@@ -1,0 +1,386 @@
+name: Acquire DTC research snapshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/acquire-dtc-research.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-dtc-research
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Acquire, verify, compare and import research snapshot
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import sqlite3
+          import tempfile
+          import time
+          import urllib.request
+          from pathlib import Path
+
+          OUT = Path("research-output")
+          OUT.mkdir(parents=True, exist_ok=True)
+          REPORT = {
+              "project": "VAG TECH PRO",
+              "run_kind": "GitHub-hosted acquisition",
+              "obdex": {"status": "not_started"},
+              "wal33d": {"status": "quarantine_only_not_started"},
+              "comparison": {"status": "not_run"},
+              "research_import": {"status": "not_run"},
+              "policy": {
+                  "obdex_namespace": "generic SAE/ISO OBD-II only",
+                  "obdex_license": "CC0-1.0 data",
+                  "wal33d_data_license": "not separately established",
+                  "wal33d_policy": "ephemeral read-only inspection only; no binary or manufacturer definitions in artifact",
+                  "production_import": False,
+                  "fitment_claims": False
+              }
+          }
+
+          def fetch(url, max_bytes=40_000_000, attempts=3):
+              last = None
+              for attempt in range(attempts):
+                  try:
+                      request = urllib.request.Request(
+                          url,
+                          headers={"User-Agent": "VAG-TECH-PRO-research-audit/1.0", "Accept": "*/*"}
+                      )
+                      with urllib.request.urlopen(request, timeout=45) as response:
+                          data = response.read(max_bytes + 1)
+                      if len(data) > max_bytes:
+                          raise RuntimeError("download exceeded configured size limit")
+                      return data
+                  except Exception as exc:
+                      last = exc
+                      if attempt + 1 < attempts:
+                          time.sleep(2 ** attempt)
+              raise RuntimeError(f"download failed: {url}: {last}")
+
+          def write_download(name, url, expected_bytes=None, expected_git_blob=None, max_bytes=40_000_000):
+              data = fetch(url, max_bytes=max_bytes)
+              if expected_bytes is not None and len(data) != expected_bytes:
+                  raise RuntimeError(f"{name}: expected {expected_bytes} bytes, got {len(data)}")
+              if expected_git_blob:
+                  git_sha = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+                  if git_sha != expected_git_blob:
+                      raise RuntimeError(f"{name}: pinned Git blob SHA-1 mismatch: {git_sha}")
+              else:
+                  git_sha = None
+              target = OUT / name
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+              return data, {
+                  "file": name,
+                  "url": url,
+                  "bytes": len(data),
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "git_blob_sha1": git_sha
+              }
+
+          def collection(value, label):
+              if isinstance(value, list):
+                  return value
+              if isinstance(value, dict):
+                  for key in ("items", "pids", "records", "data"):
+                      if isinstance(value.get(key), list):
+                          return value[key]
+              raise RuntimeError(f"{label}: expected a JSON array or an object containing an array")
+
+          try:
+              base = "https://foerbsnavi.github.io/OBDex/"
+              raw = "https://raw.githubusercontent.com/foerbsnavi/OBDex/main/"
+              obdex_files = [
+                  ("obdex/generic.min.json", base + "generic.min.json"),
+                  ("obdex/pids/mode01.json", base + "pids/mode01.json"),
+                  ("obdex/pids/mode09.json", base + "pids/mode09.json"),
+                  ("obdex/meta.json", base + "meta.json"),
+                  ("obdex/LICENSE-DATA", raw + "LICENSE-DATA")
+              ]
+              blobs = {}
+              file_manifest = []
+              for name, url in obdex_files:
+                  data, metadata = write_download(name, url)
+                  file_manifest.append(metadata)
+                  blobs[name] = data
+
+              license_text = blobs["obdex/LICENSE-DATA"].decode("utf-8", errors="strict")
+              if "CC0 1.0 Universal" not in license_text or "applies to the data files" not in license_text:
+                  raise RuntimeError("OBDex data license text did not pass the CC0-1.0 scope check")
+
+              dtcs = collection(json.loads(blobs["obdex/generic.min.json"]), "OBDex generic DTC")
+              pids01 = collection(json.loads(blobs["obdex/pids/mode01.json"]), "OBDex Mode 01 PID")
+              pids09 = collection(json.loads(blobs["obdex/pids/mode09.json"]), "OBDex Mode 09 PID")
+              meta = json.loads(blobs["obdex/meta.json"])
+
+              codes = []
+              for row in dtcs:
+                  if not isinstance(row, dict) or not isinstance(row.get("code"), str):
+                      raise RuntimeError("OBDex generic snapshot contains a row without a code")
+                  codes.append(row["code"].strip().upper())
+              if len(codes) != len(set(codes)):
+                  raise RuntimeError("OBDex generic snapshot contains duplicate DTC identifiers")
+              if len(codes) != 9533:
+                  raise RuntimeError(f"OBDex generic DTC count mismatch: expected 9533, got {len(codes)}")
+              pid_total = len(pids01) + len(pids09)
+              if pid_total != 132:
+                  raise RuntimeError(f"OBDex PID count mismatch: expected 132, got {pid_total}")
+
+              pid_keys = []
+              for mode, rows in (("01", pids01), ("09", pids09)):
+                  for i, row in enumerate(rows):
+                      if not isinstance(row, dict):
+                          raise RuntimeError(f"OBDex Mode {mode} PID row {i} is not an object")
+                      key = row.get("pid", row.get("code", row.get("id", str(i))))
+                      pid_keys.append((mode, str(key)))
+              if len(pid_keys) != len(set(pid_keys)):
+                  raise RuntimeError("OBDex contains duplicate PID identifiers within a mode")
+
+              source_hashes = {item["file"]: item["sha256"] for item in file_manifest}
+              REPORT["obdex"] = {
+                  "status": "downloaded_and_validated",
+                  "generic_dtc_count": len(dtcs),
+                  "mode01_pid_count": len(pids01),
+                  "mode09_pid_count": len(pids09),
+                  "pid_total": pid_total,
+                  "unique_generic_codes": len(set(codes)),
+                  "upstream_meta": meta,
+                  "data_license": "CC0-1.0",
+                  "files": file_manifest
+              }
+              (OUT / "OBDex-SNAPSHOT-MANIFEST.json").write_text(
+                  json.dumps({"source": "foerbsnavi/OBDex", "files": file_manifest,
+                              "license_file": "obdex/LICENSE-DATA", "license": "CC0-1.0",
+                              "scope": "generic SAE/ISO DTC and PIDs only"},
+                             ensure_ascii=False, indent=2) + "\n",
+                  encoding="utf-8"
+              )
+
+              # Compare identifiers against a pinned, temporary Wal33D copy.
+              wal_base = "https://raw.githubusercontent.com/Wal33D/dtc-database/04c43d72e7db7197658b6f72fe582c5076d9eee8/"
+              wal_specs = [
+                  ("data/dtc_codes.db", 3256320, "5270a7baf7c3d221de289d0dc7806a9203191fce"),
+                  ("data/source-data/audi_codes.txt", 19817, "96cac4cd186eae8b7b74d151c5a3dc36c9cb8870"),
+                  ("data/source-data/volkswagen_codes.txt", 28200, "a8afd432644e8cad718e42cdd18cc1931a75bb08")
+              ]
+              wal_audit = {"status": "not_available", "binary_artifact_published": False}
+              overlap = {"status": "not_run"}
+              try:
+                  with tempfile.TemporaryDirectory(prefix="vag-wal33d-") as tmp:
+                      tmp = Path(tmp)
+                      downloaded = {}
+                      wal_file_manifest = []
+                      for rel, size, blob in wal_specs:
+                          data = fetch(wal_base + rel, max_bytes=size + 1024)
+                          if len(data) != size:
+                              raise RuntimeError(f"{rel}: expected {size} bytes, got {len(data)}")
+                          actual_blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+                          if actual_blob != blob:
+                              raise RuntimeError(f"{rel}: pinned Git blob SHA-1 mismatch")
+                          target = tmp / Path(rel).name
+                          target.write_bytes(data)
+                          downloaded[rel] = target
+                          wal_file_manifest.append({
+                              "path": rel, "bytes": len(data), "git_blob_sha1": actual_blob,
+                              "sha256": hashlib.sha256(data).hexdigest()
+                          })
+
+                      db_path = downloaded["data/dtc_codes.db"]
+                      con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+                      try:
+                          integrity = con.execute("PRAGMA integrity_check").fetchone()[0]
+                          if integrity != "ok":
+                              raise RuntimeError(f"Wal33D SQLite integrity_check: {integrity}")
+                          tables = [row[0] for row in con.execute(
+                              "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+                          )]
+                          if "dtc_definitions" not in tables:
+                              raise RuntimeError("Wal33D dtc_definitions table missing")
+                          columns = [row[1] for row in con.execute("PRAGMA table_info(dtc_definitions)")]
+                          required = {"code", "manufacturer"}
+                          if not required.issubset(columns):
+                              raise RuntimeError("Wal33D dtc_definitions lacks code/manufacturer columns")
+                          total_rows = con.execute("SELECT COUNT(*) FROM dtc_definitions").fetchone()[0]
+                          manufacturer_counts = dict(con.execute(
+                              "SELECT UPPER(manufacturer), COUNT(*) FROM dtc_definitions GROUP BY UPPER(manufacturer)"
+                          ).fetchall())
+                          rows = con.execute(
+                              "SELECT DISTINCT UPPER(code) FROM dtc_definitions "
+                              "WHERE UPPER(manufacturer) IN ('AUDI','VOLKSWAGEN','VW')"
+                          ).fetchall()
+                          wal_vag_db_codes = {row[0] for row in rows if row[0]}
+                      finally:
+                          con.close()
+
+                      text_sets = {}
+                      pattern = re.compile(r"^\s*([PBCU][0-9A-F]{4})\b", re.I)
+                      for rel in ("data/source-data/audi_codes.txt", "data/source-data/volkswagen_codes.txt"):
+                          found = set()
+                          for line in downloaded[rel].read_text(encoding="utf-8-sig", errors="replace").splitlines():
+                              match = pattern.match(line)
+                              if match:
+                                  found.add(match.group(1).upper())
+                          text_sets[Path(rel).name] = found
+
+                      obdex_set = set(codes)
+                      overlap = {
+                          "status": "exact_identifier_intersection_only",
+                          "obdex_vs_wal33d_audi_vw_sqlite": len(obdex_set & wal_vag_db_codes),
+                          "obdex_vs_audi_text": len(obdex_set & text_sets["audi_codes.txt"]),
+                          "obdex_vs_volkswagen_text": len(obdex_set & text_sets["volkswagen_codes.txt"]),
+                          "audi_text_unique_codes": len(text_sets["audi_codes.txt"]),
+                          "volkswagen_text_unique_codes": len(text_sets["volkswagen_codes.txt"]),
+                          "wal33d_audi_vw_sqlite_unique_codes": len(wal_vag_db_codes),
+                          "interpretation": "Identifier overlap is not VAG attribution, ECU applicability, vehicle fitment or a repair instruction."
+                      }
+                      wal_audit = {
+                          "status": "downloaded_and_inspected_ephemerally",
+                          "pinned_commit": "04c43d72e7db7197658b6f72fe582c5076d9eee8",
+                          "integrity_check": integrity,
+                          "tables": tables,
+                          "total_definition_rows": total_rows,
+                          "manufacturer_row_counts": manufacturer_counts,
+                          "audi_vw_unique_sqlite_codes": len(wal_vag_db_codes),
+                          "files": wal_file_manifest,
+                          "data_license": "not separately established",
+                          "binary_artifact_published": False,
+                          "production_import": False
+                      }
+              except Exception as exc:
+                  wal_audit = {
+                      "status": "download_or_inspection_failed",
+                      "error": str(exc),
+                      "binary_artifact_published": False,
+                      "data_license": "not separately established",
+                      "production_import": False
+                  }
+                  overlap = {"status": "not_run", "reason": str(exc)}
+
+              REPORT["wal33d"] = wal_audit
+              REPORT["comparison"] = overlap
+
+              # Import generic CC0 rows into an isolated research SQLite file.
+              db_out = OUT / "generic-obdex-research.sqlite"
+              if db_out.exists():
+                  db_out.unlink()
+              db = sqlite3.connect(db_out)
+              try:
+                  db.executescript("""
+                    CREATE TABLE source_imports (
+                      import_id INTEGER PRIMARY KEY,
+                      source_name TEXT NOT NULL,
+                      source_scope TEXT NOT NULL,
+                      data_license TEXT NOT NULL,
+                      generic_namespace_only INTEGER NOT NULL CHECK (generic_namespace_only = 1),
+                      fitment_claim INTEGER NOT NULL CHECK (fitment_claim = 0),
+                      snapshot_sha256_json TEXT NOT NULL,
+                      imported_at_utc TEXT NOT NULL,
+                      review_status TEXT NOT NULL CHECK (review_status = 'research_only')
+                    );
+                    CREATE TABLE generic_dtc_research (
+                      code TEXT PRIMARY KEY,
+                      payload_json TEXT NOT NULL,
+                      source_import_id INTEGER NOT NULL REFERENCES source_imports(import_id),
+                      source_sha256 TEXT NOT NULL,
+                      review_status TEXT NOT NULL CHECK (review_status = 'research_only'),
+                      fitment_claim INTEGER NOT NULL CHECK (fitment_claim = 0)
+                    );
+                    CREATE TABLE generic_pid_research (
+                      mode TEXT NOT NULL,
+                      record_key TEXT NOT NULL,
+                      payload_json TEXT NOT NULL,
+                      source_import_id INTEGER NOT NULL REFERENCES source_imports(import_id),
+                      source_sha256 TEXT NOT NULL,
+                      review_status TEXT NOT NULL CHECK (review_status = 'research_only'),
+                      PRIMARY KEY (mode, record_key)
+                    );
+                  """)
+                  db.execute(
+                      "INSERT INTO source_imports(source_name,source_scope,data_license,generic_namespace_only,"
+                      "fitment_claim,snapshot_sha256_json,imported_at_utc,review_status) "
+                      "VALUES(?,?,?,?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now'),'research_only')",
+                      ("OBDex", "generic SAE/ISO OBD-II DTC and PIDs", "CC0-1.0", 1, 0,
+                       json.dumps(source_hashes, sort_keys=True))
+                  )
+                  import_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+                  db.executemany(
+                      "INSERT INTO generic_dtc_research(code,payload_json,source_import_id,source_sha256,review_status,fitment_claim) "
+                      "VALUES(?,?,?,?, 'research_only', 0)",
+                      [(row["code"].strip().upper(), json.dumps(row, ensure_ascii=False, sort_keys=True),
+                        import_id, source_hashes["obdex/generic.min.json"]) for row in dtcs]
+                  )
+                  pid_rows = []
+                  for mode, rows, filename in (
+                      ("01", pids01, "obdex/pids/mode01.json"),
+                      ("09", pids09, "obdex/pids/mode09.json")
+                  ):
+                      for i, row in enumerate(rows):
+                          key = row.get("pid", row.get("code", row.get("id", str(i))))
+                          pid_rows.append((mode, str(key), json.dumps(row, ensure_ascii=False, sort_keys=True),
+                                           import_id, source_hashes[filename], "research_only"))
+                  db.executemany(
+                      "INSERT INTO generic_pid_research(mode,record_key,payload_json,source_import_id,source_sha256,review_status) "
+                      "VALUES(?,?,?,?,?,?)", pid_rows
+                  )
+                  db.commit()
+                  integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
+                  dtc_imported = db.execute("SELECT COUNT(*) FROM generic_dtc_research").fetchone()[0]
+                  pid_imported = db.execute("SELECT COUNT(*) FROM generic_pid_research").fetchone()[0]
+                  if integrity != "ok" or dtc_imported != 9533 or pid_imported != 132:
+                      raise RuntimeError("research SQLite post-import verification failed")
+              finally:
+                  db.close()
+
+              REPORT["research_import"] = {
+                  "status": "completed_in_isolated_research_database",
+                  "database": db_out.name,
+                  "integrity_check": integrity,
+                  "generic_dtcs_imported": dtc_imported,
+                  "pids_imported": pid_imported,
+                  "production_database_touched": False,
+                  "fitment_claims": False,
+                  "review_status": "research_only"
+              }
+              REPORT["overall_status"] = "completed_with_quarantine_policy"
+              REPORT["source_file_sha256":] = source_hashes
+          except Exception as exc:
+              REPORT["overall_status"] = "failed"
+              REPORT["error"] = str(exc)
+              raise
+          finally:
+              (OUT / "ACQUISITION-REPORT.json").write_text(
+                  json.dumps(REPORT, ensure_ascii=False, indent=2, default=str) + "\n",
+                  encoding="utf-8"
+              )
+          PY
+
+      - name: Upload CC0 snapshot and research audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-dtc-research
+          path: research-output/
+          if-no-files-found: warn
+          retention-days: 14
