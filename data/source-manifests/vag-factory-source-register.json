@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-03",
+  "project_scope": "VAG TECH PRO; Russian market first",
+  "policy": {
+    "generic_obd_is_not_vag_specific": true,
+    "model_year_match_is_not_exact_fitment": true,
+    "vin_fitment_requires_primary_evidence": true,
+    "oem_documents_may_not_be_redistributed_without_permission": true,
+    "manufacturer_data_requires_rights_review_before_storage_or_publication": true
+  },
+  "sources": [
+    {
+      "source_id": "vw-maximum-commercial-repair-info-ru",
+      "publisher": "VW Максимум (Russian commercial Volkswagen repair information request page)",
+      "owner_named_by_source": "VOLKSWAGEN AG",
+      "url": "https://com.vw-maximum.ru/owners/service/repair-tech/",
+      "source_kind": "officially_described_vin_request_channel",
+      "market_scope": [
+        "RU"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "Volkswagen"
+        ],
+        "vehicle_segment": [
+          "commercial"
+        ],
+        "per_request_vehicle_count": 1,
+        "vin_required": true,
+        "request_types": [
+          "technical_information",
+          "removal_installation",
+          "disassembly_assembly",
+          "wiring_diagram"
+        ],
+        "excludes": [
+          "vehicle_safety_system_information"
+        ]
+      },
+      "access": {
+        "status": "available_by_individual_request",
+        "eligible_applicants": [
+          "independent_service_station_legal_entity",
+          "individual_entrepreneur"
+        ],
+        "delivery": "email_after_invoice_payment",
+        "listed_price_rub_with_vat": 1400,
+        "scope_note": "Source page says the information is not processed, adapted or checked; completeness is not guaranteed for vehicles before 2000."
+      },
+      "rights": {
+        "data_license_status": "proprietary_oem_information",
+        "owner": "VOLKSWAGEN AG",
+        "redistribution_allowed": false,
+        "permission_required_for_database_reuse": "not_granted_by_page; obtain written permission",
+        "bulk_acquisition": false
+      },
+      "project_decision": "request_only_for_specific_commercial_vehicle_cases; do_not_publish_or_batch_import",
+      "evidence_status": "source_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "volkswagen-erwin-official",
+      "publisher": "Volkswagen AG erWin",
+      "url": "https://volkswagen.erwin-store.com/erwin/showInfoTour.do",
+      "terms_url": "https://volkswagen.erwin-store.com/erwin/showTermsOfBusiness.do",
+      "source_kind": "official_oem_service_information_portal",
+      "market_scope": [
+        "country_dependent",
+        "market_specific"
+      ],
+      "vehicle_scope": {
+        "vin_specific_identification": true,
+        "may_return_engine_code": true,
+        "document_types": [
+          "repair_manual",
+          "circuit_diagram",
+          "technical_servicing_manual",
+          "emission_test",
+          "maintenance_information"
+        ]
+      },
+      "access": {
+        "status": "commercial_subscription_or_flat_rate",
+        "new_portal_coverage_note": "The current page lists EU, Norway, Switzerland and United Kingdom; other countries are directed to check availability."
+      },
+      "rights": {
+        "data_license_status": "copyrighted_oem_content",
+        "purchased_information_user_right": "own_use_only",
+        "third_party_transfer_allowed": false,
+        "publication_or_forwarding": "prior_oem_approval_and_license_agreement_required",
+        "automated_mechanical_queries": "prohibited",
+        "no_russia_belarus_clause_observed_in_reviewed_terms": true,
+        "permission_for_vag_tech_pro": "not_obtained"
+      },
+      "project_decision": "blocked_for_bulk_download_storage_or_redistribution_until_written_oem_authorization_and_country_terms_review",
+      "evidence_status": "official_info_tour_and_terms_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "nhtsa-tsbs-public-index",
+      "publisher": "National Highway Traffic Safety Administration",
+      "url": "https://catalog.data.gov/dataset/nhtsas-office-of-defects-investigation-odi-technical-service-bulletins-system-tsbs-downloadable-file",
+      "schema_url": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS.txt",
+      "source_kind": "government_summary_index",
+      "market_scope": [
+        "US_NAR"
+      ],
+      "fields_observed": [
+        "NHTSA_ID",
+        "TSB_document_ID",
+        "manufacturer_communication_date",
+        "manufacturer_campaign_or_software_version_ID",
+        "communication_type",
+        "make",
+        "model",
+        "model_year",
+        "NHTSA_component",
+        "manufacturer_component_system",
+        "manufacturer_component_subsystem",
+        "summary"
+      ],
+      "limitations": [
+        "not_all_manufacturer_service_bulletins_are_included",
+        "summary_index_does_not_guarantee_engine_code_or_ecu_part_number",
+        "US_market_index_does_not_prove_RU_applicability",
+        "underlying_oem_pdfs_may_have_separate_copyright_and_reuse_terms"
+      ],
+      "rights": {
+        "dataset_catalog_license": "Public Domain Label 1.0",
+        "index_metadata_reuse": "candidate_for_metadata_only_import_with_attribution_and_snapshot_provenance",
+        "underlying_oem_pdf_redistribution": "not_assumed; separate permission_required"
+      },
+      "project_decision": "allow_metadata_indexing_as_nar_candidate_only;_do_not_copy_oem_pdf_content",
+      "evidence_status": "data_gov_metadata_and_official_field_definition_reviewed_2026-11-03",
+      "last_dataset_update_reported_by_catalog": "2024-05-01"
+    },
+    {
+      "source_id": "nhtsa-vpic",
+      "publisher": "National Highway Traffic Safety Administration",
+      "url": "https://vpic.nhtsa.dot.gov/about/",
+      "api_url": "https://vpic.nhtsa.dot.gov/api/",
+      "source_kind": "manufacturer_submitted_vin_decode_data",
+      "market_scope": [
+        "US"
+      ],
+      "model_year_scope": "1981_and_newer",
+      "fields_purpose": [
+        "basic_vin_decoding",
+        "manufacturer_information",
+        "equipment_plant_identification"
+      ],
+      "limitations": [
+        "not_a_Russian_market_factory_build_sheet",
+        "not_a_VAG_repair_procedure_source",
+        "does_not_establish_exact_ECU_or_service_bulletin_applicability_without_explicit_response_fields"
+      ],
+      "rights": {
+        "access": "public_api",
+        "reuse_terms": "review_api_terms_and_rate_limits_before_product_integration"
+      },
+      "project_decision": "optional_us_vin_decoder_only; not a source for RU engine_gearbox_ECU facts",
+      "evidence_status": "official_nhtsa_vpic_about_and_api_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "rosstandart-fgis-registers-kts",
+      "publisher": "Rosstandart / FBU Interstandart",
+      "url": "https://www.interstandart.ru/page/fgis_01",
+      "source_kind": "official_vehicle_type_approval_register_system",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "document_types": [
+        "OTTS",
+        "OTSH",
+        "SBKTS",
+        "cancellation_notices"
+      ],
+      "evidence_scope": [
+        "vehicle_type_approval",
+        "type_or_variant_homologation"
+      ],
+      "limitations": [
+        "not_individual_vin_factory_build_sheet",
+        "not_ecu_dtc_or_repair_procedure_source",
+        "bulk_api_and_redistribution_terms_not_verified"
+      ],
+      "rights": {
+        "access": "official_fgis_registry_information",
+        "bulk_export_rights": "not_established",
+        "permission_status": "requires_further_review"
+      },
+      "project_decision": "use_as_type_approval_evidence_only_after_document_and_rights_review",
+      "evidence_status": "official_interstandart_information_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "ross-tech-official-factory-source-directory",
+      "publisher": "Ross-Tech Wiki",
+      "url": "https://wiki.ross-tech.com/wiki/index.php/Official_Factory_Repair_Information",
+      "source_kind": "secondary_navigation_directory",
+      "market_scope": [
+        "RoW",
+        "NAR"
+      ],
+      "evidence_scope": [
+        "portal_discovery_only"
+      ],
+      "rights": {
+        "data_license_status": "not_applicable_to_oem_portal_documents",
+        "reuse_of_linked_oem_materials": "not_granted"
+      },
+      "project_decision": "use_only_to_discover_primary_oem_portals; never as proof of repair procedure",
+      "evidence_status": "secondary_directory_reviewed_2026-11-03"
+    }
+  ],
+  "minimum_fitment_evidence_fields": [
+    "market_scope",
+    "make",
+    "model",
+    "generation_or_type_code",
+    "model_year",
+    "production_date_or_range",
+    "engine_code",
+    "transmission_code",
+    "drive_configuration",
+    "body_configuration",
+    "ecu_supplier_or_family",
+    "ecu_diagnostic_address",
+    "ecu_part_number",
+    "ecu_hardware_number",
+    "ecu_software_number_or_version",
+    "pr_codes_or_equipment_variant",
+    "vin_range_or_exact_vin_scope",
+    "source_document_id",
+    "source_revision",
+    "source_issue_date",
+    "page_section_or_table",
+    "source_file_sha256_when_lawfully_stored",
+    "data_license_status",
+    "reuse_scope",
+    "redistribution_allowed",
+    "permission_reference",
+    "technical_review_status"
+  ],
+  "review_states": [
+    "candidate",
+    "source_header_verified",
+    "applicability_verified",
+    "engineer_reviewed",
+    "publication_approved"
+  ]
+}
