@@ -8,20 +8,34 @@ Non-commercial technical knowledge base and repair-workflow project for Volkswag
 - Never infer engine, transmission, ECU, PR-code, VIN fitment or repair-procedure applicability.
 - Preserve source revision, hashes, scope and data license for every research snapshot.
 - Do not promote research imports into production without technical review and confirmed reuse rights.
-- Wal33D is inspected only in a temporary quarantine; its repository MIT license is not treated as a data license.
+- Wal33D is inspected only in an ephemeral read-only quarantine; its repository MIT license is not treated as a data license.
 
-## Current repository bootstrap
+## Repository contents and current state
 
-The GitHub repository has been initialized. The next commit adds a self-contained GitHub Actions workflow for acquiring and auditing OBDex generic DTC/PID snapshots and performing an exact-identifier comparison with the pinned Wal33D candidate. The complete application source package is maintained separately in the current development workspace and is not yet mirrored here.
+The repository currently contains the acquisition workflow and its research policy/reporting. The full application source tree from the development workspace has not yet been mirrored into this GitHub repository. This repository is therefore not yet a complete installable Windows application.
+
+## Verified research acquisition — 2026-11-02
+
+GitHub Actions run #2 completed successfully:
+[Acquire DTC research snapshots](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/41517889631)
+
+The run acquired an OBDex CC0-1.0 data snapshot and validated:
+
+- 9,533 unique generic SAE/ISO DTC definitions.
+- 119 Mode 01 PIDs and 13 Mode 09 PIDs (132 total).
+- A separate SQLite research import of 9,533 DTCs and 132 PIDs; integrity check passed.
+- Exact identifier overlap against an ephemeral pinned Wal33D read-only inspection: 126 overlaps with the Audi text/database set and 0 with the Volkswagen text set.
+
+The overlap is not proof of manufacturer attribution, ECU applicability, vehicle fitment or a repair instruction. Wal33D data rights remain unestablished; its binary and manufacturer definition text were not retained in the artifact or imported.
+
+Detailed counts, source hashes, pinned upstream revision, license scope and import checks are recorded in [the acquisition report](docs/research/OBDEX_RUN_2026-11-02.md).
 
 ## Research workflow
 
 Workflow: `.github/workflows/acquire-dtc-research.yml`
 
-It runs on the workflow-file push to `main` and can be run manually. It downloads OBDex data and its `CC0-1.0` data license, validates the advertised corpus size, imports only generic records into a separate research SQLite database, and produces an exact-code overlap report against the pinned Wal33D database and Audi/VW text files.
-
-The Wal33D database is downloaded only to an ephemeral GitHub runner for read-only inspection. Its binary is not included in artifacts or imported. The report contains aggregate audit results, not copied manufacturer definitions.
+It runs on changes to the workflow file on `main` and can also be run manually. OBDex generic records are retained as research-only data; Wal33D is used only for ephemeral identifier comparison. No production database is modified.
 
 ## Important limitation
 
-OBDex covers generic SAE/ISO definitions only. It does not establish VAG ECU-specific applicability, vehicle-generation fitment or factory repair procedures. The repository is not yet a complete installable Windows application.
+OBDex covers generic SAE/ISO diagnostic definitions only. It does not establish VAG ECU-specific applicability, vehicle-generation fitment, factory wiring or repair procedures. OEM technical sources and exact model/engine/ECU applicability still require independent evidence and review.
