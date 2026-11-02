@@ -6,7 +6,7 @@ on:
       - .github/workflows/acquire-obdex-cc0.yml
       - data/source-manifests/obdex-generic-cc0.lock.json
   push:
-    branches: [main]
+    branches: [main, automation/obdex-cc0-acquisition]
     paths:
       - .github/workflows/acquire-obdex-cc0.yml
       - data/source-manifests/obdex-generic-cc0.lock.json
