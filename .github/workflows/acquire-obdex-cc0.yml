@@ -6,7 +6,9 @@ on:
       - .github/workflows/acquire-obdex-cc0.yml
       - data/source-manifests/obdex-generic-cc0.lock.json
   push:
-    branches: [main, automation/obdex-cc0-acquisition]
+    branches:
+      - main
+      - 'automation/obdex-cc0-*'
     paths:
       - .github/workflows/acquire-obdex-cc0.yml
       - data/source-manifests/obdex-generic-cc0.lock.json
@@ -46,6 +48,7 @@ jobs:
           if ($actual -ne $lock.commit_sha) { throw "OBDex revision mismatch: $actual" }
           "OBDEX_REPO=$repo" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "OBDEX_COMMIT=$actual" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "OBDEX_ARTIFACT_NAME=$($lock.artifact_name)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Validate upstream data and build JSON projections
         shell: pwsh
@@ -111,6 +114,7 @@ jobs:
             source_files = $sourceFiles
             build = $lock.build
             expected_counts = $lock.expected_counts
+            normalizer_version = $lock.normalizer_version
             generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
           }
           $manifest | ConvertTo-Json -Depth 30 | Set-Content -Path (Join-Path $generatedRoot "OBDex-SOURCE-MANIFEST.json") -Encoding utf8NoBOM
@@ -229,7 +233,7 @@ jobs:
 
           const packageData = {
             package_type: "generic_obd2_cc0_review_only",
-            normalizer_version: 1,
+            normalizer_version: sourceManifest.normalizer_version,
             generated_at: new Date().toISOString(),
             source: {
               title: "OBDex",
@@ -364,7 +368,7 @@ jobs:
       - name: Upload immutable source snapshot and SQLite research database
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-obdex-cc0-2026-11-02
+          name: ${{ env.OBDEX_ARTIFACT_NAME }}
           path: research-output/
           if-no-files-found: error
           retention-days: 30
