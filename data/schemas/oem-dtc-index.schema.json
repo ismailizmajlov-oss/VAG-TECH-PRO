@@ -1,0 +1,506 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/blob/main/data/schemas/oem-dtc-index.schema.json",
+  "title": "VAG TECH PRO OEM DTC applicability record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "dtc",
+    "dtc_namespace",
+    "manufacturer",
+    "market_scope",
+    "source_document",
+    "applicability",
+    "ecu",
+    "provenance",
+    "rights",
+    "review"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dtc": {
+      "type": "string",
+      "pattern": "^[PBCU][0-9A-F]{4}$"
+    },
+    "dtc_namespace": {
+      "enum": [
+        "generic_sae_iso",
+        "manufacturer_specific_vag",
+        "manufacturer_specific_other",
+        "unknown"
+      ]
+    },
+    "manufacturer": {
+      "enum": [
+        "VOLKSWAGEN",
+        "AUDI",
+        "SKODA",
+        "SEAT",
+        "CUPRA",
+        "OTHER",
+        "UNKNOWN"
+      ]
+    },
+    "market_scope": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "RU",
+          "EAEU",
+          "EU",
+          "NAR",
+          "CN",
+          "ROW",
+          "UNKNOWN"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "vehicle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "generation_or_type_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_year_from": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "model_year_to": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "production_date_from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "production_date_to": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "engine_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transmission_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "drive_configuration": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pr_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "vin_scope": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Store exact VIN only in protected local records; never commit personal VINs to public Git."
+        }
+      }
+    },
+    "ecu": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity_status"
+      ],
+      "properties": {
+        "identity_status": {
+          "enum": [
+            "exact",
+            "family_only",
+            "not_provided",
+            "unknown"
+          ]
+        },
+        "system_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "supplier": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ecu_family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "diagnostic_address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "part_number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hardware_number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hardware_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "software_number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "software_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "calibration_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "component_string": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "source_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "document_id",
+        "revision",
+        "issue_date",
+        "evidence_locator"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string"
+        },
+        "document_id": {
+          "type": "string"
+        },
+        "document_type": {
+          "enum": [
+            "dtc_table",
+            "diagnostic_test_plan",
+            "tpi_tsb",
+            "repair_manual",
+            "wiring_diagram",
+            "vehicle_data_sheet",
+            "other"
+          ]
+        },
+        "revision": {
+          "type": "string"
+        },
+        "issue_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidence_locator": {
+          "type": "string",
+          "description": "Page, section, table, figure or paragraph that supports this exact claim."
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "source_file_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{64}$"
+        }
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_statement",
+        "evidence_level"
+      ],
+      "properties": {
+        "scope_statement": {
+          "type": "string"
+        },
+        "evidence_level": {
+          "enum": [
+            "exact_vin",
+            "exact_ecu_hw_sw",
+            "engine_transmission_variant",
+            "model_year_only",
+            "generic_only",
+            "unknown"
+          ]
+        },
+        "vin_range_explicit": {
+          "type": "boolean"
+        },
+        "engine_code_explicit": {
+          "type": "boolean"
+        },
+        "transmission_code_explicit": {
+          "type": "boolean"
+        },
+        "ecu_hw_sw_explicit": {
+          "type": "boolean"
+        }
+      }
+    },
+    "diagnostic_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "symptoms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "possible_causes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_plan_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "freeze_frame_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "repair_procedure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "procedure_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "procedure_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "steps_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "wiring_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "allowed_to_store_steps": {
+          "type": "boolean"
+        },
+        "allowed_to_store_diagrams": {
+          "type": "boolean"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retrieved_at",
+        "source_hash_or_metadata_hash"
+      ],
+      "properties": {
+        "retrieved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_hash_or_metadata_hash": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "upstream_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "operator_note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "license_status",
+        "reuse_scope",
+        "redistribution_allowed"
+      ],
+      "properties": {
+        "license_status": {
+          "enum": [
+            "cc0",
+            "public_domain",
+            "open_license",
+            "permission_granted",
+            "proprietary",
+            "unknown",
+            "permission_required"
+          ]
+        },
+        "license_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reuse_scope": {
+          "type": "string"
+        },
+        "redistribution_allowed": {
+          "type": "boolean"
+        },
+        "permission_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reviewed_by_role"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "candidate",
+            "source_header_verified",
+            "applicability_verified",
+            "engineer_reviewed",
+            "publication_approved",
+            "rejected"
+          ]
+        },
+        "reviewed_by_role": {
+          "enum": [
+            "unreviewed",
+            "data_curator",
+            "vag_diagnostic_engineer",
+            "rights_reviewer"
+          ]
+        },
+        "reviewed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "rejection_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}
