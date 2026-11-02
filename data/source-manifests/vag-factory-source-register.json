@@ -227,12 +227,15 @@
           "SKODA",
           "VOLKSWAGEN"
         ],
-        "vin_query": true
+        "vin_query": true,
+        "vin_length": 17
       },
       "fields_observed": [
         "factory_equipment_options",
         "audatex_option_codes",
-        "textual_equipment_descriptions_after_calculation"
+        "textual_equipment_descriptions_after_calculation",
+        "audatex_option_codes_returned_for_supported_vehicle_models",
+        "printable_vin_result"
       ],
       "not_confirmed": [
         "engine_code",
@@ -240,11 +243,15 @@
         "ecu_part_number",
         "ecu_hardware_software",
         "manufacturer_dtc",
-        "repair_procedure"
+        "repair_procedure",
+        "universal_coverage_for_all_model_years_and_RU_market_variants"
       ],
       "access": {
         "status": "commercial_AudaPad_Web_account_required",
-        "pricing": "per_successful_vin_transaction; current pricing to confirm"
+        "pricing": "per_successful_vin_transaction; current pricing to confirm",
+        "billing": "per_successful_vin_transaction; no subscription fee for VIN query stated on page",
+        "success_definition": "VIN request that returns Audatex option codes, regardless of whether user is satisfied with result",
+        "note": "A result is available only for models for which manufacturer data exists; full VIN required; characters O/I/Q excluded."
       },
       "rights": {
         "data_license_status": "commercial_proprietary_or_contractual",
