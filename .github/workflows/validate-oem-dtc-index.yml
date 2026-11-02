@@ -1,0 +1,31 @@
+name: Validate OEM DTC index schema
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - data/schemas/oem-dtc-index.schema.json
+      - data/sql/oem-dtc-index.sql
+      - scripts/validate-oem-dtc-index.py
+      - .github/workflows/validate-oem-dtc-index.yml
+  pull_request:
+    paths:
+      - data/schemas/oem-dtc-index.schema.json
+      - data/sql/oem-dtc-index.sql
+      - scripts/validate-oem-dtc-index.py
+      - .github/workflows/validate-oem-dtc-index.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate JSON contract and SQLite guards
+        run: python scripts/validate-oem-dtc-index.py
