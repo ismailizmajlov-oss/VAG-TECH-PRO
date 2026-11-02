@@ -1,0 +1,369 @@
+name: Build licensed OBDex generic SQLite snapshot
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/acquire-obdex-cc0.yml
+      - data/source-manifests/obdex-generic-cc0.lock.json
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/acquire-obdex-cc0.yml
+      - data/source-manifests/obdex-generic-cc0.lock.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-obdex-cc0
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    name: Validate and package CC0 OBD-II reference data
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout VAG TECH PRO source register
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.16.0"
+
+      - name: Fetch the pinned OBDex source revision
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $lock = Get-Content "data/source-manifests/obdex-generic-cc0.lock.json" -Raw | ConvertFrom-Json
+          $repo = Join-Path $env:RUNNER_TEMP "OBDex"
+          git clone --filter=blob:none --no-checkout https://github.com/foerbsnavi/OBDex.git $repo
+          git -C $repo fetch --depth 1 origin $lock.commit_sha
+          git -C $repo checkout --detach $lock.commit_sha
+          $actual = (git -C $repo rev-parse HEAD).Trim()
+          if ($actual -ne $lock.commit_sha) { throw "OBDex revision mismatch: $actual" }
+          "OBDEX_REPO=$repo" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "OBDEX_COMMIT=$actual" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Validate upstream data and build JSON projections
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Push-Location $env:OBDEX_REPO
+          npm ci
+          npm run check
+          npm run build
+          Pop-Location
+
+          $lock = Get-Content "data/source-manifests/obdex-generic-cc0.lock.json" -Raw | ConvertFrom-Json
+          $out = Join-Path $env:GITHUB_WORKSPACE "research-output"
+          $sourceRoot = Join-Path $out "source"
+          $generatedRoot = Join-Path $out "generated"
+          New-Item -ItemType Directory -Path $sourceRoot,$generatedRoot -Force | Out-Null
+
+          $licensePath = Join-Path $env:OBDEX_REPO "LICENSE-DATA"
+          $licenseText = Get-Content $licensePath -Raw
+          if ($licenseText -notmatch "CC0 1\.0 Universal" -or $licenseText -notmatch "applies to the data files") {
+            throw "OBDex LICENSE-DATA did not pass the CC0-1.0 data-scope check"
+          }
+          Copy-Item $licensePath (Join-Path $generatedRoot "UPSTREAM-LICENSE.txt")
+
+          $sourceFiles = @()
+          foreach ($relative in $lock.source_files) {
+            $full = Join-Path $env:OBDEX_REPO ($relative -replace '/', '\')
+            if (-not (Test-Path $full -PathType Leaf)) { throw "Pinned OBDex source file missing: $relative" }
+            $sha256 = (Get-FileHash -Path $full -Algorithm SHA256).Hash.ToLowerInvariant()
+            $blobSha = (git -C $env:OBDEX_REPO rev-parse "HEAD:$relative").Trim()
+            $target = Join-Path $sourceRoot ($relative -replace '/', '\')
+            New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
+            Copy-Item $full $target
+            $sourceFiles += [pscustomobject]@{
+              path = $relative
+              bytes = (Get-Item $full).Length
+              sha256 = $sha256
+              git_blob_sha1 = $blobSha
+            }
+          }
+
+          $projectionFiles = @(
+            @{ source = "dist/generic.min.json"; target = "generic.min.json" },
+            @{ source = "dist/pids/mode01.json"; target = "mode01.json" },
+            @{ source = "dist/pids/mode09.json"; target = "mode09.json" },
+            @{ source = "dist/meta.json"; target = "meta.json" }
+          )
+          foreach ($item in $projectionFiles) {
+            $from = Join-Path $env:OBDEX_REPO ($item.source -replace '/', '\')
+            if (-not (Test-Path $from -PathType Leaf)) { throw "OBDex build output missing: $($item.source)" }
+            Copy-Item $from (Join-Path $generatedRoot $item.target)
+          }
+
+          $manifest = [ordered]@{
+            source_id = $lock.source_id
+            publisher = $lock.publisher
+            repository = $lock.repository
+            commit_sha = $env:OBDEX_COMMIT
+            data_license = $lock.data_license
+            license_url = $lock.license_url
+            license_sha256 = (Get-FileHash -Path (Join-Path $generatedRoot "UPSTREAM-LICENSE.txt") -Algorithm SHA256).Hash.ToLowerInvariant()
+            scope = $lock.scope
+            source_files = $sourceFiles
+            build = $lock.build
+            expected_counts = $lock.expected_counts
+            generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
+          }
+          $manifest | ConvertTo-Json -Depth 30 | Set-Content -Path (Join-Path $generatedRoot "OBDex-SOURCE-MANIFEST.json") -Encoding utf8NoBOM
+
+      - name: Normalize, validate and import generic-only SQLite research package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $scriptPath = Join-Path $env:RUNNER_TEMP "build-obdex-package.mjs"
+          $nodeScript = @'
+          import fs from "node:fs";
+          import path from "node:path";
+          import crypto from "node:crypto";
+          import { DatabaseSync } from "node:sqlite";
+
+          const root = path.join(process.env.GITHUB_WORKSPACE, "research-output", "generated");
+          const sourceManifest = JSON.parse(fs.readFileSync(path.join(root, "OBDex-SOURCE-MANIFEST.json"), "utf8"));
+          const readBytes = (name) => fs.readFileSync(path.join(root, name));
+          const readJson = (name) => JSON.parse(readBytes(name).toString("utf8"));
+          const sha256 = (value) => crypto.createHash("sha256").update(value).digest("hex");
+          const generic = readJson("generic.min.json");
+          const mode01 = readJson("mode01.json");
+          const mode09 = readJson("mode09.json");
+          const meta = readJson("meta.json");
+          const license = readBytes("UPSTREAM-LICENSE.txt").toString("utf8");
+          const families = new Set(["P0","P2","P3","B0","C0","U0","U3"]);
+          const hashes = Object.fromEntries(
+            ["generic.min.json","mode01.json","mode09.json","meta.json","UPSTREAM-LICENSE.txt"]
+              .map((name) => [name, sha256(readBytes(name))])
+          );
+          if (!/CC0\s*1\.0|Creative Commons Zero/i.test(license) || !/applies to the data files/i.test(license)) {
+            throw new Error("CC0 data license scope validation failed");
+          }
+          if (!Array.isArray(generic) || !Array.isArray(mode01) || !Array.isArray(mode09)) {
+            throw new Error("OBDex projections must be JSON arrays");
+          }
+
+          const dtcSeen = new Set();
+          const dtcs = generic.map((row) => {
+            const code = String(row?.code ?? "").trim().toUpperCase();
+            if (!/^[PBCU][0-3][0-9A-F]{3}$/.test(code) || !families.has(code.slice(0,2))) {
+              throw new Error("Non-generic or malformed DTC in OBDex projection: " + code);
+            }
+            if (dtcSeen.has(code)) throw new Error("Duplicate OBDex DTC: " + code);
+            dtcSeen.add(code);
+            if (!row.title || typeof row.title.en !== "string" || row.title.en.trim().length < 3) {
+              throw new Error(code + ": missing English title");
+            }
+            if (!Array.isArray(row.sources) || row.sources.length === 0 ||
+                row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
+              throw new Error(code + ": invalid source references");
+            }
+            const rawHash = sha256(Buffer.from(JSON.stringify(row)));
+            return {
+              code,
+              namespace: "generic_sae_iso_obd2",
+              category: row.category ?? null,
+              title: { en: row.title.en, de: row.title.de ?? null },
+              description: { en: row.description?.en ?? null, de: row.description?.de ?? null },
+              affected_components: Array.isArray(row.affected_components) ? row.affected_components : [],
+              common_causes: Array.isArray(row.common_causes) ? row.common_causes : [],
+              symptoms: Array.isArray(row.symptoms) ? row.symptoms : [],
+              repair: row.repair && typeof row.repair === "object" ? row.repair : null,
+              flags: row.flags && typeof row.flags === "object" ? row.flags : {},
+              related_codes: Array.isArray(row.related_codes) ? row.related_codes : [],
+              source_references: row.sources,
+              applies_to: null,
+              verification_status: "source_imported_unreviewed",
+              vehicle_fitment_claim: false,
+              source_record_sha256: rawHash,
+              raw_record: row
+            };
+          });
+          if (dtcs.length !== 9533) throw new Error("Expected 9,533 generic DTCs, received " + dtcs.length);
+
+          function normalizePids(rows, mode) {
+            const seen = new Set();
+            return rows.map((row) => {
+              const pid = String(row?.pid ?? "").trim().toUpperCase().replace(/^0X/,"").padStart(2,"0");
+              if (!/^[0-9A-F]{2}$/.test(pid)) throw new Error("Invalid Mode " + mode + " PID: " + pid);
+              if (seen.has(pid)) throw new Error("Duplicate Mode " + mode + " PID: " + pid);
+              seen.add(pid);
+              if (Number.parseInt(String(row.mode).replace(/^0x/i,""),16) !== mode) {
+                throw new Error("PID " + pid + " has unexpected mode " + row.mode);
+              }
+              if (!row.name || typeof row.name.en !== "string" || row.name.en.trim().length < 2) {
+                throw new Error("PID " + pid + " has no English name");
+              }
+              if (!Array.isArray(row.sources) || row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
+                throw new Error("PID " + pid + " has invalid source references");
+              }
+              const range = Array.isArray(row.range) ? row.range : null;
+              const min = range?.[0] ?? null;
+              const max = range?.[1] ?? null;
+              if (range && (range.length !== 2 || !Number.isFinite(Number(min)) || !Number.isFinite(Number(max)) || Number(min) > Number(max))) {
+                throw new Error("PID " + pid + " has an invalid range");
+              }
+              return {
+                pid, mode,
+                name: row.name.en,
+                localized_name: { en: row.name.en, de: row.name.de ?? null },
+                unit: row.unit ?? null,
+                bytes: row.bytes ?? null,
+                formula: row.formula ?? null,
+                min, max,
+                source_references: row.sources,
+                raw_record: row,
+                verification_status: "source_imported_unreviewed",
+                vehicle_fitment_claim: false,
+                source_record_sha256: sha256(Buffer.from(JSON.stringify(row)))
+              };
+            });
+          }
+          const pids = [...normalizePids(mode01,1), ...normalizePids(mode09,9)];
+          if (pids.length !== 132) throw new Error("Expected 132 generic PIDs, received " + pids.length);
+
+          const packageData = {
+            package_type: "generic_obd2_cc0_review_only",
+            generated_at: new Date().toISOString(),
+            source: {
+              title: "OBDex",
+              publisher: "foerbsnavi",
+              url: "https://github.com/foerbsnavi/OBDex",
+              data_license: "CC0-1.0",
+              license_url: sourceManifest.license_url,
+              attribution: "OBD-II code data: OBDex (CC0-1.0)",
+              revision: sourceManifest.commit_sha,
+              snapshot_sha256: hashes,
+              source_manifest: sourceManifest,
+              meta
+            },
+            scope: {
+              dtc_namespace: "generic_sae_iso_obd2",
+              pid_modes: [1,9],
+              manufacturer_specific_codes_included: false,
+              exact_vag_fitment: false,
+              repair_procedures_or_pinouts_included: false
+            },
+            counts: {
+              generic_dtcs: dtcs.length,
+              mode01_pids: mode01.length,
+              mode09_pids: mode09.length,
+              rejected_dtc_rows: 0,
+              rejected_pid_rows: 0
+            },
+            warnings: [
+              "Generic SAE/ISO OBD-II reference data only; not a VAG factory diagnostic corpus.",
+              "Do not map generic code descriptions to a VAG ECU, engine, gearbox or model without separate evidence.",
+              "Descriptions and causes are unreviewed source content, not verified repair instructions.",
+              "No record asserts vehicle fitment or exact diagnostic procedure applicability.",
+              "Repair cost fields are retained only in raw source provenance and must not be displayed as Russian-market pricing."
+            ],
+            generic_dtcs: dtcs,
+            pids,
+            rejected: { dtcs: [], pids: [] }
+          };
+          const packageBytes = Buffer.from(JSON.stringify(packageData,null,2) + "\n");
+          fs.writeFileSync(path.join(root,"obdex-generic-review.json"),packageBytes);
+
+          const dbPath = path.join(root,"obdex-generic-research.sqlite");
+          if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath);
+          const db = new DatabaseSync(dbPath);
+          try {
+            db.exec("PRAGMA foreign_keys=ON; PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL; PRAGMA application_id=1447120724; PRAGMA user_version=1;");
+            db.exec([
+              "CREATE TABLE source_registry(" +
+                "source_id TEXT PRIMARY KEY,publisher TEXT NOT NULL,source_version TEXT NOT NULL," +
+                "source_url TEXT NOT NULL,license_id TEXT NOT NULL CHECK(license_id='CC0-1.0')," +
+                "license_url TEXT NOT NULL,license_sha256 TEXT NOT NULL,snapshot_sha256_json TEXT NOT NULL," +
+                "source_manifest_json TEXT NOT NULL,attribution TEXT NOT NULL,market_scope TEXT NOT NULL," +
+                "verification_status TEXT NOT NULL CHECK(verification_status='license_verified_research_only'))",
+              "CREATE TABLE generic_dtc_research(" +
+                "code TEXT PRIMARY KEY,namespace TEXT NOT NULL CHECK(namespace='generic_sae_iso_obd2')," +
+                "category TEXT,title_json TEXT NOT NULL,description_json TEXT NOT NULL,raw_record_json TEXT NOT NULL," +
+                "source_record_sha256 TEXT NOT NULL,source_references_json TEXT NOT NULL," +
+                "source_id TEXT NOT NULL REFERENCES source_registry(source_id),source_version TEXT NOT NULL," +
+                "source_sha256 TEXT NOT NULL,data_license TEXT NOT NULL CHECK(data_license='CC0-1.0')," +
+                "verification_status TEXT NOT NULL CHECK(verification_status='source_imported_unreviewed')," +
+                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0))",
+              "CREATE TABLE generic_pid_research(" +
+                "mode INTEGER NOT NULL CHECK(mode IN (1,9)),pid TEXT NOT NULL,raw_record_json TEXT NOT NULL," +
+                "source_record_sha256 TEXT NOT NULL,source_references_json TEXT NOT NULL," +
+                "source_id TEXT NOT NULL REFERENCES source_registry(source_id),source_version TEXT NOT NULL," +
+                "source_sha256 TEXT NOT NULL,data_license TEXT NOT NULL CHECK(data_license='CC0-1.0')," +
+                "verification_status TEXT NOT NULL CHECK(verification_status='source_imported_unreviewed')," +
+                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0),PRIMARY KEY(mode,pid))",
+              "CREATE TABLE database_info(" +
+                "id INTEGER PRIMARY KEY CHECK(id=1),schema_version INTEGER NOT NULL,source_id TEXT NOT NULL," +
+                "source_version TEXT NOT NULL,package_sha256 TEXT NOT NULL,generic_dtc_count INTEGER NOT NULL," +
+                "pid_count INTEGER NOT NULL,created_at_utc TEXT NOT NULL)"
+            ].join("\n"));
+            db.exec("BEGIN IMMEDIATE");
+            try {
+              db.prepare("INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,'license_verified_research_only')").run(
+                "obdex-generic-cc0","foerbsnavi",sourceManifest.commit_sha,
+                "https://github.com/foerbsnavi/OBDex","CC0-1.0",sourceManifest.license_url,
+                sourceManifest.license_sha256,JSON.stringify(hashes),JSON.stringify(sourceManifest),
+                "OBD-II code data: OBDex (CC0-1.0)","global_generic_obd2_not_market_specific"
+              );
+              const insertDtc=db.prepare("INSERT INTO generic_dtc_research VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,0)");
+              for(const row of dtcs) insertDtc.run(
+                row.code,row.namespace,row.category,JSON.stringify(row.title),JSON.stringify(row.description),
+                JSON.stringify(row.raw_record),row.source_record_sha256,JSON.stringify(row.source_references),
+                "obdex-generic-cc0",sourceManifest.commit_sha,hashes["generic.min.json"],"CC0-1.0","source_imported_unreviewed"
+              );
+              const insertPid=db.prepare("INSERT INTO generic_pid_research VALUES(?,?,?,?,?,?,?,?,?,?,0)");
+              for(const row of pids) insertPid.run(
+                row.mode,row.pid,JSON.stringify(row.raw_record),row.source_record_sha256,
+                JSON.stringify(row.source_references),"obdex-generic-cc0",sourceManifest.commit_sha,
+                hashes[row.mode===1?"mode01.json":"mode09.json"],"CC0-1.0","source_imported_unreviewed"
+              );
+              db.prepare("INSERT INTO database_info VALUES(1,1,?,?,?,?,?,?)").run(
+                "obdex-generic-cc0",sourceManifest.commit_sha,sha256(packageBytes),dtcs.length,pids.length,new Date().toISOString()
+              );
+              db.exec("COMMIT");
+            } catch(error) {
+              db.exec("ROLLBACK");
+              throw error;
+            }
+            const integrity=db.prepare("PRAGMA integrity_check").get().integrity_check;
+            const foreignKeys=db.prepare("PRAGMA foreign_key_check").all();
+            const dtcCount=db.prepare("SELECT COUNT(*) n FROM generic_dtc_research").get().n;
+            const pidCount=db.prepare("SELECT COUNT(*) n FROM generic_pid_research").get().n;
+            if(integrity!=="ok"||foreignKeys.length!==0||dtcCount!==9533||pidCount!==132) {
+              throw new Error("SQLite post-import validation failed");
+            }
+            const report={
+              status:"validated_research_only",
+              database:path.basename(dbPath),
+              database_sha256:sha256(fs.readFileSync(dbPath)),
+              package_sha256:sha256(packageBytes),
+              source_commit:sourceManifest.commit_sha,
+              data_license:"CC0-1.0",
+              integrity_check:integrity,
+              foreign_key_violations:foreignKeys.length,
+              generic_dtcs:dtcCount,
+              pids:pidCount,
+              vag_specific_dtc_rows:0,
+              fitment_claims:0,
+              production_rows:0
+            };
+            fs.writeFileSync(path.join(root,"OBDex-SQLITE-REPORT.json"),JSON.stringify(report,null,2)+"\n");
+          } finally {
+            db.close();
+          }
+          '@
+          Set-Content -Path $scriptPath -Value $nodeScript -Encoding utf8NoBOM
+          node --experimental-sqlite $scriptPath
+
+      - name: Upload immutable source snapshot and SQLite research database
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-obdex-cc0-2026-11-02
+          path: research-output/
+          if-no-files-found: error
+          retention-days: 30
