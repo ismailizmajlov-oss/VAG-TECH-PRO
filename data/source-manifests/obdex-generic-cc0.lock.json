@@ -51,5 +51,8 @@
     "publication_status": "review_only",
     "exclude_from_vag_specific_dtc": true,
     "exclude_repair_costs_from_user_display": true
-  }
+  },
+  "normalizer_version": 1,
+  "acquisition_workflow": ".github/workflows/acquire-obdex-cc0.yml",
+  "artifact_name": "vag-tech-pro-obdex-cc0-2026-11-02"
 }
