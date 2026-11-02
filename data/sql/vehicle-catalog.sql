@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_evidence (
   claim_type TEXT NOT NULL CHECK (
     claim_type IN ('make','model','generation','variant','engine_code',
                    'transmission_code','engine_fitment','transmission_fitment',
-                   'engine_transmission_pair','market_scope','other')
+                   'engine_transmission_pair','market_scope','ecu_fitment','dtc_applicability','repair_document_applicability','other')
   ),
   review_status TEXT NOT NULL DEFAULT 'candidate' CHECK (
     review_status IN ('candidate','source_checked','technically_verified',
