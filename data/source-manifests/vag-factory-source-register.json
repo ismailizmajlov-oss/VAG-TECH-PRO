@@ -210,6 +210,167 @@
       },
       "project_decision": "use_only_to_discover_primary_oem_portals; never as proof of repair procedure",
       "evidence_status": "secondary_directory_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "audatex-audavin-ru",
+      "publisher": "Audatex / AudaVIN",
+      "url": "https://audatex.ru/services/using_vin",
+      "source_kind": "commercial_vin_factory_equipment_lookup",
+      "market_scope": [
+        "RU",
+        "UNKNOWN"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "AUDI",
+          "SEAT",
+          "SKODA",
+          "VOLKSWAGEN"
+        ],
+        "vin_query": true
+      },
+      "fields_observed": [
+        "factory_equipment_options",
+        "audatex_option_codes",
+        "textual_equipment_descriptions_after_calculation"
+      ],
+      "not_confirmed": [
+        "engine_code",
+        "transmission_code",
+        "ecu_part_number",
+        "ecu_hardware_software",
+        "manufacturer_dtc",
+        "repair_procedure"
+      ],
+      "access": {
+        "status": "commercial_AudaPad_Web_account_required",
+        "pricing": "per_successful_vin_transaction; current pricing to confirm"
+      },
+      "rights": {
+        "data_license_status": "commercial_proprietary_or_contractual",
+        "redistribution_allowed": false,
+        "permission_required_for_local_cache_and_derived_fact_export": true,
+        "permission_status": "not_obtained"
+      },
+      "project_decision": "priority_candidate_for_anonymized_sample_report_and_written_API_license_review",
+      "evidence_status": "provider_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "vagtec-vag-catalogs-ru",
+      "publisher": "VAGtec",
+      "url": "https://vagtec.ru/allnews/153-news-6",
+      "source_kind": "independent_vag_parts_catalog_and_vin_order_check",
+      "market_scope": [
+        "RU",
+        "UNKNOWN"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "AUDI",
+          "VOLKSWAGEN",
+          "SKODA",
+          "SEAT"
+        ],
+        "catalog_models_reported_from_year": 2010,
+        "vin_length": 17
+      },
+      "fields_observed": [
+        "parts_catalog_navigation",
+        "vin_based_order_fitment_check_claim"
+      ],
+      "not_confirmed": [
+        "full_factory_build_sheet",
+        "engine_code",
+        "gearbox_code",
+        "ecu_hw_sw",
+        "dtc",
+        "repair_procedure"
+      ],
+      "rights": {
+        "data_license_status": "not_established",
+        "redistribution_allowed": false,
+        "permission_required": true
+      },
+      "project_decision": "request_api_and_reuse_terms; no scraping or import",
+      "evidence_status": "provider_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "plan-parts-vag-api",
+      "publisher": "plan.parts",
+      "url": "https://plan.parts/ru/databases/vag",
+      "source_kind": "commercial_third_party_vag_catalog_api",
+      "market_scope": [
+        "RU",
+        "UNKNOWN"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "VOLKSWAGEN",
+          "AUDI",
+          "SKODA",
+          "SEAT",
+          "PORSCHE"
+        ],
+        "vin_decode_claimed": true
+      },
+      "fields_claimed": [
+        "vin_decode",
+        "oem_part_numbers",
+        "assembly_diagrams",
+        "supersession_chains"
+      ],
+      "not_confirmed": [
+        "exact_RU_market_factory_build_sheet",
+        "engine_code",
+        "gearbox_code",
+        "ecu_hw_sw",
+        "manufacturer_dtc",
+        "repair_procedure"
+      ],
+      "rights": {
+        "data_license_status": "commercial_api_terms_to_review",
+        "redistribution_allowed": false,
+        "permission_required_for_local_cache_and_offline_distribution": true,
+        "permission_status": "not_obtained"
+      },
+      "project_decision": "technical_candidate_only; require sample API payload and written local-cache/offline redistribution terms",
+      "evidence_status": "provider_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "vwts-independent-technical-archive",
+      "publisher": "Volkswagen Technical Site / VWTS",
+      "url": "https://www.volkswagen.msk.ru/",
+      "source_kind": "independent_technical_document_archive",
+      "market_scope": [
+        "UNKNOWN",
+        "EU",
+        "RU"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "VOLKSWAGEN",
+          "AUDI",
+          "SKODA",
+          "SEAT"
+        ]
+      },
+      "fields_claimed": [
+        "repair_manuals",
+        "engine_information",
+        "gearbox_information",
+        "electrical_system_documents"
+      ],
+      "not_confirmed": [
+        "VIN_specific_fitment_without_document_header",
+        "rights_for_each_document"
+      ],
+      "rights": {
+        "data_license_status": "per_document_rights_unverified",
+        "redistribution_allowed": false,
+        "permission_required": true
+      },
+      "project_decision": "use_for_document_discovery_only; no bulk copying or production import without per-document rights and exact applicability",
+      "evidence_status": "archive_index_reviewed_2026-11-03"
     }
   ],
   "minimum_fitment_evidence_fields": [
