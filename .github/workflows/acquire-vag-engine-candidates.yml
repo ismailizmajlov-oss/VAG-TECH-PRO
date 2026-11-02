@@ -1,6 +1,11 @@
 name: Acquire VAG open engine candidates (research only)
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/acquire-vag-engine-candidates.yml'
+      - 'scripts/import_vag_engine_candidates.py'
   workflow_dispatch:
 
 permissions:
@@ -17,7 +22,7 @@ jobs:
       - name: Download pinned ODbL VAG candidate files
         run: |
           set -euo pipefail
-          mkdir -p .research-input
+          mkdir -p .research-input artifacts
           REV="ee99776470a45214bf524cdfe22e5dbf4bd67f93"
           for brand in audi volkswagen skoda seat cupra; do
             curl --fail --location --retry 3 \
@@ -33,12 +38,13 @@ jobs:
           python scripts/import_vag_engine_candidates.py \
             --input-dir .research-input \
             --output artifacts/vag-engine-candidates-research.sqlite
-      - name: Upload research-only database and license
+      - name: Upload research-only database, manifest and license
         uses: actions/upload-artifact@v4
         with:
           name: vag-engine-candidates-research-odbl
           path: |
             artifacts/vag-engine-candidates-research.sqlite
+            artifacts/vag-engine-candidates-research.manifest.json
             .research-input/LICENSE-DATA
           if-no-files-found: error
           retention-days: 30
