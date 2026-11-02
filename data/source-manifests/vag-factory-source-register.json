@@ -378,6 +378,105 @@
       },
       "project_decision": "use_for_document_discovery_only; no bulk copying or production import without per-document rights and exact applicability",
       "evidence_status": "archive_index_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "gor3a-vehicle-makes-models-odbl",
+      "publisher": "gor3a/vehicle-makes-models",
+      "url": "https://github.com/gor3a/vehicle-makes-models",
+      "upstream_source": "autoevolution.com (as declared by upstream project)",
+      "pinned_revision": "ee99776470a45214bf524cdfe22e5dbf4bd67f93",
+      "source_kind": "third_party_global_model_generation_engine_spec_dataset",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "observed_vag_counts": {
+        "AUDI": {
+          "models": 78,
+          "generations": 340,
+          "engine_variants": 2049
+        },
+        "VOLKSWAGEN": {
+          "models": 82,
+          "generations": 284,
+          "engine_variants": 1710
+        },
+        "SKODA": {
+          "models": 36,
+          "generations": 106,
+          "engine_variants": 660
+        },
+        "SEAT": {
+          "models": 29,
+          "generations": 81,
+          "engine_variants": 608
+        },
+        "CUPRA": {
+          "models": 8,
+          "generations": 12,
+          "engine_variants": 54
+        }
+      },
+      "observed_fields": [
+        "make",
+        "model",
+        "model_year_range",
+        "generation_name",
+        "generation_year_range",
+        "body_type",
+        "engine_variant_label",
+        "fuel_type",
+        "displacement",
+        "power",
+        "torque",
+        "transmission_description",
+        "drivetrain",
+        "raw_specs"
+      ],
+      "not_provided": [
+        "explicit_factory_engine_code",
+        "explicit_factory_gearbox_code",
+        "market_specific_type_approval",
+        "ecu_part_number_hw_sw",
+        "manufacturer_dtc_applicability"
+      ],
+      "rights": {
+        "data_license_status": "ODbL-1.0",
+        "attribution_required": true,
+        "attribution": "gor3a/vehicle-makes-models and autoevolution.com",
+        "share_alike_required": true,
+        "public_redistribution_requires_ODbL_offer": true
+      },
+      "project_decision": "research_staging_only; market UNKNOWN; never infer engine or gearbox codes from labels; ODbL obligations must be preserved",
+      "evidence_status": "five_brand_files_inspected_2026-11-03; pinned_revision"
+    },
+    {
+      "source_id": "riz4d-openvag-dtc-quarantine",
+      "publisher": "riz4d/OpenVAG",
+      "url": "https://github.com/riz4d/OpenVAG",
+      "source_kind": "community_vag_dtc_and_component_database",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "fields_claimed": [
+        "995_dtc_code_title_rows",
+        "1103_fault_variants",
+        "341_component_identifiers",
+        "712_dtc_component_links",
+        "276_related_code_links"
+      ],
+      "observed_limitations": [
+        "mixed_legacy_vag_numeric_and_generic_obd_code_formats",
+        "no_complete_document_level_provenance_chain_observed",
+        "no_reliable_exact_vehicle_engine_gearbox_ecu_hw_sw_fitment_matrix"
+      ],
+      "rights": {
+        "repository_code_license": "MIT",
+        "database_data_license": "not_separately_established_in_review",
+        "redistribution_allowed": false,
+        "permission_status": "not_cleared"
+      },
+      "project_decision": "quarantine_only; do not import definitions, repair solutions or mappings into production until data provenance and database rights are independently established",
+      "evidence_status": "README_LICENSE_AND_DB_SCHEMA_REVIEWED_2026-11-03"
     }
   ],
   "minimum_fitment_evidence_fields": [
