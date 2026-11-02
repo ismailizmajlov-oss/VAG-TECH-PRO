@@ -199,7 +199,7 @@ jobs:
               if (!row.name || typeof row.name.en !== "string" || row.name.en.trim().length < 2) {
                 throw new Error("PID " + pid + " has no English name");
               }
-              if (!Array.isArray(row.sources) || row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
+              if (!Array.isArray(row.sources) || row.sources.length === 0 || row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
                 throw new Error("PID " + pid + " has invalid source references");
               }
               const range = Array.isArray(row.range) ? row.range : null;
@@ -229,6 +229,7 @@ jobs:
 
           const packageData = {
             package_type: "generic_obd2_cc0_review_only",
+            normalizer_version: 1,
             generated_at: new Date().toISOString(),
             source: {
               title: "OBDex",
