@@ -28,7 +28,7 @@ The run acquired an OBDex CC0-1.0 data snapshot and validated:
 
 The overlap is not proof of manufacturer attribution, ECU applicability, vehicle fitment or a repair instruction. Wal33D data rights remain unestablished; its binary and manufacturer definition text were not retained in the artifact or imported.
 
-Detailed counts, source hashes, pinned upstream revision, license scope and import checks are recorded in [the acquisition report](docs/research/OBDEX_RUN_2026-11-02.md).
+Detailed counts, source hashes, pinned upstream revision, license scope and import checks are recorded in [the acquisition report](docs/research/OBDEX_RUN_2026-11-02.md). The current VAG OEM-source access and reuse review is in [VAG factory source access review](docs/research/VAG_FACTORY_SOURCE_ACCESS_REVIEW_2026-11-03.md), with a machine-readable [source register](data/source-manifests/vag-factory-source-register.json).
 
 ## Research workflow
 
