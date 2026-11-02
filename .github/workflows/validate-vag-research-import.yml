@@ -1,0 +1,24 @@
+name: Test VAG research candidate importer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_vag_engine_candidates.py'
+      - 'scripts/test-vag-engine-candidate-import.py'
+      - '.github/workflows/validate-vag-research-import.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-importer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test isolated research importer
+        run: python scripts/test-vag-engine-candidate-import.py
