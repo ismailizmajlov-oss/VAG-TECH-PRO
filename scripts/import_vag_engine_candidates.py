@@ -77,7 +77,7 @@ def main():
            "autoevolution.com (as declared by upstream)",LICENSE,
            "Credit gor3a/vehicle-makes-models and autoevolution.com; link source and note changes",
            "Any publicly redistributed adapted database must be offered under ODbL 1.0",
-           "UNKNOWN"))
+           digest,"UNKNOWN"))
         for make in payload.get("makes",[]):
             cur=db.execute("""INSERT INTO make_candidates(source_id,make_name,group_key,raw_json)
                               VALUES(?,?,?,?)""",
