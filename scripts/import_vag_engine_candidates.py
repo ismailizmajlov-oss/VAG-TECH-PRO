@@ -62,7 +62,8 @@ def main():
     if args.output.exists(): args.output.unlink()
     db=sqlite3.connect(args.output)
     db.executescript(DDL)
-    counts={"makes":0,"models":0,"generations":0,"engine_variants":0}\n    source_hashes={}
+    counts={"makes":0,"models":0,"generations":0,"engine_variants":0}
+    source_hashes={}
     for brand in BRANDS:
         path=args.input_dir/f"{brand}.json"
         raw_bytes=path.read_bytes()
