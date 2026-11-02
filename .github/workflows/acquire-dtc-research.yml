@@ -364,7 +364,7 @@ jobs:
                   "review_status": "research_only"
               }
               REPORT["overall_status"] = "completed_with_quarantine_policy"
-              REPORT["source_file_sha256":] = source_hashes
+              REPORT["source_file_sha256"] = source_hashes
           except Exception as exc:
               REPORT["overall_status"] = "failed"
               REPORT["error"] = str(exc)
