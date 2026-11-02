@@ -16,8 +16,10 @@ def main():
        "specs":{"ENGINE SPECS / Power":"140 HP"}}]}]}]}]}
       (inp/f"{brand}.json").write_text(json.dumps(data),encoding="utf-8")
     out=Path(tmp)/"research.sqlite"
-    subprocess.run([sys.executable,str(ROOT/"scripts/import_vag_engine_candidates.py"),
-      "--input-dir",str(inp),"--output",str(out)],check=True,capture_output=True,text=True)
+    run=subprocess.run([sys.executable,str(ROOT/"scripts/import_vag_engine_candidates.py"),
+      "--input-dir",str(inp),"--output",str(out)],capture_output=True,text=True)
+    if run.returncode != 0:
+      raise AssertionError(f"importer failed\\nSTDOUT:\\n{run.stdout}\\nSTDERR:\\n{run.stderr}")
     db=sqlite3.connect(out)
     assert db.execute("select count(*) from model_candidates").fetchone()[0]==5
     assert db.execute("select count(*) from generation_candidates").fetchone()[0]==5
