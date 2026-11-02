@@ -28,7 +28,7 @@ The run acquired an OBDex CC0-1.0 data snapshot and validated:
 
 The overlap is not proof of manufacturer attribution, ECU applicability, vehicle fitment or a repair instruction. Wal33D data rights remain unestablished; its binary and manufacturer definition text were not retained in the artifact or imported.
 
-Detailed counts, source hashes, pinned upstream revision, license scope and import checks are recorded in [the acquisition report](docs/research/OBDEX_RUN_2026-11-02.md). The current VAG OEM-source access and reuse review is in [VAG factory source access review](docs/research/VAG_FACTORY_SOURCE_ACCESS_REVIEW_2026-11-03.md), with a machine-readable [source register](data/source-manifests/vag-factory-source-register.json).
+Detailed counts, source hashes, pinned upstream revision, license scope and import checks are recorded in [the acquisition report](docs/research/OBDEX_RUN_2026-11-02.md). The current VAG OEM-source access and reuse review is in [VAG factory source access review](docs/research/VAG_FACTORY_SOURCE_ACCESS_REVIEW_2026-11-03.md), with a machine-readable [source register](data/source-manifests/vag-factory-source-register.json). Russian passenger-car VIN candidates are reviewed in [the passenger VAG VIN source assessment](docs/research/RU_VAG_PASSENGER_VIN_SOURCES_2026-11-03.md). Commercial VW sample-document intake is specified in [the sample intake guide](docs/research/COMMERCIAL_VW_SAMPLE_DOCUMENT_INTAKE.md). The evidence-first DTC index is defined by [the JSON Schema](data/schemas/oem-dtc-index.schema.json), [the SQLite schema](data/sql/oem-dtc-index.sql), and [the schema design note](docs/research/OEM_DTC_INDEX_SCHEMA_DESIGN.md).
 
 ## Research workflow
 
