@@ -1,0 +1,55 @@
+{
+  "source_id": "obdex-generic-cc0",
+  "publisher": "foerbsnavi",
+  "repository": "https://github.com/foerbsnavi/OBDex",
+  "commit_sha": "09c8aac3d7cb3477a8d9345dfff90b82457b64d1",
+  "commit_date_utc": "2026-11-02T19:36:08Z",
+  "data_license": "CC0-1.0",
+  "license_path": "LICENSE-DATA",
+  "license_url": "https://github.com/foerbsnavi/OBDex/blob/09c8aac3d7cb3477a8d9345dfff90b82457b64d1/LICENSE-DATA",
+  "attribution": "OBD-II code data: OBDex (https://github.com/foerbsnavi/OBDex), CC0-1.0",
+  "scope": {
+    "dtc_namespace": "generic_sae_iso_obd2",
+    "standards": "SAE J2012 / ISO 15031-6 generic OBD-II",
+    "pid_modes": [
+      1,
+      9
+    ],
+    "manufacturer_specific_codes_included": false,
+    "exact_vag_fitment": false,
+    "repair_procedures_or_pinouts_included": false,
+    "market_scope": "global_generic_obd2_not_market_specific"
+  },
+  "expected_counts": {
+    "generic_dtcs": 9533,
+    "pids_total": 132
+  },
+  "source_files": [
+    "LICENSE-DATA",
+    "data/generic/B0xxx_enriched.yaml",
+    "data/generic/C0xxx_enriched.yaml",
+    "data/generic/P0xxx_enriched.yaml",
+    "data/generic/P2xxx_enriched.yaml",
+    "data/generic/P3xxx_enriched.yaml",
+    "data/generic/U0xxx_enriched.yaml",
+    "data/generic/U3xxx_enriched.yaml",
+    "data/pids/mode01.yaml",
+    "data/pids/mode09.yaml"
+  ],
+  "build": {
+    "node": "22.x",
+    "commands": [
+      "npm ci",
+      "npm run check",
+      "npm run build"
+    ]
+  },
+  "import_policy": {
+    "target": "local SQLite generic research namespace",
+    "verification_status": "source_imported_unreviewed",
+    "fitment_claim": false,
+    "publication_status": "review_only",
+    "exclude_from_vag_specific_dtc": true,
+    "exclude_repair_costs_from_user_display": true
+  }
+}
