@@ -6,6 +6,9 @@ on:
     paths:
       - 'data/sql/vehicle-catalog.sql'
       - 'scripts/test-vehicle-catalog-schema.py'
+      - 'data/sql/oem-dtc-index.sql'
+      - 'data/sql/dtc-catalog-links.sql'
+      - 'scripts/test-dtc-catalog-links.py'
       - '.github/workflows/validate-vehicle-catalog.yml'
   workflow_dispatch:
 
@@ -23,3 +26,5 @@ jobs:
           python-version: '3.12'
       - name: Validate SQLite schema and evidence gates
         run: python scripts/test-vehicle-catalog-schema.py
+      - name: Validate DTC-to-vehicle applicability links
+        run: python scripts/test-dtc-catalog-links.py
