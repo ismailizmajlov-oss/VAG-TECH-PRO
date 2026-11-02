@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS research_sources(
  source_id TEXT PRIMARY KEY, publisher TEXT NOT NULL, dataset TEXT NOT NULL,
  upstream_revision TEXT NOT NULL, source_url TEXT NOT NULL, upstream_source TEXT NOT NULL,
  license TEXT NOT NULL, attribution TEXT NOT NULL, share_alike TEXT NOT NULL,
+ source_sha256 TEXT NOT NULL CHECK(length(source_sha256)=64),
  market_scope TEXT NOT NULL CHECK(market_scope='UNKNOWN'),
  imported_at_utc TEXT NOT NULL
 );
@@ -70,7 +71,7 @@ def main():
             raise ValueError(f"{path}: group mismatch; expected {brand!r}")
         digest=hashlib.sha256(raw_bytes).hexdigest()
         source_id=f"vehiclesdb-odbl-{brand}-{REVISION[:12]}"
-        db.execute("""INSERT INTO research_sources VALUES(?,?,?,?,?,?,?,?,?,?,datetime('now'))""",
+        db.execute("""INSERT INTO research_sources VALUES(?,?,?,?,?,?,?,?,?,?,?,datetime('now'))""",
           (source_id,"gor3a/vehicle-makes-models",DATASET,REVISION,
            f"https://github.com/{DATASET}/blob/{REVISION}/data/json/{brand}.json",
            "autoevolution.com (as declared by upstream)",LICENSE,
