@@ -15,7 +15,7 @@
       "publisher": "VW Максимум (Russian commercial Volkswagen repair information request page)",
       "owner_named_by_source": "VOLKSWAGEN AG",
       "url": "https://com.vw-maximum.ru/owners/service/repair-tech/",
-      "source_kind": "officially_described_vin_request_channel",
+      "source_kind": "dealer_hosted_vin_request_channel_referencing_vw_ag_information",
       "market_scope": [
         "RU"
       ],
@@ -55,7 +55,7 @@
         "permission_required_for_database_reuse": "not_granted_by_page; obtain written permission",
         "bulk_acquisition": false
       },
-      "project_decision": "request_only_for_specific_commercial_vehicle_cases; do_not_publish_or_batch_import",
+      "project_decision": "request_only_for_specific_commercial_vehicle_cases;_confirm_request_channel_authority_and_do_not_publish_without_written_reuse_permission",
       "evidence_status": "source_page_reviewed_2026-11-03"
     },
     {
