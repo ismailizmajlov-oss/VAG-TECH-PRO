@@ -70,6 +70,7 @@ def main():
         if payload.get("group") != brand:
             raise ValueError(f"{path}: group mismatch; expected {brand!r}")
         digest=hashlib.sha256(raw_bytes).hexdigest()
+        source_hashes[brand]=digest
         source_id=f"vehiclesdb-odbl-{brand}-{REVISION[:12]}"
         db.execute("""INSERT INTO research_sources VALUES(?,?,?,?,?,?,?,?,?,?,?,datetime('now'))""",
           (source_id,"gor3a/vehicle-makes-models",DATASET,REVISION,
@@ -120,8 +121,9 @@ def main():
     for table,key in (("make_candidates","makes"),("model_candidates","models"),
                       ("generation_candidates","generations"),("engine_variant_candidates","engine_variants")):
         assert db.execute(f"SELECT count(*) FROM {table}").fetchone()[0]==counts[key]
-    print(json.dumps({"revision":REVISION,"license":LICENSE,"counts":counts,
-      "market_scope":"UNKNOWN","status":"research_only","production_import":False},ensure_ascii=False))
+    manifest={"dataset":DATASET,"revision":REVISION,"license":LICENSE,"attribution":"gor3a/vehicle-makes-models; upstream autoevolution.com","share_alike":"ODbL-1.0","source_sha256":source_hashes,"counts":counts,"market_scope":"UNKNOWN","status":"research_only","production_import":False}
+    args.output.with_suffix(".manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    print(json.dumps(manifest,ensure_ascii=False))
     db.close()
 
 if __name__=="__main__": main()
