@@ -14,11 +14,12 @@ REPOSITORY = "https://github.com/autodiag2/database"
 REVISION = "59b4e774c4023b2daaee179177615f17a5967ae1"
 RELEASE_TAG = "v6"
 ASSET_URL = "https://github.com/autodiag2/database/releases/download/v6/ad_database.sqlite"
-ASSET_SHA256 = "61f9398f2f75b68c86db6ef4d4c0b0d8a3a7e38a0f6b3c5d8a3f8e9c4f6a2b1d"
+ASSET_SHA256 = "61f9398f479d2d59a8b44c05da72cb5d519232e915bc7dcdf43f4bb5265baaf3"
 LICENSE_URL = f"https://raw.githubusercontent.com/autodiag2/database/{REVISION}/LICENSE"
 README_URL = f"https://raw.githubusercontent.com/autodiag2/database/{REVISION}/README.md"
-LICENSE_GIT_BLOB_SHA1 = "9e5c1c6f2b3d1d2c0f3a5f9a7d9c8e7b6a5f4d3c"
-README_GIT_BLOB_SHA1 = "4f0c8b2a6d7e9f1c3a5b7d9e0f2a4c6e8b1d3f5a"
+LICENSE_GIT_BLOB_SHA1 = "aed5df8b43561cdca41655cba0410cd88350c733"
+README_GIT_BLOB_SHA1 = "6f5e088b98130743064bf5204d9d94a62e161bb2"
+EXPECTED_ASSET_SIZE = 10649600
 MAX_ASSET_BYTES = 20 * 1024 * 1024
 VAG_NAMES = {"audi", "volkswagen", "volkswagen__vw_", "skoda", "seat"}
 
@@ -61,16 +62,16 @@ def evidence_for(conn: sqlite3.Connection, link_table: str, entity_column: str, 
     return list(dict.fromkeys(str(row[0]) for row in result if row[0]))
 
 def linked_names(conn: sqlite3.Connection, link_table: str, entity_column: str,
-                 entity_id: int, target_table: str, target_column: str = "name") -> list[str]:
+                 entity_id: int, target_table: str, target_id_column: str,
+                 target_column: str = "name") -> list[str]:
     if not has_table(conn, link_table) or not has_table(conn, target_table):
         return []
     cols = table_columns(conn, link_table)
-    target_id = target_table.removeprefix("ad_") + "_id"
-    if entity_column not in cols or target_id not in cols:
+    if entity_column not in cols or target_id_column not in cols:
         return []
     result = conn.execute(
         f"SELECT t.{target_column} FROM {link_table} l "
-        f"JOIN {target_table} t ON t.id=l.{target_id} "
+        f"JOIN {target_table} t ON t.id=l.{target_id_column} "
         f"WHERE l.{entity_column}=? ORDER BY t.{target_column}",
         (entity_id,),
     )
@@ -109,6 +110,8 @@ def main() -> None:
 
     asset = download(ASSET_URL, MAX_ASSET_BYTES)
     asset_hash = sha256(asset)
+    if len(asset) != EXPECTED_ASSET_SIZE:
+        raise RuntimeError(f"AutoDiag2 release asset size mismatch: {len(asset)}")
     if asset_hash != ASSET_SHA256:
         raise RuntimeError(f"AutoDiag2 release asset SHA-256 mismatch: {asset_hash}")
     temp.write_bytes(asset)
@@ -119,6 +122,10 @@ def main() -> None:
     readme_text = readme_bytes.decode("utf-8", errors="strict")
     if "ODbL-1.0" not in license_text or "DbCL-1.0" not in license_text:
         raise RuntimeError("AutoDiag2 repository license does not declare both ODbL-1.0 and DbCL-1.0")
+    def git_blob_sha1(data: bytes) -> str:
+        return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\\0" + data).hexdigest()
+    if git_blob_sha1(license_bytes) != LICENSE_GIT_BLOB_SHA1 or git_blob_sha1(readme_bytes) != README_GIT_BLOB_SHA1:
+        raise RuntimeError("AutoDiag2 LICENSE/README do not match the pinned source revision")
     if "ODbL-1.0" not in readme_text or "DbCL-1.0" not in readme_text:
         raise RuntimeError("AutoDiag2 README does not confirm the database/content license split")
     (upstream / "LICENSE").write_bytes(license_bytes)
@@ -515,8 +522,8 @@ def main() -> None:
         if not evidence:
             excluded["no_evidence"] += 1
             continue
-        protocols = linked_names(src,"ad_dtc_protocol_link","dtc_id",dtc_id,"ad_diag_protocol")
-        standards = linked_names(src,"ad_dtc_standard_link","dtc_id",dtc_id,"ad_dtc_standard")
+        protocols = linked_names(src,"ad_dtc_protocol_link","dtc_id",dtc_id,"ad_diag_protocol","protocol_id")
+        standards = linked_names(src,"ad_dtc_standard_link","dtc_id",dtc_id,"ad_dtc_standard","standard_id")
         namespace = classify_dtc(dtc.get("code"),protocols,standards)
         if namespace == "generic_obd2":
             excluded["generic_obd2"] += 1
