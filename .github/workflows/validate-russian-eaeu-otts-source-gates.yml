@@ -1,4 +1,4 @@
-name: Validate Russian EAEU OTTS source contract
+name: Validate Russian EAEU and VAG OEM source contracts
 
 on:
   push:
@@ -7,8 +7,11 @@ on:
       - "automation/**"
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
+      - data/source-manifests/vw-okapi-product-catalog.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
+      - docs/research/VW_OKAPI_SOURCE_REVIEW_2026-11-03.md
       - tests/test_russian_eaeu_otts_manifest.py
+      - tests/test_vw_okapi_source_manifest.py
       - package.json
       - scripts/import-authorized-fgis-otts-export.cjs
       - tests/authorized-fgis-otts-export.test.cjs
@@ -17,8 +20,11 @@ on:
   pull_request:
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
+      - data/source-manifests/vw-okapi-product-catalog.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
+      - docs/research/VW_OKAPI_SOURCE_REVIEW_2026-11-03.md
       - tests/test_russian_eaeu_otts_manifest.py
+      - tests/test_vw_okapi_source_manifest.py
       - scripts/import-authorized-fgis-otts-export.cjs
       - tests/authorized-fgis-otts-export.test.cjs
       - docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md
@@ -29,12 +35,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: vag-tech-pro-russian-eaeu-otts-source-gates
+  group: vag-tech-pro-source-rights-contracts
   cancel-in-progress: false
 
 jobs:
   validate:
-    name: Validate source rights and OTTS field namespaces
+    name: Validate source rights, data scope and OTTS field namespaces
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
@@ -49,9 +55,9 @@ jobs:
         run: |
           python -m json.tool package.json > $null
           python -m json.tool data/source-manifests/russian-eaeu-otts-sources.json > $null
+          python -m json.tool data/source-manifests/vw-okapi-product-catalog.json > $null
       - name: Run fail-closed source contract tests
-        run: python -m unittest discover -s tests -p "test_russian_eaeu_otts_manifest.py" -v
-
+        run: python -m unittest discover -s tests -p "test_*_manifest.py" -v
       - name: Syntax-check the authorized FGIS importer
         run: node --check scripts/import-authorized-fgis-otts-export.cjs
       - name: Run transactional SQLite importer tests on Windows
