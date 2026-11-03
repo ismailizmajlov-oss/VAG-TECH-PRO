@@ -35,7 +35,7 @@ The OTTS/ЭОТТС/ОТШ/ЭОТШ attribute list includes:
 - vehicle mass, driven-wheel formula, suspension and steering descriptions;
 - a full approval PDF reference/file.
 
-The important distinction is that the OTTS engine field is **make/type**, not a guaranteed VAG factory engine code. The OTTS attribute list does not provide a dedicated gearbox-code field. The VIN list describes the approval's covered vehicles; it does not, by itself, prove the exact engine, gearbox or ECU fitted to a particular VIN.
+The important distinction is that the OTTS engine field is **make/type**, not a guaranteed VAG factory engine code. The OTTS form's technical annex (Decision 232, Annex 14 to TR TS 018/2011) includes a gearbox make/type descriptor and gear ratios, but it does not guarantee a VAG factory gearbox code or exact individual-vehicle fitment. The VIN list describes the approval's covered vehicles; it does not, by itself, prove the exact engine, gearbox or ECU fitted to a particular VIN.
 
 The separate SBKTS/ЭСБКТС attribute list includes engine make/type and, at field 68, gearbox make/type. SBKTS is an individual-vehicle safety certificate, not an OTTS type-approval record. Its individual-vehicle context and possible personal data require a separate privacy and rights review. Do not merge SBKTS gearbox descriptions into OTTS fitment or factory gearbox-code fields.
 
@@ -70,6 +70,16 @@ The terms state that search is free while document retrieval is paid. They prohi
 - Pricing: https://otts-baza.ru/pricing/
 
 The offer dated 2026-10-04 provides paid subscription access to available PDF files. It permits the user's own tasks and internal professional work, but without separate agreement does not allow systematic extraction of a substantial part of the database for publication, resale or creation of a competing catalogue. The terms do not grant offline distribution or PDF redistribution rights. No subscription or download was made.
+
+## EAEU unified-register structure and OTTS technical fields
+
+- Decision of the EEC Board No. 225 (2014-12-02) defines the unified register as national parts maintained by member-state competent authorities. The data-source search must be country-specific; a single central EAEU bulk export must not be assumed.
+- Decision of the EEC Board No. 232 (2014-12-09) defines the OTTS form and its technical annexes. The latest amendment reviewed is Decision No. 52 (2026-05-12), effective 2026-06-14. The amendment's official EEC publication is linked at https://docs.eaeunion.org/documents/463/10653/; the current consolidated text was cross-checked against https://www.alta.ru/tamdoc/14kr0232/.
+- The technical annex can contain engine make/type, ECU marking, injection-pump and injector markings, transmission type, clutch make/type, gearbox make/type, gear counts and ratios, transfer-case type/ratios, and final-drive type/ratios.
+- These fields improve the extraction schema but remain type-approval descriptors. An engine make/type is not automatically a VAG factory engine code; a gearbox make/type is not automatically a VAG factory gearbox code; an ECU marking does not prove exact ECU hardware/software fitment to every vehicle in the approved type. The exact revision printed on each approval must be checked.
+- A type approval applies to the approved type/modifications and, where relevant, an identified batch/VIN scope. It does not establish exact fitment for every individual vehicle without independent configuration evidence.
+
+This legal form mapping is a schema reference only. It does not grant bulk database or PDF reuse rights and does not authorize copying OTTS records.
 
 ## Import policy
 
