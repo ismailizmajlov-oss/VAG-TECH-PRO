@@ -23,6 +23,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn('"source_id": "wal33d-vag-oem-dtc-mit"', source)
         self.assertIn('"status": "permission_required"', source)
         self.assertIn('"included": False', source)
+        self.assertIn("Permission-required manufacturer DTC source is not explicitly excluded", source)
         self.assertIn("No manufacturer-specific DTC pack is included", source)
 
     def test_generic_obdex_remains_explicitly_generic(self):
