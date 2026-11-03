@@ -17,6 +17,7 @@ on:
       - scripts/build_vag_identity_vehiclesdb.py
       - scripts/verify_vag_identity_vehiclesdb.py
       - scripts/test_vag_identity_vehiclesdb.py
+  workflow_call:
   workflow_dispatch:
 
 permissions:
