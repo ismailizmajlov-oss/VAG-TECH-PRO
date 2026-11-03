@@ -51,7 +51,8 @@ def normalize_field(value: str) -> str:
 
 
 def normalize_make_code(value: Any) -> str:
-    return re.sub(r"[^A-Z0-9]", "", str(value or "").upper())
+    text = str(value or "").upper().translate(str.maketrans({"Š": "S", "Ž": "Z", "Ä": "A", "Ö": "O", "Ü": "U"}))
+    return re.sub(r"[^A-Z0-9]", "", text)
 
 
 def make_name_for_code(value: Any, aliases: dict[str, str]) -> str | None:
@@ -352,12 +353,21 @@ def build_database(
             key = item["key"]
             row_json = canonical_json(item["make_row"])
             row_hash = sha256_bytes(row_json.encode("utf-8"))
+            source_row = item["make_row"]
+            display_key = (
+                field(source_row, "typegoedkeuringsnummer"),
+                field(source_row, "codevarianttgk", "codevariantgk"),
+                field(source_row, "codeuitvoeringtgk"),
+                field(source_row, "volgnummerrevisieuitvoering"),
+            )
+            if not all(display_key):
+                raise ValueError("Selected RDW make row lost one of its published display-key fields")
             cursor = db.execute(
                 """INSERT INTO vag_type_approval_variants(
                      type_approval_number,variant_code,version_code,revision_sequence,rdw_make_code,make_name,
                      market_scope,applicability_precision,verification_status,make_source_row_sha256,make_source_row_json
                    ) VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
-                (*key, item["make_code"], item["make_name"], MARKET_SCOPE, PRECISION, VERIFICATION, row_hash, row_json),
+                (*display_key, item["make_code"], item["make_name"], MARKET_SCOPE, PRECISION, VERIFICATION, row_hash, row_json),
             )
             variant_ids[composite] = int(cursor.lastrowid)
 
