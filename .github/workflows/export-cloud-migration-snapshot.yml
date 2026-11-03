@@ -1,0 +1,46 @@
+name: Export exact cloud migration snapshot
+
+on:
+  push:
+    branches:
+      - automation/cloud-migration-reconciliation-run24
+    paths:
+      - 'supabase/migrations/**'
+      - '.github/workflows/export-cloud-migration-snapshot.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify migration snapshot manifest
+        shell: pwsh
+        run: |
+          $manifest = Get-Content 'supabase/migrations/cloud-ledger-normalized-hashes.json' -Raw | ConvertFrom-Json
+          if ($manifest.project_id -ne 'psnwvysvvemueuhahjfs') { throw 'Unexpected Supabase project id' }
+          if ($manifest.migrations.Count -ne 62) { throw 'Expected 62 cloud migrations' }
+          $versions = @($manifest.migrations | ForEach-Object { $_.version } | Sort-Object -Unique)
+          if ($versions.Count -ne 62) { throw 'Duplicate migration versions in manifest' }
+          $expected = @(
+            '20261101221006_vag_tech_pro_initial_schema.sql',
+            '20261101234529_fitment_scoped_technical_verification.sql',
+            '20261102134010_public_model_reads_require_verified_source_evidence.sql'
+          )
+          foreach ($name in $expected) {
+            if (-not (Test-Path "supabase/migrations/$name")) { throw "Missing cloud migration file: $name" }
+          }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cloud-migration-snapshot-run24
+          path: |
+            supabase/migrations/20261101221006_vag_tech_pro_initial_schema.sql
+            supabase/migrations/20261101234529_fitment_scoped_technical_verification.sql
+            supabase/migrations/20261102134010_public_model_reads_require_verified_source_evidence.sql
+            supabase/migrations/cloud-ledger-normalized-hashes.json
+          if-no-files-found: error
+          retention-days: 7
