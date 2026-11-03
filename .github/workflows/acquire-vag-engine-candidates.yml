@@ -74,7 +74,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path "artifacts" -Force | Out-Null
-          $args = @(
+          $importArgs = @(
             "--lock", "data/source-manifests/vag-open-engine-candidates.lock.json",
             "--input-dir", $env:VAG_ENGINE_INPUT,
             "--output", "artifacts/vag-engine-candidates-research.sqlite",
@@ -85,7 +85,7 @@ jobs:
       - name: Verify source hashes, ODbL share-alike, UNKNOWN market and candidate boundaries
         shell: pwsh
         run: |
-          $args = @(
+          $verifyArgs = @(
             "--db", "artifacts/vag-engine-candidates-research.sqlite",
             "--manifest", "artifacts/vag-engine-candidates-research.manifest.json",
             "--lock", "data/source-manifests/vag-open-engine-candidates.lock.json",
