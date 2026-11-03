@@ -135,6 +135,9 @@ def source_catalog_counts(db: sqlite3.Connection, upstream_manifest: dict[str, A
         raise ValueError("Upstream VehiclesDB SQLite integrity_check failed")
     if db.execute("PRAGMA foreign_key_check").fetchall():
         raise ValueError("Upstream VehiclesDB SQLite foreign_key_check failed")
+    meta = {row["key"]: row["value"] for row in db.execute("SELECT key,value FROM meta")}
+    if "version" in meta and meta["version"] != upstream_manifest.get("version"):
+        raise ValueError("VehiclesDB SQLite meta version does not match the pinned manifest")
     for kind in ALLOWED_KINDS:
         expected = int(upstream_manifest.get("kinds", {}).get(kind, {}).get("models", -1))
         actual = db.execute("SELECT count(*) FROM models WHERE kind=?", (kind,)).fetchone()[0]
@@ -286,6 +289,8 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
                     raise ValueError(f"Country mismatch for source {source_id}")
                 if evidence["evidence"] not in {"registration", "approval", "sales"}:
                     raise ValueError(f"Unknown evidence type for {source_id}: {evidence['evidence']}")
+                if source.get("evidence") and evidence["evidence"] != source["evidence"]:
+                    raise ValueError(f"Evidence type mismatch for source {source_id}")
                 approved_evidence.append({
                     "country": str(evidence["country"]).lower(),
                     "evidence": evidence["evidence"],
@@ -331,8 +336,8 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("No VAG model candidates with approved country evidence were found")
 
     output_dir = args.output_dir.resolve()
-    if output_dir.exists() and any(output_dir.iterdir()):
-        raise FileExistsError(f"Refusing to overwrite non-empty output directory: {output_dir}")
+    if output_dir.exists():
+        raise FileExistsError(f"Refusing to overwrite existing output directory: {output_dir}")
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     temp_dir = Path(tempfile.mkdtemp(prefix="vag-identity-build-", dir=output_dir.parent))
     database_path = temp_dir / "vag-identity-vehiclesdb.sqlite"
@@ -343,6 +348,7 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
     attribution_hash = sha256_file(args.attribution)
     built_at = datetime.now(timezone.utc).isoformat()
 
+    db = None
     try:
         db = sqlite3.connect(database_path)
         db.execute("PRAGMA foreign_keys=ON")
@@ -431,6 +437,7 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
             "market_evidence": db.execute("SELECT count(*) FROM model_market_evidence").fetchone()[0],
         }
         db.close()
+        db = None
 
         shutil.copy2(args.manifest, temp_dir / "UPSTREAM-MANIFEST.json")
         shutil.copy2(args.license, temp_dir / "LICENSE.txt")
@@ -484,6 +491,11 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         os.replace(temp_dir, output_dir)
         return pack_manifest
     except Exception:
+        if db is not None:
+            try:
+                db.close()
+            except sqlite3.Error:
+                pass
         try:
             shutil.rmtree(temp_dir)
         except OSError:
