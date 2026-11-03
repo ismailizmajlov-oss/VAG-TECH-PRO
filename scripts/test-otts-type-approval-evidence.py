@@ -180,6 +180,16 @@ def main():
                 (NOW, "Metadata reuse rights and publication scope checked.", evidence_id),
             )
 
+            # Published source facts cannot be silently edited while retaining publication status.
+            expect_integrity_error(
+                db,
+                lambda: db.execute(
+                    "UPDATE eaeu_otts_evidence SET commercial_name='Tampered after publication' WHERE approval_evidence_id=?",
+                    (evidence_id,),
+                ),
+                "mutation of published OTTS evidence",
+            )
+
             # A PDF cannot be cached when the license grants metadata rights only.
             expect_integrity_error(
                 db,
@@ -200,8 +210,24 @@ def main():
                 "UPDATE vehicle_catalog_source_rights SET pdf_redistribution_allowed=1 WHERE source_id='licensed-source'"
             )
             db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='candidate' WHERE approval_evidence_id=?",
+                (evidence_id,),
+            )
+            db.execute(
                 "UPDATE eaeu_otts_evidence SET document_cached=1, document_reference_url=?, document_sha256=? WHERE approval_evidence_id=?",
                 ("https://example.invalid/approval.pdf", H_DOCUMENT, evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "PDF cache rights and source reference checked.", evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='technically_verified', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Descriptor content remains consistent with the cited form.", evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "PDF redistribution rights explicitly checked.", evidence_id),
             )
             db.execute(
                 "UPDATE vehicle_catalog_source_rights SET pdf_redistribution_allowed=0 WHERE source_id='licensed-source'"
