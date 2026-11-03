@@ -3,7 +3,7 @@ name: Build verified Windows offline data-pack bundle
 on:
   push:
     branches:
-      - automation/windows-offline-data-foundation-run18
+      - automation/rdw-eu-type-approval-research-run19
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
       - .github/workflows/acquire-obdex-cc0.yml
@@ -11,6 +11,10 @@ on:
       - .github/workflows/acquire-vag-engine-candidates.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - .github/workflows/acquire-wal33d-vag-dtc.yml
+      - .github/workflows/acquire-rdw-eu-type-approval.yml
+      - scripts/build_rdw_type_approval_pack.py
+      - scripts/test_rdw_type_approval_pack.py
+      - data/source-manifests/rdw-eu-type-approval-cc0.json
       - scripts/build_wal33d_vag_dtc_pack.py
       - scripts/verify_wal33d_vag_dtc_pack.py
       - data/source-manifests/wal33d-dtc-candidate.json
@@ -28,6 +32,10 @@ on:
       - .github/workflows/acquire-vag-engine-candidates.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - .github/workflows/acquire-wal33d-vag-dtc.yml
+      - .github/workflows/acquire-rdw-eu-type-approval.yml
+      - scripts/build_rdw_type_approval_pack.py
+      - scripts/test_rdw_type_approval_pack.py
+      - data/source-manifests/rdw-eu-type-approval-cc0.json
       - scripts/build_wal33d_vag_dtc_pack.py
       - scripts/verify_wal33d_vag_dtc_pack.py
       - data/source-manifests/wal33d-dtc-candidate.json
@@ -78,6 +86,12 @@ jobs:
       contents: read
     uses: ./.github/workflows/acquire-wal33d-vag-dtc.yml
 
+  rdw-eu-type-approval:
+    name: Acquire CC0 Netherlands/EU type-approval candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-rdw-eu-type-approval.yml
+
   package:
     name: Assemble and independently verify Windows offline SQLite packs
     needs:
@@ -86,6 +100,7 @@ jobs:
       - vag-engine-candidates
       - vag-identity
       - wal33d-vag-dtc
+      - rdw-eu-type-approval
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
