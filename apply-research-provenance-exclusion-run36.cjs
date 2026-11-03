@@ -32,7 +32,6 @@ function excludeUnverifiedPack() {
   const sourceManifestPath = path.join(researchRoot, pack.source_manifest_file);
   const dbPath = path.join(researchRoot, pack.database);
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
-
   const licenseNotice = [
     "AUDIT NOTICE ONLY — this is not a copy of the full license text.",
     "The upstream repository declares its database under the Open Database License (ODbL) v1.0.",
@@ -72,51 +71,33 @@ function excludeUnverifiedPack() {
     product_records_included: false
   };
   writeJson(sourceManifestPath, sourceManifest);
-
   const db = new DatabaseSync(dbPath);
   try {
-    db.exec(`
-      PRAGMA foreign_keys=OFF;
-      CREATE TABLE IF NOT EXISTS research_sources (
-        source_id TEXT PRIMARY KEY, source_sha256 TEXT, license TEXT, market_scope TEXT
-      );
-      CREATE TABLE IF NOT EXISTS make_candidates (
-        id INTEGER PRIMARY KEY, make_name TEXT
-      );
-      CREATE TABLE IF NOT EXISTS model_candidates (
-        id INTEGER PRIMARY KEY, make_name TEXT, model_name TEXT,
-        market_scope TEXT, review_status TEXT
-      );
-      CREATE TABLE IF NOT EXISTS generation_candidates (
-        id INTEGER PRIMARY KEY, model_id INTEGER, generation_name TEXT,
-        market_scope TEXT, review_status TEXT
-      );
-      CREATE TABLE IF NOT EXISTS engine_variant_candidates (
-        id INTEGER PRIMARY KEY, generation_id INTEGER, engine_label TEXT,
-        engine_code TEXT, gearbox_code TEXT, code_extraction_status TEXT,
-        market_scope TEXT, review_status TEXT
-      );
-      CREATE TABLE IF NOT EXISTS source_file_artifacts (
-        relative_path TEXT PRIMARY KEY, sha256 TEXT
-      );
-      BEGIN IMMEDIATE;
-      DELETE FROM research_sources;
-      DELETE FROM make_candidates;
-      DELETE FROM model_candidates;
-      DELETE FROM generation_candidates;
-      DELETE FROM engine_variant_candidates;
-      DELETE FROM source_file_artifacts;
-      COMMIT;
-      VACUUM;
-    `);
+    db.exec([
+      "PRAGMA foreign_keys=OFF;",
+      "CREATE TABLE IF NOT EXISTS research_sources (source_id TEXT PRIMARY KEY, source_sha256 TEXT, license TEXT, market_scope TEXT);",
+      "CREATE TABLE IF NOT EXISTS make_candidates (id INTEGER PRIMARY KEY, make_name TEXT);",
+      "CREATE TABLE IF NOT EXISTS model_candidates (id INTEGER PRIMARY KEY, make_name TEXT, model_name TEXT, market_scope TEXT, review_status TEXT);",
+      "CREATE TABLE IF NOT EXISTS generation_candidates (id INTEGER PRIMARY KEY, model_id INTEGER, generation_name TEXT, market_scope TEXT, review_status TEXT);",
+      "CREATE TABLE IF NOT EXISTS engine_variant_candidates (id INTEGER PRIMARY KEY, generation_id INTEGER, engine_label TEXT, engine_code TEXT, gearbox_code TEXT, code_extraction_status TEXT, market_scope TEXT, review_status TEXT);",
+      "CREATE TABLE IF NOT EXISTS source_file_artifacts (relative_path TEXT PRIMARY KEY, sha256 TEXT);",
+      "BEGIN IMMEDIATE;",
+      "DELETE FROM research_sources;",
+      "DELETE FROM make_candidates;",
+      "DELETE FROM model_candidates;",
+      "DELETE FROM generation_candidates;",
+      "DELETE FROM engine_variant_candidates;",
+      "DELETE FROM source_file_artifacts;",
+      "COMMIT;",
+      "VACUUM;"
+    ].join("\n"));
     const integrity = db.prepare("PRAGMA integrity_check").get().integrity_check;
-    if (integrity !== "ok") throw new Error(`Excluded VAG identity placeholder integrity failed: ${integrity}`);
+    if (integrity !== "ok") throw new Error("Excluded VAG identity placeholder integrity failed: " + integrity);
     for (const table of ["research_sources", "make_candidates", "model_candidates", "generation_candidates", "engine_variant_candidates", "source_file_artifacts"]) {
-      const count = Number(db.prepare(`SELECT count(*) AS n FROM ${table}`).get().n);
-      if (count !== 0) throw new Error(`Excluded VAG identity table ${table} still contains ${count} rows`);
+      const count = Number(db.prepare("SELECT count(*) AS n FROM " + table).get().n);
+      if (count !== 0) throw new Error("Excluded VAG identity table " + table + " still contains " + count + " rows");
     }
   } finally { db.close(); }
-
   pack.included_in_product = false;
   pack.product_eligibility = "not_eligible_pending_upstream_provenance_review";
   pack.review_status = "excluded_pending_upstream_provenance_review";
@@ -128,7 +109,7 @@ function excludeUnverifiedPack() {
   pack.database_sha256 = sha256File(dbPath);
   writeJson(manifestPath, manifest);
   const readmePath = path.join(researchRoot, "README.md");
-  let readme = fs.readFileSync(readmePath, "utf8");
+  const readme = fs.readFileSync(readmePath, "utf8");
   const notice = "\n\nVAG identity ODbL source exclusion: the upstream provenance from autoevolution.com has not been independently verified. The installer contains only an empty SQLite schema placeholder and audit metadata; no model, generation or engine records from this source are distributed or searchable. Re-enable only after independent provenance and redistribution-rights review.\n";
   if (!readme.includes("VAG identity ODbL source exclusion:")) fs.appendFileSync(readmePath, notice, "utf8");
   return { databaseSha256: pack.database_sha256, productCounts: pack.product_counts };
@@ -219,14 +200,111 @@ function patchResearchDbTests() {
   writeLf(packsTest, packSource);
 }
 
+function patchAutoDiag2DbAndTests() {
+  const moduleFile = path.join(root, "lib", "autodiag2-research-db.cjs");
+  let moduleSource = readLf(moduleFile);
+  moduleSource = replaceExactly(moduleSource,
+    '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\\'unclassified_source_label\\'"),',
+    '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\\'unclassified_source_label\\'"),\n    unverifiedEngineCodeFields: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\\'unverified_source_code_field\\'"),',
+    "AutoDiag2 unverified engine source-code count"
+  );
+  moduleSource = replaceExactly(moduleSource,
+    '        counts.engineCodeShapeCandidates !== 939 || counts.unclassifiedEngineLabels !== 144 || counts.ecus !== 179 ||\n        counts.vehicleConfigCandidates !== 3170 || counts.dtcCandidates !== 956 || counts.vehicleEcuLinkedDtcCandidates !== 0 ||\n        counts.makeLevelDtcCandidates !== 956 || counts.dtcFitmentCandidateLinks !== 0 || counts.genericDtcRows !== 0 ||',
+    '        counts.engineCodeShapeCandidates !== 0 || counts.unclassifiedEngineLabels !== 0 || counts.unverifiedEngineCodeFields !== 1083 || counts.ecus !== 179 ||\n        counts.vehicleConfigCandidates !== 3170 || counts.dtcCandidates !== 0 || counts.vehicleEcuLinkedDtcCandidates !== 0 ||\n        counts.makeLevelDtcCandidates !== 0 || counts.dtcFitmentCandidateLinks !== 0 || counts.genericDtcRows !== 0 ||',
+    "AutoDiag2 filtered exact-count gate"
+  );
+  moduleSource = replaceExactly(moduleSource,
+    '        counts.genericDtcRows !== expected.generic_dtc_rows_in_pack || counts.transmissionRecords !== expected.transmission_records) {',
+    '        counts.genericDtcRows !== expected.generic_dtc_rows_in_pack || counts.transmissionRecords !== expected.transmission_records ||\n        counts.unverifiedEngineCodeFields !== expected.engine_code_candidates_unverified || expected.engine_codes_verified !== 0 ||\n        packData.sourceManifest.dtc_policy_filtered !== true ||\n        packData.sourceManifest.dtc_candidate_policy?.diagnostic_execution_allowed !== false ||\n        packData.sourceManifest.dtc_candidate_policy?.repair_advice_approved !== false ||\n        packData.sourceManifest.engine_code_policy?.shape_heuristic_is_not_used_for_verification !== true) {',
+    "AutoDiag2 source manifest policy parity gate"
+  );
+  moduleSource = replaceExactly(moduleSource,
+    '      engineCodeShapeCandidates: counts.engineCodeShapeCandidates,\n      unclassifiedEngineLabels: counts.unclassifiedEngineLabels,',
+    '      engineCodeShapeCandidates: counts.engineCodeShapeCandidates,\n      unclassifiedEngineLabels: counts.unclassifiedEngineLabels,\n      unverifiedEngineCodeFields: counts.unverifiedEngineCodeFields,',
+    "AutoDiag2 summary unverified engine count"
+  );
+  moduleSource = replaceExactly(moduleSource,
+    '      counts,\n    attributionText: packData.attributionText,',
+    '      counts,\n    excludedDtcCounts: packData.sourceManifest.dtc_policy_removal_counts || {},\n    attributionText: packData.attributionText,',
+    "AutoDiag2 summary excluded DTC counts"
+  );
+  writeLf(moduleFile, moduleSource);
+
+  const testFile = path.join(root, "tests", "autodiag2-pack-integration.test.cjs");
+  let testSource = readLf(testFile);
+  const pairs = [
+    ['  assert.equal(result.counts.engineCodeShapeCandidates, 939);', '  assert.equal(result.counts.engineCodeShapeCandidates, 0);'],
+    ['  assert.equal(result.counts.unclassifiedEngineLabels, 144);', '  assert.equal(result.counts.unclassifiedEngineLabels, 0);'],
+    ['  assert.equal(result.counts.dtcCandidates, 956);', '  assert.equal(result.counts.dtcCandidates, 0);'],
+    ['  assert.equal(result.counts.makeLevelDtcCandidates, 956);', '  assert.equal(result.counts.makeLevelDtcCandidates, 0);'],
+    ['  assert.equal(pack.counts.dtcCandidates, 956);', '  assert.equal(pack.counts.dtcCandidates, 0);']
+  ];
+  for (const pair of pairs) testSource = replaceExactly(testSource, pair[0], pair[1], "AutoDiag2 filtered count assertion");
+  testSource = replaceExactly(testSource,
+    '  assert.equal(result.counts.engines, 1083);',
+    '  assert.equal(result.counts.engines, 1083);\n  assert.equal(result.counts.unverifiedEngineCodeFields, 1083);',
+    "AutoDiag2 unverified code-field count"
+  );
+  testSource = replaceExactly(testSource,
+    '  assert.equal(pack.counts.vehicleConfigCandidates, 3170);',
+    '  assert.equal(pack.counts.vehicleConfigCandidates, 3170);\n  assert.equal(pack.counts.unverifiedEngineCodeFields, 1083);\n  assert.equal(pack.excludedDtcCounts.unattributed_make_level, 956);',
+    "AutoDiag2 summary filter provenance counts"
+  );
+  const oldDtc = [
+    '  const dtcRows = local.searchAutoDiag2Candidates("P1004", 10, root);',
+    '  const dtc = dtcRows.find((row) => row.kind === "dtc_candidate");',
+    '  assert.ok(dtc);',
+    '  assert.equal(dtc.code, "P1004");',
+    '  assert.equal(dtc.namespace, "manufacturer_controlled_candidate");',
+    '  assert.equal(dtc.sourceScope, "make_level");',
+    '  assert.deepEqual(dtc.makeLabels, ["Audi"]);',
+    '  assert.equal(dtc.marketScope, "UNKNOWN");',
+    '  assert.equal(dtc.reviewStatus, "community_reference_unverified");',
+    '  assert.equal(dtc.exactFitment, false);',
+    '  assert.equal(dtc.ecuFitment, false);',
+    '  assert.equal(dtc.diagnosticExecutionAllowed, false);',
+    '  assert.equal(dtc.repairAdviceApproved, false);',
+    '  assert.equal(dtc.license, "ODbL-1.0");',
+    '  assert.equal(dtc.contentsLicense, "DbCL-1.0");',
+    '  assert.match(dtc.sourceRevision, /^[a-f0-9]{40}$/);',
+    '  assert.match(dtc.databaseSha256, /^[a-f0-9]{64}$/);',
+    '  assert.match(dtc.sourceManifestSha256, /^[a-f0-9]{64}$/);',
+    '  assert.match(dtc.sourceArtifactZipSha256, /^[a-f0-9]{64}$/);',
+    '  assert.match(dtc.warning, /not confirmed VAG-specific/i);',
+    '  assert.equal(Object.hasOwn(dtc, "repairs"), false);',
+    '  assert.equal(Object.hasOwn(dtc, "testPlan"), false);',
+    '',
+    '  const engineRows = local.searchAutoDiag2Candidates("CAXA", 20, root);'
+  ].join('\n');
+  const newDtc = [
+    '  assert.deepEqual(local.searchAutoDiag2Candidates("P1004", 10, root), []);',
+    '',
+    '  const engineRows = local.searchAutoDiag2Candidates("CAXA", 20, root);'
+  ].join('\n');
+  testSource = replaceExactly(testSource, oldDtc, newDtc, "AutoDiag2 make-level DTC exclusion integration test");
+  testSource = replaceExactly(testSource,
+    '  assert.equal(config.marketScope, "UNKNOWN");',
+    '  assert.equal(config.marketScope, "UNKNOWN");\n  assert.equal(config.engineLabelQuality, "unverified_source_code_field");',
+    "AutoDiag2 engine label remains explicitly unverified"
+  );
+  testSource = replaceExactly(testSource,
+    '  assert.deepEqual(local.searchGenericDtcs("P1004", 10, root), []);',
+    '  assert.deepEqual(local.searchGenericDtcs("P1004", 10, root), []);\n  const generic = local.searchGenericDtcs("P0300", 10, root);\n  assert.ok(generic.length > 0);\n  assert.equal(generic[0].namespace, "generic_obd2");',
+    "generic DTC remains separate from AutoDiag2 candidates"
+  );
+  writeLf(testFile, testSource);
+}
+
 function patchResearchUi() {
   const file = path.join(root, "components", "local-research-catalog.tsx");
   let source = readLf(file);
-  source = replaceExactly(source,
-    'type SummaryPack = { id: string; license: string; counts: Record<string, number>; source: string; sourceUrl: string; note: string;',
-    'type SummaryPack = { id: string; license: string; counts: Record<string, number>; source: string; sourceUrl: string; note: string; includedInProduct?: boolean;',
-    "research summary included-in-product type"
-  );
+  if (!source.includes("excludedDtcCounts?: Record<string, number>")) {
+    const typeMatch = source.match(/type SummaryPack = \{[^}]+\};/);
+    if (!typeMatch) throw new Error("research summary type was not found");
+    const updatedType = typeMatch[0].replace("note: string;", "note: string; includedInProduct?: boolean; excludedDtcCounts?: Record<string, number>;");
+    if (updatedType === typeMatch[0]) throw new Error("research summary type could not be extended");
+    source = source.replace(typeMatch[0], updatedType);
+  }
   source = replaceExactly(source,
     'const [dataset, setDataset] = useState<Dataset>("vehicles");',
     'const [dataset, setDataset] = useState<Dataset>("dtc");',
@@ -251,6 +329,31 @@ function patchResearchUi() {
     '<p>VAG identity — ODbL-1.0: <a href="https://github.com/gor3a/vehicle-makes-models" target="_blank" rel="noopener noreferrer">gor3a/vehicle-makes-models</a>; upstream source, как заявлено издателем, — autoevolution.com. При публичном распространении адаптированной базы действует share-alike по ODbL-1.0.</p>',
     '<p>VAG identity ODbL pack не распространяется и не отображает записи: upstream provenance от autoevolution.com не прошёл независимую проверку. В продукте оставлены только лицензионные и source-manifest метаданные для аудита; повторное включение возможно после подтверждения прав на исходный массив и его кэширование.</p>',
     "research credits for excluded VAG identity source"
+  );
+  source = replaceExactly(source,
+    '<article className="research-stat"><small>AutoDiag2 · DTC-кандидаты</small><strong>{formatNumber(autoDiag2?.counts?.dtcCandidates)}</strong><span>ODbL / DbCL · make-level · не OEM-подтверждены</span></article>',
+    '<article className="research-stat"><small>AutoDiag2 · DTC-кандидаты</small><strong>{formatNumber(autoDiag2?.counts?.dtcCandidates)}</strong><span>{formatNumber(autoDiag2?.excludedDtcCounts?.unattributed_make_level)} make-level generic-ECU rows excluded · 0 retained</span></article>',
+    "AutoDiag2 filtered DTC statistic"
+  );
+  source = replaceExactly(source,
+    '{row.engineLabelQuality === "factory_code_shape_candidate" ? "Похожа на код · не подтверждена" : "Не классифицирована"}',
+    '{row.engineLabelQuality === "unverified_source_code_field" ? "Поле источника · не подтверждено" : row.engineLabelQuality === "factory_code_shape_candidate" ? "Похожа на код · не подтверждена" : "Не классифицирована"}',
+    "AutoDiag2 engine source-field quality label"
+  );
+  source = replaceExactly(source,
+    '{autoDiag2 && <p>AutoDiag2 v{autoDiag2.releaseTag}: {formatNumber(autoDiag2.counts.dtcCandidates)} DTC-кандидатов уровня марки, {formatNumber(autoDiag2.counts.vehicleConfigCandidates)} конфигураций-кандидатов, {formatNumber(autoDiag2.counts.engines)} меток двигателя и {formatNumber(autoDiag2.counts.ecus)} ECU-кандидатов. Все записи — community reference, рынок UNKNOWN; точная применимость, заводская атрибуция и ECU HW/SW не подтверждены. DTC не связаны с конкретными конфигурациями: {formatNumber(autoDiag2.counts.vehicleEcuLinkedDtcCandidates)} связей. Нет КПП, тест-планов и разрешённого выполнения диагностики. Набор хранится отдельно от общих SAE/ISO DTC.</p>}',
+    '{autoDiag2 && <p>AutoDiag2 v{autoDiag2.releaseTag}: {formatNumber(autoDiag2.counts.dtcCandidates)} DTC-кандидатов оставлено после фильтра атрибуции; {formatNumber(autoDiag2.excludedDtcCounts?.unattributed_make_level)} generic-ECU make-level записей исключено. Остались {formatNumber(autoDiag2.counts.vehicleConfigCandidates)} конфигураций-кандидатов, {formatNumber(autoDiag2.counts.engines)} меток двигателя, из них {formatNumber(autoDiag2.counts.unverifiedEngineCodeFields)} полей кода не подтверждены, и {formatNumber(autoDiag2.counts.ecus)} ECU-кандидатов. Рынок UNKNOWN, точная применимость не подтверждена; заводских кодов двигателя, записей КПП, тест-планов и разрешённого выполнения диагностики нет. Набор хранится отдельно от общих SAE/ISO DTC.</p>}',
+    "AutoDiag2 filtered candidate boundary"
+  );
+  source = replaceExactly(source,
+    '<p><a href="https://github.com/autodiag2/database" target="_blank" rel="noopener noreferrer">AutoDiag2/database</a> — отдельная база ODbL-1.0; индивидуальные записи/содержимое под DbCL-1.0. По опубликованным условиям разрешены коммерческое использование, отображение, офлайн-кэширование и распространение при сохранении атрибуции и share-alike. В приложение включён только набор данных, не upstream GPL-3.0-or-later source code. Данные community-contributed, не OEM-подтверждены, рынок UNKNOWN; DTC-кандидаты make-level, без привязки к автомобилю/ECU и без права на выполнение диагностики.</p>',
+    '<p><a href="https://github.com/autodiag2/database" target="_blank" rel="noopener noreferrer">AutoDiag2/database</a> — отдельная база ODbL-1.0 / DbCL-1.0; коммерческое использование, отображение, офлайн-кэширование и распространение разрешены по опубликованным условиям при атрибуции и share-alike. В наборе оставлены только community vehicle/configuration/engine/ECU candidates. 956 generic-ECU make-level DTC rows исключены, 0 DTC rows retained; все 1 083 непустых source-code fields остаются непроверенными, 0 factory engine codes, 0 transmission records, рынок UNKNOWN, точная применимость и диагностическое выполнение не подтверждены.</p>',
+    "AutoDiag2 rights and filtering attribution"
+  );
+  source = replaceExactly(source,
+    '<p>SQLite SHA-256 · VAG identity: {vag?.databaseSha256 || "недоступен"}</p>',
+    '<p>VAG identity ODbL source: excluded; no source records or SQLite data are shipped.</p>',
+    "VAG identity no-data SHA notice"
   );
   writeLf(file, source);
 
@@ -304,6 +407,7 @@ const emptying = excludeUnverifiedPack();
 patchLocalResearchDb();
 patchVerifier();
 patchResearchDbTests();
+patchAutoDiag2DbAndTests();
 patchResearchUi();
 writeDedicatedTest();
 console.log(JSON.stringify({ status: "excluded_unverified_vag_identity_source", ...emptying }, null, 2));
