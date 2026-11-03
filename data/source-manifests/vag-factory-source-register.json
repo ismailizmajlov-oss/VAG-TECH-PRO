@@ -487,7 +487,11 @@
         "schema_document_present": true,
         "data_snapshot_available": false,
         "note": "The README and db/README.md describe a 2.1 MB SQLite database, but the pinned current Git tree contains only app code, db/schema.sql and documentation; no .sqlite/.db file, seed data directory or release asset is present."
-      }
+      },
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "applicability_precision": "none",
+      "verification_status": "quarantine_only"
     }
   ],
   "minimum_fitment_evidence_fields": [
