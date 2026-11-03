@@ -123,8 +123,16 @@ jobs:
           if ($run.status -ne "completed" -or $run.conclusion -ne "success") {
             throw "Latest AutoDiag2 workflow did not complete successfully. Run=$($run.id), status=$($run.status), conclusion=$($run.conclusion)"
           }
+          $artifactUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
+          $artifactResponse = Invoke-RestMethod -Method Get -Uri $artifactUri -Headers $headers
+          $artifact = $artifactResponse.artifacts | Where-Object { $_.name -eq "autodiag2-vag-community-candidate-pack" -and $_.expired -eq $false } | Select-Object -First 1
+          if ($null -eq $artifact) { throw "AutoDiag2 candidate-pack artifact is missing or expired for run $($run.id)." }
+          $artifactDigest = ([string]$artifact.digest) -replace "^sha256:", ""
+          if ($artifactDigest -notmatch "^[a-f0-9]{64}$") { throw "AutoDiag2 artifact digest is not a valid SHA-256: $($artifact.digest)" }
           "run_id=$($run.id)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "head_sha=$($run.head_sha)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_id=$($artifact.id)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_sha256=$artifactDigest" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
       - name: Download AutoDiag2 community candidate pack
         uses: actions/download-artifact@v4
@@ -155,6 +163,11 @@ jobs:
 
       - name: Assemble and verify offline SQLite research packs
         shell: pwsh
+        env:
+          AUTODIAG2_RUN_ID: ${{ steps.autodiag2-run.outputs.run_id }}
+          AUTODIAG2_ARTIFACT_ID: ${{ steps.autodiag2-run.outputs.artifact_id }}
+          AUTODIAG2_ARTIFACT_SHA256: ${{ steps.autodiag2-run.outputs.artifact_sha256 }}
+          AUTODIAG2_COMMIT_SHA: ${{ steps.autodiag2-run.outputs.head_sha }}
         run: |
           $ErrorActionPreference = "Stop"
           $packs = Join-Path $env:RUNNER_TEMP "vag-tech-pro-data-packs"
@@ -192,6 +205,13 @@ jobs:
           )) {
             if (-not (Test-Path (Join-Path $research $db))) { throw "Research database missing after assembly: $db" }
           }
+          $provenance = [ordered]@{
+            workflow_run_id = [long]$env:AUTODIAG2_RUN_ID
+            artifact_id = [long]$env:AUTODIAG2_ARTIFACT_ID
+            artifact_sha256 = [string]$env:AUTODIAG2_ARTIFACT_SHA256
+            commit = [string]$env:AUTODIAG2_COMMIT_SHA
+          }
+          $provenance | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $env:GITHUB_WORKSPACE "desktop-source/autodiag2-build-provenance.json") -Encoding utf8
 
       - name: Exclude VAG identity source pending upstream provenance review
         shell: pwsh
