@@ -53,8 +53,8 @@ jobs:
               "policy": {
                   "obdex_namespace": "generic SAE/ISO OBD-II only",
                   "obdex_license": "CC0-1.0 data",
-                  "wal33d_data_license": "not separately established",
-                  "wal33d_policy": "ephemeral read-only inspection only; no binary or manufacturer definitions in artifact",
+                  "wal33d_data_license": "repository-level MIT declaration in README; no separate dataset license file",
+                  "wal33d_policy": "separate Volkswagen P1 candidate-only SQLite; no exact vehicle or ECU fitment; hidden from production until technical review",
                   "production_import": False,
                   "fitment_claims": False
               }
@@ -183,7 +183,9 @@ jobs:
               wal_specs = [
                   ("data/dtc_codes.db", 3256320, "5270a7baf7c3d221de289d0dc7806a9203191fce"),
                   ("data/source-data/audi_codes.txt", 19817, "96cac4cd186eae8b7b74d151c5a3dc36c9cb8870"),
-                  ("data/source-data/volkswagen_codes.txt", 28200, "a8afd432644e8cad718e42cdd18cc1931a75bb08")
+                  ("data/source-data/volkswagen_codes.txt", 28200, "a8afd432644e8cad718e42cdd18cc1931a75bb08"),
+                  ("LICENSE", 1078, "9cbfaae3f07b8daa1685b4587e36c604a7a4ded1"),
+                  ("README.md", 4353, "1ab235040508244db114e7cafc6c6afe973425d7")
               ]
               wal_audit = {"status": "not_available", "binary_artifact_published": False}
               overlap = {"status": "not_run"}
@@ -256,7 +258,7 @@ jobs:
                           "interpretation": "Identifier overlap is not VAG attribution, ECU applicability, vehicle fitment or a repair instruction."
                       }
                       wal_audit = {
-                          "status": "downloaded_and_inspected_ephemerally",
+                          "status": "downloaded_and_inspected",
                           "pinned_commit": "04c43d72e7db7197658b6f72fe582c5076d9eee8",
                           "integrity_check": integrity,
                           "tables": tables,
@@ -264,10 +266,234 @@ jobs:
                           "manufacturer_row_counts": manufacturer_counts,
                           "audi_vw_unique_sqlite_codes": len(wal_vag_db_codes),
                           "files": wal_file_manifest,
-                          "data_license": "not separately established",
+                          "data_license": "MIT-1.0 repository-level declaration",
                           "binary_artifact_published": False,
                           "production_import": False
                       }
+
+                      # Preserve a source-backed, candidate-only Volkswagen P1 namespace.
+                      license_bytes = downloaded["LICENSE"].read_bytes()
+                      readme_bytes = downloaded["README.md"].read_bytes()
+                      license_text = license_bytes.decode("utf-8", errors="strict")
+                      readme_text = readme_bytes.decode("utf-8", errors="strict")
+                      if "MIT License" not in license_text or "Permission is hereby granted" not in license_text:
+                          raise RuntimeError("Wal33D repository MIT license text failed validation")
+                      if "**License:** MIT" not in readme_text or "data/source-data/" not in readme_text:
+                          raise RuntimeError("Wal33D README does not declare the repository MIT license and source-data folder")
+
+                      vw_raw = downloaded["data/source-data/volkswagen_codes.txt"].read_bytes()
+                      vw_source_sha = hashlib.sha256(vw_raw).hexdigest()
+                      license_sha = hashlib.sha256(license_bytes).hexdigest()
+                      readme_sha = hashlib.sha256(readme_bytes).hexdigest()
+                      vw_rows = []
+                      seen_codes = set()
+                      for line_no, raw_line in enumerate(vw_raw.splitlines(), 1):
+                          line = raw_line.decode("utf-8-sig", errors="strict")
+                          match = re.match(r"^\s*(P1[0-9A-F]{3})\s+-\s+(.+?)\s*$", line, re.I)
+                          if not match:
+                              continue
+                          code = match.group(1).upper()
+                          description = match.group(2).strip()
+                          if not description or code in seen_codes:
+                              raise RuntimeError(f"Wal33D Volkswagen candidate duplicate/empty row at line {line_no}: {code}")
+                          seen_codes.add(code)
+                          vw_rows.append((code, description, line_no, hashlib.sha256(raw_line).hexdigest()))
+                      if len(vw_rows) != 528 or len(seen_codes) != 528:
+                          raise RuntimeError(f"Wal33D Volkswagen P1 source count mismatch: expected 528 unique rows, got {len(vw_rows)}")
+                      if any(not row[0].startswith("P1") for row in vw_rows):
+                          raise RuntimeError("Generic or non-P1 DTC entered the Volkswagen manufacturer-controlled namespace")
+
+                      pack_dir = OUT / "wal33d-vw-dtc-candidates"
+                      upstream_dir = pack_dir / "upstream"
+                      upstream_dir.mkdir(parents=True, exist_ok=True)
+                      (upstream_dir / "volkswagen_codes.txt").write_bytes(vw_raw)
+                      (upstream_dir / "LICENSE").write_bytes(license_bytes)
+                      (upstream_dir / "README.md").write_bytes(readme_bytes)
+
+                      candidate_db_path = pack_dir / "wal33d-vw-dtc-candidates.sqlite"
+                      if candidate_db_path.exists():
+                          candidate_db_path.unlink()
+                      candidate_db = sqlite3.connect(candidate_db_path)
+                      try:
+                          candidate_db.executescript("""
+                            PRAGMA foreign_keys=ON;
+                            CREATE TABLE source_registry (
+                              source_id TEXT PRIMARY KEY,
+                              publisher TEXT NOT NULL,
+                              repository_url TEXT NOT NULL,
+                              source_revision TEXT NOT NULL,
+                              source_file_path TEXT NOT NULL,
+                              source_file_sha256 TEXT NOT NULL,
+                              license_id TEXT NOT NULL,
+                              license_sha256 TEXT NOT NULL,
+                              readme_sha256 TEXT NOT NULL,
+                              license_scope TEXT NOT NULL,
+                              rights_status TEXT NOT NULL,
+                              market_scope TEXT NOT NULL CHECK (market_scope='UNKNOWN'),
+                              applicability_precision TEXT NOT NULL CHECK (applicability_precision='manufacturer_make_candidate'),
+                              verification_status TEXT NOT NULL CHECK (verification_status='community_reference_unverified'),
+                              attribution_required INTEGER NOT NULL CHECK (attribution_required=1),
+                              exact_vehicle_fitment_claim INTEGER NOT NULL CHECK (exact_vehicle_fitment_claim=0),
+                              ecu_fitment_claim INTEGER NOT NULL CHECK (ecu_fitment_claim=0),
+                              pr_code_fitment_claim INTEGER NOT NULL CHECK (pr_code_fitment_claim=0),
+                              diagnostic_execution_allowed INTEGER NOT NULL CHECK (diagnostic_execution_allowed=0),
+                              repair_procedure_included INTEGER NOT NULL CHECK (repair_procedure_included=0),
+                              oem_part_number_included INTEGER NOT NULL CHECK (oem_part_number_included=0),
+                              imported_count INTEGER NOT NULL CHECK (imported_count=528)
+                            );
+                            CREATE TABLE dtc_candidates (
+                              code TEXT PRIMARY KEY,
+                              oem_make TEXT NOT NULL CHECK (oem_make='Volkswagen'),
+                              namespace TEXT NOT NULL CHECK (namespace='manufacturer_controlled_candidate'),
+                              code_range TEXT NOT NULL CHECK (code_range='P1'),
+                              description TEXT NOT NULL,
+                              source_file_path TEXT NOT NULL,
+                              source_line_no INTEGER NOT NULL,
+                              source_line_sha256 TEXT NOT NULL,
+                              source_file_sha256 TEXT NOT NULL,
+                              repo_revision TEXT NOT NULL,
+                              license_id TEXT NOT NULL CHECK (license_id='MIT-1.0'),
+                              market_scope TEXT NOT NULL CHECK (market_scope='UNKNOWN'),
+                              applicability_precision TEXT NOT NULL CHECK (applicability_precision='manufacturer_make_candidate'),
+                              verification_status TEXT NOT NULL CHECK (verification_status='community_reference_unverified'),
+                              exact_vehicle_fitment_claim INTEGER NOT NULL CHECK (exact_vehicle_fitment_claim=0),
+                              ecu_fitment_claim INTEGER NOT NULL CHECK (ecu_fitment_claim=0),
+                              pr_code_fitment_claim INTEGER NOT NULL CHECK (pr_code_fitment_claim=0),
+                              diagnostic_execution_allowed INTEGER NOT NULL CHECK (diagnostic_execution_allowed=0),
+                              repair_procedure_included INTEGER NOT NULL CHECK (repair_procedure_included=0),
+                              oem_part_number_included INTEGER NOT NULL CHECK (oem_part_number_included=0),
+                              source_id TEXT NOT NULL REFERENCES source_registry(source_id),
+                              UNIQUE(source_file_path, source_line_no)
+                            );
+                            CREATE INDEX idx_vw_dtc_candidate_code ON dtc_candidates(code);
+                            CREATE INDEX idx_vw_dtc_candidate_make ON dtc_candidates(oem_make, code_range);
+                          """)
+                          candidate_db.execute(
+                              "INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                              (
+                                  "wal33d-vw-dtc-candidates-mit", "Wal33D / Waleed Judah",
+                                  "https://github.com/Wal33D/dtc-database",
+                                  "04c43d72e7db7197658b6f72fe582c5076d9eee8",
+                                  "data/source-data/volkswagen_codes.txt", vw_source_sha,
+                                  "MIT-1.0", license_sha, readme_sha,
+                                  "Repository-level MIT declaration; no separate dataset license file. Preserve upstream notice.",
+                                  "repository_level_MIT_declared; primary code-source provenance not independently verified",
+                                  "UNKNOWN", "manufacturer_make_candidate", "community_reference_unverified", 1,
+                                  0, 0, 0, 0, 0, 0, len(vw_rows)
+                              )
+                          )
+                          candidate_db.executemany(
+                              "INSERT INTO dtc_candidates VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                              [
+                                  (
+                                      code, "Volkswagen", "manufacturer_controlled_candidate", "P1",
+                                      description, "data/source-data/volkswagen_codes.txt", line_no, line_sha,
+                                      vw_source_sha, "04c43d72e7db7197658b6f72fe582c5076d9eee8", "MIT-1.0",
+                                      "UNKNOWN", "manufacturer_make_candidate", "community_reference_unverified",
+                                      0, 0, 0, 0, 0, 0, "wal33d-vw-dtc-candidates-mit"
+                                  )
+                                  for code, description, line_no, line_sha in vw_rows
+                              ]
+                          )
+                          candidate_db.commit()
+                          candidate_integrity = candidate_db.execute("PRAGMA integrity_check").fetchone()[0]
+                          candidate_count = candidate_db.execute("SELECT COUNT(*) FROM dtc_candidates").fetchone()[0]
+                          candidate_generic = candidate_db.execute(
+                              "SELECT COUNT(*) FROM dtc_candidates WHERE code NOT LIKE 'P1%' OR namespace!='manufacturer_controlled_candidate'"
+                          ).fetchone()[0]
+                          candidate_unsafe = candidate_db.execute(
+                              "SELECT COUNT(*) FROM dtc_candidates WHERE exact_vehicle_fitment_claim!=0 OR ecu_fitment_claim!=0 OR pr_code_fitment_claim!=0 OR diagnostic_execution_allowed!=0 OR repair_procedure_included!=0 OR oem_part_number_included!=0"
+                          ).fetchone()[0]
+                          if candidate_integrity != "ok" or candidate_count != 528 or candidate_generic or candidate_unsafe:
+                              raise RuntimeError("Wal33D Volkswagen candidate SQLite failed integrity, namespace or non-execution gate")
+                      finally:
+                          candidate_db.close()
+
+                      candidate_db_sha = hashlib.sha256(candidate_db_path.read_bytes()).hexdigest()
+                      attribution_text = (
+                          "Volkswagen manufacturer-controlled P1 DTC candidates from Wal33D / Waleed Judah, "
+                          "https://github.com/Wal33D/dtc-database, pinned commit "
+                          "04c43d72e7db7197658b6f72fe582c5076d9eee8. Repository README declares MIT; "
+                          "preserve the upstream LICENSE notice. These 528 rows are community reference candidates only. "
+                          "Market, model, generation, year, engine, gearbox, ECU, PR-code and VIN applicability are unknown. "
+                          "No repair procedures, test plans, pinouts or OEM part mappings are included."
+                      )
+                      (pack_dir / "ATTRIBUTION.txt").write_text(attribution_text + "\n", encoding="utf-8")
+                      pack_manifest = {
+                          "schema_version": 1,
+                          "pack_id": "wal33d-vw-dtc-candidates-mit",
+                          "publisher": "Wal33D / Waleed Judah",
+                          "repository_url": "https://github.com/Wal33D/dtc-database",
+                          "source_revision": "04c43d72e7db7197658b6f72fe582c5076d9eee8",
+                          "source_file": "upstream/volkswagen_codes.txt",
+                          "source_file_sha256": vw_source_sha,
+                          "license_file": "upstream/LICENSE",
+                          "license_sha256": license_sha,
+                          "readme_file": "upstream/README.md",
+                          "readme_sha256": readme_sha,
+                          "data_license": "MIT-1.0",
+                          "license_scope": "Repository README declares MIT for the repository; no separate data license file is supplied.",
+                          "rights_status": "repository_level_MIT_declared; provenance_review_required",
+                          "commercial_use_allowed_by_declared_license": True,
+                          "display_allowed_by_declared_license": True,
+                          "offline_cache_allowed_by_declared_license": True,
+                          "redistribution_allowed_by_declared_license": True,
+                          "attribution_required": True,
+                          "attribution_file": "ATTRIBUTION.txt",
+                          "market_scope": "UNKNOWN",
+                          "applicability_precision": "manufacturer_make_candidate",
+                          "verification_status": "community_reference_unverified",
+                          "display_status": "candidate_only_pending_technical_review",
+                          "counts": {"volkswagen_p1_candidates": candidate_count, "audi_candidates": 0, "generic_dtc_rows": 0},
+                          "namespace": "manufacturer_controlled_candidate",
+                          "code_range": "P1",
+                          "exact_vehicle_fitment": False,
+                          "ecu_fitment": False,
+                          "pr_code_fitment": False,
+                          "diagnostic_execution_allowed": False,
+                          "repair_procedures_included": False,
+                          "oem_part_numbers_included": False,
+                          "source_line_evidence": [
+                              {"code": code, "source_line_no": line_no, "source_line_sha256": line_sha}
+                              for code, _description, line_no, line_sha in vw_rows
+                          ],
+                          "source_snapshot_sha256": hashlib.sha256(
+                              b"LICENSE\\0" + license_bytes + b"\\0README.md\\0" + readme_bytes +
+                              b"\\0volkswagen_codes.txt\\0" + vw_raw
+                          ).hexdigest(),
+                          "database_sha256": candidate_db_sha,
+                          "integrity_check": candidate_integrity
+                      }
+                      manifest_path = pack_dir / "manifest.json"
+                      manifest_path.write_text(json.dumps(pack_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                      pack_files = [
+                          ("wal33d-vw-dtc-candidates.sqlite", candidate_db_sha),
+                          ("manifest.json", hashlib.sha256(manifest_path.read_bytes()).hexdigest()),
+                          ("ATTRIBUTION.txt", hashlib.sha256((pack_dir / "ATTRIBUTION.txt").read_bytes()).hexdigest()),
+                          ("upstream/volkswagen_codes.txt", vw_source_sha),
+                          ("upstream/LICENSE", license_sha),
+                          ("upstream/README.md", readme_sha)
+                      ]
+                      (pack_dir / "SHA256SUMS.txt").write_text(
+                          "".join(f"{digest}  {name}\n" for name, digest in pack_files), encoding="utf-8"
+                      )
+                      wal_audit["candidate_pack"] = {
+                          "status": "built_and_verified_candidate_only",
+                          "database": "wal33d-vw-dtc-candidates.sqlite",
+                          "database_sha256": candidate_db_sha,
+                          "integrity_check": candidate_integrity,
+                          "volkswagen_p1_candidates": candidate_count,
+                          "generic_rows": 0,
+                          "exact_fitment_claims": 0,
+                          "ecu_fitment_claims": 0,
+                          "diagnostic_execution_allowed": False,
+                          "rights_status": pack_manifest["rights_status"],
+                          "source_file_sha256": vw_source_sha,
+                          "license_sha256": license_sha,
+                          "readme_sha256": readme_sha,
+                          "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+                      }
+                      REPORT["wal33d_candidate_pack"] = wal_audit["candidate_pack"]
               except Exception as exc:
                   wal_audit = {
                       "status": "download_or_inspection_failed",
