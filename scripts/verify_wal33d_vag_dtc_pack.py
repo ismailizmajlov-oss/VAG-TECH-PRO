@@ -10,7 +10,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-CODE_RE = re.compile(r"^([PBCU][0-9A-F]{4})\\s+-\\s+(.+?)\\s*$")
+CODE_RE = re.compile(r"^([PBCU][0-9A-F]{4})\s+-\s+(.+?)\s*$")
 MANUFACTURER_CODE_RE = re.compile(
     r"^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$"
 )
