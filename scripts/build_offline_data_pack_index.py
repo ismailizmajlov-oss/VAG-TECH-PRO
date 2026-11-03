@@ -423,17 +423,32 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     packs = {pack["pack_id"]: pack for pack in index.get("packs", [])}
     if set(packs) != expected_ids:
         raise ValueError("Offline bundle pack index is incomplete or has unexpected packs")
-    for pack in packs.values():
+    inspectors = {
+        "obdex-generic-cc0": inspect_obdex,
+        "vehiclesdb-vag-identity": inspect_vehiclesdb,
+        "vag-engine-candidates-odbl": inspect_odbl,
+        "obdb-vag-signals-cc-by-sa": inspect_obdb,
+    }
+    for pack_id, pack in packs.items():
         db_path = root / pack["database_path"]
         manifest_path = root / pack["manifest_path"]
         if sha256_file(db_path) != pack["database_sha256"] or sha256_file(manifest_path) != pack["manifest_sha256"]:
-            raise ValueError(f"Pack database/manifest hash mismatch: {pack['pack_id']}")
+            raise ValueError(f"Pack database/manifest hash mismatch: {pack_id}")
         for license_path in pack["license_files"]:
             if not (root / license_path).is_file():
-                raise ValueError(f"Missing license file for {pack['pack_id']}: {license_path}")
+                raise ValueError(f"Missing license file for {pack_id}: {license_path}")
         for attribution_path in pack["attribution_files"]:
             if not (root / attribution_path).is_file():
-                raise ValueError(f"Missing attribution file for {pack['pack_id']}: {attribution_path}")
+                raise ValueError(f"Missing attribution file for {pack_id}: {attribution_path}")
+        pack_dir = root / pack["relative_dir"]
+        fresh = inspectors[pack_id](pack_dir)
+        for key in (
+            "database_path", "database_sha256", "manifest_path", "manifest_sha256",
+            "license", "status", "product_eligibility", "market_scope",
+            "applicability_precision", "counts",
+        ):
+            if fresh.get(key) != pack.get(key):
+                raise ValueError(f"Pack index metadata drift for {pack_id}.{key}")
     for path in root.rglob("*"):
         if path.is_file() and path.suffix.lower() in {".exe", ".msi"}:
             raise ValueError("Data bundle unexpectedly contains an installer executable")
