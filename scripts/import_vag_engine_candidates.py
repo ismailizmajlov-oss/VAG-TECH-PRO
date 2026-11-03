@@ -23,7 +23,8 @@ DATASET = "vehicle-makes-models"
 LICENSE_ID = "ODbL-1.0"
 LICENSE_URL = "https://opendatacommons.org/licenses/odbl/1-0/"
 FORBIDDEN_CODE_KEYS = {
-    "enginecode", "gearboxcode", "transmissioncode", "ecu", "ecucode", "ecuid",
+    "enginecode", "gearboxcode", "transmissioncode", "engineid", "gearboxid",
+    "transmissionid", "ecu", "ecucode", "ecuid",
 }
 
 
@@ -234,6 +235,10 @@ def validate_lock(lock: dict[str, Any]) -> None:
         raise ValueError("ODbL candidate data cannot claim exact gearbox codes")
     if not isinstance(lock.get("brands"), list) or not isinstance(lock.get("source_files"), dict):
         raise ValueError("ODbL source lock is missing brand/source-file mappings")
+    if len(lock["brands"]) != len(set(lock["brands"])) or set(lock["brands"]) != set(lock["source_files"]):
+        raise ValueError("ODbL brand and source-file lock entries are inconsistent")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(lock.get("revision", ""))):
+        raise ValueError("ODbL source revision must be a pinned 40-character Git commit SHA")
 
 
 def input_file_manifest(input_dir: Path, lock: dict[str, Any], license_path: Path) -> tuple[dict[str, dict[str, Any]], str]:
@@ -561,7 +566,7 @@ def main() -> int:
         print(json.dumps(manifest, ensure_ascii=False, indent=2))
         return 0
     except Exception:
-        for path in (temp_db_path, temp_manifest_path, license_output):
+        for path in (temp_db_path, temp_manifest_path, output, manifest_path, license_output):
             try:
                 if path.exists():
                     path.unlink()
