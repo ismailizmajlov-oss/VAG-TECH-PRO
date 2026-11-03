@@ -50,23 +50,23 @@ jobs:
           Copy-Item -LiteralPath "desktop-package-run35.json" -Destination "desktop-source/package.json" -Force
 
           $patches = @(
-            @{ File = "run36-01-manifest.patch.gz.b64"; GzipSha = "982d6f86a63d6245c0e84d533bb3e5268cdb7ab5724794f5d0bbab0e75ce67d1"; PatchSha = "195003ca7ad428b14c877b3c2f4586fc4320c50ae9c9353a87508efd2b0c907e" },
-            @{ File = "run36-02-api-db.patch.gz.b64"; GzipSha = "8b5626be40e037f236791019971a66952dccaf9ffb51f8889e0ba1d6aa4cde93"; PatchSha = "554ac86467b5713879c254734df05d6419609ff8c5a93e5edb3c4c309567acbb" },
+            @{ File = "run36-01-manifest.patch.gz.b64"; GzipSha = "af9b133cbcb557f69935e6b615d1cef094d87cc83cad1ad0bedb4a81b983f1dd"; PatchSha = "195003ca7ad428b14c877b3c2f4586fc4320c50ae9c9353a87508efd2b0c907e" },
+            @{ File = "run36-02-api-db.patch.gz.b64"; GzipSha = "0a927dbbc96e04198fa44f00d90b91b1a823b042e1d0fb33b16f446154b12331"; PatchSha = "554ac86467b5713879c254734df05d6419609ff8c5a93e5edb3c4c309567acbb" },
             @{ File = "run36-03-ui.patch.gz.b64"; GzipSha = "dc38f48043f2d7fe75d8a8e368e1b30c55da0e1b1a8f7b9cdc93eb6d7b6c51e8"; PatchSha = "abccb6706d44155469fe96a6e21f039c8c33a7fd59407a92b55288a67ce46ae3" },
-            @{ File = "run36-04-verification-tests.patch.gz.b64"; GzipSha = "e2d3e46e5a2c07b59edb427fd9d4d4c364833af4b5d9a8142fb89faf4a3d8c82"; PatchSha = "3dbc26d866cf76feabacb7eaba2618ad4cba922d2aa3dae2aead360d8c4e7692" }
+            @{ File = "run36-04-verification-tests.patch.gz.b64"; GzipSha = "48a649d7babfdf028a64432cab8c4c212e6584e3e2ea7b77bdd1221cc2f88b2d"; PatchSha = "3dbc26d866cf76feabacb7eaba2618ad4cba922d2aa3dae2aead360d8c4e7692" }
           )
           foreach ($patch in $patches) {
             $encodedPatch = (Get-Content -LiteralPath $patch.File -Raw) -replace "\s", ""
             $compressed = [Convert]::FromBase64String($encodedPatch)
             $gzipHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($compressed)).ToLowerInvariant()
-            if ($gzipHash -ne $patch.GzipSha) { throw "Run36 patch gzip SHA-256 mismatch: $($patch.File)" }
+            if ($gzipHash -ne $patch.GzipSha) { throw "Run36 patch gzip SHA-256 mismatch: $($patch.File) expected $($patch.GzipSha) actual $gzipHash" }
             $inputStream = [System.IO.MemoryStream]::new([byte[]]$compressed)
             $gzipStream = [System.IO.Compression.GZipStream]::new($inputStream, [System.IO.Compression.CompressionMode]::Decompress)
             $outputStream = [System.IO.MemoryStream]::new()
             $gzipStream.CopyTo($outputStream)
             $patchBytes = $outputStream.ToArray()
             $patchHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($patchBytes)).ToLowerInvariant()
-            if ($patchHash -ne $patch.PatchSha) { throw "Run36 patch SHA-256 mismatch: $($patch.File)" }
+            if ($patchHash -ne $patch.PatchSha) { throw "Run36 patch SHA-256 mismatch: $($patch.File) expected $($patch.PatchSha) actual $patchHash" }
             $patchPath = Join-Path $env:RUNNER_TEMP ($patch.File.Replace(".gz.b64", ".patch"))
             [System.IO.File]::WriteAllBytes($patchPath, $patchBytes)
             git apply --check --unsafe-paths --directory=desktop-source $patchPath
