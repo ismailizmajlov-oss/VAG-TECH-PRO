@@ -22,7 +22,7 @@ from typing import Any
 SOURCE_MANIFEST = Path("data/source-manifests/wal33d-dtc-candidate.json")
 MAX_SOURCE_BYTES = 2_000_000
 TIMEOUT_SECONDS = 30
-CODE_RE = re.compile(r"^([PBCU][0-9A-F]{4})\\s+-\\s+(.+?)\\s*$")
+CODE_RE = re.compile(r"^([PBCU][0-9A-F]{4})\s+-\s+(.+?)\s*$")
 MANUFACTURER_CODE_RE = re.compile(
     r"^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$"
 )
@@ -156,6 +156,7 @@ def create_database(path: Path, source_manifest: dict[str, Any], fetched: dict[s
                 source_id TEXT NOT NULL REFERENCES source_registry(source_id),
                 source_path TEXT NOT NULL,
                 local_path TEXT NOT NULL,
+                source_url TEXT NOT NULL,
                 byte_size INTEGER NOT NULL CHECK (byte_size > 0),
                 sha256 TEXT NOT NULL CHECK (length(sha256)=64),
                 PRIMARY KEY (source_id, source_path)
@@ -224,11 +225,11 @@ def create_database(path: Path, source_manifest: dict[str, Any], fetched: dict[s
             )
             db.executemany(
                 """
-                INSERT INTO source_files (source_id,source_path,local_path,byte_size,sha256)
-                VALUES (?,?,?,?,?)
+                INSERT INTO source_files (source_id,source_path,local_path,source_url,byte_size,sha256)
+                VALUES (?,?,?,?,?,?)
                 """,
                 [
-                    (source_id, item["source_path"], item["path"], item["byte_size"], item["sha256"])
+                    (source_id, item["source_path"], item["path"], item["source_url"], item["byte_size"], item["sha256"])
                     for item in file_metadata
                 ],
             )
