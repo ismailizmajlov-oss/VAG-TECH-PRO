@@ -1,0 +1,107 @@
+name: Build verified Windows offline data-pack bundle
+
+on:
+  push:
+    branches:
+      - automation/windows-offline-data-foundation-run18
+    paths:
+      - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/acquire-obdex-cc0.yml
+      - .github/workflows/acquire-obdb-vag-signalsets.yml
+      - .github/workflows/acquire-vag-engine-candidates.yml
+      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
+      - scripts/build_offline_data_pack_index.py
+      - scripts/verify_offline_data_pack_index.py
+      - data/source-manifests/obdex-generic-cc0.lock.json
+      - data/source-manifests/obdb-vag-signalsets.json
+      - data/source-manifests/vag-open-engine-candidates.lock.json
+      - data/source-manifests/vehiclesdb-vag-identity.lock.json
+  pull_request:
+    paths:
+      - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/acquire-obdex-cc0.yml
+      - .github/workflows/acquire-obdb-vag-signalsets.yml
+      - .github/workflows/acquire-vag-engine-candidates.yml
+      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
+      - scripts/build_offline_data_pack_index.py
+      - scripts/verify_offline_data_pack_index.py
+      - data/source-manifests/obdex-generic-cc0.lock.json
+      - data/source-manifests/obdb-vag-signalsets.json
+      - data/source-manifests/vag-open-engine-candidates.lock.json
+      - data/source-manifests/vehiclesdb-vag-identity.lock.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: vag-tech-pro-windows-offline-data-packs
+  cancel-in-progress: false
+
+jobs:
+  obdex-generic:
+    name: Acquire generic CC0 OBD-II data
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-obdex-cc0.yml
+
+  obdb-vag-signals:
+    name: Acquire CC BY-SA community UDS signal candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-obdb-vag-signalsets.yml
+
+  vag-engine-candidates:
+    name: Acquire ODbL VAG generation/engine candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-vag-engine-candidates.yml
+
+  vag-identity:
+    name: Acquire CC BY VAG make/model identity candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-vag-identity-vehiclesdb.yml
+
+  package:
+    name: Assemble and independently verify Windows offline SQLite packs
+    needs:
+      - obdex-generic
+      - obdb-vag-signals
+      - vag-engine-candidates
+      - vag-identity
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download verified source-pack artifacts from this workflow run
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/source-artifacts
+          merge-multiple: false
+          if-no-artifact-found: error
+
+      - name: Compile Windows data-pack assembler and verifier
+        run: |
+          python -m py_compile scripts/build_offline_data_pack_index.py
+          python -m py_compile scripts/verify_offline_data_pack_index.py
+
+      - name: Assemble separate SQLite databases and license notices
+        run: python scripts/build_offline_data_pack_index.py --input-dir dist/source-artifacts --output-dir dist/windows-offline-data-packs
+
+      - name: Re-open and independently verify the completed bundle
+        run: python scripts/verify_offline_data_pack_index.py --pack-dir dist/windows-offline-data-packs
+
+      - name: Upload verified Windows offline data-pack bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-windows-offline-data-packs
+          path: dist/windows-offline-data-packs/
+          if-no-files-found: error
+          retention-days: 30
