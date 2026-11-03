@@ -1,0 +1,1 @@
+Trigger the Windows CI after the reusable workflow and CRLF-safe patcher were merged to main.
