@@ -141,6 +141,7 @@ def main():
         assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
         assert db.execute("PRAGMA foreign_key_check").fetchall() == []
         assert db.execute("SELECT count(*) FROM oem_dtc_vehicle_applicability").fetchone()[0] == 1
+        db.close()  # Windows cannot remove the temporary SQLite file while the handle is open.
         print("PASS: DTC namespace separation, candidate-only fitment, publication rights/revision gates, evidence links and SQLite integrity")
 
 if __name__ == "__main__":
