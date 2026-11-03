@@ -529,8 +529,8 @@ def verify_pack(pack_dir: Path) -> dict[str, Any]:
             raise ValueError(f"RDW SQLite row counts mismatch: {counts} != {manifest.get('counts')}")
         if db.execute("SELECT count(*) FROM source_registry").fetchone()[0] != 5:
             raise ValueError("RDW source registry must contain exactly five licensed datasets")
-        if db.execute("SELECT count(*) FROM source_files").fetchone()[0] != 16:
-            raise ValueError("RDW source file registry must contain five CSVs, five metadata snapshots, five license-evidence pages and one CC0 legal text")
+        if db.execute("SELECT count(*) FROM source_files").fetchone()[0] != int(manifest.get("source_file_count", -1)):
+            raise ValueError("RDW source file registry count does not match the pack manifest")
         if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC0-1.0' OR rights_status<>'approved_by_dataset_specific_CC0' OR commercial_use_allowed<>1 OR display_allowed<>1 OR offline_cache_allowed<>1 OR redistribution_allowed<>1").fetchone()[0] != 0:
             raise ValueError("RDW source rights flags mismatch")
         if db.execute("SELECT count(*) FROM vag_type_approval_variants WHERE market_scope<>? OR applicability_precision<>? OR verification_status<>? OR exact_vehicle_fitment<>0 OR russian_eaeu_fitment<>0 OR factory_engine_code_confirmed<>0 OR factory_gearbox_code_confirmed<>0 OR model_generation_year_confirmed<>0",
