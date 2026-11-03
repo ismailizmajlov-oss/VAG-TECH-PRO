@@ -111,6 +111,7 @@ jobs:
             data_license = $lock.data_license
             license_url = $lock.license_url
             license_sha256 = (Get-FileHash -Path (Join-Path $generatedRoot "UPSTREAM-LICENSE.txt") -Algorithm SHA256).Hash.ToLowerInvariant()
+            source_reference_policy = $lock.source_reference_policy
             scope = $lock.scope
             source_files = $sourceFiles
             build = $lock.build
@@ -152,6 +153,18 @@ jobs:
             throw new Error("OBDex projections must be JSON arrays");
           }
 
+          function validSourceReference(value) {
+            if (typeof value !== "string") return false;
+            try {
+              const parsed = new URL(value);
+              return (parsed.protocol === "https:" || parsed.protocol === "http:") &&
+                parsed.hostname.length > 0 && !parsed.username && !parsed.password &&
+                parsed.hostname.toLowerCase() !== "localhost";
+            } catch {
+              return false;
+            }
+          }
+
           const dtcSeen = new Set();
           const dtcs = generic.map((row) => {
             const code = String(row?.code ?? "").trim().toUpperCase();
@@ -164,7 +177,7 @@ jobs:
               throw new Error(code + ": missing English title");
             }
             if (!Array.isArray(row.sources) || row.sources.length === 0 ||
-                row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
+                row.sources.some((u) => !validSourceReference(u))) {
               throw new Error(code + ": invalid source references");
             }
             const rawHash = sha256(Buffer.from(JSON.stringify(row)));
@@ -203,7 +216,7 @@ jobs:
               if (!row.name || typeof row.name.en !== "string" || row.name.en.trim().length < 2) {
                 throw new Error("PID " + pid + " has no English name");
               }
-              if (!Array.isArray(row.sources) || row.sources.length === 0 || row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
+              if (!Array.isArray(row.sources) || row.sources.length === 0 || row.sources.some((u) => !validSourceReference(u))) {
                 throw new Error("PID " + pid + " has invalid source references");
               }
               const range = Array.isArray(row.range) ? row.range : null;
@@ -245,6 +258,7 @@ jobs:
               revision: sourceManifest.commit_sha,
               snapshot_sha256: hashes,
               source_manifest: sourceManifest,
+              source_reference_policy: sourceManifest.source_reference_policy,
               meta
             },
             scope: {
@@ -266,7 +280,8 @@ jobs:
               "Do not map generic code descriptions to a VAG ECU, engine, gearbox or model without separate evidence.",
               "Descriptions and causes are unreviewed source content, not verified repair instructions.",
               "No record asserts vehicle fitment or exact diagnostic procedure applicability.",
-              "Repair cost fields are retained only in raw source provenance and must not be displayed as Russian-market pricing."
+              "Repair cost fields are retained only in raw source provenance and must not be displayed as Russian-market pricing.",
+              "External source URLs are preserved as references only; no external documents are fetched or licensed by this package."
             ],
             generic_dtcs: dtcs,
             pids,
