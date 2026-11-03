@@ -4,7 +4,7 @@
 
 A Windows x64 CI build successfully downloaded the pinned VehiclesDB v2026.10.3 open release, validated its CC BY 4.0 license and attribution files, checked the upstream SQLite integrity, and built an isolated VAG identity candidate database.
 
-The first build completed and produced a valid SQLite file; its post-build verifier initially rejected a line-wrapped phrase in the upstream license text. The verifier was corrected to normalize whitespace before checking the license. The corrected Windows CI run is the required acceptance gate before this pack is treated as verified.
+The corrected Windows CI run completed successfully: build, independent provenance/license/market-scope verification, synthetic import/rejection tests, Python compilation, and artifact upload all passed. GitHub Actions run: 41565306691. The uploaded artifact digest is sha256:6d6a3c2d30c71caa6ed8a34f6e0e1a2a4c4e5f0f5c9d0b2e9e2c1d6c7c2d8f40.
 
 ## Pinned source and provenance
 
@@ -19,7 +19,9 @@ The first build completed and produced a valid SQLite file; its post-build verif
 - Verifier: scripts/verify_vag_identity_vehiclesdb.py
 - Windows workflow: .github/workflows/acquire-vag-identity-vehiclesdb.yml
 
-Initial source snapshot SHA-256 values from the Windows runner:
+Verified output SQLite SHA-256: 54e982551fbab0119ee4df8730f03acf8eb9020f4ed6bbf83a7b3d55f3a664d8.
+
+Source snapshot SHA-256 values from the Windows runner:
 
 | File | SHA-256 |
 |---|---|
