@@ -90,6 +90,17 @@ def main() -> int:
     db_path = root / manifest["database_path"]
     if sha256_file(db_path) != manifest["database_sha256"]:
         fail("SQLite database SHA-256 mismatch")
+    sums_path = root / "SHA256SUMS.txt"
+    if not sums_path.is_file():
+        fail("SHA256SUMS.txt is missing")
+    for line in sums_path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        expected_hash, relative = line.split("  ", 1)
+        path = root / relative
+        if not path.is_file() or sha256_file(path) != expected_hash:
+            fail(f"SHA256SUMS verification failed: {relative}")
+
     connection = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)
     try:
         if connection.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
