@@ -206,7 +206,7 @@ let homePage = readLf(homePagePath);
 const dbRowStart = homePage.indexOf("type DbRow =");
 const moduleInfoAt = dbRowStart >= 0 ? homePage.indexOf("\nconst moduleInfo", dbRowStart) : -1;
 if (dbRowStart < 0 || moduleInfoAt < 0) throw new Error("Could not locate the home-page DbRow type alias");
-homePage = homePage.slice(0, dbRowStart) + "type DbRow = Record<string, any>;\n" + homePage.slice(moduleInfoAt + 1);
+homePage = homePage.slice(0, dbRowStart) + "// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase relation payloads are heterogeneous; validation stays at query boundaries.\ntype DbRow = Record<string, any>;\n" + homePage.slice(moduleInfoAt + 1);
 homePage = replaceExactly(
   homePage,
   "  }, [globalQuery, catalogOnline]);",
