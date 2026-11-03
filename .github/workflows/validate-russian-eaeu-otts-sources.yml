@@ -32,7 +32,5 @@ jobs:
           python-version: "3.12"
       - name: Record Python runtime version
         run: python -VV
-      - name: Record EAEU form revision and field-map size
-        run: python -c "import json; from pathlib import Path; d=json.loads(Path('data/source-manifests/russian-eaeu-otts-sources.json').read_text(encoding='utf-8')); f=d['eaeu_legal_framework']['otts_form_rules']; print(f['latest_reviewed_amendment'], f['amendment_effective_date'], len(f['field_map']))"
       - name: Validate Russian/EAEU OTTS source rights
         run: python scripts/validate_russian_eaeu_otts_sources.py
