@@ -600,6 +600,8 @@ jobs:
                   json.dumps(REPORT, ensure_ascii=False, indent=2, default=str) + "\n",
                   encoding="utf-8"
               )
+          print("WAL33D_CANDIDATE_PACK_REPORT=" + json.dumps(REPORT.get("wal33d_candidate_pack", {}), ensure_ascii=False, sort_keys=True))
+          print("WAL33D_SOURCE_AUDIT=" + json.dumps(REPORT.get("wal33d", {}), ensure_ascii=False, sort_keys=True))
           PY
 
       - name: Upload CC0 snapshot and research audit
