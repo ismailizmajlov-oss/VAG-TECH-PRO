@@ -287,6 +287,9 @@ function patchResearchDbTests() {
 function patchAutoDiag2DbAndTests() {
   const moduleFile = path.join(root, "lib", "autodiag2-research-db.cjs");
   let moduleSource = readLf(moduleFile);
+  const databaseHashReferences = (moduleSource.match(/manifest\\.database_sha256/g) || []).length;
+  moduleSource = moduleSource.replaceAll("manifest.database_sha256", "(manifest.candidate_database_sha256 || manifest.database_sha256)");
+  if (databaseHashReferences > 0 && !moduleSource.includes("manifest.candidate_database_sha256")) throw new Error("AutoDiag2 candidate database SHA-256 compatibility field was not installed");
   moduleSource = replaceExactly(moduleSource,
     '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unclassified_source_label\'"),',
     '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unclassified_source_label\'"),\n    unverifiedEngineCodeFields: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unverified_source_code_field\'"),',
