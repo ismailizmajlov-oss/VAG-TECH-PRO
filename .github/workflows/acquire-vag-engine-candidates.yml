@@ -1,22 +1,6 @@
 name: Acquire VAG open engine candidates (research only)
 
 on:
-  pull_request:
-    paths:
-      - .github/workflows/acquire-vag-engine-candidates.yml
-      - data/source-manifests/vag-open-engine-candidates.lock.json
-      - scripts/import_vag_engine_candidates.py
-      - scripts/verify_vag_engine_candidate_import.py
-      - scripts/test-vag-engine-candidate-import.py
-  push:
-    branches:
-      - automation/windows-offline-data-foundation-run18
-    paths:
-      - .github/workflows/acquire-vag-engine-candidates.yml
-      - data/source-manifests/vag-open-engine-candidates.lock.json
-      - scripts/import_vag_engine_candidates.py
-      - scripts/verify_vag_engine_candidate_import.py
-      - scripts/test-vag-engine-candidate-import.py
   workflow_call:
   workflow_dispatch:
 
