@@ -1,8 +1,10 @@
-name: Validate VIN-free vehicle catalog schema
+name: Validate Windows VIN-free vehicle catalog and DTC evidence schema
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - automation/windows-offline-data-foundation-run18
     paths:
       - 'data/sql/vehicle-catalog.sql'
       - 'scripts/test-vehicle-catalog-schema.py'
@@ -17,14 +19,15 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate SQLite schema and evidence gates
+      - name: Validate SQLite vehicle taxonomy and evidence gates
         run: python scripts/test-vehicle-catalog-schema.py
-      - name: Validate DTC-to-vehicle applicability links
+      - name: Validate DTC namespace separation, publication rights and vehicle links
         run: python scripts/test-dtc-catalog-links.py
