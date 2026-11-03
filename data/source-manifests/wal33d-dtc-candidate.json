@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "source_id": "wal33d-dtc-database",
+  "publisher": "Wal33D / Waleed Judah",
+  "repository": "Wal33D/dtc-database",
+  "repository_url": "https://github.com/Wal33D/dtc-database",
+  "commit_sha": "04c43d72e7db7197658b6f72fe582c5076d9eee8",
+  "commit_date_utc": "2026-02-16T06:33:43Z",
+  "license_id": "MIT",
+  "license_url": "https://opensource.org/license/mit/",
+  "license_scope": "Repository-level MIT declaration in README/LICENSE; no separate data-specific license statement",
+  "rights_status": "repository_MIT_license_declared; upstream_record_provenance_not_independently_verified",
+  "rights_confirmed": false,
+  "commercial_use_allowed": true,
+  "display_allowed": true,
+  "offline_cache_allowed": true,
+  "redistribution_allowed": true,
+  "market_scope": "UNKNOWN",
+  "applicability_precision": "manufacturer_make_candidate",
+  "verification_status": "unverified_candidate",
+  "product_eligibility": "research_only_pending_record_provenance_and_vehicle_validation",
+  "exact_vehicle_fitment": false,
+  "model_generation_year_engine_transmission_ecu_pr_code_applicability": false,
+  "execution_allowed": false,
+  "source_files": [
+    "README.md",
+    "LICENSE",
+    "data/source-data/volkswagen_codes.txt",
+    "data/source-data/audi_codes.txt"
+  ],
+  "expected_counts": {
+    "Volkswagen": 528,
+    "Audi": 2,
+    "total": 530
+  },
+  "filter_policy": {
+    "include": "Manufacturer-controlled OBD-II ranges only: P1xxx, P30xx-P33xx, B1xxx-B2xxx, C1xxx-C2xxx, U1xxx-U2xxx",
+    "exclude": "Generic SAE/ISO ranges and malformed/unrecognized lines",
+    "generic_data_is_separate": "OBDex CC0 generic DTC pack"
+  },
+  "limitations": [
+    "The source repository declares MIT at repository level, but it does not provide a separate data-specific license statement.",
+    "No per-record upstream source URL or evidence document is supplied; upstream provenance and technical accuracy are not independently verified.",
+    "Make labels are source-file labels only; they do not establish model, generation, model year, market, engine, transmission, ECU or PR-code applicability.",
+    "The Audi source file contains generic-range codes; they are excluded from this manufacturer-specific pack.",
+    "No Skoda or SEAT source files are present in the pinned repository snapshot.",
+    "This pack contains code identifiers and descriptions only; it does not contain verified test plans, repair procedures, wiring diagrams, pinouts, torque values or adaptations."
+  ]
+}
