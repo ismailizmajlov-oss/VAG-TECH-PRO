@@ -30,3 +30,16 @@ Engine-to-variant, transmission-to-variant, and exact engine/transmission pair r
 VehiclesDB publishes a CC-BY 4.0 model/make taxonomy assembled from official registers in the countries listed in its source manifest. Its public README says the model-level dataset does not provide full technical configurations; it is suitable only as a candidate skeleton for makes/models where the source evidence covers the market. It does not supply VAG engine codes, gearbox codes, or exact engine/gearbox pairings. The required attribution must be preserved. See https://github.com/vehiclesdb/vehiclesdb and its `SOURCES.md` / `ATTRIBUTION.md`.
 
 No VehiclesDB rows are imported by this schema-only change. No Russian-market coverage is assumed from the presence of a global model name.
+
+## EAEU OTTS evidence (descriptor-only)
+
+The additive SQLite schema in `data/sql/otts-type-approval-evidence.sql` introduces:
+
+- `vehicle_catalog_source_rights`: explicit rights for commercial use, display, offline caching, bulk reuse and separately PDF redistribution, with license-text SHA-256, attribution, permission reference and review revision.
+- `eaeu_otts_evidence`: approval descriptors with issuing member state, approval number/revision, form revision, market scope, manufacturer/make/model/type, engine make/type, ECU marking, gearbox make/type and ratios, evidence locator, source revision, source-snapshot SHA-256 and normalized-record SHA-256. Cached PDFs have their own SHA-256.
+
+The evidence table has no VIN, factory engine-code or factory gearbox-code column and no foreign key to `engine_codes` or `transmission_codes`. Its `applicability_precision` is fixed to `type_approval_descriptor`; the form's engine, ECU and gearbox markings cannot be promoted to exact VAG fitment by changing a status. Exact links still require separate evidence in the engine, transmission and powertrain-pair tables.
+
+Insert requires explicit commercial-use, display, offline-cache and bulk-reuse rights. PDF caching separately requires PDF redistribution permission. Publication requires a known market and member state, complete source/form revision and hash provenance, an evidence locator and prior technical verification. Rights narrowing or revocation automatically demotes published records. Metadata-only publication remains possible when PDF redistribution is not granted, provided metadata reuse rights are approved.
+
+The EAEU form mapping follows Decision No. 232 as amended by Decision No. 52 effective 2026-06-14. These fields are type-approval descriptors, not guaranteed VAG factory codes or exact individual-vehicle fitment. The schema test uses synthetic fixtures only; no OTTS records are imported.
