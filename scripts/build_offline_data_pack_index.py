@@ -13,6 +13,7 @@ import os
 import re
 import shutil
 import sqlite3
+import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,6 +25,7 @@ ARTIFACTS = {
     "odbl": ("vag-engine-candidates-research-odbl", "vag-engine-candidates-odbl"),
     "obdb": ("obdb-vag-research-cc-by-sa", "obdb-vag-signals-cc-by-sa"),
     "wal33d": ("vag-oem-dtc-candidates-mit-research", "wal33d-vag-oem-dtc-candidates"),
+    "rdw": ("rdw-eu-type-approval-cc0", "rdw-eu-type-approval"),
 }
 
 MANUFACTURER_CODE_RE = re.compile(
@@ -524,6 +526,64 @@ def inspect_wal33d(root: Path) -> dict[str, Any]:
     }
 
 
+def inspect_rdw(root: Path) -> dict[str, Any]:
+    scripts_dir = Path(__file__).resolve().parent
+    if str(scripts_dir) not in sys.path:
+        sys.path.insert(0, str(scripts_dir))
+    from build_rdw_type_approval_pack import verify_pack
+
+    verification = verify_pack(root)
+    manifest_path = root / "manifest.json"
+    source_manifest_path = root / "source-manifest.json"
+    report_path = root / "report.json"
+    license_path = root / "LICENSES" / "CC0-1.0-legalcode.txt"
+    manifest = read_json(manifest_path)
+    if verification.get("status") != "verified" or manifest.get("status") != "verified_candidate_pack":
+        raise ValueError("RDW pack is not a verified VAG candidate pack")
+    counts = manifest.get("counts", {})
+    if int(counts.get("vag_type_approval_variants", 0)) <= 0:
+        raise ValueError("RDW pack has no matched VAG type-approval variants")
+    if manifest.get("rights_confirmed") is not True or manifest.get("dataset_license") != "CC0-1.0":
+        raise ValueError("RDW CC0 rights boundary failed")
+    if manifest.get("market_scope") != "NL_EU_TYPE_APPROVAL_REGISTER" or manifest.get("russian_eaeu_fitment") is not False:
+        raise ValueError("RDW market scope boundary failed")
+    if manifest.get("exact_vehicle_fitment") is not False or manifest.get("factory_engine_code_confirmed") is not False or manifest.get("factory_gearbox_code_confirmed") is not False:
+        raise ValueError("RDW exact-fitment/factory-code boundary failed")
+    if not license_path.is_file() or not source_manifest_path.is_file() or not report_path.is_file():
+        raise ValueError("RDW license/provenance artifacts are missing")
+    license_text = " ".join(license_path.read_text(encoding="utf-8-sig").split()).lower()
+    if "cc0 1.0 universal" not in license_text:
+        raise ValueError("RDW CC0 legal text is missing")
+    source_revisions = {item["dataset_id"]: item["source_revision"] for item in manifest.get("datasets", [])}
+    if len(source_revisions) != 5:
+        raise ValueError("RDW source revision inventory is incomplete")
+    return {
+        "pack_id": "rdw-eu-type-approval-cc0",
+        "artifact_name": ARTIFACTS["rdw"][0],
+        "relative_dir": relative(root.parent, root),
+        "database_path": relative(root.parent, root / manifest["database_file"]),
+        "database_sha256": manifest["database_sha256"],
+        "manifest_path": relative(root.parent, manifest_path),
+        "manifest_sha256": sha256_file(manifest_path),
+        "report_path": relative(root.parent, report_path),
+        "license": "CC0-1.0",
+        "license_files": [relative(root.parent, license_path)],
+        "attribution_files": [relative(root.parent, source_manifest_path), relative(root.parent, report_path)],
+        "status": "verified_research_only",
+        "product_eligibility": "nl_eu_type_approval_variant_candidate_only",
+        "market_scope": "NL_EU_TYPE_APPROVAL_REGISTER",
+        "applicability_precision": "type_approval_variant",
+        "counts": counts,
+        "source_revisions": source_revisions,
+        "warnings": [
+            "Netherlands RDW register / European type-approval records only; not Russian/EAEU OTTS and not a complete EU-wide corpus.",
+            "A type-approval variant is candidate evidence, not exact production-vehicle or VIN fitment.",
+            "RDW Motorcode is not confirmed as a VAG factory engine code; gearbox type is not confirmed as a VAG factory gearbox code.",
+            "No model-generation-year, ECU, PR-code, repair-procedure, wiring, pinout, torque or service-schedule applicability is established.",
+        ],
+    }
+
+
 def verify_dtc_namespace_separation(root: Path, index: dict[str, Any]) -> None:
     packs = {item["pack_id"]: item for item in index.get("packs", [])}
     generic_pack = packs.get("obdex-generic-cc0")
@@ -555,7 +615,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     index = read_json(index_path)
     if index.get("bundle_status") != "verified_offline_data_packs_not_installer":
         raise ValueError("Offline bundle status is invalid")
-    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 5:
+    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 6:
         raise ValueError("Offline bundle target/database count mismatch")
     if index.get("license_separation_policy", {}).get("merged_databases") is not False:
         raise ValueError("The separate licensed SQLite databases must not be merged")
@@ -646,6 +706,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                 "odbl": inspect_odbl,
                 "obdb": inspect_obdb,
                 "wal33d": inspect_wal33d,
+                "rdw": inspect_rdw,
             }[key]
             pack_descriptors.append(inspector(target_dir))
 
@@ -654,7 +715,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
             "bundle_id": "vag-tech-pro-windows-offline-data-packs",
             "bundle_status": "verified_offline_data_packs_not_installer",
             "target_platform": "windows-x64",
-            "database_count": 5,
+            "database_count": 6,
             "built_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_commit_sha": os.environ.get("GITHUB_SHA"),
             "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
@@ -670,6 +731,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                 "ODbL engine/generation candidate data is research-only pending upstream provenance review.",
                 "Community UDS 0x22 signal data is read-only reference material; command execution is disabled.",
                 "Wal33D Volkswagen/Audi manufacturer-controlled DTC records remain research-only; record provenance and exact vehicle fitment are not independently verified.",
+                "RDW type-approval records are Netherlands/EU candidates only and do not establish Russian/EAEU or exact vehicle fitment.",
                 "No pack in this bundle supplies verified VAG repair procedures, factory wiring diagrams, pinouts, torque values, adaptations or service schedules.",
             ],
             "packs": pack_descriptors,
