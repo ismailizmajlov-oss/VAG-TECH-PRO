@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-11-03",
+  "reviewed_at": "2026-11-04",
   "product_market": [
     "RU",
     "EAEU"
@@ -413,6 +413,72 @@
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion"
+    },
+    {
+      "source_id": "otts-bot",
+      "publisher": "OTTS.BOT",
+      "source_type": "commercial_otts_aggregator",
+      "source_url": "https://otts.bot/terms",
+      "terms_url": "https://otts.bot/terms",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "terms_revision": "2026-08-26",
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed_for_third_party_catalogue",
+        "offline_cache": "not_confirmed",
+        "automated_extraction": "prohibited_without_separate_written_permission",
+        "bulk_export": "not_confirmed",
+        "redistribution": "prohibited_under_published_user_agreement"
+      },
+      "status": "restricted_no_automated_collection_or_redistribution_without_written_permission",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "terms_review_only",
+      "notes": [
+        "The published user agreement prohibits automated collection/scraping and mass requests beyond ordinary user scenarios.",
+        "The agreement prohibits resale, publication or redistribution of obtained documents and database information as a proprietary information product.",
+        "The partner programme requires a contributor to warrant that they hold rights to grant the operator placement/use rights; it does not grant VAG TECH PRO any reuse rights.",
+        "No account, paid document access, automated request, download or import was used.",
+        "Require separate written permission covering bulk extraction, persistent offline caching, third-party display and redistribution before any product integration."
+      ]
+    },
+    {
+      "source_id": "otts-baza-ru",
+      "publisher": "АВТОРЕГИСТР / otts-baza.ru",
+      "source_type": "commercial_otts_database_search_and_paid_pdf",
+      "source_url": "https://otts-baza.ru/",
+      "terms_url": "https://otts-baza.ru/offer/",
+      "pricing_url": "https://otts-baza.ru/pricing/",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "terms_revision": "2026-10-04",
+      "license": {
+        "identifier": null,
+        "commercial_use": "internal_professional_use_only",
+        "display": "not_confirmed_for_third_party_catalogue",
+        "offline_cache": "not_confirmed",
+        "automated_extraction": "not_confirmed",
+        "bulk_export": "prohibited_without_separate_agreement",
+        "redistribution": "prohibited_without_separate_agreement",
+        "pdf_redistribution": "not_confirmed"
+      },
+      "status": "restricted_no_bulk_reuse_or_redistribution_without_written_permission",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "terms_review_only",
+      "notes": [
+        "Published access terms dated 2026-10-04 permit personal tasks and internal professional work.",
+        "The terms prohibit systematic extraction of a substantial part of the database for publication, resale or creation of a competing catalogue without a separate agreement.",
+        "Public search and paid PDF access are not a licence to reproduce the database in a third-party offline application.",
+        "No account, subscription, payment, automated request, download or import was used.",
+        "Require written permission for automated/bulk extraction, persistent SQLite caching, offline third-party display and redistribution."
+      ]
     }
   ]
 }
