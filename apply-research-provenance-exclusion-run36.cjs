@@ -303,11 +303,14 @@ function patchAutoDiag2DbAndTests() {
     "AutoDiag2 source manifest policy parity gate"
   );
   if (!moduleSource.includes("unverifiedEngineCodeFields: count(")) throw new Error("AutoDiag2 unverified engine-code field count query was not installed");
-  moduleSource = replaceExactly(moduleSource,
-    '      counts,\n    attributionText: packData.attributionText,',
-    '      counts,\n    excludedDtcCounts: packData.sourceManifest.dtc_policy_removal_counts || {},\n    attributionText: packData.attributionText,',
-    "AutoDiag2 summary excluded DTC counts"
-  );
+  if (!moduleSource.includes("excludedDtcCounts: packData.sourceManifest.dtc_policy_removal_counts")) {
+    const attributionAnchor = /(\n\s*)attributionText\s*:/;
+    if (!attributionAnchor.test(moduleSource)) {
+      const position = moduleSource.indexOf("attributionText");
+      throw new Error("AutoDiag2 attribution summary anchor is missing; context=" + moduleSource.slice(Math.max(0, position - 200), position + 260));
+    }
+    moduleSource = moduleSource.replace(attributionAnchor, "$1excludedDtcCounts: packData.sourceManifest.dtc_policy_removal_counts || {},$1attributionText:");
+  }
   writeLf(moduleFile, moduleSource);
 
   const testFile = path.join(root, "tests", "autodiag2-pack-integration.test.cjs");
