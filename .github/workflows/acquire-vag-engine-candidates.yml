@@ -1,50 +1,114 @@
 name: Acquire VAG open engine candidates (research only)
 
 on:
-  push:
-    branches: [main]
+  pull_request:
     paths:
-      - '.github/workflows/acquire-vag-engine-candidates.yml'
-      - 'scripts/import_vag_engine_candidates.py'
+      - .github/workflows/acquire-vag-engine-candidates.yml
+      - data/source-manifests/vag-open-engine-candidates.lock.json
+      - scripts/import_vag_engine_candidates.py
+      - scripts/verify_vag_engine_candidate_import.py
+      - scripts/test-vag-engine-candidate-import.py
+  push:
+    branches:
+      - automation/windows-offline-data-foundation-run18
+    paths:
+      - .github/workflows/acquire-vag-engine-candidates.yml
+      - data/source-manifests/vag-open-engine-candidates.lock.json
+      - scripts/import_vag_engine_candidates.py
+      - scripts/verify_vag_engine_candidate_import.py
+      - scripts/test-vag-engine-candidate-import.py
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: vag-tech-pro-odbl-candidates
+  cancel-in-progress: false
+
 jobs:
   acquire:
-    runs-on: ubuntu-latest
+    name: Acquire and verify ODbL candidate data (Windows x64)
+    runs-on: windows-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
+
       - name: Download pinned ODbL VAG candidate files
+        shell: pwsh
         run: |
-          set -euo pipefail
-          mkdir -p .research-input artifacts
-          REV="ee99776470a45214bf524cdfe22e5dbf4bd67f93"
-          for brand in audi volkswagen skoda seat cupra; do
-            curl --fail --location --retry 3 \
-              "https://raw.githubusercontent.com/gor3a/vehicle-makes-models/${REV}/data/json/${brand}.json" \
-              -o ".research-input/${brand}.json"
-          done
-          curl --fail --location --retry 3 \
-            "https://raw.githubusercontent.com/gor3a/vehicle-makes-models/${REV}/LICENSE-DATA" \
-            -o ".research-input/LICENSE-DATA"
-          sha256sum .research-input/*.json .research-input/LICENSE-DATA
+          $ErrorActionPreference = "Stop"
+          $ProgressPreference = "SilentlyContinue"
+          $lock = Get-Content "data/source-manifests/vag-open-engine-candidates.lock.json" -Raw | ConvertFrom-Json
+          $revision = $lock.revision
+          $inputDir = Join-Path $env:RUNNER_TEMP "vag-engine-candidate-input"
+          New-Item -ItemType Directory -Path $inputDir -Force | Out-Null
+
+          foreach ($brand in $lock.brands) {
+            $relativePath = $lock.source_files.$brand
+            $url = "https://raw.githubusercontent.com/gor3a/vehicle-makes-models/$revision/$relativePath"
+            $target = Join-Path $inputDir "$brand.json"
+            Invoke-WebRequest -Uri $url -OutFile $target -MaximumRedirection 5
+            if (-not (Test-Path $target -PathType Leaf) -or (Get-Item $target).Length -le 0) {
+              throw "Pinned ODbL source file is missing or empty: $relativePath"
+            }
+            $hash = (Get-FileHash -Path $target -Algorithm SHA256).Hash.ToLowerInvariant()
+            Write-Host "$relativePath bytes=$((Get-Item $target).Length) sha256=$hash"
+          }
+
+          $licenseUrl = "https://raw.githubusercontent.com/gor3a/vehicle-makes-models/$revision/$($lock.license_file)"
+          $licenseTarget = Join-Path $inputDir $lock.license_file
+          Invoke-WebRequest -Uri $licenseUrl -OutFile $licenseTarget -MaximumRedirection 5
+          if (-not (Test-Path $licenseTarget -PathType Leaf) -or (Get-Item $licenseTarget).Length -le 0) {
+            throw "Pinned ODbL license file is missing or empty"
+          }
+          $licenseHash = (Get-FileHash -Path $licenseTarget -Algorithm SHA256).Hash.ToLowerInvariant()
+          Write-Host "$($lock.license_file) bytes=$((Get-Item $licenseTarget).Length) sha256=$licenseHash"
+          "VAG_ENGINE_INPUT=$inputDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Import to isolated research SQLite
+        shell: pwsh
         run: |
-          python scripts/import_vag_engine_candidates.py \
-            --input-dir .research-input \
-            --output artifacts/vag-engine-candidates-research.sqlite
-      - name: Upload research-only database, manifest and license
+          New-Item -ItemType Directory -Path "artifacts" -Force | Out-Null
+          $args = @(
+            "--lock", "data/source-manifests/vag-open-engine-candidates.lock.json",
+            "--input-dir", $env:VAG_ENGINE_INPUT,
+            "--output", "artifacts/vag-engine-candidates-research.sqlite",
+            "--manifest", "artifacts/vag-engine-candidates-research.manifest.json"
+          )
+          python scripts/import_vag_engine_candidates.py @args
+
+      - name: Verify source hashes, ODbL share-alike, UNKNOWN market and candidate boundaries
+        shell: pwsh
+        run: |
+          $args = @(
+            "--db", "artifacts/vag-engine-candidates-research.sqlite",
+            "--manifest", "artifacts/vag-engine-candidates-research.manifest.json",
+            "--lock", "data/source-manifests/vag-open-engine-candidates.lock.json",
+            "--license", "artifacts/LICENSE-DATA"
+          )
+          python scripts/verify_vag_engine_candidate_import.py @args
+
+      - name: Run synthetic import and rejection tests
+        run: python scripts/test-vag-engine-candidate-import.py
+
+      - name: Compile Windows-targeted data scripts
+        run: |
+          python -m py_compile scripts/import_vag_engine_candidates.py
+          python -m py_compile scripts/verify_vag_engine_candidate_import.py
+          python -m py_compile scripts/test-vag-engine-candidate-import.py
+
+      - name: Upload isolated research-only database and license
         uses: actions/upload-artifact@v4
         with:
           name: vag-engine-candidates-research-odbl
           path: |
             artifacts/vag-engine-candidates-research.sqlite
             artifacts/vag-engine-candidates-research.manifest.json
-            .research-input/LICENSE-DATA
+            artifacts/LICENSE-DATA
           if-no-files-found: error
           retention-days: 30
