@@ -6,10 +6,14 @@ on:
       - .github/workflows/acquire-obdex-cc0.yml
       - data/source-manifests/obdex-generic-cc0.lock.json
   push:
-    branches: [main, automation/obdex-cc0-acquisition]
+    branches:
+      - main
+      - automation/obdex-cc0-acquisition
+      - automation/windows-offline-data-foundation-run18
     paths:
       - .github/workflows/acquire-obdex-cc0.yml
       - data/source-manifests/obdex-generic-cc0.lock.json
+  workflow_call:
   workflow_dispatch:
 
 permissions:
