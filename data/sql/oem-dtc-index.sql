@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS source_documents (
   issue_date TEXT,
   language TEXT,
   market_scope TEXT NOT NULL CHECK (
-    market_scope IN ('RU','EAEU','EU','NAR','CN','ROW','UNKNOWN')
+    market_scope IN ('RU','EAEU','EU','NAR','CN','ROW','MULTI','UNKNOWN')
   ),
   source_url TEXT,
   source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64),
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS ecu_identities (
 CREATE TABLE IF NOT EXISTS oem_dtc_index (
   oem_dtc_id INTEGER PRIMARY KEY,
   dtc_code TEXT NOT NULL CHECK (
-    length(dtc_code)=5 AND substr(dtc_code,1,1) IN ('P','B','C','U')
+    length(dtc_code)=5 AND dtc_code GLOB '[PBCU][0-9A-F][0-9A-F][0-9A-F][0-9A-F]'
   ),
   dtc_namespace TEXT NOT NULL CHECK (
     dtc_namespace IN ('generic_sae_iso','manufacturer_specific_candidate','manufacturer_specific_vag','manufacturer_specific_other','unknown')
@@ -222,7 +222,11 @@ END;
 CREATE TRIGGER IF NOT EXISTS validate_manufacturer_specific_vag_make
 BEFORE INSERT ON oem_dtc_index
 WHEN NEW.dtc_namespace = 'manufacturer_specific_vag'
- AND NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+ AND (
+   NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+   OR NEW.review_status = 'candidate'
+   OR NEW.applicability_level = 'manufacturer_make_candidate'
+ )
 BEGIN
   SELECT RAISE(ABORT, 'VAG-specific namespace requires a VAG manufacturer');
 END;
@@ -257,6 +261,64 @@ BEGIN
     )
     THEN RAISE(ABORT, 'candidate promotion blocked: source rights and provenance are not cleared')
   END;
+END;
+
+-- DTC range ownership is enforced at the namespace boundary.
+-- P1xxx, P30xx-P33xx, B1/B2, C1/C2 and U1/U2 are manufacturer-controlled ranges.
+CREATE TRIGGER IF NOT EXISTS prevent_generic_code_in_manufacturer_namespace_insert
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.dtc_namespace IN ('manufacturer_specific_candidate','manufacturer_specific_vag','manufacturer_specific_other')
+ AND NOT (
+   substr(NEW.dtc_code,1,2) = 'P1'
+   OR (substr(NEW.dtc_code,1,2) = 'P3' AND substr(NEW.dtc_code,3,1) IN ('0','1','2','3'))
+   OR substr(NEW.dtc_code,1,2) IN ('B1','B2','C1','C2','U1','U2')
+ )
+BEGIN
+  SELECT RAISE(ABORT, 'generic SAE/ISO code cannot enter a manufacturer-specific namespace');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prevent_generic_code_in_manufacturer_namespace_update
+BEFORE UPDATE ON oem_dtc_index
+WHEN NEW.dtc_namespace IN ('manufacturer_specific_candidate','manufacturer_specific_vag','manufacturer_specific_other')
+ AND NOT (
+   substr(NEW.dtc_code,1,2) = 'P1'
+   OR (substr(NEW.dtc_code,1,2) = 'P3' AND substr(NEW.dtc_code,3,1) IN ('0','1','2','3'))
+   OR substr(NEW.dtc_code,1,2) IN ('B1','B2','C1','C2','U1','U2')
+ )
+BEGIN
+  SELECT RAISE(ABORT, 'generic SAE/ISO code cannot enter a manufacturer-specific namespace');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prevent_manufacturer_code_in_generic_namespace_insert
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.dtc_namespace = 'generic_sae_iso'
+ AND (
+   substr(NEW.dtc_code,1,2) = 'P1'
+   OR (substr(NEW.dtc_code,1,2) = 'P3' AND substr(NEW.dtc_code,3,1) IN ('0','1','2','3'))
+   OR substr(NEW.dtc_code,1,2) IN ('B1','B2','C1','C2','U1','U2')
+ )
+BEGIN
+  SELECT RAISE(ABORT, 'manufacturer-controlled code cannot enter the generic SAE/ISO namespace');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prevent_manufacturer_code_in_generic_namespace_update
+BEFORE UPDATE ON oem_dtc_index
+WHEN NEW.dtc_namespace = 'generic_sae_iso'
+ AND (
+   substr(NEW.dtc_code,1,2) = 'P1'
+   OR (substr(NEW.dtc_code,1,2) = 'P3' AND substr(NEW.dtc_code,3,1) IN ('0','1','2','3'))
+   OR substr(NEW.dtc_code,1,2) IN ('B1','B2','C1','C2','U1','U2')
+ )
+BEGIN
+  SELECT RAISE(ABORT, 'manufacturer-controlled code cannot enter the generic SAE/ISO namespace');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prevent_generic_vag_mislabel_update
+BEFORE UPDATE ON oem_dtc_index
+WHEN NEW.dtc_namespace = 'generic_sae_iso'
+ AND NEW.manufacturer IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+BEGIN
+  SELECT RAISE(ABORT, 'generic SAE/ISO DTC cannot be labelled as manufacturer-specific VAG');
 END;
 
 -- Generic SAE/ISO definitions may not be silently labelled as manufacturer-specific VAG.
