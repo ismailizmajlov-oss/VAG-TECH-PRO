@@ -102,12 +102,16 @@ def parse_generation_candidates(text: str, default_reference: str) -> list[dict]
     return generations
 
 
-def validate_hex(value: object, label: str, exact_len: int | None = None) -> str:
+def validate_hex(value: object, label: str, exact_len: int | None = None, min_len: int | None = None, max_len: int | None = None) -> str:
     token = str(value or "").strip().upper()
     if not re.fullmatch(r"[0-9A-F]+", token):
         raise ValueError(f"Invalid hexadecimal {label}: {value}")
     if exact_len is not None and len(token) != exact_len:
         raise ValueError(f"Invalid length for {label}: {value}")
+    if min_len is not None and len(token) < min_len:
+        raise ValueError(f"Value too short for {label}: {value}")
+    if max_len is not None and len(token) > max_len:
+        raise ValueError(f"Value too long for {label}: {value}")
     return token
 
 
@@ -137,7 +141,7 @@ def validate_signalset(document: object, source_id: str) -> tuple[list, list, li
     for command_ordinal, command in enumerate(commands):
         if not isinstance(command, dict):
             raise ValueError(f"{source_id}: command must be an object")
-        header = validate_hex(command.get("hdr"), "command ECU header", 3)
+        header = validate_hex(command.get("hdr"), "command ECU header", min_len=3, max_len=4)
         command_map = command.get("cmd")
         if not isinstance(command_map, dict) or len(command_map) != 1:
             raise ValueError(f"{source_id}: each command must have exactly one service entry")
@@ -155,7 +159,7 @@ def validate_signalset(document: object, source_id: str) -> tuple[list, list, li
         normalized_commands.append({
             "ordinal": command_ordinal,
             "ecu_header": header,
-            "response_header": str(command.get("rax") or "").upper() or None,
+            "response_header": validate_hex(command.get("rax"), "response header", min_len=3, max_len=4) if command.get("rax") else None,
             "fcm1": 1 if command.get("fcm1") is True else 0,
             "debug_flag": 1 if command.get("dbg") is True else 0,
             "service_id": service_id,
@@ -391,7 +395,7 @@ def main() -> int:
             source_id = source["source_id"]
             attribution = f"OBDb community contributors; {source['repository']} at {source['commit_sha']}"
             connection.execute("""
-              INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+              INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 source_id, source["repository"], source["repository_url"], source["make"], source["model"],
                 source["commit_sha"], source["commit_date"], "CC-BY-SA-4.0",

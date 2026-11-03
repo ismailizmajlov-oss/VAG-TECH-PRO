@@ -71,7 +71,7 @@ def main() -> int:
         raise SystemExit("A command is marked executable")
     if db.execute("SELECT count(*) FROM source_registry WHERE license_id <> 'CC-BY-SA-4.0' OR share_alike_required <> 1 OR execution_allowed <> 0").fetchone()[0]:
         raise SystemExit("Source registry license/execution gate failed")
-    if db.execute("SELECT count(*) FROM command_candidates WHERE length(ecu_header) <> 3 OR service_id <> '22'").fetchone()[0]:
+    if db.execute("SELECT count(*) FROM command_candidates WHERE length(ecu_header) NOT BETWEEN 3 AND 4 OR ecu_header GLOB '*[^0-9A-F]*' OR service_id <> '22'").fetchone()[0]:
         raise SystemExit("Invalid ECU header or non-UDS-0x22 command found")
     db.close()
     result = {
