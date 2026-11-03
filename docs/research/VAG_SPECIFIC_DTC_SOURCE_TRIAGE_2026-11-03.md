@@ -8,12 +8,15 @@ Separate sources that can lawfully be cached in the Windows offline product from
 
 Repository: https://github.com/riz4d/OpenVAG
 
-- The repository declares MIT for the project.
+- The repository declares MIT for the project code and accompanying files.
 - Its README and `db/README.md` describe a SQLite database with 995 DTC code/title rows, 1,103 variants, 341 component identifiers and 712 DTC/component links.
-- The current Git tree contains the schema and API code, but no SQLite database snapshot or source-data directory.
-- The documented schema has no row-level source/license field. The repository's published DTC content cannot be independently reviewed or hashed from the current Git tree.
+- Pinned default-branch commit: `407d5e042cf46d55087ed4ae4e056605f2b04f08`; recursive Git tree: `d9101f504ef15d522c8f4f517cc96471bcac1619`.
+- The complete current tree contains `db/schema.sql`, `db/README.md` and API code, but zero `.sqlite`, `.db` or `.sqlite3` blobs and no seed-data directory.
+- GitHub releases: zero.
+- The documented schema has no row-level source/license field. The README's claimed row counts cannot be independently inspected or hashed from the pinned Git tree.
+- The MIT LICENSE does not establish the license or provenance of the described DTC database contents.
 
-Decision: **do not import**. The MIT project license is recorded, but there is no actual data snapshot or row-level provenance to verify. Re-evaluate only if the author publishes a data artifact with an explicit data license and source evidence.
+Decision: **do not import**. The MIT project license is recorded for code, but there is no actual data snapshot, row-level provenance or separately established database-data license to verify. Re-evaluate only if the author publishes a data artifact with an explicit data license and source evidence.
 
 ## AutoDiag2 database — excluded unless row-level source rights are established
 
