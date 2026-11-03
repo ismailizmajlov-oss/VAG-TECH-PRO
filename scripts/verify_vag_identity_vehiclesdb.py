@@ -60,7 +60,8 @@ def main() -> int:
     license_text = (root / "LICENSE.txt").read_text(encoding="utf-8-sig")
     if "Vehicle data by" not in attribution or "upstream notices below are UNCONDITIONAL" not in attribution:
         raise SystemExit("Required VehiclesDB and upstream attribution notices are absent")
-    if "Creative Commons Attribution 4.0 International" not in license_text or "even commercially" not in license_text.lower():
+    normalized_license = " ".join(license_text.split()).lower()
+    if "creative commons attribution 4.0 international" not in normalized_license or "even commercially" not in normalized_license:
         raise SystemExit("CC BY 4.0 commercial-use license text is absent")
 
     db_path = root / manifest["database_file"]
