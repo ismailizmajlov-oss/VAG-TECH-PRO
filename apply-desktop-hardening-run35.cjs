@@ -124,8 +124,8 @@ adminPage = replaceExactly(
 );
 adminPage = replaceExactly(
   adminPage,
-  "      active = false;\\n      loadSequence.current += 1;",
-  "      active = false;\\n      window.clearTimeout(initialLoadTimer);\\n      loadSequence.current += 1;",
+  "      active = false;\n      loadSequence.current += 1;",
+  "      active = false;\n      window.clearTimeout(initialLoadTimer);\n      loadSequence.current += 1;",
   "admin initial workspace timer cleanup"
 );
 writeLf(adminPagePath, adminPage);
@@ -141,7 +141,7 @@ localAdmin = replaceExactly(
     "    const refreshTimer = window.setTimeout(() => { if (active) void refresh(); }, 0);",
     "    return () => { active = false; window.clearTimeout(refreshTimer); };",
     "  }, [refresh]);"
-  ].join("\\n"),
+  ].join("\n"),
   "local admin deferred refresh effect"
 );
 writeLf(localAdminPath, localAdmin);
@@ -157,7 +157,7 @@ localWorkspace = replaceExactly(
     "    const summaryTimer = window.setTimeout(() => { if (active) void loadSummary(); }, 0);",
     "    return () => { active = false; window.clearTimeout(summaryTimer); };",
     "  }, [loadSummary]);"
-  ].join("\\n"),
+  ].join("\n"),
   "local workspace deferred summary effect"
 );
 writeLf(localWorkspacePath, localWorkspace);
@@ -166,7 +166,7 @@ const coreTestPath = path.join(root, "tests", "local-core-db.test.cjs");
 let coreTests = readLf(coreTestPath);
 coreTests = replaceExactly(
   coreTests,
-  "  const now = new Date().toISOString();\\n  seedSourceSnapshot(db,sourceId);",
+  "  const now = new Date().toISOString();\n  seedSourceSnapshot(db,sourceId);",
   "  seedSourceSnapshot(db,sourceId);",
   "unused test timestamp"
 );
@@ -188,8 +188,8 @@ const uiEffectTest = [
   '  assert.match(workspace, /window\\.clearTimeout\\(summaryTimer\\)/);',
   '});',
   ""
-].join("\\n");
-if (!uiTests.includes('async React loaders are deferred from effects')) uiTests += uiEffectTest;
+].join("\n");
+if (!uiTests.includes("async React loaders are deferred from effects")) uiTests += uiEffectTest;
 writeLf(uiTestPath, uiTests);
 
 for (const [file, source, required] of [
@@ -198,6 +198,6 @@ for (const [file, source, required] of [
   ["local workspace", localWorkspace, "window.clearTimeout(summaryTimer)"],
   ["UI regression tests", uiTests, "async React loaders are deferred from effects"]
 ]) {
-  if (!source.includes(required)) throw new Error(`React effect hardening verification failed: ${file}`);
+  if (!source.includes(required)) throw new Error("React effect hardening verification failed: " + file);
 }
 console.log("Desktop hardening and React effect-lint fixes applied and verified.");
