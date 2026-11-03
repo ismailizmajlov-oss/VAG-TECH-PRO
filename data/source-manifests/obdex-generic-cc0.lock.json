@@ -8,6 +8,13 @@
   "license_path": "LICENSE-DATA",
   "license_url": "https://github.com/foerbsnavi/OBDex/blob/09c8aac3d7cb3477a8d9345dfff90b82457b64d1/LICENSE-DATA",
   "attribution": "OBD-II code data: OBDex (https://github.com/foerbsnavi/OBDex), CC0-1.0",
+  "source_reference_policy": {
+    "allowed_schemes": ["https", "http"],
+    "validation": "syntax_only",
+    "external_fetch": false,
+    "rights_review": "not_inherited_from_cc0_dataset",
+    "display_policy": "external_reference_link_only"
+  },
   "scope": {
     "dtc_namespace": "generic_sae_iso_obd2",
     "standards": "SAE J2012 / ISO 15031-6 generic OBD-II",
