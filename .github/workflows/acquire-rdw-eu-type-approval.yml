@@ -2,15 +2,6 @@ name: Acquire RDW EU type-approval CC0 candidate pack
 
 on:
   workflow_call:
-  push:
-    branches:
-      - automation/rdw-eu-type-approval-research-run19
-    paths:
-      - data/source-manifests/rdw-eu-type-approval-cc0.json
-      - scripts/build_rdw_type_approval_pack.py
-      - scripts/test_rdw_type_approval_pack.py
-      - .github/workflows/acquire-rdw-eu-type-approval.yml
-  workflow_dispatch:
 
 permissions:
   contents: read
