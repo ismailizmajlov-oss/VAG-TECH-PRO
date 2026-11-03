@@ -548,6 +548,70 @@ def verify_pack(pack_dir: Path) -> dict[str, Any]:
             "exact_vehicle_fitment": False, "database_sha256": manifest["database_sha256"]}
 
 
+def soql_quote(value: str) -> str:
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def fetch_socrata_csv_pages(
+    dataset: dict[str, Any],
+    where_clause: str,
+    chunk_label: str,
+    output_dir: Path,
+    timeout: int,
+    max_bytes: int,
+    max_rows: int,
+    first_chunk_no: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    """Fetch only rows matching the reviewed VAG approval keys; retain each raw page."""
+    page_limit = 50000
+    offset = 0
+    page_no = 0
+    chunk_no = first_chunk_no
+    all_rows: list[dict[str, Any]] = []
+    file_items: list[dict[str, Any]] = []
+    file_records: list[dict[str, Any]] = []
+    while True:
+        params = {"$where": where_clause, "$limit": str(page_limit), "$offset": str(offset)}
+        query_text = urllib.parse.urlencode(params)
+        url = dataset["query_api_url_csv"] + "?" + query_text
+        raw = safe_fetch(url, max_bytes, timeout, "text/csv, application/csv;q=0.9")
+        rows, headers = read_csv_rows(raw, dataset["dataset_id"], page_limit + 1)
+        if len(rows) > page_limit:
+            raise ValueError(f"{dataset['dataset_id']}: Socrata page exceeded requested limit")
+        if not headers:
+            raise ValueError(f"{dataset['dataset_id']}: query response has no CSV header")
+        upstream = output_dir / "upstream"
+        upstream.mkdir(parents=True, exist_ok=True)
+        relative = f"upstream/{dataset['view_id']}-{chunk_label}-{page_no + 1:03d}.csv"
+        target = output_dir / relative
+        target.write_bytes(raw)
+        digest = sha256_bytes(raw)
+        item = {
+            "chunk_no": chunk_no,
+            "query_text": query_text,
+            "relative_path": relative,
+            "source_url": url,
+            "byte_size": len(raw),
+            "sha256": digest,
+        }
+        file_items.append(item)
+        file_records.append({"relative_path": relative, "byte_size": len(raw), "sha256": digest})
+        all_rows.extend(rows)
+        if len(all_rows) > max_rows:
+            raise ValueError(f"{dataset['dataset_id']}: VAG filtered row limit {max_rows} exceeded")
+        if len(rows) < page_limit:
+            break
+        offset += page_limit
+        page_no += 1
+        chunk_no += 1
+    return all_rows, file_items, file_records
+
+
+def chunks(values: list[str], size: int):
+    for index in range(0, len(values), size):
+        yield values[index:index + size]
+
+
 def build(manifest_path: Path, output_dir: Path) -> dict[str, Any]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
     if manifest.get("schema_version") != 1 or manifest.get("source_id") != "rdw-eu-type-approval-register":
@@ -566,7 +630,7 @@ def build(manifest_path: Path, output_dir: Path) -> dict[str, Any]:
         max_csv = int(manifest["limits"]["max_csv_bytes_per_dataset"])
         max_rows = int(manifest["limits"]["max_rows_per_dataset"])
         snapshots: dict[str, dict[str, Any]] = {}
-        rows_by_dataset: dict[str, list[dict[str, Any]]] = {}
+        rows_by_dataset: dict[str, list[dict[str, Any]]] = {item["dataset_id"]: [] for item in manifest["datasets"]}
         file_records: list[dict[str, Any]] = []
         now = datetime.now(timezone.utc).isoformat()
 
@@ -579,75 +643,151 @@ def build(manifest_path: Path, output_dir: Path) -> dict[str, Any]:
         license_path.write_bytes(license_raw)
         license_record = {
             "relative_path": license_path.relative_to(temp_dir).as_posix(),
-            "source_url": manifest["license_text_url"], "byte_size": len(license_raw),
+            "source_url": manifest["license_text_url"],
+            "byte_size": len(license_raw),
             "sha256": sha256_bytes(license_raw),
         }
         file_records.append({"relative_path": license_record["relative_path"], "byte_size": len(license_raw), "sha256": license_record["sha256"]})
 
         aliases = {normalize_make_code(k): v for k, v in manifest["brand_code_aliases"].items()}
+        # Capture metadata and dataset-specific CC0 evidence before any data query.
         for dataset in manifest["datasets"]:
             metadata_raw = safe_fetch(dataset["metadata_url"], max_meta, timeout, "application/json")
             metadata, revision = validate_view_metadata(metadata_raw, dataset)
-            csv_raw = safe_fetch(dataset["download_url"], max_csv, timeout, "text/csv, application/csv;q=0.9")
-            rows, headers = read_csv_rows(csv_raw, dataset["dataset_id"], max_rows)
-            required = dataset.get("required_fields", [])
-            header_norm = {normalize_field(x) for x in headers}
-            for required_field in required:
-                if normalize_field(required_field) not in header_norm:
-                    # Manufacturer trade names use the published codevariantgk alias.
-                    if not (required_field == "codevarianttgk" and "codevariantgk" in header_norm):
-                        raise ValueError(f"{dataset['dataset_id']}: required CSV column missing: {required_field}")
             page_raw = safe_fetch(dataset["dataset_page"], max_meta, timeout, "text/html,application/xhtml+xml")
             page_text = page_raw.decode("utf-8", errors="replace").casefold()
             if "cc-0" not in page_text and "cc0" not in page_text:
                 raise ValueError(f"{dataset['dataset_id']}: dataset page no longer declares CC0")
-            base = temp_dir / "upstream"
-            base.mkdir(exist_ok=True)
-            csv_path = base / f"{dataset['view_id']}.csv"
-            metadata_path = base / f"{dataset['view_id']}.metadata.json"
-            page_path = base / f"{dataset['view_id']}.license-evidence.html"
-            csv_path.write_bytes(csv_raw)
+            upstream = temp_dir / "upstream"
+            upstream.mkdir(exist_ok=True)
+            metadata_path = upstream / f"{dataset['view_id']}.metadata.json"
+            page_path = upstream / f"{dataset['view_id']}.license-evidence.html"
             metadata_path.write_bytes(metadata_raw)
             page_path.write_bytes(page_raw)
             snapshots[dataset["dataset_id"]] = {
                 "source_revision": revision,
                 "metadata_sha256": sha256_bytes(metadata_raw),
-                "csv_snapshot": {"relative_path": csv_path.relative_to(temp_dir).as_posix(), "source_url": dataset["download_url"], "byte_size": len(csv_raw), "sha256": sha256_bytes(csv_raw)},
-                "view_metadata": {"relative_path": metadata_path.relative_to(temp_dir).as_posix(), "source_url": dataset["metadata_url"], "byte_size": len(metadata_raw), "sha256": sha256_bytes(metadata_raw)},
-                "license_evidence_page": {"relative_path": page_path.relative_to(temp_dir).as_posix(), "source_url": dataset["dataset_page"], "byte_size": len(page_raw), "sha256": sha256_bytes(page_raw)},
+                "view_metadata": {
+                    "relative_path": metadata_path.relative_to(temp_dir).as_posix(),
+                    "source_url": dataset["metadata_url"], "byte_size": len(metadata_raw),
+                    "sha256": sha256_bytes(metadata_raw),
+                },
+                "license_evidence_page": {
+                    "relative_path": page_path.relative_to(temp_dir).as_posix(),
+                    "source_url": dataset["dataset_page"], "byte_size": len(page_raw),
+                    "sha256": sha256_bytes(page_raw),
+                },
+                "csv_snapshots": [],
             }
-            rows_by_dataset[dataset["dataset_id"]] = rows
-            for kind in ("csv_snapshot", "view_metadata", "license_evidence_page"):
+            for kind in ("view_metadata", "license_evidence_page"):
                 item = snapshots[dataset["dataset_id"]][kind]
                 file_records.append({"relative_path": item["relative_path"], "byte_size": item["byte_size"], "sha256": item["sha256"]})
 
-        snapshots["__license__"] = {"license_text": license_record}
-        make_dataset = "rdw-tgk-merk-uitvoering"
+        # Discover the exact RDW make codes first; do not download the multi-hundred-MB
+        # unfiltered basis table. The aggregate query is retained and hashed.
+        make_dataset = next(item for item in manifest["datasets"] if item["purpose"] == "approval_variant_make_anchor")
+        inventory_query = urllib.parse.urlencode({
+            "$select": "merkcoderdw,count(*) as row_count",
+            "$group": "merkcoderdw",
+            "$limit": "1000",
+        })
+        inventory_url = make_dataset["query_api_url_json"] + "?" + inventory_query
+        inventory_raw = safe_fetch(inventory_url, max_meta, timeout, "application/json")
+        try:
+            inventory_data = json.loads(inventory_raw.decode("utf-8-sig"))
+        except Exception as exc:
+            raise ValueError("RDW make-code discovery query did not return JSON") from exc
+        if not isinstance(inventory_data, list):
+            raise ValueError("RDW make-code discovery query returned an unexpected shape")
         inventory: Counter[str] = Counter()
-        for row in rows_by_dataset[make_dataset]:
+        for row in inventory_data:
             code = field(row, "merkcoderdw", "merkcodeRdw")
+            count_value = field(row, "row_count", "count")
             if code:
-                inventory[code] += 1
+                inventory[code] = int(count_value or 0)
+        if not inventory:
+            raise ValueError("RDW make-code discovery query returned no make-code inventory")
+        discovery_path = temp_dir / "upstream" / f"{make_dataset['view_id']}-make-code-inventory.json"
+        discovery_path.write_bytes(inventory_raw)
+        discovery_item = {
+            "relative_path": discovery_path.relative_to(temp_dir).as_posix(),
+            "source_url": inventory_url,
+            "query_text": inventory_query,
+            "byte_size": len(inventory_raw),
+            "sha256": sha256_bytes(inventory_raw),
+        }
+        snapshots[make_dataset["dataset_id"]]["discovery_query"] = discovery_item
+        file_records.append({"relative_path": discovery_item["relative_path"], "byte_size": discovery_item["byte_size"], "sha256": discovery_item["sha256"]})
 
+        vag_codes = [code for code in inventory if normalize_make_code(code) in aliases]
+        source_rows: dict[str, int] = {}
+        if vag_codes:
+            make_where = "merkcoderdw in (" + ",".join(soql_quote(code) for code in sorted(vag_codes)) + ")"
+            make_rows, make_files, records = fetch_socrata_csv_pages(
+                make_dataset, make_where, "vag-makes", temp_dir, timeout, max_csv, max_rows, 1
+            )
+            rows_by_dataset[make_dataset["dataset_id"]] = make_rows
+            snapshots[make_dataset["dataset_id"]]["csv_snapshots"].extend(make_files)
+            file_records.extend(records)
+            source_rows[make_dataset["dataset_id"]] = len(make_rows)
+
+            approval_numbers = sorted({
+                field(row, "typegoedkeuringsnummer")
+                for row in make_rows
+                if field(row, "typegoedkeuringsnummer")
+            })
+            if not approval_numbers:
+                raise ValueError("VAG make-code query returned rows but no type-approval numbers")
+            for dataset in manifest["datasets"]:
+                if dataset["dataset_id"] == make_dataset["dataset_id"]:
+                    continue
+                dataset_rows: list[dict[str, Any]] = []
+                chunk_no = 1
+                for approval_chunk_no, approval_chunk in enumerate(chunks(approval_numbers, 50), start=1):
+                    where = "typegoedkeuringsnummer in (" + ",".join(soql_quote(value) for value in approval_chunk) + ")"
+                    label = f"approval-{approval_chunk_no:04d}"
+                    rows, files, records = fetch_socrata_csv_pages(
+                        dataset, where, label, temp_dir, timeout, max_csv, max_rows, chunk_no
+                    )
+                    dataset_rows.extend(rows)
+                    snapshots[dataset["dataset_id"]]["csv_snapshots"].extend(files)
+                    file_records.extend(records)
+                    chunk_no += len(files)
+                rows_by_dataset[dataset["dataset_id"]] = dataset_rows
+                source_rows[dataset["dataset_id"]] = len(dataset_rows)
+        else:
+            source_rows = {item["dataset_id"]: 0 for item in manifest["datasets"]}
+
+        snapshots["__license__"] = {"license_text": license_record}
         db_path = temp_dir / "rdw-eu-type-approval-candidates.sqlite"
         counts = build_database(db_path, manifest, snapshots, rows_by_dataset, aliases, dict(inventory))
         database_hash = sha256_file(db_path)
+        matched_codes = {
+            code: make_name_for_code(code, aliases)
+            for code in sorted(inventory)
+            if make_name_for_code(code, aliases) is not None
+        }
+        unmapped_codes = {
+            code: count_value
+            for code, count_value in sorted(inventory.items())
+            if make_name_for_code(code, aliases) is None
+        }
         report = {
-            "status": "candidate_pack_built",
+            "status": "candidate_pack_built" if counts["vag_type_approval_variants"] else "discovery_only_no_vag_make_codes_matched",
             "source_id": manifest["source_id"],
             "publisher": manifest["publisher"],
             "dataset_license": manifest["dataset_license"],
             "market_scope": MARKET_SCOPE,
             "retrieved_at_utc": now,
-            "source_row_counts": {key: len(value) for key, value in rows_by_dataset.items()},
+            "source_row_counts": source_rows,
             "brand_code_inventory": dict(sorted(inventory.items())),
-            "matched_vag_brand_codes": {code: name for code, name in sorted(aliases.items()) if code in {normalize_make_code(x) for x in inventory}},
-            "unmapped_brand_codes": {code: count for code, count in sorted(inventory.items()) if normalize_make_code(code) not in aliases},
+            "matched_vag_brand_codes": matched_codes,
+            "unmapped_brand_codes": unmapped_codes,
             "counts": counts,
             "database_sha256": database_hash,
         }
-        report_path = temp_dir / "report.json"
-        report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        (temp_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        (temp_dir / "source-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         pack_manifest = {
             "schema_version": 1,
             "pack_id": "rdw-eu-type-approval-cc0",
@@ -675,34 +815,33 @@ def build(manifest_path: Path, output_dir: Path) -> dict[str, Any]:
             "model_generation_year_confirmed": False,
             "datasets": [
                 {"dataset_id": item["dataset_id"], "title": item["title"], "view_id": item["view_id"],
-                 "dataset_page": item["dataset_page"], "download_url": item["download_url"],
+                 "dataset_page": item["dataset_page"], "query_api_url_csv": item["query_api_url_csv"],
                  "source_revision": snapshots[item["dataset_id"]]["source_revision"],
                  "metadata_sha256": snapshots[item["dataset_id"]]["metadata_sha256"]}
                 for item in manifest["datasets"]
             ],
             "counts": counts,
+            "source_row_counts": source_rows,
             "brand_code_inventory": dict(sorted(inventory.items())),
-            "matched_vag_brand_codes": report["matched_vag_brand_codes"],
-            "unmapped_brand_codes": report["unmapped_brand_codes"],
+            "matched_vag_brand_codes": matched_codes,
+            "unmapped_brand_codes": unmapped_codes,
             "database_file": db_path.name,
             "database_sha256": database_hash,
+            "source_file_count": len(file_records),
             "files": file_records,
             "built_at_utc": now,
         }
-        (temp_dir / "source-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         (temp_dir / "manifest.json").write_text(json.dumps(pack_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         verification = verify_pack(temp_dir)
         if verification["status"] != "verified":
             raise RuntimeError("RDW pack verification failed")
         os.replace(temp_dir, output_dir)
-        return {**verification, "brand_code_inventory": report["brand_code_inventory"],
-                "matched_vag_brand_codes": report["matched_vag_brand_codes"],
-                "unmapped_brand_codes": report["unmapped_brand_codes"],
-                "source_row_counts": report["source_row_counts"]}
+        return {**verification, "brand_code_inventory": dict(sorted(inventory.items())),
+                "matched_vag_brand_codes": matched_codes, "unmapped_brand_codes": unmapped_codes,
+                "source_row_counts": source_rows}
     except Exception:
         shutil.rmtree(temp_dir, ignore_errors=True)
         raise
-
 
 def main() -> int:
     parser = argparse.ArgumentParser()
