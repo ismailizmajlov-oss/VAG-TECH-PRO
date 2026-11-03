@@ -96,13 +96,62 @@ jobs:
           run-id: 41622526550
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Resolve latest successful AutoDiag2 policy-gated pack
+        id: autodiag2-run
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/acquire-autodiag2-vag-candidates.yml/runs?branch=main&per_page=10"
+          $run = $null
+          for ($attempt = 1; $attempt -le 40; $attempt++) {
+            $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
+            $run = $response.workflow_runs |
+              Where-Object { $_.head_branch -eq "main" -and $_.event -in @("push", "workflow_dispatch") } |
+              Sort-Object { [datetime]$_.created_at } -Descending |
+              Select-Object -First 1
+            if ($null -eq $run) { throw "No AutoDiag2 candidate-pack workflow run was found on main." }
+            if ($run.status -eq "completed") { break }
+            Start-Sleep -Seconds 15
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") {
+            throw "Latest AutoDiag2 workflow did not complete successfully. Run=$($run.id), status=$($run.status), conclusion=$($run.conclusion)"
+          }
+          "run_id=$($run.id)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "head_sha=$($run.head_sha)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
       - name: Download AutoDiag2 community candidate pack
         uses: actions/download-artifact@v4
         with:
           name: autodiag2-vag-community-candidate-pack
           path: ${{ runner.temp }}/vag-tech-pro-autodiag2
-          run-id: 41715531679
+          run-id: ${{ steps.autodiag2-run.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify AutoDiag2 rights and attribution gates
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $manifestPath = Join-Path $env:RUNNER_TEMP "vag-tech-pro-autodiag2/manifest.json"
+          if (-not (Test-Path $manifestPath)) { throw "AutoDiag2 manifest is missing." }
+          $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+          if ($manifest.pack_id -ne "autodiag2-vag-community-v6") { throw "Unexpected AutoDiag2 pack ID." }
+          if ($manifest.dtc_policy_filtered -ne $true) { throw "AutoDiag2 DTC attribution filter has not run." }
+          if ($manifest.license.database -ne "ODbL-1.0" -or $manifest.license.contents -ne "DbCL-1.0") { throw "AutoDiag2 license metadata mismatch." }
+          if ($manifest.license.commercial_use_allowed -ne $true -or $manifest.license.display_allowed -ne $true -or $manifest.license.offline_cache_allowed -ne $true -or $manifest.license.redistribution_allowed -ne $true) { throw "AutoDiag2 reuse rights are incomplete." }
+          if ($manifest.license.separate_pack_required -ne $true) { throw "AutoDiag2 ODbL pack must remain separate." }
+          if ($manifest.market_scope -ne "UNKNOWN") { throw "AutoDiag2 market scope must remain UNKNOWN." }
+          if ($manifest.counts.make_level_dtc_candidates -ne 0 -or $manifest.counts.generic_dtc_rows_in_pack -ne 0) { throw "Unattributed or generic DTC records remain in the pack." }
+          if ($manifest.counts.vag_specific_dtc_verified_rows -ne 0 -or $manifest.counts.engine_codes_verified -ne 0 -or $manifest.counts.transmission_records -ne 0) { throw "Candidate pack incorrectly claims verified OEM data." }
+          if ($manifest.dtc_candidate_policy.diagnostic_execution_allowed -ne $false -or $manifest.dtc_candidate_policy.repair_advice_approved -ne $false) { throw "Unverified DTC candidates must not be actionable." }
+          if ($manifest.engine_code_policy.shape_heuristic_is_not_used_for_verification -ne $true) { throw "Engine-code shape heuristic is not explicitly disabled." }
+          Write-Output "AutoDiag2 rights, attribution, market and applicability gates passed."
 
       - name: Assemble and verify offline SQLite research packs
         shell: pwsh
