@@ -372,7 +372,7 @@ def inspect_obdb(root: Path) -> dict[str, Any]:
         raise ValueError("OBDb signal applicability boundary failed")
     db.close()
     license_files = sorted(
-        relative(root, root / source["license_copy"]) for source in manifest["sources"]
+        relative(root.parent, root / source["license_copy"]) for source in manifest["sources"]
     )
     return {
         "pack_id": "obdb-vag-signals-cc-by-sa",
