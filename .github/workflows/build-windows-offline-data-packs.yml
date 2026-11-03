@@ -12,6 +12,7 @@ on:
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - scripts/build_offline_data_pack_index.py
       - scripts/verify_offline_data_pack_index.py
+      - tests/test_offline_data_pack_rights.py
       - data/source-manifests/obdex-generic-cc0.lock.json
       - data/source-manifests/obdb-vag-signalsets.json
       - data/source-manifests/vag-open-engine-candidates.lock.json
@@ -25,6 +26,7 @@ on:
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - scripts/build_offline_data_pack_index.py
       - scripts/verify_offline_data_pack_index.py
+      - tests/test_offline_data_pack_rights.py
       - data/source-manifests/obdex-generic-cc0.lock.json
       - data/source-manifests/obdb-vag-signalsets.json
       - data/source-manifests/vag-open-engine-candidates.lock.json
@@ -94,8 +96,6 @@ jobs:
       - name: Enforce rights-filtered bundle registry
         run: python -m unittest discover -s tests -p "test_offline_data_pack_rights.py"
 
-      - name: Enforce rights-filtered bundle registry
-        run: python -m unittest discover -s tests -p "test_offline_data_pack_rights.py"
 
       - name: Assemble separate SQLite databases and license notices
         run: python scripts/build_offline_data_pack_index.py --input-dir dist/source-artifacts --output-dir dist/windows-offline-data-packs
