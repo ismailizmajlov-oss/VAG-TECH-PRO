@@ -1,0 +1,228 @@
+#!/usr/bin/env python3
+"""Regression tests for licensed, descriptor-only EAEU OTTS SQLite evidence."""
+from pathlib import Path
+import sqlite3
+import tempfile
+
+ROOT = Path(__file__).resolve().parents[1]
+BASE_SCHEMA = ROOT / "data/sql/vehicle-catalog.sql"
+OTTS_SCHEMA = ROOT / "data/sql/otts-type-approval-evidence.sql"
+NOW = "2026-11-03T00:00:00Z"
+H_LICENSE = "a" * 64
+H_SOURCE = "b" * 64
+H_RECORD = "c" * 64
+H_DOCUMENT = "d" * 64
+
+
+def expect_integrity_error(db, operation, label):
+    try:
+        operation()
+    except sqlite3.IntegrityError:
+        return
+    raise AssertionError(f"{label}: operation unexpectedly succeeded")
+
+
+def insert_source(db, source_id, license_status, redistribution_allowed):
+    db.execute(
+        """INSERT INTO vehicle_catalog_sources
+           (source_id,publisher,source_title,source_url,market_scope,
+            license_status,redistribution_allowed,reuse_scope,checked_at_utc)
+           VALUES (?,?,?,?,?,?,?,?,?)""",
+        (source_id, "Test fixture only", "Synthetic fixture",
+         "https://example.invalid/source", "RU", license_status,
+         redistribution_allowed, "synthetic test fixture only", NOW),
+    )
+
+
+def insert_rights(db, source_id, *, pdf_allowed=0, status="approved"):
+    db.execute(
+        """INSERT INTO vehicle_catalog_source_rights
+           (source_id,rights_status,license_name,license_url,license_text_sha256,
+            commercial_use_allowed,display_allowed,offline_cache_allowed,
+            bulk_reuse_allowed,pdf_redistribution_allowed,attribution_required,
+            attribution_text,rights_revision,reviewed_at_utc)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (source_id, status, "CC0-1.0 test fixture",
+         "https://creativecommons.org/publicdomain/zero/1.0/",
+         H_LICENSE, 1, 1, 1, 1, pdf_allowed, 0, None,
+         "synthetic-rights-fixture-v1", NOW),
+    )
+
+
+def evidence_values(source_id, key, *, market="EAEU", cached=0, precision="type_approval_descriptor"):
+    return (
+        source_id, "RU", "OTTS", "TEST-OTTS-001", key, "revision-A",
+        "EEC-Decision-232-amendment-52", NOW, "2030-01-01", "2035-01-01",
+        "Synthetic Manufacturer", "TEST-MAKE", "TEST MODEL", "TEST-TYPE",
+        "TEST-BASE", "Synthetic modification", "M1", "TEST-CLASS", "TEST-PLANT",
+        "Approval scope fixture; no VINs stored",
+        "TEST ENGINE MAKE/TYPE DESCRIPTOR", 1998, "TEST FUEL",
+        "TEST ECU MARKING", "TEST PUMP MARKING", "TEST INJECTOR MARKING",
+        "TEST TRANSMISSION DESCRIPTOR", "TEST CLUTCH DESCRIPTOR",
+        "TEST GEARBOX MAKE/TYPE DESCRIPTOR", 7, "[]",
+        "TEST TRANSFER CASE", "[]", "TEST FINAL DRIVE", "[]",
+        market, precision, "Annex 14 / page 1 / row 1",
+        "https://example.invalid/approval",
+        "https://example.invalid/approval.pdf" if cached else None,
+        cached, H_DOCUMENT if cached else None, "source-revision-fixture-v1",
+        H_SOURCE, H_RECORD, NOW,
+    )
+
+
+def insert_evidence(db, source_id, key, **kwargs):
+    db.execute(
+        """INSERT INTO eaeu_otts_evidence (
+             source_id,member_state,approval_document_type,approval_number,
+             source_record_key,approval_revision,form_revision,issue_date,
+             valid_from,valid_to,manufacturer,make,commercial_name,vehicle_type,
+             base_vehicle_or_chassis,modifications,vehicle_category,environmental_class,
+             assembly_plant,approval_scope_note,engine_make_type_descriptor,
+             engine_displacement_cc,engine_fuel_type,engine_control_unit_marking,
+             fuel_pump_marking,injector_marking,transmission_type_descriptor,
+             clutch_make_type_descriptor,gearbox_make_type_descriptor,gearbox_gear_count,
+             gearbox_ratios_json,transfer_case_type_descriptor,transfer_case_ratios_json,
+             final_drive_type_descriptor,final_drive_ratios_json,market_scope,
+             applicability_precision,evidence_locator,source_url,document_reference_url,
+             document_cached,document_sha256,source_revision,source_snapshot_sha256,
+             record_sha256,retrieved_at_utc
+           ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        evidence_values(source_id, key, **kwargs),
+    )
+
+
+def main():
+    with tempfile.TemporaryDirectory() as tmp:
+        db = sqlite3.connect(Path(tmp) / "catalog.sqlite")
+        db.execute("PRAGMA foreign_keys=ON")
+        db.executescript(BASE_SCHEMA.read_text(encoding="utf-8"))
+        db.executescript(OTTS_SCHEMA.read_text(encoding="utf-8"))
+
+        tables = {row[0] for row in db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        )}
+        assert {"vehicle_catalog_source_rights", "eaeu_otts_evidence"} <= tables
+
+        columns = {row[1].lower() for row in db.execute("PRAGMA table_info(eaeu_otts_evidence)")}
+        assert not any("vin" in name for name in columns), columns
+        assert "engine_code" not in columns and "transmission_code" not in columns, columns
+        foreign_targets = {row[2] for row in db.execute("PRAGMA foreign_key_list(eaeu_otts_evidence)")}
+        assert foreign_targets == {"vehicle_catalog_sources"}, foreign_targets
+
+        # A permission-required FGIS-like source cannot approve rights or accept OTTS rows.
+        insert_source(db, "blocked-source", "permission_required", 0)
+        expect_integrity_error(
+            db,
+            lambda: insert_rights(db, "blocked-source"),
+            "rights approval for permission-required source",
+        )
+        expect_integrity_error(
+            db,
+            lambda: insert_evidence(db, "blocked-source", "blocked-row"),
+            "OTTS import from permission-required source",
+        )
+
+        # Licensed metadata can be stored without PDF redistribution rights.
+        insert_source(db, "licensed-source", "open_license", 1)
+        insert_rights(db, "licensed-source", pdf_allowed=0)
+        insert_evidence(db, "licensed-source", "metadata-only-row")
+        evidence_id = db.execute(
+            "SELECT approval_evidence_id FROM eaeu_otts_evidence WHERE source_record_key='metadata-only-row'"
+        ).fetchone()[0]
+        db.execute("UPDATE eaeu_otts_evidence SET review_status='source_checked' WHERE approval_evidence_id=?", (evidence_id,))
+        db.execute("UPDATE eaeu_otts_evidence SET review_status='technically_verified' WHERE approval_evidence_id=?", (evidence_id,))
+        db.execute(
+            "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=? WHERE approval_evidence_id=?",
+            (NOW, evidence_id),
+        )
+
+        # A PDF cannot be cached when the license grants metadata rights only.
+        expect_integrity_error(
+            db,
+            lambda: insert_evidence(db, "licensed-source", "cached-pdf-without-rights", cached=1),
+            "PDF cache without PDF redistribution rights",
+        )
+        expect_integrity_error(
+            db,
+            lambda: db.execute(
+                "UPDATE eaeu_otts_evidence SET document_cached=1, document_reference_url=?, document_sha256=? WHERE approval_evidence_id=?",
+                ("https://example.invalid/approval.pdf", H_DOCUMENT, evidence_id),
+            ),
+            "PDF cache update without PDF redistribution rights",
+        )
+
+        # PDF rights can be granted separately; revoking them demotes records that cache PDFs.
+        db.execute(
+            "UPDATE vehicle_catalog_source_rights SET pdf_redistribution_allowed=1 WHERE source_id='licensed-source'"
+        )
+        db.execute(
+            "UPDATE eaeu_otts_evidence SET document_cached=1, document_reference_url=?, document_sha256=? WHERE approval_evidence_id=?",
+            ("https://example.invalid/approval.pdf", H_DOCUMENT, evidence_id),
+        )
+        db.execute(
+            "UPDATE vehicle_catalog_source_rights SET pdf_redistribution_allowed=0 WHERE source_id='licensed-source'"
+        )
+        status = db.execute(
+            "SELECT review_status FROM eaeu_otts_evidence WHERE approval_evidence_id=?",
+            (evidence_id,),
+        ).fetchone()[0]
+        assert status == "candidate", status
+
+        # Metadata-only publication remains possible when PDF rights are not granted.
+        db.execute(
+            "UPDATE eaeu_otts_evidence SET document_cached=0, document_reference_url=NULL, document_sha256=NULL WHERE approval_evidence_id=?",
+            (evidence_id,),
+        )
+        db.execute("UPDATE eaeu_otts_evidence SET review_status='source_checked' WHERE approval_evidence_id=?", (evidence_id,))
+        db.execute("UPDATE eaeu_otts_evidence SET review_status='technically_verified' WHERE approval_evidence_id=?", (evidence_id,))
+        db.execute(
+            "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=? WHERE approval_evidence_id=?",
+            (NOW, evidence_id),
+        )
+
+        # Rights narrowing/revocation removes publication eligibility.
+        db.execute(
+            "UPDATE vehicle_catalog_source_rights SET offline_cache_allowed=0, rights_status='restricted' WHERE source_id='licensed-source'"
+        )
+        status = db.execute(
+            "SELECT review_status FROM eaeu_otts_evidence WHERE approval_evidence_id=?",
+            (evidence_id,),
+        ).fetchone()[0]
+        assert status == "candidate", status
+        expect_integrity_error(
+            db,
+            lambda: db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='publication_approved' WHERE approval_evidence_id=?",
+                (evidence_id,),
+            ),
+            "publication after offline-cache rights revocation",
+        )
+
+        # Unknown market cannot be published, even when the source license is valid.
+        insert_source(db, "licensed-source-2", "open_license", 1)
+        insert_rights(db, "licensed-source-2", pdf_allowed=0)
+        insert_evidence(db, "licensed-source-2", "unknown-market-row", market="UNKNOWN")
+        unknown_id = db.execute(
+            "SELECT approval_evidence_id FROM eaeu_otts_evidence WHERE source_record_key='unknown-market-row'"
+        ).fetchone()[0]
+        db.execute("UPDATE eaeu_otts_evidence SET review_status='source_checked' WHERE approval_evidence_id=?", (unknown_id,))
+        db.execute("UPDATE eaeu_otts_evidence SET review_status='technically_verified' WHERE approval_evidence_id=?", (unknown_id,))
+        expect_integrity_error(
+            db,
+            lambda: db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='publication_approved' WHERE approval_evidence_id=?",
+                (unknown_id,),
+            ),
+            "publication with unknown market",
+        )
+
+        # OTTS descriptors never create or directly link factory engine/gearbox codes.
+        assert db.execute("SELECT count(*) FROM engine_codes").fetchone()[0] == 0
+        assert db.execute("SELECT count(*) FROM transmission_codes").fetchone()[0] == 0
+        assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+        assert db.execute("PRAGMA foreign_key_check").fetchall() == []
+        db.close()
+        print("PASS: OTTS descriptor-only schema, rights gate, PDF cache gate, revocation, market and provenance gates")
+
+
+if __name__ == "__main__":
+    main()
