@@ -1,14 +1,30 @@
-name: Validate VIN-free vehicle catalog schema
+name: Validate Windows VIN-free vehicle catalog and DTC evidence schema
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "automation/**"
     paths:
       - 'data/sql/vehicle-catalog.sql'
+      - 'data/sql/otts-type-approval-evidence.sql'
       - 'scripts/test-vehicle-catalog-schema.py'
+      - 'scripts/test-otts-type-approval-evidence.py'
       - 'data/sql/oem-dtc-index.sql'
       - 'data/sql/dtc-catalog-links.sql'
       - 'scripts/test-dtc-catalog-links.py'
+      - 'docs/research/VIN_FREE_VEHICLE_CATALOG_SCHEMA.md'
+      - '.github/workflows/validate-vehicle-catalog.yml'
+  pull_request:
+    paths:
+      - 'data/sql/vehicle-catalog.sql'
+      - 'data/sql/otts-type-approval-evidence.sql'
+      - 'scripts/test-vehicle-catalog-schema.py'
+      - 'scripts/test-otts-type-approval-evidence.py'
+      - 'data/sql/oem-dtc-index.sql'
+      - 'data/sql/dtc-catalog-links.sql'
+      - 'scripts/test-dtc-catalog-links.py'
+      - 'docs/research/VIN_FREE_VEHICLE_CATALOG_SCHEMA.md'
       - '.github/workflows/validate-vehicle-catalog.yml'
   workflow_dispatch:
 
@@ -17,14 +33,19 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    name: SQLite taxonomy, OTTS rights and DTC evidence gates (Windows x64)
+    runs-on: windows-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout pinned repository revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: '3.12'
-      - name: Validate SQLite schema and evidence gates
+      - name: Validate VIN-free vehicle taxonomy and evidence gates
         run: python scripts/test-vehicle-catalog-schema.py
-      - name: Validate DTC-to-vehicle applicability links
+      - name: Validate EAEU OTTS descriptor-only evidence and rights gates
+        run: python scripts/test-otts-type-approval-evidence.py
+      - name: Validate DTC namespace separation, publication rights and vehicle links
         run: python scripts/test-dtc-catalog-links.py
