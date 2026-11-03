@@ -188,7 +188,8 @@ class RDWBuilderTests(unittest.TestCase):
                     "manufacturer_trade_names": 1,
                 },
             )
-            with sqlite3.connect(db_path) as db:
+            db = sqlite3.connect(db_path)
+            try:
                 persisted = {
                     table: db.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
                     for table in (
@@ -201,6 +202,8 @@ class RDWBuilderTests(unittest.TestCase):
                 }
                 self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
                 self.assertEqual(db.execute("PRAGMA foreign_key_check").fetchall(), [])
+            finally:
+                db.close()
             self.assertEqual(persisted, counts)
 
 
