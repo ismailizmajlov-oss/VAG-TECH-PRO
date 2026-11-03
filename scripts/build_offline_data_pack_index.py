@@ -124,6 +124,10 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex generic-only boundary failed")
     if source_manifest.get("scope", {}).get("manufacturer_specific_codes_included") is not False:
         raise ValueError("OBDex source manifest claims manufacturer-specific DTCs")
+    if source_manifest.get("scope", {}).get("generic_code_ranges") != ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx","U3xxx"]:
+        raise ValueError("OBDex generic code ranges are not explicitly constrained")
+    if source_manifest.get("scope", {}).get("excluded_manufacturer_controlled_ranges") != ["P1xxx","P30xx-P33xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"]:
+        raise ValueError("OBDex manufacturer-controlled ranges are not explicitly excluded")
     if source_manifest.get("scope", {}).get("exact_vag_fitment") is not False:
         raise ValueError("OBDex source manifest claims exact VAG fitment")
     if source_manifest.get("scope", {}).get("repair_procedures_or_pinouts_included") is not False:
