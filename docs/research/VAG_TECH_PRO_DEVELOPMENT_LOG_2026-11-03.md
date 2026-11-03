@@ -78,6 +78,24 @@ No application-ready or repair-accuracy claim is made by this journal entry.
 
 ---
 
+## Latest available desktop workspace baseline — run 16
+
+The latest desktop source snapshot available in the Library is `VAG_TECH_PRO_run16_source.zip` (source root `vag_next`), with its companion `VAG_TECH_PRO_run16_verification.json` dated 2026-11-03 01:02:36 UTC. This is a separate workspace snapshot; it is not present in the canonical GitHub repository.
+
+Verified in that snapshot:
+
+- 228/228 automated tests passed: 7 VIN, 190 integrity, 24 OEM-provider and 7 desktop-runtime tests.
+- Main `vag-tech-pro.sqlite`: 212,992 bytes; `PRAGMA integrity_check=ok`; zero foreign-key violations; 134 research records; zero production vehicle, engine, transmission or ECU-hardware rows.
+- OTTS staging `vag-tech-pro-otts-staging.sqlite`: 139,264 bytes; integrity and foreign keys passed; 25 engine candidates, 19 transmission identifiers, 26 explicit engine/transmission evidence pairs, 31 ECU-hardware candidates, 4 vehicle-type candidates, 4 VIN patterns and 12 evidence records. Its status is `staging_only_rights_unverified`; zero documents were visually verified. These candidates must not be promoted.
+- Desktop runtime already exposes the research directory as a read-only extra resource through `node:sqlite`; the writable user database is under `%APPDATA%/VAG TECH PRO/data/vag-tech-pro.sqlite`. The local API smoke checks returned 200 for summary, DTC, vehicle and PID endpoints, and 400 for a deliberately short invalid query. Isolated TypeScript checks passed.
+- The snapshot declares that uninstall preserves user data, but this is not a substitute for the required Windows install/update/uninstall test matrix.
+
+The run16 package is not release-ready: `package-lock.json` and `node_modules` were absent; ESLint was unavailable; full typecheck and production build were not run; GitHub Actions was not connected to this desktop source; no NSIS `.exe` was built; clean installation, offline launch, upgrade-over-existing, backup/restore and uninstall-preserves-database were not tested on Windows.
+
+## Current read-only Supabase audit (not the Windows product database)
+
+A fresh read-only audit after run16 found 30 public tables, all with RLS enabled; 62 recorded migrations; zero Security Advisor findings; and 45 informational unused-index notices. Current row counts include 5 brands, 277 models (44 active), 784 generations (zero verified), zero engines, transmissions, ECU units or vehicle configurations, 9,943 DTC rows (all draft), 2 technical documents, and zero procedures, specifications, wiring diagrams or diagnostic tests. There are 26 source-registry entries. No cloud writes or migrations were performed. Supabase is not being treated as the first-delivery local SQLite store.
+
 ## Latest verified Windows data-pack build — run 24
 
 Verified against GitHub Actions run `41578436264`, branch `automation/rdw-eu-type-approval-research-run19`, commit `7f186c5ef9f392968c9b21fdecd69705a62d65db` (2026-11-03 04:29:41–04:36:59 UTC).
