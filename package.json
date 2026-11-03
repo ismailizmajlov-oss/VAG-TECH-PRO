@@ -1,0 +1,12 @@
+{
+  "name": "vag-tech-pro-data-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "test:authorized-fgis-otts": "node --test tests/authorized-fgis-otts-export.test.cjs"
+  }
+}
