@@ -179,6 +179,63 @@ BEGIN
     THEN RAISE(ABORT, 'OTTS review transition requires a timestamp and review note') END;
 END;
 
+-- Published source facts are immutable. Demote to candidate before correcting a record, then re-review it.
+CREATE TRIGGER IF NOT EXISTS prevent_published_otts_evidence_mutation
+BEFORE UPDATE ON eaeu_otts_evidence
+WHEN OLD.review_status='publication_approved'
+  AND NEW.review_status='publication_approved'
+  AND (
+    NEW.source_id IS NOT OLD.source_id
+    OR NEW.member_state IS NOT OLD.member_state
+    OR NEW.approval_document_type IS NOT OLD.approval_document_type
+    OR NEW.approval_number IS NOT OLD.approval_number
+    OR NEW.source_record_key IS NOT OLD.source_record_key
+    OR NEW.approval_revision IS NOT OLD.approval_revision
+    OR NEW.form_revision IS NOT OLD.form_revision
+    OR NEW.issue_date IS NOT OLD.issue_date
+    OR NEW.valid_from IS NOT OLD.valid_from
+    OR NEW.valid_to IS NOT OLD.valid_to
+    OR NEW.manufacturer IS NOT OLD.manufacturer
+    OR NEW.make IS NOT OLD.make
+    OR NEW.commercial_name IS NOT OLD.commercial_name
+    OR NEW.vehicle_type IS NOT OLD.vehicle_type
+    OR NEW.base_vehicle_or_chassis IS NOT OLD.base_vehicle_or_chassis
+    OR NEW.modifications IS NOT OLD.modifications
+    OR NEW.vehicle_category IS NOT OLD.vehicle_category
+    OR NEW.environmental_class IS NOT OLD.environmental_class
+    OR NEW.assembly_plant IS NOT OLD.assembly_plant
+    OR NEW.approval_scope_note IS NOT OLD.approval_scope_note
+    OR NEW.engine_make_type_descriptor IS NOT OLD.engine_make_type_descriptor
+    OR NEW.engine_displacement_cc IS NOT OLD.engine_displacement_cc
+    OR NEW.engine_fuel_type IS NOT OLD.engine_fuel_type
+    OR NEW.engine_control_unit_marking IS NOT OLD.engine_control_unit_marking
+    OR NEW.fuel_pump_marking IS NOT OLD.fuel_pump_marking
+    OR NEW.injector_marking IS NOT OLD.injector_marking
+    OR NEW.transmission_type_descriptor IS NOT OLD.transmission_type_descriptor
+    OR NEW.clutch_make_type_descriptor IS NOT OLD.clutch_make_type_descriptor
+    OR NEW.gearbox_make_type_descriptor IS NOT OLD.gearbox_make_type_descriptor
+    OR NEW.gearbox_gear_count IS NOT OLD.gearbox_gear_count
+    OR NEW.gearbox_ratios_json IS NOT OLD.gearbox_ratios_json
+    OR NEW.transfer_case_type_descriptor IS NOT OLD.transfer_case_type_descriptor
+    OR NEW.transfer_case_ratios_json IS NOT OLD.transfer_case_ratios_json
+    OR NEW.final_drive_type_descriptor IS NOT OLD.final_drive_type_descriptor
+    OR NEW.final_drive_ratios_json IS NOT OLD.final_drive_ratios_json
+    OR NEW.market_scope IS NOT OLD.market_scope
+    OR NEW.applicability_precision IS NOT OLD.applicability_precision
+    OR NEW.evidence_locator IS NOT OLD.evidence_locator
+    OR NEW.source_url IS NOT OLD.source_url
+    OR NEW.document_reference_url IS NOT OLD.document_reference_url
+    OR NEW.document_cached IS NOT OLD.document_cached
+    OR NEW.document_sha256 IS NOT OLD.document_sha256
+    OR NEW.source_revision IS NOT OLD.source_revision
+    OR NEW.source_snapshot_sha256 IS NOT OLD.source_snapshot_sha256
+    OR NEW.record_sha256 IS NOT OLD.record_sha256
+    OR NEW.retrieved_at_utc IS NOT OLD.retrieved_at_utc
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'published OTTS evidence is immutable; demote to candidate before editing');
+END;
+
 -- Data may enter this table only when all rights required for offline product use are approved.
 CREATE TRIGGER IF NOT EXISTS prevent_unlicensed_otts_evidence_insert
 BEFORE INSERT ON eaeu_otts_evidence
