@@ -26,34 +26,97 @@ function excludeUnverifiedPack() {
   if (pack.license !== "ODbL-1.0" || pack.commercial_use_allowed !== true || pack.display_allowed !== true || pack.cache_allowed !== true || pack.redistribution_allowed !== true) {
     throw new Error("VAG identity source license metadata is incomplete; refusing to create the exclusion record");
   }
+
   const packDir = path.join(researchRoot, "vag-identity-odbl");
-  fs.mkdirSync(packDir, { recursive: true });
   const licensePath = path.join(researchRoot, pack.license_file);
   const sourceManifestPath = path.join(researchRoot, pack.source_manifest_file);
   const dbPath = path.join(researchRoot, pack.database);
-  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  const originalSourceManifest = readJson(sourceManifestPath);
+  const quarantineRoot = path.join(root, "data", "research-quarantine", "vag-identity-odbl");
+  fs.mkdirSync(quarantineRoot, { recursive: true });
+
+  function preserveOriginal(sourcePath, targetName, expectedSha, label) {
+    if (!fs.existsSync(sourcePath)) throw new Error(label + " is missing: " + sourcePath);
+    const actualSha = sha256File(sourcePath);
+    if (expectedSha && actualSha !== expectedSha) {
+      throw new Error(label + " SHA-256 mismatch before quarantine: expected " + expectedSha + ", got " + actualSha);
+    }
+    const targetPath = path.join(quarantineRoot, targetName);
+    if (fs.existsSync(targetPath)) {
+      if (sha256File(targetPath) !== actualSha) {
+        throw new Error("Quarantine collision with different content: " + targetPath);
+      }
+    } else {
+      fs.copyFileSync(sourcePath, targetPath);
+    }
+    if (sha256File(targetPath) !== actualSha) throw new Error(label + " quarantine copy failed SHA-256 verification");
+    fs.unlinkSync(sourcePath);
+    return { path: path.relative(root, targetPath).replace(/\\/g, "/"), sha256: actualSha };
+  }
+
+  const originalDatabase = preserveOriginal(dbPath, "original-vag-engine-candidates-research.sqlite", pack.database_sha256, "VAG identity database");
+  const originalLicense = preserveOriginal(licensePath, "original-LICENSE-DATA", pack.license_file_sha256, "VAG identity license");
+  const originalManifest = preserveOriginal(sourceManifestPath, "original-source-manifest.json", pack.source_manifest_sha256, "VAG identity source manifest");
+
+  const quarantineManifest = {
+    schema_version: 1,
+    pack_id: pack.id,
+    status: "quarantined_not_shipped_or_searchable",
+    reason: "Upstream provenance from autoevolution.com has not been independently verified. Original files are retained outside the installer payload for audit and future rights review.",
+    upstream_repository: pack.source_url,
+    upstream_revision: pack.upstream_revision,
+    upstream_source_claim: "autoevolution.com",
+    license: pack.license,
+    license_url: "https://opendatacommons.org/licenses/odbl/1-0/",
+    snapshot_generated_at_utc: pack.snapshot_generated_at_utc,
+    original_files: {
+      database: originalDatabase,
+      license: originalLicense,
+      source_manifest: originalManifest
+    },
+    source_file_sha256: pack.source_file_sha256,
+    original_counts: pack.counts,
+    product_records_included: false,
+    installer_path: null
+  };
+  const quarantineManifestPath = path.join(quarantineRoot, "quarantine-manifest.json");
+  if (fs.existsSync(quarantineManifestPath)) {
+    const existing = readJson(quarantineManifestPath);
+    if (existing.original_files?.database?.sha256 !== originalDatabase.sha256 ||
+        existing.original_files?.license?.sha256 !== originalLicense.sha256 ||
+        existing.original_files?.source_manifest?.sha256 !== originalManifest.sha256) {
+      throw new Error("Existing VAG identity quarantine manifest does not match the pinned original files");
+    }
+  } else {
+    writeJson(quarantineManifestPath, quarantineManifest);
+  }
+  const quarantineManifestSha = sha256File(quarantineManifestPath);
+
   const licenseNotice = [
-    "AUDIT NOTICE ONLY — this is not a copy of the full license text.",
-    "The upstream repository declares its database under the Open Database License (ODbL) v1.0.",
-    "Share-Alike obligations apply to lawful redistribution of the upstream database and derivative databases.",
-    "No source records from this dataset are included in this product build.",
-    "Official license text: https://opendatacommons.org/licenses/odbl/1-0/",
-    "Upstream provenance from autoevolution.com has not been independently verified; this pack is excluded."
+    "AUDIT NOTICE ONLY — this file is not the ODbL license text.",
+    "The upstream repository declares the database under Open Database License (ODbL) v1.0.",
+    "No VAG identity source records are shipped, displayed, cached, or searchable in this product build.",
+    "The original database, original license file, and original source manifest are preserved outside the installer payload under data/research-quarantine/vag-identity-odbl/.",
+    "The source's upstream provenance from autoevolution.com has not been independently verified.",
+    "Official ODbL text: https://opendatacommons.org/licenses/odbl/1-0/",
+    "Reconsider inclusion only after independent provenance and redistribution-rights review."
   ].join("\n") + "\n";
   fs.writeFileSync(licensePath, licenseNotice, "utf8");
-  const licenseSha = sha256File(licensePath);
+  const noticeSha = sha256File(licensePath);
+
   const sourceManifest = {
     schema_version: 1,
     dataset: pack.dataset,
     publisher: pack.publisher,
     repository_url: pack.source_url,
     revision: pack.upstream_revision,
-    upstream_source: "autoevolution.com",
+    upstream_source_claim: "autoevolution.com",
     license: pack.license,
     license_url: "https://opendatacommons.org/licenses/odbl/1-0/",
-    license_sha256: licenseSha,
+    license_sha256: noticeSha,
+    original_license_sha256: originalLicense.sha256,
     license_file: "LICENSE-DATA",
-    attribution: "Audit metadata only. Upstream candidate data is not included because its provenance has not been independently verified.",
+    attribution: "Audit metadata only. No source records are included in the product.",
     share_alike: "ODbL-1.0",
     share_alike_required: true,
     rights_status: pack.license_status,
@@ -68,53 +131,70 @@ function excludeUnverifiedPack() {
     exact_vehicle_fitment: false,
     production_import: false,
     status: "excluded_pending_upstream_provenance_review",
-    product_records_included: false
+    product_records_included: false,
+    quarantine_manifest_sha256: quarantineManifestSha,
+    quarantine_path: "data/research-quarantine/vag-identity-odbl/"
   };
   writeJson(sourceManifestPath, sourceManifest);
+
   const db = new DatabaseSync(dbPath);
   try {
     db.exec([
-      "PRAGMA foreign_keys=OFF;",
-      "CREATE TABLE IF NOT EXISTS research_sources (source_id TEXT PRIMARY KEY, source_sha256 TEXT, license TEXT, market_scope TEXT);",
-      "CREATE TABLE IF NOT EXISTS make_candidates (id INTEGER PRIMARY KEY, make_name TEXT);",
-      "CREATE TABLE IF NOT EXISTS model_candidates (id INTEGER PRIMARY KEY, make_name TEXT, model_name TEXT, market_scope TEXT, review_status TEXT);",
-      "CREATE TABLE IF NOT EXISTS generation_candidates (id INTEGER PRIMARY KEY, model_id INTEGER, generation_name TEXT, market_scope TEXT, review_status TEXT);",
-      "CREATE TABLE IF NOT EXISTS engine_variant_candidates (id INTEGER PRIMARY KEY, generation_id INTEGER, engine_label TEXT, engine_code TEXT, gearbox_code TEXT, code_extraction_status TEXT, market_scope TEXT, review_status TEXT);",
-      "CREATE TABLE IF NOT EXISTS source_file_artifacts (relative_path TEXT PRIMARY KEY, sha256 TEXT);",
-      "BEGIN IMMEDIATE;",
-      "DELETE FROM research_sources;",
-      "DELETE FROM make_candidates;",
-      "DELETE FROM model_candidates;",
-      "DELETE FROM generation_candidates;",
-      "DELETE FROM engine_variant_candidates;",
-      "DELETE FROM source_file_artifacts;",
-      "COMMIT;",
+      "PRAGMA foreign_keys=ON;",
+      "PRAGMA journal_mode=DELETE;",
+      "CREATE TABLE research_sources (source_id TEXT PRIMARY KEY, source_sha256 TEXT, license TEXT, market_scope TEXT);",
+      "CREATE TABLE make_candidates (id INTEGER PRIMARY KEY, make_name TEXT);",
+      "CREATE TABLE model_candidates (id INTEGER PRIMARY KEY, make_name TEXT, model_name TEXT, market_scope TEXT, review_status TEXT);",
+      "CREATE TABLE generation_candidates (id INTEGER PRIMARY KEY, model_id INTEGER, generation_name TEXT, market_scope TEXT, review_status TEXT);",
+      "CREATE TABLE engine_variant_candidates (id INTEGER PRIMARY KEY, generation_id INTEGER, engine_label TEXT, engine_code TEXT, gearbox_code TEXT, code_extraction_status TEXT, market_scope TEXT, review_status TEXT);",
+      "CREATE TABLE source_file_artifacts (relative_path TEXT PRIMARY KEY, sha256 TEXT);",
+      "PRAGMA user_version=1;",
       "VACUUM;"
     ].join("\n"));
     const integrity = db.prepare("PRAGMA integrity_check").get().integrity_check;
     if (integrity !== "ok") throw new Error("Excluded VAG identity placeholder integrity failed: " + integrity);
     for (const table of ["research_sources", "make_candidates", "model_candidates", "generation_candidates", "engine_variant_candidates", "source_file_artifacts"]) {
       const count = Number(db.prepare("SELECT count(*) AS n FROM " + table).get().n);
-      if (count !== 0) throw new Error("Excluded VAG identity table " + table + " still contains " + count + " rows");
+      if (count !== 0) throw new Error("Excluded VAG identity placeholder contains records in " + table);
     }
-  } finally { db.close(); }
+  } finally {
+    db.close();
+  }
+
   pack.included_in_product = false;
   pack.product_eligibility = "not_eligible_pending_upstream_provenance_review";
   pack.review_status = "excluded_pending_upstream_provenance_review";
   pack.display_status = "excluded";
-  pack.exclusion_reason = "Upstream provenance from autoevolution.com has not been independently verified; no source records are included in the product.";
+  pack.exclusion_reason = "Upstream provenance from autoevolution.com has not been independently verified; original files are quarantined outside the installer.";
   pack.product_counts = { makes: 0, models: 0, generations: 0, engineVariants: 0, sourceRows: 0 };
-  pack.license_file_sha256 = licenseSha;
+  pack.license_file_sha256 = noticeSha;
   pack.source_manifest_sha256 = sha256File(sourceManifestPath);
   pack.database_sha256 = sha256File(dbPath);
+  pack.quarantine = {
+    path: "data/research-quarantine/vag-identity-odbl/",
+    manifest_sha256: quarantineManifestSha,
+    original_database_sha256: originalDatabase.sha256,
+    original_license_sha256: originalLicense.sha256,
+    original_source_manifest_sha256: originalManifest.sha256
+  };
   writeJson(manifestPath, manifest);
-  const readmePath = path.join(researchRoot, "README.md");
-  const readme = fs.readFileSync(readmePath, "utf8");
-  const notice = "\n\nVAG identity ODbL source exclusion: the upstream provenance from autoevolution.com has not been independently verified. The installer contains only an empty SQLite schema placeholder and audit metadata; no model, generation or engine records from this source are distributed or searchable. Re-enable only after independent provenance and redistribution-rights review.\n";
-  if (!readme.includes("VAG identity ODbL source exclusion:")) fs.appendFileSync(readmePath, notice, "utf8");
-  return { databaseSha256: pack.database_sha256, productCounts: pack.product_counts };
-}
 
+  let readme = fs.readFileSync(path.join(researchRoot, "README.md"), "utf8");
+  readme = readme.replace(
+    "| VAG identity taxonomy | ODbL-1.0 | 5 makes; 233 models; 823 generation labels; 5,081 descriptive engine variants | Market UNKNOWN; no factory engine/gearbox codes or exact pairings; share-alike applies |",
+    "| VAG identity taxonomy | ODbL-1.0 | Excluded from installer; 0 records searchable | Upstream provenance is not independently verified; original snapshot quarantined outside installer |"
+  );
+  const notice = "\n\nVAG identity ODbL exclusion: original database, license and source manifest are retained in data/research-quarantine/vag-identity-odbl/ for audit, but this directory is not part of electron-builder extraResources. The installer contains only an empty schema placeholder and exclusion metadata; no candidate rows are searchable.\n";
+  if (!readme.includes("VAG identity ODbL exclusion:")) readme += notice;
+  fs.writeFileSync(path.join(researchRoot, "README.md"), readme, "utf8");
+
+  return {
+    status: "excluded_unverified_vag_identity_source",
+    databaseSha256: pack.database_sha256,
+    productCounts: pack.product_counts,
+    quarantineManifestSha256: quarantineManifestSha
+  };
+}
 function patchLocalResearchDb() {
   const file = path.join(root, "lib", "local-research-db.cjs");
   let source = readLf(file);
@@ -204,8 +284,8 @@ function patchAutoDiag2DbAndTests() {
   const moduleFile = path.join(root, "lib", "autodiag2-research-db.cjs");
   let moduleSource = readLf(moduleFile);
   moduleSource = replaceExactly(moduleSource,
-    '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\\'unclassified_source_label\\'"),',
-    '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\\'unclassified_source_label\\'"),\n    unverifiedEngineCodeFields: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\\'unverified_source_code_field\\'"),',
+    '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unclassified_source_label\'"),',
+    '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unclassified_source_label\'"),\n    unverifiedEngineCodeFields: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unverified_source_code_field\'"),',
     "AutoDiag2 unverified engine source-code count"
   );
   moduleSource = replaceExactly(moduleSource,
