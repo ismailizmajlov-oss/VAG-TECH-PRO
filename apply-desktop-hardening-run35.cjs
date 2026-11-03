@@ -258,12 +258,9 @@ if (!homePage.includes("type DbRow = Record<string, any>;") ||
 // Hash verification must not trust size/mtime caches: same-size tampering with restored timestamps is possible.
 const researchDbPath = path.join(root, "lib", "local-research-db.cjs");
 let researchDb = readLf(researchDbPath);
-researchDb = replaceExactly(
-  researchDb,
-  "const VERIFIED_PACKS = new Set();\n\n",
-  "",
-  "remove research hash cache declaration"
-);
+const cacheDeclarationPattern = /^const VERIFIED_PACKS = new Set\(\);\r?\n\r?\n/m;
+if (!cacheDeclarationPattern.test(researchDb)) throw new Error("Research hash cache declaration not found");
+researchDb = researchDb.replace(cacheDeclarationPattern, "");
 const databaseCachePattern = /  const cacheKey = \x60\$\{realFile\}\|\$\{stat\.size\}\|\$\{stat\.mtimeMs\}\|\$\{pack\.database_sha256\}\x60;\n  if \(VERIFIED_PACKS\.has\(cacheKey\)\) return pack;\n/;
 const provenanceCachePattern = /  const cacheKey = \x60\$\{realFile\}\|\$\{stat\.size\}\|\$\{stat\.mtimeMs\}\|\$\{expected\}\x60;\n  if \(VERIFIED_PACKS\.has\(cacheKey\)\) return pack;\n/;
 if (!databaseCachePattern.test(researchDb) || !provenanceCachePattern.test(researchDb)) {
