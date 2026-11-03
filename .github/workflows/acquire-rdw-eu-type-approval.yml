@@ -1,6 +1,7 @@
 name: Acquire RDW EU type-approval CC0 candidate pack
 
 on:
+  workflow_call:
   push:
     branches:
       - automation/rdw-eu-type-approval-research-run19
