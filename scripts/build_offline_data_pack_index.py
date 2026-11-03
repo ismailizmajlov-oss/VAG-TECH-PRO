@@ -637,6 +637,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         "vag-engine-candidates-odbl",
         "obdb-vag-signals-cc-by-sa",
         "wal33d-vag-oem-dtc-mit",
+        "rdw-eu-type-approval-cc0",
     }
     packs = {pack["pack_id"]: pack for pack in index.get("packs", [])}
     if set(packs) != expected_ids:
@@ -647,6 +648,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         "vag-engine-candidates-odbl": inspect_odbl,
         "obdb-vag-signals-cc-by-sa": inspect_obdb,
         "wal33d-vag-oem-dtc-mit": inspect_wal33d,
+        "rdw-eu-type-approval-cc0": inspect_rdw,
     }
     for pack_id, pack in packs.items():
         db_path = root / pack["database_path"]
