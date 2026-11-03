@@ -471,12 +471,23 @@
       ],
       "rights": {
         "repository_code_license": "MIT",
-        "database_data_license": "not_separately_established_in_review",
+        "database_data_license": "not_separately_established",
         "redistribution_allowed": false,
         "permission_status": "not_cleared"
       },
-      "project_decision": "quarantine_only; do not import definitions, repair solutions or mappings into production until data provenance and database rights are independently established",
-      "evidence_status": "README_LICENSE_AND_DB_SCHEMA_REVIEWED_2026-11-03"
+      "project_decision": "quarantine_only; current pinned tree contains no database snapshot or source data; do not import claimed README row counts or infer a data license from the MIT code license",
+      "evidence_status": "README_LICENSE_SCHEMA_AND_PINNED_TREE_REVIEWED_2026-11-03",
+      "upstream_commit": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+      "upstream_git_tree_sha256": "d9101f504ef15d522c8f4f517cc96471bcac1619",
+      "snapshot_check": {
+        "checked_at": "2026-11-03",
+        "default_branch": "main",
+        "database_blob_count": 0,
+        "release_count": 0,
+        "schema_document_present": true,
+        "data_snapshot_available": false,
+        "note": "The README and db/README.md describe a 2.1 MB SQLite database, but the pinned current Git tree contains only app code, db/schema.sql and documentation; no .sqlite/.db file, seed data directory or release asset is present."
+      }
     }
   ],
   "minimum_fitment_evidence_fields": [
