@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "source_id": "volkswagen-okapi-product-catalog",
+  "publisher": "Volkswagen AG",
+  "source_type": "official_oem_product_configuration_api",
+  "reviewed_at": "2026-11-03",
+  "source_urls": {
+    "api_base": "https://api.productdata.volkswagenag.com/v3",
+    "developer_portal": "https://okapi-ddp.productdata.volkswagenag.com/dev-portal/",
+    "terms": "https://productdata.volkswagenag.com/condition-of-use.html",
+    "caching_guide": "https://productdata.volkswagenag.com/data-update.html",
+    "tutorial": "https://productdata.volkswagenag.com/tutorial.html"
+  },
+  "access": {
+    "requires_company_access_request": true,
+    "requires_volkswagen_approval": true,
+    "approval_is_discretionary": true,
+    "requires_client_id_and_secret": true,
+    "credentials_created": false,
+    "account_created": false,
+    "owner_action_required": true
+  },
+  "contract": {
+    "terms_revision": "published_terms_copyright_2019_reviewed_2026-11-03",
+    "data_owner": "Volkswagen AG",
+    "grant": "non_exclusive_non_transferable_revocable_non_sublicensable",
+    "registered_application_required": true,
+    "display_and_evaluate_in_registered_application": "permitted_subject_to_terms",
+    "disclose_product_data_to_third_parties": "permitted_subject_to_terms",
+    "commercial_use": "conditional_on_approved_company_access_and_registered_application",
+    "credentials_must_remain_confidential": true,
+    "current_price": "currently_free_subject_to_change",
+    "paid_terms_accepted": false,
+    "offline_cache": "documented_by_official_caching_guide_for_the_users_application",
+    "offline_distribution_of_cached_database": "not_confirmed_requires_written_clarification",
+    "sublicensing": "not_permitted"
+  },
+  "data_scope": {
+    "documented_endpoints": [
+      "countries",
+      "brands_by_country",
+      "models_by_brand_and_country",
+      "vehicle_types_by_model_and_country",
+      "options_by_vehicle_type_and_country",
+      "configuration_buildability",
+      "WLTP_information",
+      "configuration_order_information"
+    ],
+    "market_scope": "unknown_until_authenticated_country_list_is_observed",
+    "russia_market_confirmed": false,
+    "eaeu_market_confirmed": false,
+    "vehicle_identity_precision": "market_specific_model_year_vehicle_type_and_configuration_candidates",
+    "engine_code_precision": "not_established_by_public_api_schema",
+    "gearbox_code_precision": "not_established_by_public_api_schema",
+    "ecu_precision": "not_provided",
+    "pr_code_precision": "not_established",
+    "repair_documentation": "not_provided",
+    "oem_parts_catalog": "not_provided",
+    "repair_fitment_claim": false,
+    "non_binding_customer_information": true
+  },
+  "cache_contract": {
+    "etag_documented": true,
+    "conditional_get_if_none_match_documented": true,
+    "catalog_last_update_headers_documented": true,
+    "cache_refresh_signal": "etag_and_x_catalog_content_lastupdate",
+    "product_data_is_dynamic": true,
+    "offline_cache_in_registered_application_documented": true,
+    "redistributable_offline_pack_rights_confirmed": false
+  },
+  "ingestion": {
+    "status": "permission_required",
+    "data_ingested": false,
+    "source_snapshot_sha256": null,
+    "hash_status": "not_downloaded_no_credentials",
+    "production_fitment_rows_added": 0,
+    "publishable": false
+  },
+  "prohibitions_and_limits": [
+    "Do not create an account, request credentials, or contact Volkswagen on the owner's behalf.",
+    "Do not store credentials in source control, manifests, logs, or the SQLite database.",
+    "Do not ship a cached product-data database until Volkswagen confirms offline distribution and retention rights for this exact application.",
+    "Do not infer engine codes, gearbox codes, ECU, PR-code, repair procedure, or OEM parts applicability from a model/type label.",
+    "Do not treat a buildable new-car configuration as proof of an existing vehicle's factory configuration.",
+    "Do not claim RU or EAEU coverage until the authenticated country list explicitly confirms it."
+  ]
+}
