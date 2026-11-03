@@ -1,0 +1,67 @@
+name: Acquire licensed MechanicDB Audi/VW DTC candidates
+
+on:
+  push:
+    branches:
+      - automation/mechanicdb-vag-dtc-pack-run23
+    paths:
+      - .github/workflows/acquire-mechanicdb-vag-dtc-sample.yml
+      - scripts/build_mechanicdb_vag_dtc_pack.py
+      - scripts/verify_mechanicdb_vag_dtc_pack.py
+      - tests/test_mechanicdb_vag_dtc_pack_policy.py
+      - data/source-manifests/mechanicdb-vag-dtc-sample.json
+      - docs/research/MECHANICDB_VAG_DTC_SAMPLE_REVIEW_2026-11-03.md
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mechanicdb-vag-dtc-candidates-run23
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Acquire ODbL free sample and build isolated candidate SQLite (Windows x64)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned VAG TECH PRO source manifest
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Verify project source policy
+        run: python -m unittest discover -s tests -p "test_mechanicdb_vag_dtc_pack_policy.py"
+
+      - name: Fetch the immutable public upstream revision
+        shell: pwsh
+        run: |
+          git clone --no-checkout https://github.com/MechanicDB/MechanicDB-public.git upstream/MechanicDB-public
+          git -C upstream/MechanicDB-public fetch --depth 1 origin c788dfe9ed1517d4cd0be27f5aacb4776abf4864
+          git -C upstream/MechanicDB-public checkout --detach c788dfe9ed1517d4cd0be27f5aacb4776abf4864
+
+      - name: Compile the pack builder and verifier
+        run: |
+          python -m py_compile scripts/build_mechanicdb_vag_dtc_pack.py
+          python -m py_compile scripts/verify_mechanicdb_vag_dtc_pack.py
+
+      - name: Build the separate ODbL Audi/VW candidate-only SQLite pack
+        run: >
+          python scripts/build_mechanicdb_vag_dtc_pack.py
+          --upstream-dir upstream/MechanicDB-public
+          --manifest data/source-manifests/mechanicdb-vag-dtc-sample.json
+          --output dist/mechanicdb-vag-dtc-candidates
+
+      - name: Independently verify file hashes, source-line hashes, SQLite integrity and candidate boundaries
+        run: python scripts/verify_mechanicdb_vag_dtc_pack.py --root dist/mechanicdb-vag-dtc-candidates
+
+      - name: Upload the verified candidate-only pack
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mechanicdb-audi-vw-dtc-candidates-odbl-research
+          path: dist/mechanicdb-vag-dtc-candidates/
+          if-no-files-found: error
+          retention-days: 30
