@@ -399,7 +399,7 @@ def build(manifest_path: Path, output_dir: Path) -> dict[str, Any]:
         os.replace(temp_dir, output_dir)
         return {
             "status": "validated_research_only",
-            "database": output_dir / db_path.name,
+            "database": str(output_dir / db_path.name),
             "database_sha256": manifest["database_sha256"],
             "counts": counts,
             "excluded_counts": excluded,
