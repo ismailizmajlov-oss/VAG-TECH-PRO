@@ -248,6 +248,7 @@ function patchVerifier() {
     '    assert(vag.included_in_product === false && vag.product_eligibility === "not_eligible_pending_upstream_provenance_review" && vagCounts.excluded && vagCounts.sources === 0 && vagCounts.makes === 0 && vagCounts.models === 0 && vagCounts.generations === 0 && vagCounts.engineVariants === 0 && !vagCounts.codedCandidates && !vagCounts.nonCandidateRows, `VAG identity pack must remain excluded until upstream provenance is independently verified: ${JSON.stringify(vagCounts)}`);',
     "VAG identity provenance exclusion verifier gate"
   );
+  source = replaceExactly(source, "  assert(/Open Database License\\s*\\(ODbL\\)\\s*v1\\.0/i.test(vagLicense) && /Share-Alike/i.test(vagLicense), \"VAG identity ODbL share-alike terms are not explicit\");", "  if (vag.included_in_product === false) {\n    assert(/AUDIT NOTICE ONLY/i.test(vagLicense) && /No VAG identity source records are shipped/i.test(vagLicense), \"VAG identity exclusion notice is not explicit\");\n    const originalVagLicense = fs.readFileSync(path.join(__dirname, \"../data/research-quarantine/vag-identity-odbl/original-LICENSE-DATA\"), \"utf8\");\n    assert(/Open Database License\\s*\\(ODbL\\)\\s*v1\\.0/i.test(originalVagLicense) && /Share-Alike/i.test(originalVagLicense), \"Original VAG identity ODbL share-alike terms were not preserved in quarantine\");\n  } else {\n    assert(/Open Database License\\s*\\(ODbL\\)\\s*v1\\.0/i.test(vagLicense) && /Share-Alike/i.test(vagLicense), \"VAG identity ODbL share-alike terms are not explicit\");\n  }", "VAG identity audit license gate");
   writeLf(file, source);
 }
 
@@ -284,12 +285,157 @@ function patchResearchDbTests() {
   writeLf(packsTest, packSource);
 }
 
+function refreshAutoDiag2ManifestPins() {
+  const provenance = readJson(path.join(root, "autodiag2-build-provenance.json"));
+  const runId = Number(provenance.workflow_run_id);
+  const artifactId = Number(provenance.artifact_id);
+  const artifactSha = String(provenance.artifact_sha256 || "").toLowerCase();
+  const commit = String(provenance.commit || "").toLowerCase();
+  if (!Number.isSafeInteger(runId) || runId <= 0 || !Number.isSafeInteger(artifactId) || artifactId <= 0 ||
+      !/^[a-f0-9]{64}$/.test(artifactSha) || !/^[a-f0-9]{40}$/.test(commit)) {
+    throw new Error("AutoDiag2 build provenance is incomplete or malformed");
+  }
+
+  const researchRoot = path.join(root, "data", "research");
+  const packDir = path.join(researchRoot, "autodiag2-vag-community-candidates-odbl");
+  const sourceManifestPath = path.join(packDir, "manifest.json");
+  const databasePath = path.join(packDir, "autodiag2-vag-community.sqlite");
+  const licensePath = path.join(packDir, "upstream", "LICENSE");
+  const readmePath = path.join(packDir, "upstream", "README.md");
+  const attributionPath = path.join(packDir, "ATTRIBUTION.txt");
+  const sumsPath = path.join(packDir, "SHA256SUMS.txt");
+  const sourceManifest = readJson(sourceManifestPath);
+
+  const databaseSha = sha256File(databasePath);
+  const licenseSha = sha256File(licensePath);
+  const readmeSha = sha256File(readmePath);
+  const sourceManifestSha = sha256File(sourceManifestPath);
+  const attributionSha = sha256File(attributionPath);
+  const sumsSha = sha256File(sumsPath);
+  if (databaseSha !== sourceManifest.candidate_database_sha256) throw new Error("AutoDiag2 candidate database SHA-256 does not match its source manifest");
+  if (licenseSha !== sourceManifest.license?.license_file_sha256) throw new Error("AutoDiag2 license SHA-256 does not match its source manifest");
+  if (readmeSha !== sourceManifest.license?.readme_sha256) throw new Error("AutoDiag2 README SHA-256 does not match its source manifest");
+  if (sourceManifest.dtc_policy_filtered !== true ||
+      sourceManifest.counts?.make_level_dtc_candidates !== 0 ||
+      sourceManifest.counts?.generic_dtc_rows_in_pack !== 0 ||
+      sourceManifest.counts?.vag_specific_dtc_verified_rows !== 0 ||
+      sourceManifest.counts?.engine_codes_verified !== 0 ||
+      sourceManifest.counts?.transmission_records !== 0) {
+    throw new Error("AutoDiag2 candidate-only data policy gate failed before root manifest assembly");
+  }
+
+  const sums = fs.readFileSync(sumsPath, "utf8");
+  const sumsEntries = [
+    ["autodiag2-vag-community.sqlite", databaseSha],
+    ["manifest.json", sourceManifestSha],
+    ["ATTRIBUTION.txt", attributionSha],
+    ["upstream/LICENSE", licenseSha],
+    ["upstream/README.md", readmeSha]
+  ];
+  for (const [relative, hash] of sumsEntries) {
+    if (!sums.split(/\r?\n/).some((line) => line.trim() === hash + "  " + relative)) {
+      throw new Error("AutoDiag2 SHA256SUMS is missing or mismatches " + relative);
+    }
+  }
+
+  const rootManifestPath = path.join(researchRoot, "manifest.json");
+  const rootManifest = readJson(rootManifestPath);
+  let pack = rootManifest.packs.find((item) => item.id === "autodiag2-vag-community-candidates-odbl");
+  if (!pack) {
+    pack = { id: "autodiag2-vag-community-candidates-odbl" };
+    rootManifest.packs.push(pack);
+  }
+  Object.assign(pack, {
+    id: "autodiag2-vag-community-candidates-odbl",
+    kind: "community_vehicle_engine_ecu_dtc_candidates",
+    dataset: sourceManifest.pack_id,
+    publisher: sourceManifest.publisher,
+    source: sourceManifest.publisher,
+    source_url: sourceManifest.repository_url,
+    source_asset_url: sourceManifest.source_asset_url,
+    source_asset_sha256: sourceManifest.source_asset_sha256,
+    source_asset_size_bytes: sourceManifest.source_asset_size_bytes,
+    upstream_revision: sourceManifest.source_revision,
+    source_revision: sourceManifest.source_revision,
+    release_tag: sourceManifest.release_tag,
+    snapshot_generated_at_utc: sourceManifest.created_at_utc,
+    database: "autodiag2-vag-community-candidates-odbl/autodiag2-vag-community.sqlite",
+    database_sha256: databaseSha,
+    license_file: "autodiag2-vag-community-candidates-odbl/upstream/LICENSE",
+    license_file_sha256: licenseSha,
+    readme_file: "autodiag2-vag-community-candidates-odbl/upstream/README.md",
+    readme_sha256: readmeSha,
+    source_manifest_file: "autodiag2-vag-community-candidates-odbl/manifest.json",
+    source_manifest_sha256: sourceManifestSha,
+    attribution_file: "autodiag2-vag-community-candidates-odbl/ATTRIBUTION.txt",
+    attribution_sha256: attributionSha,
+    sha256sums_file: "autodiag2-vag-community-candidates-odbl/SHA256SUMS.txt",
+    sha256sums_sha256: sumsSha,
+    license: sourceManifest.license.database,
+    contents_license: sourceManifest.license.contents,
+    share_alike_required: sourceManifest.license.share_alike_required,
+    attribution_required: sourceManifest.license.attribution_required,
+    commercial_use_allowed: sourceManifest.license.commercial_use_allowed,
+    display_allowed: sourceManifest.license.display_allowed,
+    cache_allowed: sourceManifest.license.offline_cache_allowed,
+    redistribution_allowed: sourceManifest.license.redistribution_allowed,
+    separate_pack_required: sourceManifest.license.separate_pack_required,
+    market_scope: sourceManifest.market_scope,
+    review_status: sourceManifest.verification_status,
+    display_status: sourceManifest.display_status,
+    applicability_precision: sourceManifest.applicability_precision,
+    fitment_claim: sourceManifest.exact_vehicle_fitment,
+    ecu_fitment_claim: sourceManifest.ecu_fitment,
+    exact_fitment_claim: sourceManifest.exact_vehicle_fitment,
+    diagnostic_execution_allowed: sourceManifest.diagnostic_execution_allowed,
+    repair_advice_approved: sourceManifest.repair_advice_approved,
+    generic_dtc_mixed: sourceManifest.generic_dtc_mixed_into_vag_pack,
+    transmission_data_present: sourceManifest.transmission_data_present,
+    source_artifact_zip_sha256: artifactSha,
+    source_workflow: { workflow_run_id: runId, artifact_id: artifactId, commit: commit },
+    counts: sourceManifest.counts,
+    excluded_dtc_counts: sourceManifest.dtc_policy_removal_counts,
+    dtc_policy_filtered: sourceManifest.dtc_policy_filtered,
+    dtc_policy_removal_counts: sourceManifest.dtc_policy_removal_counts,
+    dtc_candidate_policy: sourceManifest.dtc_candidate_policy,
+    engine_code_policy: sourceManifest.engine_code_policy,
+    transmission_policy: sourceManifest.transmission_policy,
+    vag_source_make_names: sourceManifest.vag_source_make_names,
+    make_alias_note: sourceManifest.make_alias_note,
+    upstream_sqlite_integrity: sourceManifest.upstream_sqlite_integrity,
+    candidate_sqlite_integrity: sourceManifest.candidate_sqlite_integrity,
+    candidate_sqlite_foreign_key_issues: sourceManifest.candidate_sqlite_foreign_key_issues,
+    included_in_product: true,
+    candidate_only: true,
+    product_eligibility: "candidate_only_not_oem_verified",
+    status: "research_only"
+  });
+  writeJson(rootManifestPath, rootManifest);
+
+  const moduleFile = path.join(root, "lib", "autodiag2-research-db.cjs");
+  let moduleSource = readLf(moduleFile);
+  const artifactPattern = /const EXPECTED_ARTIFACT_SHA256 = "[^"]+";/;
+  const workflowPattern = /const EXPECTED_WORKFLOW = Object\.freeze\(\{ run_id: \d+, artifact_id: \d+, commit: "[^"]+" \}\);/;
+  if (!artifactPattern.test(moduleSource) || !workflowPattern.test(moduleSource)) {
+    throw new Error("AutoDiag2 runtime pin constants could not be located");
+  }
+  moduleSource = moduleSource.replace(artifactPattern, 'const EXPECTED_ARTIFACT_SHA256 = "' + artifactSha + '";');
+  moduleSource = moduleSource.replace(workflowPattern, "const EXPECTED_WORKFLOW = Object.freeze({ run_id: " + runId + ", artifact_id: " + artifactId + ', commit: "' + commit + '" });');
+  writeLf(moduleFile, moduleSource);
+
+  return {
+    status: "autodiag2_manifest_pinned_to_downloaded_artifact",
+    workflowRunId: runId,
+    artifactId: artifactId,
+    artifactSha256: artifactSha,
+    databaseSha256: databaseSha,
+    sourceManifestSha256: sourceManifestSha
+  };
+}
+
 function patchAutoDiag2DbAndTests() {
   const moduleFile = path.join(root, "lib", "autodiag2-research-db.cjs");
   let moduleSource = readLf(moduleFile);
-  const databaseHashReferences = (moduleSource.match(/manifest\\.database_sha256/g) || []).length;
-  moduleSource = moduleSource.replaceAll("manifest.database_sha256", "(manifest.candidate_database_sha256 || manifest.database_sha256)");
-  if (databaseHashReferences > 0 && !moduleSource.includes("manifest.candidate_database_sha256")) throw new Error("AutoDiag2 candidate database SHA-256 compatibility field was not installed");
   moduleSource = replaceExactly(moduleSource,
     '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unclassified_source_label\'"),',
     '    unclassifiedEngineLabels: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unclassified_source_label\'"),\n    unverifiedEngineCodeFields: count("SELECT count(*) AS n FROM engine_candidates WHERE engine_code_quality=\'unverified_source_code_field\'"),',
@@ -521,7 +667,8 @@ const emptying = excludeUnverifiedPack();
 patchLocalResearchDb();
 patchVerifier();
 patchResearchDbTests();
+const autoDiag2Pins = refreshAutoDiag2ManifestPins();
 patchAutoDiag2DbAndTests();
 patchResearchUi();
 writeDedicatedTest();
-console.log(JSON.stringify({ status: "excluded_unverified_vag_identity_source", ...emptying }, null, 2));
+console.log(JSON.stringify({ status: "desktop_research_patches_applied", ...emptying, autoDiag2Pins }, null, 2));
