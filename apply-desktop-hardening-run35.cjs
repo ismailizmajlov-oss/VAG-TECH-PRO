@@ -112,4 +112,92 @@ if (!tests.includes('test("health probe rejects HTTP 4xx and 5xx responses"') ||
   throw new Error("Electron regression test verification failed after patch.");
 }
 writeLf(testPath, tests);
-console.log("Desktop hardening patch applied and verified.");
+
+// Defer React data-loading effects so they do not synchronously cascade state updates.
+const adminPagePath = path.join(root, "app", "admin", "page.tsx");
+let adminPage = readLf(adminPagePath);
+adminPage = replaceExactly(
+  adminPage,
+  "    void loadWorkspace();",
+  "    const initialLoadTimer = window.setTimeout(() => { if (active) void loadWorkspace(); }, 0);",
+  "admin initial workspace load"
+);
+adminPage = replaceExactly(
+  adminPage,
+  "      active = false;\\n      loadSequence.current += 1;",
+  "      active = false;\\n      window.clearTimeout(initialLoadTimer);\\n      loadSequence.current += 1;",
+  "admin initial workspace timer cleanup"
+);
+writeLf(adminPagePath, adminPage);
+
+const localAdminPath = path.join(root, "components", "local-data-admin.tsx");
+let localAdmin = readLf(localAdminPath);
+localAdmin = replaceExactly(
+  localAdmin,
+  "  useEffect(() => { void refresh(); }, [refresh]);",
+  [
+    "  useEffect(() => {",
+    "    let active = true;",
+    "    const refreshTimer = window.setTimeout(() => { if (active) void refresh(); }, 0);",
+    "    return () => { active = false; window.clearTimeout(refreshTimer); };",
+    "  }, [refresh]);"
+  ].join("\\n"),
+  "local admin deferred refresh effect"
+);
+writeLf(localAdminPath, localAdmin);
+
+const localWorkspacePath = path.join(root, "components", "local-offline-workspace.tsx");
+let localWorkspace = readLf(localWorkspacePath);
+localWorkspace = replaceExactly(
+  localWorkspace,
+  "  useEffect(() => { void loadSummary(); }, [loadSummary]);",
+  [
+    "  useEffect(() => {",
+    "    let active = true;",
+    "    const summaryTimer = window.setTimeout(() => { if (active) void loadSummary(); }, 0);",
+    "    return () => { active = false; window.clearTimeout(summaryTimer); };",
+    "  }, [loadSummary]);"
+  ].join("\\n"),
+  "local workspace deferred summary effect"
+);
+writeLf(localWorkspacePath, localWorkspace);
+
+const coreTestPath = path.join(root, "tests", "local-core-db.test.cjs");
+let coreTests = readLf(coreTestPath);
+coreTests = replaceExactly(
+  coreTests,
+  "  const now = new Date().toISOString();\\n  seedSourceSnapshot(db,sourceId);",
+  "  seedSourceSnapshot(db,sourceId);",
+  "unused test timestamp"
+);
+writeLf(coreTestPath, coreTests);
+
+const uiTestPath = path.join(root, "tests", "local-data-admin-ui-contract.test.cjs");
+let uiTests = readLf(uiTestPath);
+const uiEffectTest = [
+  "",
+  'test("async React loaders are deferred from effects and cleaned up on unmount", () => {',
+  '  const adminPage = read("app/admin/page.tsx");',
+  '  const localAdmin = read("components/local-data-admin.tsx");',
+  '  const workspace = read("components/local-offline-workspace.tsx");',
+  '  assert.match(adminPage, /const initialLoadTimer = window\\.setTimeout\\(\\(\\) => \\{ if \\(active\\) void loadWorkspace\\(\\); \\}, 0\\);/);',
+  '  assert.match(adminPage, /window\\.clearTimeout\\(initialLoadTimer\\)/);',
+  '  assert.match(localAdmin, /const refreshTimer = window\\.setTimeout\\(\\(\\) => \\{ if \\(active\\) void refresh\\(\\); \\}, 0\\);/);',
+  '  assert.match(localAdmin, /window\\.clearTimeout\\(refreshTimer\\)/);',
+  '  assert.match(workspace, /const summaryTimer = window\\.setTimeout\\(\\(\\) => \\{ if \\(active\\) void loadSummary\\(\\); \\}, 0\\);/);',
+  '  assert.match(workspace, /window\\.clearTimeout\\(summaryTimer\\)/);',
+  '});',
+  ""
+].join("\\n");
+if (!uiTests.includes('async React loaders are deferred from effects')) uiTests += uiEffectTest;
+writeLf(uiTestPath, uiTests);
+
+for (const [file, source, required] of [
+  ["admin page", adminPage, "window.clearTimeout(initialLoadTimer)"],
+  ["local admin", localAdmin, "window.clearTimeout(refreshTimer)"],
+  ["local workspace", localWorkspace, "window.clearTimeout(summaryTimer)"],
+  ["UI regression tests", uiTests, "async React loaders are deferred from effects"]
+]) {
+  if (!source.includes(required)) throw new Error(`React effect hardening verification failed: ${file}`);
+}
+console.log("Desktop hardening and React effect-lint fixes applied and verified.");
