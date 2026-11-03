@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source_id_prefix": "vag",
+  "publisher": "gor3a",
+  "dataset": "vehicle-makes-models",
+  "repository_url": "https://github.com/gor3a/vehicle-makes-models",
+  "revision": "ee99776470a45214bf524cdfe22e5dbf4bd67f93",
+  "upstream_source": "autoevolution.com",
+  "license": "ODbL-1.0",
+  "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "license_file": "LICENSE-DATA",
+  "attribution": "Vehicle make/model/generation/engine variant candidate data compiled from autoevolution.com; dataset repository gor3a/vehicle-makes-models.",
+  "share_alike_required": true,
+  "market_scope": "UNKNOWN",
+  "brands": ["audi", "volkswagen", "skoda", "seat", "cupra"],
+  "source_files": {
+    "audi": "data/json/audi.json",
+    "volkswagen": "data/json/volkswagen.json",
+    "skoda": "data/json/skoda.json",
+    "seat": "data/json/seat.json",
+    "cupra": "data/json/cupra.json"
+  },
+  "expected_counts": {
+    "makes": 5,
+    "models": 233,
+    "generations": 823,
+    "engine_variants": 5081
+  },
+  "applicability_policy": {
+    "make": "make_name_candidate",
+    "model": "model_name_candidate",
+    "generation": "generation_name_candidate",
+    "engine_variant": "engine_variant_description_only",
+    "model_years_are_market_specific": false,
+    "exact_engine_codes_included": false,
+    "exact_gearbox_codes_included": false,
+    "ecu_fitment_included": false,
+    "exact_vehicle_fitment": false,
+    "market_scope_unknown": true,
+    "review_status": "candidate",
+    "production_import": false
+  }
+}
