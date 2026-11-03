@@ -109,6 +109,12 @@ The bundle contains six separate SQLite databases and a metadata-only pack index
 
 The official FGIS «Реестры КТС» is still the highest-priority Russian source, but the reviewed public-site search/attribute publication does not grant bulk extraction, commercial display, offline caching or redistribution rights. The EAEU OData catalogue review has not identified a dedicated OTTS bulk dataset with dataset-specific reuse terms. HPT.SU API terms restrict third-party equivalent/derived databases and full mirroring without separate written consent. A fresh terms review also confirmed that OTTS.BOT prohibits automated scraping and redistribution of its database/documents, while АВТОРЕГИСТР permits internal professional use but prohibits substantial systematic extraction for a competing catalogue. Both aggregators are now explicitly marked restricted_for_product_distribution in the machine-readable register. No Russian/EAEU OTTS data was imported, no account or API key was created, no document was downloaded, and no paid terms were accepted.
 
+## Russian/EAEU source-rights guard — verified on Windows
+
+Added `scripts/validate_russian_eaeu_otts_sources.py` and `.github/workflows/validate-russian-eaeu-otts-sources.yml`. The validator is fail-closed: it refuses ingestion unless commercial use, display, offline caching, bulk reuse, required PDF redistribution, a source revision, market scope, applicability precision and a valid source SHA-256 are all explicitly recorded. It also asserts that FGIS remains permission_required, the EAEU catalogue remains discovery_only, and HPT.SU, OTTS.BOT and АВТОРЕГИСТР remain restricted and unimported.
+
+Windows x64 workflow run `41591282473` completed successfully on commit `842eda2789648efa3af84c008a88e04dc3a3fe70`. The run records the Python runtime and executes the current validator. The machine-readable register contains five source entries, zero ingested records and three explicitly blocked commercial aggregators. This gate validates permission metadata only; it does not fetch or import OTTS data.
+
 ## Current external delivery boundary
 
 - The canonical GitHub repository is still the acquisition/schema/validation pipeline; its README states that the complete desktop application source has not been mirrored into this repository.
