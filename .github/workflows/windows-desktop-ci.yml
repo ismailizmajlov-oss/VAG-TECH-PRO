@@ -163,7 +163,6 @@ jobs:
           $research = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/research"
           $mappings = @(
             @{ Source = "obdex-generic-cc0"; Target = "obdex-generic-cc0" },
-            @{ Source = "vag-engine-candidates-odbl"; Target = "vag-identity-odbl" },
             @{ Source = "obdb-vag-signals-cc-by-sa"; Target = "obdb-vag-signals-cc-by-sa" },
             @{ Source = "vehiclesdb-vag-identity"; Target = "vehiclesdb-vag-identity" }
           )
@@ -186,7 +185,6 @@ jobs:
           Copy-Item -Path (Join-Path $autodiag2 "*") -Destination $autodiag2Target -Recurse -Force
           foreach ($db in @(
             "obdex-generic-cc0/generic-obdex-research.sqlite",
-            "vag-identity-odbl/vag-engine-candidates-research.sqlite",
             "obdb-vag-signals-cc-by-sa/vag-obdb-research.sqlite",
             "vehiclesdb-vag-identity/vag-identity-vehiclesdb.sqlite",
             "mechanicdb-vag-dtc-candidates-odbl/mechanicdb-vag-dtc-candidates.sqlite",
@@ -194,6 +192,15 @@ jobs:
           )) {
             if (-not (Test-Path (Join-Path $research $db))) { throw "Research database missing after assembly: $db" }
           }
+
+      - name: Exclude VAG identity source pending upstream provenance review
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-research-provenance-exclusion-run36.cjs
+          node apply-research-provenance-exclusion-run36.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-identity-exclusion.log"
+          if ($LASTEXITCODE -ne 0) { throw "VAG identity provenance exclusion failed" }
+          "vag_identity_source=excluded_pending_upstream_provenance_review" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Generate deterministic dependency lock and install
         working-directory: desktop-source
