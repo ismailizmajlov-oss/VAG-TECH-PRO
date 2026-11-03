@@ -29,6 +29,9 @@ ARTIFACTS = {
 MANUFACTURER_CODE_RE = re.compile(
     r"^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$"
 )
+GENERIC_OBD_CODE_RE = re.compile(
+    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P3[4-9][0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$"
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -142,6 +145,9 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex SQLite row counts mismatch")
     if db.execute("SELECT count(*) FROM generic_dtc_research WHERE namespace<>'generic_sae_iso_obd2' OR vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex contains non-generic or fitment-claim DTC rows")
+    generic_codes = [row["code"] for row in db.execute("SELECT code FROM generic_dtc_research")]
+    if len(set(generic_codes)) != dtc_count or any(not GENERIC_OBD_CODE_RE.fullmatch(code) for code in generic_codes):
+        raise ValueError("OBDex generic pack contains manufacturer-controlled or malformed DTC ranges")
     if db.execute("SELECT count(*) FROM generic_pid_research WHERE vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex PID rows contain vehicle-fitment claims")
     if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC0-1.0' OR verification_status<>'license_verified_research_only'").fetchone()[0]:
@@ -514,6 +520,32 @@ def inspect_wal33d(root: Path) -> dict[str, Any]:
     }
 
 
+def verify_dtc_namespace_separation(root: Path, index: dict[str, Any]) -> None:
+    packs = {item["pack_id"]: item for item in index.get("packs", [])}
+    generic_pack = packs.get("obdex-generic-cc0")
+    vag_pack = packs.get("wal33d-vag-oem-dtc-mit")
+    if not generic_pack or not vag_pack:
+        raise ValueError("Generic and manufacturer-specific DTC packs must both be present")
+    generic_db = sqlite_readonly(root / generic_pack["database_path"])
+    vag_db = sqlite_readonly(root / vag_pack["database_path"])
+    try:
+        generic_codes = {row["code"] for row in generic_db.execute("SELECT code FROM generic_dtc_research")}
+        vag_codes = {row["code"] for row in vag_db.execute("SELECT code FROM dtc_candidates")}
+        if generic_codes.intersection(vag_codes):
+            raise ValueError("Generic and manufacturer-specific DTC namespaces overlap")
+        if any(not GENERIC_OBD_CODE_RE.fullmatch(code) for code in generic_codes):
+            raise ValueError("Generic OBDex pack contains a manufacturer-controlled code range")
+        if any(not MANUFACTURER_CODE_RE.fullmatch(code) for code in vag_codes):
+            raise ValueError("VAG candidate pack contains a generic or malformed DTC range")
+        if "P1128" not in vag_codes or "P1128" in generic_codes:
+            raise ValueError("Volkswagen P1128 must remain isolated in the manufacturer-specific candidate pack")
+        if "P3000" not in vag_codes or "P3100" not in vag_codes:
+            raise ValueError("Audi P3000/P3100 candidate records are missing")
+    finally:
+        generic_db.close()
+        vag_db.close()
+
+
 def verify_bundle(root: Path) -> dict[str, Any]:
     index_path = root / "offline-data-pack-index.json"
     index = read_json(index_path)
@@ -574,6 +606,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         ):
             if fresh.get(key) != pack.get(key):
                 raise ValueError(f"Pack index metadata drift for {pack_id}.{key}")
+    verify_dtc_namespace_separation(root, index)
     for path in root.rglob("*"):
         if path.is_file() and path.suffix.lower() in {".exe", ".msi"}:
             raise ValueError("Data bundle unexpectedly contains an installer executable")
