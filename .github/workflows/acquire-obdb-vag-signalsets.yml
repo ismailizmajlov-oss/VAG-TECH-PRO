@@ -1,0 +1,37 @@
+name: Acquire OBDb VAG signal research pack
+
+on:
+  push:
+    branches:
+      - automation/obdb-vag-research-pack-run17
+    paths:
+      - .github/workflows/acquire-obdb-vag-signalsets.yml
+      - data/source-manifests/obdb-vag-signalsets.json
+      - scripts/build_obdb_vag_research.py
+      - scripts/verify_obdb_vag_research.py
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned pipeline
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build read-only SQLite pack
+        run: python scripts/build_obdb_vag_research.py --output dist/obdb-vag-research
+      - name: Verify licenses, provenance, hashes and SQLite invariants
+        run: python scripts/verify_obdb_vag_research.py dist/obdb-vag-research
+      - name: Upload verified research pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: obdb-vag-research-cc-by-sa
+          path: dist/obdb-vag-research/
+          if-no-files-found: error
+          retention-days: 30
