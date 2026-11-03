@@ -136,7 +136,8 @@ jobs:
           const mode09 = readJson("mode09.json");
           const meta = readJson("meta.json");
           const license = readBytes("UPSTREAM-LICENSE.txt").toString("utf8");
-          const families = new Set(["P0","P2","P3","B0","C0","U0","U3"]);
+          // P30xx-P33xx are manufacturer-controlled; generic P3 codes begin at P34xx.
+          const genericCodePattern = /^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P3[4-9][0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$/;
           const hashes = Object.fromEntries(
             ["generic.min.json","mode01.json","mode09.json","meta.json","UPSTREAM-LICENSE.txt"]
               .map((name) => [name, sha256(readBytes(name))])
@@ -163,7 +164,7 @@ jobs:
           const dtcSeen = new Set();
           const dtcs = generic.map((row) => {
             const code = String(row?.code ?? "").trim().toUpperCase();
-            if (!/^[PBCU][0-3][0-9A-F]{3}$/.test(code) || !families.has(code.slice(0,2))) {
+            if (!genericCodePattern.test(code)) {
               throw new Error("Non-generic or malformed DTC in OBDex projection: " + code);
             }
             if (dtcSeen.has(code)) throw new Error("Duplicate OBDex DTC: " + code);
