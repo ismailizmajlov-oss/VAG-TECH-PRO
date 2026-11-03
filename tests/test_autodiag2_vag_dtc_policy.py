@@ -38,6 +38,9 @@ class AutoDiag2VagDtcPolicyTests(unittest.TestCase):
               id INTEGER PRIMARY KEY, source_scope TEXT NOT NULL,
               ecu_manufacturer TEXT, namespace TEXT NOT NULL
             );
+            CREATE TABLE engine_candidates(
+              id INTEGER PRIMARY KEY, engine_code TEXT, engine_code_quality TEXT NOT NULL
+            );
             CREATE TABLE dtc_fitment_candidates(
               dtc_candidate_id INTEGER NOT NULL REFERENCES dtc_candidates(id),
               vehicle_config_candidate_id INTEGER NOT NULL
@@ -52,6 +55,11 @@ class AutoDiag2VagDtcPolicyTests(unittest.TestCase):
               (4,'vehicle_ecu_linked','Bosch','uds_ecu_specific_candidate'),
               (5,'vehicle_ecu_linked','unknown','manufacturer_controlled_candidate');
             INSERT INTO dtc_fitment_candidates VALUES (1,10),(2,20),(4,40),(5,50);
+            INSERT INTO engine_candidates VALUES
+              (1,'AFN','factory_code_shape_candidate'),
+              (2,'8HP45','factory_code_shape_candidate'),
+              (3,'1000 TFSI','unclassified_source_label'),
+              (4,NULL,'unclassified_source_label');
         """)
         db.commit()
         db.close()
@@ -70,14 +78,23 @@ class AutoDiag2VagDtcPolicyTests(unittest.TestCase):
             self.assertEqual(result["removed"]["unattributed_make_level"], 1)
             self.assertEqual(result["removed"]["generic_or_unknown_ecu_identity"], 2)
             self.assertEqual(result["removed"]["missing_vehicle_configuration_link"], 1)
+            self.assertEqual(result["after"]["engine_code_candidates_unverified"], 3)
+            self.assertEqual(result["after"]["engine_codes_verified"], 0)
             db = sqlite3.connect(root / "autodiag2-vag-community.sqlite")
             self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
             self.assertEqual(db.execute("SELECT id FROM dtc_candidates").fetchall(), [(4,)])
             self.assertEqual(db.execute("SELECT dtc_candidate_id FROM dtc_fitment_candidates").fetchall(), [(4,)])
+            self.assertEqual(
+                db.execute("SELECT engine_code_quality FROM engine_candidates ORDER BY id").fetchall(),
+                [('unverified_source_code_field',),('unverified_source_code_field',),
+                 ('unverified_source_code_field',),('unclassified_source_label',)]
+            )
             db.close()
             manifest = json.loads((root / "manifest.json").read_text())
             self.assertTrue(manifest["dtc_policy_filtered"])
             self.assertEqual(manifest["counts"]["vag_specific_dtc_verified_rows"], 0)
+            self.assertEqual(manifest["counts"]["engine_codes_verified"], 0)
+            self.assertTrue(manifest["engine_code_policy"]["shape_heuristic_is_not_used_for_verification"])
             self.assertEqual(manifest["dtc_policy_removal_counts"]["unattributed_make_level"], 1)
             self.assertEqual(manifest["candidate_database_sha256"], result["candidate_database_sha256"])
             checksum_lines = (root / "SHA256SUMS.txt").read_text().splitlines()
