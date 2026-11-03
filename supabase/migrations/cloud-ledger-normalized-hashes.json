@@ -1,0 +1,379 @@
+{
+  "project_id": "psnwvysvvemueuhahjfs",
+  "captured_at": "2026-11-03",
+  "normalization": "Remove SQL line comments beginning with --, then remove all whitespace; MD5 is a reconciliation fingerprint, not a security signature. Cloud hashes are computed from supabase_migrations.schema_migrations.statements.",
+  "migrations": [
+    {
+      "version": "20261101221006",
+      "name": "vag_tech_pro_initial_schema",
+      "normalized_sql_md5": "63252625a4a7f6d08468b2ddbb12b68c",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101221017",
+      "name": "allow_sources_for_verified_content",
+      "normalized_sql_md5": "947cda3a905996f7b5eabe53df68dca5",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101221134",
+      "name": "vin_lookup_and_model_catalog",
+      "normalized_sql_md5": "e33d17824eaba8a6f3f7e7deb0dfce7a",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101221150",
+      "name": "fix_vin_hash_extension_schema",
+      "normalized_sql_md5": "e21b8c9d5eee0f7c0ef9365a47d4830d",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101223009",
+      "name": "vin_decode_cache",
+      "normalized_sql_md5": "0e3b94a07cc2a21658d1e552e7d39bd4",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101223029",
+      "name": "vin_decode_cache_deny_client_access",
+      "normalized_sql_md5": "f8579435e011bfec70b1ca31ea8cfec9",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101224750",
+      "name": "bookmark_record_types",
+      "normalized_sql_md5": "a335a766205c74fd81ff32debf388579",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101224849",
+      "name": "foreign_key_indexes",
+      "normalized_sql_md5": "cd30a9ec30d67974852377feb5249974",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101224938",
+      "name": "gate_public_content_by_source_license",
+      "normalized_sql_md5": "7e34c250ffd0787ea50469c3104ab4fa",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101225002",
+      "name": "catalog_provenance_gates",
+      "normalized_sql_md5": "bdaef08efc6287d288823b76976cf02d",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101225354",
+      "name": "break_source_policy_recursion",
+      "normalized_sql_md5": "b708795d99c76769191fb90d73b8c34c",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101225607",
+      "name": "secure_vin_rpc",
+      "normalized_sql_md5": "aadec12da1953eb1d228d1d442f70859",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101225625",
+      "name": "restrict_vin_rpc_to_server",
+      "normalized_sql_md5": "f59010e674c08b32b1a463e5ed6837dc",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101225730",
+      "name": "index_catalog_source_foreign_keys",
+      "normalized_sql_md5": "5e69806c1b47666bdb30948f3fec82ac",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101231117",
+      "name": "staff_ingestion_audit",
+      "normalized_sql_md5": "f0ec671a65549508ca550a4a8f481569",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101231321",
+      "name": "harden_admin_rpc_and_policy_cost",
+      "normalized_sql_md5": "8ebe0ed52c15f8396b4d0c492a17da22",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101231616",
+      "name": "bind_review_to_parent_document",
+      "normalized_sql_md5": "67cffb2c24381884fa2148d40d7a22fc",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101231818",
+      "name": "require_exact_fitment_staging",
+      "normalized_sql_md5": "6dbbb1a3628cab4d205ead46528a4b87",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101232001",
+      "name": "server_side_vin_rate_limit",
+      "normalized_sql_md5": "6368df81e494b14be0dd77ca1a0b6f99",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101232031",
+      "name": "vin_rate_limit_service_policy",
+      "normalized_sql_md5": "5ed6d9f900bdb28d9aa776c83f5754c2",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101233610",
+      "name": "bookmark_wiring_and_diagnostic_test_targets",
+      "normalized_sql_md5": "08ec9b4e00ab6bb51262f97b3f085a94",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101233614",
+      "name": "unique_user_bookmarks_by_target",
+      "normalized_sql_md5": "cc3a4683cfd1b84ad04f32cdce42deb7",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101234002",
+      "name": "typed_staging_importer",
+      "normalized_sql_md5": "aed0c8a591f3f4b0772a377922c53e2d",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101234049",
+      "name": "restore_catalog_notes_columns",
+      "normalized_sql_md5": "76ea41c201d28a955f54ac87b969eb43",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101234529",
+      "name": "fitment_scoped_technical_verification",
+      "normalized_sql_md5": "7dd5a124ad012f9ee3eade98286bb7e8",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101234747",
+      "name": "enforce_exact_configuration_provenance",
+      "normalized_sql_md5": "9cb05dbc82164f04b79a38da4d57e982",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101235225",
+      "name": "ecu_unit_source_provenance",
+      "normalized_sql_md5": "bc5b73bd331fd009905d13ee3cd4bd51",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101235428",
+      "name": "enforce_ecu_identity_and_source_gate",
+      "normalized_sql_md5": "69ee8b1bd4ca2666b6154050811f3a2f",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101235622",
+      "name": "register_vetted_external_source_rights",
+      "normalized_sql_md5": "a28b4acd293ac390182c6a3f208fdf0c",
+      "statement_count": 1
+    },
+    {
+      "version": "20261101235830",
+      "name": "add_user_vehicle_garage",
+      "normalized_sql_md5": "d6cc64e37aa63c22f2c4aafe26a36e15",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102001008",
+      "name": "register_openvag_dtc_candidate",
+      "normalized_sql_md5": "32adace03441899331f70653f81ac318",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102021737",
+      "name": "add_ingestion_batch_preview",
+      "normalized_sql_md5": "bc713bf424401d5754b4346e335ab3bb",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102022127",
+      "name": "harden_ingestion_payload_types",
+      "normalized_sql_md5": "8a4055c6d5580edf24752eaa2bcefb04",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102022348",
+      "name": "clarify_ingestion_preview_scope",
+      "normalized_sql_md5": "911ff885c960ab23da43a6afd1afb48a",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102022545",
+      "name": "unique_ingestion_natural_keys",
+      "normalized_sql_md5": "510f49b1ebee1cdea941c74f5d3b6eb7",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102022646",
+      "name": "submit_ingestion_batch",
+      "normalized_sql_md5": "ddba79f673fff77e111759a20185fbbe",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102022856",
+      "name": "register_vehiclesdb_candidate",
+      "normalized_sql_md5": "66d185264621144b41608ac6f3d6bd64",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102023247",
+      "name": "enforce_batch_submit_limit",
+      "normalized_sql_md5": "a501340a4ccbdbb5e7b5f5820b4cda4e",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102023339",
+      "name": "harden_batch_submit_ownership",
+      "normalized_sql_md5": "4d4bfb8fa67d5bfbefea6ad4929ebdd8",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102025107",
+      "name": "vehicle_model_source_evidence",
+      "normalized_sql_md5": "65e0874938dea9929f0f2ababc1f8f57",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102025137",
+      "name": "harden_vehicle_model_evidence_review",
+      "normalized_sql_md5": "798af919a3a19adde8ef88217fd5aa42",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102025154",
+      "name": "harden_vehicle_model_evidence_performance",
+      "normalized_sql_md5": "b1f6074608f6b9d3b8b95b8163cc927d",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102025317",
+      "name": "allow_staff_read_inactive_vehicle_models",
+      "normalized_sql_md5": "afd5a1f4f2ec5eb1a3571b69916cf94b",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102025445",
+      "name": "deactivate_model_names_when_source_rights_revoke",
+      "normalized_sql_md5": "f3b6065a0e2a938515b27277b9066196",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102025736",
+      "name": "require_model_evidence_rereview_after_rights_revoke",
+      "normalized_sql_md5": "44850802464d939092646dd2dc714b2b",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102025927",
+      "name": "gate_model_evidence_on_attribution_display",
+      "normalized_sql_md5": "810714c60127baf81b9b826d419ff65d",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102092816",
+      "name": "protect_source_license_notes",
+      "normalized_sql_md5": "178116ba8eb25e2ed657c712ba9ca5a1",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102092851",
+      "name": "harden_source_rights_rpc_exposure",
+      "normalized_sql_md5": "967066b824d05c2e2b23ed1395f88481",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102092938",
+      "name": "restrict_source_rights_audit_visibility",
+      "normalized_sql_md5": "2426366fe49288f3385824ec8d16bf06",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102092957",
+      "name": "restrict_source_rights_audit_visibility",
+      "normalized_sql_md5": "2426366fe49288f3385824ec8d16bf06",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102093054",
+      "name": "enforce_source_rights_evidence_invariants",
+      "normalized_sql_md5": "a34ecf65b3eaf9f2b9ea0291a8ab0450",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102095404",
+      "name": "add_ingestion_reference_resolution_audit",
+      "normalized_sql_md5": "6a7f5c5ee54f078f3a8757417baf03ce",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102103845",
+      "name": "create_homologation_variant_review_layer",
+      "normalized_sql_md5": "2224c8992b50bec0e8f5acbc7cb8fc9f",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102103952",
+      "name": "lock_homologation_review_to_rpc",
+      "normalized_sql_md5": "df11bc86083f273939fdbf19d390ddb9",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102104027",
+      "name": "move_homologation_definer_to_private",
+      "normalized_sql_md5": "c66d6b06a562e89df79a6c75896ebc8d",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102104143",
+      "name": "tune_homologation_rls_and_fk_indexes",
+      "normalized_sql_md5": "efdcc9fe2299dd6f318bc225633aabb5",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102104946",
+      "name": "optimize_homologation_rls_auth_initplan",
+      "normalized_sql_md5": "a7e3a381ebf22b7fb58b210767d5c07b",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102105700",
+      "name": "admin_staff_directory_and_role_management",
+      "normalized_sql_md5": "615456164473e4174611a0abdc0de23b",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102105743",
+      "name": "fix_staff_role_revoke_audit_event",
+      "normalized_sql_md5": "b4e5bd40d6f2982031e41dc287640b00",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102125352",
+      "name": "fix_reference_resolution_object_key_count",
+      "normalized_sql_md5": "1e18319cafe0b63a4702ecf06c014586",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102125607",
+      "name": "register_russian_market_provider_candidates",
+      "normalized_sql_md5": "1c874c7870b063112376b385441a8c6c",
+      "statement_count": 1
+    },
+    {
+      "version": "20261102134010",
+      "name": "public_model_reads_require_verified_source_evidence",
+      "normalized_sql_md5": "2e2bb0340c1882d4cfb849bede5f1ca9",
+      "statement_count": 1
+    }
+  ]
+}
