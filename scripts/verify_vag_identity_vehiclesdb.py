@@ -108,13 +108,23 @@ def main() -> int:
     source_ids = {row["source_id"] for row in sources}
     if not source_ids or not source_ids.issubset(set(allowed)):
         raise SystemExit("Pack includes an unapproved or empty source registry")
+    upstream_sources = {row["id"]: row for row in upstream["sources"]}
+    upstream_countries = {str(code).lower() for code in upstream["countries"]}
     for row in sources:
         if row["upstream_license"] != allowed[row["source_id"]]:
             raise SystemExit(f"Source license mismatch: {row['source_id']}")
         if row["rights_status"] != "approved_by_published_license":
             raise SystemExit(f"Source rights are not approved: {row['source_id']}")
-        if row["country_code"] == "ru":
-            raise SystemExit("Russian market evidence must not be inferred from this dataset")
+        if row["country_code"] == "ru" or row["country_code"] not in upstream_countries:
+            raise SystemExit("Source market scope is absent or prohibited")
+        if row["source_id"] not in upstream_sources or row["source_url"] != upstream_sources[row["source_id"]]["url"]:
+            raise SystemExit(f"Source URL mismatch: {row['source_id']}")
+        if row["upstream_license_url"] != upstream_sources[row["source_id"]]["license_url"]:
+            raise SystemExit(f"Source license URL mismatch: {row['source_id']}")
+        if row["source_notice_preserved"] != 1:
+            raise SystemExit(f"Upstream notice was not preserved: {row['source_id']}")
+        if row["upstream_attribution_required"] not in (0, 1):
+            raise SystemExit(f"Invalid attribution requirement: {row['source_id']}")
 
     bad_models = db.execute(
         """SELECT count(*) FROM model_candidates
@@ -139,7 +149,8 @@ def main() -> int:
     invalid_refs = db.execute(
         """SELECT count(*) FROM model_market_evidence e
            LEFT JOIN source_registry s ON s.source_id=e.source_id
-           WHERE s.source_id IS NULL OR s.country_code<>e.country_code"""
+           WHERE s.source_id IS NULL OR s.country_code<>e.country_code
+              OR (s.evidence_kind IS NOT NULL AND s.evidence_kind<>e.evidence_type)"""
     ).fetchone()[0]
     if invalid_refs:
         raise SystemExit(f"Market evidence/source mismatches: {invalid_refs}")
@@ -160,8 +171,22 @@ def main() -> int:
     if countries != manifest["market_scope_countries"] or "ru" in countries or "th" in countries:
         raise SystemExit("Market scope summary mismatch or prohibited market found")
     artifact_rows = db.execute("SELECT * FROM source_file_artifacts").fetchall()
-    if len(artifact_rows) != 4 or any(len(row["sha256"]) != 64 or row["byte_size"] <= 0 for row in artifact_rows):
+    expected_artifacts = {
+        "catalog.sqlite": ("sqlite", manifest["source_snapshot_sha256"]["catalog.sqlite"], manifest["source_snapshot_bytes"]["catalog.sqlite"]),
+        "manifest.json": ("manifest", manifest["source_snapshot_sha256"]["manifest.json"], manifest["source_snapshot_bytes"]["manifest.json"]),
+        "LICENSE": ("license", manifest["source_snapshot_sha256"]["LICENSE"], manifest["source_snapshot_bytes"]["LICENSE"]),
+        "ATTRIBUTION.md": ("attribution", manifest["source_snapshot_sha256"]["ATTRIBUTION.md"], manifest["source_snapshot_bytes"]["ATTRIBUTION.md"]),
+    }
+    if len(artifact_rows) != 4:
         raise SystemExit("Source artifact provenance rows are incomplete")
+    for row in artifact_rows:
+        expected = expected_artifacts.pop(row["relative_path"], None)
+        if expected is None or (row["artifact_kind"], row["sha256"], row["byte_size"]) != expected:
+            raise SystemExit(f"Source artifact hash/size mismatch: {row['relative_path']}")
+        if not row["source_url"].startswith("https://cdn.jsdelivr.net/gh/vehiclesdb/vehiclesdb@"):
+            raise SystemExit(f"Unpinned or untrusted source artifact URL: {row['relative_path']}")
+    if expected_artifacts:
+        raise SystemExit(f"Missing source artifact records: {sorted(expected_artifacts)}")
 
     db.close()
     result = {
