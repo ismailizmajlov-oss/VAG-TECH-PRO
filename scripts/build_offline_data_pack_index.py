@@ -108,6 +108,10 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex generic-only boundary failed")
     if source_manifest.get("scope", {}).get("manufacturer_specific_codes_included") is not False:
         raise ValueError("OBDex source manifest claims manufacturer-specific DTCs")
+    if source_manifest.get("scope", {}).get("exact_vag_fitment") is not False:
+        raise ValueError("OBDex source manifest claims exact VAG fitment")
+    if source_manifest.get("scope", {}).get("repair_procedures_or_pinouts_included") is not False:
+        raise ValueError("OBDex source manifest claims repair procedures or pinouts")
 
     source_root = root / "source"
     for item in source_manifest.get("source_files", []):
@@ -194,6 +198,7 @@ def inspect_vehiclesdb(root: Path) -> dict[str, Any]:
         raise ValueError("VehiclesDB SQLite schema mismatch")
     counts = {
         "sources": count(db, "source_registry"),
+        "source_files": count(db, "source_file_artifacts"),
         "models": count(db, "model_candidates"),
         "market_evidence": count(db, "model_market_evidence"),
     }
@@ -203,10 +208,16 @@ def inspect_vehiclesdb(root: Path) -> dict[str, Any]:
         raise ValueError("VehiclesDB expected snapshot counts changed")
     if db.execute("SELECT count(*) FROM model_market_evidence WHERE country_code IN ('ru','th')").fetchone()[0]:
         raise ValueError("VehiclesDB pack includes a prohibited market")
-    if db.execute("SELECT count(*) FROM model_candidates WHERE fitment_status<>'not_established' OR year_start IS NOT NULL OR year_end IS NOT NULL").fetchone()[0]:
+    if db.execute("SELECT count(*) FROM source_registry WHERE rights_status<>'approved_by_published_license'").fetchone()[0]:
+        raise ValueError("VehiclesDB source rights status mismatch")
+    if db.execute("SELECT count(*) FROM model_candidates WHERE fitment_status<>'not_established' OR year_start IS NOT NULL OR year_end IS NOT NULL OR applicability_precision<>'make_model_name_only' OR verification_status<>'identity_candidate'").fetchone()[0]:
         raise ValueError("VehiclesDB model candidate boundary failed")
-    if db.execute("SELECT count(*) FROM model_market_evidence WHERE applicability_precision<>'market_presence_only'").fetchone()[0]:
+    if db.execute("SELECT count(*) FROM model_market_evidence WHERE applicability_precision<>'market_presence_only' OR verification_status<>'source_published_presence_evidence'").fetchone()[0]:
         raise ValueError("VehiclesDB market-evidence precision mismatch")
+    if db.execute("""SELECT count(*) FROM model_market_evidence e
+                     JOIN source_registry s ON s.source_id=e.source_id
+                     WHERE s.country_code<>e.country_code""").fetchone()[0]:
+        raise ValueError("VehiclesDB market evidence/source country mismatch")
     countries = sorted(row[0] for row in db.execute("SELECT DISTINCT country_code FROM model_market_evidence"))
     if countries != manifest["market_scope_countries"] or "ru" in countries or "th" in countries:
         raise ValueError("VehiclesDB market-scope summary mismatch")
@@ -264,10 +275,19 @@ def inspect_odbl(root: Path) -> dict[str, Any]:
     }
     if counts != manifest.get("counts") or counts != {"makes": 5, "models": 233, "generations": 823, "engine_variants": 5081}:
         raise ValueError("ODbL candidate counts mismatch")
-    if db.execute("SELECT count(*) FROM engine_variant_candidates WHERE engine_code IS NOT NULL OR gearbox_code IS NOT NULL OR market_scope<>'UNKNOWN' OR code_extraction_status<>'not_provided'").fetchone()[0]:
-        raise ValueError("ODbL candidate code/market boundary failed")
+    bad_candidates = db.execute(
+        """SELECT
+             (SELECT count(*) FROM make_candidates WHERE market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'make_name_candidate')
+           + (SELECT count(*) FROM model_candidates WHERE market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'model_name_candidate')
+           + (SELECT count(*) FROM generation_candidates WHERE market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'generation_name_candidate')
+           + (SELECT count(*) FROM engine_variant_candidates WHERE engine_code IS NOT NULL OR gearbox_code IS NOT NULL OR market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'engine_variant_description_only' OR code_extraction_status<>'not_provided')"""
+    ).fetchone()[0]
+    if bad_candidates:
+        raise ValueError("ODbL candidate code/market/applicability boundary failed")
     if db.execute("SELECT count(*) FROM research_sources WHERE rights_review_status<>'research_only_upstream_provenance_not_independently_verified' OR publication_status<>'research_only'").fetchone()[0]:
         raise ValueError("ODbL source rights-review status mismatch")
+    if count(db, "source_file_artifacts") != 6 or count(db, "research_sources") != 5:
+        raise ValueError("ODbL source artifact provenance count mismatch")
     db.close()
     return {
         "pack_id": "vag-engine-candidates-odbl",
@@ -335,6 +355,10 @@ def inspect_obdb(root: Path) -> dict[str, Any]:
         raise ValueError("OBDb research counts mismatch")
     if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC-BY-SA-4.0' OR market_scope<>'UNKNOWN' OR verification_status<>'unverified_community_candidate' OR execution_allowed<>0").fetchone()[0]:
         raise ValueError("OBDb source registry boundary failed")
+    if db.execute("SELECT count(*) FROM generation_candidates WHERE market_scope<>'UNKNOWN' OR verification_status<>'unverified_community_candidate'").fetchone()[0]:
+        raise ValueError("OBDb generation candidate boundary failed")
+    if db.execute("SELECT count(*) FROM ecu_candidates WHERE market_scope<>'UNKNOWN' OR verification_status<>'unverified_community_candidate'").fetchone()[0]:
+        raise ValueError("OBDb ECU candidate boundary failed")
     if db.execute("SELECT count(*) FROM command_candidates WHERE service_id<>'22' OR execution_allowed<>0 OR market_scope<>'UNKNOWN' OR verification_status<>'unverified_community_candidate'").fetchone()[0]:
         raise ValueError("OBDb command execution/applicability boundary failed")
     if db.execute("SELECT count(*) FROM signal_candidates WHERE market_scope<>'UNKNOWN' OR verification_status<>'unverified_community_candidate'").fetchone()[0]:
