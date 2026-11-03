@@ -16,7 +16,7 @@ import build_rdw_type_approval_pack as builder
 
 class RDWBuilderTests(unittest.TestCase):
     def test_make_code_normalization(self) -> None:
-        self.assertEqual(builder.normalize_make_code("Škoda Auto"), "KODAAUTO")
+        self.assertEqual(builder.normalize_make_code("Škoda Auto"), "SKODAAUTO")
         self.assertEqual(builder.normalize_make_code("Volkswagen AG"), "VOLKSWAGENAG")
 
     def test_vag_make_aliases(self) -> None:
@@ -48,7 +48,7 @@ class RDWBuilderTests(unittest.TestCase):
         self.assertIsNone(builder.variant_key({"typegoedkeuringsnummer": "e1"}))
 
     def test_csv_reader_preserves_source_fields(self) -> None:
-        raw = b"Typegoedkeuringsnummer,Motorcode\\r\\ne1*abc,EA888\\r\\n"
+        raw = b"Typegoedkeuringsnummer,Motorcode\r\ne1*abc,EA888\r\n"
         rows, headers = builder.read_csv_rows(raw, "fixture", 10)
         self.assertEqual(headers, ["Typegoedkeuringsnummer", "Motorcode"])
         self.assertEqual(rows[0]["Motorcode"], "EA888")
