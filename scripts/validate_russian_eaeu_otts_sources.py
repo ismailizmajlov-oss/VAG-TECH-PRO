@@ -28,6 +28,28 @@ def require(condition: bool, message: str) -> None:
 
 
 def validate(data: dict[str, Any]) -> dict[str, Any]:
+    framework = data.get("eaeu_legal_framework")
+    require(isinstance(framework, dict), "EAEU legal framework mapping is required")
+    unified = framework.get("unified_register")
+    require(isinstance(unified, dict) and unified.get("structure") == "national_parts",
+            "EAEU unified register must remain explicitly country/national-part scoped")
+    form_rules = framework.get("otts_form_rules")
+    require(isinstance(form_rules, dict), "EAEU OTTS form rules are required")
+    require(form_rules.get("latest_reviewed_amendment") ==
+            "Решение Коллегии ЕЭК от 12.05.2026 № 52",
+            "latest reviewed EAEU OTTS form amendment is missing")
+    require(form_rules.get("amendment_effective_date") == "2026-06-14",
+            "EAEU OTTS form amendment effective date is missing")
+    form_fields = {item.get("field"): item for item in form_rules.get("field_map", [])}
+    for field in ("engine_make_type", "engine_control_unit_marking", "gearbox_make_type", "gearbox_gears_and_ratios"):
+        require(field in form_fields, f"EAEU OTTS form field missing: {field}")
+    require("not_guaranteed_factory_engine_code" in form_fields["engine_make_type"].get("precision", ""),
+            "OTTS engine descriptor must not be promoted to a factory engine code")
+    require("not_guaranteed_factory_gearbox_code" in form_fields["gearbox_make_type"].get("precision", ""),
+            "OTTS gearbox descriptor must not be promoted to a factory gearbox code")
+    require("not_exact_ecu_hw_sw_fitment" in form_fields["engine_control_unit_marking"].get("precision", ""),
+            "OTTS ECU marking must not be promoted to exact ECU fitment")
+
     policy = data.get("ingestion_policy")
     require(isinstance(policy, dict), "ingestion_policy must be an object")
     for key in (
