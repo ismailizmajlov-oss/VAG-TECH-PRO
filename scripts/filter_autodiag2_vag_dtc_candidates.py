@@ -79,6 +79,7 @@ def filter_pack(pack_dir: Path) -> dict[str, Any]:
             "source_registry": {"source_id", "database_license", "contents_license"},
             "dtc_candidates": {"id", "source_scope", "ecu_manufacturer", "namespace"},
             "dtc_fitment_candidates": {"dtc_candidate_id"},
+            "engine_candidates": {"engine_code", "engine_code_quality"},
         }.items():
             require_columns(conn, table, columns)
 
@@ -138,6 +139,16 @@ def filter_pack(pack_dir: Path) -> dict[str, Any]:
             conn.execute(
                 "DELETE FROM dtc_candidates WHERE id IN (SELECT id FROM remove_dtc_ids)"
             )
+        conn.execute(
+            """
+            UPDATE engine_candidates
+            SET engine_code_quality = CASE
+              WHEN engine_code IS NULL OR trim(engine_code) = ''
+                THEN 'unclassified_source_label'
+              ELSE 'unverified_source_code_field'
+            END
+            """
+        )
         conn.commit()
 
         integrity_after = str(conn.execute("PRAGMA integrity_check").fetchone()[0])
@@ -170,7 +181,18 @@ def filter_pack(pack_dir: Path) -> dict[str, Any]:
             "dtc_fitment_candidate_links": count(conn, "dtc_fitment_candidates"),
             "generic_dtc_rows_in_pack": count(conn, "dtc_candidates", "namespace='generic_obd2'"),
             "vag_specific_dtc_verified_rows": 0,
+            "engine_code_candidates_unverified": count(
+                conn, "engine_candidates", "engine_code IS NOT NULL AND trim(engine_code) <> ''"
+            ),
+            "engine_codes_verified": 0,
+            "transmission_records": 0,
         })
+        invalid_engine_quality = count(
+            conn, "engine_candidates",
+            "engine_code_quality NOT IN ('unverified_source_code_field','unclassified_source_label')"
+        )
+        if invalid_engine_quality:
+            raise RuntimeError("Unverified engine-code shape heuristic remained in the candidate pack")
         if counts["make_level_dtc_candidates"] != 0 or counts["generic_dtc_rows_in_pack"] != 0:
             raise RuntimeError("Unattributed or generic DTC rows remain in the VAG candidate pack")
     finally:
@@ -189,6 +211,17 @@ def filter_pack(pack_dir: Path) -> dict[str, Any]:
         "vag_specific_verified_rows": 0,
         "diagnostic_execution_allowed": False,
         "repair_advice_approved": False,
+    }
+    manifest["engine_code_policy"] = {
+        "source_code_field_is_not_factory_code_proof": True,
+        "shape_heuristic_is_not_used_for_verification": True,
+        "all_nonempty_source_codes_remain_unverified": True,
+        "verified_factory_engine_codes": 0,
+        "transmission_codes_in_engine_field_are_not_reclassified": True,
+    }
+    manifest["transmission_policy"] = {
+        "transmission_records_present": False,
+        "do_not_infer_gearbox_from_engine_source_field": True,
     }
     manifest["candidate_sqlite_integrity"] = integrity_after
     manifest["candidate_sqlite_foreign_key_issues"] = 0
