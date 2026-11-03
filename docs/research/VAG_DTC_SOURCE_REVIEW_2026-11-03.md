@@ -47,7 +47,11 @@ The Windows CI builder pins the upstream commit and preserves:
 - a separate SQLite database with source registry and candidate rows;
 - the complete MIT notice and attribution.
 
-The initial successful Windows bundle run was GitHub Actions run `41568389304` on 2026-11-03. It assembled five separate SQLite databases and 71 files. The Wal33D candidate database contained 530 rows (528 Volkswagen, 2 Audi); its SHA-256 and the full source-file hashes are recorded in the generated `manifest.json` and SQLite `source_files` table.
+The latest successful Windows bundle run was GitHub Actions run `41568847069` on 2026-11-03. It assembled five separate SQLite databases and 71 files (18,617,903 bytes). Bundle artifact ID: `13199724634`; artifact SHA-256: `1a9b27a9117033d5ab02941326d5a153f17c6b564c5246edcef686d2e08f0bd5`.
+
+The standalone Wal33D candidate artifact ID is `13199439821`; artifact SHA-256: `bfcdb4adc6557a6dfad592ca6823812d9a2db96906d51f86ca4cfb9d811f2fc0`. The SQLite database SHA-256 is `d0d72e90ce92f30bd2e7de9f33b30bd34abfde0fb7642d8d88f79d5d4d7c81a0`. It contains 530 rows (528 Volkswagen, 2 Audi), with the full source-file hashes and per-record source-line hashes recorded in `manifest.json` and the SQLite `source_files`/ `dtc_candidates` tables.
+
+The same Windows bundle run enforces the generic OBDex ranges (P0xxx, P2xxx, P34xx–P39xx, B0xxx, C0xxx, U0xxx, U3xxx), excludes manufacturer-controlled ranges, and verifies that the generic and manufacturer-specific DTC sets do not overlap.
 
 ## Explicit non-claims
 
