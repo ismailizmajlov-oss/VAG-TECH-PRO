@@ -74,24 +74,12 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path "artifacts" -Force | Out-Null
-          $importArgs = @(
-            "--lock", "data/source-manifests/vag-open-engine-candidates.lock.json",
-            "--input-dir", $env:VAG_ENGINE_INPUT,
-            "--output", "artifacts/vag-engine-candidates-research.sqlite",
-            "--manifest", "artifacts/vag-engine-candidates-research.manifest.json"
-          )
-          python scripts/import_vag_engine_candidates.py @args
+          python scripts/import_vag_engine_candidates.py --lock "data/source-manifests/vag-open-engine-candidates.lock.json" --input-dir "$env:VAG_ENGINE_INPUT" --output "artifacts/vag-engine-candidates-research.sqlite" --manifest "artifacts/vag-engine-candidates-research.manifest.json"
 
       - name: Verify source hashes, ODbL share-alike, UNKNOWN market and candidate boundaries
         shell: pwsh
         run: |
-          $verifyArgs = @(
-            "--db", "artifacts/vag-engine-candidates-research.sqlite",
-            "--manifest", "artifacts/vag-engine-candidates-research.manifest.json",
-            "--lock", "data/source-manifests/vag-open-engine-candidates.lock.json",
-            "--license", "artifacts/LICENSE-DATA"
-          )
-          python scripts/verify_vag_engine_candidate_import.py @args
+          python scripts/verify_vag_engine_candidate_import.py --db "artifacts/vag-engine-candidates-research.sqlite" --manifest "artifacts/vag-engine-candidates-research.manifest.json" --lock "data/source-manifests/vag-open-engine-candidates.lock.json" --license "artifacts/LICENSE-DATA"
 
       - name: Run synthetic import and rejection tests
         run: python scripts/test-vag-engine-candidate-import.py
