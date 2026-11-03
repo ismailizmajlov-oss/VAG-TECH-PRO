@@ -64,9 +64,10 @@ def validate_upstream_documents(
         raise ValueError("VehiclesDB attribution identity changed; manual review required")
     if "Creative Commons Attribution 4.0 International" not in license_text:
         raise ValueError("The upstream LICENSE file does not identify CC BY 4.0")
-    if "even commercially" not in license_text.lower():
+    normalized_license = " ".join(license_text.split()).lower()
+    if "even commercially" not in normalized_license:
         raise ValueError("The upstream LICENSE file no longer confirms commercial reuse")
-    if ATTRIBUTION_TEXT not in attribution_text or "upstream notices below are UNCONDITIONAL" not in attribution_text:
+    if "VehiclesDB" not in attribution_text or "https://vehiclesdb.com" not in attribution_text or "upstream notices below are UNCONDITIONAL" not in attribution_text:
         raise ValueError("The upstream attribution file is incomplete")
     countries = upstream_manifest.get("countries")
     if not isinstance(countries, list) or "ru" in {str(x).lower() for x in countries}:
@@ -184,7 +185,8 @@ def create_output_schema(db: sqlite3.Connection) -> None:
       upstream_license_url TEXT NOT NULL,
       evidence_kind TEXT,
       rights_status TEXT NOT NULL CHECK(rights_status='approved_by_published_license'),
-      attribution_required INTEGER NOT NULL DEFAULT 1 CHECK(attribution_required=1),
+      upstream_attribution_required INTEGER NOT NULL CHECK(upstream_attribution_required IN (0,1)),
+      source_notice_preserved INTEGER NOT NULL DEFAULT 1 CHECK(source_notice_preserved=1),
       attribution_notice_file TEXT NOT NULL DEFAULT 'ATTRIBUTION.md'
     );
 
@@ -349,8 +351,12 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         create_output_schema(db)
         db.execute("BEGIN IMMEDIATE")
         db.execute(
-            """INSERT INTO dataset_provenance VALUES
-               (1,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,0)""",
+            """INSERT INTO dataset_provenance
+               (provenance_id,dataset_id,publisher,repository_url,upstream_tag,dataset_version,
+                dataset_license,license_url,attribution_required,attribution_text,attribution_url,
+                catalog_sqlite_sha256,upstream_manifest_sha256,license_sha256,attribution_sha256,
+                built_at_utc,ru_evidence_present,fitment_claim)
+               VALUES(1,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,0)""",
             (
                 lock["dataset_id"], lock["publisher"], lock["repository"], lock["upstream_tag"],
                 upstream_manifest["version"], EXPECTED_DATA_LICENSE, lock["license_url"],
@@ -358,17 +364,23 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
                 upstream_manifest_hash, license_hash, attribution_hash, built_at,
             ),
         )
-        source_by_id = {str(row["id"]): row for row in upstream_manifest["sources"]}
+        attribution_required_licenses = {
+            "CC-BY-4.0", "CC-BY-3.0-AU", "OGL-UK-3.0", "DL-DE-BY-2.0",
+            "OGL-Canada-2.0", "Ley-37/2007",
+        }
         for source_id in sorted(used_source_ids):
             row = allowed_sources[source_id]
+            upstream_attribution_required = 1 if row["license"] in attribution_required_licenses else 0
             db.execute(
                 """INSERT INTO source_registry
                    (source_id,country_code,source_name,source_url,upstream_license,
-                    upstream_license_url,evidence_kind,rights_status,attribution_required)
-                   VALUES(?,?,?,?,?,?,?,'approved_by_published_license',1)""",
+                    upstream_license_url,evidence_kind,rights_status,
+                    upstream_attribution_required,source_notice_preserved)
+                   VALUES(?,?,?,?,?,?,?,'approved_by_published_license',?,1)""",
                 (
                     source_id, str(row["country"]).lower(), row["name"], row["url"],
                     row["license"], row["license_url"], row.get("evidence"),
+                    upstream_attribution_required,
                 ),
             )
         for filename, kind, path, url in (
