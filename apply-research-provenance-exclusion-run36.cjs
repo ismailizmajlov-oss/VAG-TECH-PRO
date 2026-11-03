@@ -521,7 +521,7 @@ function patchAutoDiag2DbAndTests() {
   );
   testSource = replaceExactly(testSource,
     '  assert.deepEqual(local.searchGenericDtcs("P1004", 10, root), []);',
-    '  assert.deepEqual(local.searchGenericDtcs("P1004", 10, root), []);\n  const generic = local.searchGenericDtcs("P0300", 10, root);\n  assert.ok(generic.length > 0);\n  assert.equal(generic[0].namespace, "generic_obd2");',
+    '  assert.deepEqual(local.searchGenericDtcs("P1004", 10, root), []);\n  const generic = local.searchGenericDtcs("P0300", 10, root);\n  assert.ok(generic.length > 0);\n  assert.equal(generic[0].namespace, "generic_sae_iso_obd2");',
     "generic DTC remains separate from AutoDiag2 candidates"
   );
   writeLf(testFile, testSource);
