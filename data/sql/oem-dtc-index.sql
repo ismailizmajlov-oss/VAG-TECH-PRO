@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS oem_dtc_index (
     length(dtc_code)=5 AND substr(dtc_code,1,1) IN ('P','B','C','U')
   ),
   dtc_namespace TEXT NOT NULL CHECK (
-    dtc_namespace IN ('generic_sae_iso','manufacturer_specific_vag','manufacturer_specific_other','unknown')
+    dtc_namespace IN ('generic_sae_iso','manufacturer_specific_candidate','manufacturer_specific_vag','manufacturer_specific_other','unknown')
   ),
   manufacturer TEXT NOT NULL CHECK (
     manufacturer IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA','OTHER','UNKNOWN')
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS oem_dtc_index (
   evidence_locator TEXT NOT NULL,
   applicability_level TEXT NOT NULL CHECK (
     applicability_level IN ('exact_vin','exact_ecu_hw_sw','engine_transmission_variant',
-                            'model_year_only','generic_only','unknown')
+                            'manufacturer_make_candidate','model_year_only','generic_only','unknown')
   ),
   vin_range_explicit INTEGER NOT NULL DEFAULT 0 CHECK (vin_range_explicit IN (0,1)),
   engine_code_explicit INTEGER NOT NULL DEFAULT 0 CHECK (engine_code_explicit IN (0,1)),
@@ -126,18 +126,136 @@ BEFORE UPDATE OF review_status ON oem_dtc_index
 WHEN NEW.review_status = 'publication_approved'
 BEGIN
   SELECT CASE
+    WHEN OLD.review_status <> 'engineer_reviewed'
+    THEN RAISE(ABORT, 'publication blocked: engineer review must be completed first')
+  END;
+  SELECT CASE
     WHEN NOT EXISTS (
       SELECT 1 FROM source_documents s
       WHERE s.source_document_id = NEW.source_document_id
         AND s.redistribution_allowed = 1
         AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+        AND s.source_sha256 IS NOT NULL
+        AND s.upstream_revision IS NOT NULL
+        AND s.revision <> ''
+        AND s.market_scope IN (NEW.market_scope,'MULTI')
     )
-    THEN RAISE(ABORT, 'publication blocked: source reuse rights not cleared')
+    THEN RAISE(ABORT, 'publication blocked: source rights, revision, hash or market scope not cleared')
   END;
   SELECT CASE
     WHEN NEW.evidence_locator = ''
-      OR NEW.applicability_level IN ('generic_only','unknown','model_year_only')
-    THEN RAISE(ABORT, 'publication blocked: insufficient exact applicability evidence')
+      OR NEW.market_scope = 'UNKNOWN'
+      OR NEW.applicability_level NOT IN ('exact_vin','exact_ecu_hw_sw','engine_transmission_variant')
+    THEN RAISE(ABORT, 'publication blocked: exact vehicle applicability evidence is required')
+  END;
+  SELECT CASE
+    WHEN NEW.applicability_level = 'exact_vin' AND NEW.vin_range_explicit <> 1
+    THEN RAISE(ABORT, 'publication blocked: exact VIN applicability must be explicit')
+  END;
+  SELECT CASE
+    WHEN NEW.applicability_level = 'exact_ecu_hw_sw' AND NEW.ecu_hw_sw_explicit <> 1
+    THEN RAISE(ABORT, 'publication blocked: ECU hardware/software applicability must be explicit')
+  END;
+  SELECT CASE
+    WHEN NEW.applicability_level = 'engine_transmission_variant'
+      AND (NEW.engine_code_explicit <> 1 OR NEW.transmission_code_explicit <> 1)
+    THEN RAISE(ABORT, 'publication blocked: engine and transmission codes must be explicit')
+  END;
+END;
+
+-- Make-labelled source rows remain candidates until the DTC definition itself is reviewed.
+-- Candidate rows cannot carry model, year, engine, gearbox, ECU or PR-code applicability.
+CREATE TRIGGER IF NOT EXISTS validate_manufacturer_specific_candidate_insert
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.dtc_namespace = 'manufacturer_specific_candidate'
+BEGIN
+  SELECT CASE
+    WHEN NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+    THEN RAISE(ABORT, 'manufacturer-specific candidate requires a VAG make label')
+  END;
+  SELECT CASE
+    WHEN NEW.market_scope <> 'UNKNOWN'
+      OR NEW.applicability_level <> 'manufacturer_make_candidate'
+      OR NEW.review_status NOT IN ('candidate','source_header_verified')
+    THEN RAISE(ABORT, 'manufacturer-specific candidate must remain make-level and unverified')
+  END;
+  SELECT CASE
+    WHEN NEW.model IS NOT NULL OR NEW.generation_or_type_code IS NOT NULL
+      OR NEW.model_year_from IS NOT NULL OR NEW.model_year_to IS NOT NULL
+      OR NEW.production_date_from IS NOT NULL OR NEW.production_date_to IS NOT NULL
+      OR NEW.engine_code IS NOT NULL OR NEW.transmission_code IS NOT NULL
+      OR NEW.drive_configuration IS NOT NULL OR NEW.ecu_identity_id IS NOT NULL
+      OR NEW.pr_codes_json <> '[]'
+      OR NEW.vin_range_explicit <> 0 OR NEW.engine_code_explicit <> 0
+      OR NEW.transmission_code_explicit <> 0 OR NEW.ecu_hw_sw_explicit <> 0
+    THEN RAISE(ABORT, 'make-level candidate cannot claim exact vehicle or ECU fitment')
+  END;
+END;
+
+CREATE TRIGGER IF NOT EXISTS validate_manufacturer_specific_candidate_update
+BEFORE UPDATE ON oem_dtc_index
+WHEN NEW.dtc_namespace = 'manufacturer_specific_candidate'
+BEGIN
+  SELECT CASE
+    WHEN NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+    THEN RAISE(ABORT, 'manufacturer-specific candidate requires a VAG make label')
+  END;
+  SELECT CASE
+    WHEN NEW.market_scope <> 'UNKNOWN'
+      OR NEW.applicability_level <> 'manufacturer_make_candidate'
+      OR NEW.review_status NOT IN ('candidate','source_header_verified')
+    THEN RAISE(ABORT, 'manufacturer-specific candidate must remain make-level and unverified')
+  END;
+  SELECT CASE
+    WHEN NEW.model IS NOT NULL OR NEW.generation_or_type_code IS NOT NULL
+      OR NEW.model_year_from IS NOT NULL OR NEW.model_year_to IS NOT NULL
+      OR NEW.production_date_from IS NOT NULL OR NEW.production_date_to IS NOT NULL
+      OR NEW.engine_code IS NOT NULL OR NEW.transmission_code IS NOT NULL
+      OR NEW.drive_configuration IS NOT NULL OR NEW.ecu_identity_id IS NOT NULL
+      OR NEW.pr_codes_json <> '[]'
+      OR NEW.vin_range_explicit <> 0 OR NEW.engine_code_explicit <> 0
+      OR NEW.transmission_code_explicit <> 0 OR NEW.ecu_hw_sw_explicit <> 0
+    THEN RAISE(ABORT, 'make-level candidate cannot claim exact vehicle or ECU fitment')
+  END;
+END;
+
+CREATE TRIGGER IF NOT EXISTS validate_manufacturer_specific_vag_make
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.dtc_namespace = 'manufacturer_specific_vag'
+ AND NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+BEGIN
+  SELECT RAISE(ABORT, 'VAG-specific namespace requires a VAG manufacturer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS validate_manufacturer_specific_vag_make_update
+BEFORE UPDATE ON oem_dtc_index
+WHEN NEW.dtc_namespace = 'manufacturer_specific_vag'
+ AND NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+BEGIN
+  SELECT RAISE(ABORT, 'VAG-specific namespace requires a VAG manufacturer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prevent_unreviewed_candidate_namespace_promotion
+BEFORE UPDATE OF dtc_namespace ON oem_dtc_index
+WHEN OLD.dtc_namespace = 'manufacturer_specific_candidate'
+ AND NEW.dtc_namespace = 'manufacturer_specific_vag'
+BEGIN
+  SELECT CASE
+    WHEN OLD.review_status <> 'source_header_verified'
+      OR NEW.review_status NOT IN ('applicability_verified','engineer_reviewed')
+    THEN RAISE(ABORT, 'candidate promotion requires source-header and technical applicability review')
+  END;
+  SELECT CASE
+    WHEN NOT EXISTS (
+      SELECT 1 FROM source_documents s
+      WHERE s.source_document_id = NEW.source_document_id
+        AND s.redistribution_allowed = 1
+        AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+        AND s.source_sha256 IS NOT NULL
+        AND s.upstream_revision IS NOT NULL
+        AND s.revision <> ''
+    )
+    THEN RAISE(ABORT, 'candidate promotion blocked: source rights and provenance are not cleared')
   END;
 END;
 
