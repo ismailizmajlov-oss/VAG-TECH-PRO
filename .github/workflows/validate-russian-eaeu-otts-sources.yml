@@ -30,5 +30,7 @@ jobs:
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.12"
+      - name: Record Python runtime version
+        run: python -VV
       - name: Validate Russian/EAEU OTTS source rights
         run: python scripts/validate_russian_eaeu_otts_sources.py
