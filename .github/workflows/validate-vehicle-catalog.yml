@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
-      - automation/windows-offline-data-foundation-run18
+      - "automation/**"
     paths:
       - 'data/sql/vehicle-catalog.sql'
+      - 'data/sql/otts-type-approval-evidence.sql'
+      - 'scripts/test-otts-type-approval-evidence.py'
       - 'scripts/test-vehicle-catalog-schema.py'
       - 'data/sql/oem-dtc-index.sql'
       - 'data/sql/dtc-catalog-links.sql'
@@ -29,5 +31,7 @@ jobs:
           python-version: '3.12'
       - name: Validate SQLite vehicle taxonomy and evidence gates
         run: python scripts/test-vehicle-catalog-schema.py
+      - name: Validate EAEU OTTS descriptor-only evidence and rights gates
+        run: python scripts/test-otts-type-approval-evidence.py
       - name: Validate DTC namespace separation, publication rights and vehicle links
         run: python scripts/test-dtc-catalog-links.py
