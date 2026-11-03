@@ -52,7 +52,7 @@ jobs:
           $patches = @(
             @{ File = "run36-01-manifest.patch.gz.b64"; GzipSha = "982d6f86a63d6245c0e84d533bb3e5268cdb7ab5724794f5d0bbab0e75ce67d1"; PatchSha = "195003ca7ad428b14c877b3c2f4586fc4320c50ae9c9353a87508efd2b0c907e" },
             @{ File = "run36-02-api-db.patch.gz.b64"; GzipSha = "8b5626be40e037f236791019971a66952dccaf9ffb51f8889e0ba1d6aa4cde93"; PatchSha = "554ac86467b5713879c254734df05d6419609ff8c5a93e5edb3c4c309567acbb" },
-            @{ File = "run36-03-ui.patch.gz.b64"; GzipSha = "2351931d56a8d040d38836635767eb273585fb7b5dcb23038c98bbdd83b858d1"; PatchSha = "be13b888e4b3c353cc3288d2839098e7461c30be2b6fbeebc90b5129578c7987" },
+            @{ File = "run36-03-ui.patch.gz.b64"; GzipSha = "dc38f48043f2d7fe75d8a8e368e1b30c55da0e1b1a8f7b9cdc93eb6d7b6c51e8"; PatchSha = "abccb6706d44155469fe96a6e21f039c8c33a7fd59407a92b55288a67ce46ae3" },
             @{ File = "run36-04-verification-tests.patch.gz.b64"; GzipSha = "e2d3e46e5a2c07b59edb427fd9d4d4c364833af4b5d9a8142fb89faf4a3d8c82"; PatchSha = "3dbc26d866cf76feabacb7eaba2618ad4cba922d2aa3dae2aead360d8c4e7692" }
           )
           foreach ($patch in $patches) {
