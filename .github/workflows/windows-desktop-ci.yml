@@ -5,7 +5,6 @@ on:
     branches:
       - automation/windows-desktop-build-run35
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
   workflow_dispatch:
@@ -49,8 +48,8 @@ jobs:
           Expand-Archive -LiteralPath $zipPath -DestinationPath "desktop-source" -Force
           if (-not (Test-Path "desktop-source/package.json")) { throw "Desktop package.json was not extracted." }
           Copy-Item -LiteralPath "desktop-package-run35.json" -Destination "desktop-source/package.json" -Force
-          git apply --check "desktop-source-run35.patch"
-          git apply "desktop-source-run35.patch"
+          node --check apply-desktop-hardening-run35.cjs
+          node apply-desktop-hardening-run35.cjs
           "source_archive_sha256=$actual" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Encoding utf8
 
       - name: Download pinned open research packs
