@@ -48,8 +48,8 @@ jobs:
           $lock = Get-Content "data/source-manifests/vehiclesdb-vag-identity.lock.json" -Raw | ConvertFrom-Json
           $tag = $lock.upstream_tag
           $base = "https://cdn.jsdelivr.net/gh/vehiclesdb/vehiclesdb@$tag"
-          $input = Join-Path $env:RUNNER_TEMP "vehiclesdb-vag-input"
-          New-Item -ItemType Directory -Path $input -Force | Out-Null
+          $inputDir = Join-Path $env:RUNNER_TEMP "vehiclesdb-vag-input"
+          New-Item -ItemType Directory -Path $inputDir -Force | Out-Null
 
           $files = @(
             @{ url = "$base/dist/catalog.sqlite"; name = "catalog.sqlite" },
@@ -58,7 +58,7 @@ jobs:
             @{ url = "$base/LICENSE"; name = "LICENSE" }
           )
           foreach ($file in $files) {
-            $target = Join-Path $input $file.name
+            $target = Join-Path $inputDir $file.name
             Invoke-WebRequest -Uri $file.url -OutFile $target -MaximumRedirection 5
             if (-not (Test-Path $target -PathType Leaf) -or (Get-Item $target).Length -le 0) {
               throw "Pinned VehiclesDB source file is missing or empty: $($file.name)"
@@ -66,7 +66,7 @@ jobs:
             $hash = (Get-FileHash -Path $target -Algorithm SHA256).Hash.ToLowerInvariant()
             Write-Host "$($file.name) bytes=$((Get-Item $target).Length) sha256=$hash"
           }
-          "VEHICLESDB_INPUT=$input" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VEHICLESDB_INPUT=$inputDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Build isolated VAG identity candidate SQLite
         shell: pwsh
