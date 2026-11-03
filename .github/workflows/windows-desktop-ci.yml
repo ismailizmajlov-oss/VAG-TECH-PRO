@@ -30,6 +30,12 @@ jobs:
           Expand-Archive -LiteralPath "desktop-source-run33.zip" -DestinationPath "desktop-source" -Force
           if (-not (Test-Path "desktop-source/package.json")) { throw "Desktop package.json was not extracted." }
 
+      - name: Apply reviewed desktop runtime hardening patch
+        shell: pwsh
+        run: |
+          git apply --check desktop-source-run31.patch
+          git apply desktop-source-run31.patch
+
       - name: Set up Node.js 22 x64
         uses: actions/setup-node@v4
         with:
