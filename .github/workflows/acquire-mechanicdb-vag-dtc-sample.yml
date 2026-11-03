@@ -34,7 +34,7 @@ jobs:
           python-version: "3.12"
 
       - name: Verify project source policy
-        run: python -m unittest discover -s tests -p "test_mechanicdb_vag_dtc_pack_policy.py"
+        run: python tests/test_mechanicdb_vag_dtc_pack_policy.py
 
       - name: Fetch the immutable public upstream revision
         shell: pwsh
