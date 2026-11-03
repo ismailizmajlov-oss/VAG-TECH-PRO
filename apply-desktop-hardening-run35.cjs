@@ -200,4 +200,59 @@ for (const [file, source, required] of [
 ]) {
   if (!source.includes(required)) throw new Error("React effect hardening verification failed: " + file);
 }
-console.log("Desktop hardening and React effect-lint fixes applied and verified.");
+// Resolve the desktop's heterogeneous Supabase row typing without lying about relation cardinality.
+const homePagePath = path.join(root, "app", "page.tsx");
+let homePage = readLf(homePagePath);
+const dbRowStart = homePage.indexOf("type DbRow =");
+const moduleInfoAt = dbRowStart >= 0 ? homePage.indexOf("\nconst moduleInfo", dbRowStart) : -1;
+if (dbRowStart < 0 || moduleInfoAt < 0) throw new Error("Could not locate the home-page DbRow type alias");
+homePage = homePage.slice(0, dbRowStart) + "type DbRow = Record<string, any>;\n" + homePage.slice(moduleInfoAt + 1);
+homePage = replaceExactly(
+  homePage,
+  "  }, [globalQuery, catalogOnline]);",
+  "  }, [globalQuery, catalogOnline, query]);",
+  "home page keyboard search dependency"
+);
+writeLf(homePagePath, homePage);
+
+const researchCatalogPath = path.join(root, "components", "local-research-catalog.tsx");
+let researchCatalog = readLf(researchCatalogPath);
+researchCatalog = researchCatalog
+  .replace(/row\.affectedComponents\.length/g, "row.affectedComponents?.length")
+  .replace(/row\.affectedComponents\.map/g, "row.affectedComponents?.map")
+  .replace(/row\.commonCauses\.length/g, "row.commonCauses?.length")
+  .replace(/row\.commonCauses\.map/g, "row.commonCauses?.map");
+writeLf(researchCatalogPath, researchCatalog);
+
+const loginPagePath = path.join(root, "app", "login", "page.tsx");
+let loginPage = readLf(loginPagePath);
+if (!loginPage.includes('import { useRouter } from "next/navigation";')) {
+  loginPage = replaceExactly(
+    loginPage,
+    'import { FormEvent, useMemo, useState } from "react";',
+    'import { FormEvent, useMemo, useState } from "react";\nimport { useRouter } from "next/navigation";',
+    "login router import"
+  );
+}
+if (!loginPage.includes("const router=useRouter();")) {
+  loginPage = replaceExactly(
+    loginPage,
+    "export default function LoginPage(){",
+    "export default function LoginPage(){\n const router=useRouter();",
+    "login router hook"
+  );
+}
+loginPage = replaceExactly(loginPage, 'window.location.href="/";', 'router.push("/");', "login internal navigation");
+writeLf(loginPagePath, loginPage);
+
+let coreTestsFinal = readLf(coreTestPath);
+coreTestsFinal = coreTestsFinal.replace(/^\s*const now = new Date\(\)\.toISOString\(\);\r?\n(?=\s*seedSourceSnapshot)/m, "");
+writeLf(coreTestPath, coreTestsFinal);
+
+if (!homePage.includes("type DbRow = Record<string, any>;") ||
+    !researchCatalog.includes("row.affectedComponents?.length") ||
+    !researchCatalog.includes("row.commonCauses?.length") ||
+    !loginPage.includes('router.push("/");')) {
+  throw new Error("TypeScript/lint hardening verification failed");
+}
+console.log("Desktop hardening, React effect, TypeScript and lint fixes applied and verified.");
