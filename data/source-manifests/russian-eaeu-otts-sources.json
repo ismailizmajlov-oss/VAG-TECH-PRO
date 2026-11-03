@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-11-03",
+  "product_market": [
+    "RU",
+    "EAEU"
+  ],
+  "ingestion_policy": {
+    "require_commercial_use_rights": true,
+    "require_display_rights": true,
+    "require_offline_cache_rights": true,
+    "require_bulk_reuse_rights": true,
+    "require_pdf_redistribution_rights_if_pdfs_are_packaged": true,
+    "no_scraping_or_undocumented_endpoints": true,
+    "no_import_until_all_required_rights_are_confirmed": true
+  },
+  "sources": [
+    {
+      "source_id": "rosstandart-fgis-reestr-kts",
+      "publisher": "Росстандарт / ФБУ «КВФ «Интерстандарт»",
+      "source_type": "official_vehicle_type_approval_register",
+      "source_url": "https://www.interstandart.ru/page/fgis_01",
+      "legal_basis": {
+        "document": "Приказ Росстандарта от 24.09.2025 № 2038",
+        "document_url": "https://law.tks.ru/document/779154",
+        "effective_transition_date": "2025-10-01",
+        "note": "Orders 2038 and 2335 define internal database attributes and the fields to be published/searchable on the Rosstandart site. They do not themselves grant a bulk database reuse, commercial display, offline caching, redistribution or PDF redistribution license.",
+        "primary_publication_url": null,
+        "primary_signed_pdf_sha256": null,
+        "publication_source_quality": "secondary_republication_reviewed; primary official copy not retrieved",
+        "current_revision": "2038_as_amended_by_2335",
+        "latest_amendment_found": {
+          "document": "Приказ Росстандарта от 30.10.2025 № 2335",
+          "document_url": "https://oei-analitika.ru/kurilka/order_info.php?order_id=725730",
+          "source_quality": "secondary_republication_of_electronically_signed_document",
+          "changes": [
+            "Corrects the preamble reference to Commission of the Customs Union Decision No. 877 dated 2011-12-09.",
+            "Adds internal FGIS Annex 1 attributes 86 (resumption reason) and 87 (resumption date).",
+            "Updates public Annex 2 field 25 and adds public fields 27 and 28 for early termination based on a cancellation notice."
+          ]
+        }
+      },
+      "market_scope": [
+        "RU",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "license": {
+        "identifier": null,
+        "url": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "pdf_redistribution": "not_confirmed"
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "type_approval_document_metadata_only",
+      "important_limitations": [
+        "OTTS field 50 is engine make/type, not a confirmed VAG factory engine code.",
+        "OTTS fields 14-18 identify make, commercial name, type, base vehicle/chassis and modifications; they do not establish exact engine/gearbox fitment by themselves.",
+        "OTTS field 40 contains VINs covered by the approval; field 79 describes VIN structure.",
+        "The OTTS attribute list does not provide a dedicated gearbox-code field.",
+        "SBKTS Appendix 1 field 68 is gearbox make/type, but SBKTS is an individual-vehicle safety certificate, not an OTTS type-approval record.",
+        "Do not use SBKTS personal data or package certificate PDFs without separate rights and privacy review.",
+        "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace."
+      ],
+      "ot_ts_attribute_map": [
+        {
+          "field": 4,
+          "name": "approval_registration_number",
+          "precision": "document"
+        },
+        {
+          "field": 6,
+          "name": "valid_from",
+          "precision": "document"
+        },
+        {
+          "field": 7,
+          "name": "valid_to",
+          "precision": "document"
+        },
+        {
+          "field": 14,
+          "name": "make",
+          "precision": "document"
+        },
+        {
+          "field": 15,
+          "name": "commercial_name",
+          "precision": "document"
+        },
+        {
+          "field": 16,
+          "name": "vehicle_type",
+          "precision": "document"
+        },
+        {
+          "field": 17,
+          "name": "base_vehicle_or_chassis",
+          "precision": "document"
+        },
+        {
+          "field": 18,
+          "name": "modifications",
+          "precision": "document"
+        },
+        {
+          "field": 19,
+          "name": "vehicle_category",
+          "precision": "document"
+        },
+        {
+          "field": 20,
+          "name": "environmental_class",
+          "precision": "document"
+        },
+        {
+          "field": 28,
+          "name": "manufacturer",
+          "precision": "document"
+        },
+        {
+          "field": 36,
+          "name": "assembly_plants",
+          "precision": "document"
+        },
+        {
+          "field": 40,
+          "name": "covered_vins",
+          "precision": "approval_scope_not_engine_fitment"
+        },
+        {
+          "field": 50,
+          "name": "ice_engine_make_and_type",
+          "precision": "engine_descriptor_not_factory_code"
+        },
+        {
+          "field": 51,
+          "name": "displacement_cc",
+          "precision": "document"
+        },
+        {
+          "field": 52,
+          "name": "fuel",
+          "precision": "document"
+        },
+        {
+          "field": 53,
+          "name": "fuel_supply_system_type",
+          "precision": "document"
+        },
+        {
+          "field": 54,
+          "name": "ignition_system_type",
+          "precision": "document"
+        },
+        {
+          "field": 63,
+          "name": "maximum_permissible_vehicle_mass_kg",
+          "precision": "document"
+        },
+        {
+          "field": 69,
+          "name": "wheel_formula_and_driven_wheels",
+          "precision": "document"
+        },
+        {
+          "field": 72,
+          "name": "suspension_type_front_rear",
+          "precision": "document"
+        },
+        {
+          "field": 73,
+          "name": "steering_description",
+          "precision": "document"
+        },
+        {
+          "field": 79,
+          "name": "vin_structure",
+          "precision": "manufacturer_vin_pattern"
+        },
+        {
+          "field": 80,
+          "name": "full_otts_pdf",
+          "precision": "document_file_rights_unconfirmed"
+        }
+      ],
+      "publication_contract": {
+        "legal_basis_revision": "2038_as_amended_by_2335",
+        "official_site_search_required": true,
+        "effective_from": "2025-10-01",
+        "internal_fgis_attribute_namespace": "annex_1_internal_database_fields",
+        "public_site_search_namespace": "annex_2_publication_fields",
+        "field_numbers_are_not_interchangeable": true,
+        "public_site_search_fields": [
+          {
+            "field": 1,
+            "name": "approval_form_accounting_number"
+          },
+          {
+            "field": 2,
+            "name": "application_form_accounting_numbers"
+          },
+          {
+            "field": 3,
+            "name": "supplementary_sheet_accounting_numbers"
+          },
+          {
+            "field": 4,
+            "name": "approval_registration_number"
+          },
+          {
+            "field": 5,
+            "name": "valid_from"
+          },
+          {
+            "field": 6,
+            "name": "valid_to"
+          },
+          {
+            "field": 7,
+            "name": "certification_body_name"
+          },
+          {
+            "field": 8,
+            "name": "certification_body_address"
+          },
+          {
+            "field": 9,
+            "name": "certification_body_phone"
+          },
+          {
+            "field": 10,
+            "name": "certification_body_email"
+          },
+          {
+            "field": 11,
+            "name": "certification_body_accreditation_certificate_number"
+          },
+          {
+            "field": 12,
+            "name": "make"
+          },
+          {
+            "field": 13,
+            "name": "commercial_name"
+          },
+          {
+            "field": 14,
+            "name": "vehicle_type"
+          },
+          {
+            "field": 15,
+            "name": "base_vehicle_or_chassis"
+          },
+          {
+            "field": 16,
+            "name": "modifications"
+          },
+          {
+            "field": 17,
+            "name": "vehicle_category"
+          },
+          {
+            "field": 18,
+            "name": "environmental_class"
+          },
+          {
+            "field": 19,
+            "name": "annex_1_pdf"
+          },
+          {
+            "field": 20,
+            "name": "electronically_issued_flag"
+          },
+          {
+            "field": 21,
+            "name": "suspension_date"
+          },
+          {
+            "field": 22,
+            "name": "suspension_reason"
+          },
+          {
+            "field": 23,
+            "name": "resumption_date"
+          },
+          {
+            "field": 24,
+            "name": "resumption_reason"
+          },
+          {
+            "field": 25,
+            "name": "early_termination_date"
+          },
+          {
+            "field": 26,
+            "name": "publication_date"
+          },
+          {
+            "field": 27,
+            "name": "early_termination_date_based_on_cancellation_notice"
+          },
+          {
+            "field": 28,
+            "name": "early_termination_reason_based_on_cancellation_notice"
+          }
+        ],
+        "access_and_reuse": {
+          "public_search": "required_by_order_for_annex_2_fields",
+          "documented_public_bulk_api": "not_identified",
+          "commercial_use": "not_confirmed",
+          "third_party_display": "not_confirmed",
+          "offline_cache": "not_confirmed",
+          "bulk_export": "not_confirmed",
+          "pdf_redistribution": "not_confirmed"
+        },
+        "source_verification": {
+          "registry_operator_overview_reviewed": true,
+          "order_2038_secondary_copy_reviewed": true,
+          "order_2335_secondary_copy_reviewed": true,
+          "official_primary_order_copy_retrieved": false,
+          "official_public_search_endpoint_resolved": false,
+          "reviewed_at": "2026-11-03"
+        }
+      },
+      "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
+    },
+    {
+      "source_id": "eaeu-open-data-portal",
+      "publisher": "Евразийская экономическая комиссия",
+      "source_type": "official_open_data_catalog_and_odata_api",
+      "source_url": "https://opendata.eaeunion.org/opendata/ru/resourses",
+      "api_url": "https://opendata.eaeunion.org/opendata/ru/api/restapi",
+      "market_scope": [
+        "EAEU"
+      ],
+      "catalog_observation": {
+        "total_resources": 117,
+        "technical_regulation_resources": 7,
+        "dedicated_bulk_otts_dataset_confirmed": false,
+        "observation_note": "The searchable catalog did not identify a dedicated bulk OTTS dataset during this review. This is not proof that no related resource exists."
+      },
+      "reuse_terms": "The portal describes OData reuse with minimal organizational and other access restrictions; each selected dataset's own metadata and license still require review.",
+      "license": {
+        "identifier": null,
+        "dataset_specific_terms_confirmed": false,
+        "commercial_use": "not_confirmed_for_an_otts_dataset",
+        "display": "not_confirmed_for_an_otts_dataset",
+        "offline_cache": "not_confirmed_for_an_otts_dataset"
+      },
+      "status": "discovery_only",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
+    },
+    {
+      "source_id": "hpt-su-otts-api",
+      "publisher": "HPT.SU",
+      "source_type": "commercial_aggregated_otts_database_api",
+      "source_url": "https://hpt.su/api/v1/docs/swagger/",
+      "offer_url": "https://hpt.su/p/oferta/",
+      "api_terms_url": "https://hpt.su/p/api-terms/",
+      "api_terms_effective_date": "2026-05-27",
+      "offer_effective_date": "2026-08-22",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "license": {
+        "identifier": "contractual_subscription_license",
+        "commercial_use": "internal_user_use_only_with_active_api_subscription",
+        "display_to_third_parties": "prohibited_in_equivalent_database_form_without_written_consent",
+        "offline_cache": "not_confirmed_for_distribution",
+        "bulk_copy": "prohibited",
+        "derived_database_for_third_parties": "prohibited_without_separate_written_consent",
+        "full_database_mirror": "prohibited"
+      },
+      "status": "restricted_for_product_distribution",
+      "subscription_required": true,
+      "paid_terms_accepted": false,
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "terms_review_only",
+      "notes": [
+        "API terms require an active subscription to an API tariff.",
+        "Internal integration and processing for the subscriber's own needs are permitted.",
+        "Equivalent third-party access, substantially reproducing derived databases, and systematic full database copying are restricted without separate written consent.",
+        "No account, subscription, API key or payment was created."
+      ]
+    },
+    {
+      "source_id": "otts-bot-and-public-aggregators",
+      "publisher": "Third-party public aggregators",
+      "source_type": "commercial_or_unverified_aggregator",
+      "source_url": "https://otts.bot/otts",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed"
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
+    }
+  ]
+}
