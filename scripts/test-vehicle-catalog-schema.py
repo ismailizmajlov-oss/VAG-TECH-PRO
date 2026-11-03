@@ -83,6 +83,7 @@ def main():
 
         assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
         assert db.execute("PRAGMA foreign_key_check").fetchall() == []
+        db.close()  # Windows cannot remove the temporary SQLite file while the handle is open.
         print("PASS: schema, VIN-free columns, evidence gates, pair gate, rights gate, integrity")
 
 if __name__ == "__main__":
