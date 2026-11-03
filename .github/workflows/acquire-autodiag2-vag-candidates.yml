@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "scripts/build_autodiag2_vag_pack.py"
+      - "scripts/filter_autodiag2_vag_dtc_candidates.py"
+      - "tests/test_autodiag2_vag_dtc_policy.py"
       - ".github/workflows/acquire-autodiag2-vag-candidates.yml"
 
 permissions:
@@ -28,8 +30,14 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Test DTC attribution and rights gates
+        run: python -m unittest discover -s tests -p "test_autodiag2_vag_dtc_policy.py" -v
+
       - name: Download, filter and verify the ODbL/DbCL VAG subset
         run: python scripts/build_autodiag2_vag_pack.py
+
+      - name: Exclude unattributed generic-ECU make-level DTC rows
+        run: python scripts/filter_autodiag2_vag_dtc_candidates.py --pack-dir research-output/autodiag2-vag-community
 
       - name: Upload separate ODbL candidate database
         uses: actions/upload-artifact@v4
