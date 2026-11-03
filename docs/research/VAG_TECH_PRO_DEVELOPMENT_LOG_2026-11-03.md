@@ -133,6 +133,12 @@ Added `scripts/validate_russian_eaeu_otts_sources.py` and `.github/workflows/val
 
 Windows x64 workflow run `41591282473` completed successfully on commit `842eda2789648efa3af84c008a88e04dc3a3fe70`. The run records the Python runtime and executes the current validator. The machine-readable register contains five source entries, zero ingested records and three explicitly blocked commercial aggregators. This gate validates permission metadata only; it does not fetch or import OTTS data.
 
+## VAG-specific DTC source quarantine — verified on Windows
+
+Rechecked `riz4d/OpenVAG` at default-branch commit `407d5e042cf46d55087ed4ae4e056605f2b04f08`, tree `d9101f504ef15d522c8f4f517cc96471bcac1619`. The repository README and `db/README.md` claim a 2.1 MB database with 995 DTCs and related variants, but the complete current Git tree contains no SQLite/database blob, no seed-data directory and no GitHub release asset. The MIT license covers project code; a separate database-data license and row-level provenance are not established. The source register now pins the commit/tree and explicitly records `data_ingested=false`, `source_snapshot_sha256=null`, `applicability_precision=none`, and `verification_status=quarantine_only`.
+
+Added `scripts/validate_vag_dtc_source_rights.py` and `.github/workflows/validate-vag-dtc-source-rights.yml`. Windows x64 run `41591897343` completed successfully on commit `e5e21756651a71daf2038a8e93487c41f7a8197c`. The gate fails if a quarantined or unlicensed source is marked as imported, and keeps generic OBD separate from manufacturer-controlled candidates.
+
 ## Current external delivery boundary
 
 - The canonical GitHub repository is still the acquisition/schema/validation pipeline; its README states that the complete desktop application source has not been mirrored into this repository.
