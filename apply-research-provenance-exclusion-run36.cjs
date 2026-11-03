@@ -51,10 +51,12 @@ function excludeUnverifiedPack() {
     }
     if (sha256File(targetPath) !== actualSha) throw new Error(label + " quarantine copy failed SHA-256 verification");
     fs.unlinkSync(sourcePath);
-    return { path: path.relative(root, targetPath).replace(/\\/g, "/"), sha256: actualSha };
+    return { path: path.relative(root, targetPath).replace(/\\/g, "/"), sha256: actualSha, status: "quarantined" };
   }
 
-  const originalDatabase = preserveOriginal(dbPath, "original-vag-engine-candidates-research.sqlite", pack.database_sha256, "VAG identity database");
+  const originalDatabase = fs.existsSync(dbPath)
+    ? preserveOriginal(dbPath, "original-vag-engine-candidates-research.sqlite", pack.database_sha256, "VAG identity database")
+    : { path: null, sha256: pack.database_sha256, status: "not_present_in_source_archive" };
   const originalLicense = preserveOriginal(licensePath, "original-LICENSE-DATA", pack.license_file_sha256, "VAG identity license");
   const originalManifest = preserveOriginal(sourceManifestPath, "original-source-manifest.json", pack.source_manifest_sha256, "VAG identity source manifest");
 
@@ -96,7 +98,8 @@ function excludeUnverifiedPack() {
     "AUDIT NOTICE ONLY — this file is not the ODbL license text.",
     "The upstream repository declares the database under Open Database License (ODbL) v1.0.",
     "No VAG identity source records are shipped, displayed, cached, or searchable in this product build.",
-    "The original database, original license file, and original source manifest are preserved outside the installer payload under data/research-quarantine/vag-identity-odbl/.",
+    "The original license file, original source manifest, and any database file present in this source archive are preserved outside the installer payload under data/research-quarantine/vag-identity-odbl/.",
+    "If the database file was not present in this source archive, its previously declared SHA-256 is recorded as unverified metadata only.",
     "The source's upstream provenance from autoevolution.com has not been independently verified.",
     "Official ODbL text: https://opendatacommons.org/licenses/odbl/1-0/",
     "Reconsider inclusion only after independent provenance and redistribution-rights review."
@@ -165,7 +168,7 @@ function excludeUnverifiedPack() {
   pack.product_eligibility = "not_eligible_pending_upstream_provenance_review";
   pack.review_status = "excluded_pending_upstream_provenance_review";
   pack.display_status = "excluded";
-  pack.exclusion_reason = "Upstream provenance from autoevolution.com has not been independently verified; original files are quarantined outside the installer.";
+  pack.exclusion_reason = "Upstream provenance from autoevolution.com has not been independently verified; original source metadata and any present database file are quarantined outside the installer.";
   pack.product_counts = { makes: 0, models: 0, generations: 0, engineVariants: 0, sourceRows: 0 };
   pack.license_file_sha256 = noticeSha;
   pack.source_manifest_sha256 = sha256File(sourceManifestPath);
@@ -175,7 +178,8 @@ function excludeUnverifiedPack() {
     manifest_sha256: quarantineManifestSha,
     original_database_sha256: originalDatabase.sha256,
     original_license_sha256: originalLicense.sha256,
-    original_source_manifest_sha256: originalManifest.sha256
+    original_source_manifest_sha256: originalManifest.sha256,
+    original_database_status: originalDatabase.status
   };
   writeJson(manifestPath, manifest);
 
@@ -184,7 +188,7 @@ function excludeUnverifiedPack() {
     "| VAG identity taxonomy | ODbL-1.0 | 5 makes; 233 models; 823 generation labels; 5,081 descriptive engine variants | Market UNKNOWN; no factory engine/gearbox codes or exact pairings; share-alike applies |",
     "| VAG identity taxonomy | ODbL-1.0 | Excluded from installer; 0 records searchable | Upstream provenance is not independently verified; original snapshot quarantined outside installer |"
   );
-  const notice = "\n\nVAG identity ODbL exclusion: original database, license and source manifest are retained in data/research-quarantine/vag-identity-odbl/ for audit, but this directory is not part of electron-builder extraResources. The installer contains only an empty schema placeholder and exclusion metadata; no candidate rows are searchable.\n";
+  const notice = "\n\nVAG identity ODbL exclusion: original license and source manifest, plus any database file present in the source archive, are retained in data/research-quarantine/vag-identity-odbl/ for audit. This directory is not part of electron-builder extraResources. If no database file was present in the source archive, only its previously declared hash is retained as unverified metadata. The installer contains only an empty schema placeholder and exclusion metadata; no candidate rows are searchable.\n";
   if (!readme.includes("VAG identity ODbL exclusion:")) readme += notice;
   fs.writeFileSync(path.join(researchRoot, "README.md"), readme, "utf8");
 
@@ -446,43 +450,71 @@ function patchResearchUi() {
 
 function writeDedicatedTest() {
   const file = path.join(root, "tests", "vag-identity-provenance-exclusion.test.cjs");
-  const content = String.raw`"use strict";
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
-const { DatabaseSync } = require("node:sqlite");
-const local = require("../lib/local-research-db.cjs");
-const root = path.resolve(__dirname, "../data/research");
-
-test("unverified Autoevolution-derived ODbL taxonomy is not shipped as usable data", () => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));
-  const pack = manifest.packs.find((item) => item.id === "vag-identity-odbl");
-  assert.ok(pack);
-  assert.equal(pack.included_in_product, false);
-  assert.equal(pack.product_eligibility, "not_eligible_pending_upstream_provenance_review");
-  assert.deepEqual(pack.product_counts, { makes: 0, models: 0, generations: 0, engineVariants: 0, sourceRows: 0 });
-  const sourceManifest = JSON.parse(fs.readFileSync(path.join(root, pack.source_manifest_file), "utf8"));
-  assert.equal(sourceManifest.rights_review_status, "research_only_upstream_provenance_not_independently_verified");
-  const db = new DatabaseSync(path.join(root, pack.database), { readOnly: true });
-  try {
-    db.exec("PRAGMA query_only=ON");
-    for (const table of ["research_sources", "make_candidates", "model_candidates", "generation_candidates", "engine_variant_candidates", "source_file_artifacts"]) {
-      assert.equal(db.prepare("SELECT count(*) AS n FROM " + table).get().n, 0, table);
-    }
-    assert.equal(db.prepare("PRAGMA integrity_check").get().integrity_check, "ok");
-    assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
-  } finally { db.close(); }
-  const summary = local.getResearchSummary(root).packs.find((item) => item.id === "vag-identity-odbl");
-  assert.equal(summary.includedInProduct, false);
-  assert.equal(summary.status, "excluded_pending_provenance_review");
-  assert.deepEqual(summary.counts, { makes: 0, models: 0, generations: 0, engineVariants: 0 });
-  assert.deepEqual(local.searchVehicleCandidates("Golf", 10, root), []);
-});
-`;
+  const content = [
+    '"use strict";',
+    'const test = require("node:test");',
+    'const assert = require("node:assert/strict");',
+    'const fs = require("node:fs");',
+    'const path = require("node:path");',
+    'const crypto = require("node:crypto");',
+    'const { DatabaseSync } = require("node:sqlite");',
+    'const local = require("../lib/local-research-db.cjs");',
+    'const projectRoot = path.resolve(__dirname, "..");',
+    'const root = path.join(projectRoot, "data", "research");',
+    'const quarantineRoot = path.join(projectRoot, "data", "research-quarantine", "vag-identity-odbl");',
+    'const sha256File = (file) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");',
+    '',
+    'test("unverified Autoevolution-derived ODbL taxonomy is excluded without losing source artifacts", () => {',
+    '  const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));',
+    '  const pack = manifest.packs.find((item) => item.id === "vag-identity-odbl");',
+    '  assert.ok(pack);',
+    '  assert.equal(pack.included_in_product, false);',
+    '  assert.equal(pack.product_eligibility, "not_eligible_pending_upstream_provenance_review");',
+    '  assert.deepEqual(pack.product_counts, { makes: 0, models: 0, generations: 0, engineVariants: 0, sourceRows: 0 });',
+    '  const sourceManifest = JSON.parse(fs.readFileSync(path.join(root, pack.source_manifest_file), "utf8"));',
+    '  assert.equal(sourceManifest.rights_review_status, "research_only_upstream_provenance_not_independently_verified");',
+    '  assert.equal(sourceManifest.product_records_included, false);',
+    '  const quarantine = JSON.parse(fs.readFileSync(path.join(quarantineRoot, "quarantine-manifest.json"), "utf8"));',
+    '  assert.equal(quarantine.status, "quarantined_not_shipped_or_searchable");',
+    '  for (const key of ["license", "source_manifest"]) {',
+    '    const item = quarantine.original_files[key];',
+    '    assert.equal(item.status, "quarantined");',
+    '    const absolute = path.resolve(projectRoot, item.path);',
+    '    assert.ok(fs.existsSync(absolute), key + " was not preserved");',
+    '    assert.equal(sha256File(absolute), item.sha256, key + " quarantine SHA-256 mismatch");',
+    '  }',
+    '  const originalDb = quarantine.original_files.database;',
+    '  if (originalDb.status === "quarantined") {',
+    '    const absolute = path.resolve(projectRoot, originalDb.path);',
+    '    assert.ok(fs.existsSync(absolute), "original database was not preserved");',
+    '    assert.equal(sha256File(absolute), originalDb.sha256, "original database quarantine SHA-256 mismatch");',
+    '  } else {',
+    '    assert.equal(originalDb.status, "not_present_in_source_archive");',
+    '    assert.equal(originalDb.path, null);',
+    '    assert.match(originalDb.sha256, /^[a-f0-9]{64}$/);',
+    '  }',
+    '  const productDb = new DatabaseSync(path.join(root, pack.database), { readOnly: true });',
+    '  try {',
+    '    productDb.exec("PRAGMA query_only=ON");',
+    '    for (const table of ["research_sources", "make_candidates", "model_candidates", "generation_candidates", "engine_variant_candidates", "source_file_artifacts"]) {',
+    '      assert.equal(productDb.prepare("SELECT count(*) AS n FROM " + table).get().n, 0, table);',
+    '    }',
+    '    assert.equal(productDb.prepare("PRAGMA integrity_check").get().integrity_check, "ok");',
+    '    assert.deepEqual(productDb.prepare("PRAGMA foreign_key_check").all(), []);',
+    '  } finally { productDb.close(); }',
+    '  const summary = local.getResearchSummary(root).packs.find((item) => item.id === "vag-identity-odbl");',
+    '  assert.equal(summary.includedInProduct, false);',
+    '  assert.equal(summary.status, "excluded_pending_provenance_review");',
+    '  assert.deepEqual(summary.counts, { makes: 0, models: 0, generations: 0, engineVariants: 0 });',
+    '  assert.deepEqual(local.searchVehicleCandidates("Golf", 10, root), []);',
+    '  const pkg = JSON.parse(fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"));',
+    '  assert.ok(pkg.build.extraResources.some((item) => item.from === "data/research"));',
+    '  assert.equal(pkg.build.extraResources.some((item) => String(item.from).includes("research-quarantine")), false);',
+    '});',
+    ''
+  ].join("\n");
   fs.writeFileSync(file, content, "utf8");
 }
-
 const emptying = excludeUnverifiedPack();
 patchLocalResearchDb();
 patchVerifier();
