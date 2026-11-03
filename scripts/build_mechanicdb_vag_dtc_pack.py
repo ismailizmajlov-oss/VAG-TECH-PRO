@@ -71,7 +71,7 @@ def read_selected_rows(upstream: Path, manifest: dict) -> tuple[list[dict], dict
     found: dict[tuple[str, str], dict] = {}
 
     with source.open("r", encoding="utf-8-sig", newline="") as handle:
-        reader = csv.DictReader(handle)
+        reader = csv.DictReader(handle, delimiter="|")
         for row in reader:
             make = (row.get("oem_make") or "").strip()
             code = (row.get("dtc_code") or "").strip().upper()
