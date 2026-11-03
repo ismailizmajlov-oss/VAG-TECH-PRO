@@ -8,6 +8,7 @@ on:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
       - tests/test_russian_eaeu_otts_manifest.py
+      - package.json
       - scripts/import-authorized-fgis-otts-export.cjs
       - tests/authorized-fgis-otts-export.test.cjs
       - docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md
