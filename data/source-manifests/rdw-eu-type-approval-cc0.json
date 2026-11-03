@@ -60,8 +60,15 @@
       "dataset_page": "https://data.overheid.nl/dataset/46077-open-data-rdw--tgk-basis-uitvoering",
       "metadata_url": "https://opendata.rdw.nl/api/views/byxc-wwua.json",
       "download_url": "https://opendata.rdw.nl/api/v3/views/byxc-wwua/export.csv?accessType=DOWNLOAD",
-      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
-      "purpose": "approval_variant_base"
+      "required_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering"
+      ],
+      "purpose": "approval_variant_base",
+      "query_api_url_csv": "https://opendata.rdw.nl/resource/byxc-wwua.csv",
+      "query_api_url_json": "https://opendata.rdw.nl/resource/byxc-wwua.json"
     },
     {
       "dataset_id": "rdw-tgk-merk-uitvoering",
@@ -70,8 +77,16 @@
       "dataset_page": "https://data.overheid.nl/dataset/46081-open-data-rdw--tgk-merk-uitvoering",
       "metadata_url": "https://opendata.rdw.nl/api/views/kyri-nuah.json",
       "download_url": "https://opendata.rdw.nl/api/v3/views/kyri-nuah/export.csv?accessType=DOWNLOAD",
-      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering", "merkcoderdw"],
-      "purpose": "approval_variant_make_anchor"
+      "required_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "merkcoderdw"
+      ],
+      "purpose": "approval_variant_make_anchor",
+      "query_api_url_csv": "https://opendata.rdw.nl/resource/kyri-nuah.csv",
+      "query_api_url_json": "https://opendata.rdw.nl/resource/kyri-nuah.json"
     },
     {
       "dataset_id": "rdw-tgk-aandrijving-uitvoering",
@@ -80,8 +95,15 @@
       "dataset_page": "https://data.overheid.nl/dataset/46074-open-data-rdw--tgk-aandrijving-uitvoering",
       "metadata_url": "https://opendata.rdw.nl/api/views/4by9-ammk.json",
       "download_url": "https://opendata.rdw.nl/api/v3/views/4by9-ammk/export.csv?accessType=DOWNLOAD",
-      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
-      "purpose": "engine_type_approval_candidates"
+      "required_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering"
+      ],
+      "purpose": "engine_type_approval_candidates",
+      "query_api_url_csv": "https://opendata.rdw.nl/resource/4by9-ammk.csv",
+      "query_api_url_json": "https://opendata.rdw.nl/resource/4by9-ammk.json"
     },
     {
       "dataset_id": "rdw-tgk-handelsbenaming-fabrikant",
@@ -90,8 +112,14 @@
       "dataset_page": "https://data.overheid.nl/dataset/46083-open-data-rdw--tgk-handelsbenaming-fabrikant",
       "metadata_url": "https://opendata.rdw.nl/api/views/x5v3-sewk.json",
       "download_url": "https://opendata.rdw.nl/api/v3/views/x5v3-sewk/export.csv?accessType=DOWNLOAD",
-      "required_fields": ["typegoedkeuringsnummer", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
-      "purpose": "manufacturer_trade_name_candidates"
+      "required_fields": [
+        "typegoedkeuringsnummer",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering"
+      ],
+      "purpose": "manufacturer_trade_name_candidates",
+      "query_api_url_csv": "https://opendata.rdw.nl/resource/x5v3-sewk.csv",
+      "query_api_url_json": "https://opendata.rdw.nl/resource/x5v3-sewk.json"
     },
     {
       "dataset_id": "rdw-tgk-versnelling-uitvoering",
@@ -100,8 +128,15 @@
       "dataset_page": "https://data.overheid.nl/dataset/46075-open-data-rdw--tgk-versnelling-uitvoering",
       "metadata_url": "https://opendata.rdw.nl/api/views/7rjk-eycs.json",
       "download_url": "https://opendata.rdw.nl/api/v3/views/7rjk-eycs/export.csv?accessType=DOWNLOAD",
-      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
-      "purpose": "gearbox_type_approval_candidates"
+      "required_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering"
+      ],
+      "purpose": "gearbox_type_approval_candidates",
+      "query_api_url_csv": "https://opendata.rdw.nl/resource/7rjk-eycs.csv",
+      "query_api_url_json": "https://opendata.rdw.nl/resource/7rjk-eycs.json"
     }
   ],
   "limits": {
