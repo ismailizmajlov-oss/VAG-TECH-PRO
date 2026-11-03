@@ -1,0 +1,137 @@
+name: Windows x64 desktop build and lifecycle
+
+on:
+  push:
+    branches:
+      - automation/windows-desktop-build-run33
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify and unpack desktop source snapshot
+        shell: pwsh
+        run: |
+          $expected = ((Get-Content -Raw "desktop-source-run33.zip.sha256").Trim() -split "\\s+")[0].ToLowerInvariant()
+          $actual = (Get-FileHash -LiteralPath "desktop-source-run33.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Desktop source archive SHA-256 mismatch." }
+          New-Item -ItemType Directory -Path "desktop-source" -Force | Out-Null
+          Expand-Archive -LiteralPath "desktop-source-run33.zip" -DestinationPath "desktop-source" -Force
+          if (-not (Test-Path "desktop-source/package.json")) { throw "Desktop package.json was not extracted." }
+
+      - name: Set up Node.js 22 x64
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          architecture: "x64"
+
+      - name: Download pinned offline research data packs
+        uses: actions/download-artifact@v4
+        with:
+          name: vag-tech-pro-windows-offline-data-packs
+          run-id: 41595547071
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/vag-tech-pro-data-packs
+
+      - name: Download separately licensed MechanicDB candidate pack
+        uses: actions/download-artifact@v4
+        with:
+          name: mechanicdb-audi-vw-dtc-candidates-odbl-research
+          run-id: 41622526550
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/mechanicdb-vag-dtc-pack
+
+      - name: Assemble offline research databases
+        shell: pwsh
+        run: |
+          $research = Join-Path $env:GITHUB_WORKSPACE "desktop-source\\data\\research"
+          $packs = Join-Path $env:RUNNER_TEMP "vag-tech-pro-data-packs"
+          $mechanic = Join-Path $env:RUNNER_TEMP "mechanicdb-vag-dtc-pack"
+          foreach ($folder in @("obdex-generic-cc0", "vag-identity-odbl", "obdb-vag-signals-cc-by-sa", "vehiclesdb-vag-identity", "mechanicdb-vag-dtc-candidates-odbl")) {
+            New-Item -ItemType Directory -Path (Join-Path $research $folder) -Force | Out-Null
+          }
+          Copy-Item -Path (Join-Path $packs "obdex-generic-cc0\\*") -Destination (Join-Path $research "obdex-generic-cc0") -Recurse -Force
+          Copy-Item -LiteralPath (Join-Path $packs "obdex-generic-cc0\\generated\\obdex-generic-research.sqlite") -Destination (Join-Path $research "obdex-generic-cc0\\generic-obdex-research.sqlite") -Force
+          Copy-Item -LiteralPath (Join-Path $packs "vag-engine-candidates-odbl\\vag-engine-candidates-research.sqlite") -Destination (Join-Path $research "vag-identity-odbl\\vag-engine-candidates-research.sqlite") -Force
+          Copy-Item -Path (Join-Path $packs "obdb-vag-signals-cc-by-sa\\*") -Destination (Join-Path $research "obdb-vag-signals-cc-by-sa") -Recurse -Force
+          Copy-Item -Path (Join-Path $packs "vehiclesdb-vag-identity\\*") -Destination (Join-Path $research "vehiclesdb-vag-identity") -Recurse -Force
+          Copy-Item -Path (Join-Path $mechanic "*") -Destination (Join-Path $research "mechanicdb-vag-dtc-candidates-odbl") -Recurse -Force
+          foreach ($file in @(
+            "obdex-generic-cc0\\generic-obdex-research.sqlite",
+            "vag-identity-odbl\\vag-engine-candidates-research.sqlite",
+            "obdb-vag-signals-cc-by-sa\\vag-obdb-research.sqlite",
+            "vehiclesdb-vag-identity\\vag-identity-vehiclesdb.sqlite",
+            "mechanicdb-vag-dtc-candidates-odbl\\mechanicdb-vag-dtc-candidates.sqlite"
+          )) {
+            if (-not (Test-Path (Join-Path $research $file))) { throw "Missing research database: $file" }
+          }
+
+      - name: Generate lockfile and install exact resolved dependencies
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm ci --no-audit --no-fund
+
+      - name: Run desktop, local SQLite and data provenance tests
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          npm run test:desktop
+          npm run test:local-core
+          npm run verify:local-core
+          npm run verify:local-research
+
+      - name: Lint and type-check Windows desktop source
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          npm run lint
+          npm run typecheck
+
+      - name: Build initial Windows x64 NSIS installer
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          npm run build:desktop
+          $installer = Get-ChildItem -LiteralPath "release" -Filter "VAG-TECH-PRO-Setup-0.2.0-x64.exe" | Select-Object -First 1
+          if (-not $installer) { throw "Initial Windows x64 NSIS installer was not produced." }
+          Copy-Item -LiteralPath $installer.FullName -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") -Force
+
+      - name: Build newer installer for in-place upgrade verification
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          npm version patch --no-git-tag-version
+          npm run build:desktop
+          $installer = Get-ChildItem -LiteralPath "release" -Filter "VAG-TECH-PRO-Setup-0.2.1-x64.exe" | Select-Object -First 1
+          if (-not $installer) { throw "Upgrade Windows x64 NSIS installer was not produced." }
+          Copy-Item -LiteralPath $installer.FullName -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") -Force
+
+      - name: Verify clean install, offline launch, backup, restore, upgrade and uninstall preservation
+        shell: pwsh
+        run: |
+          & "desktop-source\\scripts\\windows-installer-lifecycle.ps1" -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe")
+
+      - name: Upload Windows verification artifacts (not a production release)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-windows-x64-verification
+          path: |
+            desktop-source/package-lock.json
+            desktop-source/release/*.exe
+            desktop-source/.next/BUILD_ID
+          if-no-files-found: warn
+          retention-days: 14
