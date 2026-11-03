@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import sqlite3
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -93,6 +95,113 @@ class RDWBuilderTests(unittest.TestCase):
         result = builder.verify_pack(Path(pack_dir))
         self.assertEqual(result["status"], "verified")
         self.assertFalse(result["exact_vehicle_fitment"])
+
+
+    def test_build_database_commits_rows_before_close(self) -> None:
+        dataset_specs = [
+            ("rdw-tgk-basis-uitvoering", "approval_variant_base", "byxc-wwua"),
+            ("rdw-tgk-merk-uitvoering", "approval_variant_make_anchor", "kyri-nuah"),
+            ("rdw-tgk-aandrijving-uitvoering", "engine_type_approval_candidates", "4by9-ammk"),
+            ("rdw-tgk-handelsbenaming-fabrikant", "manufacturer_trade_name_candidates", "x5v3-sewk"),
+            ("rdw-tgk-versnelling-uitvoering", "gearbox_type_approval_candidates", "7rjk-eycs"),
+        ]
+        datasets = [
+            {
+                "dataset_id": dataset_id,
+                "purpose": purpose,
+                "title": dataset_id,
+                "dataset_page": "https://data.overheid.nl/",
+                "view_id": view_id,
+            }
+            for dataset_id, purpose, view_id in dataset_specs
+        ]
+        snapshots = {}
+        for index, (dataset_id, _, view_id) in enumerate(dataset_specs, start=1):
+            digest = str(index) * 64
+            snapshots[dataset_id] = {
+                "source_revision": "fixture-revision-1",
+                "metadata_sha256": digest,
+                "view_metadata": {
+                    "relative_path": f"upstream/{view_id}.metadata.json",
+                    "source_url": f"https://opendata.rdw.nl/api/views/{view_id}.json",
+                    "byte_size": 1,
+                    "sha256": digest,
+                },
+                "license_evidence_page": {
+                    "relative_path": f"upstream/{view_id}.license.html",
+                    "source_url": "https://data.overheid.nl/",
+                    "byte_size": 1,
+                    "sha256": digest,
+                },
+                "csv_snapshots": [],
+            }
+        snapshots["__license__"] = {
+            "license_text": {
+                "relative_path": "LICENSES/CC0-1.0-legalcode.txt",
+                "source_url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+                "byte_size": 1,
+                "sha256": "f" * 64,
+            }
+        }
+
+        key = {
+            "typegoedkeuringsnummer": "e1*2007/46*1234*01",
+            "codevarianttgk": "AB",
+            "codeuitvoeringtgk": "CD",
+            "volgnummerrevisieuitvoering": "1",
+        }
+        rows_by_dataset = {dataset_id: [] for dataset_id, _, _ in dataset_specs}
+        rows_by_dataset["rdw-tgk-merk-uitvoering"] = [{**key, "merkcoderdw": "VOLKSWAGEN"}]
+        rows_by_dataset["rdw-tgk-basis-uitvoering"] = [{**key, "fixture_base_field": "base"}]
+        rows_by_dataset["rdw-tgk-aandrijving-uitvoering"] = [{**key, "motorcode": "RDW-CANDIDATE"}]
+        rows_by_dataset["rdw-tgk-handelsbenaming-fabrikant"] = [
+            {**key, "handelsbenamingfabrikant": "Golf", "typeaanduidingfabrikant": "Type A"}
+        ]
+        rows_by_dataset["rdw-tgk-versnelling-uitvoering"] = [
+            {**key, "codetypeversnellingsbak": "RDW-GB-CANDIDATE"}
+        ]
+        manifest = {
+            "source_id": "rdw-fixture",
+            "publisher": "RDW fixture",
+            "dataset_license": "CC0-1.0",
+            "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "datasets": datasets,
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            db_path = Path(temp_dir) / "rdw.sqlite"
+            counts = builder.build_database(
+                db_path,
+                manifest,
+                snapshots,
+                rows_by_dataset,
+                {"VOLKSWAGEN": "Volkswagen"},
+                {"VOLKSWAGEN": 1},
+            )
+            self.assertEqual(
+                counts,
+                {
+                    "vag_type_approval_variants": 1,
+                    "base_variant_evidence": 1,
+                    "engine_candidates": 1,
+                    "gearbox_type_candidates": 1,
+                    "manufacturer_trade_names": 1,
+                },
+            )
+            with sqlite3.connect(db_path) as db:
+                persisted = {
+                    table: db.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+                    for table in (
+                        "vag_type_approval_variants",
+                        "base_variant_evidence",
+                        "engine_candidates",
+                        "gearbox_type_candidates",
+                        "manufacturer_trade_names",
+                    )
+                }
+                self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+                self.assertEqual(db.execute("PRAGMA foreign_key_check").fetchall(), [])
+            self.assertEqual(persisted, counts)
 
 
 def main() -> int:

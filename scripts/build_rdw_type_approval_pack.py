@@ -485,6 +485,10 @@ def build_database(
             raise ValueError("RDW SQLite integrity_check failed")
         if db.execute("PRAGMA foreign_key_check").fetchall():
             raise ValueError("RDW SQLite foreign_key_check failed")
+        # Persist the complete pack before the connection closes. sqlite3.close()
+        # rolls back an open transaction; without this commit the published SQLite
+        # file can be empty even when the manifest reports populated tables.
+        db.commit()
         return counts
     finally:
         db.close()
