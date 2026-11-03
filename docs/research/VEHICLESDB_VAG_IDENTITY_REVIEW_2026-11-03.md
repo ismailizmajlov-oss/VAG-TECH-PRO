@@ -4,7 +4,7 @@
 
 A Windows x64 CI build successfully downloaded the pinned VehiclesDB v2026.10.3 open release, validated its CC BY 4.0 license and attribution files, checked the upstream SQLite integrity, and built an isolated VAG identity candidate database.
 
-The corrected Windows CI run completed successfully: build, independent provenance/license/market-scope verification, synthetic import/rejection tests, Python compilation, and artifact upload all passed. GitHub Actions run: 41565306691. The uploaded artifact digest is sha256:6d6a3c2d30c71caa6ed8a34f6e0e1a2a4c4e5f0f5c9d0b2e9e2c1d6c7c2d8f40.
+The corrected Windows CI run completed successfully: build, independent provenance/license/market-scope verification, synthetic import/rejection tests, Python compilation, and artifact upload all passed. GitHub Actions run: 41565306691. The uploaded artifact digest is sha256:6d6a59d58f2aa985f787ff6065061d692f6e280203c6546c3fa91310d497050b.
 
 ## Pinned source and provenance
 
