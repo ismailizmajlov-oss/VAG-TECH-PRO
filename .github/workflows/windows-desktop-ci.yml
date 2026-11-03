@@ -1,0 +1,212 @@
+name: VAG TECH PRO Windows x64 desktop
+
+on:
+  push:
+    branches:
+      - automation/windows-desktop-build-run35
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: vag-tech-pro-windows-x64-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-lifecycle:
+    runs-on: windows-2025
+    timeout-minutes: 60
+    env:
+      CI: "true"
+    steps:
+      - name: Checkout build manifest and source payload
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 x64
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+
+      - name: Reassemble and verify pinned desktop source archive
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $encoded = (Get-Content -LiteralPath "desktop-source-run34.zip.b64" -Raw) -replace "\s", ""
+          if ($encoded.Length -ne 566352) { throw "Unexpected desktop source base64 length: $($encoded.Length)" }
+          $bytes = [Convert]::FromBase64String($encoded)
+          if ($bytes.Length -ne 424764) { throw "Unexpected desktop source archive length: $($bytes.Length)" }
+          $zipPath = Join-Path $env:RUNNER_TEMP "desktop-source-run34.zip"
+          [System.IO.File]::WriteAllBytes($zipPath, $bytes)
+          $actual = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $expected = (Get-Content -LiteralPath "desktop-source-run34.zip.sha256" -Raw).Trim().Split(" ")[0].ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Desktop source archive SHA-256 mismatch: $actual" }
+          Expand-Archive -LiteralPath $zipPath -DestinationPath "desktop-source" -Force
+          if (-not (Test-Path "desktop-source/package.json")) { throw "Desktop package.json was not extracted." }
+          Copy-Item -LiteralPath "desktop-package-run35.json" -Destination "desktop-source/package.json" -Force
+          git apply --check "desktop-source-run35.patch"
+          git apply "desktop-source-run35.patch"
+          "source_archive_sha256=$actual" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Encoding utf8
+
+      - name: Download pinned open research packs
+        uses: actions/download-artifact@v4
+        with:
+          name: vag-tech-pro-windows-offline-data-packs
+          path: ${{ runner.temp }}/vag-tech-pro-data-packs
+          run-id: 41595547071
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download MechanicDB candidate pack
+        uses: actions/download-artifact@v4
+        with:
+          name: mechanicdb-audi-vw-dtc-candidates-odbl-research
+          path: ${{ runner.temp }}/vag-tech-pro-mechanicdb
+          run-id: 41622526550
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Assemble and verify offline SQLite research packs
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packs = Join-Path $env:RUNNER_TEMP "vag-tech-pro-data-packs"
+          $mechanic = Join-Path $env:RUNNER_TEMP "vag-tech-pro-mechanicdb"
+          $research = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/research"
+          $mappings = @(
+            @{ Source = "obdex-generic-cc0"; Target = "obdex-generic-cc0" },
+            @{ Source = "vag-engine-candidates-odbl"; Target = "vag-identity-odbl" },
+            @{ Source = "obdb-vag-signals-cc-by-sa"; Target = "obdb-vag-signals-cc-by-sa" },
+            @{ Source = "vehiclesdb-vag-identity"; Target = "vehiclesdb-vag-identity" }
+          )
+          foreach ($mapping in $mappings) {
+            $from = Join-Path $packs $mapping.Source
+            $to = Join-Path $research $mapping.Target
+            if (-not (Test-Path $from)) { throw "Missing downloaded research pack: $($mapping.Source)" }
+            New-Item -ItemType Directory -Force -Path $to | Out-Null
+            Copy-Item -Path (Join-Path $from "*") -Destination $to -Recurse -Force
+          }
+          $obdexDb = Join-Path $research "obdex-generic-cc0/generated/obdex-generic-research.sqlite"
+          if (-not (Test-Path $obdexDb)) { throw "Missing generated generic OBDex SQLite database." }
+          Copy-Item -LiteralPath $obdexDb -Destination (Join-Path $research "obdex-generic-cc0/generic-obdex-research.sqlite") -Force
+          $mechanicTarget = Join-Path $research "mechanicdb-vag-dtc-candidates-odbl"
+          New-Item -ItemType Directory -Force -Path $mechanicTarget | Out-Null
+          Copy-Item -Path (Join-Path $mechanic "*") -Destination $mechanicTarget -Recurse -Force
+          foreach ($db in @(
+            "obdex-generic-cc0/generic-obdex-research.sqlite",
+            "vag-identity-odbl/vag-engine-candidates-research.sqlite",
+            "obdb-vag-signals-cc-by-sa/vag-obdb-research.sqlite",
+            "vehiclesdb-vag-identity/vag-identity-vehiclesdb.sqlite",
+            "mechanicdb-vag-dtc-candidates-odbl/mechanicdb-vag-dtc-candidates.sqlite"
+          )) {
+            if (-not (Test-Path (Join-Path $research $db))) { throw "Research database missing after assembly: $db" }
+          }
+
+      - name: Generate deterministic dependency lock and install
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-lock.log
+          if ($LASTEXITCODE -ne 0) { throw "package-lock generation failed" }
+          if (-not (Test-Path package-lock.json)) { throw "package-lock.json was not generated" }
+          npm ci --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-ci.log
+          if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
+
+      - name: Run desktop, local core and research tests
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          npm test 2>&1 | Tee-Object -FilePath test.log
+          if ($LASTEXITCODE -ne 0) { throw "Desktop test suite failed" }
+          npm run verify:local-core 2>&1 | Tee-Object -FilePath verify-local-core.log
+          if ($LASTEXITCODE -ne 0) { throw "Local core SQLite verification failed" }
+          npm run verify:local-research 2>&1 | Tee-Object -FilePath verify-local-research.log
+          if ($LASTEXITCODE -ne 0) { throw "Research pack verification failed" }
+
+      - name: Run ESLint and TypeScript project check
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          npm run lint 2>&1 | Tee-Object -FilePath lint.log
+          if ($LASTEXITCODE -ne 0) { throw "ESLint failed" }
+          npm run typecheck 2>&1 | Tee-Object -FilePath typecheck.log
+          if ($LASTEXITCODE -ne 0) { throw "TypeScript check failed" }
+
+      - name: Build first Windows x64 NSIS installer
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.0.log
+          if ($LASTEXITCODE -ne 0) { throw "Initial Windows NSIS build failed" }
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.0-x64.exe"
+          if (-not (Test-Path $installer)) { throw "Initial NSIS installer not found: $installer" }
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") -Force
+
+      - name: Build upgrade Windows x64 NSIS installer
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.1'; l.version='0.2.1'; if (l.packages && l.packages['']) l.packages[''].version='0.2.1'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\n');"
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.1.log
+          if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.1-x64.exe"
+          if (-not (Test-Path $installer)) { throw "Upgrade NSIS installer not found: $installer" }
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") -Force
+
+      - name: Run clean install, offline, backup/restore, upgrade and uninstall lifecycle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File "desktop-source/scripts/windows-installer-lifecycle.ps1" `
+            -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") `
+            -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-lifecycle.log"
+          if ($LASTEXITCODE -ne 0) { throw "Windows installer lifecycle test failed" }
+
+      - name: Write build metadata
+        if: always()
+        shell: pwsh
+        run: |
+          $items = @()
+          $sourceLine = Get-Content -LiteralPath "source-verification.txt" -Raw -ErrorAction SilentlyContinue
+          $sourceHash = if ($sourceLine -match "source_archive_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          foreach ($file in @(
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe"),
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe")
+          )) {
+            if (Test-Path $file) {
+              $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
+            }
+          }
+          [ordered]@{ source_archive_sha256 = $sourceHash; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+
+      - name: Upload Windows installer and verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-windows-x64-run35
+          path: |
+            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
+            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
+            desktop-source/package-lock.json
+            desktop-source/npm-lock.log
+            desktop-source/npm-ci.log
+            desktop-source/test.log
+            desktop-source/verify-local-core.log
+            desktop-source/verify-local-research.log
+            desktop-source/lint.log
+            desktop-source/typecheck.log
+            desktop-source/build-0.2.0.log
+            desktop-source/build-0.2.1.log
+            windows-lifecycle.log
+            build-metadata.json
+            source-verification.txt
+          if-no-files-found: warn
+          retention-days: 14
