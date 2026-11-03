@@ -97,7 +97,7 @@ def classify_dtc(code: str | None, protocols: list[str], standards: list[str]) -
             return "manufacturer_controlled_candidate"
         return "reserved_or_unknown"
     protocol_text = " ".join(protocols + standards).lower()
-    if "uds" in protocol_text and re.fullmatch(r"(?:0X)?[0-9A-F]{4,8}", value):
+    if ("uds" in protocol_text or "iso14229" in protocol_text or "iso 14229" in protocol_text) and re.fullmatch(r"(?:0X)?[0-9A-F]{4,8}", value):
         return "uds_ecu_specific_candidate"
     return "other_or_unknown"
 
@@ -123,7 +123,7 @@ def main() -> None:
     if "ODbL-1.0" not in license_text or "DbCL-1.0" not in license_text:
         raise RuntimeError("AutoDiag2 repository license does not declare both ODbL-1.0 and DbCL-1.0")
     def git_blob_sha1(data: bytes) -> str:
-        return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\\0" + data).hexdigest()
+        return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
     if git_blob_sha1(license_bytes) != LICENSE_GIT_BLOB_SHA1 or git_blob_sha1(readme_bytes) != README_GIT_BLOB_SHA1:
         raise RuntimeError("AutoDiag2 LICENSE/README do not match the pinned source revision")
     if "ODbL-1.0" not in readme_text or "DbCL-1.0" not in readme_text:
