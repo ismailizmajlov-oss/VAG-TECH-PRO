@@ -159,7 +159,7 @@ def validate_signalset(document: object, source_id: str) -> tuple[list, list, li
         normalized_commands.append({
             "ordinal": command_ordinal,
             "ecu_header": header,
-            "response_header": validate_hex(command.get("rax"), "response header", min_len=3, max_len=4) if command.get("rax") else None,
+            "response_header": validate_hex(command.get("rax"), "response header", min_len=3, max_len=8) if command.get("rax") else None,
             "fcm1": 1 if command.get("fcm1") is True else 0,
             "debug_flag": 1 if command.get("dbg") is True else 0,
             "service_id": service_id,
