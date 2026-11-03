@@ -10,6 +10,10 @@ on:
       - .github/workflows/acquire-obdb-vag-signalsets.yml
       - .github/workflows/acquire-vag-engine-candidates.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
+      - .github/workflows/acquire-wal33d-vag-dtc.yml
+      - scripts/build_wal33d_vag_dtc_pack.py
+      - scripts/verify_wal33d_vag_dtc_pack.py
+      - data/source-manifests/wal33d-dtc-candidate.json
       - scripts/build_offline_data_pack_index.py
       - scripts/verify_offline_data_pack_index.py
       - data/source-manifests/obdex-generic-cc0.lock.json
@@ -64,6 +68,12 @@ jobs:
       contents: read
     uses: ./.github/workflows/acquire-vag-identity-vehiclesdb.yml
 
+  wal33d-vag-dtc:
+    name: Acquire MIT VAG manufacturer-specific DTC candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-wal33d-vag-dtc.yml
+
   package:
     name: Assemble and independently verify Windows offline SQLite packs
     needs:
@@ -71,6 +81,7 @@ jobs:
       - obdb-vag-signals
       - vag-engine-candidates
       - vag-identity
+      - wal33d-vag-dtc
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
