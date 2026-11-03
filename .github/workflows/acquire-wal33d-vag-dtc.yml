@@ -1,0 +1,40 @@
+name: Acquire MIT VAG manufacturer-specific DTC candidates
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and verify isolated VAG DTC candidate SQLite (Windows x64)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned VAG TECH PRO pipeline
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile Windows-targeted DTC pack scripts
+        run: |
+          python -m py_compile scripts/build_wal33d_vag_dtc_pack.py
+          python -m py_compile scripts/verify_wal33d_vag_dtc_pack.py
+
+      - name: Download pinned MIT source and build isolated SQLite
+        run: python scripts/build_wal33d_vag_dtc_pack.py --manifest data/source-manifests/wal33d-dtc-candidate.json --output dist/wal33d-vag-dtc
+
+      - name: Verify source hashes, license notice, DTC namespaces and candidate boundaries
+        run: python scripts/verify_wal33d_vag_dtc_pack.py --root dist/wal33d-vag-dtc
+
+      - name: Upload verified research-only VAG DTC candidate pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-oem-dtc-candidates-mit-research
+          path: dist/wal33d-vag-dtc/
+          if-no-files-found: error
+          retention-days: 30
