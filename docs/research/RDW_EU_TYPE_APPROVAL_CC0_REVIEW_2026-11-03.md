@@ -55,7 +55,7 @@ Every imported record is marked `source_published_candidate`, with `type_approva
 
 ## Snapshot integrity
 
-The Windows x64 acquisition job stores the exact downloaded CSV and Socrata view metadata for each dataset, plus SHA-256 hashes, retrieval time, license evidence URL and the CC0 legal text. The SQLite pack records row-level hashes for each retained source row.
+The Windows x64 acquisition job first snapshots the make-code inventory, then downloads only VAG-make rows and related type-approval rows through paginated Socrata queries. Every exact query string and URL is retained with each raw CSV page; Socrata view metadata, dataset-specific license pages, retrieval time and the CC0 legal text are also stored and hashed. The SQLite pack records row-level hashes for each retained source row. The unfiltered Basis export is intentionally not downloaded because it exceeds the safe snapshot size limit.
 
 A changed source view, missing required column, unexpected HTML response, failed hash, or invalid join key must stop the import rather than silently produce partial data.
 
