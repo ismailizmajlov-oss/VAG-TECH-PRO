@@ -1,0 +1,40 @@
+name: Acquire AutoDiag2 VAG community candidate pack
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build_autodiag2_vag_pack.py"
+      - ".github/workflows/acquire-autodiag2-vag-candidates.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: autodiag2-vag-candidate-pack
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned pack builder
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download, filter and verify the ODbL/DbCL VAG subset
+        run: python scripts/build_autodiag2_vag_pack.py
+
+      - name: Upload separate ODbL candidate database
+        uses: actions/upload-artifact@v4
+        with:
+          name: autodiag2-vag-community-candidate-pack
+          path: research-output/autodiag2-vag-community/
+          if-no-files-found: error
+          retention-days: 30
