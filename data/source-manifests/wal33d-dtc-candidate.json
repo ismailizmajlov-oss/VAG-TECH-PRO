@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "source_id": "wal33d-vw-dtc-candidates-mit",
+  "publisher": "Wal33D / Waleed Judah",
+  "repository_url": "https://github.com/Wal33D/dtc-database",
+  "pinned_revision": "04c43d72e7db7197658b6f72fe582c5076d9eee8",
+  "source_file": {
+    "path": "data/source-data/volkswagen_codes.txt",
+    "size_bytes": 28200,
+    "git_blob_sha1": "a8afd432644e8cad718e42cdd18cc1931a75bb08",
+    "sha256": "fd6bf267f1db3a1a44279a21b1c69cba19ee96d2b2821e0b238cdf54b3a71579"
+  },
+  "license": {
+    "id": "MIT-1.0",
+    "file": "LICENSE",
+    "sha256": "5106ad327a989f9f864f55f9111d055530af80c3109e9f26026bc2cd486087f5",
+    "readme_file": "README.md",
+    "readme_sha256": "60526631da85d81a8c9100709b0ac13cc270c4380ba055a95f38cedff70b6aa7",
+    "declaration": "Repository README declares MIT; no separate data license file.",
+    "rights_status": "repository_level_MIT_declared; dataset_specific_rights_not_independently_confirmed",
+    "project_commercial_use_approved": false,
+    "project_display_approved": false,
+    "project_offline_cache_approved": false,
+    "project_redistribution_approved": false,
+    "attribution_required": true
+  },
+  "candidate_pack": {
+    "generated": true,
+    "artifact_run_id": 41713373245,
+    "artifact_id": 13268296682,
+    "artifact_zip_sha256": "53e376ea33f0fecf5dc7f8fb94075d4af65fd91533d94e2738729b8a7a189c2e",
+    "database_file": "wal33d-vw-dtc-candidates.sqlite",
+    "database_sha256": "d87369ddfac724250ccab39865864d781eb247c003d3fbff38c6c7f00f54fbff",
+    "pack_manifest_sha256": "49cf199765e766c6c6aafd40e21b8d611b6ba22be8e42980a1b9f22ea373b3b7",
+    "integrity_check": "ok"
+  },
+  "counts": {
+    "volkswagen_p1_candidates": 528,
+    "unique_codes": 528,
+    "generic_rows": 0,
+    "audi_rows": 0
+  },
+  "namespace": "manufacturer_controlled_candidate",
+  "code_range": "P1",
+  "market_scope": "UNKNOWN",
+  "applicability_precision": "manufacturer_make_candidate",
+  "verification_status": "community_reference_unverified",
+  "display_status": "quarantined_not_integrated",
+  "exact_vehicle_fitment": false,
+  "generation_year_fitment": false,
+  "engine_gearbox_fitment": false,
+  "ecu_fitment": false,
+  "pr_code_vin_fitment": false,
+  "diagnostic_execution_allowed": false,
+  "test_plans_included": false,
+  "repair_procedures_included": false,
+  "wiring_pinouts_included": false,
+  "torque_values_included": false,
+  "oem_part_numbers_included": false,
+  "primary_source_provenance": "not supplied by upstream repository; author/source rights confirmation required",
+  "decision": "Keep as a quarantined research artifact only. Do not integrate into diagnostic search, do not show as verified VAG-specific DTC, and do not redistribute in the Windows product until dataset-specific rights and source provenance are confirmed.",
+  "verified_by_workflow": "Acquire DTC research snapshots — run 41713373245"
+}
