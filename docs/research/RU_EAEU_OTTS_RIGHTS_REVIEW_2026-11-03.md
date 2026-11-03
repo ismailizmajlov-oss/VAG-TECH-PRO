@@ -15,7 +15,20 @@ The FBU «КВФ «Интерстандарт» page describes FGIS «Реест
 - Register overview: https://www.interstandart.ru/page/fgis_01
 - Rosstandart Order No. 2038 dated 2025-09-24: https://law.tks.ru/document/779154
 
-Order No. 2038 defines the attribute structure and the fields to be published/searchable on the Rosstandart site. It does not, in the text reviewed, grant a blanket license to bulk-copy the database, commercially redistribute the records, cache the full corpus offline, or redistribute the PDFs. Therefore no bulk import is enabled.
+Order No. 2038, as amended by Order No. 2335 dated 2025-10-30, defines the internal attribute structure and the separate fields to be published/searchable on the Rosstandart site. The reviewed copies do not grant a blanket license to bulk-copy the database, commercially redistribute the records, cache the full corpus offline, or redistribute the PDFs. Therefore no bulk import is enabled.
+
+### Public-site publication contract and field-number namespaces
+
+Order No. 2038 requires the Rosstandart site to publish and support search for the Annex 2 fields from 2025-10-01. Order No. 2335 (2025-10-30) amends that contract: it adds internal FGIS Annex 1 attributes 86 (resumption reason) and 87 (resumption date), updates public Annex 2 field 25, and adds public fields 27 and 28 for early termination based on a cancellation notice.
+
+The two field-number namespaces must remain separate:
+
+- **Annex 1** is the internal FGIS database attribute set. The existing `ot_ts_attribute_map` in the machine-readable manifest is explicitly scoped to Annex 1. For example, its field 50 is the internal engine make/type descriptor, not a factory VAG engine code.
+- **Annex 2** is the public-site publication/search set. Its 28 fields are: approval form number; application form numbers; supplementary-sheet numbers; approval registration number; validity start/end; certification body name/address/phone/email/accreditation number; make; commercial name; vehicle type; base vehicle/chassis; modifications; category; environmental class; Annex 1 PDF; electronic-issue flag; suspension date/reason; resumption date/reason; early-termination date; publication date; early-termination date based on a cancellation notice; and the reason for that cancellation-based termination.
+
+Annex 2 field 19 is a PDF reference/content field. Its presence in a public search contract is not a redistribution license for the PDF. The order establishes public-site publication/search for specified records; it does not document a bulk API or grant commercial reuse, third-party display, offline caching, bulk export, or PDF redistribution rights.
+
+**Source quality limitation:** the FGIS operator overview is on the operator's official site. The text of Orders 2038 and 2335 was reviewed through secondary legal/document reproductions (TKS and OEI-Analitika); the signed primary order files were not retrieved from an official publication endpoint, so no primary-document SHA-256 is claimed. The official public-search endpoint was not resolved in this run.
 
 ### What OTTS can and cannot establish
 
