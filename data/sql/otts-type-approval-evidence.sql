@@ -232,6 +232,12 @@ WHEN NEW.rights_status<>'approved'
   OR NEW.display_allowed<>1
   OR NEW.offline_cache_allowed<>1
   OR NEW.bulk_reuse_allowed<>1
+  OR (NEW.pdf_redistribution_allowed<>1 AND EXISTS (
+    SELECT 1 FROM eaeu_otts_evidence e
+    WHERE e.source_id=NEW.source_id
+      AND e.review_status='publication_approved'
+      AND e.document_cached=1
+  ))
 BEGIN
   UPDATE eaeu_otts_evidence
   SET review_status='candidate',
