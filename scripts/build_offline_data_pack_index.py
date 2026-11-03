@@ -450,9 +450,11 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         pack_dir = root / pack["relative_dir"]
         fresh = inspectors[pack_id](pack_dir)
         for key in (
-            "database_path", "database_sha256", "manifest_path", "manifest_sha256",
-            "license", "status", "product_eligibility", "market_scope",
-            "applicability_precision", "counts",
+            "artifact_name", "relative_dir", "database_path", "database_sha256",
+            "manifest_path", "manifest_sha256", "license", "license_files",
+            "attribution_files", "status", "product_eligibility", "market_scope",
+            "applicability_precision", "counts", "source_revision", "source_revisions",
+            "make_counts", "warnings",
         ):
             if fresh.get(key) != pack.get(key):
                 raise ValueError(f"Pack index metadata drift for {pack_id}.{key}")
