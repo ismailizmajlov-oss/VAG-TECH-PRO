@@ -48,6 +48,34 @@ jobs:
           Expand-Archive -LiteralPath $zipPath -DestinationPath "desktop-source" -Force
           if (-not (Test-Path "desktop-source/package.json")) { throw "Desktop package.json was not extracted." }
           Copy-Item -LiteralPath "desktop-package-run35.json" -Destination "desktop-source/package.json" -Force
+
+          $patches = @(
+            @{ File = "run36-01-manifest.patch.gz.b64"; GzipSha = "af9b133cbcb557f69935e6b615d1cef094d87cc83cad1ad0bedb4a81b983f1dd"; PatchSha = "195003ca7ad428b14c877b3c2f4586fc4320c50ae9c9353a87508efd2b0c907e" },
+            @{ File = "run36-02-api-db.patch.gz.b64"; GzipSha = "0a927dbbc96e04198fa44f00d90b91b1a823b042e1d0fb33b16f446154b12331"; PatchSha = "554ac86467b5713879c254734df05d6419609ff8c5a93e5edb3c4c309567acbb" },
+            @{ File = "run36-03-ui.patch.gz.b64"; GzipSha = "e621053eddf01eef9ffad1e4e32ef24070887407297ad013c0c7b075163450b2"; PatchSha = "be13b888e4b3c353cc3288d2839098e7461c30be2b6fbeebc90b5129578c7987" },
+            @{ File = "run36-04-verification-tests.patch.gz.b64"; GzipSha = "48a649d7babfdf028a64432cab8c4c212e6584e3e2ea7b77bdd1221cc2f88b2d"; PatchSha = "3dbc26d866cf76feabacb7eaba2618ad4cba922d2aa3dae2aead360d8c4e7692" }
+          )
+          foreach ($patch in $patches) {
+            $encodedPatch = (Get-Content -LiteralPath $patch.File -Raw) -replace "\s", ""
+            $compressed = [Convert]::FromBase64String($encodedPatch)
+            $gzipHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($compressed)).ToLowerInvariant()
+            if ($gzipHash -ne $patch.GzipSha) { throw "Run36 patch gzip SHA-256 mismatch: $($patch.File)" }
+            $inputStream = [System.IO.MemoryStream]::new(,$compressed)
+            $gzipStream = [System.IO.Compression.GZipStream]::new($inputStream, [System.IO.Compression.CompressionMode]::Decompress)
+            $outputStream = [System.IO.MemoryStream]::new()
+            $gzipStream.CopyTo($outputStream)
+            $patchBytes = $outputStream.ToArray()
+            $patchHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($patchBytes)).ToLowerInvariant()
+            if ($patchHash -ne $patch.PatchSha) { throw "Run36 patch SHA-256 mismatch: $($patch.File)" }
+            $patchPath = Join-Path $env:RUNNER_TEMP ($patch.File.Replace(".gz.b64", ".patch"))
+            [System.IO.File]::WriteAllBytes($patchPath, $patchBytes)
+            git apply --check --unsafe-paths --directory=desktop-source $patchPath
+            if ($LASTEXITCODE -ne 0) { throw "Run36 patch check failed: $($patch.File)" }
+            git apply --unsafe-paths --directory=desktop-source $patchPath
+            if ($LASTEXITCODE -ne 0) { throw "Run36 patch application failed: $($patch.File)" }
+            "patch_sha256=$($patch.PatchSha)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+            $gzipStream.Dispose(); $inputStream.Dispose(); $outputStream.Dispose()
+          }
           node --check apply-desktop-hardening-run35.cjs
           node apply-desktop-hardening-run35.cjs
           "source_archive_sha256=$actual" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Encoding utf8
@@ -68,12 +96,21 @@ jobs:
           run-id: 41622526550
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download AutoDiag2 community candidate pack
+        uses: actions/download-artifact@v4
+        with:
+          name: autodiag2-vag-community-candidate-pack
+          path: ${{ runner.temp }}/vag-tech-pro-autodiag2
+          run-id: 41715531679
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Assemble and verify offline SQLite research packs
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           $packs = Join-Path $env:RUNNER_TEMP "vag-tech-pro-data-packs"
           $mechanic = Join-Path $env:RUNNER_TEMP "vag-tech-pro-mechanicdb"
+          $autodiag2 = Join-Path $env:RUNNER_TEMP "vag-tech-pro-autodiag2"
           $research = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/research"
           $mappings = @(
             @{ Source = "obdex-generic-cc0"; Target = "obdex-generic-cc0" },
@@ -94,12 +131,17 @@ jobs:
           $mechanicTarget = Join-Path $research "mechanicdb-vag-dtc-candidates-odbl"
           New-Item -ItemType Directory -Force -Path $mechanicTarget | Out-Null
           Copy-Item -Path (Join-Path $mechanic "*") -Destination $mechanicTarget -Recurse -Force
+          $autodiag2Target = Join-Path $research "autodiag2-vag-community-candidates-odbl"
+          if (-not (Test-Path $autodiag2)) { throw "Missing downloaded AutoDiag2 candidate pack." }
+          New-Item -ItemType Directory -Force -Path $autodiag2Target | Out-Null
+          Copy-Item -Path (Join-Path $autodiag2 "*") -Destination $autodiag2Target -Recurse -Force
           foreach ($db in @(
             "obdex-generic-cc0/generic-obdex-research.sqlite",
             "vag-identity-odbl/vag-engine-candidates-research.sqlite",
             "obdb-vag-signals-cc-by-sa/vag-obdb-research.sqlite",
             "vehiclesdb-vag-identity/vag-identity-vehiclesdb.sqlite",
-            "mechanicdb-vag-dtc-candidates-odbl/mechanicdb-vag-dtc-candidates.sqlite"
+            "mechanicdb-vag-dtc-candidates-odbl/mechanicdb-vag-dtc-candidates.sqlite",
+            "autodiag2-vag-community-candidates-odbl/autodiag2-vag-community.sqlite"
           )) {
             if (-not (Test-Path (Join-Path $research $db))) { throw "Research database missing after assembly: $db" }
           }
@@ -190,7 +232,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run35
+          name: vag-tech-pro-windows-x64-run36
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
