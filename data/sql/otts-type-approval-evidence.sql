@@ -165,13 +165,14 @@ WHEN NOT EXISTS (
     AND r.display_allowed=1
     AND r.offline_cache_allowed=1
     AND r.bulk_reuse_allowed=1
+    AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
 )
 BEGIN
   SELECT RAISE(ABORT, 'OTTS evidence import blocked: commercial display, offline-cache and bulk-reuse rights are not approved');
 END;
 
 CREATE TRIGGER IF NOT EXISTS prevent_unlicensed_otts_evidence_update
-BEFORE UPDATE OF source_id ON eaeu_otts_evidence
+BEFORE UPDATE OF source_id, document_cached ON eaeu_otts_evidence
 WHEN NOT EXISTS (
   SELECT 1
   FROM vehicle_catalog_sources s
@@ -184,6 +185,7 @@ WHEN NOT EXISTS (
     AND r.display_allowed=1
     AND r.offline_cache_allowed=1
     AND r.bulk_reuse_allowed=1
+    AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
 )
 BEGIN
   SELECT RAISE(ABORT, 'OTTS evidence update blocked: source rights are not approved');
