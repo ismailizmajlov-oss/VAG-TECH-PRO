@@ -23,12 +23,8 @@ ARTIFACTS = {
     "vehiclesdb": ("vag-identity-vehiclesdb-cc-by-4.0", "vehiclesdb-vag-identity"),
     "odbl": ("vag-engine-candidates-research-odbl", "vag-engine-candidates-odbl"),
     "obdb": ("obdb-vag-research-cc-by-sa", "obdb-vag-signals-cc-by-sa"),
-    "wal33d": ("vag-oem-dtc-candidates-mit-research", "wal33d-vag-oem-dtc-candidates"),
 }
 
-MANUFACTURER_CODE_RE = re.compile(
-    r"^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$"
-)
 GENERIC_OBD_CODE_RE = re.compile(
     r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P3[4-9][0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$"
 )
@@ -416,146 +412,13 @@ def inspect_obdb(root: Path) -> dict[str, Any]:
     }
 
 
-def inspect_wal33d(root: Path) -> dict[str, Any]:
-    db_path = find_one(root, "vag-oem-dtc-candidates.sqlite")
-    manifest_path = find_one(root, "manifest.json")
-    declaration_path = find_one(root, "source-declaration.json")
-    license_path = root / "LICENSES" / "Wal33D-MIT-LICENSE.txt"
-    attribution_path = root / "ATTRIBUTION.txt"
-    manifest = read_json(manifest_path)
-    declaration = read_json(declaration_path)
-    expected_counts = {"Volkswagen": 528, "Audi": 2, "total": 530}
-    if manifest.get("pack_id") != "wal33d-vag-oem-dtc-mit":
-        raise ValueError("Wal33D pack ID mismatch")
-    if manifest.get("source_commit_sha") != "04c43d72e7db7197658b6f72fe582c5076d9eee8":
-        raise ValueError("Wal33D source revision changed")
-    if manifest.get("dataset_license") != "MIT" or manifest.get("rights_confirmed") is not False:
-        raise ValueError("Wal33D repository-level MIT/research-only boundary failed")
-    if manifest.get("market_scope") != "UNKNOWN" or manifest.get("verification_status") != "unverified_candidate":
-        raise ValueError("Wal33D candidate market/verification boundary failed")
-    if manifest.get("exact_vehicle_fitment") is not False or manifest.get("ecu_fitment_confirmed") is not False or manifest.get("execution_allowed") is not False:
-        raise ValueError("Wal33D exact-fitment or execution boundary failed")
-    if manifest.get("counts") != expected_counts or declaration.get("expected_counts") != expected_counts:
-        raise ValueError("Wal33D candidate counts mismatch")
-    if declaration.get("commit_sha") != manifest.get("source_commit_sha") or declaration.get("rights_confirmed") is not False:
-        raise ValueError("Wal33D source declaration/revision mismatch")
-    if not license_path.is_file() or sha256_file(license_path) != manifest.get("license_sha256"):
-        raise ValueError("Wal33D MIT license file/hash mismatch")
-    license_text = license_path.read_text(encoding="utf-8-sig")
-    if "MIT License" not in license_text or "Copyright (c) 2024 Wal33D" not in license_text:
-        raise ValueError("Wal33D MIT license notice missing")
-    if not attribution_path.is_file() or "Wal33D" not in attribution_path.read_text(encoding="utf-8-sig"):
-        raise ValueError("Wal33D attribution missing")
-    if sha256_file(db_path) != manifest.get("database_sha256"):
-        raise ValueError("Wal33D SQLite database hash mismatch")
-
-    source_files = manifest.get("source_files", [])
-    if len(source_files) != 4:
-        raise ValueError("Wal33D source snapshot file count mismatch")
-    for item in source_files:
-        path = root / item["path"]
-        if not path.is_file() or path.stat().st_size != item["byte_size"] or sha256_file(path) != item["sha256"]:
-            raise ValueError(f"Wal33D source snapshot hash mismatch: {item['source_path']}")
-        if manifest["source_commit_sha"] not in item["source_url"]:
-            raise ValueError(f"Wal33D source URL is not pinned: {item['source_path']}")
-
-    db = sqlite_readonly(db_path)
-    tables = table_names(db)
-    if not {"source_registry", "source_files", "dtc_candidates", "database_info"}.issubset(tables):
-        raise ValueError("Wal33D SQLite schema mismatch")
-    counts = {
-        "Volkswagen": int(db.execute("SELECT count(*) FROM dtc_candidates WHERE make='Volkswagen'").fetchone()[0]),
-        "Audi": int(db.execute("SELECT count(*) FROM dtc_candidates WHERE make='Audi'").fetchone()[0]),
-        "total": count(db, "dtc_candidates"),
-    }
-    if counts != expected_counts:
-        raise ValueError("Wal33D SQLite row counts mismatch")
-    if db.execute(
-        """
-        SELECT count(*) FROM dtc_candidates
-        WHERE code_namespace<>'manufacturer_controlled_candidate'
-           OR license_id<>'MIT'
-           OR market_scope<>'UNKNOWN'
-           OR applicability_precision<>'manufacturer_make_candidate'
-           OR verification_status<>'unverified_candidate'
-           OR fitment_confirmed<>0
-           OR ecu_fitment_confirmed<>0
-           OR execution_allowed<>0
-        """
-    ).fetchone()[0]:
-        raise ValueError("Wal33D candidate boundary failed")
-    if db.execute("SELECT count(*) FROM source_registry WHERE rights_confirmed<>0 OR market_scope<>'UNKNOWN' OR verification_status<>'unverified_candidate'").fetchone()[0]:
-        raise ValueError("Wal33D source registry boundary failed")
-    if count(db, "source_registry") != 1 or count(db, "source_files") != 4:
-        raise ValueError("Wal33D source registry/file counts mismatch")
-    rows = db.execute("SELECT make,code FROM dtc_candidates").fetchall()
-    if any(not MANUFACTURER_CODE_RE.fullmatch(row["code"]) for row in rows):
-        raise ValueError("Generic SAE/ISO or malformed code entered Wal33D VAG pack")
-    if db.execute("SELECT count(*) FROM dtc_candidates WHERE code IN ('P0011','P0420','P0A08','P2A00')").fetchone()[0]:
-        raise ValueError("Generic DTC leaked into manufacturer-specific Wal33D pack")
-    if db.execute("SELECT count(*) FROM dtc_candidates WHERE (make='Volkswagen' AND code='P1128') OR (make='Audi' AND code IN ('P3000','P3100'))").fetchone()[0] != 3:
-        raise ValueError("Wal33D expected manufacturer-specific codes are missing")
-    db.close()
-
-    return {
-        "pack_id": "wal33d-vag-oem-dtc-mit",
-        "artifact_name": ARTIFACTS["wal33d"][0],
-        "relative_dir": relative(root.parent, root),
-        "database_path": relative(root.parent, db_path),
-        "database_sha256": sha256_file(db_path),
-        "manifest_path": relative(root.parent, manifest_path),
-        "manifest_sha256": sha256_file(manifest_path),
-        "license": "MIT",
-        "license_files": [relative(root.parent, license_path)],
-        "attribution_files": [relative(root.parent, attribution_path), relative(root.parent, declaration_path)],
-        "status": "verified_research_only",
-        "product_eligibility": "research_only_pending_record_provenance_and_vehicle_validation",
-        "market_scope": "UNKNOWN",
-        "applicability_precision": "manufacturer_make_candidate",
-        "counts": counts,
-        "source_revision": manifest["source_commit_sha"],
-        "warnings": [
-            "The repository declares MIT at repository level, but no separate data-specific license statement is supplied.",
-            "Individual record provenance and technical accuracy are not independently verified; this pack is research-only.",
-            "Volkswagen/Audi make labels do not establish model, generation, year, engine, transmission, ECU, PR-code or market applicability.",
-            "Generic SAE/ISO rows are excluded; no generic DTC is merged into this manufacturer-specific namespace.",
-            "No Skoda/SEAT files, repair procedures, test plans, wiring diagrams, pinouts, torque values or adaptations are included.",
-        ],
-    }
-
-
-def verify_dtc_namespace_separation(root: Path, index: dict[str, Any]) -> None:
-    packs = {item["pack_id"]: item for item in index.get("packs", [])}
-    generic_pack = packs.get("obdex-generic-cc0")
-    vag_pack = packs.get("wal33d-vag-oem-dtc-mit")
-    if not generic_pack or not vag_pack:
-        raise ValueError("Generic and manufacturer-specific DTC packs must both be present")
-    generic_db = sqlite_readonly(root / generic_pack["database_path"])
-    vag_db = sqlite_readonly(root / vag_pack["database_path"])
-    try:
-        generic_codes = {row["code"] for row in generic_db.execute("SELECT code FROM generic_dtc_research")}
-        vag_codes = {row["code"] for row in vag_db.execute("SELECT code FROM dtc_candidates")}
-        if generic_codes.intersection(vag_codes):
-            raise ValueError("Generic and manufacturer-specific DTC namespaces overlap")
-        if any(not GENERIC_OBD_CODE_RE.fullmatch(code) for code in generic_codes):
-            raise ValueError("Generic OBDex pack contains a manufacturer-controlled code range")
-        if any(not MANUFACTURER_CODE_RE.fullmatch(code) for code in vag_codes):
-            raise ValueError("VAG candidate pack contains a generic or malformed DTC range")
-        if "P1128" not in vag_codes or "P1128" in generic_codes:
-            raise ValueError("Volkswagen P1128 must remain isolated in the manufacturer-specific candidate pack")
-        if "P3000" not in vag_codes or "P3100" not in vag_codes:
-            raise ValueError("Audi P3000/P3100 candidate records are missing")
-    finally:
-        generic_db.close()
-        vag_db.close()
-
 
 def verify_bundle(root: Path) -> dict[str, Any]:
     index_path = root / "offline-data-pack-index.json"
     index = read_json(index_path)
     if index.get("bundle_status") != "verified_offline_data_packs_not_installer":
         raise ValueError("Offline bundle status is invalid")
-    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 5:
+    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 4:
         raise ValueError("Offline bundle target/database count mismatch")
     if index.get("license_separation_policy", {}).get("merged_databases") is not False:
         raise ValueError("The separate licensed SQLite databases must not be merged")
@@ -576,7 +439,6 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         "vehiclesdb-vag-identity",
         "vag-engine-candidates-odbl",
         "obdb-vag-signals-cc-by-sa",
-        "wal33d-vag-oem-dtc-mit",
     }
     packs = {pack["pack_id"]: pack for pack in index.get("packs", [])}
     if set(packs) != expected_ids:
@@ -586,7 +448,6 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         "vehiclesdb-vag-identity": inspect_vehiclesdb,
         "vag-engine-candidates-odbl": inspect_odbl,
         "obdb-vag-signals-cc-by-sa": inspect_obdb,
-        "wal33d-vag-oem-dtc-mit": inspect_wal33d,
     }
     for pack_id, pack in packs.items():
         db_path = root / pack["database_path"]
@@ -610,7 +471,6 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         ):
             if fresh.get(key) != pack.get(key):
                 raise ValueError(f"Pack index metadata drift for {pack_id}.{key}")
-    verify_dtc_namespace_separation(root, index)
     for path in root.rglob("*"):
         if path.is_file() and path.suffix.lower() in {".exe", ".msi"}:
             raise ValueError("Data bundle unexpectedly contains an installer executable")
@@ -645,7 +505,6 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                 "vehiclesdb": inspect_vehiclesdb,
                 "odbl": inspect_odbl,
                 "obdb": inspect_obdb,
-                "wal33d": inspect_wal33d,
             }[key]
             pack_descriptors.append(inspector(target_dir))
 
@@ -654,7 +513,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
             "bundle_id": "vag-tech-pro-windows-offline-data-packs",
             "bundle_status": "verified_offline_data_packs_not_installer",
             "target_platform": "windows-x64",
-            "database_count": 5,
+"database_count": 4,
             "built_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_commit_sha": os.environ.get("GITHUB_SHA"),
             "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
@@ -664,12 +523,20 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                 "share_alike_obligations_are_scoped_to_their_own_pack": True,
                 "attribution_and_license_notices_retained": True,
             },
+            "excluded_sources": [
+                {
+                    "source_id": "wal33d-vag-oem-dtc-mit",
+                    "status": "permission_required",
+                    "included": False,
+                    "reason": "Repository-level MIT notice does not establish data-specific rights to display, cache or redistribute the manufacturer DTC records."
+                }
+            ],
             "product_import_policy": [
                 "Generic OBD-II DTCs remain in the generic_sae_iso_obd2 namespace and are never relabeled VAG-specific.",
                 "Identity and community records remain candidates unless exact applicability is independently confirmed.",
                 "ODbL engine/generation candidate data is research-only pending upstream provenance review.",
                 "Community UDS 0x22 signal data is read-only reference material; command execution is disabled.",
-                "Wal33D Volkswagen/Audi manufacturer-controlled DTC records remain research-only; record provenance and exact vehicle fitment are not independently verified.",
+                "No manufacturer-specific DTC pack is included until data-specific reuse, display, cache and redistribution rights are confirmed.",
                 "No pack in this bundle supplies verified VAG repair procedures, factory wiring diagrams, pinouts, torque values, adaptations or service schedules.",
             ],
             "packs": pack_descriptors,
