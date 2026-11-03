@@ -135,6 +135,9 @@ def validate_view_metadata(raw: bytes, dataset: dict[str, Any]) -> tuple[dict[st
     # The manufacturer trade-name table uses codevariantgk in some published snapshots.
     if dataset["view_id"] == "x5v3-sewk":
         required.discard(normalize_field("codevarianttgk"))
+    if normalize_field("codevarianttgk") in required:
+        if normalize_field("codevariantgk") in names:
+            required.discard(normalize_field("codevarianttgk"))
     if not required.issubset(names):
         missing = sorted(required - names)
         raise ValueError(f"{dataset['dataset_id']}: required metadata columns missing: {missing}")
@@ -316,7 +319,7 @@ def build_database(
             db.execute(
                 """INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (
-                    manifest["source_id"], manifest["publisher"], dataset["dataset_id"], dataset["title"],
+                    manifest["source_id"] + ":" + dataset["dataset_id"], manifest["publisher"], dataset["dataset_id"], dataset["title"],
                     dataset["dataset_page"], dataset["view_id"], manifest["dataset_license"], manifest["license_url"],
                     "approved_by_dataset_specific_CC0", 1, 1, 1, 1, MARKET_SCOPE,
                     snap["source_revision"], snap["metadata_sha256"],
@@ -373,7 +376,13 @@ def build_database(
                         row_hash = sha256_bytes(row_json.encode("utf-8"))
                         values = [variant_id, dataset_id, row_hash, row_json]
                         if table == "engine_candidates":
-                            values = [
+                            cursor = db.execute(
+                                """INSERT OR IGNORE INTO engine_candidates(
+                                   variant_id,rdw_motorcode_candidate,displacement_cc_candidate,cylinder_count_candidate,
+                                   fuel_type_code_candidate,cylinder_layout_code_candidate,engine_operation_code_candidate,
+                                   semantics,source_dataset_id,source_record_sha256,source_record_json
+                                   ) VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+                                [
                                 variant_id,
                                 field(row, "motorcode"),
                                 field(row, "cilinderinhoud"),
@@ -383,13 +392,7 @@ def build_database(
                                 field(row, "codewerkingmotor"),
                                 "rdw_motorcode_field_not_confirmed_as_vag_factory_engine_code",
                                 dataset_id, row_hash, row_json,
-                            ]
-                            db.execute(
-                                """INSERT OR IGNORE INTO engine_candidates(
-                                   variant_id,rdw_motorcode_candidate,displacement_cc_candidate,cylinder_count_candidate,
-                                   fuel_type_code_candidate,cylinder_layout_code_candidate,engine_operation_code_candidate,
-                                   semantics,source_dataset_id,source_record_sha256,source_record_json
-                                   ) VALUES(?,?,?,?,?,?,?,?,?,?,?)""", values)
+                                ])
                         elif table == "gearbox_type_candidates":
                             values = [
                                 variant_id,
@@ -399,7 +402,7 @@ def build_database(
                                 "rdw_type_approval_gearbox_type_not_vag_factory_gearbox_code",
                                 dataset_id, row_hash, row_json,
                             ]
-                            db.execute(
+                            cursor = db.execute(
                                 """INSERT OR IGNORE INTO gearbox_type_candidates(
                                    variant_id,rdw_gearbox_type_code_candidate,gear_count_min_candidate,
                                    gear_count_max_candidate,semantics,source_dataset_id,source_record_sha256,source_record_json
@@ -409,17 +412,17 @@ def build_database(
                                 variant_id, field(row, "handelsbenamingfabrikant"),
                                 field(row, "typeaanduidingfabrikant"), dataset_id, row_hash, row_json,
                             ]
-                            db.execute(
+                            cursor = db.execute(
                                 """INSERT OR IGNORE INTO manufacturer_trade_names(
                                    variant_id,trade_name_candidate,manufacturer_type_candidate,
                                    source_dataset_id,source_record_sha256,source_record_json
                                    ) VALUES(?,?,?,?,?,?)""", values)
                         else:
-                            db.execute(
+                            cursor = db.execute(
                                 """INSERT OR IGNORE INTO base_variant_evidence(
                                    variant_id,source_dataset_id,source_record_sha256,source_record_json
                                    ) VALUES(?,?,?,?)""", values)
-                        inserted += 1
+                        inserted += max(cursor.rowcount, 0)
             return inserted
 
         counts = {
@@ -471,6 +474,9 @@ def verify_pack(pack_dir: Path) -> dict[str, Any]:
         path = pack_dir / item["relative_path"]
         if not path.is_file() or path.stat().st_size != item["byte_size"] or sha256_file(path) != item["sha256"]:
             raise ValueError(f"RDW snapshot hash/size mismatch: {item['relative_path']}")
+    source_manifest_path = pack_dir / "source-manifest.json"
+    if not source_manifest_path.is_file() or sha256_file(source_manifest_path) != manifest.get("source_manifest_sha256"):
+        raise ValueError("RDW source manifest hash mismatch")
     if sha256_file(db_path) != manifest.get("database_sha256"):
         raise ValueError("RDW SQLite database hash mismatch")
     db = sqlite3.connect(f"file:{db_path.resolve().as_posix()}?mode=ro", uri=True)
@@ -489,6 +495,10 @@ def verify_pack(pack_dir: Path) -> dict[str, Any]:
         }
         if counts != manifest.get("counts"):
             raise ValueError(f"RDW SQLite row counts mismatch: {counts} != {manifest.get('counts')}")
+        if db.execute("SELECT count(*) FROM source_registry").fetchone()[0] != 5:
+            raise ValueError("RDW source registry must contain exactly five licensed datasets")
+        if db.execute("SELECT count(*) FROM source_files").fetchone()[0] != 16:
+            raise ValueError("RDW source file registry must contain five CSVs, five metadata snapshots, five license-evidence pages and one CC0 legal text")
         if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC0-1.0' OR rights_status<>'approved_by_dataset_specific_CC0' OR commercial_use_allowed<>1 OR display_allowed<>1 OR offline_cache_allowed<>1 OR redistribution_allowed<>1").fetchone()[0] != 0:
             raise ValueError("RDW source rights flags mismatch")
         if db.execute("SELECT count(*) FROM vag_type_approval_variants WHERE market_scope<>? OR applicability_precision<>? OR verification_status<>? OR exact_vehicle_fitment<>0 OR russian_eaeu_fitment<>0 OR factory_engine_code_confirmed<>0 OR factory_gearbox_code_confirmed<>0 OR model_generation_year_confirmed<>0",
