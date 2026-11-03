@@ -422,6 +422,14 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         raise ValueError("Offline bundle target/database count mismatch")
     if index.get("license_separation_policy", {}).get("merged_databases") is not False:
         raise ValueError("The separate licensed SQLite databases must not be merged")
+    excluded = index.get("excluded_sources", [])
+    if not any(
+        item.get("source_id") == "wal33d-vag-oem-dtc-mit"
+        and item.get("status") == "permission_required"
+        and item.get("included") is False
+        for item in excluded
+    ):
+        raise ValueError("Permission-required manufacturer DTC source is not explicitly excluded")
     listed = {item["path"]: item for item in index.get("bundle_files", [])}
     actual = {
         relative(root, p): p for p in root.rglob("*")
