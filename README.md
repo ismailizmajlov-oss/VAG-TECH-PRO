@@ -8,7 +8,7 @@ Non-commercial technical knowledge base and repair-workflow project for Volkswag
 - Never infer engine, transmission, ECU, PR-code, VIN fitment or repair-procedure applicability.
 - Preserve source revision, hashes, scope and data license for every research snapshot.
 - Do not promote research imports into production without technical review and confirmed reuse rights.
-- Wal33D is inspected only in an ephemeral read-only quarantine; its repository MIT license is not treated as a data license.
+- Wal33D/manufacturer-specific DTC candidates are excluded from distributable bundles: the repository-level MIT notice does not establish data-specific display, cache or redistribution rights.
 
 ## Repository contents and current state
 
@@ -39,3 +39,10 @@ It runs on changes to the workflow file on `main` and can also be run manually. 
 ## Important limitation
 
 OBDex covers generic SAE/ISO diagnostic definitions only. It does not establish VAG ECU-specific applicability, vehicle-generation fitment, factory wiring or repair procedures. OEM technical sources and exact model/engine/ECU applicability still require independent evidence and review.
+
+
+## Windows offline bundle rights filter — 2026-11-03
+
+The Windows data-pack assembler now packages only four separately licensed datasets: OBDex CC0 generic OBD-II, VehiclesDB CC BY 4.0 identity candidates, the ODbL VAG identity candidate set, and OBDb CC BY-SA 4.0 community UDS signal candidates. Each remains a separate SQLite database with its own license and provenance.
+
+The Wal33D manufacturer-DTC candidate pack is excluded from the Windows bundle and is not treated as a VAG-specific DTC source. A repository-level MIT notice is not accepted as proof of data-specific reuse, display, caching or redistribution rights. The bundle therefore contains no manufacturer-specific DTC dataset. Generic OBD-II records remain generic and are never relabeled VAG-specific.
