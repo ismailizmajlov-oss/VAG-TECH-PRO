@@ -84,14 +84,16 @@ jobs:
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund
           npm ci --no-audit --no-fund
 
-      - name: Run desktop, local SQLite and data provenance tests
+      - name: Run the complete application test suite and Windows lifecycle contract
         working-directory: desktop-source
         shell: pwsh
         run: |
-          npm run test:desktop
-          npm run test:local-core
+          npm test
+          node --test tests/windows-lifecycle-script-contract.test.cjs
+          npm run validate:migrations
           npm run verify:local-core
           npm run verify:local-research
+          npm run report:source-readiness
 
       - name: Lint and type-check Windows desktop source
         working-directory: desktop-source
