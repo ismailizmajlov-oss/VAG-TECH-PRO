@@ -70,10 +70,9 @@ def evidence_values(source_id, key, *, market="EAEU", cached=0, precision="type_
     )
 
 
-def insert_evidence(db, source_id, key, **kwargs):
-    db.execute(
-        """INSERT INTO eaeu_otts_evidence (
-             source_id,member_state,approval_document_type,approval_number,
+def insert_evidence(db, source_id, key, review_status="candidate", **kwargs):
+    values = evidence_values(source_id, key, **kwargs)
+    columns = """source_id,member_state,approval_document_type,approval_number,
              source_record_key,approval_revision,form_revision,issue_date,
              valid_from,valid_to,manufacturer,make,commercial_name,vehicle_type,
              base_vehicle_or_chassis,modifications,vehicle_category,environmental_class,
@@ -85,9 +84,11 @@ def insert_evidence(db, source_id, key, **kwargs):
              final_drive_type_descriptor,final_drive_ratios_json,market_scope,
              applicability_precision,evidence_locator,source_url,document_reference_url,
              document_cached,document_sha256,source_revision,source_snapshot_sha256,
-             record_sha256,retrieved_at_utc
-           ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-        evidence_values(source_id, key, **kwargs),
+             record_sha256,retrieved_at_utc,review_status"""
+    placeholders = ",".join("?" for _ in range(len(values) + 1))
+    db.execute(
+        f"INSERT INTO eaeu_otts_evidence ({columns}) VALUES ({placeholders})",
+        (*values, review_status),
     )
 
 
@@ -122,18 +123,61 @@ def main():
                 "OTTS import from permission-required source",
             )
 
-            # Licensed metadata can be stored without PDF redistribution rights.
+            # The database cannot accept rows that claim to have been reviewed before review occurs.
             insert_source(db, "licensed-source", "open_license", 1)
             insert_rights(db, "licensed-source", pdf_allowed=0)
+            expect_integrity_error(
+                db,
+                lambda: insert_evidence(db, "licensed-source", "inserted-as-verified", review_status="technically_verified"),
+                "direct insert as technically verified",
+            )
+            expect_integrity_error(
+                db,
+                lambda: insert_evidence(db, "licensed-source", "inserted-as-published", review_status="publication_approved"),
+                "direct insert as publication approved",
+            )
+
+            # Licensed metadata can be stored as a candidate without PDF redistribution rights.
             insert_evidence(db, "licensed-source", "metadata-only-row")
             evidence_id = db.execute(
                 "SELECT approval_evidence_id FROM eaeu_otts_evidence WHERE source_record_key='metadata-only-row'"
             ).fetchone()[0]
-            db.execute("UPDATE eaeu_otts_evidence SET review_status='source_checked' WHERE approval_evidence_id=?", (evidence_id,))
-            db.execute("UPDATE eaeu_otts_evidence SET review_status='technically_verified' WHERE approval_evidence_id=?", (evidence_id,))
+            # Direct state jumps and review transitions without evidence are rejected.
+            expect_integrity_error(
+                db,
+                lambda: db.execute(
+                    "UPDATE eaeu_otts_evidence SET review_status='technically_verified' WHERE approval_evidence_id=?",
+                    (evidence_id,),
+                ),
+                "candidate-to-technical-verification shortcut",
+            )
+            expect_integrity_error(
+                db,
+                lambda: db.execute(
+                    "UPDATE eaeu_otts_evidence SET review_status='publication_approved' WHERE approval_evidence_id=?",
+                    (evidence_id,),
+                ),
+                "candidate-to-publication shortcut",
+            )
+            expect_integrity_error(
+                db,
+                lambda: db.execute(
+                    "UPDATE eaeu_otts_evidence SET review_status='source_checked' WHERE approval_evidence_id=?",
+                    (evidence_id,),
+                ),
+                "source check without timestamp and note",
+            )
             db.execute(
-                "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=? WHERE approval_evidence_id=?",
-                (NOW, evidence_id),
+                "UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Approval record and evidence locator checked.", evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='technically_verified', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Descriptor fields checked against the cited form; no factory fitment inferred.", evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Metadata reuse rights and publication scope checked.", evidence_id),
             )
 
             # A PDF cannot be cached when the license grants metadata rights only.
@@ -189,11 +233,19 @@ def main():
                 (evidence_id,),
             ).fetchone()[0]
             assert status == "candidate", status
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Re-review attempted after rights restriction.", evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='technically_verified', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Technical descriptors remain unchanged, but reuse rights are restricted.", evidence_id),
+            )
             expect_integrity_error(
                 db,
                 lambda: db.execute(
-                    "UPDATE eaeu_otts_evidence SET review_status='publication_approved' WHERE approval_evidence_id=?",
-                    (evidence_id,),
+                    "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                    (NOW, "Attempted publication after rights revocation.", evidence_id),
                 ),
                 "publication after offline-cache rights revocation",
             )
@@ -205,8 +257,14 @@ def main():
             unknown_id = db.execute(
                 "SELECT approval_evidence_id FROM eaeu_otts_evidence WHERE source_record_key='unknown-market-row'"
             ).fetchone()[0]
-            db.execute("UPDATE eaeu_otts_evidence SET review_status='source_checked' WHERE approval_evidence_id=?", (unknown_id,))
-            db.execute("UPDATE eaeu_otts_evidence SET review_status='technically_verified' WHERE approval_evidence_id=?", (unknown_id,))
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Synthetic unknown-market approval record checked.", unknown_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='technically_verified', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Synthetic descriptor fields checked; market remains unknown.", unknown_id),
+            )
             expect_integrity_error(
                 db,
                 lambda: db.execute(
