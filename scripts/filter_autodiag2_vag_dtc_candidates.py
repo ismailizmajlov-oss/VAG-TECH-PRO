@@ -127,14 +127,16 @@ def filter_pack(pack_dir: Path) -> dict[str, Any]:
 
         conn.execute("BEGIN IMMEDIATE")
         if remove_ids:
-            placeholders = ",".join("?" for _ in remove_ids)
-            conn.execute(
-                f"DELETE FROM dtc_fitment_candidates WHERE dtc_candidate_id IN ({placeholders})",
-                remove_ids,
+            conn.execute("CREATE TEMP TABLE remove_dtc_ids(id INTEGER PRIMARY KEY)")
+            conn.executemany(
+                "INSERT INTO remove_dtc_ids(id) VALUES(?)",
+                [(candidate_id,) for candidate_id in remove_ids],
             )
             conn.execute(
-                f"DELETE FROM dtc_candidates WHERE id IN ({placeholders})",
-                remove_ids,
+                "DELETE FROM dtc_fitment_candidates WHERE dtc_candidate_id IN (SELECT id FROM remove_dtc_ids)"
+            )
+            conn.execute(
+                "DELETE FROM dtc_candidates WHERE id IN (SELECT id FROM remove_dtc_ids)"
             )
         conn.commit()
 
