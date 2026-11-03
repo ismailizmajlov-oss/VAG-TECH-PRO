@@ -94,6 +94,9 @@ jobs:
       - name: Enforce rights-filtered bundle registry
         run: python -m unittest discover -s tests -p "test_offline_data_pack_rights.py"
 
+      - name: Enforce rights-filtered bundle registry
+        run: python -m unittest discover -s tests -p "test_offline_data_pack_rights.py"
+
       - name: Assemble separate SQLite databases and license notices
         run: python scripts/build_offline_data_pack_index.py --input-dir dist/source-artifacts --output-dir dist/windows-offline-data-packs
 
