@@ -255,4 +255,57 @@ if (!homePage.includes("type DbRow = Record<string, any>;") ||
     !loginPage.includes('router.push("/");')) {
   throw new Error("TypeScript/lint hardening verification failed");
 }
-console.log("Desktop hardening, React effect, TypeScript and lint fixes applied and verified.");
+// Hash verification must not trust size/mtime caches: same-size tampering with restored timestamps is possible.
+const researchDbPath = path.join(root, "lib", "local-research-db.cjs");
+let researchDb = readLf(researchDbPath);
+researchDb = replaceExactly(
+  researchDb,
+  "const VERIFIED_PACKS = new Set();\n\n",
+  "",
+  "remove research hash cache declaration"
+);
+const databaseCachePattern = /  const cacheKey = \x60\$\{realFile\}\|\$\{stat\.size\}\|\$\{stat\.mtimeMs\}\|\$\{pack\.database_sha256\}\x60;\n  if \(VERIFIED_PACKS\.has\(cacheKey\)\) return pack;\n/;
+const provenanceCachePattern = /  const cacheKey = \x60\$\{realFile\}\|\$\{stat\.size\}\|\$\{stat\.mtimeMs\}\|\$\{expected\}\x60;\n  if \(VERIFIED_PACKS\.has\(cacheKey\)\) return pack;\n/;
+if (!databaseCachePattern.test(researchDb) || !provenanceCachePattern.test(researchDb)) {
+  throw new Error("Could not locate both research SHA-256 cache bypasses");
+}
+researchDb = researchDb.replace(databaseCachePattern, "");
+researchDb = researchDb.replace(provenanceCachePattern, "");
+const cacheAdds = researchDb.match(/  VERIFIED_PACKS\.add\(cacheKey\);\n/g) || [];
+if (cacheAdds.length !== 2) throw new Error("Expected exactly two research hash cache writes");
+researchDb = researchDb.replace(/  VERIFIED_PACKS\.add\(cacheKey\);\n/g, "");
+writeLf(researchDbPath, researchDb);
+
+const researchTestPath = path.join(root, "tests", "local-research-db.test.cjs");
+let researchTests = readLf(researchTestPath);
+researchTests = replaceExactly(
+  researchTests,
+  [
+    '    assert.equal(local.verifyPackDatabaseHash(temp, "test-pack", "pack.bin").database_sha256, expected);',
+    '    fs.writeFileSync(dataFile, "tampered pack bytes");',
+    '    assert.throws(() => local.verifyPackDatabaseHash(temp, "test-pack", "pack.bin"), /SHA-256 mismatch/);'
+  ].join("\n"),
+  [
+    '    assert.equal(local.verifyPackDatabaseHash(temp, "test-pack", "pack.bin").database_sha256, expected);',
+    "    const originalStat = fs.statSync(dataFile);",
+    '    fs.writeFileSync(dataFile, "tampered pack bytes");',
+    "    fs.utimesSync(dataFile, originalStat.atime, originalStat.mtime);",
+    '    assert.throws(() => local.verifyPackDatabaseHash(temp, "test-pack", "pack.bin"), /SHA-256 mismatch/);'
+  ].join("\n"),
+  "same-size database tamper regression test"
+);
+researchTests = replaceExactly(
+  researchTests,
+  '    fs.writeFileSync(license, "changed license notice");\n    assert.throws(() => local.verifyPackFileHash(temp, "test-pack", "license_file", "license_file_sha256"), /SHA-256 mismatch/);',
+  '    const originalStat = fs.statSync(license);\n    fs.writeFileSync(license, "DD BY 4.0 license notice");\n    fs.utimesSync(license, originalStat.atime, originalStat.mtime);\n    assert.throws(() => local.verifyPackFileHash(temp, "test-pack", "license_file", "license_file_sha256"), /SHA-256 mismatch/);',
+  "same-size provenance tamper regression test"
+);
+writeLf(researchTestPath, researchTests);
+
+if (researchDb.includes("VERIFIED_PACKS") ||
+    !researchTests.includes("fs.utimesSync(dataFile, originalStat.atime, originalStat.mtime)") ||
+    !researchTests.includes('fs.writeFileSync(license, "DD BY 4.0 license notice")')) {
+  throw new Error("Research SHA-256 hardening verification failed");
+}
+console.log("Research pack SHA-256 verification hardened against same-size timestamp-preserving tampering.");
+
