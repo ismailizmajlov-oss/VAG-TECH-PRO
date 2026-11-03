@@ -306,5 +306,21 @@ if (researchDb.includes("VERIFIED_PACKS") ||
     !researchTests.includes('fs.writeFileSync(license, "DD BY 4.0 license notice")')) {
   throw new Error("Research SHA-256 hardening verification failed");
 }
+// Keep the native Node SQLite module outside the Next.js server bundle.
+const nextConfigPath = path.join(root, "next.config.ts");
+let nextConfig = readLf(nextConfigPath);
+if (!nextConfig.includes('serverExternalPackages: ["node:sqlite"]')) {
+  nextConfig = replaceExactly(
+    nextConfig,
+    '  output: "standalone",',
+    '  output: "standalone",\n  serverExternalPackages: ["node:sqlite"],',
+    "externalize Node built-in SQLite from Next server bundle"
+  );
+}
+writeLf(nextConfigPath, nextConfig);
+if (!nextConfig.includes('serverExternalPackages: ["node:sqlite"]')) {
+  throw new Error("Next.js Node SQLite externalization was not applied");
+}
+console.log("Next.js server externalization for node:sqlite applied and verified.");
 console.log("Research pack SHA-256 verification hardened against same-size timestamp-preserving tampering.");
 
