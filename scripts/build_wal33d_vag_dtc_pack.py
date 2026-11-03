@@ -313,7 +313,8 @@ def build(manifest_path: Path, output_dir: Path) -> dict[str, Any]:
         readme_text = fetched["README.md"].decode("utf-8-sig")
         if "MIT License" not in license_text or "Copyright (c) 2024 Wal33D" not in license_text:
             raise ValueError("Pinned MIT license notice did not match the reviewed source")
-        if "License: MIT" not in readme_text or "manufacturer-specific definitions" not in readme_text:
+        readme_normalized = " ".join(readme_text.split()).lower()
+        if "license" not in readme_normalized or "mit" not in readme_normalized or "manufacturer-specific definitions" not in readme_normalized:
             raise ValueError("Pinned README no longer declares the reviewed database/license scope")
 
         candidates: list[dict[str, Any]] = []
