@@ -96,12 +96,19 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex CC0 data-license scope check failed")
     if source_manifest.get("data_license") != "CC0-1.0":
         raise ValueError("OBDex data license mismatch")
+    reference_policy = source_manifest.get("source_reference_policy", {})
+    if reference_policy.get("validation") != "syntax_only" or reference_policy.get("external_fetch") is not False:
+        raise ValueError("OBDex external source references must remain syntax-only and unfetched")
+    if reference_policy.get("rights_review") != "not_inherited_from_cc0_dataset":
+        raise ValueError("OBDex external source-document rights boundary is missing")
     if sha256_file(license_path) != source_manifest.get("license_sha256"):
         raise ValueError("OBDex license hash mismatch")
     if sha256_file(db_path) != report.get("database_sha256"):
         raise ValueError("OBDex database hash mismatch")
     if report.get("status") != "validated_research_only" or report.get("integrity_check") != "ok":
         raise ValueError("OBDex source workflow report is not validated")
+    if report.get("source_reference_validation") != "syntax_only_http_or_https_not_fetched":
+        raise ValueError("OBDex source-reference validation policy is missing")
     if report.get("generic_dtcs") != 9533 or report.get("pids") != 132:
         raise ValueError("OBDex expected DTC/PID counts changed")
     if report.get("vag_specific_dtc_rows") != 0 or report.get("fitment_claims") != 0 or report.get("production_rows") != 0:
