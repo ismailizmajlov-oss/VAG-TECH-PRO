@@ -1,0 +1,108 @@
+name: Acquire licensed VAG identity candidates from VehiclesDB
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
+      - data/source-manifests/vehiclesdb-vag-identity.lock.json
+      - scripts/build_vag_identity_vehiclesdb.py
+      - scripts/verify_vag_identity_vehiclesdb.py
+      - scripts/test_vag_identity_vehiclesdb.py
+  push:
+    branches:
+      - automation/windows-offline-data-foundation-run18
+    paths:
+      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
+      - data/source-manifests/vehiclesdb-vag-identity.lock.json
+      - scripts/build_vag_identity_vehiclesdb.py
+      - scripts/verify_vag_identity_vehiclesdb.py
+      - scripts/test_vag_identity_vehiclesdb.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-vehiclesdb-identity
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and verify offline VAG identity SQLite (Windows x64)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned VAG TECH PRO pipeline
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download pinned VehiclesDB release and license notices
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $ProgressPreference = "SilentlyContinue"
+          $lock = Get-Content "data/source-manifests/vehiclesdb-vag-identity.lock.json" -Raw | ConvertFrom-Json
+          $tag = $lock.upstream_tag
+          $base = "https://cdn.jsdelivr.net/gh/vehiclesdb/vehiclesdb@$tag"
+          $input = Join-Path $env:RUNNER_TEMP "vehiclesdb-vag-input"
+          New-Item -ItemType Directory -Path $input -Force | Out-Null
+
+          $files = @(
+            @{ url = "$base/dist/catalog.sqlite"; name = "catalog.sqlite" },
+            @{ url = "$base/manifest.json"; name = "manifest.json" },
+            @{ url = "$base/ATTRIBUTION.md"; name = "ATTRIBUTION.md" },
+            @{ url = "$base/LICENSE"; name = "LICENSE" }
+          )
+          foreach ($file in $files) {
+            $target = Join-Path $input $file.name
+            Invoke-WebRequest -Uri $file.url -OutFile $target -MaximumRedirection 5
+            if (-not (Test-Path $target -PathType Leaf) -or (Get-Item $target).Length -le 0) {
+              throw "Pinned VehiclesDB source file is missing or empty: $($file.name)"
+            }
+            $hash = (Get-FileHash -Path $target -Algorithm SHA256).Hash.ToLowerInvariant()
+            Write-Host "$($file.name) bytes=$((Get-Item $target).Length) sha256=$hash"
+          }
+          "VEHICLESDB_INPUT=$input" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build isolated VAG identity candidate SQLite
+        shell: pwsh
+        run: |
+          $buildArgs = @(
+            "--lock", "data/source-manifests/vehiclesdb-vag-identity.lock.json",
+            "--source-db", (Join-Path $env:VEHICLESDB_INPUT "catalog.sqlite"),
+            "--manifest", (Join-Path $env:VEHICLESDB_INPUT "manifest.json"),
+            "--attribution", (Join-Path $env:VEHICLESDB_INPUT "ATTRIBUTION.md"),
+            "--license", (Join-Path $env:VEHICLESDB_INPUT "LICENSE"),
+            "--output-dir", "dist/vag-identity-vehiclesdb"
+          )
+          python scripts/build_vag_identity_vehiclesdb.py @buildArgs
+
+      - name: Verify provenance, license gates, market scope and SQLite integrity
+        shell: pwsh
+        run: |
+          $verifyArgs = @(
+            "--pack-dir", "dist/vag-identity-vehiclesdb",
+            "--lock", "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+          )
+          python scripts/verify_vag_identity_vehiclesdb.py @verifyArgs
+
+      - name: Run synthetic import and rejection tests
+        run: python scripts/test_vag_identity_vehiclesdb.py
+
+      - name: Compile Windows-targeted data pipeline scripts
+        run: |
+          python -m py_compile scripts/build_vag_identity_vehiclesdb.py
+          python -m py_compile scripts/verify_vag_identity_vehiclesdb.py
+          python -m py_compile scripts/test_vag_identity_vehiclesdb.py
+
+      - name: Upload verified offline identity pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-identity-vehiclesdb-cc-by-4.0
+          path: dist/vag-identity-vehiclesdb/
+          if-no-files-found: error
+          retention-days: 30
