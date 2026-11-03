@@ -364,6 +364,7 @@ jobs:
               package_sha256:sha256(packageBytes),
               source_commit:sourceManifest.commit_sha,
               data_license:"CC0-1.0",
+              source_reference_validation:"syntax_only_http_or_https_not_fetched",
               integrity_check:integrity,
               foreign_key_violations:foreignKeys.length,
               generic_dtcs:dtcCount,
