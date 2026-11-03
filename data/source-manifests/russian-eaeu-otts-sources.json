@@ -133,21 +133,58 @@
     },
     {
       "source_id": "otts-bot-and-public-aggregators",
-      "publisher": "Third-party public aggregators",
-      "source_type": "commercial_or_unverified_aggregator",
-      "source_url": "https://otts.bot/otts",
+      "publisher": "OTTS.BOT",
+      "source_type": "commercial_document_database",
+      "source_url": "https://www.otts.bot/",
+      "terms_url": "https://www.otts.bot/terms",
       "market_scope": ["RU", "EAEU"],
       "license": {
-        "identifier": null,
-        "commercial_use": "not_confirmed",
-        "display": "not_confirmed",
-        "offline_cache": "not_confirmed",
-        "bulk_export": "not_confirmed"
+        "identifier": "contractual_terms_no_redistribution",
+        "commercial_use": "own_internal_professional_use_only",
+        "display_to_third_parties": "not_granted_for_product_database",
+        "offline_cache": "not_granted_for_distribution",
+        "bulk_export": "automated_scraping_and_mass_requests_prohibited",
+        "pdf_redistribution": "prohibited"
       },
-      "status": "permission_required",
+      "status": "restricted_for_product_distribution",
+      "paid_terms_accepted": false,
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion"
+      "hash_status": "terms_review_only",
+      "notes": [
+        "Search is free but document retrieval is a paid service.",
+        "The terms prohibit automated scraping/mass requests and resale, publication or other distribution of documents and database information as the user's own information product.",
+        "Documents are supplied for the user's own use; this does not grant offline redistribution rights.",
+        "No account, API key, paid access or document download was created."
+      ]
+    },
+    {
+      "source_id": "otts-baza-autoregistr",
+      "publisher": "АВТОРЕГИСТР",
+      "source_type": "commercial_document_database",
+      "source_url": "https://otts-baza.ru/",
+      "offer_url": "https://otts-baza.ru/offer/",
+      "pricing_url": "https://otts-baza.ru/pricing/",
+      "offer_revision_date": "2026-10-04",
+      "market_scope": ["RU", "EAEU"],
+      "license": {
+        "identifier": "contractual_subscription_access",
+        "commercial_use": "internal_professional_vehicle_work_permitted",
+        "display_to_third_parties": "not_granted",
+        "offline_cache": "not_granted_for_distribution",
+        "bulk_export": "systematic_extraction_of_substantial_database_part_for_publication_resale_or_competing_catalog_prohibited",
+        "pdf_redistribution": "not_granted"
+      },
+      "status": "restricted_for_product_distribution",
+      "paid_terms_accepted": false,
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "terms_review_only",
+      "notes": [
+        "Access to full PDF documents requires a paid subscription.",
+        "The terms allow the subscriber's own tasks and internal professional work but do not grant a license to distribute documents or build an offline competing catalogue.",
+        "No account, subscription, payment or document download was created."
+      ]
     }
   ]
 }
