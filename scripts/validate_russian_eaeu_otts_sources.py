@@ -35,6 +35,7 @@ def validate(data: dict[str, Any]) -> dict[str, Any]:
         "require_display_rights",
         "require_offline_cache_rights",
         "require_bulk_reuse_rights",
+        "require_pdf_redistribution_rights_if_pdfs_are_packaged",
         "no_scraping_or_undocumented_endpoints",
         "no_import_until_all_required_rights_are_confirmed",
     ):
