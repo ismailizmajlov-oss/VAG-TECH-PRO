@@ -139,6 +139,18 @@ Rechecked `riz4d/OpenVAG` at default-branch commit `407d5e042cf46d55087ed4ae4e05
 
 Added `scripts/validate_vag_dtc_source_rights.py` and `.github/workflows/validate-vag-dtc-source-rights.yml`. Windows x64 run `41591897343` completed successfully on commit `e5e21756651a71daf2038a8e93487c41f7a8197c`. The gate fails if a quarantined or unlicensed source is marked as imported, and keeps generic OBD separate from manufacturer-controlled candidates.
 
+## Descriptor-only EAEU OTTS SQLite schema — Windows CI verified
+
+Added the schema `data/sql/otts-type-approval-evidence.sql` and regression suite `scripts/test-otts-type-approval-evidence.py`. The same additive schema and test were copied to canonical `main` so the core evidence model is not stranded on the research branch.
+
+The schema adds:
+- `vehicle_catalog_source_rights`, with separate commercial-use, display, offline-cache, bulk-reuse and PDF-redistribution permissions, license-text SHA-256, attribution and permission revision;
+- `eaeu_otts_evidence`, with approval number/revision, EAEU member state, market scope, Decision 232 form revision, raw engine/ECU/gearbox descriptors, ratios, evidence locator, source revision, source snapshot hash and normalized-record hash.
+
+Safety boundaries are enforced in SQLite: no VIN, factory engine-code or factory gearbox-code columns; no direct foreign keys to factory engine/transmission dictionaries; applicability precision is fixed to `type_approval_descriptor`; no record can be inserted without approved commercial/display/offline-cache/bulk-reuse rights; cached PDFs additionally require PDF redistribution rights; unknown market/state cannot be published; publication requires technical verification and complete provenance; rights narrowing/revocation demotes published evidence.
+
+Windows x64 run `41592713974` on canonical `main` and run `41592874156` on `automation/rdw-eu-type-approval-research-run19` both completed successfully. All three suites passed on each final run: vehicle taxonomy/evidence, OTTS descriptor/rights/PDF-cache/revocation/provenance, and DTC namespace/applicability links. The Windows runner exposed open SQLite handles in two older tests; all three temporary-database tests now use `contextlib.closing`, and the final runs complete cleanly. Test fixtures are synthetic; no OTTS records were imported.
+
 ## Current external delivery boundary
 
 - The canonical GitHub repository is still the acquisition/schema/validation pipeline; its README states that the complete desktop application source has not been mirrored into this repository.
