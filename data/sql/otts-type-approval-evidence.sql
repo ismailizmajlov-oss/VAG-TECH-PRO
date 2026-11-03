@@ -150,6 +150,92 @@ CREATE INDEX IF NOT EXISTS idx_eaeu_otts_make_model
 CREATE INDEX IF NOT EXISTS idx_eaeu_otts_review
   ON eaeu_otts_evidence(review_status, applicability_precision);
 
+-- New evidence is always quarantined as a candidate; callers cannot insert pre-reviewed rows.
+CREATE TRIGGER IF NOT EXISTS prevent_non_candidate_otts_evidence_insert
+BEFORE INSERT ON eaeu_otts_evidence
+WHEN NEW.review_status <> 'candidate'
+BEGIN
+  SELECT RAISE(ABORT, 'new OTTS evidence must enter as candidate');
+END;
+
+-- Enforce an explicit, auditable review state machine. Rights revocation may always demote to candidate.
+CREATE TRIGGER IF NOT EXISTS validate_otts_evidence_review_transition
+BEFORE UPDATE OF review_status ON eaeu_otts_evidence
+WHEN NEW.review_status <> OLD.review_status
+BEGIN
+  SELECT CASE WHEN NOT (
+    NEW.review_status='candidate'
+    OR (OLD.review_status='candidate' AND NEW.review_status IN ('source_checked','rejected'))
+    OR (OLD.review_status='source_checked' AND NEW.review_status IN ('technically_verified','rejected'))
+    OR (OLD.review_status='technically_verified' AND NEW.review_status IN ('publication_approved','rejected'))
+    OR (OLD.review_status='publication_approved' AND NEW.review_status='rejected')
+    OR (OLD.review_status='rejected' AND NEW.review_status='candidate')
+  ) THEN RAISE(ABORT, 'invalid OTTS review-state transition') END;
+
+  SELECT CASE WHEN NEW.review_status IN
+      ('source_checked','technically_verified','publication_approved','rejected')
+      AND (NEW.reviewed_at_utc IS NULL OR trim(NEW.reviewed_at_utc)=''
+        OR NEW.review_note IS NULL OR trim(NEW.review_note)='')
+    THEN RAISE(ABORT, 'OTTS review transition requires a timestamp and review note') END;
+END;
+
+-- Published source facts are immutable. Demote to candidate before correcting a record, then re-review it.
+CREATE TRIGGER IF NOT EXISTS prevent_published_otts_evidence_mutation
+BEFORE UPDATE ON eaeu_otts_evidence
+WHEN OLD.review_status='publication_approved'
+  AND NEW.review_status='publication_approved'
+  AND (
+    NEW.source_id IS NOT OLD.source_id
+    OR NEW.member_state IS NOT OLD.member_state
+    OR NEW.approval_document_type IS NOT OLD.approval_document_type
+    OR NEW.approval_number IS NOT OLD.approval_number
+    OR NEW.source_record_key IS NOT OLD.source_record_key
+    OR NEW.approval_revision IS NOT OLD.approval_revision
+    OR NEW.form_revision IS NOT OLD.form_revision
+    OR NEW.issue_date IS NOT OLD.issue_date
+    OR NEW.valid_from IS NOT OLD.valid_from
+    OR NEW.valid_to IS NOT OLD.valid_to
+    OR NEW.manufacturer IS NOT OLD.manufacturer
+    OR NEW.make IS NOT OLD.make
+    OR NEW.commercial_name IS NOT OLD.commercial_name
+    OR NEW.vehicle_type IS NOT OLD.vehicle_type
+    OR NEW.base_vehicle_or_chassis IS NOT OLD.base_vehicle_or_chassis
+    OR NEW.modifications IS NOT OLD.modifications
+    OR NEW.vehicle_category IS NOT OLD.vehicle_category
+    OR NEW.environmental_class IS NOT OLD.environmental_class
+    OR NEW.assembly_plant IS NOT OLD.assembly_plant
+    OR NEW.approval_scope_note IS NOT OLD.approval_scope_note
+    OR NEW.engine_make_type_descriptor IS NOT OLD.engine_make_type_descriptor
+    OR NEW.engine_displacement_cc IS NOT OLD.engine_displacement_cc
+    OR NEW.engine_fuel_type IS NOT OLD.engine_fuel_type
+    OR NEW.engine_control_unit_marking IS NOT OLD.engine_control_unit_marking
+    OR NEW.fuel_pump_marking IS NOT OLD.fuel_pump_marking
+    OR NEW.injector_marking IS NOT OLD.injector_marking
+    OR NEW.transmission_type_descriptor IS NOT OLD.transmission_type_descriptor
+    OR NEW.clutch_make_type_descriptor IS NOT OLD.clutch_make_type_descriptor
+    OR NEW.gearbox_make_type_descriptor IS NOT OLD.gearbox_make_type_descriptor
+    OR NEW.gearbox_gear_count IS NOT OLD.gearbox_gear_count
+    OR NEW.gearbox_ratios_json IS NOT OLD.gearbox_ratios_json
+    OR NEW.transfer_case_type_descriptor IS NOT OLD.transfer_case_type_descriptor
+    OR NEW.transfer_case_ratios_json IS NOT OLD.transfer_case_ratios_json
+    OR NEW.final_drive_type_descriptor IS NOT OLD.final_drive_type_descriptor
+    OR NEW.final_drive_ratios_json IS NOT OLD.final_drive_ratios_json
+    OR NEW.market_scope IS NOT OLD.market_scope
+    OR NEW.applicability_precision IS NOT OLD.applicability_precision
+    OR NEW.evidence_locator IS NOT OLD.evidence_locator
+    OR NEW.source_url IS NOT OLD.source_url
+    OR NEW.document_reference_url IS NOT OLD.document_reference_url
+    OR NEW.document_cached IS NOT OLD.document_cached
+    OR NEW.document_sha256 IS NOT OLD.document_sha256
+    OR NEW.source_revision IS NOT OLD.source_revision
+    OR NEW.source_snapshot_sha256 IS NOT OLD.source_snapshot_sha256
+    OR NEW.record_sha256 IS NOT OLD.record_sha256
+    OR NEW.retrieved_at_utc IS NOT OLD.retrieved_at_utc
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'published OTTS evidence is immutable; demote to candidate before editing');
+END;
+
 -- Data may enter this table only when all rights required for offline product use are approved.
 CREATE TRIGGER IF NOT EXISTS prevent_unlicensed_otts_evidence_insert
 BEFORE INSERT ON eaeu_otts_evidence
@@ -173,20 +259,21 @@ END;
 
 CREATE TRIGGER IF NOT EXISTS prevent_unlicensed_otts_evidence_update
 BEFORE UPDATE OF source_id, document_cached ON eaeu_otts_evidence
-WHEN NOT EXISTS (
-  SELECT 1
-  FROM vehicle_catalog_sources s
-  JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
-  WHERE s.source_id=NEW.source_id
-    AND s.redistribution_allowed=1
-    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
-    AND r.rights_status='approved'
-    AND r.commercial_use_allowed=1
-    AND r.display_allowed=1
-    AND r.offline_cache_allowed=1
-    AND r.bulk_reuse_allowed=1
-    AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
-)
+WHEN (NEW.source_id IS NOT OLD.source_id OR NEW.document_cached=1)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM vehicle_catalog_sources s
+    JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
+    WHERE s.source_id=NEW.source_id
+      AND s.redistribution_allowed=1
+      AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+      AND r.rights_status='approved'
+      AND r.commercial_use_allowed=1
+      AND r.display_allowed=1
+      AND r.offline_cache_allowed=1
+      AND r.bulk_reuse_allowed=1
+      AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
+  )
 BEGIN
   SELECT RAISE(ABORT, 'OTTS evidence update blocked: source rights are not approved');
 END;
@@ -195,6 +282,9 @@ CREATE TRIGGER IF NOT EXISTS prevent_unapproved_otts_publication
 BEFORE UPDATE OF review_status ON eaeu_otts_evidence
 WHEN NEW.review_status='publication_approved'
 BEGIN
+  SELECT CASE WHEN NEW.reviewed_at_utc IS NULL OR trim(NEW.reviewed_at_utc)=''
+      OR NEW.review_note IS NULL OR trim(NEW.review_note)=''
+    THEN RAISE(ABORT, 'OTTS publication requires a review timestamp and note') END;
   SELECT CASE WHEN OLD.review_status<>'technically_verified'
     THEN RAISE(ABORT, 'OTTS publication requires technical verification first') END;
   SELECT CASE WHEN NEW.market_scope='UNKNOWN' OR NEW.member_state='UNKNOWN'
@@ -242,8 +332,12 @@ BEGIN
   UPDATE eaeu_otts_evidence
   SET review_status='candidate',
       reviewed_at_utc=NULL,
-      review_note='Source rights were revoked or narrowed; publication eligibility was removed.'
-  WHERE source_id=NEW.source_id AND review_status='publication_approved';
+      review_note='Source rights were revoked or narrowed; publication eligibility was removed.',
+      document_cached=0,
+      document_reference_url=NULL,
+      document_sha256=NULL
+  WHERE source_id=NEW.source_id
+    AND (review_status='publication_approved' OR document_cached=1);
 END;
 
 CREATE TRIGGER IF NOT EXISTS demote_otts_after_rights_deletion
@@ -252,8 +346,12 @@ BEGIN
   UPDATE eaeu_otts_evidence
   SET review_status='candidate',
       reviewed_at_utc=NULL,
-      review_note='Source rights record was deleted; publication eligibility was removed.'
-  WHERE source_id=OLD.source_id AND review_status='publication_approved';
+      review_note='Source rights record was deleted; publication eligibility was removed.',
+      document_cached=0,
+      document_reference_url=NULL,
+      document_sha256=NULL
+  WHERE source_id=OLD.source_id
+    AND (review_status='publication_approved' OR document_cached=1);
 END;
 
 CREATE TRIGGER IF NOT EXISTS revoke_otts_rights_after_source_restriction
