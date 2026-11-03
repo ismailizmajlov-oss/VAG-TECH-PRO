@@ -228,13 +228,15 @@ def build_database(
         CREATE TABLE source_files(
           file_id INTEGER PRIMARY KEY,
           dataset_id TEXT NOT NULL REFERENCES source_registry(dataset_id),
-          file_kind TEXT NOT NULL CHECK(file_kind IN ('csv_snapshot','view_metadata','license_evidence_page','license_text')),
+          file_kind TEXT NOT NULL CHECK(file_kind IN ('csv_snapshot','view_metadata','license_evidence_page','license_text','discovery_query')),
+          chunk_no INTEGER NOT NULL DEFAULT 0 CHECK(chunk_no>=0),
+          query_text TEXT NOT NULL DEFAULT '',
           relative_path TEXT NOT NULL,
           source_url TEXT NOT NULL,
           retrieved_at_utc TEXT NOT NULL,
           byte_size INTEGER NOT NULL CHECK(byte_size>0),
           sha256 TEXT NOT NULL CHECK(length(sha256)=64),
-          UNIQUE(dataset_id,file_kind)
+          UNIQUE(dataset_id,file_kind,chunk_no)
         );
         CREATE TABLE vag_type_approval_variants(
           variant_id INTEGER PRIMARY KEY,
@@ -326,19 +328,39 @@ def build_database(
                     snap["source_revision"], snap["metadata_sha256"],
                 ),
             )
-            for kind in ("csv_snapshot", "view_metadata", "license_evidence_page"):
+            for kind in ("view_metadata", "license_evidence_page"):
                 item = snap[kind]
                 db.execute(
-                    """INSERT INTO source_files(dataset_id,file_kind,relative_path,source_url,retrieved_at_utc,byte_size,sha256)
-                       VALUES(?,?,?,?,?,?,?)""",
-                    (dataset["dataset_id"], kind, item["relative_path"], item["source_url"], now,
+                    """INSERT INTO source_files(
+                         dataset_id,file_kind,chunk_no,query_text,relative_path,source_url,retrieved_at_utc,byte_size,sha256
+                       ) VALUES(?,?,?,?,?,?,?,?,?)""",
+                    (dataset["dataset_id"], kind, 0, "", item["relative_path"], item["source_url"], now,
                      item["byte_size"], item["sha256"]),
+                )
+            for item in snap.get("csv_snapshots", []):
+                db.execute(
+                    """INSERT INTO source_files(
+                         dataset_id,file_kind,chunk_no,query_text,relative_path,source_url,retrieved_at_utc,byte_size,sha256
+                       ) VALUES(?,?,?,?,?,?,?,?,?)""",
+                    (dataset["dataset_id"], "csv_snapshot", item["chunk_no"], item["query_text"],
+                     item["relative_path"], item["source_url"], now, item["byte_size"], item["sha256"]),
+                )
+            discovery = snap.get("discovery_query")
+            if discovery:
+                db.execute(
+                    """INSERT INTO source_files(
+                         dataset_id,file_kind,chunk_no,query_text,relative_path,source_url,retrieved_at_utc,byte_size,sha256
+                       ) VALUES(?,?,?,?,?,?,?,?,?)""",
+                    (dataset["dataset_id"], "discovery_query", 0, discovery["query_text"],
+                     discovery["relative_path"], discovery["source_url"], now,
+                     discovery["byte_size"], discovery["sha256"]),
                 )
         license_snapshot = snapshots["__license__"]["license_text"]
         db.execute(
-            """INSERT INTO source_files(dataset_id,file_kind,relative_path,source_url,retrieved_at_utc,byte_size,sha256)
-               VALUES(?,?,?,?,?,?,?)""",
-            ("rdw-tgk-basis-uitvoering", "license_text", license_snapshot["relative_path"],
+            """INSERT INTO source_files(
+                 dataset_id,file_kind,chunk_no,query_text,relative_path,source_url,retrieved_at_utc,byte_size,sha256
+               ) VALUES(?,?,?,?,?,?,?,?,?)""",
+            ("rdw-tgk-basis-uitvoering", "license_text", 0, "", license_snapshot["relative_path"],
              license_snapshot["source_url"], now, license_snapshot["byte_size"], license_snapshot["sha256"]),
         )
 
