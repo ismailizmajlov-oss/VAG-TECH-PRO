@@ -219,8 +219,10 @@ const researchCatalogPath = path.join(root, "components", "local-research-catalo
 let researchCatalog = readLf(researchCatalogPath);
 researchCatalog = researchCatalog
   .replace(/row\.affectedComponents\.length/g, "row.affectedComponents?.length")
+  .replace(/row\.affectedComponents\?\.length\s*>\s*0/g, "(row.affectedComponents?.length ?? 0) > 0")
   .replace(/row\.affectedComponents\.map/g, "row.affectedComponents?.map")
   .replace(/row\.commonCauses\.length/g, "row.commonCauses?.length")
+  .replace(/row\.commonCauses\?\.length\s*>\s*0/g, "(row.commonCauses?.length ?? 0) > 0")
   .replace(/row\.commonCauses\.map/g, "row.commonCauses?.map");
 writeLf(researchCatalogPath, researchCatalog);
 
@@ -250,8 +252,8 @@ coreTestsFinal = coreTestsFinal.replace(/^\s*const now = new Date\(\)\.toISOStri
 writeLf(coreTestPath, coreTestsFinal);
 
 if (!homePage.includes("type DbRow = Record<string, any>;") ||
-    !researchCatalog.includes("row.affectedComponents?.length") ||
-    !researchCatalog.includes("row.commonCauses?.length") ||
+    !researchCatalog.includes("(row.affectedComponents?.length ?? 0) > 0") ||
+    !researchCatalog.includes("(row.commonCauses?.length ?? 0) > 0") ||
     !loginPage.includes('router.push("/");')) {
   throw new Error("TypeScript/lint hardening verification failed");
 }
