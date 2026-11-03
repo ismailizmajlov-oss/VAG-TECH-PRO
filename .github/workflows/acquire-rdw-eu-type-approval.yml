@@ -1,0 +1,59 @@
+name: Acquire RDW EU type-approval CC0 candidate pack
+
+on:
+  push:
+    branches:
+      - automation/rdw-eu-type-approval-research-run19
+    paths:
+      - data/source-manifests/rdw-eu-type-approval-cc0.json
+      - scripts/build_rdw_type_approval_pack.py
+      - scripts/test_rdw_type_approval_pack.py
+      - .github/workflows/acquire-rdw-eu-type-approval.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rdw-eu-type-approval-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-verify:
+    name: Build and verify RDW SQLite pack (Windows x64)
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout pinned source revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: false
+
+      - name: Run offline regression tests
+        shell: pwsh
+        run: python scripts/test_rdw_type_approval_pack.py
+
+      - name: Acquire licensed source snapshots and build SQLite
+        shell: pwsh
+        run: python scripts/build_rdw_type_approval_pack.py --manifest data/source-manifests/rdw-eu-type-approval-cc0.json --output build/rdw-eu-type-approval
+
+      - name: Verify pack and regression boundaries
+        shell: pwsh
+        run: |
+          python scripts/test_rdw_type_approval_pack.py --pack-dir build/rdw-eu-type-approval
+          python scripts/build_rdw_type_approval_pack.py --verify-only --output build/rdw-eu-type-approval
+
+      - name: Upload verified source pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdw-eu-type-approval-cc0
+          path: build/rdw-eu-type-approval/
+          if-no-files-found: error
+          retention-days: 30
