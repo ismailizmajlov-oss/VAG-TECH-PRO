@@ -563,7 +563,7 @@ def build(manifest_path: Path, output_dir: Path) -> dict[str, Any]:
             for required_field in required:
                 if normalize_field(required_field) not in header_norm:
                     # Manufacturer trade names use the published codevariantgk alias.
-                    if not (dataset["view_id"] == "x5v3-sewk" and required_field == "codevarianttgk" and "codevariantgk" in header_norm):
+                    if not (required_field == "codevarianttgk" and "codevariantgk" in header_norm):
                         raise ValueError(f"{dataset['dataset_id']}: required CSV column missing: {required_field}")
             page_raw = safe_fetch(dataset["dataset_page"], max_meta, timeout, "text/html,application/xhtml+xml")
             page_text = page_raw.decode("utf-8", errors="replace").casefold()
