@@ -328,7 +328,7 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": approved_evidence,
         })
         used_source_ids.update(row["source_id"] for row in approved_evidence)
-        country_counts.update(countries)
+        country_counts.update(row["country"] for row in approved_evidence)
         make_counts[model["make_id"]] += 1
 
     source_db.close()
@@ -461,6 +461,13 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
                 "LICENSE": license_hash,
                 "ATTRIBUTION.md": attribution_hash,
             },
+            "source_snapshot_bytes": {
+                "catalog.sqlite": args.source_db.stat().st_size,
+                "manifest.json": args.manifest.stat().st_size,
+                "LICENSE": args.license.stat().st_size,
+                "ATTRIBUTION.md": args.attribution.stat().st_size,
+            },
+            "country_evidence_counts": dict(sorted(country_counts.items())),
             "database_file": "vag-identity-vehiclesdb.sqlite",
             "database_sha256": database_hash,
             "counts": counts,
