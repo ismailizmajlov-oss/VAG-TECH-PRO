@@ -250,15 +250,52 @@ def main():
                 (NOW, evidence_id),
             )
 
-            # Rights narrowing/revocation removes publication eligibility.
+            # A separately licensed PDF may be cached, but revoking core rights clears its cache reference.
+            db.execute(
+                "UPDATE vehicle_catalog_source_rights SET pdf_redistribution_allowed=1 WHERE source_id='licensed-source'"
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='candidate' WHERE approval_evidence_id=?",
+                (evidence_id,),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET document_cached=1, document_reference_url=?, document_sha256=? WHERE approval_evidence_id=?",
+                ("https://example.invalid/approval.pdf", H_DOCUMENT, evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Cached PDF reference and separate redistribution right checked.", evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='technically_verified', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Approval descriptors checked before PDF-backed publication.", evidence_id),
+            )
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "PDF redistribution and offline caching rights checked.", evidence_id),
+            )
             db.execute(
                 "UPDATE vehicle_catalog_source_rights SET offline_cache_allowed=0, rights_status='restricted' WHERE source_id='licensed-source'"
             )
-            status = db.execute(
-                "SELECT review_status FROM eaeu_otts_evidence WHERE approval_evidence_id=?",
+            state = db.execute(
+                "SELECT review_status, document_cached, document_reference_url, document_sha256 FROM eaeu_otts_evidence WHERE approval_evidence_id=?",
                 (evidence_id,),
-            ).fetchone()[0]
-            assert status == "candidate", status
+            ).fetchone()
+            assert state == ("candidate", 0, None, None), state
+
+            # Cache removal remains possible after rights revocation; adding a cache is blocked.
+            db.execute(
+                "UPDATE eaeu_otts_evidence SET document_cached=0, document_reference_url=NULL, document_sha256=NULL WHERE approval_evidence_id=?",
+                (evidence_id,),
+            )
+            expect_integrity_error(
+                db,
+                lambda: db.execute(
+                    "UPDATE eaeu_otts_evidence SET document_cached=1, document_reference_url=?, document_sha256=? WHERE approval_evidence_id=?",
+                    ("https://example.invalid/approval.pdf", H_DOCUMENT, evidence_id),
+                ),
+                "re-caching PDF after rights revocation",
+            )
             db.execute(
                 "UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
                 (NOW, "Re-review attempted after rights restriction.", evidence_id),
