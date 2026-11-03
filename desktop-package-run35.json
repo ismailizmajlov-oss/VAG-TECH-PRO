@@ -14,7 +14,7 @@
     "test": "npm run test:desktop && npm run test:local-core && npm run test:research",
     "test:desktop": "node --test tests/desktop-runtime.test.cjs tests/windows-lifecycle-script-contract.test.cjs tests/diagnostic-worksheet.test.cjs",
     "test:local-core": "node --test tests/local-core-db.test.cjs tests/local-offline-workspace.test.cjs tests/local-data-admin-ui-contract.test.cjs tests/local-core-api.test.cjs",
-    "test:research": "node --test tests/local-research-db.test.cjs tests/local-research-packs.test.cjs tests/local-research-ui-contract.test.cjs tests/autodiag2-pack-integration.test.cjs",
+    "test:research": "node --test tests/local-research-db.test.cjs tests/local-research-packs.test.cjs tests/local-research-ui-contract.test.cjs tests/autodiag2-pack-integration.test.cjs tests/vag-identity-provenance-exclusion.test.cjs",
     "verify:local-core": "node scripts/verify-local-core.cjs",
     "verify:local-research": "node scripts/verify-all-local-research-packs.cjs",
     "build:desktop": "npm run build && electron-builder --win nsis --x64",
