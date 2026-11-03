@@ -259,20 +259,21 @@ END;
 
 CREATE TRIGGER IF NOT EXISTS prevent_unlicensed_otts_evidence_update
 BEFORE UPDATE OF source_id, document_cached ON eaeu_otts_evidence
-WHEN NOT EXISTS (
-  SELECT 1
-  FROM vehicle_catalog_sources s
-  JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
-  WHERE s.source_id=NEW.source_id
-    AND s.redistribution_allowed=1
-    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
-    AND r.rights_status='approved'
-    AND r.commercial_use_allowed=1
-    AND r.display_allowed=1
-    AND r.offline_cache_allowed=1
-    AND r.bulk_reuse_allowed=1
-    AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
-)
+WHEN (NEW.source_id IS NOT OLD.source_id OR NEW.document_cached=1)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM vehicle_catalog_sources s
+    JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
+    WHERE s.source_id=NEW.source_id
+      AND s.redistribution_allowed=1
+      AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+      AND r.rights_status='approved'
+      AND r.commercial_use_allowed=1
+      AND r.display_allowed=1
+      AND r.offline_cache_allowed=1
+      AND r.bulk_reuse_allowed=1
+      AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
+  )
 BEGIN
   SELECT RAISE(ABORT, 'OTTS evidence update blocked: source rights are not approved');
 END;
@@ -331,8 +332,12 @@ BEGIN
   UPDATE eaeu_otts_evidence
   SET review_status='candidate',
       reviewed_at_utc=NULL,
-      review_note='Source rights were revoked or narrowed; publication eligibility was removed.'
-  WHERE source_id=NEW.source_id AND review_status='publication_approved';
+      review_note='Source rights were revoked or narrowed; publication eligibility was removed.',
+      document_cached=0,
+      document_reference_url=NULL,
+      document_sha256=NULL
+  WHERE source_id=NEW.source_id
+    AND (review_status='publication_approved' OR document_cached=1);
 END;
 
 CREATE TRIGGER IF NOT EXISTS demote_otts_after_rights_deletion
@@ -341,8 +346,12 @@ BEGIN
   UPDATE eaeu_otts_evidence
   SET review_status='candidate',
       reviewed_at_utc=NULL,
-      review_note='Source rights record was deleted; publication eligibility was removed.'
-  WHERE source_id=OLD.source_id AND review_status='publication_approved';
+      review_note='Source rights record was deleted; publication eligibility was removed.',
+      document_cached=0,
+      document_reference_url=NULL,
+      document_sha256=NULL
+  WHERE source_id=OLD.source_id
+    AND (review_status='publication_approved' OR document_cached=1);
 END;
 
 CREATE TRIGGER IF NOT EXISTS revoke_otts_rights_after_source_restriction
