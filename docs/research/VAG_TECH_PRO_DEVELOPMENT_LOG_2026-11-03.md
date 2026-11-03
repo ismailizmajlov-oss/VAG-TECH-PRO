@@ -107,7 +107,7 @@ The bundle contains six separate SQLite databases and a metadata-only pack index
 
 ### Current Russian/EAEU rights gate
 
-The official FGIS «Реестры КТС» is still the highest-priority Russian source, but the reviewed public-site search/attribute publication does not grant bulk extraction, commercial display, offline caching or redistribution rights. The EAEU OData catalogue review has not identified a dedicated OTTS bulk dataset with dataset-specific reuse terms. HPT.SU API terms restrict third-party equivalent/derived databases and full mirroring without separate written consent. No Russian/EAEU OTTS data was imported, no account or API key was created, and no paid terms were accepted.
+The official FGIS «Реестры КТС» is still the highest-priority Russian source, but the reviewed public-site search/attribute publication does not grant bulk extraction, commercial display, offline caching or redistribution rights. The EAEU OData catalogue review has not identified a dedicated OTTS bulk dataset with dataset-specific reuse terms. HPT.SU API terms restrict third-party equivalent/derived databases and full mirroring without separate written consent. A fresh terms review also confirmed that OTTS.BOT prohibits automated scraping and redistribution of its database/documents, while АВТОРЕГИСТР permits internal professional use but prohibits substantial systematic extraction for a competing catalogue. Both aggregators are now explicitly marked restricted_for_product_distribution in the machine-readable register. No Russian/EAEU OTTS data was imported, no account or API key was created, no document was downloaded, and no paid terms were accepted.
 
 ## Current external delivery boundary
 
