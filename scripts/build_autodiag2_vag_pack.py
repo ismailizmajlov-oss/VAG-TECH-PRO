@@ -582,8 +582,8 @@ def main() -> None:
             evidence = evidence_for(src,"ad_dtc_evidence","dtc_id",dtc_id)
             if not evidence:
                 continue
-            protocols = linked_names(src,"ad_dtc_protocol_link","dtc_id",dtc_id,"ad_diag_protocol")
-            standards = linked_names(src,"ad_dtc_standard_link","dtc_id",dtc_id,"ad_dtc_standard")
+            protocols = linked_names(src,"ad_dtc_protocol_link","dtc_id",dtc_id,"ad_diag_protocol","protocol_id")
+            standards = linked_names(src,"ad_dtc_standard_link","dtc_id",dtc_id,"ad_dtc_standard","standard_id")
             namespace = classify_dtc(dtc.get("code"),protocols,standards)
             if namespace != "manufacturer_controlled_candidate" or not (dtc.get("definition") or dtc.get("description")):
                 continue
