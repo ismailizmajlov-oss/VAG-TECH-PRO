@@ -243,11 +243,11 @@ def main():
                 "UPDATE eaeu_otts_evidence SET document_cached=0, document_reference_url=NULL, document_sha256=NULL WHERE approval_evidence_id=?",
                 (evidence_id,),
             )
-            db.execute("UPDATE eaeu_otts_evidence SET review_status='source_checked' WHERE approval_evidence_id=?", (evidence_id,))
-            db.execute("UPDATE eaeu_otts_evidence SET review_status='technically_verified' WHERE approval_evidence_id=?", (evidence_id,))
+            db.execute("UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?", (NOW, "Metadata-only source locator and reuse rights checked.", evidence_id))
+            db.execute("UPDATE eaeu_otts_evidence SET review_status='technically_verified', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?", (NOW, "Metadata-only descriptors reviewed; no PDF or exact vehicle fitment claimed.", evidence_id))
             db.execute(
-                "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=? WHERE approval_evidence_id=?",
-                (NOW, evidence_id),
+                "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+                (NOW, "Metadata-only publication rights and scope independently checked.", evidence_id),
             )
 
             # A separately licensed PDF may be cached, but revoking core rights clears its cache reference.
