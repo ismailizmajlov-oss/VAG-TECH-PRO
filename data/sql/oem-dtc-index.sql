@@ -224,19 +224,23 @@ BEFORE INSERT ON oem_dtc_index
 WHEN NEW.dtc_namespace = 'manufacturer_specific_vag'
  AND (
    NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
-   OR NEW.review_status = 'candidate'
+   OR NEW.review_status NOT IN ('source_header_verified','applicability_verified','engineer_reviewed')
    OR NEW.applicability_level = 'manufacturer_make_candidate'
  )
 BEGIN
-  SELECT RAISE(ABORT, 'VAG-specific namespace requires a VAG manufacturer');
+  SELECT RAISE(ABORT, 'VAG-specific namespace requires a reviewed VAG source; use candidate namespace otherwise');
 END;
 
 CREATE TRIGGER IF NOT EXISTS validate_manufacturer_specific_vag_make_update
 BEFORE UPDATE ON oem_dtc_index
 WHEN NEW.dtc_namespace = 'manufacturer_specific_vag'
- AND NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+ AND (
+   NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+   OR NEW.review_status = 'candidate'
+   OR NEW.applicability_level = 'manufacturer_make_candidate'
+ )
 BEGIN
-  SELECT RAISE(ABORT, 'VAG-specific namespace requires a VAG manufacturer');
+  SELECT RAISE(ABORT, 'VAG-specific namespace requires a reviewed VAG source; use candidate namespace otherwise');
 END;
 
 CREATE TRIGGER IF NOT EXISTS prevent_unreviewed_candidate_namespace_promotion
