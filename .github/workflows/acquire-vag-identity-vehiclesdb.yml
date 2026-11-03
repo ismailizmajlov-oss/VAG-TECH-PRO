@@ -1,22 +1,6 @@
 name: Acquire licensed VAG identity candidates from VehiclesDB
 
 on:
-  pull_request:
-    paths:
-      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
-      - data/source-manifests/vehiclesdb-vag-identity.lock.json
-      - scripts/build_vag_identity_vehiclesdb.py
-      - scripts/verify_vag_identity_vehiclesdb.py
-      - scripts/test_vag_identity_vehiclesdb.py
-  push:
-    branches:
-      - automation/windows-offline-data-foundation-run18
-    paths:
-      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
-      - data/source-manifests/vehiclesdb-vag-identity.lock.json
-      - scripts/build_vag_identity_vehiclesdb.py
-      - scripts/verify_vag_identity_vehiclesdb.py
-      - scripts/test_vag_identity_vehiclesdb.py
   workflow_call:
   workflow_dispatch:
 
