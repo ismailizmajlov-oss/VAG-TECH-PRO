@@ -440,7 +440,7 @@ def main() -> int:
                 connection.execute("""
                   INSERT INTO signal_candidates
                   (command_id,source_id,ordinal,signal_key,name,description,path,unit,format_json,suggested_metric,raw_json,record_sha256,market_scope,applicability_precision,verification_status)
-                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'UNKNOWN','vehicle_model_candidate','unverified_community_candidate')
+                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,'UNKNOWN','vehicle_model_candidate','unverified_community_candidate')
                 """, (
                     command_ids[signal["command_ordinal"]], source_id, signal["signal_ordinal"],
                     signal["signal_key"], signal["name"], signal["description"], signal["path"],
