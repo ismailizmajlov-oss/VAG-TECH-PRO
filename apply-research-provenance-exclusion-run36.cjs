@@ -302,11 +302,14 @@ function patchAutoDiag2DbAndTests() {
     '        counts.genericDtcRows !== expected.generic_dtc_rows_in_pack || counts.transmissionRecords !== expected.transmission_records ||\n        counts.unverifiedEngineCodeFields !== expected.engine_code_candidates_unverified || expected.engine_codes_verified !== 0 ||\n        packData.sourceManifest.dtc_policy_filtered !== true ||\n        packData.sourceManifest.dtc_candidate_policy?.diagnostic_execution_allowed !== false ||\n        packData.sourceManifest.dtc_candidate_policy?.repair_advice_approved !== false ||\n        packData.sourceManifest.engine_code_policy?.shape_heuristic_is_not_used_for_verification !== true) {',
     "AutoDiag2 source manifest policy parity gate"
   );
-  moduleSource = replaceExactly(moduleSource,
-    '      engineCodeShapeCandidates: counts.engineCodeShapeCandidates,\n      unclassifiedEngineLabels: counts.unclassifiedEngineLabels,',
-    '      engineCodeShapeCandidates: counts.engineCodeShapeCandidates,\n      unclassifiedEngineLabels: counts.unclassifiedEngineLabels,\n      unverifiedEngineCodeFields: counts.unverifiedEngineCodeFields,',
-    "AutoDiag2 summary unverified engine count"
-  );
+  if (!moduleSource.includes("unverifiedEngineCodeFields: counts.unverifiedEngineCodeFields")) {
+    const summaryCountPattern = /(\n\s*unclassifiedEngineLabels:\s*counts\.unclassifiedEngineLabels,)/;
+    if (!summaryCountPattern.test(moduleSource)) {
+      const position = moduleSource.indexOf("unclassifiedEngineLabels");
+      throw new Error("AutoDiag2 summary unverified engine count anchor is missing; context=" + moduleSource.slice(Math.max(0, position - 180), position + 240));
+    }
+    moduleSource = moduleSource.replace(summaryCountPattern, "$1\n      unverifiedEngineCodeFields: counts.unverifiedEngineCodeFields,");
+  }
   moduleSource = replaceExactly(moduleSource,
     '      counts,\n    attributionText: packData.attributionText,',
     '      counts,\n    excludedDtcCounts: packData.sourceManifest.dtc_policy_removal_counts || {},\n    attributionText: packData.attributionText,',
