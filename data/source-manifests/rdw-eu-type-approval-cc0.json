@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "source_id": "rdw-eu-type-approval-register",
+  "publisher": "RDW (Dienst Wegverkeer), Netherlands",
+  "publisher_url": "https://www.rdw.nl/over-rdw/dienstverlening/open-data/algemene-informatie",
+  "catalogue_url": "https://opendata.rdw.nl/",
+  "dataset_license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "license_text_url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+  "rights_evidence": {
+    "commercial_use": "confirmed_by_dataset_specific_CC0_declaration",
+    "display": "confirmed_by_dataset_specific_CC0_declaration",
+    "offline_cache": "confirmed_by_dataset_specific_CC0_declaration",
+    "redistribution": "confirmed_by_dataset_specific_CC0_declaration",
+    "evidence_note": "Each selected RDW type-approval dataset has a dataset-specific CC0-1.0 declaration in the Dutch government data catalogue. RDW states that its non-sensitive type-approval data are released as open data and are freely available for reuse."
+  },
+  "market_scope": "NL_EU_TYPE_APPROVAL_REGISTER",
+  "market_scope_note": "Records from the Netherlands RDW type-approval register. The register includes European type approvals recorded by RDW; this is not a complete EU-wide corpus and is not Russian/EAEU OTTS evidence.",
+  "product_eligibility": "candidate_identity_and_type_approval_evidence_only",
+  "applicability_policy": {
+    "applicability_precision": "type_approval_variant",
+    "verification_status": "source_published_candidate",
+    "exact_vehicle_fitment": false,
+    "russian_or_eaeu_fitment": false,
+    "factory_engine_code_confirmed": false,
+    "factory_gearbox_code_confirmed": false,
+    "model_generation_year_confirmed": false,
+    "vin_fitment_confirmed": false,
+    "notes": [
+      "RDW Motorcode is retained as an RDW type-approval field candidate and is not promoted to a VAG factory engine code without independent evidence.",
+      "RDW CodeTypeVersnellingsbak is retained as a type-approval gearbox-type candidate and is not promoted to a VAG factory gearbox code.",
+      "Records may be linked only by the published type-approval number, variant, version and revision keys.",
+      "No Russian/EAEU market fitment is inferred from a Dutch/EU type-approval record."
+    ]
+  },
+  "brand_code_aliases": {
+    "VOLKSWAGEN": "Volkswagen",
+    "VOLKSWAGENAG": "Volkswagen",
+    "VW": "Volkswagen",
+    "VWAG": "Volkswagen",
+    "VOWA": "Volkswagen",
+    "AUDI": "Audi",
+    "SKODA": "Škoda",
+    "SKODAAUTO": "Škoda",
+    "SEAT": "SEAT",
+    "CUPRA": "CUPRA",
+    "BENTLEY": "Bentley",
+    "BENTLEYMOTORS": "Bentley",
+    "LAMBORGHINI": "Lamborghini",
+    "AUTOMOBILILAMBORGHINI": "Lamborghini",
+    "PORSCHE": "Porsche",
+    "PORSCHEAG": "Porsche",
+    "BUGATTI": "Bugatti"
+  },
+  "datasets": [
+    {
+      "dataset_id": "rdw-tgk-basis-uitvoering",
+      "title": "Open Data RDW: TGK Basis Uitvoering",
+      "view_id": "byxc-wwua",
+      "dataset_page": "https://data.overheid.nl/dataset/46077-open-data-rdw--tgk-basis-uitvoering",
+      "metadata_url": "https://opendata.rdw.nl/api/views/byxc-wwua.json",
+      "download_url": "https://opendata.rdw.nl/api/v3/views/byxc-wwua/export.csv?accessType=DOWNLOAD",
+      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
+      "purpose": "approval_variant_base"
+    },
+    {
+      "dataset_id": "rdw-tgk-merk-uitvoering",
+      "title": "Open Data RDW: TGK Merk Uitvoering",
+      "view_id": "kyri-nuah",
+      "dataset_page": "https://data.overheid.nl/dataset/46081-open-data-rdw--tgk-merk-uitvoering",
+      "metadata_url": "https://opendata.rdw.nl/api/views/kyri-nuah.json",
+      "download_url": "https://opendata.rdw.nl/api/v3/views/kyri-nuah/export.csv?accessType=DOWNLOAD",
+      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering", "merkcoderdw"],
+      "purpose": "approval_variant_make_anchor"
+    },
+    {
+      "dataset_id": "rdw-tgk-aandrijving-uitvoering",
+      "title": "Open Data RDW: TGK Aandrijving Uitvoering",
+      "view_id": "4by9-ammk",
+      "dataset_page": "https://data.overheid.nl/dataset/46074-open-data-rdw--tgk-aandrijving-uitvoering",
+      "metadata_url": "https://opendata.rdw.nl/api/views/4by9-ammk.json",
+      "download_url": "https://opendata.rdw.nl/api/v3/views/4by9-ammk/export.csv?accessType=DOWNLOAD",
+      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
+      "purpose": "engine_type_approval_candidates"
+    },
+    {
+      "dataset_id": "rdw-tgk-handelsbenaming-fabrikant",
+      "title": "Open Data RDW: TGK Handelsbenaming Fabrikant",
+      "view_id": "x5v3-sewk",
+      "dataset_page": "https://data.overheid.nl/dataset/46083-open-data-rdw--tgk-handelsbenaming-fabrikant",
+      "metadata_url": "https://opendata.rdw.nl/api/views/x5v3-sewk.json",
+      "download_url": "https://opendata.rdw.nl/api/v3/views/x5v3-sewk/export.csv?accessType=DOWNLOAD",
+      "required_fields": ["typegoedkeuringsnummer", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
+      "purpose": "manufacturer_trade_name_candidates"
+    },
+    {
+      "dataset_id": "rdw-tgk-versnelling-uitvoering",
+      "title": "Open Data RDW: TGK Versnelling Uitvoering",
+      "view_id": "7rjk-eycs",
+      "dataset_page": "https://data.overheid.nl/dataset/46075-open-data-rdw--tgk-versnelling-uitvoering",
+      "metadata_url": "https://opendata.rdw.nl/api/views/7rjk-eycs.json",
+      "download_url": "https://opendata.rdw.nl/api/v3/views/7rjk-eycs/export.csv?accessType=DOWNLOAD",
+      "required_fields": ["typegoedkeuringsnummer", "codevarianttgk", "codeuitvoeringtgk", "volgnummerrevisieuitvoering"],
+      "purpose": "gearbox_type_approval_candidates"
+    }
+  ],
+  "limits": {
+    "max_metadata_bytes": 5000000,
+    "max_csv_bytes_per_dataset": 300000000,
+    "timeout_seconds": 90,
+    "max_rows_per_dataset": 3000000
+  }
+}
