@@ -257,8 +257,9 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
         if missing:
             raise ValueError(f"VehiclesDB source SQLite is missing tables: {sorted(missing)}")
 
+        upstream_source_rows = {str(item["id"]): item for item in upstream.get("sources", [])}
         source_rows: dict[str, dict[str, Any]] = {}
-        for source_id, item in upstream_sources.items():
+        for source_id, item in upstream_source_rows.items():
             required_fields = ("country", "name", "url", "license", "license_url", "evidence")
             if any(item.get(field) in (None, "") for field in required_fields):
                 raise ValueError(f"VehiclesDB upstream source metadata is incomplete: {source_id}")
@@ -273,7 +274,6 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
             }
         if set(source_rows) != set(approved) | set(excluded):
             raise ValueError("VehiclesDB upstream source registry differs from pinned manifest")
-        upstream_source_rows = source_rows
         for source_id, expected_license in approved.items():
             row = source_rows[source_id]
             manifest_source = upstream_source_rows[source_id]
