@@ -289,10 +289,13 @@ if (!routeSource.includes("localResearch.searchMechanicDbCandidates")) {
 }
 
 const uiFile = path.join(ROOT, "components", "local-research-catalog.tsx");
-replaceExactly(uiFile,
-  'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds";',
-  'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "mechanicdb";',
-  "MechanicDB dataset type");
+const uiDatasetSource = readText(uiFile);
+if (!/type Dataset = [^;]*"mechanicdb"/.test(uiDatasetSource)) {
+  replaceExactly(uiFile,
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds";',
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "mechanicdb";',
+    "MechanicDB dataset type");
+}
 replaceExactly(uiFile,
   '  bytes?: number;\n};',
   '  bytes?: number;\n  faultFamily?: string;\n  descriptionStatus?: string;\n  namespace?: string;\n  sourceLineNo?: number;\n  sourceLineSha256?: string;\n  sourceFileSha256?: string;\n  sourceSnapshotSha256?: string;\n  exactFitment?: boolean;\n  ecuFitment?: boolean;\n  prCodeFitment?: boolean;\n  diagnosticExecutionAllowed?: boolean;\n  repairProcedureIncluded?: boolean;\n  oemPartNumberIncluded?: boolean;\n  sourceFile?: string;\n  sourceFileUrl?: string;\n  upstreamLicense?: string;\n  documentationLicense?: string;\n};',
