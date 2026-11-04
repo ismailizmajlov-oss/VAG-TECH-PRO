@@ -30,8 +30,24 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
         self.assertEqual(source["license"]["redistribution"], "prohibited_without_separate_agreement")
 
+    def test_elpts_public_register_is_not_cleared_for_offline_product_reuse(self):
+        source = self.sources["elpts-national-otts-register"]
+        self.assertEqual(source["status"], "permission_required")
+        self.assertFalse(source["data_ingested"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["license"]["commercial_use"], "not_confirmed")
+        self.assertEqual(source["license"]["display"], "not_confirmed")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        self.assertEqual(source["license"]["bulk_export"], "not_confirmed")
+        self.assertEqual(source["license"]["redistribution"], "not_confirmed")
+        self.assertIn("OTTS", source["document_types"])
+        self.assertIn("SBKTS", source["document_types"])
+        self.assertIn("exact_OTTS_coverage", source["access"])
+        self.assertEqual(source["access"]["exact_OTTS_coverage"], "not_established")
+        self.assertIn("no scraping", source["notes"][2])
+
     def test_all_ru_eaeu_otts_candidates_remain_non_imported_without_clear_rights(self):
-        for source_id in ("rosstandart-fgis-reestr-kts", "eaeu-open-data-portal", "hpt-su-otts-api", "otts-bot", "otts-baza-ru"):
+        for source_id in ("rosstandart-fgis-reestr-kts", "eaeu-open-data-portal", "hpt-su-otts-api", "otts-bot", "otts-baza-ru", "elpts-national-otts-register"):
             source = self.sources[source_id]
             self.assertFalse(source["data_ingested"], source_id)
             self.assertIsNone(source["source_snapshot_sha256"], source_id)
