@@ -1,0 +1,1 @@
+Run52: compare Origin against the validated loopback Host header, preserve Fetch Metadata rejection, and prove the localhost/127.0.0.1 forwarded-host regression in API integration tests.

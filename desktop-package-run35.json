@@ -1,0 +1,106 @@
+{
+  "name": "vag-tech-pro",
+  "version": "0.2.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run test:desktop && npm run test:local-core && npm run test:research",
+    "test:desktop": "node --test tests/desktop-runtime.test.cjs tests/windows-lifecycle-script-contract.test.cjs tests/diagnostic-worksheet.test.cjs",
+    "test:local-core": "node --test tests/local-core-db.test.cjs tests/local-offline-workspace.test.cjs tests/local-data-admin-ui-contract.test.cjs tests/local-core-api.test.cjs",
+    "test:research": "node --test tests/local-research-db.test.cjs tests/local-research-packs.test.cjs tests/local-research-ui-contract.test.cjs tests/autodiag2-pack-integration.test.cjs tests/vag-identity-provenance-exclusion.test.cjs",
+    "verify:local-core": "node scripts/verify-local-core.cjs",
+    "verify:local-research": "node scripts/verify-all-local-research-packs.cjs",
+    "build:desktop": "npm run build && electron-builder --win nsis --x64",
+    "dist:win": "npm run build:desktop"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0",
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.4.3",
+    "typescript": "5.9.3",
+    "electron": "45.2.1",
+    "electron-builder": "26.18.0"
+  },
+  "main": "electron/main.cjs",
+  "build": {
+    "appId": "ru.vagtechpro.desktop",
+    "productName": "VAG TECH PRO",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".next/standalone",
+        "to": "app-runtime",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": ".next/static",
+        "to": "app-runtime/.next/static",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "data/research",
+        "to": "research-data",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "VAG-TECH-PRO-Setup-${version}-x64.${ext}",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "VAG TECH PRO",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": false
+    },
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true
+    }
+  }
+}

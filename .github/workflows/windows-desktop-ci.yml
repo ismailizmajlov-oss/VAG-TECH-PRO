@@ -1,28 +1,13 @@
 name: VAG TECH PRO Windows x64 desktop
+# Run52 fix: bind same-origin validation to the actual loopback Host header, not Next.js reconstructed request.url.
 
 on:
   push:
     branches:
       - "automation/windows-desktop-build-run*"
-    paths:
-      - "desktop-source-run*.zip.b64"
-      - "desktop-source-run*.zip.sha256"
-      - "desktop-source-run*.patch"
-      - "desktop-package-run*.json"
-      - "apply-*-run*.cjs"
-      - "run*-*.patch.gz.b64"
-      - "ci-trigger-run*.txt"
   pull_request:
     branches:
       - main
-    paths:
-      - "desktop-source-run*.zip.b64"
-      - "desktop-source-run*.zip.sha256"
-      - "desktop-source-run*.patch"
-      - "desktop-package-run*.json"
-      - "apply-*-run*.cjs"
-      - "run*-*.patch.gz.b64"
-      - "ci-trigger-run*.txt"
   workflow_dispatch:
 
 permissions:
@@ -64,9 +49,40 @@ jobs:
           Expand-Archive -LiteralPath $zipPath -DestinationPath "desktop-source" -Force
           if (-not (Test-Path "desktop-source/package.json")) { throw "Desktop package.json was not extracted." }
           Copy-Item -LiteralPath "desktop-package-run35.json" -Destination "desktop-source/package.json" -Force
+
+          $patches = @(
+            @{ File = "run36-01-manifest.patch.gz.b64"; GzipSha = "af9b133cbcb557f69935e6b615d1cef094d87cc83cad1ad0bedb4a81b983f1dd"; PatchSha = "195003ca7ad428b14c877b3c2f4586fc4320c50ae9c9353a87508efd2b0c907e" },
+            @{ File = "run36-02-api-db.patch.gz.b64"; GzipSha = "0a927dbbc96e04198fa44f00d90b91b1a823b042e1d0fb33b16f446154b12331"; PatchSha = "554ac86467b5713879c254734df05d6419609ff8c5a93e5edb3c4c309567acbb" },
+            @{ File = "run36-03-ui.patch.gz.b64"; GzipSha = "dc38f48043f2d7fe75d8a8e368e1b30c55da0e1b1a8f7b9cdc93eb6d7b6c51e8"; PatchSha = "abccb6706d44155469fe96a6e21f039c8c33a7fd59407a92b55288a67ce46ae3" },
+            @{ File = "run36-04-verification-tests.patch.gz.b64"; GzipSha = "48a649d7babfdf028a64432cab8c4c212e6584e3e2ea7b77bdd1221cc2f88b2d"; PatchSha = "3dbc26d866cf76feabacb7eaba2618ad4cba922d2aa3dae2aead360d8c4e7692" }
+          )
+          foreach ($patch in $patches) {
+            $encodedPatch = (Get-Content -LiteralPath $patch.File -Raw) -replace "\s", ""
+            $compressed = [Convert]::FromBase64String($encodedPatch)
+            $gzipHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($compressed)).ToLowerInvariant()
+            if ($gzipHash -ne $patch.GzipSha) { throw "Run36 patch gzip SHA-256 mismatch: $($patch.File) expected $($patch.GzipSha) actual $gzipHash" }
+            $inputStream = [System.IO.MemoryStream]::new([byte[]]$compressed)
+            $gzipStream = [System.IO.Compression.GZipStream]::new($inputStream, [System.IO.Compression.CompressionMode]::Decompress)
+            $outputStream = [System.IO.MemoryStream]::new()
+            $gzipStream.CopyTo($outputStream)
+            $patchBytes = $outputStream.ToArray()
+            $patchHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($patchBytes)).ToLowerInvariant()
+            if ($patchHash -ne $patch.PatchSha) { throw "Run36 patch SHA-256 mismatch: $($patch.File) expected $($patch.PatchSha) actual $patchHash" }
+            $patchPath = Join-Path $env:RUNNER_TEMP ($patch.File.Replace(".gz.b64", ".patch"))
+            [System.IO.File]::WriteAllBytes($patchPath, $patchBytes)
+            git apply --check --unsafe-paths --directory=desktop-source $patchPath
+            if ($LASTEXITCODE -ne 0) { throw "Run36 patch check failed: $($patch.File)" }
+            git apply --unsafe-paths --directory=desktop-source $patchPath
+            if ($LASTEXITCODE -ne 0) { throw "Run36 patch application failed: $($patch.File)" }
+            "patch_sha256=$($patch.PatchSha)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+            $gzipStream.Dispose(); $inputStream.Dispose(); $outputStream.Dispose()
+          }
           node --check apply-desktop-hardening-run35.cjs
           node apply-desktop-hardening-run35.cjs
-          "source_archive_sha256=$actual" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Encoding utf8
+          node --check apply-local-core-host-origin-run51.cjs
+          node apply-local-core-host-origin-run51.cjs 2>&1 | Tee-Object -FilePath "local-core-host-origin-patch.log"
+          if ($LASTEXITCODE -ne 0) { throw "Local-core Host/Origin hardening patch failed" }
+          "source_archive_sha256=$actual" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Download pinned open research packs
         uses: actions/download-artifact@v4
@@ -84,16 +100,86 @@ jobs:
           run-id: 41622526550
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Resolve latest successful AutoDiag2 policy-gated pack
+        id: autodiag2-run
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/acquire-autodiag2-vag-candidates.yml/runs?branch=main&per_page=10"
+          $run = $null
+          for ($attempt = 1; $attempt -le 40; $attempt++) {
+            $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
+            $run = $response.workflow_runs |
+              Where-Object { $_.head_branch -eq "main" -and $_.event -in @("push", "workflow_dispatch") } |
+              Sort-Object { [datetime]$_.created_at } -Descending |
+              Select-Object -First 1
+            if ($null -eq $run) { throw "No AutoDiag2 candidate-pack workflow run was found on main." }
+            if ($run.status -eq "completed") { break }
+            Start-Sleep -Seconds 15
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") {
+            throw "Latest AutoDiag2 workflow did not complete successfully. Run=$($run.id), status=$($run.status), conclusion=$($run.conclusion)"
+          }
+          $artifactUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
+          $artifactResponse = Invoke-RestMethod -Method Get -Uri $artifactUri -Headers $headers
+          $artifact = $artifactResponse.artifacts | Where-Object { $_.name -eq "autodiag2-vag-community-candidate-pack" -and $_.expired -eq $false } | Select-Object -First 1
+          if ($null -eq $artifact) { throw "AutoDiag2 candidate-pack artifact is missing or expired for run $($run.id)." }
+          $artifactDigest = ([string]$artifact.digest) -replace "^sha256:", ""
+          if ($artifactDigest -notmatch "^[a-f0-9]{64}$") { throw "AutoDiag2 artifact digest is not a valid SHA-256: $($artifact.digest)" }
+          "run_id=$($run.id)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "head_sha=$($run.head_sha)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_id=$($artifact.id)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_sha256=$artifactDigest" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Download AutoDiag2 community candidate pack
+        uses: actions/download-artifact@v4
+        with:
+          name: autodiag2-vag-community-candidate-pack
+          path: ${{ runner.temp }}/vag-tech-pro-autodiag2
+          run-id: ${{ steps.autodiag2-run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify AutoDiag2 rights and attribution gates
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $manifestPath = Join-Path $env:RUNNER_TEMP "vag-tech-pro-autodiag2/manifest.json"
+          if (-not (Test-Path $manifestPath)) { throw "AutoDiag2 manifest is missing." }
+          $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+          if ($manifest.pack_id -ne "autodiag2-vag-community-v6") { throw "Unexpected AutoDiag2 pack ID." }
+          if ($manifest.dtc_policy_filtered -ne $true) { throw "AutoDiag2 DTC attribution filter has not run." }
+          if ($manifest.license.database -ne "ODbL-1.0" -or $manifest.license.contents -ne "DbCL-1.0") { throw "AutoDiag2 license metadata mismatch." }
+          if ($manifest.license.commercial_use_allowed -ne $true -or $manifest.license.display_allowed -ne $true -or $manifest.license.offline_cache_allowed -ne $true -or $manifest.license.redistribution_allowed -ne $true) { throw "AutoDiag2 reuse rights are incomplete." }
+          if ($manifest.license.separate_pack_required -ne $true) { throw "AutoDiag2 ODbL pack must remain separate." }
+          if ($manifest.market_scope -ne "UNKNOWN") { throw "AutoDiag2 market scope must remain UNKNOWN." }
+          if ($manifest.counts.make_level_dtc_candidates -ne 0 -or $manifest.counts.generic_dtc_rows_in_pack -ne 0) { throw "Unattributed or generic DTC records remain in the pack." }
+          if ($manifest.counts.vag_specific_dtc_verified_rows -ne 0 -or $manifest.counts.engine_codes_verified -ne 0 -or $manifest.counts.transmission_records -ne 0) { throw "Candidate pack incorrectly claims verified OEM data." }
+          if ($manifest.dtc_candidate_policy.diagnostic_execution_allowed -ne $false -or $manifest.dtc_candidate_policy.repair_advice_approved -ne $false) { throw "Unverified DTC candidates must not be actionable." }
+          if ($manifest.engine_code_policy.shape_heuristic_is_not_used_for_verification -ne $true) { throw "Engine-code shape heuristic is not explicitly disabled." }
+          Write-Output "AutoDiag2 rights, attribution, market and applicability gates passed."
+
       - name: Assemble and verify offline SQLite research packs
         shell: pwsh
+        env:
+          AUTODIAG2_RUN_ID: ${{ steps.autodiag2-run.outputs.run_id }}
+          AUTODIAG2_ARTIFACT_ID: ${{ steps.autodiag2-run.outputs.artifact_id }}
+          AUTODIAG2_ARTIFACT_SHA256: ${{ steps.autodiag2-run.outputs.artifact_sha256 }}
+          AUTODIAG2_COMMIT_SHA: ${{ steps.autodiag2-run.outputs.head_sha }}
         run: |
           $ErrorActionPreference = "Stop"
           $packs = Join-Path $env:RUNNER_TEMP "vag-tech-pro-data-packs"
           $mechanic = Join-Path $env:RUNNER_TEMP "vag-tech-pro-mechanicdb"
+          $autodiag2 = Join-Path $env:RUNNER_TEMP "vag-tech-pro-autodiag2"
           $research = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/research"
           $mappings = @(
             @{ Source = "obdex-generic-cc0"; Target = "obdex-generic-cc0" },
-            @{ Source = "vag-engine-candidates-odbl"; Target = "vag-identity-odbl" },
             @{ Source = "obdb-vag-signals-cc-by-sa"; Target = "obdb-vag-signals-cc-by-sa" },
             @{ Source = "vehiclesdb-vag-identity"; Target = "vehiclesdb-vag-identity" }
           )
@@ -110,17 +196,146 @@ jobs:
           $mechanicTarget = Join-Path $research "mechanicdb-vag-dtc-candidates-odbl"
           New-Item -ItemType Directory -Force -Path $mechanicTarget | Out-Null
           Copy-Item -Path (Join-Path $mechanic "*") -Destination $mechanicTarget -Recurse -Force
+          $autodiag2Target = Join-Path $research "autodiag2-vag-community-candidates-odbl"
+          if (-not (Test-Path $autodiag2)) { throw "Missing downloaded AutoDiag2 candidate pack." }
+          New-Item -ItemType Directory -Force -Path $autodiag2Target | Out-Null
+          Copy-Item -Path (Join-Path $autodiag2 "*") -Destination $autodiag2Target -Recurse -Force
           foreach ($db in @(
             "obdex-generic-cc0/generic-obdex-research.sqlite",
-            "vag-identity-odbl/vag-engine-candidates-research.sqlite",
             "obdb-vag-signals-cc-by-sa/vag-obdb-research.sqlite",
             "vehiclesdb-vag-identity/vag-identity-vehiclesdb.sqlite",
-            "mechanicdb-vag-dtc-candidates-odbl/mechanicdb-vag-dtc-candidates.sqlite"
+            "mechanicdb-vag-dtc-candidates-odbl/mechanicdb-vag-dtc-candidates.sqlite",
+            "autodiag2-vag-community-candidates-odbl/autodiag2-vag-community.sqlite"
           )) {
             if (-not (Test-Path (Join-Path $research $db))) { throw "Research database missing after assembly: $db" }
           }
+          $provenance = [ordered]@{
+            workflow_run_id = [long]$env:AUTODIAG2_RUN_ID
+            artifact_id = [long]$env:AUTODIAG2_ARTIFACT_ID
+            artifact_sha256 = [string]$env:AUTODIAG2_ARTIFACT_SHA256
+            commit = [string]$env:AUTODIAG2_COMMIT_SHA
+          }
+          $provenance | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $env:GITHUB_WORKSPACE "desktop-source/autodiag2-build-provenance.json") -Encoding utf8
 
-      - name: Generate deterministic dependency lock and install
+      - name: Exclude VAG identity source pending upstream provenance review
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-research-provenance-exclusion-run36.cjs
+          node apply-research-provenance-exclusion-run36.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-identity-exclusion.log"
+          if ($LASTEXITCODE -ne 0) { throw "VAG identity provenance exclusion failed" }
+          "vag_identity_source=excluded_pending_upstream_provenance_review" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply run38 loopback Origin fix for native lifecycle requests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-origin-fix-run38.cjs
+          node apply-lifecycle-origin-fix-run38.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-origin-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run38 local API request-origin fix failed" }
+          "lifecycle_origin_fix=applied" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply run40 lifecycle HttpClient and diagnostic gate fix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-httpclient-fix-run40.cjs
+          node apply-lifecycle-httpclient-fix-run40.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-httpclient-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run40 lifecycle patch failed" }
+          "lifecycle_httpclient_fix=applied" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply run41 strict Fetch Metadata gate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-fetchmetadata-strict-run41.cjs
+          node apply-lifecycle-fetchmetadata-strict-run41.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-fetchmetadata-strict-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run41 strict Fetch Metadata patch failed" }
+          "lifecycle_fetchmetadata=strict_same_origin_or_none" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply run42 loopback transport and proxy-bypass fix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-loopback-transport-fix-run42.cjs
+          node apply-lifecycle-loopback-transport-fix-run42.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-loopback-transport-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run42 loopback transport patch failed" }
+          "lifecycle_loopback_transport=proxy_bypass_host_pinned" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply run43 loopback rejection diagnostics
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-request-diagnostics-run43.cjs
+          node apply-lifecycle-request-diagnostics-run43.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-request-diagnostics.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run43 loopback diagnostics patch failed" }
+          "lifecycle_loopback_diagnostics=reason_logged_security_unchanged" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply run52 loopback Host-bound Origin fix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-origin-host-fix-run52.cjs
+          node apply-lifecycle-origin-host-fix-run52b.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-origin-host-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run52 loopback Host-bound Origin fix failed" }
+          "lifecycle_origin_validation=actual_loopback_host_header" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply owner-controlled source rights approval workflow (run53)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-owner-rights-approval-run53.cjs
+          node apply-owner-rights-approval-run53.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/owner-rights-approval.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run53 owner source-rights approval patch failed" }
+          "source_rights_approval=owner_attestation_only; all_five_rights; sha256_evidence; technical_review_separate" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply transactional local catalog importer v2 (run54)
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $encodedPath = Join-Path $env:GITHUB_WORKSPACE "catalog-import-v2-run54.patch.gz.b64"
+          if (-not (Test-Path $encodedPath)) { throw "Run54 compressed catalog importer patch is missing" }
+          $encoded = (Get-Content -LiteralPath $encodedPath -Raw).Trim()
+          $compressedBytes = [Convert]::FromBase64String($encoded)
+          $compressedSha = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($compressedBytes)).ToLowerInvariant()
+          if ($compressedSha -ne "378517318d4f15a87be9eda845eb1329b8d763d766a269b44fe32ee0b1e1bca3") { throw "Run54 compressed patch SHA-256 mismatch: $compressedSha" }
+          $compressedStream = [System.IO.MemoryStream]::new($compressedBytes)
+          $gzipStream = [System.IO.Compression.GZipStream]::new($compressedStream,[System.IO.Compression.CompressionMode]::Decompress)
+          $outputStream = [System.IO.MemoryStream]::new()
+          $gzipStream.CopyTo($outputStream)
+          $patchBytes = $outputStream.ToArray()
+          $gzipStream.Dispose(); $compressedStream.Dispose(); $outputStream.Dispose()
+          $patchHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($patchBytes)).ToLowerInvariant()
+          if ($patchHash -ne "a2955404a4dfc48352389318a1a9bca413527a4513cfc2e934f32d35bcc45b28") { throw "Run54 decompressed patch SHA-256 mismatch: $patchHash" }
+          $patchPath = Join-Path $env:RUNNER_TEMP "catalog-import-v2-run54.patch"
+          [System.IO.File]::WriteAllBytes($patchPath,$patchBytes)
+          git apply --check $patchPath
+          if ($LASTEXITCODE -ne 0) { throw "Run54 catalog importer patch check failed" }
+          git apply $patchPath
+          if ($LASTEXITCODE -ne 0) { throw "Run54 catalog importer patch did not apply cleanly" }
+          node --check lib/local-core-db.cjs
+          node --test tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/catalog-import-v2-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Local catalog importer v2 tests failed" }
+          "catalog_import_v2_patch_sha256=$patchHash; catalog_import_v2=transactional; normalized_catalog; exact_pairing; per_entity_provenance" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Apply external-network-blocked offline lifecycle gate (run55)
+        shell: pwsh
+        run: |
+          node --check apply-offline-firewall-test-run55.cjs
+          node apply-offline-firewall-test-run55.cjs
+
+      - name: Prepare packaged Next.js production runtime dependencies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-electron-runtime-packaging-fix-run37.cjs
+          node apply-electron-runtime-packaging-fix-run37.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Electron runtime packaging patch failed" }
+          node --check desktop-source/scripts/prepare-electron-runtime.cjs
+          node --check desktop-source/electron/main.cjs
+
+      - name: Generate dependency lock for this run and install
         working-directory: desktop-source
         shell: pwsh
         run: |
@@ -130,6 +345,54 @@ jobs:
           if (-not (Test-Path package-lock.json)) { throw "package-lock.json was not generated" }
           npm ci --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-ci.log
           if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
+          npm audit --audit-level=high 2>&1 | Tee-Object -FilePath npm-audit.log
+          if ($LASTEXITCODE -ne 0) { throw "npm audit reported high or critical dependency vulnerabilities" }
+
+      - name: Apply fail-closed research pack hash verification fix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-research-pack-hash-fix-run44.cjs
+          node apply-research-pack-hash-fix-run44.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Research pack hash verification patch failed" }
+          node --check desktop-source/lib/local-research-db.cjs
+          node --test desktop-source/tests/local-research-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/research-hash-targeted-test.log"
+          if ($LASTEXITCODE -ne 0) { throw "Targeted research pack integrity test failed" }
+
+      - name: Apply React lint and lifecycle cleanup fixes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-eslint-fix-run45.cjs
+          node apply-desktop-eslint-fix-run45.cjs
+          if ($LASTEXITCODE -ne 0) { throw "React lint fix patch failed" }
+
+      - name: Apply desktop TypeScript model fixes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-types-fix-run48.cjs
+          node apply-desktop-types-fix-run48.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Desktop TypeScript model patch failed" }
+
+      - name: Apply explicit typed Supabase row model
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-dbrow-typed-fix-run49.cjs
+          node apply-desktop-dbrow-typed-fix-run49.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-dbrow-types-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Desktop DbRow type fix failed" }
+
+      - name: Print local-core API test source around failing assertion
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $testPath = Join-Path $env:GITHUB_WORKSPACE "desktop-source/tests/local-core-api.test.cjs"
+          if (-not (Test-Path $testPath)) { throw "Local-core API test file is missing before test execution." }
+          $lines = Get-Content -LiteralPath $testPath
+          $start = [Math]::Max(1, 108)
+          $end = [Math]::Min($lines.Count, 126)
+          for ($i = $start; $i -le $end; $i++) { Write-Output ("{0}: {1}" -f $i, $lines[$i - 1]) }
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
@@ -153,36 +416,51 @@ jobs:
           npm run typecheck 2>&1 | Tee-Object -FilePath typecheck.log
           if ($LASTEXITCODE -ne 0) { throw "TypeScript check failed" }
 
+      - name: Set first desktop package version 0.2.2
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.2'; l.version='0.2.2'; if (l.packages && l.packages['']) l.packages[''].version='0.2.2'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
+
       - name: Build first Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.0.log
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.2.log
           if ($LASTEXITCODE -ne 0) { throw "Initial Windows NSIS build failed" }
-          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.0-x64.exe"
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.2-x64.exe"
           if (-not (Test-Path $installer)) { throw "Initial NSIS installer not found: $installer" }
-          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") -Force
+          foreach ($module in @("next", "react", "react-dom")) {
+            $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
+            if (-not (Test-Path $runtimeModule)) { throw "Packaged runtime dependency is missing: $module ($runtimeModule)" }
+          }
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe") -Force
 
       - name: Build upgrade Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.1'; l.version='0.2.1'; if (l.packages && l.packages['']) l.packages[''].version='0.2.1'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\n');"
-          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.1.log
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.3'; l.version='0.2.3'; if (l.packages && l.packages['']) l.packages[''].version='0.2.3'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.3.log
           if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
-          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.1-x64.exe"
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.3-x64.exe"
           if (-not (Test-Path $installer)) { throw "Upgrade NSIS installer not found: $installer" }
-          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") -Force
+          foreach ($module in @("next", "react", "react-dom")) {
+            $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
+            if (-not (Test-Path $runtimeModule)) { throw "Packaged upgrade runtime dependency is missing: $module ($runtimeModule)" }
+          }
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") -Force
 
       - name: Run clean install, offline, backup/restore, upgrade and uninstall lifecycle
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File "desktop-source/scripts/windows-installer-lifecycle.ps1" `
-            -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") `
-            -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-lifecycle.log"
+            -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe") `
+            -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-lifecycle.log"
           if ($LASTEXITCODE -ne 0) { throw "Windows installer lifecycle test failed" }
 
       - name: Write build metadata
@@ -192,35 +470,43 @@ jobs:
           $items = @()
           $sourceLine = Get-Content -LiteralPath "source-verification.txt" -Raw -ErrorAction SilentlyContinue
           $sourceHash = if ($sourceLine -match "source_archive_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          $patchHash = if ($sourceLine -match "catalog_import_v2_patch_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
           foreach ($file in @(
-            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe"),
-            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe")
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe"),
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe")
           )) {
             if (Test-Path $file) {
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; catalog_import_v2_patch_sha256 = $patchHash; desktop_version = '0.2.3'; patch_set = 'run54-local-catalog-import-v2'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Upload Windows installer and verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run35
+          name: vag-tech-pro-windows-x64-run54
           path: |
-            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
-            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
+            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.2-x64.exe
+            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.3-x64.exe
             desktop-source/package-lock.json
             desktop-source/npm-lock.log
+            desktop-source/local-core-host-origin-patch.log
             desktop-source/npm-ci.log
+            desktop-source/npm-audit.log
             desktop-source/test.log
+            catalog-import-v2-tests.log
             desktop-source/verify-local-core.log
             desktop-source/verify-local-research.log
             desktop-source/lint.log
             desktop-source/typecheck.log
-            desktop-source/build-0.2.0.log
-            desktop-source/build-0.2.1.log
+            desktop-dbrow-types-fix.log
+            desktop-source/build-0.2.2.log
+            desktop-source/build-0.2.3.log
+            desktop-source/runtime-preparation.json
+            research-hash-targeted-test.log
             windows-lifecycle.log
+            lifecycle-fetchmetadata-strict-fix.log
             build-metadata.json
             source-verification.txt
           if-no-files-found: warn
