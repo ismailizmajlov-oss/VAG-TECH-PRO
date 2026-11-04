@@ -280,6 +280,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run52 loopback Host-bound Origin fix failed" }
           "lifecycle_origin_validation=actual_loopback_host_header" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply owner-controlled source rights approval workflow (run53)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-owner-rights-approval-run53.cjs
+          node apply-owner-rights-approval-run53.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/owner-rights-approval.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run53 owner source-rights approval patch failed" }
+          "source_rights_approval=owner_attestation_only; all_five_rights; sha256_evidence; technical_review_separate" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -389,7 +398,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.1'; l.version='0.2.1'; if (l.packages && l.packages['']) l.packages[''].version='0.2.1'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\n');"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.2'; l.version='0.2.2'; if (l.packages && l.packages['']) l.packages[''].version='0.2.1'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\n');"
           npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.1.log
           if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
           $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.1-x64.exe"
@@ -424,13 +433,13 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; desktop_version = '0.2.2'; patch_set = 'run53-owner-source-rights-approval'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Upload Windows installer and verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run52
+          name: vag-tech-pro-windows-x64-run53
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
