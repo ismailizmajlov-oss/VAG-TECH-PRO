@@ -44,15 +44,15 @@ const newType = [
   "  ecu_family?: string | null;",
   "  hardware_number?: string | null;",
   "  software_number?: string | null;",
-  "  engine?: DbRow | null;",
-  "  transmission?: DbRow | null;",
-  "  ecu?: DbRow | null;",
-  "  generation?: DbRow | null;",
-  "  model?: DbRow | null;",
-  "  brand?: DbRow | null;",
-  "  source?: DbRow | null;",
-  "  document?: DbRow | null;",
-  "  configuration?: DbRow | null;",
+  "  engine?: DbRelation;",
+  "  transmission?: DbRelation;",
+  "  ecu?: DbRelation;",
+  "  generation?: DbRelation;",
+  "  model?: DbRelation;",
+  "  brand?: DbRelation;",
+  "  source?: DbRelation;",
+  "  document?: DbRelation;",
+  "  configuration?: DbRelation;",
   "  publisher?: string | null;",
   "  title?: string | null;",
   "  revision?: string | null;",
@@ -87,7 +87,12 @@ const newType = [
   "  query_text?: string;",
   "  response_summary?: string;",
   "};",
-  "type IdentifiedDbRow = DbRow & { id: string };"
+  "type DbRelation = DbRow | DbRow[] | null | undefined;",
+  "type IdentifiedDbRow = DbRow & { id: string };",
+  "function firstRelation(value: DbRelation): DbRow | null {",
+  "  if (Array.isArray(value)) return value[0] || null;",
+  "  return value || null;",
+  "}"
 ].join("\n");
 
 page = replaceOnce(page, oldType, newType, "replace permissive Supabase row type");
@@ -111,6 +116,37 @@ page = replaceOnce(
   "function selectSavedVehicle(item: DbRow)",
   "function selectSavedVehicle(item: IdentifiedDbRow)",
   "saved vehicle row identity"
+);
+page = replaceOnce(
+  page,
+  "const config = item.configuration; const generation = config?.generation; const model = generation?.model; const make = model?.brand;",
+  "const config = firstRelation(item.configuration); const generation = firstRelation(config?.generation); const model = firstRelation(generation?.model); const make = firstRelation(model?.brand);",
+  "saved vehicle relation normalization"
+);
+page = replaceOnce(
+  page,
+  "const c=item.configuration;const g=c?.generation;const m=g?.model;const ecu=c?.ecu;",
+  "const c=firstRelation(item.configuration);const g=firstRelation(c?.generation);const m=firstRelation(g?.model);const brandRow=firstRelation(m?.brand);const engine=firstRelation(c?.engine);const transmission=firstRelation(c?.transmission);const ecu=firstRelation(c?.ecu);",
+  "garage relation normalization"
+);
+page = replaceOnce(page, "m?.brand?.name", "brandRow?.name", "garage brand relation");
+page = replaceOnce(page, "c?.engine?.engine_code", "engine?.engine_code", "garage engine relation");
+page = replaceOnce(page, "c?.transmission?.transmission_code", "transmission?.transmission_code", "garage transmission relation");
+page = replaceOnce(page, "configurations.find(c => c.id === configurationId)?.engine?.engine_code", "firstRelation(configurations.find(c => c.id === configurationId)?.engine)?.engine_code", "vehicle summary engine relation");
+page = replaceOnce(page, "c.engine?.engine_code", "firstRelation(c.engine)?.engine_code", "configuration option engine relation");
+page = replaceOnce(page, "c.transmission?.transmission_code", "firstRelation(c.transmission)?.transmission_code", "configuration option transmission relation");
+page = replaceOnce(page, "c.ecu?.ecu_family", "firstRelation(c.ecu)?.ecu_family", "configuration option ECU family relation");
+page = replaceOnce(page, "c.ecu?.hardware_number", "firstRelation(c.ecu)?.hardware_number", "configuration option ECU hardware relation");
+page = replaceOnce(page, "configurations.find(c => c.id === configurationId)?.ecu?.ecu_family", "firstRelation(configurations.find(c => c.id === configurationId)?.ecu)?.ecu_family", "selected ECU family relation");
+page = replaceOnce(page, "configurations.find(c => c.id === configurationId)?.ecu?.hardware_number", "firstRelation(configurations.find(c => c.id === configurationId)?.ecu)?.hardware_number", "selected ECU hardware relation");
+page = replaceOnce(page, "configurations.find(c => c.id === configurationId)?.ecu?.software_number", "firstRelation(configurations.find(c => c.id === configurationId)?.ecu)?.software_number", "selected ECU software relation");
+page = replaceOnce(page, "configurations.find(c=>c.id===configurationId)?.engine?.engine_code", "firstRelation(configurations.find(c=>c.id===configurationId)?.engine)?.engine_code", "engine input relation");
+page = replaceOnce(page, "configurations.find(c=>c.id===configurationId)?.transmission?.transmission_code", "firstRelation(configurations.find(c=>c.id===configurationId)?.transmission)?.transmission_code", "transmission input relation");
+page = replaceOnce(
+  page,
+  "const source=r.source||r.document?.source||null;const documentTitle=r.document?.title||r.title||\"Документ не указан\";const revision=r.revision||r.document?.revision||\"Ревизия не указана\";",
+  "const document=firstRelation(r.document);const source=firstRelation(r.source)||firstRelation(document?.source)||null;const documentTitle=document?.title||r.title||\"Документ не указан\";const revision=r.revision||document?.revision||\"Ревизия не указана\";",
+  "search result document/source relation normalization"
 );
 page = replaceOnce(
   page,
@@ -173,7 +209,17 @@ const testContent = [
   '  assert.match(page, /type IdentifiedDbRow = DbRow & \\{ id: string \\};/);',
   '  assert.doesNotMatch(page, /Record<string,\\s*any>/);',
   '  assert.doesNotMatch(page, /Date\\.now\\(\\)/);',
+  '  assert.match(page, /type DbRelation = DbRow \\| DbRow\\[\\] \\| null \\| undefined;/);',
+  '  assert.match(page, /function firstRelation\\(value: DbRelation\\): DbRow \\| null/);',
   '  assert.equal((page.match(/useState<IdentifiedDbRow\\[\\]>\\(\\[\\]\\)/g) || []).length, 7);',
+  '});',
+  '',
+  'test("one-to-many PostgREST relations are normalized before dereferencing", () => {',
+  '  assert.match(page, /firstRelation\\(item\\.configuration\\)/);',
+  '  assert.match(page, /firstRelation\\(r\\.document\\)/);',
+  '  assert.match(page, /firstRelation\\(c\\.engine\\)\\?\\.engine_code/);',
+  '  assert.doesNotMatch(page, /c\\?\\.engine\\?\\.engine_code/);',
+  '  assert.doesNotMatch(page, /r\\.document\\?\\.title/);',
   '});',
   '',
   'test("saved vehicle navigation guards every required identity before using it", () => {',
