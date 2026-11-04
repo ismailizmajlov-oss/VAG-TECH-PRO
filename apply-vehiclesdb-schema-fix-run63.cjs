@@ -252,15 +252,17 @@ tests = replaceOnce(
   "  assert.throws(() => vehiclesDb.exec(\"DELETE FROM model_candidates WHERE model_id='car/audi/100'\"), /readonly|read-only|query only/i);",
   "VehiclesDB read-only mutation assertion"
 );
-tests = replaceOnce(
-  tests,
+const golfHashBefore = '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);';
+const golfHashAfter = [
   '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);',
-  '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);\n  assert.match(golf.candidateRecordSha256, /^[a-f0-9]{64}$/);
-  assert.equal(golf.recordHashKind, "normalized_candidate_row");
-  assert.ok(Array.isArray(golf.sourceIds) && golf.sourceIds.length > 0);
-  assert.equal(golf.verificationStatus, "identity_candidate");\n  assert.match(golf.sourceCatalogSha256, /^[a-f0-9]{64}$/);\n  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
-  "VehiclesDB record and source catalog fingerprints"
-);
+  '  assert.match(golf.candidateRecordSha256, /^[a-f0-9]{64}$/);',
+  '  assert.equal(golf.recordHashKind, "normalized_candidate_row");',
+  '  assert.ok(Array.isArray(golf.sourceIds) && golf.sourceIds.length > 0);',
+  '  assert.equal(golf.verificationStatus, "identity_candidate");',
+  '  assert.match(golf.sourceCatalogSha256, /^[a-f0-9]{64}$/);',
+  '  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
+].join("\n");
+tests = replaceOnce(tests, golfHashBefore, golfHashAfter, "VehiclesDB record and source catalog fingerprints");
 fs.writeFileSync(testFile, tests, "utf8");
 
 process.stdout.write(JSON.stringify({
