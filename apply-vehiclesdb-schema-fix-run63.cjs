@@ -69,29 +69,29 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
   try {
     const pattern = likePattern(q);
     const models = db.prepare(
-      "SELECT model_id, kind, make_slug, make_name, model_slug, model_name,\\n" +
-      "  body_types_json, regions_json, market_scope_json, applicability_precision,\\n" +
-      "  verification_status, fitment_status, year_start, year_end, source_ids_json\\n" +
-      "FROM model_candidates\\n" +
-      "WHERE applicability_precision='make_model_name_only'\\n" +
-      "  AND verification_status='identity_candidate' AND fitment_status='not_established'\\n" +
-      "  AND (make_name LIKE ? ESCAPE '\\' OR model_name LIKE ? ESCAPE '\\')\\n" +
-      "ORDER BY make_name, model_name\\n" +
+      "SELECT model_id, kind, make_slug, make_name, model_slug, model_name,\n" +
+      "  body_types_json, regions_json, market_scope_json, applicability_precision,\n" +
+      "  verification_status, fitment_status, year_start, year_end, source_ids_json\n" +
+      "FROM model_candidates\n" +
+      "WHERE applicability_precision='make_model_name_only'\n" +
+      "  AND verification_status='identity_candidate' AND fitment_status='not_established'\n" +
+      "  AND (make_name LIKE ? ESCAPE '\\' OR model_name LIKE ? ESCAPE '\\')\n" +
+      "ORDER BY make_name, model_name\n" +
       "LIMIT ?"
     ).all(pattern, pattern, clampLimit(limit));
     if (!models.length) return [];
     const ids = models.map((row) => row.model_id);
     const placeholders = ids.map(() => "?").join(",");
     const evidence = db.prepare(
-      "SELECT me.model_id, me.country_code, me.evidence_type,\\n" +
-      "  sr.source_id, sr.source_name, sr.source_url, sr.source_license,\\n" +
-      "  sr.source_license_url, sr.evidence_type AS source_evidence_type\\n" +
-      "FROM model_market_evidence me\\n" +
-      "JOIN source_registry sr ON sr.source_id=me.source_id\\n" +
-      "WHERE me.model_id IN (" + placeholders + ")\\n" +
-      "  AND me.country_code!='ru'\\n" +
-      "  AND me.applicability_precision='market_presence_only'\\n" +
-      "  AND me.verification_status='source_published_presence_evidence'\\n" +
+      "SELECT me.model_id, me.country_code, me.evidence_type,\n" +
+      "  sr.source_id, sr.source_name, sr.source_url, sr.source_license,\n" +
+      "  sr.source_license_url, sr.evidence_type AS source_evidence_type\n" +
+      "FROM model_market_evidence me\n" +
+      "JOIN source_registry sr ON sr.source_id=me.source_id\n" +
+      "WHERE me.model_id IN (" + placeholders + ")\n" +
+      "  AND me.country_code!='ru'\n" +
+      "  AND me.applicability_precision='market_presence_only'\n" +
+      "  AND me.verification_status='source_published_presence_evidence'\n" +
       "ORDER BY me.model_id, me.country_code, sr.source_name"
     ).all(...ids);
     const byModel = new Map(ids.map((id) => [id, []]));
@@ -190,7 +190,7 @@ let tests = fs.readFileSync(testFile, "utf8");
 tests = replaceOnce(
   tests,
   '  assert.equal(rows[0].snapshotGeneratedAt, "2026-11-03T07:21:36.7901580Z");',
-  '  const rootManifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));\\n  const obdexPack = rootManifest.packs.find((pack) => pack.id === "obdex-generic-cc0");\\n  assert.equal(rows[0].snapshotGeneratedAt, obdexPack.snapshot_generated_at_utc);',
+  '  const rootManifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));\n  const obdexPack = rootManifest.packs.find((pack) => pack.id === "obdex-generic-cc0");\\n  assert.equal(rows[0].snapshotGeneratedAt, obdexPack.snapshot_generated_at_utc);',
   "dynamic OBDex snapshot timestamp assertion"
 );
 tests = replaceOnce(
@@ -202,7 +202,7 @@ tests = replaceOnce(
 tests = replaceOnce(
   tests,
   '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);',
-  '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);\\n  assert.match(golf.sourceRecordSha256, /^[a-f0-9]{64}$/);\\n  assert.match(golf.sourceCatalogSha256, /^[a-f0-9]{64}$/);\\n  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
+  '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);\n  assert.match(golf.sourceRecordSha256, /^[a-f0-9]{64}$/);\n  assert.match(golf.sourceCatalogSha256, /^[a-f0-9]{64}$/);\n  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
   "VehiclesDB record and source catalog fingerprints"
 );
 fs.writeFileSync(testFile, tests, "utf8");
