@@ -10,7 +10,7 @@ Official Wikidata item pages state that structured data in the main, Property, L
 
 ## Query scope
 
-The acquisition filters car-model entities (Q3231690 or subclasses) by an explicit, project-maintained English manufacturer-label whitelist covering core Volkswagen Group passenger-car manufacturers. This whitelist is an acquisition filter only; it is not proof of corporate ownership. The snapshot preserves the manufacturer QID and label, model QID and English/Russian labels, and optional Wikidata inception/dissolution/date-modified statements.
+The acquisition filters car-model entities with a direct P31=Q3231690 statement by an explicit, project-maintained English manufacturer-label whitelist covering core Volkswagen Group passenger-car manufacturers. This whitelist is an acquisition filter only; it is not proof of corporate ownership. The snapshot preserves the manufacturer QID and label, model QID and English/Russian labels, and optional Wikidata inception/dissolution/date-modified statements.
 
 The query is pinned by its SHA-256. Each raw SPARQL binding receives a canonical SHA-256 and binding index. The complete response snapshot is retained with its SHA-256. The SQLite rows preserve source revision, query hash, snapshot hash, source binding indexes and record hashes.
 
