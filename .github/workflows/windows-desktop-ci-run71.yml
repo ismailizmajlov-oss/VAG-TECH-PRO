@@ -958,8 +958,6 @@ jobs:
         with:
           name: vag-tech-pro-windows-x64-run70
           path: |
-            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.3-x64.exe
-            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.4-x64.exe
             desktop-source/package-lock.json
             desktop-source/npm-lock.log
             desktop-source/local-core-host-origin-patch.log
