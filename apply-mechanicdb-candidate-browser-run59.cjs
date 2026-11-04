@@ -290,11 +290,11 @@ if (!routeSource.includes("localResearch.searchMechanicDbCandidates")) {
 
 const uiFile = path.join(ROOT, "components", "local-research-catalog.tsx");
 const uiDatasetSource = readText(uiFile);
-if (!/type Dataset = [^;]*"mechanicdb"/.test(uiDatasetSource)) {
-  replaceExactly(uiFile,
-    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds";',
-    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "mechanicdb";',
-    "MechanicDB dataset type");
+const uiDatasetMatch = uiDatasetSource.match(/type Dataset = ([^;]+);/);
+if (!uiDatasetMatch) fail("MechanicDB dataset type declaration is missing");
+if (!uiDatasetMatch[1].split("|").some((part) => part.trim() === '"mechanicdb"')) {
+  const updatedDatasetSource = uiDatasetSource.replace(uiDatasetMatch[0], `type Dataset = ${uiDatasetMatch[1]} | "mechanicdb";`);
+  writeText(uiFile, updatedDatasetSource);
 }
 replaceExactly(uiFile,
   '  bytes?: number;\n};',
