@@ -192,7 +192,7 @@ tests = replaceOnce(
 tests = replaceOnce(
   tests,
   '  assert.throws(() => vehiclesDb.exec("DELETE FROM model_candidates WHERE model_candidate_id=1"), /readonly|read-only|query only/i);',
-  "  assert.throws(() => vehiclesDb.exec(\\"DELETE FROM model_candidates WHERE model_id='car/audi/100'\\"), /readonly|read-only|query only/i);",
+  "  assert.throws(() => vehiclesDb.exec(\"DELETE FROM model_candidates WHERE model_id='car/audi/100'\"), /readonly|read-only|query only/i);",
   "VehiclesDB read-only mutation assertion"
 );
 tests = replaceOnce(
