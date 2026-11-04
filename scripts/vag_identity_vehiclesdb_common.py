@@ -220,6 +220,7 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
     attribution_text = attribution_path.read_text(encoding="utf-8-sig")
     license_text = license_path.read_text(encoding="utf-8-sig")
     approved, excluded, scoped_makes, scoped_kinds = _validate_inputs(lock, upstream, attribution_text, license_text)
+    not_in_release = lock["not_in_release_sources"]
     snapshot = _source_snapshot(source_db_path, upstream_manifest_path, attribution_path, license_path)
     pinned_counts = expected_counts(lock)
 
