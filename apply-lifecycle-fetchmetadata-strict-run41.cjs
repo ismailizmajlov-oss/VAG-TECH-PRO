@@ -22,6 +22,12 @@ function replaceOnce(source, before, after, label) {
 function patchRoute() {
   const file = "app/api/local-core/route.ts";
   let source = read(file);
+  const oldComment = [
+    '  // Fetch Metadata is browser-oriented. Native PowerShell/HttpClient callers may send a non-browser value;',
+    '  // when Origin is present it is validated above and remains authoritative for this loopback-only API.'
+  ].join("\n") + "\n";
+  const newComment = '  // Native HttpClient callers explicitly identify their request as same-origin; reject contradictory Fetch Metadata.\n';
+  source = replaceOnce(source, oldComment, newComment, "update obsolete native-client Fetch Metadata comment");
   const permissive = '  if (!origin && fetchSite && fetchSite !== "same-origin" && fetchSite !== "none") return false;\n';
   const strict = '  if (fetchSite && fetchSite !== "same-origin" && fetchSite !== "none") return false;\n';
   source = replaceOnce(source, permissive, strict, "reject contradictory cross-site Fetch Metadata even with a matching Origin");
@@ -35,12 +41,12 @@ function patchApiTest() {
     '  const nativeClientWithFetchMetadata = await POST(new Request(baseUrl, {',
     '    method: "POST",',
     '    headers: { ...headers, "sec-fetch-site": "cross-site", "content-type": "application/json" },'
-  ].join("\\n");
+  ].join("\n");
   const newNativeHeader = [
     '  const nativeClientWithFetchMetadata = await POST(new Request(baseUrl, {',
     '    method: "POST",',
     '    headers: { ...headers, "sec-fetch-site": "same-origin", "content-type": "application/json" },'
-  ].join("\\n");
+  ].join("\n");
   source = replaceOnce(source, oldNativeHeader, newNativeHeader, "native HttpClient must identify its request as same-origin");
   const before = [
     '  assert.equal(nativeClientWithFetchMetadata.status, 201);',
