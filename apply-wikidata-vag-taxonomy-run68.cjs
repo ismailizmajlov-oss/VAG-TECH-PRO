@@ -11,9 +11,9 @@ const ARTIFACT = {
   workflowRunId: 41905383209,
   artifactId: 13360765168,
   artifactSha256: "a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609",
-  sourceCommit: "786caeedb5c89d1f2a3b4c5d6e7f8091a2b3c4d5",
+  sourceCommit: "786caeedb535b9b9984e70452dafb420cc760b0a",
   sourceBranch: "main",
-  snapshotCommit: "813479d000000000000000000000000000000000"
+  snapshotCommit: "813479dce981cd167f19896fc9023d8b5fb3bf56"
 };
 
 function fail(message) { throw new Error("[run68] " + message); }
