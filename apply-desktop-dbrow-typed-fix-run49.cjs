@@ -101,7 +101,7 @@ const stateCount = page.split(stateAnchor).length - 1;
 if (stateCount === 7) {
   page = page.replaceAll(stateAnchor, "useState<IdentifiedDbRow[]>([])");
 } else if (stateCount !== 0 || (page.match(/useState<IdentifiedDbRow\[\]>\(\[\]\)/g) || []).length !== 7) {
-  throw new Error("Expected eight identified Supabase row state declarations; found " + stateCount);
+  throw new Error("Expected seven identified Supabase row state declarations; found " + stateCount);
 }
 
 page = replaceOnce(
@@ -176,7 +176,7 @@ if (/\bRecord<string,\s*any>/.test(page)) {
   throw new Error("Permissive Record<string, any> declaration remains in app/page.tsx.");
 }
 if ((page.match(/useState<IdentifiedDbRow\[\]>\(\[\]\)/g) || []).length !== 7) {
-  throw new Error("Identified row state count is not eight after patch.");
+  throw new Error("Identified row state count is not seven after patch.");
 }
 fs.writeFileSync(pageFile, page, "utf8");
 
