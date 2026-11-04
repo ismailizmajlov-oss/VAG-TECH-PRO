@@ -1,0 +1,104 @@
+{
+  "head": {
+    "vars": [
+      "model",
+      "modelLabelEn",
+      "modelLabelRu",
+      "manufacturer",
+      "manufacturerLabel",
+      "inception",
+      "dissolution",
+      "modified"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "model": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q9990001"
+        },
+        "modelLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Volkswagen Golf"
+        },
+        "modelLabelRu": {
+          "type": "literal",
+          "xml:lang": "ru",
+          "value": "Volkswagen Golf"
+        },
+        "manufacturer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q156578"
+        },
+        "manufacturerLabel": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Volkswagen AG"
+        },
+        "inception": {
+          "type": "literal",
+          "value": "1974-03-29T00:00:00Z"
+        },
+        "modified": {
+          "type": "literal",
+          "value": "2026-10-01T00:00:00Z"
+        }
+      },
+      {
+        "model": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q9990002"
+        },
+        "modelLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Audi A4"
+        },
+        "modelLabelRu": {
+          "type": "literal",
+          "xml:lang": "ru",
+          "value": "Audi A4"
+        },
+        "manufacturer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q23317"
+        },
+        "manufacturerLabel": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Audi AG"
+        },
+        "inception": {
+          "type": "literal",
+          "value": "1994-01-01T00:00:00Z"
+        }
+      },
+      {
+        "model": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q9990003"
+        },
+        "modelLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Škoda Octavia"
+        },
+        "manufacturer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q29637"
+        },
+        "manufacturerLabel": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Škoda Auto"
+        },
+        "inception": {
+          "type": "literal",
+          "value": "1996-01-01T00:00:00Z"
+        }
+      }
+    ]
+  }
+}
