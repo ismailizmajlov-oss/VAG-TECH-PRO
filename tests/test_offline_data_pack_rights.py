@@ -89,6 +89,8 @@ class OfflineDataPackRightsTests(unittest.TestCase):
             "validation": "syntax_only",
             "external_fetch": False,
             "rights_review": "not_inherited_from_cc0_dataset",
+            "allowed_schemes": ["https", "http"],
+            "display_policy": "external_reference_link_only",
         })
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
