@@ -1,0 +1,82 @@
+name: VAG TECH PRO RDW type-approval acquisition run72
+
+on:
+  push:
+    branches:
+      - automation/rdw-type-approval-run72
+    paths:
+      - ".github/workflows/rdw-type-approval-run72.yml"
+      - "scripts/rdw_vag_type_approval_common.py"
+      - "scripts/build_rdw_vag_type_approval.py"
+      - "scripts/verify_rdw_vag_type_approval.py"
+      - "tests/test_rdw_vag_type_approval.py"
+      - "data/source-manifests/rdw-vag-type-approval.lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-rdw-type-approval-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-verify:
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - name: Checkout source and lock files
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Compile and run offline RDW contract tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python --version
+          python -m py_compile scripts/rdw_vag_type_approval_common.py scripts/build_rdw_vag_type_approval.py scripts/verify_rdw_vag_type_approval.py tests/test_rdw_vag_type_approval.py
+          python -m unittest discover -s tests -p "test_rdw_vag_type_approval.py" -v 2>&1 | Tee-Object -FilePath rdw-unit-tests.log
+          if ($LASTEXITCODE -ne 0) { throw "RDW candidate-only contract tests failed" }
+          python -c "import json,pathlib; p=pathlib.Path('data/source-manifests/rdw-vag-type-approval.lock.json'); d=json.loads(p.read_text(encoding='utf-8')); assert d['data_license']=='CC0-1.0' and d['rights_status']=='approved_by_published_license'; print('RDW lock JSON and CC0 gate passed')"
+
+      - name: Build filtered RDW VAG type-approval pack from official API
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $pack = Join-Path $env:RUNNER_TEMP "rdw-vag-type-approval"
+          python scripts/build_rdw_vag_type_approval.py --output-dir "$pack" 2>&1 | Tee-Object -FilePath rdw-pack-build.log
+          if ($LASTEXITCODE -ne 0) { throw "RDW official API acquisition or pack build failed" }
+          python scripts/verify_rdw_vag_type_approval.py --pack-dir "$pack" 2>&1 | Tee-Object -FilePath rdw-pack-verification.log
+          if ($LASTEXITCODE -ne 0) { throw "RDW pack verification failed" }
+          Copy-Item -LiteralPath $pack -Destination (Join-Path $env:GITHUB_WORKSPACE "rdw-vag-type-approval") -Recurse -Force
+          $manifest = Get-Content -LiteralPath (Join-Path $pack "manifest.json") -Raw | ConvertFrom-Json
+          if ($manifest.counts.vehicle_variants -lt 1 -or $manifest.counts.engine_candidates -lt 1 -or $manifest.counts.transmission_candidates -lt 1) { throw "RDW pack does not contain all required candidate classes" }
+          if ($manifest.exact_vehicle_fitment -ne $false -or $manifest.ru_eaeu_applicability -ne $false -or $manifest.vag_factory_gearbox_code_verified -ne $false) { throw "RDW applicability or gearbox-code guard failed" }
+          "pack_id=$($manifest.pack_id)" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          "source_revision=$($manifest.source_revision)" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          "counts=$($manifest.counts | ConvertTo-Json -Compress)" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          "database_sha256=$($manifest.database_sha256)" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          "source_snapshot_sha256=$($manifest.source_snapshot_sha256)" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          "metadata_bundle_sha256=$($manifest.metadata_bundle_sha256)" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          "market_scope=EU_TYPE_APPROVAL;NL_REGISTRATION_OBSERVATION" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          "exact_vehicle_fitment=false; RU_EAEU=false; vag_factory_engine_code=false; vag_factory_gearbox_code=false" | Out-File -FilePath rdw-source-verification.txt -Append -Encoding utf8
+          Get-Content -LiteralPath (Join-Path $pack "manifest.json") -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload verified RDW CC0 research pack
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rdw-vag-type-approval-cc0-run72
+          path: |
+            rdw-vag-type-approval/**
+            rdw-unit-tests.log
+            rdw-pack-build.log
+            rdw-pack-verification.log
+            rdw-source-verification.txt
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
