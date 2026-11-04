@@ -696,13 +696,13 @@ function patchAutoDiag2Docs() {
   const rowPattern = /^\| AutoDiag2 VAG-group community candidates.*$/m;
   if (!rowPattern.test(readme)) throw new Error("AutoDiag2 README summary row was not found");
   readme = readme.replace(rowPattern, row);
-  const oldBulletPattern = /^- AutoDiag2 is a separate community dataset\.[^\n]*$/m;
+  const bulletPattern = /^- AutoDiag2 is a separate community dataset\.[^\n]*$/m;
   const bullet = "- AutoDiag2 is a separate community dataset. All " + excluded.toLocaleString("en-US") +
     " upstream make-level DTC records were excluded because they used generic ECU manufacturer labels and had no vehicle-configuration DTC links; the shipped filtered database contains " +
     dtcs.toLocaleString("en-US") + " DTC rows. All " + engineFields.toLocaleString("en-US") +
     " engine labels remain unverified source-field values; none is promoted to a factory engine code. It contains no gearbox records or exact ECU/vehicle fitment.";
-  if (!oldBulletPattern.test(readme)) throw new Error("AutoDiag2 README critical-limit note was not found");
-  readme = readme.replace(oldBulletPattern, bullet);
+  if (!bulletPattern.test(readme)) throw new Error("AutoDiag2 README critical-limit note was not found");
+  readme = readme.replace(bulletPattern, bullet);
   writeLf(readmePath, readme);
 
   const reviewPath = path.join(root, "docs", "research", "AUTODIAG2_VAG_COMMUNITY_PACK_REVIEW.md");
