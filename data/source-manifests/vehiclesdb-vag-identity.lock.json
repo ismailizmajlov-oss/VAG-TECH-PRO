@@ -55,6 +55,12 @@
     "ATTRIBUTION.md",
     "LICENSE"
   ],
+  "expected_counts": {
+    "sources": 14,
+    "source_files": 4,
+    "models": 260,
+    "market_evidence": 1524
+  },
   "build_policy": {
     "output_database": "vag-identity-vehiclesdb.sqlite",
     "verification_status": "identity_candidate",
