@@ -16,10 +16,10 @@ The initial candidate pack contained 956 DTC rows that looked VAG-related only b
 - Upstream asset size: 10,649,600 bytes
 - Upstream license file SHA-256: 50a8762802c3303f5612c002bd35a3e617dcc7315ff7073f784b8682ea646cb5
 - Upstream README SHA-256: 993937e4edb4ddf03bf9c6435215d751ed8a867276cd16dc5086748d48bdae2d
-- GitHub Actions artifact inspected: autodiag2-vag-community-candidate-pack
-- Artifact ID: 13268484250
-- Workflow run ID: 41715531679
-- Artifact ZIP SHA-256: eab2029c26ecc73a6a6643fbb6a22a6e2a3107d31351324fa2d478ef27920ddf
+- Initial unfiltered upstream snapshot artifact: ID `13268484250`, workflow run `41715531679`, ZIP SHA-256 `eab2029c26ecc73a6a6643fbb6a22a6e2a3107d31351324fa2d478ef27920ddf` (inspection only; not shipped).
+- Latest filtered candidate-pack artifact: ID `13275271441`, workflow run `41726841575`, ZIP SHA-256 `aeaffa50d7ee0208503053b01d73d30e4ae18f4d28d3f64153c398815b36dc87`.
+- Filtered candidate SQLite SHA-256: `5b071814ec63516f3fc8c5dc114d746b86e67ab75476b604c2606678dfff5c1a`.
+- Filtered manifest SHA-256: `27016ca82622310b0513b9f75bb48a6309b7f6ae538dd7fd561b509c6d466669`.
 
 The upstream license declares ODbL-1.0 for the database, DbCL-1.0 for database contents, and GPL-3.0-or-later for upstream source code. The candidate database remains a separate pack with attribution and share-alike obligations. The declared commercial use, display, offline caching and redistribution rights do not imply OEM endorsement or technical correctness.
 
@@ -58,7 +58,7 @@ The filtered local pack was rebuilt from the pinned artifact and independently c
 - SQLite foreign-key violations: 0.
 - Every file listed in SHA256SUMS.txt matches its SHA-256 digest.
 
-Filtered SQLite SHA-256: 9e61c1b6a9e51ef6ae351aae493c56800413d582238c187a8777a482c9eaa0b3
+Filtered SQLite SHA-256: 5b071814ec63516f3fc8c5dc114d746b86e67ab75476b604c2606678dfff5c1a
 
 ## Code and CI gate
 
@@ -77,7 +77,7 @@ Relevant commits:
 - Engine-code heuristic removal: 5b5abe7f6bd3d125657e600e667f7d1fe085e816
 - Engine-code regression test: a1b27d881233148a27eedf1c2f4594dfde92daf6
 
-The workflow result for the latest policy-gated rerun has not yet been observed. The locally filtered pack is verified, but it is not represented as a completed Windows installer or production import.
+The latest policy-gated acquisition run (41726841575) completed successfully and published the filtered artifact above. Windows desktop CI run 41872948632 downloaded that exact artifact, passed the AutoDiag2 rights/attribution/market/applicability gates, and passed the dedicated AutoDiag2 integration tests. The app exposes the pack only as a separate research candidate source, not as a production DTC or vehicle-fitment database. No production fitment rows were imported.
 
 ## Publication boundary
 
