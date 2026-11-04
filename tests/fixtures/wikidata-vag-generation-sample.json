@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "retrieved_at_utc": "2026-11-05T00:00:00Z",
+  "parent_model_pack": {
+    "pack_id": "wikidata-vag-model-taxonomy-cc0-fixture",
+    "snapshot_id": "fixture",
+    "source_revision": "wikidata-snapshot-fixture",
+    "source_snapshot_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "database_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "model_entities": 1
+  },
+  "parent_models": [
+    {
+      "model_qid": "Q758729",
+      "manufacturer_qid": "Q23317",
+      "model_label_en": "Audi A4",
+      "model_label_ru": "Ауди A4",
+      "manufacturer_label_en": "Audi AG"
+    }
+  ],
+  "query": "PREFIX wd: <http://www.wikidata.org/entity/>\nSELECT ?model ?member WHERE { ?member wdt:P179 ?model }",
+  "results": {
+    "bindings": [
+      {
+        "model": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q758729"
+        },
+        "member": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q20760348"
+        },
+        "relation": {
+          "type": "literal",
+          "value": "P179"
+        },
+        "memberLabelEn": {
+          "type": "literal",
+          "value": "Audi A4 B9",
+          "xml:lang": "en"
+        },
+        "memberLabelRu": {
+          "type": "literal",
+          "value": "Audi A4 B9",
+          "xml:lang": "ru"
+        },
+        "memberType": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        },
+        "start": {
+          "type": "literal",
+          "value": "2015-06-01T00:00:00Z"
+        },
+        "end": {
+          "type": "literal",
+          "value": "2024-03-01T00:00:00Z"
+        },
+        "inception": {
+          "type": "literal",
+          "value": "2015-01-01T00:00:00Z"
+        },
+        "dissolution": {
+          "type": "literal",
+          "value": "2024-01-01T00:00:00Z"
+        },
+        "ordinal": {
+          "type": "literal",
+          "value": "9"
+        },
+        "memberManufacturer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q23317"
+        }
+      },
+      {
+        "model": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q758729"
+        },
+        "member": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q20760348"
+        },
+        "relation": {
+          "type": "literal",
+          "value": "P527"
+        },
+        "memberLabelEn": {
+          "type": "literal",
+          "value": "Audi A4 B9",
+          "xml:lang": "en"
+        },
+        "memberLabelRu": {
+          "type": "literal",
+          "value": "Audi A4 B9",
+          "xml:lang": "ru"
+        },
+        "memberType": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        },
+        "memberManufacturer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q23317"
+        }
+      }
+    ]
+  }
+}
