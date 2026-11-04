@@ -81,5 +81,18 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn('"obdb-vag-signals-cc-by-sa"', source)
 
 
+    def test_obdex_lock_pins_generic_ranges_and_external_reference_quarantine(self):
+        lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
+        self.assertEqual(lock["scope"]["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx-P39xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])
+        self.assertEqual(lock["scope"]["excluded_manufacturer_controlled_ranges"], ["P1xxx", "P30xx-P33xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])
+        self.assertEqual(lock["source_reference_policy"], {
+            "validation": "syntax_only",
+            "external_fetch": False,
+            "rights_review": "not_inherited_from_cc0_dataset",
+        })
+        workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
+        self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
