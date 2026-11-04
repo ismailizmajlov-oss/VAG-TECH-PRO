@@ -663,6 +663,118 @@ function writeDedicatedTest() {
   ].join("\n");
   fs.writeFileSync(file, content, "utf8");
 }
+function patchAutoDiag2Docs() {
+  const researchRoot = path.join(root, "data", "research");
+  const packDir = path.join(researchRoot, "autodiag2-vag-community-candidates-odbl");
+  const sourceManifest = readJson(path.join(packDir, "manifest.json"));
+  const rootManifest = readJson(path.join(researchRoot, "manifest.json"));
+  const pack = rootManifest.packs.find((item) => item.id === "autodiag2-vag-community-candidates-odbl");
+  if (!pack) throw new Error("AutoDiag2 root manifest entry is missing while writing source documentation");
+  const counts = sourceManifest.counts;
+  const removed = sourceManifest.dtc_policy_removal_counts || {};
+  const excluded = Number(removed.unattributed_make_level || 0);
+  const models = Number(counts.vehicle_models || 0);
+  const versions = Number(counts.vehicle_versions || 0);
+  const engines = Number(counts.engines || 0);
+  const engineFields = Number(counts.engine_code_candidates_unverified || 0);
+  const ecus = Number(counts.ecus || 0);
+  const configs = Number(counts.vehicle_config_candidates || 0);
+  const dtcs = Number(counts.dtc_candidates || 0);
+  if (sourceManifest.dtc_policy_filtered !== true || dtcs !== 0 || Number(counts.make_level_dtc_candidates || 0) !== 0 ||
+      Number(counts.engine_codes_verified || 0) !== 0 || Number(counts.transmission_records || 0) !== 0) {
+    throw new Error("AutoDiag2 documentation cannot be generated for a pack that retains unverified DTC or drivetrain records");
+  }
+
+  const readmePath = path.join(researchRoot, "README.md");
+  let readme = readLf(readmePath);
+  const row = "| AutoDiag2 VAG-group community candidates | ODbL-1.0 database; DbCL-1.0 contents | " +
+    models.toLocaleString("en-US") + " model candidates; " + versions.toLocaleString("en-US") +
+    " version candidates; " + engines.toLocaleString("en-US") + " unverified engine labels; " +
+    ecus.toLocaleString("en-US") + " ECU candidates; " + configs.toLocaleString("en-US") +
+    " configuration candidates; " + dtcs.toLocaleString("en-US") + " DTC rows | Separate SQLite; all market UNKNOWN and unverified; " +
+    excluded.toLocaleString("en-US") + " upstream make-level DTC rows excluded because they used generic ECU labels and had no vehicle-configuration DTC links; no gearbox records, OEM confirmation, test plans, repairs or diagnostic execution; attribution/share-alike required |";
+  const rowPattern = /^\\| AutoDiag2 VAG-group community candidates.*$/m;
+  if (!rowPattern.test(readme)) throw new Error("AutoDiag2 README summary row was not found");
+  readme = readme.replace(rowPattern, row);
+  const oldBulletPattern = /^- AutoDiag2 is a separate community dataset\\.[^\\n]*$/m;
+  const bullet = "- AutoDiag2 is a separate community dataset. All " + excluded.toLocaleString("en-US") +
+    " upstream make-level DTC records were excluded because they used generic ECU manufacturer labels and had no vehicle-configuration DTC links; the shipped filtered database contains " +
+    dtcs.toLocaleString("en-US") + " DTC rows. All " + engineFields.toLocaleString("en-US") +
+    " engine labels remain unverified source-field values; none is promoted to a factory engine code. It contains no gearbox records or exact ECU/vehicle fitment.";
+  if (!oldBulletPattern.test(readme)) throw new Error("AutoDiag2 README critical-limit note was not found");
+  readme = readme.replace(oldBulletPattern, bullet);
+  writeLf(readmePath, readme);
+
+  const reviewPath = path.join(root, "docs", "research", "AUTODIAG2_VAG_COMMUNITY_PACK_REVIEW.md");
+  const review = [
+    "# AutoDiag2 VAG-group community candidate pack review",
+    "",
+    "- Publisher: " + sourceManifest.publisher,
+    "- Upstream release: " + sourceManifest.release_tag,
+    "- Pinned source revision: " + sourceManifest.source_revision,
+    "- Upstream SQLite asset SHA-256: " + sourceManifest.source_asset_sha256,
+    "- Filtered candidate SQLite SHA-256: " + pack.database_sha256,
+    "- Source manifest SHA-256: " + pack.source_manifest_sha256,
+    "- Attribution SHA-256: " + pack.attribution_sha256,
+    "- SHA256SUMS SHA-256: " + pack.sha256sums_sha256,
+    "- Acquisition artifact SHA-256: " + pack.source_artifact_zip_sha256,
+    "- Workflow run / artifact: " + pack.source_workflow.workflow_run_id + " / " + pack.source_workflow.artifact_id,
+    "- Database license: ODbL-1.0; individual contents: DbCL-1.0",
+    "- Rights stated by the published license: commercial use, display, offline caching and redistribution permitted subject to attribution and share-alike obligations. The data is stored in a separate SQLite pack to preserve those obligations. The upstream GPL-3.0-or-later source code is not included.",
+    "",
+    "## Retained and excluded counts",
+    "",
+    "| Record type | Count |",
+    "|---|---:|",
+    "| Vehicle model candidates | " + models.toLocaleString("en-US") + " |",
+    "| Vehicle version candidates | " + versions.toLocaleString("en-US") + " |",
+    "| Engine labels retained as unverified source-field values | " + engineFields.toLocaleString("en-US") + " |",
+    "| Factory engine codes verified | " + Number(counts.engine_codes_verified || 0).toLocaleString("en-US") + " |",
+    "| ECU candidates | " + ecus.toLocaleString("en-US") + " |",
+    "| Vehicle/configuration/ECU candidates | " + configs.toLocaleString("en-US") + " |",
+    "| DTC candidates retained | " + dtcs.toLocaleString("en-US") + " |",
+    "| Upstream make-level DTC records excluded | " + excluded.toLocaleString("en-US") + " |",
+    "| Vehicle/ECU-linked DTC candidates | " + Number(counts.vehicle_ecu_linked_dtc_candidates || 0).toLocaleString("en-US") + " |",
+    "| DTC fitment links | " + Number(counts.dtc_fitment_candidate_links || 0).toLocaleString("en-US") + " |",
+    "| Generic SAE/ISO DTC rows in this pack | " + Number(counts.generic_dtc_rows_in_pack || 0).toLocaleString("en-US") + " |",
+    "| Transmission records | " + Number(counts.transmission_records || 0).toLocaleString("en-US") + " |",
+    "",
+    "## Application boundary",
+    "",
+    "All retained records are community_reference_unverified, with market_scope=UNKNOWN. All " + excluded.toLocaleString("en-US") +
+      " upstream DTC rows were excluded because they were make-level only, used generic ECU manufacturer labels, and had no vehicle-configuration DTC links. The shipped candidate SQLite therefore contains zero DTC rows. All " +
+      engineFields.toLocaleString("en-US") + " engine labels remain unverified source-field values; none is promoted to a factory engine code. No exact vehicle, generation, engine, gearbox, ECU hardware/software, PR-code or VIN fitment is claimed. No gearbox catalogue, test plan, repair procedure, repair recommendation or diagnostic execution is enabled. Generic SAE/ISO OBD-II records remain in the separate CC0 OBDex pack.",
+    "",
+    "## Packaging and provenance",
+    "",
+    "The separate SQLite is opened read-only/query-only. The runtime checks the candidate database, source manifest, license, README, attribution and SHA256SUMS hashes before search or attribution is exposed. The source artifact ZIP digest and source workflow run/artifact identifiers are pinned in the product manifest. ODbL share-alike and DbCL contents-license obligations remain attached to this separate pack.",
+    ""
+  ].join("\n");
+  writeLf(reviewPath, review);
+
+  const testFile = path.join(root, "tests", "autodiag2-pack-integration.test.cjs");
+  let testSource = readLf(testFile);
+  const testName = 'test("AutoDiag2 documentation matches the filtered, DTC-free candidate pack"';
+  if (!testSource.includes(testName)) {
+    testSource += [
+      "",
+      testName + ', () => {',
+      '  const review = fs.readFileSync(path.join(__dirname, "../docs/research/AUTODIAG2_VAG_COMMUNITY_PACK_REVIEW.md"), "utf8");',
+      '  const readme = fs.readFileSync(path.join(__dirname, "../data/research/README.md"), "utf8");',
+      '  const verified = local.verifyAutoDiag2Pack(root);',
+      '  assert.match(review, new RegExp(verified.databaseSha256));',
+      '  assert.match(review, /DTC candidates retained \\\\| 0/);',
+      '  assert.match(review, /Upstream make-level DTC records excluded \\\\| 956/);',
+      '  assert.match(review, /956 upstream DTC rows were excluded/);',
+      '  assert.match(readme, /0 DTC rows/);',
+      '  assert.match(readme, /956 upstream make-level DTC records were excluded/);',
+      '});',
+      ""
+    ].join("\n");
+    writeLf(testFile, testSource);
+  }
+}
+
 const emptying = excludeUnverifiedPack();
 patchLocalResearchDb();
 patchVerifier();
@@ -670,5 +782,6 @@ patchResearchDbTests();
 const autoDiag2Pins = refreshAutoDiag2ManifestPins();
 patchAutoDiag2DbAndTests();
 patchResearchUi();
+patchAutoDiag2Docs();
 writeDedicatedTest();
 console.log(JSON.stringify({ status: "desktop_research_patches_applied", ...emptying, autoDiag2Pins }, null, 2));
