@@ -45,7 +45,7 @@ const newEnd = [
 if (!lifecycle.includes("external-network-blocked offline launch")) {
   lifecycle = replaceOnce(lifecycle, oldEnd, newEnd, "offline firewall cleanup");
 }
-if (!lifecycle.includes("New-NetFirewallRule") || !lifecycle.includes('RemoteAddress "::/0"') || !lifecycle.includes("Remove-NetFirewallRule -Name $ruleName")) {
+if (!lifecycle.includes("New-NetFirewallRule") || !lifecycle.includes('RemoteAddress @("::/1", "8000::/1")') || !lifecycle.includes("Remove-NetFirewallRule -Name $ruleName")) {
   throw new Error("Offline network-isolation contract is incomplete");
 }
 fs.writeFileSync(lifecyclePath, lifecycle, "utf8");
@@ -69,7 +69,7 @@ const test = [
   '  assert.doesNotMatch(script, /RemoteAddress\\s+"0\\.0\\.0\\.0\\/0"/);',
   '});',
   'test("Windows lifecycle blocks IPv6 and always removes temporary firewall rules", () => {',
-  '  assert.match(script, /New-NetFirewallRule[^\\n]*Offline IPv6[^\\n]*RemoteAddress\\s+"::\\/0"/);',
+  '  assert.ok(script.includes(\'RemoteAddress @("::/1", "8000::/1")\'));',
   '  assert.match(script, /finally\\s*\\{[\\s\\S]*Remove-NetFirewallRule -Name \\$ruleName/);',
   '});'
 ].join("\n") + "\n";
