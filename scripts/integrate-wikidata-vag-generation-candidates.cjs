@@ -340,7 +340,7 @@ function patchDesktopSource(desktop) {
     "}",
     "",
     "function searchWikidataGenerationCandidates(query, limit=25, root) {",
-    "  const q=validateQuery(query); const summary=getWikidataGenerationSummary(root); const base=getResearchRoot(root);",
+    "  const q=validateQuery(query); const summary=getWikidataGenerationSummary(root);",
     "  const db=openReadOnly(root,PACKS.wikidataGenerations.file); const parentDb=openReadOnly(root,PACKS.wikidata.file);",
     "  try {",
     "    const pattern=\"%\"+q.replace(/[\\\\%_]/g,\"\\\\$&\")+\"%\";",
