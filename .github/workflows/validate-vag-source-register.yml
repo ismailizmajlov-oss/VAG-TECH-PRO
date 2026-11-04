@@ -17,6 +17,7 @@ on:
       - "tests/test_wal33d_source_rights.py"
       - "tests/test_openvag_source_rights.py"
       - "tests/test_mechanicdb_generic_guidance_source_rights.py"
+      - "tests/test_wikidata_generation_source_rights.py"
       - ".github/workflows/validate-vag-source-register.yml"
   pull_request:
     branches: [main]
@@ -29,6 +30,7 @@ on:
       - "tests/test_hptsu_source_rights.py"
       - "tests/test_fgis_source_rights.py"
       - "tests/test_openvag_source_rights.py"
+      - "tests/test_wikidata_generation_source_rights.py"
       - ".github/workflows/validate-vag-source-register.yml"
 
 permissions:
