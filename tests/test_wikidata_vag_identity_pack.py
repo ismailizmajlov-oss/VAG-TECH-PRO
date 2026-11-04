@@ -23,6 +23,8 @@ class WikidataIdentityPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "pack"
             manifest = MODULE.build_pack(SNAPSHOT, LOCK, output)
+            disk_manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(disk_manifest, manifest)
             self.assertEqual(manifest["pack_id"], "wikidata-vag-identity-cc0")
             self.assertEqual(manifest["data_license"], "CC0-1.0")
             self.assertEqual(manifest["counts"]["total"], 20)
