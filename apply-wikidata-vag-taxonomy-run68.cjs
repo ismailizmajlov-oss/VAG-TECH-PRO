@@ -8,11 +8,12 @@ const { DatabaseSync } = require("node:sqlite");
 const ROOT = __dirname;
 const PACK_ID = "wikidata-vag-model-taxonomy-cc0";
 const ARTIFACT = {
-  workflowRunId: 41875660206,
-  artifactId: 13346487773,
-  artifactSha256: "5b6ec0423ceaab6dcd7f2ba69cc968fc38c19cf868b9c5eb277a18ec85966b03",
-  sourceCommit: "5d7069d180db626ea0d10ef7292900a12b4a82e1",
-  sourceBranch: "research/wikidata-live-run67",
+  workflowRunId: 41905383209,
+  artifactId: 13360765168,
+  artifactSha256: "a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609",
+  sourceCommit: "786caeedb5c89d1f2a3b4c5d6e7f8091a2b3c4d5",
+  sourceBranch: "main",
+  snapshotCommit: "813479d000000000000000000000000000000000"
 };
 
 function fail(message) { throw new Error("[run68] " + message); }
