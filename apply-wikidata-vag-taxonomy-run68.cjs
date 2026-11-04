@@ -705,10 +705,10 @@ function patchDesktopSource(desktopRoot) {
     '  assert.match(component, /Wikidata · модели VAG/);\n' +
     '  assert.match(component, /dataset === "wikidata"/);\n' +
     '  assert.match(component, /Русскоязычная метка не доказывает российский рынок/);\n' +
-    '  assert.match(component, /P571/);
-  assert.match(component, /P576/);
-  assert.match(component, /row\.applicabilityPrecision/);
-  assert.match(component, /row\.marketScope/);
+    '  assert.match(component, /P571/);\n' +
+    '  assert.match(component, /P576/);\n' +
+    '  assert.match(component, /row\\.applicabilityPrecision/);\n' +
+    '  assert.match(component, /row\\.marketScope/);\n' +
     '  assert.match(component, /CC0-1\\.0/);\n' +
     '  const route = fs.readFileSync(path.join(__dirname, "..", "app", "api", "local-research", "route.ts"), "utf8");\n' +
     '  assert.match(route, /dataset === "wikidata"/);\n' +
