@@ -192,7 +192,7 @@ function validatePack(packDir) {
   } finally {
     db.close();
   }
-  return { manifest, counts };
+  return { manifest, counts, sourceManifestSha256: sha256File(safeJoin(packDir, "manifest.json")) };
 }
 
 function updateResearchManifest(researchDir, verified) {
@@ -213,7 +213,7 @@ function updateResearchManifest(researchDir, verified) {
   const querySha = sha256File(safeJoin(researchDir, queryRelative));
   const snapshotSha = sha256File(safeJoin(researchDir, snapshotRelative));
   const databaseSha = sha256File(safeJoin(researchDir, databaseRelative));
-  if (sourceManifestSha !== sha256File(safeJoin(researchDir, sourceManifestRelative)) ||
+  if (sourceManifestSha !== verified.sourceManifestSha256 ||
       databaseSha !== verified.manifest.database_sha256 ||
       snapshotSha !== verified.manifest.source_snapshot_sha256 ||
       querySha !== verified.manifest.source_query_sha256) fail("Copied Wikidata pack failed final source hash verification");
@@ -428,7 +428,7 @@ function patchDesktopSource(desktopRoot) {
       '    const wikidataPackManifest = JSON.parse(fs.readFileSync(path.join(getResearchRoot(root), PACKS.wikidata.manifest), "utf8"));',
       '    const wikidataAttribution = fs.readFileSync(path.join(getResearchRoot(root), PACKS.wikidata.attribution), "utf8");',
       '    const wikidataLicense = fs.readFileSync(path.join(getResearchRoot(root), PACKS.wikidata.licenseFile), "utf8");',
-      '    const wikidataSource = wikidataDb.prepare("SELECT * FROM source_registry WHERE source_id=?").get(PACKS.wikidata.id);',
+      '    const wikidataSource = wikidataDb.prepare("SELECT * FROM source_registry WHERE source_id=?").get(wikidataPackManifest.source_id);',
       '    const wikidataCounts = {',
       '      models: wikidataDb.prepare("SELECT count(*) AS n FROM vehicle_model_entities").get().n,',
       '      sourceBindings: wikidataDb.prepare("SELECT count(*) AS n FROM source_bindings").get().n,',
@@ -437,7 +437,8 @@ function patchDesktopSource(desktopRoot) {
       '      dateStatements: wikidataDb.prepare("SELECT count(*) AS n FROM model_date_statements").get().n,',
       '      invalidRows: wikidataDb.prepare("SELECT count(*) AS n FROM vehicle_model_entities WHERE market_scope!=\'UNKNOWN\' OR applicability_precision!=\'candidate_identity_only\' OR review_status!=\'candidate\' OR exact_vehicle_fitment!=0 OR generation_verified!=0 OR engine_code_fitment!=0 OR transmission_code_fitment!=0 OR ecu_fitment!=0 OR dtc_fitment!=0 OR repair_procedure_fitment!=0").get().n,',
       '      invalidBindings: wikidataDb.prepare("SELECT count(*) AS n FROM source_bindings WHERE length(source_binding_sha256)!=64 OR source_revision!=? OR source_snapshot_sha256!=? OR source_query_sha256!=?").get(wikidataPackManifest.source_revision, wikidataPackManifest.source_snapshot_sha256, wikidataPackManifest.source_query_sha256).n,',
-      '      invalidDates: wikidataDb.prepare("SELECT count(*) AS n FROM model_date_statements WHERE property_id NOT IN (\'P571\',\'P576\')").get().n,',
+      '      invalidDates: wikidataDb.prepare("SELECT count(*) AS n FROM model_date_statements WHERE property_id NOT IN (\'P571\',\'P576\')").get().n,
+      badEntityBindingCounts: wikidataDb.prepare("SELECT count(*) AS n FROM vehicle_model_entities v WHERE v.source_binding_count != (SELECT count(*) FROM source_bindings b WHERE b.model_qid=v.model_qid AND b.manufacturer_qid=v.manufacturer_qid)").get().n,',
       '    };',
       '    if (!wikidataSource || wikidataSource.source_url !== "https://www.wikidata.org/" || wikidataSource.endpoint_url !== "https://query.wikidata.org/sparql" ||',
       '        wikidataSource.license_id !== "CC0-1.0" || wikidataSource.rights_status !== "approved_by_published_license" ||',
@@ -457,10 +458,10 @@ function patchDesktopSource(desktopRoot) {
       '        wikidataPackManifest.scope?.generation_verified !== false || wikidataPackManifest.scope?.engine_code_fitment !== false ||',
       '        wikidataPackManifest.scope?.transmission_code_fitment !== false || wikidataPackManifest.scope?.ecu_fitment !== false ||',
       '        wikidataPackManifest.scope?.dtc_fitment !== false || wikidataPackManifest.scope?.repair_procedure_fitment !== false ||',
-      '        wikidataPackManifest.scope?.diagnostic_execution_allowed !== false || wikidataPackManifest.scope?.production_years_inferred !== false ||',
+      '        wikidataPackManifest.scope?.diagnostic_execution_allowed !== false || wikidataPackManifest.scope?.production_years_inferred !== false || wikidataPackManifest.scope?.generation_entities !== 0 || wikidataPackManifest.completeness_status !== "unknown" ||',
       '        wikidataCounts.models !== 376 || wikidataCounts.sourceBindings !== 376 || wikidataCounts.manufacturers !== 5 ||',
       '        wikidataCounts.russianLabels !== 171 || wikidataCounts.dateStatements !== 21 || wikidataCounts.invalidRows ||',
-      '        wikidataCounts.invalidBindings || wikidataCounts.invalidDates || !/Wikidata structured data/i.test(wikidataAttribution) ||',
+      '        wikidataCounts.invalidBindings || wikidataCounts.invalidDates || wikidataCounts.badEntityBindingCounts || !/Wikidata structured data/i.test(wikidataAttribution) ||',
       '        !/CC0 1\\.0 Universal/i.test(wikidataLicense)) throw new Error("Wikidata model identity pack failed its CC0 provenance, rights or candidate-only gate");',
       ''
     ].join("\n");
@@ -493,7 +494,8 @@ function patchDesktopSource(desktopRoot) {
     '        },'
   ].join("\n");
   if (!source.slice(summaryStart, summaryEnd).includes("id: PACKS.wikidata.id")) {
-    const arrayEnd = source.lastIndexOf("\n      ],\n    };", summaryEnd);
+    const currentSummaryEnd = source.indexOf("\nfunction searchGenericDtcs(", summaryStart);
+    const arrayEnd = source.lastIndexOf("\n      ],\n    };", currentSummaryEnd);
     if (arrayEnd < 0 || arrayEnd < summaryStart) fail("Wikidata summary pack-array insertion point is missing");
     source = source.slice(0, arrayEnd) + "\n" + summaryObject + source.slice(arrayEnd);
   }
@@ -518,19 +520,19 @@ function patchDesktopSource(desktopRoot) {
       "      report.ecu_fitment !== false || report.dtc_fitment !== false || report.repair_procedure_fitment !== false ||",
       "      report.diagnostic_execution_allowed !== false || report.production_years_inferred !== false ||",
       "      packManifest.data_license !== \"CC0-1.0\" || packManifest.scope?.market_scope !== \"UNKNOWN\" ||",
-      "      packManifest.scope?.applicability_precision !== \"candidate_identity_only\" || packManifest.scope?.exact_vehicle_fitment !== false) {",
+      "      packManifest.scope?.applicability_precision !== \"candidate_identity_only\" || packManifest.scope?.exact_vehicle_fitment !== false || packManifest.scope?.generation_verified !== false || packManifest.scope?.engine_code_fitment !== false || packManifest.scope?.transmission_code_fitment !== false || packManifest.scope?.ecu_fitment !== false || packManifest.scope?.dtc_fitment !== false || packManifest.scope?.repair_procedure_fitment !== false || packManifest.scope?.diagnostic_execution_allowed !== false || packManifest.scope?.production_years_inferred !== false) {",
       "    throw new Error(\"Wikidata search failed its candidate-only runtime gate\");",
       "  }",
       "  const db = openReadOnly(root, PACKS.wikidata.file);",
       "  try {",
-      "    const source = db.prepare(\"SELECT * FROM source_registry WHERE source_id=?\").get(PACKS.wikidata.id);",
+      "    const source = db.prepare(\"SELECT * FROM source_registry WHERE source_id=?\").get(wikidataPackManifest.source_id);",
       "    if (!source || source.license_id !== \"CC0-1.0\" || source.market_scope !== \"UNKNOWN\" || source.applicability_precision !== \"candidate_identity_only\" || source.review_status !== \"candidate\" || source.commercial_use_allowed !== 1 || source.display_allowed !== 1 || source.offline_cache_allowed !== 1 || source.bulk_reuse_allowed !== 1 || source.redistribution_allowed !== 1 || source.attribution_required !== 0 || source.share_alike_required !== 0) throw new Error(\"Wikidata SQLite source registry rights gate failed\");",
-      "    const pattern = likePattern(q);",
+      "    const pattern = \"%\" + q.replace(/[!%_]/g, \"!      "    const pattern = likePattern(q);",\") + \"%\";",
       "    const rows = db.prepare(",
       "      \"SELECT model_qid, manufacturer_qid, model_label_en, model_label_ru, manufacturer_label_en, inception_dates_json, dissolution_dates_json, modified_dates_json, source_record_sha256, source_revision, source_snapshot_sha256, source_query_sha256, source_binding_count \" +",
       "      \"FROM vehicle_model_entities WHERE market_scope='UNKNOWN' AND applicability_precision='candidate_identity_only' AND review_status='candidate' \" +",
       "      \"AND exact_vehicle_fitment=0 AND generation_verified=0 AND engine_code_fitment=0 AND transmission_code_fitment=0 AND ecu_fitment=0 AND dtc_fitment=0 AND repair_procedure_fitment=0 \" +",
-      "      \"AND (model_label_en LIKE ? ESCAPE '\\\\\\\\' OR model_label_ru LIKE ? ESCAPE '\\\\\\\\' OR manufacturer_label_en LIKE ? ESCAPE '\\\\\\\\') ORDER BY manufacturer_label_en, model_label_en LIMIT ?\"",
+      "      \"AND (model_label_en LIKE ? ESCAPE '!' OR model_label_ru LIKE ? ESCAPE '!' OR manufacturer_label_en LIKE ? ESCAPE '!') ORDER BY manufacturer_label_en, model_label_en LIMIT ?\"",
       "    ).all(pattern, pattern, pattern, clampLimit(limit));",
       "    const parseDates = (value) => { try { const parsed = JSON.parse(value || \"[]\"); return Array.isArray(parsed) ? parsed : []; } catch { return []; } };",
       "    return rows.map((row) => ({",
