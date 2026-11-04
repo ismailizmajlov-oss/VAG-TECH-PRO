@@ -12,6 +12,8 @@ on:
       - "desktop-source-run*.patch"
       - "desktop-package-run*.json"
       - "desktop-package-lock.sha256"
+      - "apply-exact-vehicle-config-match-run64.py.gz.b64"
+      - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "run*-*.patch.gz.b64"
@@ -27,6 +29,8 @@ on:
       - "desktop-source-run*.patch"
       - "desktop-package-run*.json"
       - "desktop-package-lock.sha256"
+      - "apply-exact-vehicle-config-match-run64.py.gz.b64"
+      - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "run*-*.patch.gz.b64"
@@ -546,6 +550,22 @@ jobs:
           node apply-desktop-dbrow-typed-fix-run49.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-dbrow-types-fix.log"
           if ($LASTEXITCODE -ne 0) { throw "Desktop DbRow type fix failed" }
 
+      - name: Enforce user-declared engine and gearbox match before technical lookup (run64)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $patchPath = Join-Path $env:GITHUB_WORKSPACE "apply-exact-vehicle-config-match-run64.py.gz.b64"
+          $hashPath = Join-Path $env:GITHUB_WORKSPACE "apply-exact-vehicle-config-match-run64.sha256"
+          $expected = (Get-Content -LiteralPath $hashPath -Raw).Trim().Split(" ")[0].ToLowerInvariant()
+          $actual = (Get-FileHash -LiteralPath $patchPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Vehicle configuration guard patch SHA-256 mismatch: expected $expected actual $actual" }
+          $compressed = [Convert]::FromBase64String((Get-Content -LiteralPath $patchPath -Raw).Trim())
+          $gzipPath = Join-Path $env:GITHUB_WORKSPACE "apply-exact-vehicle-config-match-run64.py.gz"
+          [System.IO.File]::WriteAllBytes($gzipPath, $compressed)
+          py -3 -c "import gzip,pathlib; p=pathlib.Path(r'$gzipPath'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
+          py -3 (Join-Path $env:GITHUB_WORKSPACE "apply-exact-vehicle-config-match-run64.py")
+          if ($LASTEXITCODE -ne 0) { throw "Exact vehicle configuration match guard failed" }
+
       - name: Print local-core API test source around failing assertion
         shell: pwsh
         run: |
@@ -662,6 +682,7 @@ jobs:
             catalog-import-v2-tests.log
             desktop-source/verify-local-core.log
             desktop-source/verify-local-research.log
+            desktop-source/vehicle-config-match-guard-verification.json
             desktop-source/lint.log
             desktop-source/typecheck.log
             desktop-dbrow-types-fix.log
