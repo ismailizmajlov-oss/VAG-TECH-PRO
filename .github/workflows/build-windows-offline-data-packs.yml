@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - automation/windows-desktop-build-run57
+      - automation/windows-desktop-build-run58
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
       - .github/workflows/acquire-obdex-cc0.yml
