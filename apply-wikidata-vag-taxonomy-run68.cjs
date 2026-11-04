@@ -329,7 +329,7 @@ function updateResearchManifest(researchDir, verified) {
   } else {
     rootManifest.packs.push(entry);
   }
-  if (rootManifest.packs.length !== 6) fail("Expected six separately licensed desktop research packs; found " + rootManifest.packs.length);
+  if (rootManifest.packs.length !== 7) fail("Expected seven separately licensed desktop research packs; found " + rootManifest.packs.length + ": " + rootManifest.packs.map((pack) => pack.id).sort().join(", "));
   rootManifest.integration_revision = "run68";
   rootManifest.integrated_artifacts = Array.isArray(rootManifest.integrated_artifacts) ? rootManifest.integrated_artifacts : [];
   rootManifest.integrated_artifacts = rootManifest.integrated_artifacts.filter((item) => item.pack_id !== PACK_ID);
@@ -718,7 +718,8 @@ function patchDesktopSource(desktopRoot) {
     "Wikidata UI contract test");
 
   let verifier = readText(verifierFile);
-  if (verifier.includes("manifest.packs.length === 5")) verifier = verifier.replace('manifest.packs.length === 5, "Expected five separately licensed research packs"', 'manifest.packs.length === 6, "Expected six separately licensed research packs"');
+  if (verifier.includes("manifest.packs.length === 5")) verifier = verifier.replace('manifest.packs.length === 5, "Expected five separately licensed research packs"', 'manifest.packs.length === 7, "Expected seven separately licensed research packs"');
+  if (verifier.includes("manifest.packs.length === 6")) verifier = verifier.replace('manifest.packs.length === 6, "Expected six separately licensed research packs (AutoDiag2 is verified separately)"', 'manifest.packs.length === 7, "Expected seven separately licensed research packs (AutoDiag2 is verified separately)"');
   if (!verifier.includes('const wikidata = byId["wikidata-vag-model-taxonomy-cc0"];')) {
     const anchor = '  const mechanicdb = byId["mechanicdb-vag-dtc-candidates-odbl"];\n';
     if (verifier.split(anchor).length - 1 !== 1) fail("Wikidata verifier manifest lookup anchor is missing");
@@ -743,7 +744,7 @@ function patchDesktopSource(desktopRoot) {
   writeText(verifierFile, verifier);
 
   let readme = readText(readmeFile);
-  readme = readme.replace("Five separately licensed", "Six separately licensed");
+  readme = readme.replace(/(?:Five|Six) separately licensed/g, "Seven separately licensed");
   if (!readme.includes("| Wikidata VAG model identity | CC0-1.0 |")) {
     const anchor = '| VehiclesDB | CC BY 4.0 | 260 model names; 1,524 market-presence evidence rows across 14 non-RU countries | No RU evidence, generation/year, engine, gearbox, ECU or exact fitment; visible attribution and upstream notices required |\n';
     replaceExactly(readmeFile, anchor, anchor + '| Wikidata VAG model identity | CC0-1.0 | 376 model entities; 171 Russian-language labels; 5 manufacturer labels | Market UNKNOWN; candidate identity only; no generation verification, model years, engine/gearbox/ECU codes or exact fitment |\n', "Wikidata README table row");
@@ -764,7 +765,7 @@ function patchDesktopSource(desktopRoot) {
   }
 
   if (fs.existsSync(docsFile)) {
-    let docs = readText(docsFile).replace("Five separately licensed", "Six separately licensed");
+    let docs = readText(docsFile).replace(/(?:Five|Six) separately licensed/g, "Seven separately licensed");
     if (!docs.includes("| Wikidata VAG model identity |")) {
     const anchor = "## Critical limits\n";
     if (docs.split(anchor).length - 1 !== 1) fail("Wikidata research docs table anchor is missing");
@@ -877,6 +878,7 @@ function main() {
     registry_manifest_sha256: registryManifestSha,
     root_manifest_sha256: sha256File(path.join(researchDir, "manifest.json")),
     counts: packSummary.counts,
+    registered_pack_ids: rootManifest.packs.map((pack) => pack.id).sort(),
     search_sample_count: sample.length,
     market_scope: "UNKNOWN",
     applicability_precision: "candidate_identity_only",
