@@ -528,10 +528,29 @@ def verify_pack(pack_dir: Path, lock_path: Path, *, strict_counts: bool = True) 
             raise ValueError("VehiclesDB output source registry differs from approved source map")
         if db.execute("SELECT count(*) FROM source_registry WHERE rights_status<>? ", (APPROVED_RIGHTS_STATUS,)).fetchone()[0]:
             raise ValueError("VehiclesDB source rights status mismatch")
+        upstream_sources = {str(item["id"]): item for item in upstream.get("sources", [])}
         for source_id, expected_license in approved.items():
-            row = db.execute("SELECT source_license FROM source_registry WHERE source_id=?", (source_id,)).fetchone()
-            if not row or row[0] != expected_license:
+            row = db.execute("SELECT source_license,country_code FROM source_registry WHERE source_id=?", (source_id,)).fetchone()
+            upstream_row = upstream_sources[source_id]
+            if not row or row["source_license"] != expected_license:
                 raise ValueError(f"VehiclesDB source license mismatch in output: {source_id}")
+            if row["country_code"] != upstream_row.get("country"):
+                raise ValueError(f"VehiclesDB source country mismatch in output: {source_id}")
+        allowed_makes = {str(value).lower() for value in lock["scope"]["makes"]}
+        allowed_kinds = {str(value).lower() for value in lock["scope"]["kinds"]}
+        for model in db.execute("SELECT model_id,make_slug,kind,market_scope_json,source_ids_json FROM model_candidates"):
+            if model["make_slug"].lower() not in allowed_makes or model["kind"].lower() not in allowed_kinds:
+                raise ValueError(f"VehiclesDB out-of-scope model candidate: {model['model_id']}")
+            expected_countries = sorted(row[0] for row in db.execute(
+                "SELECT DISTINCT country_code FROM model_market_evidence WHERE model_id=?", (model["model_id"],)
+            ))
+            expected_sources = sorted(row[0] for row in db.execute(
+                "SELECT DISTINCT source_id FROM model_market_evidence WHERE model_id=?", (model["model_id"],)
+            ))
+            if json.loads(model["market_scope_json"]) != expected_countries:
+                raise ValueError(f"VehiclesDB model market scope/provenance mismatch: {model['model_id']}")
+            if json.loads(model["source_ids_json"]) != expected_sources:
+                raise ValueError(f"VehiclesDB model source provenance mismatch: {model['model_id']}")
         if db.execute("""SELECT count(*) FROM model_candidates
                          WHERE fitment_status<>'not_established' OR year_start IS NOT NULL OR year_end IS NOT NULL
                            OR applicability_precision<>'make_model_name_only'
@@ -558,8 +577,29 @@ def verify_pack(pack_dir: Path, lock_path: Path, *, strict_counts: bool = True) 
             path = pack_dir / row["source_path"]
             if not path.is_file() or path.stat().st_size != row["byte_size"] or sha256_file(path) != row["sha256"]:
                 raise ValueError(f"VehiclesDB source artifact hash mismatch: {row['source_path']}")
-        if table_count(db, "dataset_provenance") != 1:
+        expected_artifact_paths = {
+            "source-snapshot/catalog.sqlite", "UPSTREAM-MANIFEST.json", "ATTRIBUTION.md", "LICENSE.txt"
+        }
+        if {row["source_path"] for row in artifact_rows} != expected_artifact_paths:
+            raise ValueError("VehiclesDB source artifact path set mismatch")
+        provenance = db.execute("SELECT * FROM dataset_provenance").fetchone()
+        if provenance is None or table_count(db, "dataset_provenance") != 1:
             raise ValueError("VehiclesDB dataset provenance row count mismatch")
+        if (
+            provenance["dataset_id"] != PACK_ID
+            or provenance["repository"] != lock["repository"]
+            or provenance["upstream_tag"] != lock["upstream_tag"]
+            or provenance["dataset_version"] != upstream["version"]
+            or provenance["dataset_license"] != DATASET_LICENSE
+            or provenance["upstream_manifest_sha256"] != source_snapshot["manifest.json"]
+            or provenance["source_catalog_sha256"] != source_snapshot["catalog.sqlite"]
+            or provenance["attribution_sha256"] != source_snapshot["ATTRIBUTION.md"]
+            or provenance["license_sha256"] != source_snapshot["LICENSE"]
+            or provenance["lock_sha256"] != sha256_file(lock_path)
+        ):
+            raise ValueError("VehiclesDB dataset provenance record mismatch")
+        if manifest.get("source_manifest_sha256") != source_snapshot["manifest.json"] or manifest.get("source_catalog_sha256") != source_snapshot["catalog.sqlite"]:
+            raise ValueError("VehiclesDB manifest/source snapshot provenance mismatch")
     finally:
         db.close()
     return {"status": "verified_identity_candidate_pack", "counts": counts, "market_scope_countries": countries,
