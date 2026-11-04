@@ -138,7 +138,7 @@ function validatePack(packDir, researchDir) {
       sourceRecord.access?.query_limit_scope !== "per_batch") fail("Source register provenance/query limits mismatch");
   for (const [relative, info] of Object.entries(manifest.pack_files || {})) {
     const file = safeJoin(packDir, relative);
-    if (!fs.existsSync(file) || fs.statSync(file).size !== info.size_bytes || sha256File(file) !== info.sha256) fail("Pack file SHA-256/size mismatch: " + relative);
+    if (!fs.existsSync(file) || fs.statSync(file).size !== info.byte_size || sha256File(file) !== info.sha256) fail("Pack file SHA-256/size mismatch: " + relative);
   }
   const parentManifest = readJson(safeJoin(researchDir, "wikidata-vag-model-taxonomy-cc0/manifest.json"));
   if (manifest.parent_model_pack?.source_snapshot_sha256 !== parentManifest.source_snapshot_sha256 ||
