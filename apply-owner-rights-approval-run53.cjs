@@ -365,6 +365,15 @@ function patchApiTests() {
   write("tests/local-core-api.test.cjs", source);
 }
 
+function patchOfflineWorkspaceTests() {
+  let source = read("tests/local-offline-workspace.test.cjs");
+  source = replaceExactly(source,
+    '  assert.match(route, /127\\.0\\.0\\.1/);',
+    '  assert.match(route, /function isLoopbackHost/);\n  assert.match(route, /127/);',
+    "assert loopback host helper and IPv4 literal without depending on regex source escaping");
+  write("tests/local-offline-workspace.test.cjs", source);
+}
+
 function patchUiTests() {
   let source = read("tests/local-data-admin-ui-contract.test.cjs");
   source = source.replace('assert.match(component, /не позволяет самостоятельно объявить источник лицензированным/);', 'assert.match(component, /Владелец может отдельно зафиксировать права источника/);');
@@ -399,6 +408,7 @@ patchUi();
 patchStyles();
 patchCoreTests();
 patchApiTests();
+patchOfflineWorkspaceTests();
 patchUiTests();
 console.log(JSON.stringify({
   status: "owner_source_rights_approval_workflow_applied",
