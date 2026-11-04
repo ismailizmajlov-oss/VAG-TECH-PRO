@@ -20,7 +20,7 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
     db = sqlite3.connect(source_db)
     db.executescript("""
     CREATE TABLE makes(kind TEXT,id TEXT,slug TEXT,name TEXT,PRIMARY KEY(kind,id));
-    CREATE TABLE models(kind TEXT,id TEXT,make_id TEXT,slug TEXT,name TEXT,global_decile INTEGER,mass_decile INTEGER,PRIMARY KEY(kind,id));
+    CREATE TABLE models(kind TEXT,id TEXT,make_id TEXT,slug TEXT,name TEXT,PRIMARY KEY(kind,id));
     CREATE TABLE availability(kind TEXT,model_id TEXT,country TEXT,evidence TEXT,source TEXT,PRIMARY KEY(kind,model_id,country,source));
     """)
     makes = [
@@ -30,12 +30,12 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
     ]
     db.executemany("INSERT INTO makes VALUES(?,?,?,?)", makes)
     models = [
-        ("car", "volkswagen/golf", "volkswagen", "golf", "Golf", 2, 2),
-        ("car", "audi/a4", "audi", "a4", "A4", 3, 3),
-        ("car", "volkswagen/passat", "volkswagen", "passat", "Passat", 4, 4),
-        ("car", "toyota/corolla", "toyota", "corolla", "Corolla", 1, 1),
+        ("car", "volkswagen/golf", "volkswagen", "golf", "Golf"),
+        ("car", "audi/a4", "audi", "a4", "A4"),
+        ("car", "volkswagen/passat", "volkswagen", "passat", "Passat"),
+        ("car", "toyota/corolla", "toyota", "corolla", "Corolla"),
     ]
-    db.executemany("INSERT INTO models VALUES(?,?,?,?,?,?,?)", models)
+    db.executemany("INSERT INTO models VALUES(?,?,?,?,?)", models)
     availability = [
         ("car", "volkswagen/golf", "nl", "registration", "nl_rdw"),
         ("car", "audi/a4", "us", "approval", "us_fueleconomy"),
