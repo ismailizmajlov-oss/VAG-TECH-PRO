@@ -125,13 +125,33 @@
         "underlying_oem_pdfs_may_have_separate_copyright_and_reuse_terms"
       ],
       "rights": {
-        "dataset_catalog_license": "Public Domain Label 1.0",
-        "index_metadata_reuse": "candidate_for_metadata_only_import_with_attribution_and_snapshot_provenance",
-        "underlying_oem_pdf_redistribution": "not_assumed; separate permission_required"
+        "access_level": "public",
+        "current_data_gov_rights_field": "public",
+        "current_data_gov_license_field": "not_present_in_reviewed_page",
+        "dataset_license_status": "not_explicitly_confirmed_by_current_primary_catalog_record",
+        "third_party_public_domain_label_claim": "not accepted as authoritative evidence",
+        "bulk_reuse_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "display_and_redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "underlying_oem_pdf_redistribution": "not_assumed; separate permission required"
       },
-      "project_decision": "allow_metadata_indexing_as_nar_candidate_only;_do_not_copy_oem_pdf_content",
-      "evidence_status": "data_gov_metadata_and_official_field_definition_reviewed_2026-11-03",
-      "last_dataset_update_reported_by_catalog": "2024-05-01"
+      "project_decision": "no_import_or_offline_cache_until_NHTSA_or_an_authoritative_current_license_record_confirms_bulk_reuse_display_caching_and_redistribution; public access alone is insufficient; keep US_NAR scope only",
+      "evidence_status": "NHTSA current dataset page, current TSBS field dictionary, and current Data.gov catalog reviewed 2026-11-04",
+      "last_dataset_update_reported_by_catalog": "2024-05-01",
+      "access": {
+        "status": "publicly_downloadable_official_files",
+        "current_file_evidence": {
+          "nhtsa_dataset_page": "https://www.nhtsa.gov/nhtsa-datasets-and-apis",
+          "current_schema_url": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS.txt",
+          "schema_last_updated": "2026-09-25",
+          "current_recent_archive": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS_RECEIVED_2025-2026.zip",
+          "recent_archive_last_updated": "2026-11-03",
+          "data_gov_dataset_page": "https://catalog.data.gov/dataset/nhtsas-office-of-defects-investigation-odi-technical-service-bulletins-system-tsbs-downloadable-file",
+          "data_gov_last_updated": "2026-09-03"
+        },
+        "rights_note": "Public download/access does not establish bulk reuse, offline caching, display or redistribution rights."
+      }
     },
     {
       "source_id": "nhtsa-vpic",
