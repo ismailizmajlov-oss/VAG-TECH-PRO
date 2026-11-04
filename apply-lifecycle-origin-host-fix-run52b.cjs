@@ -99,7 +99,7 @@ const regression = [
   testAnchor
 ].join("\n");
 apiTests = replaceOnce(apiTests, testAnchor, regression, "insert forwarded-host same-origin regression test");
-apiTests = replaceOnce(apiTests, "assert.equal(finalSummary.sources.length, 2);", "assert.equal(finalSummary.sources.length, 3);", "update source count after loopback regression fixture");
+apiTests = replaceOnce(apiTests, "assert.equal(finalSummary.sources.length, 2);", 'console.log("[local-core test] final source ids", core.listSources(dbPath).map((row) => row.source_id));\n  assert.equal(finalSummary.sources.length, 3);', "log final source ids and update source count after loopback regression fixture");
 
 // Either guard may reject a Host/Origin mismatch: 404 at the loopback boundary
 // or 403 at the mutation-origin boundary. Both are safe; assert no mutation below.
