@@ -411,10 +411,10 @@ function patchDesktopSource(desktop) {
     ui = exact(ui, stateAnchor, stateAnchor + '\n  const [wikidataGenerationSummary, setWikidataGenerationSummary] = useState<WikidataGenerationSummary | null>(null);', "generation summary state");
   }
   if (!ui.includes('dataset !== "wikidata-generations"')) {
-    const genericIndex = ui.indexOf("generic-guidance-summary");
-    const effectEnd = ui.indexOf("  }, [dataset]);", genericIndex);
-    if (genericIndex < 0 || effectEnd < 0) fail("Generic guidance summary effect missing");
-    const insertAt = effectEnd + "  }, [dataset]);".length;
+    const stateAnchor = '  const [wikidataGenerationSummary, setWikidataGenerationSummary] = useState<WikidataGenerationSummary | null>(null);';
+    const stateIndex = ui.indexOf(stateAnchor);
+    if (stateIndex < 0) fail("Generation summary state missing before effect insertion");
+    const insertAt = stateIndex + stateAnchor.length;
     const effect = [
       "",
       "  useEffect(() => {",
