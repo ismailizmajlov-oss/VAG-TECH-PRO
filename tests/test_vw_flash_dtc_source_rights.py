@@ -54,7 +54,7 @@ class VwFlashSimos18DtcRightsTests(unittest.TestCase):
         source = self.source
         self.assertIn("quarantine_no_import_no_display_no_cache", source["project_decision"])
         self.assertTrue(any("do not merge this candidate into the generic DTC namespace" in item for item in source["quality_limits"]))
-        self.assertTrue(any("potentially OEM ODX-derived" in item for item in source["quality_limits"]))
+        self.assertTrue(any("may be derived from OEM ODX material" in item for item in source["quality_limits"]))
 
 
 if __name__ == "__main__":
