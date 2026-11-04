@@ -336,6 +336,17 @@ jobs:
           node apply-desktop-dbrow-typed-fix-run49.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-dbrow-types-fix.log"
           if ($LASTEXITCODE -ne 0) { throw "Desktop DbRow type fix failed" }
 
+      - name: Print local-core API test source around failing assertion
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $testPath = Join-Path $env:GITHUB_WORKSPACE "desktop-source/tests/local-core-api.test.cjs"
+          if (-not (Test-Path $testPath)) { throw "Local-core API test file is missing before test execution." }
+          $lines = Get-Content -LiteralPath $testPath
+          $start = [Math]::Max(1, 108)
+          $end = [Math]::Min($lines.Count, 126)
+          for ($i = $start; $i -le $end; $i++) { Write-Output ("{0}: {1}" -f $i, $lines[$i - 1]) }
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
