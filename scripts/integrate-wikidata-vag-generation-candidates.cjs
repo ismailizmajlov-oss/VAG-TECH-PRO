@@ -383,13 +383,13 @@ function patchDesktopSource(desktop) {
   if (!dataset[1].includes('"wikidata-generations"')) ui = ui.replace(dataset[0], "type Dataset = " + dataset[1] + ' | "wikidata-generations";');
   if (!ui.includes("type WikidataGenerationRow")) {
     const rowType = [
-      "type WikidataGenerationSummary = {
-  counts: { memberEntities: number; modelMemberLinks: number; sourceBindings: number; modelsWithMembers: number; manufacturers: number; russianLabels: number; dateStatements: number };
-  marketScope: string; applicabilityPrecision: string; reviewStatus: string; generationVerified: boolean;
-  exactVehicleFitment: boolean; diagnosticExecutionAllowed: boolean; sourceSnapshotSha256: string;
-  sourceQuerySha256: string; databaseSha256: string; sourceManifestSha256: string; note: string;
-};
-type WikidataGenerationRow = {",
+      "type WikidataGenerationSummary = {",
+      "  counts: { memberEntities: number; modelMemberLinks: number; sourceBindings: number; modelsWithMembers: number; manufacturers: number; russianLabels: number; dateStatements: number };",
+      "  marketScope: string; applicabilityPrecision: string; reviewStatus: string; generationVerified: boolean;",
+      "  exactVehicleFitment: boolean; diagnosticExecutionAllowed: boolean; sourceSnapshotSha256: string;",
+      "  sourceQuerySha256: string; databaseSha256: string; sourceManifestSha256: string; note: string;",
+      "};",
+      "type WikidataGenerationRow = {",
       "  memberQid: string; modelQid: string; manufacturerQid: string | null;",
       "  memberLabelEn: string; memberLabelRu: string | null; modelLabelEn: string; modelLabelRu: string | null;",
       "  manufacturerLabelEn: string | null; memberUrl: string; modelUrl: string;",
