@@ -19,16 +19,16 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
     source_db = source_dir / "catalog.sqlite"
     db = sqlite3.connect(source_db)
     db.executescript("""
-    CREATE TABLE makes(kind TEXT,id TEXT,slug TEXT,name TEXT,PRIMARY KEY(kind,id));
+    CREATE TABLE makes(kind TEXT,id TEXT,name TEXT,PRIMARY KEY(kind,id));
     CREATE TABLE models(kind TEXT,id TEXT,make_id TEXT,slug TEXT,name TEXT,PRIMARY KEY(kind,id));
     CREATE TABLE availability(kind TEXT,model_id TEXT,country TEXT,evidence TEXT,source TEXT,PRIMARY KEY(kind,model_id,country,source));
     """)
     makes = [
-        ("car", "volkswagen", "volkswagen", "Volkswagen"),
-        ("car", "audi", "audi", "Audi"),
-        ("car", "toyota", "toyota", "Toyota"),
+        ("car", "volkswagen", "Volkswagen"),
+        ("car", "audi", "Audi"),
+        ("car", "toyota", "Toyota"),
     ]
-    db.executemany("INSERT INTO makes VALUES(?,?,?,?)", makes)
+    db.executemany("INSERT INTO makes VALUES(?,?,?)", makes)
     models = [
         ("car", "volkswagen/golf", "volkswagen", "golf", "Golf"),
         ("car", "audi/a4", "audi", "a4", "A4"),
