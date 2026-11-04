@@ -29,6 +29,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
       - name: Set up Python 3.12
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -40,7 +41,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          python -m unittest tests.test_wikidata_vag_taxonomy -v
+          python -m unittest discover -s tests -p "test_wikidata_vag_taxonomy.py" -v
           if ($LASTEXITCODE -ne 0) { throw "Wikidata fixture tests failed" }
 
       - name: Acquire live structured-data snapshot and build SQLite
