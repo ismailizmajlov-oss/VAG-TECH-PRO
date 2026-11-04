@@ -1,0 +1,1 @@
+Run 62: validate valid on-disk Wikidata manifest JSON, CC0 attribution files and Windows installer packaging after the first pack-build gate exposed an escaped-newline defect.
