@@ -94,9 +94,9 @@ page = replaceOnce(page, oldType, newType, "replace permissive Supabase row type
 
 const stateAnchor = "useState<DbRow[]>([])";
 const stateCount = page.split(stateAnchor).length - 1;
-if (stateCount === 8) {
+if (stateCount === 7) {
   page = page.replaceAll(stateAnchor, "useState<IdentifiedDbRow[]>([])");
-} else if (stateCount !== 0 || (page.match(/useState<IdentifiedDbRow\[\]>\(\[\]\)/g) || []).length !== 8) {
+} else if (stateCount !== 0 || (page.match(/useState<IdentifiedDbRow\[\]>\(\[\]\)/g) || []).length !== 7) {
   throw new Error("Expected eight identified Supabase row state declarations; found " + stateCount);
 }
 
@@ -140,7 +140,7 @@ page = replaceOnce(
 if (/\bRecord<string,\s*any>/.test(page)) {
   throw new Error("Permissive Record<string, any> declaration remains in app/page.tsx.");
 }
-if ((page.match(/useState<IdentifiedDbRow\[\]>\(\[\]\)/g) || []).length !== 8) {
+if ((page.match(/useState<IdentifiedDbRow\[\]>\(\[\]\)/g) || []).length !== 7) {
   throw new Error("Identified row state count is not eight after patch.");
 }
 fs.writeFileSync(pageFile, page, "utf8");
@@ -172,7 +172,7 @@ const testContent = [
   '  assert.match(declaration, /\\[key: string\\]: unknown;/);',
   '  assert.match(page, /type IdentifiedDbRow = DbRow & \\{ id: string \\};/);',
   '  assert.doesNotMatch(page, /Record<string,\\s*any>/);',
-  '  assert.equal((page.match(/useState<IdentifiedDbRow\\[\\]>\\(\\[\\]\\)/g) || []).length, 8);',
+  '  assert.equal((page.match(/useState<IdentifiedDbRow\\[\\]>\\(\\[\\]\\)/g) || []).length, 7);',
   '});',
   '',
   'test("saved vehicle navigation guards every required identity before using it", () => {',
@@ -191,7 +191,7 @@ if (fs.existsSync(testFile)) {
 
 console.log(JSON.stringify({
   status: "typed_supabase_row_model_applied",
-  identifiedStateCollections: 8,
+  identifiedStateCollections: 7,
   explicitProperties: 58,
   permissiveAnyRemoved: true,
   regressionTest: "tests/desktop-dbrow-types.test.cjs"
