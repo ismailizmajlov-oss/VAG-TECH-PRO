@@ -1054,7 +1054,13 @@
         "No diagnostic execution or repair advice is approved."
       ],
       "project_decision": "allow_separate_read_only_candidate_pack_only_under_ODbL_and_DbCL; do_not_promote_to_verified_vehicle_taxonomy_or_factory_codes; no gearbox inference; no diagnostic lookup",
-      "evidence_status": "pinned_v6_artifact_independently_audited_2026-11-05; source revision, asset hash, pack hash, internal checksums and SQLite integrity verified"
+      "evidence_status": "pinned_v6_artifact_independently_audited_2026-11-05; source revision, asset hash, pack hash, internal checksums and SQLite integrity verified",
+      "exact_vehicle_fitment": false,
+      "ecu_fitment": false,
+      "diagnostic_execution_allowed": false,
+      "repair_advice_approved": false,
+      "engine_codes_verified": 0,
+      "transmission_records": 0
     },
     {
       "source_id": "mechanicdb-vag-dtc-candidates-odbl",
@@ -1121,7 +1127,12 @@
         "No diagnostic execution, repair procedure, OEM part mapping or approved test plan."
       ],
       "project_decision": "allow_separate_candidate_pack_only_under_ODbL; keep hidden from normal DTC lookup pending technical review; never describe as verified VAG-specific or enable diagnostic execution",
-      "evidence_status": "pinned_source_csv_and_pack_independently_audited_2026-11-05; physical source-line hashes, pack hashes and SQLite integrity verified"
+      "evidence_status": "pinned_source_csv_and_pack_independently_audited_2026-11-05; physical source-line hashes, pack hashes and SQLite integrity verified",
+      "exact_vehicle_fitment": false,
+      "ecu_fitment": false,
+      "pr_code_fitment": false,
+      "diagnostic_execution_allowed": false,
+      "repair_advice_approved": false
     }
   ],
   "minimum_fitment_evidence_fields": [
