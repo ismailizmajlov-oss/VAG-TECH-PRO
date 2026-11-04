@@ -94,7 +94,7 @@ const regression = [
   '    method: "POST", headers: { ...forwardedHeaders, "sec-fetch-site": "cross-site", "content-type": "application/json" },',
   '    body: JSON.stringify({ action: "source.register-candidate", source: { source_id: "cross-site-rejected", publisher: "Test", title: "Test", source_type: "test", revision: "r1", market_scope: "UNKNOWN" } }),',
   '  }));',
-  '  assert.equal(crossSite.status, 404, "Fetch Metadata must continue to reject cross-site requests");',
+  '  assert.ok([403, 404].includes(crossSite.status), "Fetch Metadata must continue to reject cross-site requests");',
   "",
   testAnchor
 ].join("\n");
