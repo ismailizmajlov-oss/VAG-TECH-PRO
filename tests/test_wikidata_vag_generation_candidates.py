@@ -63,6 +63,26 @@ class WikidataVagGenerationCandidateTests(unittest.TestCase):
         finally:
             db.close()
 
+    def test_batched_snapshot_preserves_each_query_and_result_hash(self):
+        payload = json.loads(json.dumps(self.fixture))
+        bindings = payload.pop("results")["bindings"]
+        batch_query = payload["query"]
+        payload["query_batch_size"] = 50
+        payload["query"] = "# batch 1/1\n" + batch_query + "\n"
+        payload["query_batches"] = [{
+            "batch_index": 1,
+            "model_qids": ["Q758729"],
+            "query_sha256": builder.sha256(batch_query.encode("utf-8")),
+            "result_count": len(bindings),
+            "results": {"results": {"bindings": bindings}},
+            "query": batch_query,
+        }]
+        output, manifest = self.build_fixture_pack(payload)
+        self.assertEqual(manifest["query_batches"], 1)
+        self.assertEqual(manifest["query_batch_size"], 50)
+        self.assertFalse(manifest["limit_reached"])
+        builder.verify_pack(output)
+
     def test_cc0_rights_and_parent_model_provenance_are_retained(self):
         output, manifest = self.build_fixture_pack()
         self.assertEqual(manifest["data_license"], "CC0-1.0")
