@@ -331,7 +331,7 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
             output_db.executescript(DDL)
             with output_db:
                 output_db.execute(
-                    """INSERT INTO dataset_provenance VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+                    """INSERT INTO dataset_provenance VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                     (
                         PACK_ID, "VehiclesDB", lock["repository"], lock["upstream_tag"], upstream["version"],
                         DATASET_LICENSE, lock["license_url"], snapshot["manifest.json"]["sha256"],
