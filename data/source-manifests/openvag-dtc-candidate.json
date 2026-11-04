@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "source_id": "openvag-community-dtc-api",
+  "publisher": "riz4d / OpenVAG",
+  "repository_url": "https://github.com/riz4d/OpenVAG",
+  "reviewed_at": "2026-11-04",
+  "pinned_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+  "repository_license": {
+    "id": "MIT",
+    "file": "LICENSE",
+    "scope_review": "repository software/documentation declaration only; not accepted as independent proof of rights in absent or third-party-derived DTC data",
+    "data_license": "not_separately_declared",
+    "data_reuse_status": "not_approved"
+  },
+  "repository_evidence": {
+    "latest_main_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+    "repository_created_at": "2026-06-27T09:00:58Z",
+    "repository_last_push_at": "2026-06-27T09:50:28Z",
+    "files_reviewed": [
+      {
+        "path": "README.md",
+        "git_blob_sha1": "1c85ac53a5d50b34d2caebe2340420497918cf12"
+      },
+      {
+        "path": "db/README.md",
+        "git_blob_sha1": "9cfb62e9e5a939a58dcc8f0d7b3a2db843eec63c"
+      },
+      {
+        "path": "db/schema.sql",
+        "git_blob_sha1": "b2bcb53b115acd3c8eb0eaa29de08d5df8c0a122"
+      },
+      {
+        "path": ".gitignore",
+        "git_blob_sha1": "6fe697c8fe8a3bb7bb2892b3d27892164393fef8"
+      }
+    ],
+    "tracked_data_artifact": false,
+    "expected_generated_database": "db/openvag.db",
+    "expected_database_is_gitignored": true,
+    "database_generation_script_present": false,
+    "release_artifact_present": false
+  },
+  "claimed_counts_from_upstream_documentation": {
+    "dtc_codes": 995,
+    "dtc_variants": 1103,
+    "component_identifiers": 341,
+    "dtc_component_links": 712,
+    "related_code_links": 276,
+    "verification_status": "upstream_documentation_claim_only_not_independently_reproduced"
+  },
+  "provenance_review": {
+    "per_record_source_url": false,
+    "per_record_source_revision": false,
+    "per_record_source_file_hash": false,
+    "per_record_license": false,
+    "source_line_evidence": false,
+    "data_snapshot_sha256": null,
+    "hash_status": "no_tracked_database_or_reproducible_data_artifact_available"
+  },
+  "data_model_review": {
+    "code_formats_documented": [
+      "five_digit_vag_label",
+      "combined_vag_obd_internal",
+      "obd_ii_p_code",
+      "body_code",
+      "chassis_code",
+      "network_code"
+    ],
+    "generic_and_manufacturer_namespaces_separated": false,
+    "make_attribution_available_per_record": false,
+    "model_generation_year_applicability": false,
+    "engine_gearbox_applicability": false,
+    "ecu_applicability": false,
+    "market_scope": "UNKNOWN",
+    "applicability_precision": "unverified_make_label_only",
+    "diagnostic_execution_authorized": false,
+    "repair_instruction_use_authorized": false
+  },
+  "product_policy": {
+    "rights_status": "quarantined_no_data_rights_or_artifact",
+    "product_eligibility": false,
+    "import_allowed": false,
+    "display_allowed": false,
+    "offline_cache_allowed": false,
+    "redistribution_allowed": false,
+    "decision": "Do not ingest or display. Re-review only if the upstream maintainer supplies the actual database artifact, reproducible build inputs, record-level provenance, and an explicit data license covering commercial display, offline caching and redistribution."
+  }
+}
