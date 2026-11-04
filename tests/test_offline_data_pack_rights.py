@@ -30,6 +30,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
         self.assertIn("generic_sae_iso_obd2", source)
         self.assertIn("manufacturer-controlled or malformed DTC ranges", source)
+        self.assertIn("raw_references_preserved_not_fetched_not_linked", source)
 
     def test_autoevolution_derived_identity_dataset_is_excluded(self):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
