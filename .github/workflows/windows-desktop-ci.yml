@@ -271,18 +271,16 @@ jobs:
           npm ci --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-ci.log
           if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
 
-      - name: Diagnose research pack integrity regression
-        working-directory: desktop-source
+      - name: Apply fail-closed research pack hash verification fix
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $testPath = "tests/local-research-db.test.cjs"
-          $testLines = Get-Content -LiteralPath $testPath
-          for ($line = 1; $line -le [Math]::Min(35, $testLines.Length); $line++) { "{0}: {1}" -f $line, $testLines[$line - 1] }
-          for ($line = 155; $line -le [Math]::Min(185, $testLines.Length); $line++) { "{0}: {1}" -f $line, $testLines[$line - 1] }
-          Get-ChildItem -LiteralPath "." -Recurse -File -Include *.cjs,*.js,*.ts |
-            Select-String -Pattern "verifyPackDatabaseHash" -Context 8,32 |
-            ForEach-Object { "{0}:{1}: {2}" -f $_.Path, $_.LineNumber, $_.Line.Trim() }
+          node --check apply-research-pack-hash-fix-run44.cjs
+          node apply-research-pack-hash-fix-run44.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Research pack hash verification patch failed" }
+          node --check desktop-source/lib/local-research-db.cjs
+          node --test desktop-source/tests/local-research-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/research-hash-targeted-test.log"
+          if ($LASTEXITCODE -ne 0) { throw "Targeted research pack integrity test failed" }
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
@@ -367,7 +365,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run43
+          name: vag-tech-pro-windows-x64-run44
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
@@ -382,6 +380,7 @@ jobs:
             desktop-source/build-0.2.0.log
             desktop-source/build-0.2.1.log
             desktop-source/runtime-preparation.json
+            research-hash-targeted-test.log
             windows-lifecycle.log
             lifecycle-fetchmetadata-strict-fix.log
             build-metadata.json
