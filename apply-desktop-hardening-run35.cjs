@@ -321,6 +321,54 @@ writeLf(nextConfigPath, nextConfig);
 if (!nextConfig.includes('serverExternalPackages: ["node:sqlite"]')) {
   throw new Error("Next.js Node SQLite externalization was not applied");
 }
+// Preserve actionable Windows startup diagnostics in the CI artifact when the packaged app exits early.
+const lifecyclePath = path.join(root, "scripts", "windows-installer-lifecycle.ps1");
+let lifecycle = readLf(lifecyclePath);
+lifecycle = replaceExactly(
+  lifecycle,
+  '    if ($process.HasExited) { throw "Desktop process exited before local server readiness." }',
+  [
+    '    if ($process.HasExited) {',
+    '      $diagnostics = if (Test-Path -LiteralPath $logPath) { (Get-Content -LiteralPath $logPath -Tail 120 -ErrorAction SilentlyContinue) -join [Environment]::NewLine } else { "Desktop log was not created: $logPath" }',
+    '      $profileListing = if (Test-Path -LiteralPath $appData) { (Get-ChildItem -LiteralPath $appData -Force | Select-Object -ExpandProperty FullName) -join [Environment]::NewLine } else { "App data root missing: $appData" }',
+    '      throw "Desktop process exited before local server readiness (exit code $($process.ExitCode))." + [Environment]::NewLine + $diagnostics + [Environment]::NewLine + "App data contents:" + [Environment]::NewLine + $profileListing',
+    '    }'
+  ].join("\n"),
+  "Windows desktop early-exit diagnostics"
+);
+lifecycle = replaceExactly(
+  lifecycle,
+  '  if (-not $baseUrl) { throw "Local Next.js server did not report readiness within 60 seconds; see $logPath" }',
+  [
+    '  if (-not $baseUrl) {',
+    '    $diagnostics = if (Test-Path -LiteralPath $logPath) { (Get-Content -LiteralPath $logPath -Tail 120 -ErrorAction SilentlyContinue) -join [Environment]::NewLine } else { "Desktop log was not created: $logPath" }',
+    '    throw "Local Next.js server did not report readiness within 60 seconds. Startup diagnostics:" + [Environment]::NewLine + $diagnostics',
+    '  }'
+  ].join("\n"),
+  "Windows desktop readiness-timeout diagnostics"
+);
+writeLf(lifecyclePath, lifecycle);
+
+const lifecycleTestPath = path.join(root, "tests", "windows-lifecycle-script-contract.test.cjs");
+let lifecycleTests = readLf(lifecycleTestPath);
+if (!lifecycleTests.includes("lifecycle failure reports startup diagnostics")) {
+  lifecycleTests += [
+    "",
+    'test("lifecycle failure reports startup diagnostics", () => {',
+    '  assert.match(script, /process\\.ExitCode/);',
+    '  assert.match(script, /Get-Content -LiteralPath \\$logPath -Tail 120/);',
+    '  assert.match(script, /Desktop log was not created/);',
+    '});',
+    ""
+  ].join("\n");
+}
+writeLf(lifecycleTestPath, lifecycleTests);
+if (!lifecycle.includes("Desktop process exited before local server readiness (exit code") ||
+    !lifecycle.includes("Desktop log was not created") ||
+    !lifecycleTests.includes("lifecycle failure reports startup diagnostics")) {
+  throw new Error("Windows lifecycle diagnostics patch verification failed.");
+}
+console.log("Windows lifecycle startup diagnostics added and verified.");
 console.log("Next.js server externalization for node:sqlite applied and verified.");
 console.log("Research pack SHA-256 verification hardened against same-size timestamp-preserving tampering.");
 
