@@ -695,6 +695,51 @@
       ],
       "project_decision": "quarantine_no_import_until_per_file_provenance_and_rights_verified; keep generic SAE definitions separate from manufacturer-specific candidates; do not label any row VAG-specific or infer model/year/ECU applicability; no records imported or cached",
       "evidence_status": "repository_readme_and_integration_notes_reviewed_2026-11-04"
+    },
+    {
+      "source_id": "eaeu-otts-unified-register-public-portal",
+      "publisher": "Eurasian Economic Commission",
+      "url": "https://portal.eaeunion.org/",
+      "legal_basis_url": "https://www.alta.ru/tamdoc/16kr0088/",
+      "source_kind": "official_public_query_route_for_eaeu_vehicle_type_approval_register",
+      "market_scope": [
+        "EAEU"
+      ],
+      "document_types": [
+        "OTTS",
+        "OTSH",
+        "SBKTS",
+        "cancellation_notices"
+      ],
+      "evidence_scope": [
+        "vehicle_type_approval",
+        "type_or_variant_homologation"
+      ],
+      "access": {
+        "legal_access_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
+        "current_portal_observation": "The portal root checked on 2026-11-04 redirects to the EAEU open-data portal; a current OTTS-specific search endpoint was not independently resolved.",
+        "machine_readable_api": "not_verified_for_OTTS",
+        "individual_query_access": "provided_by_decision_88_via_union_information_portal",
+        "bulk_export": "not_established",
+        "offline_cache": "not_established",
+        "automated_extraction": "not_established"
+      },
+      "rights": {
+        "data_license_status": "not_established",
+        "public_query_access": "legal_basis_identified_but_current_OTTS_endpoint_not_verified",
+        "bulk_reuse_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "display_and_redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true
+      },
+      "limitations": [
+        "Decision No. 88 describes information exchange and portal access but does not itself grant a VAG TECH PRO license to bulk copy, cache, redistribute or create a derivative database.",
+        "The EAEU open-data portal advertises OData/REST reuse for published resources, but inclusion of the OTTS register in that open-data catalog has not been established.",
+        "An OTTS establishes type/variant homologation only to the extent explicitly stated in the document; it is not an individual VIN build sheet and does not establish ECU, DTC, wiring or repair applicability."
+      ],
+      "project_decision": "manual document-level lookup only after the current official query route is resolved; no scraping, bulk export, offline caching or redistribution until EEC/registry operator confirms the endpoint and reuse terms in writing",
+      "evidence_status": "EEC Collegium Decision No. 88, official Interstandart FGIS page, and current portal redirect reviewed 2026-11-04"
     }
   ],
   "minimum_fitment_evidence_fields": [
