@@ -149,8 +149,21 @@ jobs:
             throw new Error("OBDex projections must be JSON arrays");
           }
 
+          let sourceReferenceRowsQuarantined = 0;
+          let sourceReferenceValuesQuarantined = 0;
+          const quarantineSourceReferences = (row) => {
+            const refs = Array.isArray(row?.sources) ? row.sources : row?.sources == null ? [] : [row.sources];
+            if (refs.length) {
+              sourceReferenceRowsQuarantined += 1;
+              sourceReferenceValuesQuarantined += refs.length;
+            }
+            // External source-document rights are not inherited from the CC0 dataset.
+            // Preserve original references only inside raw_record; never publish or fetch them as links.
+            return [];
+          };
           const dtcSeen = new Set();
           const dtcs = generic.map((row) => {
+            const safeSourceReferences = quarantineSourceReferences(row);
             const code = String(row?.code ?? "").trim().toUpperCase();
             if (!/^[PBCU][0-3][0-9A-F]{3}$/.test(code) || !families.has(code.slice(0,2))) {
               throw new Error("Non-generic or malformed DTC in OBDex projection: " + code);
@@ -159,10 +172,6 @@ jobs:
             dtcSeen.add(code);
             if (!row.title || typeof row.title.en !== "string" || row.title.en.trim().length < 3) {
               throw new Error(code + ": missing English title");
-            }
-            if (!Array.isArray(row.sources) || row.sources.length === 0 ||
-                row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
-              throw new Error(code + ": invalid source references");
             }
             const rawHash = sha256(Buffer.from(JSON.stringify(row)));
             return {
@@ -177,7 +186,7 @@ jobs:
               repair: row.repair && typeof row.repair === "object" ? row.repair : null,
               flags: row.flags && typeof row.flags === "object" ? row.flags : {},
               related_codes: Array.isArray(row.related_codes) ? row.related_codes : [],
-              source_references: row.sources,
+              source_references: safeSourceReferences,
               applies_to: null,
               verification_status: "source_imported_unreviewed",
               vehicle_fitment_claim: false,
@@ -190,6 +199,7 @@ jobs:
           function normalizePids(rows, mode) {
             const seen = new Set();
             return rows.map((row) => {
+              const safeSourceReferences = quarantineSourceReferences(row);
               const pid = String(row?.pid ?? "").trim().toUpperCase().replace(/^0X/,"").padStart(2,"0");
               if (!/^[0-9A-F]{2}$/.test(pid)) throw new Error("Invalid Mode " + mode + " PID: " + pid);
               if (seen.has(pid)) throw new Error("Duplicate Mode " + mode + " PID: " + pid);
@@ -199,9 +209,6 @@ jobs:
               }
               if (!row.name || typeof row.name.en !== "string" || row.name.en.trim().length < 2) {
                 throw new Error("PID " + pid + " has no English name");
-              }
-              if (!Array.isArray(row.sources) || row.sources.length === 0 || row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
-                throw new Error("PID " + pid + " has invalid source references");
               }
               const range = Array.isArray(row.range) ? row.range : null;
               const min = range?.[0] ?? null;
@@ -217,7 +224,7 @@ jobs:
                 bytes: row.bytes ?? null,
                 formula: row.formula ?? null,
                 min, max,
-                source_references: row.sources,
+                source_references: safeSourceReferences,
                 raw_record: row,
                 verification_status: "source_imported_unreviewed",
                 vehicle_fitment_claim: false,
@@ -352,7 +359,10 @@ jobs:
               pids:pidCount,
               vag_specific_dtc_rows:0,
               fitment_claims:0,
-              production_rows:0
+              production_rows:0,
+              source_reference_validation:"raw_references_preserved_not_fetched_not_linked",
+              source_reference_rows_quarantined:sourceReferenceRowsQuarantined,
+              source_reference_values_quarantined:sourceReferenceValuesQuarantined
             };
             fs.writeFileSync(path.join(root,"OBDex-SQLITE-REPORT.json"),JSON.stringify(report,null,2)+"\n");
           } finally {
