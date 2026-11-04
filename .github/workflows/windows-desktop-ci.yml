@@ -298,6 +298,14 @@ jobs:
           node apply-desktop-types-fix-run48.cjs
           if ($LASTEXITCODE -ne 0) { throw "Desktop TypeScript model patch failed" }
 
+      - name: Apply explicit typed Supabase row model
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-dbrow-typed-fix-run49.cjs
+          node apply-desktop-dbrow-typed-fix-run49.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-dbrow-types-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Desktop DbRow type fix failed" }
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
@@ -393,6 +401,7 @@ jobs:
             desktop-source/verify-local-research.log
             desktop-source/lint.log
             desktop-source/typecheck.log
+            desktop-dbrow-types-fix.log
             desktop-source/build-0.2.0.log
             desktop-source/build-0.2.1.log
             desktop-source/runtime-preparation.json
