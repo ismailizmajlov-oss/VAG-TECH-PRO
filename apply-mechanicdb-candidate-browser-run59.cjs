@@ -296,10 +296,36 @@ if (!uiDatasetMatch[1].split("|").some((part) => part.trim() === '"mechanicdb"')
   const updatedDatasetSource = uiDatasetSource.replace(uiDatasetMatch[0], `type Dataset = ${uiDatasetMatch[1]} | "mechanicdb";`);
   writeText(uiFile, updatedDatasetSource);
 }
-replaceExactly(uiFile,
-  '  bytes?: number;\n};',
-  '  bytes?: number;\n  faultFamily?: string;\n  descriptionStatus?: string;\n  namespace?: string;\n  sourceLineNo?: number;\n  sourceLineSha256?: string;\n  sourceFileSha256?: string;\n  sourceSnapshotSha256?: string;\n  exactFitment?: boolean;\n  ecuFitment?: boolean;\n  prCodeFitment?: boolean;\n  diagnosticExecutionAllowed?: boolean;\n  repairProcedureIncluded?: boolean;\n  oemPartNumberIncluded?: boolean;\n  sourceFile?: string;\n  sourceFileUrl?: string;\n  upstreamLicense?: string;\n  documentationLicense?: string;\n};',
-  "MechanicDB research row fields");
+let uiRowSource = readText(uiFile);
+const rowTypeStart = uiRowSource.indexOf("type ResearchRow = {");
+if (rowTypeStart < 0) fail("MechanicDB research row type declaration is missing");
+const rowTypeEnd = uiRowSource.indexOf("\n};", rowTypeStart);
+if (rowTypeEnd < 0) fail("MechanicDB research row type closing brace is missing");
+const rowTypeText = uiRowSource.slice(rowTypeStart, rowTypeEnd);
+const requiredResearchRowFields = [
+  "faultFamily?: string;",
+  "descriptionStatus?: string;",
+  "namespace?: string;",
+  "sourceLineNo?: number;",
+  "sourceLineSha256?: string;",
+  "sourceFileSha256?: string;",
+  "sourceSnapshotSha256?: string;",
+  "exactFitment?: boolean;",
+  "ecuFitment?: boolean;",
+  "prCodeFitment?: boolean;",
+  "diagnosticExecutionAllowed?: boolean;",
+  "repairProcedureIncluded?: boolean;",
+  "oemPartNumberIncluded?: boolean;",
+  "sourceFile?: string;",
+  "sourceFileUrl?: string;",
+  "upstreamLicense?: string;",
+  "documentationLicense?: string;",
+];
+const missingResearchRowFields = requiredResearchRowFields.filter((field) => !rowTypeText.includes(field));
+if (missingResearchRowFields.length) {
+  uiRowSource = uiRowSource.slice(0, rowTypeEnd) + "\n" + missingResearchRowFields.map((field) => "  " + field).join("\n") + uiRowSource.slice(rowTypeEnd);
+  writeText(uiFile, uiRowSource);
+}
 replaceExactly(uiFile,
   '  { id: "dtc", label: "Общие DTC", hint: "CC0 · SAE/ISO, не VAG-specific" },\n',
   '  { id: "dtc", label: "Общие DTC", hint: "CC0 · SAE/ISO, не VAG-specific" },\n  { id: "mechanicdb", label: "DTC · кандидаты марок", hint: "ODbL · community · не OEM" },\n',
