@@ -11,6 +11,16 @@ on:
       - "data/source-manifests/wikidata-vag-taxonomy.json"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/acquire-wikidata-vag-taxonomy.yml"
+      - "scripts/build_wikidata_vag_taxonomy.py"
+      - "tests/test_wikidata_vag_taxonomy.py"
+      - "tests/fixtures/wikidata-vag-taxonomy-sample.json"
+      - "data/source-manifests/wikidata-vag-taxonomy.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md"
   workflow_dispatch:
 
 permissions:
@@ -59,10 +69,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Wikidata live pack verification failed" }
 
       - name: Publish immutable research snapshot to PR branch
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
         shell: pwsh
         env:
-          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          TARGET_REF: ${{ github.event.pull_request.head.ref || 'main' }}
         run: |
           $ErrorActionPreference = "Stop"
           $builtDir = "build/wikidata-vag-taxonomy"
@@ -79,7 +89,7 @@ jobs:
             git add -- $target
             git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "data(wikidata): publish CC0 VAG model identity snapshot $($built.snapshot_id)"
             if ($LASTEXITCODE -ne 0) { throw "Could not commit immutable Wikidata snapshot." }
-            git push origin "HEAD:$env:PR_HEAD_REF"
+            git push origin "HEAD:$env:TARGET_REF"
             if ($LASTEXITCODE -ne 0) { throw "Could not push immutable Wikidata snapshot." }
           }
 
