@@ -958,3 +958,61 @@ jobs:
             source-verification.txt
           if-no-files-found: warn
           retention-days: 14
+
+  windows-2022-lifecycle:
+    name: Windows Server 2022 installer compatibility lifecycle
+    needs: build-and-lifecycle
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - name: Download installers and offline lifecycle contract
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: vag-tech-pro-windows-x64-run70
+          path: ${{ runner.temp }}/vag-tech-pro-run70-artifact
+          run-id: ${{ github.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node for bundled SQLite verification
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+
+      - name: Verify installer hashes and execute Windows Server 2022 lifecycle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run70-artifact"
+          $metadata = Get-Content -LiteralPath (Join-Path $artifactRoot "build-metadata.json") -Raw | ConvertFrom-Json
+          $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.3-x64.exe"
+          $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
+          foreach ($file in @($installer, $upgradeInstaller)) {
+            if (-not (Test-Path $file)) { throw "Windows installer artifact is missing: $file" }
+            $name = [System.IO.Path]::GetFileName($file)
+            $expected = $metadata.installers | Where-Object { $_.name -eq $name } | Select-Object -First 1
+            $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($null -eq $expected -or $expected.sha256 -ne $actual) { throw "Windows installer artifact hash mismatch: $name" }
+          }
+          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 9 -or $metadata.wikidata_generation_model_member_links -ne 10 -or $metadata.wikidata_generation_source_bindings -ne 14) { throw "Build metadata does not describe the pinned generation candidate pack." }
+          $desktopRoot = Join-Path $artifactRoot "desktop-source"
+          $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
+          if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
+          foreach ($required in @("data/research/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
+            if (-not (Test-Path (Join-Path $desktopRoot $required))) { throw "Offline lifecycle evidence file is missing: $required" }
+          }
+          Set-Location $desktopRoot
+          pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File $lifecycle -InstallerPath $installer -UpgradeInstallerPath $upgradeInstaller 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-2022-lifecycle.log"
+          if ($LASTEXITCODE -ne 0) { throw "Windows Server 2022 installer lifecycle test failed" }
+
+      - name: Upload Windows Server 2022 lifecycle evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: vag-tech-pro-windows-2022-lifecycle-run70
+          path: |
+            ${{ runner.temp }}/vag-tech-pro-run70-artifact/build-metadata.json
+            ${{ runner.temp }}/vag-tech-pro-run70-artifact/source-verification.txt
+            windows-2022-lifecycle.log
+          if-no-files-found: warn
+          retention-days: 30
+
