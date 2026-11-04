@@ -428,11 +428,11 @@ def build_pack(snapshot_bytes: bytes, output_dir: Path, retrieved_at_utc: str | 
         "logical_content_sha256": logical_sha,
         "database_sha256": pack_files[db_path.name]["sha256"],
         "manufacturer_whitelist": MANUFACTURER_LABELS,
-        "counts": counts,
+        "counts": counts,\n        "query_limit": 3000,\n        "limit_reached": len(rows) >= 3000,\n        "completeness_status": "unknown",
         "scope": {
             "namespace": "vag_identity_candidate",
             "manufacturer_group_basis": "curated_manufacturer_label_whitelist; not an authoritative corporate ownership registry",
-            "market_scope": "UNKNOWN",
+            "market_scope": "UNKNOWN",\n            "completeness_status": "unknown",
             "applicability_precision": "candidate_identity_only",
             "review_status": "candidate",
             "generation_entities": 0,
@@ -472,7 +472,7 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
     for field in ("exact_vehicle_fitment", "generation_verified", "engine_code_fitment", "transmission_code_fitment", "ecu_fitment", "dtc_fitment", "repair_procedure_fitment", "diagnostic_execution_allowed", "production_years_inferred"):
         if scope.get(field) is not False:
             raise ValueError(f"candidate-only scope boundary changed: {field}")
-    if scope.get("market_scope") != "UNKNOWN" or scope.get("applicability_precision") != "candidate_identity_only" or scope.get("generation_entities") != 0:
+    if scope.get("market_scope") != "UNKNOWN" or scope.get("applicability_precision") != "candidate_identity_only" or scope.get("generation_entities") != 0 or scope.get("completeness_status") != "unknown" or manifest.get("completeness_status") != "unknown" or manifest.get("query_limit") != 3000:
         raise ValueError("candidate-only scope metadata changed")
     for name, info in manifest["pack_files"].items():
         path = output_dir / name
