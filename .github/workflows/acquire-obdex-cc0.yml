@@ -290,7 +290,7 @@ jobs:
                 "source_url TEXT NOT NULL,license_id TEXT NOT NULL CHECK(license_id='CC0-1.0')," +
                 "license_url TEXT NOT NULL,license_sha256 TEXT NOT NULL,snapshot_sha256_json TEXT NOT NULL," +
                 "source_manifest_json TEXT NOT NULL,attribution TEXT NOT NULL,market_scope TEXT NOT NULL," +
-                "verification_status TEXT NOT NULL CHECK(verification_status='license_verified_research_only'))",
+                "verification_status TEXT NOT NULL CHECK(verification_status='license_verified_research_only'));",
               "CREATE TABLE generic_dtc_research(" +
                 "code TEXT PRIMARY KEY,namespace TEXT NOT NULL CHECK(namespace='generic_sae_iso_obd2')," +
                 "category TEXT,title_json TEXT NOT NULL,description_json TEXT NOT NULL,raw_record_json TEXT NOT NULL," +
@@ -298,18 +298,18 @@ jobs:
                 "source_id TEXT NOT NULL REFERENCES source_registry(source_id),source_version TEXT NOT NULL," +
                 "source_sha256 TEXT NOT NULL,data_license TEXT NOT NULL CHECK(data_license='CC0-1.0')," +
                 "verification_status TEXT NOT NULL CHECK(verification_status='source_imported_unreviewed')," +
-                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0))",
+                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0));",
               "CREATE TABLE generic_pid_research(" +
                 "mode INTEGER NOT NULL CHECK(mode IN (1,9)),pid TEXT NOT NULL,raw_record_json TEXT NOT NULL," +
                 "source_record_sha256 TEXT NOT NULL,source_references_json TEXT NOT NULL," +
                 "source_id TEXT NOT NULL REFERENCES source_registry(source_id),source_version TEXT NOT NULL," +
                 "source_sha256 TEXT NOT NULL,data_license TEXT NOT NULL CHECK(data_license='CC0-1.0')," +
                 "verification_status TEXT NOT NULL CHECK(verification_status='source_imported_unreviewed')," +
-                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0),PRIMARY KEY(mode,pid))",
+                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0),PRIMARY KEY(mode,pid));",
               "CREATE TABLE database_info(" +
                 "id INTEGER PRIMARY KEY CHECK(id=1),schema_version INTEGER NOT NULL,source_id TEXT NOT NULL," +
                 "source_version TEXT NOT NULL,package_sha256 TEXT NOT NULL,generic_dtc_count INTEGER NOT NULL," +
-                "pid_count INTEGER NOT NULL,created_at_utc TEXT NOT NULL)"
+                "pid_count INTEGER NOT NULL,created_at_utc TEXT NOT NULL);"
             ].join("\n"));
             db.exec("BEGIN IMMEDIATE");
             try {
