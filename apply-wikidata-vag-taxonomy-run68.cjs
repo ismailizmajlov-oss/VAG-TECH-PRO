@@ -601,7 +601,10 @@ function patchDesktopSource(desktopRoot) {
       "engineCode?: string | null;", "gearboxCode?: string | null;", "dtcFitment?: boolean;",
       "repairProcedureFitment?: boolean;",
     ];
-    const missing = fields.filter((field) => !rowType.includes(field));
+    const missing = fields.filter((field) => {
+      const name = field.split("?")[0].split(":")[0].trim();
+      return !new RegExp("\\b" + name + "\\??\\s*:").test(rowType);
+    });
     if (missing.length) ui = ui.slice(0, rowTypeEnd) + "\n  " + missing.join("\n  ") + ui.slice(rowTypeEnd);
   } else if (!ui.includes("type ResearchRow = Record<string, any>;")) {
     fail("Wikidata ResearchRow type declaration is missing");
