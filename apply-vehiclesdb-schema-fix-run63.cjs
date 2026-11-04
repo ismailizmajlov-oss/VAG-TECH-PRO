@@ -201,6 +201,24 @@ verifier = replaceOnce(
   'assert(vehiclesDbSnapshot.attribution_required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");',
   "VehiclesDB current attribution flag"
 );
+verifier = replaceOnce(
+  verifier,
+  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository_url, upstream_tag, dataset_version, dataset_license, attribution_required, attribution_text, attribution_url, catalog_sqlite_sha256, upstream_manifest_sha256, license_sha256, attribution_sha256, ru_evidence_present, fitment_claim FROM dataset_provenance WHERE provenance_id=1").get();',
+  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository, upstream_tag, dataset_version, dataset_license, license_url, upstream_manifest_sha256, source_catalog_sha256, attribution_sha256, license_sha256, lock_sha256, imported_at_utc FROM dataset_provenance WHERE dataset_id=?").get(vehiclesdb.id);',
+  "VehiclesDB verifier provenance query"
+);
+verifier = replaceOnce(
+  verifier,
+  'assert(vehiclesDbProvenance && vehiclesDbProvenance.dataset_license === "CC-BY-4.0" && vehiclesDbProvenance.attribution_required === 1 && vehiclesDbProvenance.ru_evidence_present === 0 && vehiclesDbProvenance.fitment_claim === 0, "VehiclesDB embedded provenance failed");',
+  'assert(vehiclesDbProvenance && vehiclesDbProvenance.dataset_id === vehiclesdb.id && vehiclesDbProvenance.dataset_license === "CC-BY-4.0", "VehiclesDB embedded provenance failed");',
+  "VehiclesDB verifier embedded provenance"
+);
+verifier = replaceOnce(
+  verifier,
+  'assert(vehiclesDbProvenance.catalog_sqlite_sha256 === vehiclesDbSnapshot.source_snapshot_sha256["catalog.sqlite"] && vehiclesDbProvenance.upstream_manifest_sha256 === vehiclesdb.upstream_manifest_sha256 && vehiclesDbProvenance.license_sha256 === vehiclesdb.license_file_sha256 && vehiclesDbProvenance.attribution_sha256 === vehiclesdb.attribution_sha256, "VehiclesDB embedded source hashes mismatch");',
+  'assert(vehiclesDbProvenance.upstream_manifest_sha256 === vehiclesdb.upstream_manifest_sha256 && vehiclesDbProvenance.source_catalog_sha256 === vehiclesDbSnapshot.source_catalog_sha256 && vehiclesDbProvenance.license_sha256 === vehiclesdb.license_file_sha256 && vehiclesDbProvenance.attribution_sha256 === vehiclesdb.attribution_sha256 && vehiclesDbProvenance.lock_sha256 === vehiclesDbSnapshot.lock_sha256, "VehiclesDB embedded source hashes mismatch");',
+  "VehiclesDB verifier embedded source hashes"
+);
 fs.writeFileSync(verifierFile, verifier, "utf8");
 
 let tests = fs.readFileSync(testFile, "utf8");
@@ -231,6 +249,7 @@ process.stdout.write(JSON.stringify({
   changes: [
     "use the current VehiclesDB dataset_provenance schema and manifest for rights/attribution fields",
     "align the independent research-pack verifier with current pack_id and attribution_required fields",
+    "update verifier SQL and hash assertions to the current VehiclesDB provenance schema",
     "expose the pinned attribution text and source repository URL",
     "query model_id and current source_registry/model_market_evidence columns",
     "decode source JSON arrays and compute deterministic per-model record SHA-256",
