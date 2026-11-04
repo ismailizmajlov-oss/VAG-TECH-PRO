@@ -45,16 +45,8 @@ SELECT DISTINCT ?model ?modelLabelEn ?modelLabelRu ?manufacturer ?manufacturerLa
 WHERE {
   ?model wdt:P176 ?manufacturer ;
          wdt:P31/wdt:P279* wd:Q3231690 .
+  VALUES ?manufacturerLabel { "Volkswagen"@en "Volkswagen AG"@en "Volkswagen Commercial Vehicles"@en "Audi AG"@en "Škoda Auto"@en "SEAT"@en "SEAT S.A."@en "Porsche AG"@en "Bentley Motors Limited"@en "Automobili Lamborghini S.p.A."@en "Bugatti Rimac"@en }
   ?manufacturer rdfs:label ?manufacturerLabel .
-  FILTER(
-    LANG(?manufacturerLabel) = "en" &&
-    STR(?manufacturerLabel) IN (
-      "Volkswagen", "Volkswagen AG", "Volkswagen Commercial Vehicles",
-      "Audi AG", "Škoda Auto", "SEAT", "SEAT S.A.",
-      "Porsche AG", "Bentley Motors Limited",
-      "Automobili Lamborghini S.p.A.", "Bugatti Rimac"
-    )
-  )
   ?model rdfs:label ?modelLabelEn .
   FILTER(LANG(?modelLabelEn) = "en")
   OPTIONAL { ?model rdfs:label ?modelLabelRu . FILTER(LANG(?modelLabelRu) = "ru") }
@@ -307,7 +299,7 @@ def build_database(db_path: Path, rows: list[dict[str, Any]], source_revision: s
         db.executescript(SCHEMA_SQL)
         db.execute("PRAGMA user_version=1")
         db.execute(
-            """INSERT INTO source_registry VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            """INSERT INTO source_registry VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 SOURCE_ID, PUBLISHER, SOURCE_URL, ENDPOINT, LICENSE_ID, LICENSE_URL,
                 "approved_by_published_license", 1, 1, 1, 1, 1, 0, 1, 0,
@@ -521,6 +513,8 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
             raise ValueError("SQLite source registry rights metadata mismatch")
         if any(source[i] != 1 for i in (7,8,9,10,11)) or source[12] != 0 or source[13] != 1 or source[14] != 0:
             raise ValueError("SQLite source registry reuse rights mismatch")
+        if source[15] != manifest["source_revision"] or source[16] != manifest["source_snapshot_sha256"] or source[17] != manifest["source_query_sha256"]:
+            raise ValueError("SQLite source registry revision/hash mismatch")
         if db.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN ('engines','transmissions','ecu','dtc','repair_procedures','wiring_diagrams','pinouts','torque_specs','adaptations')").fetchone()[0]:
             raise ValueError("technical data tables are forbidden in identity-only pack")
     finally:
