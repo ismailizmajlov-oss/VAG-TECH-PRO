@@ -1,0 +1,1 @@
+Post-ready-for-review synchronization trigger for Windows 10/11 x64 desktop CI. Run the pinned build and lifecycle tests; do not publish or release.
