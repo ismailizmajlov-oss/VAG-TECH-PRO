@@ -712,8 +712,8 @@ function patchDesktopSource(desktopRoot) {
     '  assert.ok(rows.every((row) => row.marketScope === "UNKNOWN" && row.reviewStatus === "candidate" && row.applicabilityPrecision === "candidate_identity_only" && row.exactFitment === false && row.generationVerified === false && row.engineCode === null && row.gearboxCode === null && row.ecuFitment === false && row.dtcFitment === false && row.repairProcedureFitment === false));\n' +
     '});\n\n' +
     'test("Wikidata search treats SQL LIKE wildcard characters literally", () => {\n' +
-    '  assert.deepEqual(local.searchWikidataCandidates("%", 25, root), []);\n' +
-    '  assert.deepEqual(local.searchWikidataCandidates("_", 25, root), []);\n' +
+    '  assert.deepEqual(local.searchWikidataCandidates("%%", 25, root), []);\n' +
+    '  assert.deepEqual(local.searchWikidataCandidates("__", 25, root), []);\n' +
     '});\n\n' +
     'test("VehiclesDB model evidence is foreign-market-only, attributed, and never promoted to exact fitment", () => {',
     "Wikidata local research DB test");
