@@ -19,12 +19,12 @@ function patch(relative, replacements) {
 }
 
 patch("app/admin/page.tsx", [[
-"  useEffect(() => {\n    let active = true;\n    void loadWorkspace();\n    const authSubscription = supabase?.auth.onAuthStateChange(() => {",
-"  useEffect(() => {\n    let active = true;\n    const initialLoad = window.setTimeout(() => { if (active) void loadWorkspace(); }, 0);\n    const authSubscription = supabase?.auth.onAuthStateChange(() => {",
+"    void loadWorkspace();",
+"    const initialLoad = window.setTimeout(() => { if (active) void loadWorkspace(); }, 0);",
 "deferred admin workspace initial load"
 ],[
-"    return () => {\n      active = false;\n      loadSequence.current += 1;",
-"    return () => {\n      active = false;\n      window.clearTimeout(initialLoad);\n      loadSequence.current += 1;",
+"      active = false;\n      loadSequence.current += 1;",
+"      active = false;\n      window.clearTimeout(initialLoad);\n      loadSequence.current += 1;",
 "admin initial-load timer cleanup"
 ]]);
 
