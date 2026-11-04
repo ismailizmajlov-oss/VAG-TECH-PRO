@@ -310,7 +310,7 @@ jobs:
                 "id INTEGER PRIMARY KEY CHECK(id=1),schema_version INTEGER NOT NULL,source_id TEXT NOT NULL," +
                 "source_version TEXT NOT NULL,package_sha256 TEXT NOT NULL,generic_dtc_count INTEGER NOT NULL," +
                 "pid_count INTEGER NOT NULL,created_at_utc TEXT NOT NULL)"
-            ].join("\n"));
+            ].join(";\n"));
             db.exec("BEGIN IMMEDIATE");
             try {
               db.prepare("INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,'license_verified_research_only')").run(
