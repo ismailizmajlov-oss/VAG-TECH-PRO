@@ -798,7 +798,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $path = "desktop-source/app/research/page.tsx"
+          $path = "desktop-source/components/local-research-catalog.tsx"
           if (Test-Path -LiteralPath $path) {
             $lines = Get-Content -LiteralPath $path
             $start = [Math]::Max(1, 300)
@@ -987,7 +987,7 @@ jobs:
             desktop-source/vehicle-config-match-guard-verification.json
             desktop-source/lint.log
             desktop-source/typecheck.log
-            desktop-source/app/research/page.tsx
+            desktop-source/components/local-research-catalog.tsx
             desktop-source/app/api/local-research/route.ts
             desktop-source/lib/local-research-db.cjs
             desktop-dbrow-types-fix.log
