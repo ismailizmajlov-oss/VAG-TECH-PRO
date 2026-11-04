@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "source_id": "wikidata-vag-generation-candidates",
+  "publisher": "Wikidata / Wikimedia Foundation",
+  "source_url": "https://www.wikidata.org/",
+  "endpoint_url": "https://query.wikidata.org/sparql",
+  "license": {
+    "id": "CC0-1.0",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "rights_status": "approved_by_published_license",
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "bulk_reuse_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": false,
+    "attribution_recommended": true,
+    "share_alike_required": false,
+    "scope_note": "Applies only to structured Wikidata statements in the pinned query snapshot; not article text, images, logos or third-party resources."
+  },
+  "acquisition": {
+    "method": "SPARQL POST",
+    "parent_model_source_id": "wikidata-vag-model-taxonomy",
+    "relationship_properties": [
+      "P179",
+      "P527"
+    ],
+    "query_batch_size": 50,
+    "query_limit_per_batch": 5000,
+    "query_limit_scope": "per_batch",
+    "parent_model_snapshot_sha256_required": true,
+    "parent_model_database_sha256_required": true,
+    "query_sha256_required": true,
+    "snapshot_sha256_required": true,
+    "per_binding_sha256_required": true,
+    "completeness_status": "unknown"
+  },
+  "applicability": {
+    "market_scope": "UNKNOWN",
+    "precision": "series_member_candidate",
+    "review_status": "candidate",
+    "generation_verified": false,
+    "exact_vehicle_fitment": false,
+    "engine_code_fitment": false,
+    "transmission_code_fitment": false,
+    "ecu_fitment": false,
+    "dtc_fitment": false,
+    "repair_procedure_fitment": false,
+    "diagnostic_execution_allowed": false,
+    "production_years_inferred": false,
+    "completeness_status": "unknown"
+  },
+  "exclusions": [
+    "P179/P527 links are series-member candidates, not verified vehicle generations.",
+    "Member instance types are retained as source evidence but are not used to certify a generation.",
+    "P571/P576/P580/P582 dates remain raw property statements; no production-year ranges are inferred.",
+    "No Russian/EAEU market scope or exact vehicle fitment.",
+    "No engine or gearbox codes, ECU identities, DTC definitions, diagnostic test plans or execution commands.",
+    "No repair procedures, wiring diagrams, pinouts, torque values, adaptations or OEM part numbers.",
+    "No article text, images, logos or third-party linked resources."
+  ],
+  "snapshot_manifest_pattern": "data/research/wikidata-vag-generations/<snapshot-id>/manifest.json"
+}
