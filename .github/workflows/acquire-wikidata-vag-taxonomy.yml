@@ -9,7 +9,6 @@ on:
       - "tests/test_wikidata_vag_taxonomy.py"
       - "tests/fixtures/wikidata-vag-taxonomy-sample.json"
       - "data/source-manifests/wikidata-vag-taxonomy.json"
-      - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md"
   push:
     branches: [main]
@@ -19,7 +18,6 @@ on:
       - "tests/test_wikidata_vag_taxonomy.py"
       - "tests/fixtures/wikidata-vag-taxonomy-sample.json"
       - "data/source-manifests/wikidata-vag-taxonomy.json"
-      - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md"
   workflow_dispatch:
 
