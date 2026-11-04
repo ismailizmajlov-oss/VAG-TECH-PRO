@@ -519,7 +519,7 @@ type WikidataGenerationRow = {",
   }
 
   let verifier = readText(verifierPath);
-  verifier = verifier.replace(/manifest\\.packs\\.length\\s*===\\s*8/, "manifest.packs.length === 9");
+  verifier = verifier.replace(/manifest\.packs\.length\s*===\s*\d+/, "manifest.packs.length === 9");
   verifier = verifier.replace(/Expected eight separately licensed research packs/g, "Expected nine separately licensed research packs");
   if (!verifier.includes("wikidata-vag-generation-candidates-cc0")) {
     const anchor = '  const wikidata = byId["wikidata-vag-model-taxonomy-cc0"];\n';
