@@ -11,6 +11,7 @@ on:
       - "desktop-source-run*.zip.sha256"
       - "desktop-source-run*.patch"
       - "desktop-package-run*.json"
+      - "desktop-package-lock.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "run*-*.patch.gz.b64"
@@ -25,6 +26,7 @@ on:
       - "desktop-source-run*.zip.sha256"
       - "desktop-source-run*.patch"
       - "desktop-package-run*.json"
+      - "desktop-package-lock.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "run*-*.patch.gz.b64"
@@ -157,8 +159,7 @@ jobs:
             if ($null -ne $run -and $run.status -eq "completed") { break }
             Start-Sleep -Seconds 15
           }
-          if ($null -eq $run) { throw "No offline data-pack workflow run was found for commit $expectedHeadSha on $branch." }
-          if ($run.status -ne "completed" -or $run.conclusion -ne "success") {
+          if ($null -eq $run) { throw "No offline data-pack workflow run was found for commit $expectedHeadSha on $branch." }          if ($run.status -ne "completed" -or $run.conclusion -ne "success") {
             throw "Offline data-pack workflow did not complete successfully. Run=$($run.id), status=$($run.status), conclusion=$($run.conclusion)"
           }
           $artifactUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
@@ -317,8 +318,7 @@ jobs:
             "autodiag2-vag-community-candidates-odbl/autodiag2-vag-community.sqlite"
           )) {
             if (-not (Test-Path (Join-Path $research $db))) { throw "Research database missing after assembly: $db" }
-          }
-          $provenance = [ordered]@{
+          }          $provenance = [ordered]@{
             workflow_run_id = [long]$env:AUTODIAG2_RUN_ID
             artifact_id = [long]$env:AUTODIAG2_ARTIFACT_ID
             artifact_sha256 = [string]$env:AUTODIAG2_ARTIFACT_SHA256
@@ -467,7 +467,7 @@ jobs:
           node --check desktop-source/scripts/prepare-electron-runtime.cjs
           node --check desktop-source/electron/main.cjs
 
-      - name: Generate dependency lock for this run and install
+      - name: Generate, pin and install the Windows dependency lock
         working-directory: desktop-source
         timeout-minutes: 15
         env:
@@ -476,11 +476,19 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          node --version
+          npm --version
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-lock.log
           if ($LASTEXITCODE -ne 0) { throw "package-lock generation failed" }
           if (-not (Test-Path package-lock.json)) { throw "package-lock.json was not generated" }
+          $expectedLockHash = (Get-Content -LiteralPath (Join-Path $env:GITHUB_WORKSPACE "desktop-package-lock.sha256") -Raw).Trim().Split(" ")[0].ToLowerInvariant()
+          $actualLockHash = (Get-FileHash -LiteralPath "package-lock.json" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualLockHash -ne $expectedLockHash) { throw "Dependency lock SHA-256 drift: expected $expectedLockHash actual $actualLockHash" }
+          "package_lock_sha256=$actualLockHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           npm ci --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-ci.log
           if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
+          npm audit --omit=dev --audit-level=moderate 2>&1 | Tee-Object -FilePath npm-audit-production.log
+          if ($LASTEXITCODE -ne 0) { throw "Production dependency audit reported moderate or higher vulnerabilities" }
           npm audit --audit-level=high 2>&1 | Tee-Object -FilePath npm-audit.log
           if ($LASTEXITCODE -ne 0) { throw "npm audit reported high or critical dependency vulnerabilities" }
 
@@ -637,8 +645,7 @@ jobs:
       - name: Upload Windows installer and verification evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: vag-tech-pro-windows-x64-run59
+        with:          name: vag-tech-pro-windows-x64-run59
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.2-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.3-x64.exe
@@ -647,6 +654,7 @@ jobs:
             desktop-source/local-core-host-origin-patch.log
             desktop-source/npm-ci.log
             desktop-source/npm-audit.log
+            desktop-source/npm-audit-production.log
             desktop-source/test.log
             catalog-import-v2-tests.log
             desktop-source/verify-local-core.log
