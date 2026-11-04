@@ -40,7 +40,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           python --version
-          python -m py_compile scripts/rdw_vag_type_approval_common.py scripts/build_rdw_vag_type_approval.py scripts/verify_rdw_vag_type_approval.py tests/test_rdw_vag_type_approval.py
+          python -m py_compile scripts/rdw_vag_type_approval_common.py scripts/build_rdw_vag_type_approval.py scripts/verify_rdw_vag_type_approval.py tests/test_rdw_vag_type_approval.py tests/test_rdw_vag_type_approval_source_rights.py
           python -m unittest discover -s tests -p "test_rdw_vag_type_approval*.py" -v 2>&1 | Tee-Object -FilePath rdw-unit-tests.log
           if ($LASTEXITCODE -ne 0) { throw "RDW candidate-only contract tests failed" }
           python -c "import json,pathlib; p=pathlib.Path('data/source-manifests/rdw-vag-type-approval.lock.json'); d=json.loads(p.read_text(encoding='utf-8')); assert d['data_license']=='CC0-1.0' and d['rights_status']=='approved_by_published_license'; print('RDW lock JSON and CC0 gate passed')"
