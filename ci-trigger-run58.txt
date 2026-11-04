@@ -3,3 +3,5 @@ Purpose: execute the pinned desktop source, run54 transactional local catalog im
 No production deployment, release publication, cloud writes, or paid services.
 workflow_revision=17f51a446623b8d518cd320e15ce0e541605758a
 trigger_reason=run54 importer plus run55 offline firewall lifecycle gate
+run59_patch=apply-mechanicdb-candidate-browser-run59.cjs
+run59_workflow_revision=5cb0c93a784929bdb693e11e30b1fc5ff34549cf
