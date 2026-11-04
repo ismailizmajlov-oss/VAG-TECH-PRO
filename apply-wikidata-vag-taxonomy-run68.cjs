@@ -752,6 +752,7 @@ function patchDesktopSource(desktopRoot) {
   if (!readme.includes("Wikidata Russian-language labels do not establish Russian/EAEU market applicability")) {
     const anchor = '- VehiclesDB is only a foreign-market identity aid; it cannot establish Russian or EAEU applicability.\n';
     replaceExactly(readmeFile, anchor, anchor + '- Wikidata Russian-language labels do not establish Russian/EAEU market applicability; P571/P576 statements are not converted into production-year ranges.\n', "Wikidata README boundary");
+    readme = readText(readmeFile);
   }
   if (!readme.includes("Wikidata structured-data snapshot is acquired")) {
     const anchor = "The MechanicDB artifact is integrated with";
