@@ -28,4 +28,4 @@ jobs:
         with:
           python-version: "3.12"
       - name: Validate HPT.SU rights boundaries
-        run: python -m unittest discover -s tests -p "test_hptsu_source_rights.py" -v
+        run: python -m unittest discover -s tests -p "test_*source_rights.py" -v
