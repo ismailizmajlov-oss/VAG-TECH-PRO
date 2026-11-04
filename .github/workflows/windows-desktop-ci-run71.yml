@@ -591,6 +591,40 @@ jobs:
           if ($evidence.status -ne "integrated_verified_candidate_only" -or $evidence.counts.models -ne 376 -or $evidence.counts.russianLabels -ne 171 -or $evidence.market_scope -ne "UNKNOWN" -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.generation_verified -ne $false) { throw "Run68 Wikidata evidence failed the candidate-only gate" }
           "wikidata_pack=CC0-1.0; models=376; russian_labels=171; market=UNKNOWN; generation=unverified; exact_fitment=none; engine_gearbox_ECU_DTC=none; database_sha256=$($evidence.database_sha256); snapshot_sha256=$($evidence.source_snapshot_sha256); query_sha256=$($evidence.source_query_sha256); manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Download pinned CC0 Wikidata VAG generation candidate snapshot
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: wikidata-vag-generation-candidates-cc0
+          path: ${{ runner.temp }}/vag-tech-pro-wikidata-generations
+          run-id: 41906770429
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify pinned Wikidata generation artifact, parent model pack and CC0 rights
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m unittest discover -s tests -p "test_wikidata_generation_source_rights.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "Wikidata generation source-rights gate failed" }
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/41906770429/artifacts?per_page=100"
+          $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
+          $artifact = $response.artifacts | Where-Object { $_.id -eq 13361576024 -and $_.name -eq "wikidata-vag-generation-candidates-cc0" -and $_.expired -eq $false } | Select-Object -First 1
+          if ($null -eq $artifact) { throw "Pinned Wikidata generation artifact is missing or expired." }
+          if ($artifact.digest -ne "sha256:0171d7775e9ad8c98ff564be1dd5729c85b031f67cd063521e5a9f4989ca3989") { throw "Pinned generation artifact digest mismatch: $($artifact.digest)" }
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-wikidata-generations"
+          $manifest = Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json
+          if ($manifest.pack_id -ne "wikidata-vag-generation-candidates-cc0-5c1c7c37593b" -or $manifest.source_id -ne "wikidata-vag-generation-candidates" -or $manifest.source_revision -ne "wikidata-generation-candidates-5c1c7c37593b") { throw "Wikidata generation snapshot identity/revision mismatch." }
+          if ($manifest.data_license -ne "CC0-1.0" -or $manifest.rights_status -ne "approved_by_published_license" -or $manifest.scope.market_scope -ne "UNKNOWN" -or $manifest.scope.applicability_precision -ne "series_member_candidate" -or $manifest.scope.generation_verified -ne $false -or $manifest.scope.exact_vehicle_fitment -ne $false) { throw "Wikidata generation CC0 rights or candidate-only scope mismatch." }
+          if ($manifest.counts.member_entities -ne 9 -or $manifest.counts.model_member_links -ne 10 -or $manifest.counts.source_bindings -ne 14 -or $manifest.counts.models_with_members -ne 6 -or $manifest.counts.manufacturers -ne 3 -or $manifest.counts.russian_labels -ne 5 -or $manifest.counts.date_statements -ne 2) { throw "Wikidata generation candidate counts mismatch." }
+          if ($manifest.parent_model_pack.pack_id -ne "wikidata-vag-model-taxonomy-cc0-7a99f275966b" -or $manifest.parent_model_pack.snapshot_id -ne "7a99f275966b" -or $manifest.parent_model_pack.database_sha256 -ne "39732875dff952041707a449168917c173c532db91a9950ec006a94ec9240a34") { throw "Generation pack is not aligned to the pinned VAG model identity parent." }
+          "wikidata_generation_artifact_sha256=0171d7775e9ad8c98ff564be1dd5729c85b031f67cd063521e5a9f4989ca3989" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "wikidata_generation_source_revision=$($manifest.source_revision)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "wikidata_generation_snapshot_sha256=$($manifest.source_snapshot_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "wikidata_generation_query_sha256=$($manifest.source_query_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -720,6 +754,22 @@ jobs:
           $genericReport = Get-Content -LiteralPath "desktop-source/data/research/run69-integration-verification.json" -Raw | ConvertFrom-Json
           "generic_mechanicdb_pack=ODbL-1.0; guidance=$($genericReport.counts.generic_authored_guidance); dtc=$($genericReport.counts.generic_sae_dtc_references); market=UNKNOWN; vag_specific=false; database_sha256=$($genericReport.database_sha256); snapshot_sha256=$($genericReport.source_snapshot_sha256); manifest_sha256=$($genericReport.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           Get-Content -LiteralPath "desktop-source/data/research/run69-integration-verification.json" -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Integrate verified CC0 Wikidata VAG generation candidates (run70)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-wikidata-generations"
+          node --check scripts/integrate-wikidata-vag-generation-candidates.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run70 generation candidate integration script syntax check failed" }
+          node scripts/integrate-wikidata-vag-generation-candidates.cjs --pack-dir "$packDir" --research-dir "desktop-source/data/research" 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/wikidata-generation-integration-run70.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run70 Wikidata generation candidate integration failed" }
+          $evidencePath = "desktop-source/data/research/wikidata-vag-generation-candidates-cc0/integration-verification.json"
+          if (-not (Test-Path $evidencePath)) { throw "Run70 generation candidate integration evidence is missing" }
+          $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
+          if ($evidence.status -ne "integrated_verified_series_member_candidates_only" -or $evidence.counts.member_entities -ne 9 -or $evidence.counts.model_member_links -ne 10 -or $evidence.counts.source_bindings -ne 14 -or $evidence.market_scope -ne "UNKNOWN" -or $evidence.applicability_precision -ne "series_member_candidate" -or $evidence.generation_verified -ne $false -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.diagnostic_execution_allowed -ne $false) { throw "Run70 generation evidence failed candidate-only applicability gate" }
+          "wikidata_generation_pack=CC0-1.0; members=9; model_member_links=10; source_bindings=14; market=UNKNOWN; generation=unverified; exact_fitment=none; engine_gearbox_ECU_DTC_repair=none; database_sha256=$($evidence.database_sha256); snapshot_sha256=$($evidence.source_snapshot_sha256); query_sha256=$($evidence.source_query_sha256); manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          Get-Content -LiteralPath $evidencePath -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Print local-core API test source around failing assertion
         shell: pwsh
