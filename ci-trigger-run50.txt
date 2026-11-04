@@ -1,0 +1,1 @@
+Run50: verify native Windows lifecycle requests with proxy disabled, explicit loopback Host/Origin and strict same-origin Fetch Metadata. No source data rights or production records are promoted by this build.
