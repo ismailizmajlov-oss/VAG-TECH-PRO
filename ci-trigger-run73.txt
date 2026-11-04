@@ -1,0 +1,1 @@
+Trigger the newly enabled Windows 10/11 x64 desktop validation workflow against the synchronized desktop source branch. Build/test only; no release or deployment.
