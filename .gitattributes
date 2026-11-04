@@ -1,0 +1,5 @@
+/data/research/generic-repair-guidance/manifest.json text eol=lf
+/data/research/generic-repair-guidance/ATTRIBUTION.md text eol=lf
+/data/research/generic-repair-guidance/LICENSE-ODbL.txt -text
+/data/research/generic-repair-guidance/LICENSE-MIT.txt -text
+/data/research/generic-repair-guidance/generic-repair-guidance.sqlite -text
