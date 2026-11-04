@@ -996,6 +996,7 @@ jobs:
             desktop-source/runtime-preparation.json
             research-hash-targeted-test.log
             windows-lifecycle.log
+            windows-lifecycle-staging/**
             lifecycle-fetchmetadata-strict-fix.log
             build-metadata.json
             source-verification.txt
