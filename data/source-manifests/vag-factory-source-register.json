@@ -857,7 +857,9 @@
         "query_limit": 5000,
         "retry_policy": "4 attempts with bounded exponential backoff",
         "offline_snapshot_retained": true,
-        "completeness_status": "unknown"
+        "completeness_status": "unknown",
+        "query_batch_size": 50,
+        "query_limit_scope": "per_batch"
       },
       "rights": {
         "data_license_status": "CC0-1.0",
