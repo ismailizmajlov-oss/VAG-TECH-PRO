@@ -67,6 +67,7 @@ jobs:
             $gzipStream.CopyTo($outputStream)
             $patchBytes = $outputStream.ToArray()
             $patchHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($patchBytes)).ToLowerInvariant()
+          if ($patchHash -ne "a2955404a4dfc48352389318a1a9bca413527a4513cfc2e934f32d35bcc45b28") { throw "Run54 decompressed patch SHA-256 mismatch: $patchHash" }
             if ($patchHash -ne $patch.PatchSha) { throw "Run36 patch SHA-256 mismatch: $($patch.File) expected $($patch.PatchSha) actual $patchHash" }
             $patchPath = Join-Path $env:RUNNER_TEMP ($patch.File.Replace(".gz.b64", ".patch"))
             [System.IO.File]::WriteAllBytes($patchPath, $patchBytes)
@@ -298,6 +299,8 @@ jobs:
           if (-not (Test-Path $encodedPath)) { throw "Run54 compressed catalog importer patch is missing" }
           $encoded = (Get-Content -LiteralPath $encodedPath -Raw).Trim()
           $compressedBytes = [Convert]::FromBase64String($encoded)
+          $compressedSha = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($compressedBytes)).ToLowerInvariant()
+          if ($compressedSha -ne "378517318d4f15a87be9eda845eb1329b8d763d766a269b44fe32ee0b1e1bca3") { throw "Run54 compressed patch SHA-256 mismatch: $compressedSha" }
           $compressedStream = [System.IO.MemoryStream]::new($compressedBytes)
           $gzipStream = [System.IO.Compression.GZipStream]::new($compressedStream,[System.IO.Compression.CompressionMode]::Decompress)
           $outputStream = [System.IO.MemoryStream]::new()
@@ -314,7 +317,7 @@ jobs:
           node --check lib/local-core-db.cjs
           node --test tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/catalog-import-v2-tests.log"
           if ($LASTEXITCODE -ne 0) { throw "Local catalog importer v2 tests failed" }
-          "catalog_import_v2=transactional; normalized_catalog; exact_pairing; per_entity_provenance; patch_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "catalog_import_v2_patch_sha256=$patchHash; catalog_import_v2=transactional; normalized_catalog; exact_pairing; per_entity_provenance" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
@@ -410,7 +413,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.2'; l.version='0.2.2'; if (l.packages && l.packages['']) l.packages[''].version='0.2.2'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\\n');"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.2'; l.version='0.2.2'; if (l.packages && l.packages['']) l.packages[''].version='0.2.2'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
 
       - name: Build first Windows x64 NSIS installer
         working-directory: desktop-source
@@ -432,7 +435,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.3'; l.version='0.2.3'; if (l.packages && l.packages['']) l.packages[''].version='0.2.3'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\n');"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.3'; l.version='0.2.3'; if (l.packages && l.packages['']) l.packages[''].version='0.2.3'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
           npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.3.log
           if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
           $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.3-x64.exe"
