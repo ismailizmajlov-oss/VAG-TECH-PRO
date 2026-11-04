@@ -13,7 +13,7 @@ const ARTIFACT = {
   artifactSha256: "0171d7775e9ad8c98ff564be1dd5729c85b031f67cd063521e5a9f4989ca3989",
   sourceCommit: "5fc952cfe117152e522740809c2a1d70e1bf01a3",
   sourceBranch: "main",
-  snapshotCommit: "576cf983a9c4b14a7c63a34d0d2e0a8d6f4c2b1a"
+  snapshotCommit: "576cf983d195c51c8984ad46acdcab6ed1725800"
 };
 const EXPECTED = {
   snapshotId: "5c1c7c37593b",
@@ -65,6 +65,17 @@ function parseArgs(argv) {
   }
   if (!result["--pack-dir"] || !result["--research-dir"]) fail("Usage: node integrate-wikidata-vag-generation-candidates.cjs --pack-dir <dir> --research-dir <dir>");
   return { packDir: path.resolve(result["--pack-dir"]), researchDir: path.resolve(result["--research-dir"]) };
+}
+function copyAs(sourceRoot, relative, targetFile) {
+  const source = safeJoin(sourceRoot, relative);
+  const stat = fs.lstatSync(source);
+  if (!stat.isFile() || stat.isSymbolicLink()) fail("Source is not a regular file: " + relative);
+  fs.mkdirSync(path.dirname(targetFile), { recursive: true });
+  if (fs.existsSync(targetFile)) {
+    if (!fs.lstatSync(targetFile).isFile() || sha256File(targetFile) !== sha256File(source)) fail("Refusing to overwrite different immutable file: " + relative);
+  } else fs.copyFileSync(source, targetFile);
+  if (sha256File(targetFile) !== sha256File(source)) fail("Copied file hash mismatch: " + relative);
+  return sha256File(targetFile);
 }
 function copyRegularFile(sourceRoot, relative, targetRoot) {
   const source = safeJoin(sourceRoot, relative);
@@ -153,12 +164,12 @@ function validatePack(packDir, researchDir) {
         source.display_allowed !== 1 || source.offline_cache_allowed !== 1 ||
         source.bulk_reuse_allowed !== 1 || source.redistribution_allowed !== 1) fail("SQLite source_registry rights/applicability gate failed");
     const counts = {
-      member_entities: count(db, "SELECT count(*) AS n FROM model_series_member_candidates"),
-      model_member_links: count(db, "SELECT count(*) AS n FROM series_member_source_bindings"),
+      member_entities: count(db, "SELECT count(DISTINCT member_qid) AS n FROM model_series_member_candidates"),
+      model_member_links: count(db, "SELECT count(*) AS n FROM model_series_member_candidates"),
       source_bindings: count(db, "SELECT count(*) AS n FROM series_member_source_bindings"),
       models_with_members: count(db, "SELECT count(DISTINCT model_qid) AS n FROM model_series_member_candidates"),
       manufacturers: count(db, "SELECT count(DISTINCT manufacturer_qid) AS n FROM model_series_member_candidates"),
-      russian_labels: count(db, "SELECT count(*) AS n FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND trim(member_label_ru)!=''"),
+      russian_labels: count(db, "SELECT count(DISTINCT member_qid) AS n FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND trim(member_label_ru)!=''"),
       date_statements: count(db, "SELECT count(*) AS n FROM series_member_date_statements")
     };
     if (JSON.stringify(counts) !== JSON.stringify(EXPECTED.counts)) fail("SQLite row counts do not match pinned manifest");
@@ -177,10 +188,8 @@ function updateResearchManifest(researchDir, packDir, verified) {
   fs.mkdirSync(targetDir, { recursive: true });
   copyRegularFile(packDir, "manifest.json", targetDir);
   for (const relative of Object.keys(verified.manifest.pack_files).sort()) copyRegularFile(packDir, relative, targetDir);
-  copyRegularFile(ROOT, "data/source-manifests/wikidata-vag-generation-candidates.json", targetDir);
-  copyRegularFile(ROOT, "data/source-manifests/vag-factory-source-register.json", targetDir);
-  fs.renameSync(safeJoin(targetDir, "wikidata-vag-generation-candidates.json"), safeJoin(targetDir, "source-manifest.json"));
-  fs.renameSync(safeJoin(targetDir, "vag-factory-source-register.json"), safeJoin(targetDir, "source-register.json"));
+  copyAs(ROOT, "data/source-manifests/wikidata-vag-generation-candidates.json", safeJoin(targetDir, "source-manifest.json"));
+  copyAs(ROOT, "data/source-manifests/vag-factory-source-register.json", safeJoin(targetDir, "source-register.json"));
 
   const rootPath = safeJoin(researchDir, "manifest.json");
   const rootManifest = readJson(rootPath);
@@ -315,10 +324,10 @@ function patchDesktopSource(desktop) {
     "  const pack = JSON.parse(fs.readFileSync(path.join(base, PACKS.wikidataGenerations.manifest), \"utf8\"));",
     "  const sourceManifest = JSON.parse(fs.readFileSync(path.join(base, PACKS.wikidataGenerations.sourceManifest), \"utf8\"));",
     "  const parentManifest = JSON.parse(fs.readFileSync(path.join(base, PACKS.wikidata.manifest), \"utf8\"));",
-    "  const db = openReadOnly(path.join(base, PACKS.wikidataGenerations.file));",
+    "  const db = openReadOnly(root, PACKS.wikidataGenerations.file);",
     "  try {",
     "    const source = db.prepare(\"SELECT * FROM source_registry WHERE source_id=?\").get(pack.source_id);",
-    "    const counts = { memberEntities: count(db, \"SELECT count(*) AS n FROM model_series_member_candidates\"), modelMemberLinks: count(db, \"SELECT count(*) AS n FROM series_member_source_bindings\"), sourceBindings: count(db, \"SELECT count(*) AS n FROM series_member_source_bindings\"), modelsWithMembers: count(db, \"SELECT count(DISTINCT model_qid) AS n FROM model_series_member_candidates\"), manufacturers: count(db, \"SELECT count(DISTINCT manufacturer_qid) AS n FROM model_series_member_candidates\"), russianLabels: count(db, \"SELECT count(*) AS n FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND trim(member_label_ru)!=\\\"\\\"\"), dateStatements: count(db, \"SELECT count(*) AS n FROM series_member_date_statements\") };",
+    "    const counts = { memberEntities: db.prepare(\"SELECT count(DISTINCT member_qid) AS n FROM model_series_member_candidates\").get().n, modelMemberLinks: db.prepare(\"SELECT count(*) AS n FROM model_series_member_candidates\").get().n, sourceBindings: db.prepare(\"SELECT count(*) AS n FROM series_member_source_bindings\").get().n, modelsWithMembers: db.prepare(\"SELECT count(DISTINCT model_qid) AS n FROM model_series_member_candidates\").get().n, manufacturers: db.prepare(\"SELECT count(DISTINCT manufacturer_qid) AS n FROM model_series_member_candidates\").get().n, russianLabels: db.prepare(\"SELECT count(DISTINCT member_qid) AS n FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND trim(member_label_ru)!=''\").get().n, dateStatements: db.prepare(\"SELECT count(*) AS n FROM series_member_date_statements\").get().n };",
     "    const invalid = count(db, \"SELECT count(*) AS n FROM model_series_member_candidates WHERE market_scope!='UNKNOWN' OR applicability_precision!='series_member_candidate' OR review_status!='candidate' OR generation_verified!=0 OR exact_vehicle_fitment!=0 OR engine_code_fitment!=0 OR transmission_code_fitment!=0 OR ecu_fitment!=0 OR dtc_fitment!=0 OR repair_procedure_fitment!=0 OR diagnostic_execution_allowed!=0 OR production_years_inferred!=0\");",
     "    const badBindings = count(db, \"SELECT count(*) AS n FROM series_member_source_bindings WHERE length(source_binding_sha256)!=64 OR source_revision!=? OR source_snapshot_sha256!=? OR source_query_sha256!=?\", pack.source_revision, pack.source_snapshot_sha256, pack.source_query_sha256);",
     "    const badDates = count(db, \"SELECT count(*) AS n FROM series_member_date_statements d JOIN series_member_source_bindings b USING(source_binding_index) WHERE d.source_binding_sha256!=b.source_binding_sha256\");",
@@ -334,7 +343,7 @@ function patchDesktopSource(desktop) {
     "  const db=openReadOnly(path.join(base,PACKS.wikidataGenerations.file)); const parentDb=openReadOnly(path.join(base,PACKS.wikidata.file));",
     "  try {",
     "    const pattern=\"%\"+q.replace(/[\\\\%_]/g,\"\\\\$&\")+\"%\";",
-    "    const rows=db.prepare(\"SELECT * FROM model_series_member_candidates WHERE member_label_en LIKE ? ESCAPE '\\\\' OR member_label_ru LIKE ? ESCAPE '\\\\' OR model_label_en LIKE ? ESCAPE '\\\\' OR member_qid LIKE ? OR model_qid LIKE ? ORDER BY model_label_en,member_label_en LIMIT ?\").all(pattern,pattern,pattern,pattern,pattern,clampLimit(limit,50));",
+    "    const rows=db.prepare(\"SELECT * FROM model_series_member_candidates WHERE member_label_en LIKE ? ESCAPE '\\\\' OR member_label_ru LIKE ? ESCAPE '\\\\' OR model_label_en LIKE ? ESCAPE '\\\\' OR member_qid LIKE ? OR model_qid LIKE ? ORDER BY model_label_en,member_label_en LIMIT ?\").all(pattern,pattern,pattern,pattern,pattern,clampLimit(limit));",
     "    return rows.map((row)=>{",
     "      const parent=parentDb.prepare(\"SELECT model_label_ru,manufacturer_label_en,manufacturer_qid FROM vehicle_model_entities WHERE model_qid=? LIMIT 1\").get(row.model_qid);",
     "      const dates=db.prepare(\"SELECT property_id,date_value,source_binding_index,source_binding_sha256 FROM series_member_date_statements WHERE member_qid=? AND model_qid=? ORDER BY property_id,date_value\").all(row.member_qid,row.model_qid);",
@@ -373,7 +382,13 @@ function patchDesktopSource(desktop) {
   if (!dataset[1].includes('"wikidata-generations"')) ui = ui.replace(dataset[0], "type Dataset = " + dataset[1] + ' | "wikidata-generations";');
   if (!ui.includes("type WikidataGenerationRow")) {
     const rowType = [
-      "type WikidataGenerationRow = {",
+      "type WikidataGenerationSummary = {
+  counts: { memberEntities: number; modelMemberLinks: number; sourceBindings: number; modelsWithMembers: number; manufacturers: number; russianLabels: number; dateStatements: number };
+  marketScope: string; applicabilityPrecision: string; reviewStatus: string; generationVerified: boolean;
+  exactVehicleFitment: boolean; diagnosticExecutionAllowed: boolean; sourceSnapshotSha256: string;
+  sourceQuerySha256: string; databaseSha256: string; sourceManifestSha256: string; note: string;
+};
+type WikidataGenerationRow = {",
       "  memberQid: string; modelQid: string; manufacturerQid: string | null;",
       "  memberLabelEn: string; memberLabelRu: string | null; modelLabelEn: string; modelLabelRu: string | null;",
       "  manufacturerLabelEn: string | null; memberUrl: string; modelUrl: string;",
@@ -392,7 +407,7 @@ function patchDesktopSource(desktop) {
   }
   if (!ui.includes("wikidataGenerationSummary")) {
     const stateAnchor = '  const [genericGuidanceSummary, setGenericGuidanceSummary] = useState<GenericGuidanceSummary | null>(null);';
-    ui = exact(ui, stateAnchor, stateAnchor + '\n  const [wikidataGenerationSummary, setWikidataGenerationSummary] = useState<Record<string, any> | null>(null);', "generation summary state");
+    ui = exact(ui, stateAnchor, stateAnchor + '\n  const [wikidataGenerationSummary, setWikidataGenerationSummary] = useState<WikidataGenerationSummary | null>(null);', "generation summary state");
   }
   if (!ui.includes('dataset !== "wikidata-generations"')) {
     const genericIndex = ui.indexOf("generic-guidance-summary");
@@ -545,8 +560,8 @@ function integrateGenerationPack(desktop, researchDir, packDir) {
   const updated = updateResearchManifest(researchDir, packDir, verified);
   const sourceManifestDir = path.join(desktop, "data/source-manifests");
   fs.mkdirSync(sourceManifestDir, { recursive: true });
-  copyRegularFile(ROOT, "data/source-manifests/wikidata-vag-generation-candidates.json", sourceManifestDir);
-  copyRegularFile(ROOT, "data/source-manifests/vag-factory-source-register.json", sourceManifestDir);
+  copyAs(ROOT, "data/source-manifests/wikidata-vag-generation-candidates.json", path.join(sourceManifestDir, "wikidata-vag-generation-candidates.json"));
+  copyAs(ROOT, "data/source-manifests/vag-factory-source-register.json", path.join(sourceManifestDir, "vag-factory-source-register.json"));
   patchDesktopSource(desktop);
   const local = require(path.join(desktop, "lib/local-research-db.cjs"));
   const summary = local.getWikidataGenerationSummary(researchDir);
