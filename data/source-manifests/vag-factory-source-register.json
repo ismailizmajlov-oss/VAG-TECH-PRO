@@ -884,7 +884,8 @@
         "raw_snapshot_sha256_required": true,
         "per_binding_sha256_required": true,
         "source_revision": "wikidata-generation-candidates-<snapshot-sha256-prefix>",
-        "source_manifest": "data/research/wikidata-vag-generations/<snapshot-id>/manifest.json"
+        "source_manifest": "data/source-manifests/wikidata-vag-generation-candidates.json",
+        "snapshot_manifest_pattern": "data/research/wikidata-vag-generations/<snapshot-id>/manifest.json"
       },
       "applicability": {
         "precision": "series_member_candidate",
