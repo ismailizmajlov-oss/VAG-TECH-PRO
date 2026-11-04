@@ -359,7 +359,7 @@ function patchDesktopSource(desktopRoot) {
   const verifierFile = path.join(desktopRoot, "scripts", "verify-local-research-packs.cjs");
   const readmeFile = path.join(desktopRoot, "data", "research", "README.md");
   const docsFile = path.join(desktopRoot, "docs", "RESEARCH_DATA_PACKS.md");
-  for (const file of [dbFile, typesFile, routeFile, uiFile, dbTestFile, packTestFile, uiTestFile, verifierFile, readmeFile, docsFile]) {
+  for (const file of [dbFile, typesFile, routeFile, uiFile, dbTestFile, packTestFile, uiTestFile, verifierFile, readmeFile]) {
     if (!fs.existsSync(file)) fail("Required desktop integration file is missing: " + path.relative(desktopRoot, file));
   }
 
@@ -585,7 +585,27 @@ function patchDesktopSource(desktopRoot) {
   const datasetMatch = ui.match(/type Dataset = ([^;]+);/);
   if (!datasetMatch) fail("Local research Dataset type is missing");
   if (!datasetMatch[1].split("|").some((part) => part.trim() === '"wikidata"')) ui = ui.replace(datasetMatch[0], "type Dataset = " + datasetMatch[1] + ' | "wikidata";');
-  if (!ui.includes("attributionRecommended?: boolean;")) ui = ui.replace("attributionRequired?: boolean;", "attributionRequired?: boolean; attributionRecommended?: boolean; sourceSnapshotSha256?: string; sourceQuerySha256?: string;");
+  if (!ui.includes("attributionRecommended?: boolean;")) ui = ui.replace("attributionRequired?: boolean;", "attributionRequired?: boolean; attributionRecommended?: boolean;");
+  if (!ui.includes("sourceQuerySha256?: string;")) ui = ui.replace("databaseSha256?: string;", "databaseSha256?: string; sourceQuerySha256?: string;");
+  const rowTypeStart = ui.indexOf("type ResearchRow = {");
+  if (rowTypeStart >= 0) {
+    const rowTypeEnd = ui.indexOf("\n};", rowTypeStart);
+    if (rowTypeEnd < 0) fail("Wikidata ResearchRow type closing brace is missing");
+    const rowType = ui.slice(rowTypeStart, rowTypeEnd);
+    const fields = [
+      "manufacturer?: string;", "model?: string;", "modelQid?: string;", "manufacturerQid?: string;",
+      "modelRu?: string | null;", "modelUrl?: string;", "inceptionDateStatements?: string[];",
+      "dissolutionDateStatements?: string[];", "modifiedDateStatements?: string[];", "sourceBindingCount?: number;",
+      "sourceRevision?: string;", "sourceRecordSha256?: string;", "sourceQuerySha256?: string;",
+      "sourceLicense?: string;", "attributionRecommended?: boolean;", "generationVerified?: boolean;",
+      "engineCode?: string | null;", "gearboxCode?: string | null;", "dtcFitment?: boolean;",
+      "repairProcedureFitment?: boolean;",
+    ];
+    const missing = fields.filter((field) => !rowType.includes(field));
+    if (missing.length) ui = ui.slice(0, rowTypeEnd) + "\n  " + missing.join("\n  ") + ui.slice(rowTypeEnd);
+  } else if (!ui.includes("type ResearchRow = Record<string, any>;")) {
+    fail("Wikidata ResearchRow type declaration is missing");
+  }
   if (!ui.includes('id: "wikidata"')) {
     const anchor = '  { id: "vehiclesdb", label: "Модели · рыночные данные", hint: "VehiclesDB · зарубежные рынки only" },\n';
     if (ui.split(anchor).length - 1 !== 1) fail("Wikidata research tab insertion anchor is missing");
@@ -737,8 +757,9 @@ function patchDesktopSource(desktopRoot) {
     writeText(readmeFile, readme);
   }
 
-  let docs = readText(docsFile).replace("Five separately licensed", "Six separately licensed");
-  if (!docs.includes("| Wikidata VAG model identity |")) {
+  if (fs.existsSync(docsFile)) {
+    let docs = readText(docsFile).replace("Five separately licensed", "Six separately licensed");
+    if (!docs.includes("| Wikidata VAG model identity |")) {
     const anchor = "## Critical limits\n";
     if (docs.split(anchor).length - 1 !== 1) fail("Wikidata research docs table anchor is missing");
     docs = docs.replace(anchor, "| Wikidata VAG model identity | CC0-1.0 | 376 model entities; 171 Russian-language labels; 5 manufacturer labels | Market UNKNOWN; candidate identity only; no generation, model-year, engine, gearbox, ECU or exact fitment |\n\n## Critical limits\n");
@@ -746,7 +767,8 @@ function patchDesktopSource(desktopRoot) {
   if (!docs.includes("Wikidata Russian-language labels do not establish Russian/EAEU market applicability")) {
     docs = docs.replace("- VehiclesDB is only a foreign-market identity aid; it cannot establish Russian or EAEU applicability.\n", "- VehiclesDB is only a foreign-market identity aid; it cannot establish Russian or EAEU applicability.\n- Wikidata Russian-language labels do not establish Russian/EAEU market applicability; P571/P576 statements are not converted into production-year ranges.\n");
   }
-  writeText(docsFile, docs);
+    writeText(docsFile, docs);
+  }
 }
 
 function main() {
