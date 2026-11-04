@@ -1,0 +1,1 @@
+CI-only validation trigger for the current Windows 10/11 x64 desktop candidate. No application, database, source-rights, or production configuration changes. Do not publish a release; run the existing Windows build, test, NSIS install/upgrade/offline/backup/restore/uninstall lifecycle workflow only.

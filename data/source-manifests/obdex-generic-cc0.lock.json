@@ -18,7 +18,23 @@
     "manufacturer_specific_codes_included": false,
     "exact_vag_fitment": false,
     "repair_procedures_or_pinouts_included": false,
-    "market_scope": "global_generic_obd2_not_market_specific"
+    "market_scope": "global_generic_obd2_not_market_specific",
+    "generic_code_ranges": [
+      "P0xxx",
+      "P2xxx",
+      "P34xx-P39xx",
+      "B0xxx",
+      "C0xxx",
+      "U0xxx",
+      "U3xxx"
+    ],
+    "excluded_manufacturer_controlled_ranges": [
+      "P1xxx",
+      "P30xx-P33xx",
+      "B1xxx-B2xxx",
+      "C1xxx-C2xxx",
+      "U1xxx-U2xxx"
+    ]
   },
   "expected_counts": {
     "generic_dtcs": 9533,
@@ -51,5 +67,15 @@
     "publication_status": "review_only",
     "exclude_from_vag_specific_dtc": true,
     "exclude_repair_costs_from_user_display": true
+  },
+  "source_reference_policy": {
+    "validation": "syntax_only",
+    "external_fetch": false,
+    "rights_review": "not_inherited_from_cc0_dataset",
+    "allowed_schemes": [
+      "https",
+      "http"
+    ],
+    "display_policy": "external_reference_link_only"
   }
 }

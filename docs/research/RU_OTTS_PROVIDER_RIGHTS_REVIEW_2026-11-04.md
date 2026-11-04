@@ -14,6 +14,12 @@ No newly reviewed commercial OTTS aggregator provides a public licence that perm
 | [Rosstandart FGIS «Реестры КТС»](https://www.interstandart.ru/page/fgis_01) | Official registry/search obligation | Official registry status and public search fields do not themselves establish bulk export, third-party display, persistent cache or redistribution rights. | Permission required; owner-supplied export plus matching licence/written permission required. |
 | [EAEU Open Data Portal](https://opendata.eaeunion.org/opendata/ru/api/restapi) | General OData/REST open-data portal | The reviewed catalogue search did not identify a specific OTTS/vehicle type-approval resource, resource-level licence, exact endpoint or bulk/caching terms. A portal-wide statement is not sufficient to clear an unidentified resource. | Permission required; continue exact resource discovery; no import. |
 
+## Additional official historical context
+
+A 2018 NAMI research report commissioned under a contract with the Eurasian Economic Commission describes the EAEU national conformity registers as providing free Internet access to necessary information. It also records that the registries were populated with scanned PDF copies and that missing attributes made search difficult. See the official EEC-hosted report, section 2.1, page 16: https://eec.eaeunion.org/upload/iblock/ffb/Otchet-OTTS-etap-1_664.pdf
+
+This is historical system-context evidence, not a dataset licence. The report says its results were intended for official use by the EEC; it does not grant VAG TECH PRO bulk extraction, commercial display, persistent offline caching, PDF redistribution or database redistribution rights. The 2026 catalog review still did not resolve a dedicated OTTS open-data resource with dataset-specific terms. The ingestion gate therefore remains closed.
+
 ## Consequence for acquisition
 
 1. Do not treat search-result visibility, a free API request allowance, a paid PDF download, or a software client's MIT licence as permission to reproduce a database.
@@ -24,3 +30,11 @@ No newly reviewed commercial OTTS aggregator provides a public licence that perm
 ## Review limitations
 
 This is a product source-rights gate, not a legal opinion. The provider terms were reviewed as published on 2026-11-04; terms can change. The FGIS legal-field review remains limited by the lack of a retrieved primary signed copy of the relevant Rosstandart orders.
+
+## Follow-up official EAEU catalogue check — 2026-11-05
+
+The official EAEU technical-regulation resource page at https://tech.eaeunion.org/tech/ru/registers/36 identifies the published resource as the **Unified Register of Conformity Assessment Bodies**. It exposes CSV/PDF/XML exports and OData, REST and S3 interfaces, with the page describing data published as of 2024-09-01. This is a real machine-readable EAEU resource, but it is not the vehicle type-approval/OTTS register and contains no basis for importing vehicle model, engine, gearbox or vehicle-configuration applicability.
+
+The EAEU Open Data Portal's general REST/OData documentation (https://opendata.eaeunion.org/opendata/ru/api/restapi) describes reuse of data that is actually published in the portal with minimal access restrictions. That general statement does not identify or license an absent OTTS dataset, nor does it override the separate terms of third-party OTTS providers.
+
+**Decision unchanged:** no OTTS rows or PDFs imported; no automated retrieval or caching enabled. Continue searching for a resource explicitly identified as vehicle type approvals and require its resource-specific licence/terms to cover bulk extraction, persistent offline cache, third-party display and redistribution before ingestion.

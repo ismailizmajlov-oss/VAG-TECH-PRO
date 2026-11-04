@@ -1,6 +1,7 @@
 name: Build licensed OBDex generic SQLite snapshot
 
 on:
+  workflow_call:
   pull_request:
     paths:
       - .github/workflows/acquire-obdex-cc0.yml
@@ -108,6 +109,7 @@ jobs:
             license_url = $lock.license_url
             license_sha256 = (Get-FileHash -Path (Join-Path $generatedRoot "UPSTREAM-LICENSE.txt") -Algorithm SHA256).Hash.ToLowerInvariant()
             scope = $lock.scope
+            source_reference_policy = $lock.source_reference_policy
             source_files = $sourceFiles
             build = $lock.build
             expected_counts = $lock.expected_counts
@@ -148,8 +150,21 @@ jobs:
             throw new Error("OBDex projections must be JSON arrays");
           }
 
+          let sourceReferenceRowsQuarantined = 0;
+          let sourceReferenceValuesQuarantined = 0;
+          const quarantineSourceReferences = (row) => {
+            const refs = Array.isArray(row?.sources) ? row.sources : row?.sources == null ? [] : [row.sources];
+            if (refs.length) {
+              sourceReferenceRowsQuarantined += 1;
+              sourceReferenceValuesQuarantined += refs.length;
+            }
+            // External source-document rights are not inherited from the CC0 dataset.
+            // Preserve original references only inside raw_record; never publish or fetch them as links.
+            return [];
+          };
           const dtcSeen = new Set();
           const dtcs = generic.map((row) => {
+            const safeSourceReferences = quarantineSourceReferences(row);
             const code = String(row?.code ?? "").trim().toUpperCase();
             if (!/^[PBCU][0-3][0-9A-F]{3}$/.test(code) || !families.has(code.slice(0,2))) {
               throw new Error("Non-generic or malformed DTC in OBDex projection: " + code);
@@ -158,10 +173,6 @@ jobs:
             dtcSeen.add(code);
             if (!row.title || typeof row.title.en !== "string" || row.title.en.trim().length < 3) {
               throw new Error(code + ": missing English title");
-            }
-            if (!Array.isArray(row.sources) || row.sources.length === 0 ||
-                row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
-              throw new Error(code + ": invalid source references");
             }
             const rawHash = sha256(Buffer.from(JSON.stringify(row)));
             return {
@@ -176,7 +187,7 @@ jobs:
               repair: row.repair && typeof row.repair === "object" ? row.repair : null,
               flags: row.flags && typeof row.flags === "object" ? row.flags : {},
               related_codes: Array.isArray(row.related_codes) ? row.related_codes : [],
-              source_references: row.sources,
+              source_references: safeSourceReferences,
               applies_to: null,
               verification_status: "source_imported_unreviewed",
               vehicle_fitment_claim: false,
@@ -189,6 +200,7 @@ jobs:
           function normalizePids(rows, mode) {
             const seen = new Set();
             return rows.map((row) => {
+              const safeSourceReferences = quarantineSourceReferences(row);
               const pid = String(row?.pid ?? "").trim().toUpperCase().replace(/^0X/,"").padStart(2,"0");
               if (!/^[0-9A-F]{2}$/.test(pid)) throw new Error("Invalid Mode " + mode + " PID: " + pid);
               if (seen.has(pid)) throw new Error("Duplicate Mode " + mode + " PID: " + pid);
@@ -198,9 +210,6 @@ jobs:
               }
               if (!row.name || typeof row.name.en !== "string" || row.name.en.trim().length < 2) {
                 throw new Error("PID " + pid + " has no English name");
-              }
-              if (!Array.isArray(row.sources) || row.sources.length === 0 || row.sources.some((u) => typeof u !== "string" || !u.startsWith("https://"))) {
-                throw new Error("PID " + pid + " has invalid source references");
               }
               const range = Array.isArray(row.range) ? row.range : null;
               const min = range?.[0] ?? null;
@@ -216,7 +225,7 @@ jobs:
                 bytes: row.bytes ?? null,
                 formula: row.formula ?? null,
                 min, max,
-                source_references: row.sources,
+                source_references: safeSourceReferences,
                 raw_record: row,
                 verification_status: "source_imported_unreviewed",
                 vehicle_fitment_claim: false,
@@ -282,7 +291,7 @@ jobs:
                 "source_url TEXT NOT NULL,license_id TEXT NOT NULL CHECK(license_id='CC0-1.0')," +
                 "license_url TEXT NOT NULL,license_sha256 TEXT NOT NULL,snapshot_sha256_json TEXT NOT NULL," +
                 "source_manifest_json TEXT NOT NULL,attribution TEXT NOT NULL,market_scope TEXT NOT NULL," +
-                "verification_status TEXT NOT NULL CHECK(verification_status='license_verified_research_only'))",
+                "verification_status TEXT NOT NULL CHECK(verification_status='license_verified_research_only'));",
               "CREATE TABLE generic_dtc_research(" +
                 "code TEXT PRIMARY KEY,namespace TEXT NOT NULL CHECK(namespace='generic_sae_iso_obd2')," +
                 "category TEXT,title_json TEXT NOT NULL,description_json TEXT NOT NULL,raw_record_json TEXT NOT NULL," +
@@ -290,18 +299,18 @@ jobs:
                 "source_id TEXT NOT NULL REFERENCES source_registry(source_id),source_version TEXT NOT NULL," +
                 "source_sha256 TEXT NOT NULL,data_license TEXT NOT NULL CHECK(data_license='CC0-1.0')," +
                 "verification_status TEXT NOT NULL CHECK(verification_status='source_imported_unreviewed')," +
-                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0))",
+                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0));",
               "CREATE TABLE generic_pid_research(" +
                 "mode INTEGER NOT NULL CHECK(mode IN (1,9)),pid TEXT NOT NULL,raw_record_json TEXT NOT NULL," +
                 "source_record_sha256 TEXT NOT NULL,source_references_json TEXT NOT NULL," +
                 "source_id TEXT NOT NULL REFERENCES source_registry(source_id),source_version TEXT NOT NULL," +
                 "source_sha256 TEXT NOT NULL,data_license TEXT NOT NULL CHECK(data_license='CC0-1.0')," +
                 "verification_status TEXT NOT NULL CHECK(verification_status='source_imported_unreviewed')," +
-                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0),PRIMARY KEY(mode,pid))",
+                "vehicle_fitment_claim INTEGER NOT NULL CHECK(vehicle_fitment_claim=0),PRIMARY KEY(mode,pid));",
               "CREATE TABLE database_info(" +
                 "id INTEGER PRIMARY KEY CHECK(id=1),schema_version INTEGER NOT NULL,source_id TEXT NOT NULL," +
                 "source_version TEXT NOT NULL,package_sha256 TEXT NOT NULL,generic_dtc_count INTEGER NOT NULL," +
-                "pid_count INTEGER NOT NULL,created_at_utc TEXT NOT NULL)"
+                "pid_count INTEGER NOT NULL,created_at_utc TEXT NOT NULL);"
             ].join("\n"));
             db.exec("BEGIN IMMEDIATE");
             try {
@@ -351,7 +360,10 @@ jobs:
               pids:pidCount,
               vag_specific_dtc_rows:0,
               fitment_claims:0,
-              production_rows:0
+              production_rows:0,
+              source_reference_validation:"raw_references_preserved_not_fetched_not_linked",
+              source_reference_rows_quarantined:sourceReferenceRowsQuarantined,
+              source_reference_values_quarantined:sourceReferenceValuesQuarantined
             };
             fs.writeFileSync(path.join(root,"OBDex-SQLITE-REPORT.json"),JSON.stringify(report,null,2)+"\n");
           } finally {
