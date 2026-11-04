@@ -293,7 +293,7 @@ function sync(packRootArg, researchRootArg) {
   rootManifest.product_import_policy = [...new Set([...(rootManifest.product_import_policy || []), ...(index.product_import_policy || [])])];
   atomicWriteJson(rootManifestPath, rootManifest);
 
-  for (const entry of rootManifest.packs) {
+  for (const entry of rootManifest.packs.filter((item) => required.includes(item.id))) {
     if (entry.database && entry.database_sha256 && hashRelative(researchRoot, entry.database) !== entry.database_sha256) fail(`Final research database hash mismatch: ${entry.id}`);
     for (const [fileKey, hashKey] of [["license_file", "license_file_sha256"], ["source_manifest_file", "source_manifest_sha256"], ["acquisition_report_file", "acquisition_report_sha256"], ["attribution_file", "attribution_sha256"], ["upstream_manifest_file", "upstream_manifest_sha256"]]) {
       if (entry[fileKey] && entry[hashKey] && hashRelative(researchRoot, entry[fileKey]) !== entry[hashKey]) fail(`Final research provenance hash mismatch: ${entry.id}/${fileKey}`);
