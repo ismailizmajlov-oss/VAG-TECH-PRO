@@ -221,8 +221,16 @@ verifier = replaceOnce(
 );
 verifier = replaceOnce(
   verifier,
-  'const sourceArtifacts = vehiclesDb.prepare("SELECT relative_path, sha256 FROM source_file_artifacts ORDER BY relative_path").all();\n    for (const artifact of sourceArtifacts) {\n      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.relative_path === "catalog.sqlite" ? "catalog.sqlite" : artifact.relative_path === "manifest.json" ? "manifest.json" : artifact.relative_path === "LICENSE" ? "LICENSE" : "ATTRIBUTION.md"];\n      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.relative_path}`);\n    }',
-  'const sourceArtifacts = vehiclesDb.prepare("SELECT source_path, sha256, source_role FROM source_file_artifacts ORDER BY source_path").all();\n    for (const artifact of sourceArtifacts) {\n      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.source_role];\n      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.source_path}`);\n    }',
+  String.raw`const sourceArtifacts = vehiclesDb.prepare("SELECT relative_path, sha256 FROM source_file_artifacts ORDER BY relative_path").all();
+    for (const artifact of sourceArtifacts) {
+      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.relative_path === "catalog.sqlite" ? "catalog.sqlite" : artifact.relative_path === "manifest.json" ? "manifest.json" : artifact.relative_path === "LICENSE" ? "LICENSE" : "ATTRIBUTION.md"];
+      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.relative_path}`);
+    }`,
+  String.raw`const sourceArtifacts = vehiclesDb.prepare("SELECT source_path, sha256, source_role FROM source_file_artifacts ORDER BY source_path").all();
+    for (const artifact of sourceArtifacts) {
+      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.source_role];
+      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.source_path}`);
+    }`,
   "VehiclesDB source file artifact schema"
 );
 fs.writeFileSync(verifierFile, verifier, "utf8");
