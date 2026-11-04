@@ -58,7 +58,7 @@ patch("app/login/page.tsx", [[
 'window.location.href="/";',
 'router.replace("/");',
 "internal login navigation"
-]]));
+]]);
 
 patch("tests/local-core-db.test.cjs", [[
 "  const now = new Date().toISOString();\n",
