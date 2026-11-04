@@ -1,0 +1,1 @@
+VAG TECH PRO Windows x64 run41 validation trigger. Non-merge validation branch only; no production deployment or licensed-data redistribution.
