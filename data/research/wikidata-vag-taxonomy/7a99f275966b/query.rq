@@ -1,0 +1,19 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <http://schema.org/>
+SELECT DISTINCT ?model ?modelLabelEn ?modelLabelRu ?manufacturer ?manufacturerLabel ?inception ?dissolution ?modified
+WHERE {
+  ?model wdt:P176 ?manufacturer ;
+         wdt:P31/wdt:P279* wd:Q3231690 .
+  VALUES ?manufacturerLabel { "Volkswagen"@en "Volkswagen AG"@en "Volkswagen Commercial Vehicles"@en "Audi AG"@en "Škoda Auto"@en "SEAT"@en "SEAT S.A."@en "Porsche AG"@en "Bentley Motors Limited"@en "Automobili Lamborghini S.p.A."@en "Bugatti Rimac"@en }
+  ?manufacturer rdfs:label ?manufacturerLabel .
+  ?model rdfs:label ?modelLabelEn .
+  FILTER(LANG(?modelLabelEn) = "en")
+  OPTIONAL { ?model rdfs:label ?modelLabelRu . FILTER(LANG(?modelLabelRu) = "ru") }
+  OPTIONAL { ?model wdt:P571 ?inception . }
+  OPTIONAL { ?model wdt:P576 ?dissolution . }
+  OPTIONAL { ?model schema:dateModified ?modified . }
+}
+ORDER BY ?manufacturerLabel ?modelLabelEn
+LIMIT 3000
