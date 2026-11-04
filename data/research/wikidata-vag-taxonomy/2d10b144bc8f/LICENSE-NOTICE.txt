@@ -1,0 +1,9 @@
+Wikidata structured data notice
+
+The structured data queried for this research pack is made available under
+Creative Commons CC0 1.0 Universal (CC0 1.0). Official legal code:
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+This notice applies only to the structured Wikidata statements represented in
+the pinned query snapshot. It does not apply to Wikimedia article text, images,
+logos, third-party linked resources, or any OEM material.

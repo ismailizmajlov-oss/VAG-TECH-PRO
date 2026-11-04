@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "pack_id": "wikidata-vag-model-taxonomy-cc0-2d10b144bc8f",
+  "snapshot_id": "2d10b144bc8f",
+  "built_at_utc": "2026-11-04T17:14:57Z",
+  "publisher": "Wikidata / Wikimedia Foundation",
+  "source_repository": "https://www.wikidata.org/",
+  "source_endpoint": "https://query.wikidata.org/sparql",
+  "source_id": "wikidata-vag-model-taxonomy",
+  "data_license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "rights_status": "approved_by_published_license",
+  "commercial_use_allowed": true,
+  "display_allowed": true,
+  "offline_cache_allowed": true,
+  "bulk_reuse_allowed": true,
+  "redistribution_allowed": true,
+  "attribution_required": false,
+  "attribution_recommended": true,
+  "share_alike_required": false,
+  "attribution_text": "Wikidata structured data, CC0 1.0 Universal.",
+  "source_revision": "wikidata-snapshot-2d10b144bc8f",
+  "source_snapshot_sha256": "2d10b144bc8f96016fde9488f91c3db8187d4649c4d07505d818221e51934387",
+  "source_query_sha256": "f8fbeb478d48887b9bc458f29f5e8369fc1bc3327dace391154ba1cefa5b027a",
+  "logical_content_sha256": "24056b345ac9da0dbd3898adcf46a79da306f0192c94bc97727a44e2afe3370e",
+  "database_sha256": "660e9458fea3477fc877014f0a3db9b1857f2988a83c0efd39801723598235bc",
+  "manufacturer_whitelist": [
+    "Volkswagen",
+    "Volkswagen AG",
+    "Volkswagen Commercial Vehicles",
+    "Audi AG",
+    "Škoda Auto",
+    "SEAT",
+    "SEAT S.A.",
+    "Porsche AG",
+    "Bentley Motors Limited",
+    "Automobili Lamborghini S.p.A.",
+    "Bugatti Rimac"
+  ],
+  "counts": {
+    "model_entities": 376,
+    "source_bindings": 376,
+    "manufacturers": 5,
+    "russian_labels": 171,
+    "date_statements": 21
+  },
+  "query_limit": 3000,
+  "limit_reached": false,
+  "completeness_status": "unknown",
+  "scope": {
+    "namespace": "vag_identity_candidate",
+    "manufacturer_group_basis": "curated_manufacturer_label_whitelist; not an authoritative corporate ownership registry",
+    "market_scope": "UNKNOWN",
+    "completeness_status": "unknown",
+    "applicability_precision": "candidate_identity_only",
+    "review_status": "candidate",
+    "generation_entities": 0,
+    "generation_verified": false,
+    "exact_vehicle_fitment": false,
+    "engine_code_fitment": false,
+    "transmission_code_fitment": false,
+    "ecu_fitment": false,
+    "dtc_fitment": false,
+    "repair_procedure_fitment": false,
+    "diagnostic_execution_allowed": false,
+    "production_years_inferred": false
+  },
+  "exclusions": [
+    "No engine or gearbox codes",
+    "No ECU identities",
+    "No DTC definitions or descriptions",
+    "No diagnostic test plans or execution commands",
+    "No repair procedures",
+    "No wiring diagrams or pinouts",
+    "No torque values or adaptations",
+    "No OEM part numbers",
+    "No market scope",
+    "No exact vehicle fitment",
+    "No verified generation mapping",
+    "No article text or images"
+  ],
+  "pack_files": {
+    "snapshot.json": {
+      "sha256": "2d10b144bc8f96016fde9488f91c3db8187d4649c4d07505d818221e51934387",
+      "byte_size": 267975
+    },
+    "query.rq": {
+      "sha256": "f8fbeb478d48887b9bc458f29f5e8369fc1bc3327dace391154ba1cefa5b027a",
+      "byte_size": 1046
+    },
+    "LICENSE-NOTICE.txt": {
+      "sha256": "a3b69835af6ff3dd2f7fcf20324ada50b5175d4e6724bd881e735bc077e594e1",
+      "byte_size": 452
+    },
+    "ATTRIBUTION.md": {
+      "sha256": "85ce70576e2361376466e4ee6b32943a7cc15808badb1bfc39ae36041be272f6",
+      "byte_size": 1024
+    },
+    "wikidata-vag-taxonomy.sqlite": {
+      "sha256": "660e9458fea3477fc877014f0a3db9b1857f2988a83c0efd39801723598235bc",
+      "byte_size": 409600
+    }
+  }
+}
