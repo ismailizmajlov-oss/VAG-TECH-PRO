@@ -527,7 +527,7 @@ function patchDesktopSource(desktopRoot) {
       "  try {",
       "    const source = db.prepare(\"SELECT * FROM source_registry WHERE source_id=?\").get(packManifest.source_id);",
       "    if (!source || source.license_id !== \"CC0-1.0\" || source.market_scope !== \"UNKNOWN\" || source.applicability_precision !== \"candidate_identity_only\" || source.review_status !== \"candidate\" || source.commercial_use_allowed !== 1 || source.display_allowed !== 1 || source.offline_cache_allowed !== 1 || source.bulk_reuse_allowed !== 1 || source.redistribution_allowed !== 1 || source.attribution_required !== 0 || source.share_alike_required !== 0) throw new Error(\"Wikidata SQLite source registry rights gate failed\");",
-      "    const pattern = \"%\" + q.replace(/[!%_]/g, \"!$&\") + \"%\";",
+      "    const pattern = \"%\" + q.replace(/[!%_]/g, (character) => \"!\" + character) + \"%\";",
       "    const rows = db.prepare(",
       "      \"SELECT model_qid, manufacturer_qid, model_label_en, model_label_ru, manufacturer_label_en, inception_dates_json, dissolution_dates_json, modified_dates_json, source_record_sha256, source_revision, source_snapshot_sha256, source_query_sha256, source_binding_count \" +",
       "      \"FROM vehicle_model_entities WHERE market_scope='UNKNOWN' AND applicability_precision='candidate_identity_only' AND review_status='candidate' \" +",
@@ -555,7 +555,7 @@ function patchDesktopSource(desktopRoot) {
     ].join("\n");
     const searchAnchor = "\nfunction searchVehiclesDbCandidates(";
     if (source.split(searchAnchor).length - 1 !== 1) fail("Wikidata search-function insertion anchor is missing or ambiguous");
-    source = source.replace(searchAnchor, "\n" + searchFunction + searchAnchor);
+    source = source.replace(searchAnchor, () => "\n" + searchFunction + searchAnchor);
   }
   if (!source.includes("  searchWikidataCandidates,")) {
     const exportAnchor = "  validateQuery,";
@@ -694,6 +694,10 @@ function patchDesktopSource(desktopRoot) {
     '  const rows = local.searchWikidataCandidates("Volkswagen", 10, root);\n' +
     '  assert.ok(rows.length > 0);\n' +
     '  assert.ok(rows.every((row) => row.marketScope === "UNKNOWN" && row.reviewStatus === "candidate" && row.applicabilityPrecision === "candidate_identity_only" && row.exactFitment === false && row.generationVerified === false && row.engineCode === null && row.gearboxCode === null && row.ecuFitment === false && row.dtcFitment === false && row.repairProcedureFitment === false));\n' +
+    '});\n\n' +
+    'test("Wikidata search treats SQL LIKE wildcard characters literally", () => {\n' +
+    '  assert.deepEqual(local.searchWikidataCandidates("%", 25, root), []);\n' +
+    '  assert.deepEqual(local.searchWikidataCandidates("_", 25, root), []);\n' +
     '});\n\n' +
     'test("VehiclesDB model evidence is foreign-market-only, attributed, and never promoted to exact fitment", () => {',
     "Wikidata local research DB test");
