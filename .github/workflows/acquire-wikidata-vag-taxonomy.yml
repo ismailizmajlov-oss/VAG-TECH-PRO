@@ -1,0 +1,102 @@
+name: Acquire CC0 Wikidata VAG model taxonomy
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/acquire-wikidata-vag-taxonomy.yml"
+      - "scripts/build_wikidata_vag_taxonomy.py"
+      - "tests/test_wikidata_vag_taxonomy.py"
+      - "tests/fixtures/wikidata-vag-taxonomy-sample.json"
+      - "data/source-manifests/wikidata-vag-taxonomy.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/acquire-wikidata-vag-taxonomy.yml"
+      - "scripts/build_wikidata_vag_taxonomy.py"
+      - "tests/test_wikidata_vag_taxonomy.py"
+      - "tests/fixtures/wikidata-vag-taxonomy-sample.json"
+      - "data/source-manifests/wikidata-vag-taxonomy.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wikidata-vag-taxonomy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-verify:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          cache: "false"
+
+      - name: Run deterministic fixture tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m unittest discover -s tests -p "test_wikidata_vag_taxonomy.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "Wikidata fixture tests failed" }
+
+      - name: Acquire live structured-data snapshot and build SQLite
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_wikidata_vag_taxonomy.py --fetch --output-dir build/wikidata-vag-taxonomy
+          if ($LASTEXITCODE -ne 0) { throw "Wikidata SPARQL acquisition/build failed" }
+
+      - name: Verify live snapshot, hashes, rights and candidate-only boundaries
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_wikidata_vag_taxonomy.py --verify-dir build/wikidata-vag-taxonomy --output-dir build/wikidata-vag-taxonomy
+          if ($LASTEXITCODE -ne 0) { throw "Wikidata live pack verification failed" }
+
+      - name: Publish immutable research snapshot to PR branch
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          TARGET_REF: ${{ github.event.pull_request.head.ref || 'main' }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $builtDir = "build/wikidata-vag-taxonomy"
+          $built = Get-Content -LiteralPath (Join-Path $builtDir "manifest.json") -Raw | ConvertFrom-Json
+          $target = Join-Path "data/research/wikidata-vag-taxonomy" $built.snapshot_id
+          if (Test-Path -LiteralPath $target) {
+            $existing = Get-Content -LiteralPath (Join-Path $target "manifest.json") -Raw | ConvertFrom-Json
+            if ($existing.source_snapshot_sha256 -ne $built.source_snapshot_sha256 -or $existing.database_sha256 -ne $built.database_sha256) {
+              throw "Immutable snapshot directory exists with different content."
+            }
+          } else {
+            New-Item -ItemType Directory -Path $target -Force | Out-Null
+            Copy-Item -Path (Join-Path $builtDir "*") -Destination $target -Recurse -Force
+            git add -- $target
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "data(wikidata): publish CC0 VAG model identity snapshot $($built.snapshot_id)"
+            if ($LASTEXITCODE -ne 0) { throw "Could not commit immutable Wikidata snapshot." }
+            git push origin "HEAD:$env:TARGET_REF"
+            if ($LASTEXITCODE -ne 0) { throw "Could not push immutable Wikidata snapshot." }
+          }
+
+      - name: Upload verified SQLite and provenance
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v4.6.2
+        with:
+          name: wikidata-vag-model-taxonomy-cc0
+          path: build/wikidata-vag-taxonomy/
+          if-no-files-found: error
+          retention-days: 90
