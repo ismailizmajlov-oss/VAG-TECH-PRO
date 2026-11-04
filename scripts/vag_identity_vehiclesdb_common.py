@@ -109,11 +109,13 @@ def _validate_inputs(lock: dict[str, Any], upstream: dict[str, Any], attribution
 
     approved = lock.get("approved_source_license_map")
     excluded = lock.get("excluded_source_reasons")
+    not_in_release = lock.get("not_in_release_sources")
     scope = lock.get("scope")
-    if not isinstance(approved, dict) or not approved or not isinstance(excluded, dict) or not isinstance(scope, dict):
-        raise ValueError("VehiclesDB source-rights or scope lock is invalid")
-    if set(approved) & set(excluded):
-        raise ValueError("A VehiclesDB source cannot be both approved and excluded")
+    if (not isinstance(approved, dict) or not approved or not isinstance(excluded, dict)
+            or not isinstance(not_in_release, dict) or not isinstance(scope, dict)):
+        raise ValueError("VehiclesDB source-rights, absent-source or scope lock is invalid")
+    if set(approved) & set(excluded) or set(approved) & set(not_in_release) or set(excluded) & set(not_in_release):
+        raise ValueError("A VehiclesDB source cannot be approved, excluded and/or marked absent at the same time")
     makes = scope.get("makes")
     kinds = scope.get("kinds")
     if not isinstance(makes, list) or not makes or not isinstance(kinds, list) or not kinds:
@@ -122,6 +124,9 @@ def _validate_inputs(lock: dict[str, Any], upstream: dict[str, Any], attribution
         # Country presence in the upstream release is allowed; output evidence is filtered below.
         pass
     upstream_sources = {str(item.get("id")): item for item in upstream.get("sources", []) if isinstance(item, dict)}
+    absent_but_present = set(upstream_sources) & set(not_in_release)
+    if absent_but_present:
+        raise ValueError("VehiclesDB source marked not in pinned release is present: " + ", ".join(sorted(absent_but_present)))
     if set(upstream_sources) != set(approved) | set(excluded):
         raise ValueError("VehiclesDB upstream source list differs from the pinned approved/excluded source map")
     for source_id, expected_license in approved.items():
@@ -428,6 +433,9 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
         "product_eligibility": "make_model_identity_candidate_only_foreign_market_presence",
         "market_scope": "foreign_market_presence_only",
         "market_scope_countries": market_countries,
+        "approved_source_license_map": approved,
+        "excluded_source_reasons": excluded,
+        "not_in_release_sources": not_in_release,
         "applicability_precision": "make_model_name_only",
         "fitment_status": "not_established",
         "fitment_claim": False,
@@ -482,6 +490,10 @@ def verify_pack(pack_dir: Path, lock_path: Path, *, strict_counts: bool = True) 
     )
     if manifest.get("status") != "identity_candidate_pack_verified" or manifest.get("dataset_license") != DATASET_LICENSE:
         raise ValueError("VehiclesDB pack status/license mismatch")
+    if (manifest.get("approved_source_license_map") != approved
+            or manifest.get("excluded_source_reasons") != excluded
+            or manifest.get("not_in_release_sources") != lock.get("not_in_release_sources")):
+        raise ValueError("VehiclesDB pack approved/excluded/absent source map mismatch")
     if manifest.get("ru_evidence_present") is not False or manifest.get("fitment_claim") is not False:
         raise ValueError("VehiclesDB RU-market or exact-fitment boundary failed")
     if any(manifest.get(key) is not False for key in (
@@ -604,7 +616,7 @@ def verify_pack(pack_dir: Path, lock_path: Path, *, strict_counts: bool = True) 
         db.close()
     return {"status": "verified_identity_candidate_pack", "counts": counts, "market_scope_countries": countries,
             "database_sha256": manifest["database_sha256"], "source_snapshot_sha256": source_snapshot,
-            "excluded_sources": sorted(excluded)}
+            "excluded_sources": sorted(excluded), "not_in_release_sources": sorted(lock["not_in_release_sources"])}
 
 
 def main_build(argv: list[str] | None = None) -> int:
