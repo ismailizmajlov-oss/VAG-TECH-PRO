@@ -121,13 +121,13 @@ page = replaceOnce(
 page = replaceOnce(
   page,
   "new Date(item.created_at).toLocaleDateString()",
-  "new Date(item.created_at || Date.now()).toLocaleDateString()",
+  "item.created_at ? new Date(item.created_at).toLocaleDateString() : \"—\"",
   "optional garage timestamp"
 );
 page = replaceOnce(
   page,
   "new Date(x.created_at).toLocaleString()",
-  "new Date(x.created_at || Date.now()).toLocaleString()",
+  "(x.created_at ? new Date(x.created_at).toLocaleString() : \"\")",
   "optional history timestamp"
 );
 page = replaceOnce(
@@ -172,6 +172,7 @@ const testContent = [
   '  assert.match(declaration, /\\[key: string\\]: unknown;/);',
   '  assert.match(page, /type IdentifiedDbRow = DbRow & \\{ id: string \\};/);',
   '  assert.doesNotMatch(page, /Record<string,\\s*any>/);',
+  '  assert.doesNotMatch(page, /Date\\.now\\(\\)/);',
   '  assert.equal((page.match(/useState<IdentifiedDbRow\\[\\]>\\(\\[\\]\\)/g) || []).length, 7);',
   '});',
   '',
