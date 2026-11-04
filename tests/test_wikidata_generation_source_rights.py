@@ -15,6 +15,11 @@ class WikidataGenerationSourceRightsTests(unittest.TestCase):
             item for item in register["sources"]
             if item["source_id"] == "wikidata-vag-generation-candidates"
         )
+        cls.static_manifest_path = (
+            Path(__file__).resolve().parents[1]
+            / "data" / "source-manifests" / "wikidata-vag-generation-candidates.json"
+        )
+        cls.static_manifest = json.loads(cls.static_manifest_path.read_text(encoding="utf-8"))
 
     def test_cc0_rights_cover_display_offline_cache_and_redistribution(self):
         rights = self.source["rights"]
@@ -49,6 +54,20 @@ class WikidataGenerationSourceRightsTests(unittest.TestCase):
         self.assertFalse(self.source["applicability"]["generation_verified"])
         self.assertFalse(self.source["applicability"]["production_years_inferred"])
 
+    def test_static_manifest_matches_candidate_only_cc0_policy(self):
+        manifest = self.static_manifest
+        self.assertEqual(manifest["source_id"], "wikidata-vag-generation-candidates")
+        self.assertEqual(manifest["license"]["id"], "CC0-1.0")
+        self.assertTrue(manifest["license"]["offline_cache_allowed"])
+        self.assertTrue(manifest["license"]["redistribution_allowed"])
+        self.assertEqual(manifest["acquisition"]["relationship_properties"], ["P179", "P527"])
+        self.assertEqual(manifest["acquisition"]["query_batch_size"], 50)
+        self.assertEqual(manifest["applicability"]["precision"], "series_member_candidate")
+        self.assertFalse(manifest["applicability"]["generation_verified"])
+        self.assertFalse(manifest["applicability"]["exact_vehicle_fitment"])
+        self.assertFalse(manifest["applicability"]["production_years_inferred"])
+        self.assertEqual(manifest["applicability"]["market_scope"], "UNKNOWN")
+
     def test_source_is_public_but_completeness_and_market_are_unknown(self):
         access = self.source["access"]
         self.assertEqual(access["status"], "public_sparql")
@@ -62,6 +81,14 @@ class WikidataGenerationSourceRightsTests(unittest.TestCase):
         self.assertTrue(self.source["provenance"]["parent_model_snapshot_sha256_required"])
         self.assertTrue(self.source["provenance"]["parent_model_database_sha256_required"])
         self.assertTrue(self.source["provenance"]["per_binding_sha256_required"])
+        self.assertEqual(
+            self.source["provenance"]["source_manifest"],
+            "data/source-manifests/wikidata-vag-generation-candidates.json"
+        )
+        self.assertEqual(
+            self.source["provenance"]["snapshot_manifest_pattern"],
+            "data/research/wikidata-vag-generations/<snapshot-id>/manifest.json"
+        )
 
 
 if __name__ == "__main__":
