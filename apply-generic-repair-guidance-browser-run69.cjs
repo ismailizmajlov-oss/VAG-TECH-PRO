@@ -33,7 +33,7 @@ function main(){
     scope.model_generation_year_fitment!==false||scope.engine_gearbox_fitment!==false||scope.ecu_fitment!==false||
     scope.pr_code_fitment!==false||scope.vin_fitment!==false||scope.diagnostic_execution_allowed!==false||
     scope.oem_repair_procedure!==false||scope.technical_review_status!=="not_independently_reviewed"||scope.safety_review_status!=="not_assessed")fail("Generic-only applicability boundary changed");
- files.forEach(n=>{const rec=m.pack_files&&m.pack_files[n];if(!rec)fail("Missing pack hash "+n);verify(path.join(pack,n),rec.sha256,n);});
+ files.filter(n=>n!=="manifest.json").forEach(n=>{const rec=m.pack_files&&m.pack_files[n];if(!rec)fail("Missing pack hash "+n);verify(path.join(pack,n),rec.sha256,n);});
  if(m.database_sha256!==m.pack_files["generic-repair-guidance.sqlite"].sha256)fail("SQLite hash mismatch in pack manifest");
  for(const n of ["dtc_codes.csv","diagnostic_fixes.csv"])if(!m.source_files?.[n]||!/^[a-f0-9]{64}$/.test(m.source_files[n].sha256||""))fail("Missing pinned source hash "+n);
  const register=json(path.join(repo,"data/source-manifests/vag-factory-source-register.json"));
