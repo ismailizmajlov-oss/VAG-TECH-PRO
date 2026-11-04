@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "pack_id": "wikidata-vag-identity-cc0",
+  "source_id": "wikidata-vag-identity-cc0",
+  "publisher": "Wikimedia Foundation / Wikidata contributors",
+  "source_url": "https://www.wikidata.org",
+  "source_license_url": "https://www.wikidata.org/wiki/Wikidata:Licensing",
+  "data_license": "CC0-1.0",
+  "license_scope": "CC0 applies to structured data in Wikidata main, Property, Lexeme and EntitySchema namespaces. This seed contains only structured entity labels, QIDs, manufacturer/brand/series/succession statements and explicit date statements; no Wikipedia prose, images or other non-structured page text is copied.",
+  "rights_status": "confirmed_by_published_CC0_license_for_structured_data",
+  "rights": {
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": false,
+    "attribution_recommended": true
+  },
+  "dataset_scope": {
+    "entity_class": "car model / generation candidate",
+    "brands": [
+      "Volkswagen",
+      "Audi",
+      "Škoda"
+    ],
+    "market_scope": "UNKNOWN",
+    "applicability_precision": "global_model_generation_candidate"
+  },
+  "verification_status": "community_reference_unverified",
+  "product_eligibility": "candidate_reference_only",
+  "exact_vehicle_fitment": false,
+  "engine_fitment": false,
+  "transmission_fitment": false,
+  "ecu_fitment": false,
+  "diagnostic_execution_allowed": false,
+  "repair_procedure_included": false,
+  "oem_part_numbers_included": false,
+  "limitations": [
+    "Curated seed snapshot, not exhaustive VAG taxonomy.",
+    "Wikidata is community-maintained; no manufacturer/OEM confirmation is implied.",
+    "Market scope is UNKNOWN; no Russian or EAEU applicability is claimed.",
+    "Year fields are populated only where an explicit structured date statement was inspected; ambiguous or absent ranges remain null.",
+    "No engine codes, gearbox codes, ECU mapping, DTC, repair procedures, wiring, pinouts or OEM parts are included.",
+    "This pack must remain in a separate candidate research namespace and must not populate confirmed vehicle fitment."
+  ]
+}
