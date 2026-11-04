@@ -390,6 +390,22 @@ function patchDesktopSource(desktopRoot) {
     if (count !== 1) fail(label + ": expected exactly one anchor, found " + count);
     source = source.replace(before, after);
   }
+  // Align the VehiclesDB verifier with the pinned SQLite schema; do not query fields that are absent from dataset_provenance.
+  replaceSource(
+    "    const vehiclesDbProvenance = vehiclesDb.prepare(\"SELECT dataset_id, publisher, repository_url, upstream_tag, dataset_version, dataset_license, attribution_required, attribution_text, attribution_url, catalog_sqlite_sha256, upstream_manifest_sha256, license_sha256, attribution_sha256, ru_evidence_present, fitment_claim FROM dataset_provenance WHERE provenance_id=1\").get();",
+    "    const vehiclesDbProvenance = vehiclesDb.prepare(\"SELECT dataset_id, publisher, repository, upstream_tag, dataset_version, dataset_license, license_url, upstream_manifest_sha256, source_catalog_sha256, attribution_sha256, license_sha256, lock_sha256, imported_at_utc FROM dataset_provenance WHERE dataset_id='vehiclesdb-vag-identity'\").get();",
+    "VehiclesDB provenance schema alignment"
+  );
+  replaceSource(
+    "    if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbProvenance.attribution_required !== 1 ||\n        vehiclesDbProvenance.ru_evidence_present !== 0 || vehiclesDbProvenance.fitment_claim !== 0 ||",
+    "    if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== \"vehiclesdb-vag-identity\" || vehiclesDbProvenance.publisher !== \"VehiclesDB\" ||\n        vehiclesDbProvenance.repository !== vehiclesDbPackManifest.source_repository || vehiclesDbProvenance.upstream_tag !== vehiclesDbPackManifest.upstream_tag ||\n        vehiclesDbProvenance.dataset_version !== vehiclesDbPackManifest.dataset_version || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license ||\n        vehiclesDbProvenance.license_url !== vehiclesDbPackManifest.license_url || vehiclesDbProvenance.upstream_manifest_sha256 !== vehiclesDbPackManifest.source_manifest_sha256 ||\n        vehiclesDbProvenance.source_catalog_sha256 !== vehiclesDbPackManifest.source_catalog_sha256 ||\n        vehiclesDbProvenance.attribution_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"ATTRIBUTION.md\"] ||\n        vehiclesDbProvenance.license_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"LICENSE\"] ||\n        vehiclesDbProvenance.lock_sha256 !== vehiclesDbPackManifest.lock_sha256 ||",
+    "VehiclesDB provenance field validation"
+  );
+  replaceSource(
+    "        sourceUrl: safeHttpsUrl(packManifest.repository),",
+    "        sourceUrl: safeHttpsUrl(packManifest.source_repository || packManifest.repository),",
+    "VehiclesDB source URL manifest field"
+  );
   replaceSource(
     '  const mechanicDbManifest = manifest.packs.find((pack) => pack.id === PACKS.mechanicdb.id);',
     '  const mechanicDbManifest = manifest.packs.find((pack) => pack.id === PACKS.mechanicdb.id);\n  const wikidataManifest = manifest.packs.find((pack) => pack.id === PACKS.wikidata.id);',
