@@ -13,6 +13,8 @@ const lifecycle = fs.readFileSync(path.join(root, "scripts", "windows-installer-
 test("generic guidance has a separate offline research tab and summary", () => {
   assert.match(component, /id: "generic-guidance"/);
   assert.match(component, /genericGuidanceSummary/);
+  assert.match(component, /type GenericGuidanceRow/);
+  assert.match(component, /type GenericGuidanceSummary/);
   assert.match(component, /genericRepairGuidance/);
   assert.match(component, /dataset === "generic-guidance"/);
   assert.match(component, /row\.instructions/);
@@ -22,7 +24,7 @@ test("generic guidance has a separate offline research tab and summary", () => {
 });
 
 test("generic guidance UI never claims VAG fitment or an actionable OEM procedure", () => {
-  const start = component.indexOf('dataset === "generic-guidance" && rows.map');
+  const start = component.indexOf('dataset === "generic-guidance" && (rows as unknown as GenericGuidanceRow[]).map');
   assert.ok(start >= 0);
   const end = component.indexOf("</article>)}", start);
   assert.ok(end > start);
@@ -30,6 +32,7 @@ test("generic guidance UI never claims VAG fitment or an actionable OEM procedur
   assert.match(card, /не VAG-specific/i);
   assert.match(card, /не OEM-процедура/i);
   assert.match(card, /не использовать как тест-план/i);
+  assert.match(component, /<\\/p>\\}/);
   assert.doesNotMatch(card, /onClick|<button/);
   assert.match(card, /diagnosticExecutionAllowed/);
   assert.match(card, /exactVehicleFitment/);
