@@ -64,7 +64,7 @@ def fetch_metadata(dataset_id: str) -> tuple[dict[str, Any], bytes]:
         raise ValueError(f"RDW metadata id mismatch for {dataset_id}")
     license_values = [
         str(metadata.get(k) or "")
-        for k in ("licenseId", "licenseName", "license", "attribution")
+        for k in ("licenseId", "licenseName", "license")
     ]
     joined = " ".join(license_values).strip().lower()
     if joined and not any(x in joined for x in ("cc0", "public domain", "public-domain", "zero")):
@@ -140,7 +140,13 @@ def approval_query(dataset_id: str, approvals: list[str]) -> list[tuple[str, str
     where = field + " in (" + ",".join(quote_sql(x) for x in approvals) + ")"
     if dataset_id == "byxc-wwua":
         where += " AND voertuigcategorie='M1'"
-    return [("$where", where), ("$order", "typegoedkeuringsnummer")]
+    select_fields = {
+        "4by9-ammk":"typegoedkeuringsnummer,codevarianttgk,codeuitvoeringtgk,volgnummerrevisieuitvoering,volgnummeraandrijving,motorcode,typegoedkeuringsnummermotor,aantalcilinders,cilinderinhoud",
+        "7rjk-eycs":"typegoedkeuringsnummer,codevarianttgk,codeuitvoeringtgk,volgnummerrevisieuitvoering,volgnummerversnelling,codetypeversnellingsbak,aantalversnellingenondergrens,aantalversnellingenbovengrens",
+        "byxc-wwua":"typegoedkeuringsnummer,codevarianttgk,codeuitvoeringtgk,volgnummerrevisieuitvoering,voertuigcategorie,begindatumrevisieuitvoering,einddatumrevisieuitvoering",
+        "x5v3-sewk":"typegoedkeuringsnummer,codevariantgk,codeuitvoeringtgk,volgnummerrevisieuitvoering,volgnummerhandelsbenamingfabr,handelsbenamingfabrikant,typeaanduidingfabrikant",
+    }
+    return [("$select",select_fields[dataset_id]),("$where", where), ("$order", "typegoedkeuringsnummer")]
 
 def fetch_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
     lock = json.loads(lock_path.read_text(encoding="utf-8"))
