@@ -14,8 +14,17 @@
     "display_form": "Vehicle data by VehiclesDB (vehiclesdb.com)"
   },
   "scope": {
-    "makes": ["volkswagen", "audi", "skoda", "seat", "cupra"],
-    "kinds": ["car", "van"],
+    "makes": [
+      "volkswagen",
+      "audi",
+      "skoda",
+      "seat",
+      "cupra"
+    ],
+    "kinds": [
+      "car",
+      "van"
+    ],
     "applicability_precision": "make_model_name_only",
     "market_scope_policy": "per_record_country_evidence_only",
     "fitment_claim": false,
@@ -46,8 +55,7 @@
     "il_mot": "Source-specific terms are not relicensed as CC-BY-4.0; exclude pending separate terms review.",
     "th_dlt": "Thailand is outside the requested Russian/EAEU product market.",
     "ch_tg": "One Swiss canton only; do not represent it as nationwide Swiss coverage.",
-    "no_svv_pkk": "Roadworthiness-inspection evidence is not a vehicle registration/fleet register.",
-    "ro_drpciv": "Not part of the pinned release's declared country coverage; do not infer or add it."
+    "no_svv_pkk": "Roadworthiness-inspection evidence is not a vehicle registration/fleet register."
   },
   "source_files": [
     "dist/catalog.sqlite",
@@ -68,5 +76,8 @@
     "unknown_years_remain_null": true,
     "unknown_generation_engine_gearbox_remain_absent": true,
     "do_not_promote_to_exact_fitment": true
+  },
+  "not_in_release_sources": {
+    "ro_drpciv": "Not present in the pinned VehiclesDB v2026.10.3 manifest; record as absent, not as an excluded source in this release."
   }
 }
