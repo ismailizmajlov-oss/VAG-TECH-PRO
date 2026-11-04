@@ -1,3 +1,5 @@
 VAG TECH PRO Windows 10/11 x64 CI trigger.
 Purpose: execute the pinned desktop source, run54 transactional local catalog importer, and run55 external-network-blocked lifecycle gate.
 No production deployment, release publication, cloud writes, or paid services.
+workflow_revision=17f51a446623b8d518cd320e15ce0e541605758a
+trigger_reason=run54 importer plus run55 offline firewall lifecycle gate
