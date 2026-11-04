@@ -139,12 +139,12 @@ def is_generic_sae_code(code: str) -> bool:
     if not re.fullmatch(r"[PBCU][0-9A-F]{4}", code):
         return False
     family = code[0]
-    pair = int(code[1:3], 16)
+    digits = code[1:]
     if family == "P":
-        return pair in (0, 2) or 0x34 <= pair <= 0x39
+        return digits[0] in ("0", "2") or 0x34 <= int(digits[:2], 16) <= 0x39
     if family in ("B", "C"):
-        return pair == 0
-    return pair in (0, 3)
+        return digits[0] == "0"
+    return digits[0] in ("0", "3")
 
 
 def create_database(
