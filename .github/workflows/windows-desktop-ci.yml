@@ -232,6 +232,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run38 local API request-origin fix failed" }
           "lifecycle_origin_fix=applied" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply run40 lifecycle HttpClient and diagnostic gate fix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-httpclient-fix-run40.cjs
+          node apply-lifecycle-httpclient-fix-run40.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-httpclient-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run40 lifecycle patch failed" }
+          "lifecycle_httpclient_fix=applied" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -336,7 +345,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run38
+          name: vag-tech-pro-windows-x64-run40
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
