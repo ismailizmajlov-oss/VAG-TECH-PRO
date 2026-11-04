@@ -1456,6 +1456,205 @@
         "Keep the database separate and preserve the CC BY 4.0 VehiclesDB credit plus all unconditional upstream source notices."
       ],
       "evidence_status": "pinned_v2026.10.3_manifest_LICENSE_and_ATTRIBUTION_reviewed_2026-11-05; audit records SQLite integrity and source-file hashes"
+    },
+    {
+      "source_id": "elpts-national-otts-register-public-query",
+      "publisher": "АО «Электронный паспорт» / national part of the EAEU unified vehicle type-approval register",
+      "url": "https://elpts.ru/",
+      "access_details_url": "https://docs.elpts.ru/ncher/esbkts",
+      "source_kind": "official_public_query_route_for_vehicle_type_approval_documents",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "document_types": [
+        "OTTS",
+        "OTSH",
+        "SBKTS",
+        "ZOETS",
+        "cancellation_notices"
+      ],
+      "evidence_scope": [
+        "vehicle_type_approval_document_discovery",
+        "document_metadata_only"
+      ],
+      "access": {
+        "public_query_route": "The elpts.ru public page lists the national part of the unified OTTS/OTSH/SBKTS register; docs.elpts.ru/ncher/esbkts is a publicly reachable document-register page titled ESBKTS with visible OTTS, OTSH and ZOETS filter labels.",
+        "machine_readable_api": "not_verified",
+        "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
+        "bulk_export": "not_established",
+        "offline_cache": "not_established",
+        "automated_extraction": "not_established",
+        "pdf_download_and_redistribution": "not_established"
+      },
+      "rights": {
+        "data_license_status": "not_established",
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true
+      },
+      "limitations": [
+        "The public docs page title identifies an SBKTS register; visible OTTS/OTSH/ZOETS labels do not prove that all OTTS records are exposed, complete or downloadable.",
+        "The elpts.ru page identifies a national part of the unified OTTS/OTSH/SBKTS register, but no dataset-specific open licence or terms granting bulk extraction, offline SQLite caching, third-party display or redistribution were found.",
+        "Do not treat an SBKTS record as an OTTS record; document type and issuing authority must remain explicit.",
+        "An OTTS is type-approval evidence only to the extent stated in the document; it does not establish individual VIN build data, ECU/DTC, wiring, repair applicability or an exact engine/gearbox pairing unless the primary document explicitly ties those values together."
+      ],
+      "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
+      "evidence_status": "official_elpts_public_page_and_docs_portal_reviewed_2026-11-05; see docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md"
+    },
+    {
+      "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
+      "publisher": "bri3d / VW_Flash",
+      "url": "https://github.com/bri3d/VW_Flash",
+      "readme_url": "https://github.com/bri3d/VW_Flash/blob/master/README.md",
+      "license_url": "https://github.com/bri3d/VW_Flash/blob/master/LICENSE",
+      "data_file_url": "https://github.com/bri3d/VW_Flash/blob/master/data/dtcs.csv",
+      "source_kind": "community_vag_ecu_flashing_repository_with_simos18_dtc_csv",
+      "pinned_revision": "c8376416c4df7f12789679fb216c47b6e795ffc8",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "simos18_ecu_family_candidate_only_no_exact_ecu_vehicle_or_year_mapping",
+      "verification_status": "source_provenance_unverified",
+      "display_status": "quarantined_not_displayed",
+      "source_data_evidence": {
+        "commit_sha": "c8376416c4df7f12789679fb216c47b6e795ffc8",
+        "commit_date": "2021-11-09",
+        "commit_message": "add DTC support",
+        "file_path": "data/dtcs.csv",
+        "git_blob_sha1": "e5c65fff0c6f0d98aafb082ff1acefa483be016e",
+        "file_size_bytes": 60369,
+        "line_count": 658,
+        "data_rows": 657,
+        "fields": [
+          "code",
+          "pcode",
+          "name",
+          "symbol"
+        ],
+        "per_row_source_attribution": "not_provided_in_the_addition_commit_or_reviewed_README"
+      },
+      "counts": {
+        "dtc_csv_data_rows": 657,
+        "verified_vag_specific_dtc_rows": 0,
+        "exact_ecu_fitment_rows": 0,
+        "exact_vehicle_fitment_rows": 0
+      },
+      "evidence_scope": [
+        "Simos18 ECU-family DTC candidate data only"
+      ],
+      "technical_scope": {
+        "make_group_candidate": "Volkswagen Group",
+        "ecu_family_context": [
+          "Simos18.1/6",
+          "Simos18.10"
+        ],
+        "exact_ecu_identity_per_row": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "market_scope_verified": false,
+        "diagnostic_execution_allowed": false,
+        "repair_advice_approved": false
+      },
+      "rights": {
+        "repository_code_license": "BSD-2-Clause",
+        "database_data_license": "not_separately_established",
+        "data_license_covers_dtcs_csv": "not_verified",
+        "commercial_use_allowed": "not_established_for_dataset",
+        "display_allowed": "not_established_for_dataset",
+        "offline_cache_allowed": "not_established_for_dataset",
+        "bulk_reuse_allowed": "not_established_for_dataset",
+        "redistribution_allowed": "not_established_for_dataset",
+        "permission_status": "not_cleared"
+      },
+      "quality_limits": [
+        "The repository-level BSD-2-Clause licence is clear for the repository software, but the reviewed README and the commit that adds data/dtcs.csv do not identify the origin, author or separate licence of the CSV data.",
+        "The README documents extraction of factory Simos12/Simos18 ODX containers; the DTC CSV may be derived from OEM ODX material. This relationship is a provenance risk, not a proven finding, and must be clarified by the data author before any reuse.",
+        "The DTC CSV contains VAG-looking internal SV_ERR_SYM identifiers, but the file does not bind each row to an exact ECU part number, hardware/software revision, vehicle generation, model year, market, engine or gearbox.",
+        "A P-code-shaped value does not make a row generic SAE/ISO; do not merge this candidate into the generic DTC namespace.",
+        "No DTC rows are approved for display, offline cache, diagnostic advice or distribution."
+      ],
+      "project_decision": "quarantine_no_import_no_display_no_cache; BSD-2-Clause repository code licence does not establish rights in potentially OEM ODX-derived CSV data; require the author's written provenance statement and data-specific reuse permission covering commercial use, display, offline cache and redistribution before any integration",
+      "evidence_status": "repository_LICENSE_README_and_dtcs_csv_commit_reviewed_2026-11-05; commit c8376416 adds 657 CSV data rows without row-level source attribution"
+    },
+    {
+      "source_id": "dspl1236-vag-cp-docs-au57x-odis-mcd-extract",
+      "publisher": "dspl1236 / VAG-CP-Docs",
+      "url": "https://github.com/dspl1236/VAG-CP-Docs",
+      "readme_url": "https://github.com/dspl1236/VAG-CP-Docs/blob/main/README.md",
+      "license_url": "https://github.com/dspl1236/VAG-CP-Docs/blob/main/LICENSE",
+      "evidence_document_url": "https://github.com/dspl1236/VAG-CP-Docs/blob/main/technical/au57x-mcd-project-findings.md",
+      "source_kind": "community_documentation_derived_from_vw_odis_mcd_diagnostic_database",
+      "pinned_revision": "1d6948369cdaf6acc013907b5f35591f236ca649",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "au57x_platform_family_candidate_only_no_complete_vehicle_year_or_exact_ecu_part_mapping",
+      "verification_status": "underlying_oem_data_rights_unverified",
+      "display_status": "restricted_not_imported",
+      "source_data_evidence": {
+        "repository_head_sha": "8876c4d096f92943e8d3d168c5abaf7aa5d238c2",
+        "document_commit_sha": "1d6948369cdaf6acc013907b5f35591f236ca649",
+        "license_blob_sha1": "d24ff42419f757bcf906e00e434fe6c3ae84e773",
+        "readme_blob_sha1": "f6bce2af02c660494b9271fa5d4785aed62004de",
+        "technical_document_blob_sha1": "339a0f01eed596da1919f90452892eaf6e886be1",
+        "project_name": "AU57X ODIS MCD Project",
+        "project_revision": "DVR 72 / 072102",
+        "project_date": "2022-09-22",
+        "platform_scope": "Audi A6 C7 / A7 4G / A8 D4",
+        "build_host_claimed": "VWAGWOSOB127",
+        "converter_claimed": "VW-MCD 19.0.2.0",
+        "source_method_claimed": "AStringData.data.gz string extraction and DIDB HSQLDB dump; later ODIS MCD binary decoding",
+        "documented_cp_dtc_candidates": 3,
+        "row_level_provenance": "not_provided"
+      },
+      "counts": {
+        "documented_cp_dtc_candidates": 3,
+        "verified_vag_specific_dtc_rows": 0,
+        "verified_did_records": 0,
+        "exact_vehicle_fitment_rows": 0,
+        "exact_ecu_part_number_rows": 0
+      },
+      "evidence_scope": [
+        "AU57X ODIS MCD diagnostic identifiers and CP-related DTC candidates; source rights not cleared"
+      ],
+      "technical_scope": {
+        "make": "AUDI",
+        "platform_family": "AU57X",
+        "model_candidates": [
+          "A6 C7",
+          "A7 4G",
+          "A8 D4"
+        ],
+        "exact_model_years": false,
+        "exact_ecu_part_numbers": false,
+        "exact_hardware_software_revisions": false,
+        "market_scope_verified": false
+      },
+      "rights": {
+        "repository_content_license_claimed": "CC0-1.0",
+        "underlying_oem_data_rights": "not_established",
+        "commercial_use_allowed": "not_confirmed_for_underlying_oem_data",
+        "display_allowed": "not_confirmed_for_underlying_oem_data",
+        "offline_cache_allowed": "not_confirmed_for_underlying_oem_data",
+        "bulk_reuse_allowed": "not_confirmed_for_underlying_oem_data",
+        "redistribution_allowed": "not_confirmed_for_underlying_oem_data",
+        "permission_status": "not_cleared"
+      },
+      "quality_limits": [
+        "The repository claims CC0-1.0 for its documentation, but the reviewed AU57X document identifies its source as a Volkswagen Group ODIS MCD project built from a PDX source on a VW internal server; no VW AG licence or permission evidence is supplied.",
+        "The document describes extracted AStringData and DIDB diagnostic database content and proprietary ODIS MCD/PBL project structures. The underlying OEM rights cannot be cleared by the uploader's CC0 declaration alone.",
+        "The README states that the repository contains no material extracted through unauthorized access, but VAG TECH PRO cannot independently verify the acquisition authority or the right to sublicense the underlying OEM database.",
+        "The three documented CP DTC candidates and DID/channel identifiers are not imported, displayed, cached, or used for repair advice under the project's no-closed-catalogues policy.",
+        "Platform-family references do not establish exact model year, ECU part number, HW/SW revision, engine/gearbox, market or repair applicability."
+      ],
+      "project_decision": "restricted_no_import_no_display_no_cache; treat as closed OEM ODIS MCD-derived material until VW AG permission or independently verifiable source rights are provided; uploader CC0 declaration does not establish rights in underlying OEM diagnostic database",
+      "evidence_status": "repository_LICENSE_README_and_AU57X_MCD_findings_reviewed_2026-11-05"
     }
   ],
   "minimum_fitment_evidence_fields": [

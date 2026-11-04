@@ -74,7 +74,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  source-payload-check:
+    name: Detect Windows desktop source payload
+    runs-on: windows-2025
+    outputs:
+      present: ${{ steps.detect.outputs.present }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: detect
+        name: Check whether this revision contains the desktop source archive
+        shell: pwsh
+        run: |
+          $present = Test-Path -LiteralPath "desktop-source-run34.zip.b64"
+          "present=$($present.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          if (-not $present) {
+            Write-Output "Desktop source payload is not part of this revision. The source-rights workflows validate data-only changes; the Windows installer job is skipped."
+          }
+
   build-and-lifecycle:
+    needs: source-payload-check
+    if: needs.source-payload-check.outputs.present == 'true'
     runs-on: windows-2025
     timeout-minutes: 60
     env:
