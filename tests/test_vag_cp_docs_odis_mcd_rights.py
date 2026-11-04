@@ -46,7 +46,7 @@ class VagCpDocsOdisMcdRightsTests(unittest.TestCase):
         self.assertEqual(source["counts"]["verified_did_records"], 0)
         self.assertIn("restricted_no_import_no_display_no_cache", source["project_decision"])
         self.assertTrue(any("VW internal server" in item for item in source["quality_limits"]))
-        self.assertTrue(any("CC0 declaration does not establish rights" in item for item in source["quality_limits"]))
+        self.assertTrue(any("cannot be cleared by the uploader's CC0 declaration alone" in item for item in source["quality_limits"]))
 
 
 if __name__ == "__main__":
