@@ -1034,8 +1034,8 @@ jobs:
         with:
           name: vag-tech-pro-windows-2022-lifecycle-run70
           path: |
-            ${{ runner.temp }}/vag-tech-pro-run70-artifact/build-metadata.json
-            ${{ runner.temp }}/vag-tech-pro-run70-artifact/source-verification.txt
+            ${{ runner.temp }}/vag-tech-pro-run70-artifact/windows-lifecycle-staging/build-metadata.json
+            ${{ runner.temp }}/vag-tech-pro-run70-artifact/windows-lifecycle-staging/source-verification.txt
             windows-2022-lifecycle.log
           if-no-files-found: warn
           retention-days: 30
