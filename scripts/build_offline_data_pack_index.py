@@ -111,7 +111,7 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex database hash mismatch")
     if report.get("status") != "validated_research_only" or report.get("integrity_check") != "ok":
         raise ValueError("OBDex source workflow report is not validated")
-    if report.get("source_reference_validation") != "syntax_only_http_or_https_not_fetched":
+    if report.get("source_reference_validation") != "raw_references_preserved_not_fetched_not_linked":
         raise ValueError("OBDex source-reference validation policy is missing")
     if report.get("generic_dtcs") != 9533 or report.get("pids") != 132:
         raise ValueError("OBDex expected DTC/PID counts changed")
