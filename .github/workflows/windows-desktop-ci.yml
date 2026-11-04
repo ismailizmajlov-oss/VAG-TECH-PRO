@@ -222,6 +222,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "VAG identity provenance exclusion failed" }
           "vag_identity_source=excluded_pending_upstream_provenance_review" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Prepare packaged Next.js production runtime dependencies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-electron-runtime-packaging-fix-run37.cjs
+          node apply-electron-runtime-packaging-fix-run37.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Electron runtime packaging patch failed" }
+          node --check desktop-source/scripts/prepare-electron-runtime.cjs
+          node --check desktop-source/electron/main.cjs
+
       - name: Generate deterministic dependency lock and install
         working-directory: desktop-source
         shell: pwsh
@@ -264,6 +274,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Initial Windows NSIS build failed" }
           $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.0-x64.exe"
           if (-not (Test-Path $installer)) { throw "Initial NSIS installer not found: $installer" }
+          foreach ($module in @("next", "react", "react-dom")) {
+            $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
+            if (-not (Test-Path $runtimeModule)) { throw "Packaged runtime dependency is missing: $module ($runtimeModule)" }
+          }
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") -Force
 
       - name: Build upgrade Windows x64 NSIS installer
@@ -276,6 +290,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
           $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.1-x64.exe"
           if (-not (Test-Path $installer)) { throw "Upgrade NSIS installer not found: $installer" }
+          foreach ($module in @("next", "react", "react-dom")) {
+            $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
+            if (-not (Test-Path $runtimeModule)) { throw "Packaged upgrade runtime dependency is missing: $module ($runtimeModule)" }
+          }
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") -Force
 
       - name: Run clean install, offline, backup/restore, upgrade and uninstall lifecycle
@@ -308,7 +326,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run36
+          name: vag-tech-pro-windows-x64-run37
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
@@ -322,6 +340,7 @@ jobs:
             desktop-source/typecheck.log
             desktop-source/build-0.2.0.log
             desktop-source/build-0.2.1.log
+            desktop-source/runtime-preparation.json
             windows-lifecycle.log
             build-metadata.json
             source-verification.txt
