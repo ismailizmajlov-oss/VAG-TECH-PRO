@@ -67,7 +67,6 @@ jobs:
             $gzipStream.CopyTo($outputStream)
             $patchBytes = $outputStream.ToArray()
             $patchHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($patchBytes)).ToLowerInvariant()
-          if ($patchHash -ne "a2955404a4dfc48352389318a1a9bca413527a4513cfc2e934f32d35bcc45b28") { throw "Run54 decompressed patch SHA-256 mismatch: $patchHash" }
             if ($patchHash -ne $patch.PatchSha) { throw "Run36 patch SHA-256 mismatch: $($patch.File) expected $($patch.PatchSha) actual $patchHash" }
             $patchPath = Join-Path $env:RUNNER_TEMP ($patch.File.Replace(".gz.b64", ".patch"))
             [System.IO.File]::WriteAllBytes($patchPath, $patchBytes)
@@ -308,6 +307,7 @@ jobs:
           $patchBytes = $outputStream.ToArray()
           $gzipStream.Dispose(); $compressedStream.Dispose(); $outputStream.Dispose()
           $patchHash = [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($patchBytes)).ToLowerInvariant()
+          if ($patchHash -ne "a2955404a4dfc48352389318a1a9bca413527a4513cfc2e934f32d35bcc45b28") { throw "Run54 decompressed patch SHA-256 mismatch: $patchHash" }
           $patchPath = Join-Path $env:RUNNER_TEMP "catalog-import-v2-run54.patch"
           [System.IO.File]::WriteAllBytes($patchPath,$patchBytes)
           git apply --check $patchPath
