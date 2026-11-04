@@ -134,7 +134,7 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
         verification_status: row.verification_status,
         fitment_status: row.fitment_status,
       };
-      const sourceRecordSha256 = crypto.createHash("sha256").update(JSON.stringify(sourceRecord)).digest("hex");
+      const candidateRecordSha256 = crypto.createHash("sha256").update(JSON.stringify(sourceRecord)).digest("hex");
       return {
         sourceModelId: row.model_id,
         brand: row.make_name,
@@ -146,10 +146,12 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
         regions: parseJsonArray(row.regions_json),
         marketScope: markets,
         declaredMarketScope: parseJsonArray(row.market_scope_json),
+        sourceIds: parseJsonArray(row.source_ids_json),
         marketEvidence,
         marketEvidenceCount: marketEvidence.length,
         applicabilityPrecision: row.applicability_precision,
         reviewStatus: row.verification_status,
+        verificationStatus: row.verification_status,
         fitmentStatus: row.fitment_status,
         modelYearStart: row.year_start ?? null,
         modelYearEnd: row.year_end ?? null,
@@ -165,7 +167,8 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
         attribution: typeof packManifest.attribution === "string" ? packManifest.attribution : "Vehicle data by VehiclesDB (vehiclesdb.com)",
         attributionUrl: safeHttpsUrl(packManifest.attribution?.url),
         sourceSha256: packManifest.source_catalog_sha256,
-        sourceRecordSha256,
+        candidateRecordSha256,
+        recordHashKind: "normalized_candidate_row",
         sourceManifestSha256: pack.source_manifest_sha256,
         upstreamManifestSha256: pack.upstream_manifest_sha256,
         databaseSha256: pack.database_sha256,
@@ -252,7 +255,10 @@ tests = replaceOnce(
 tests = replaceOnce(
   tests,
   '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);',
-  '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);\n  assert.match(golf.sourceRecordSha256, /^[a-f0-9]{64}$/);\n  assert.match(golf.sourceCatalogSha256, /^[a-f0-9]{64}$/);\n  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
+  '  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);\n  assert.match(golf.candidateRecordSha256, /^[a-f0-9]{64}$/);
+  assert.equal(golf.recordHashKind, "normalized_candidate_row");
+  assert.ok(Array.isArray(golf.sourceIds) && golf.sourceIds.length > 0);
+  assert.equal(golf.verificationStatus, "identity_candidate");\n  assert.match(golf.sourceCatalogSha256, /^[a-f0-9]{64}$/);\n  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
   "VehiclesDB record and source catalog fingerprints"
 );
 fs.writeFileSync(testFile, tests, "utf8");
@@ -267,7 +273,7 @@ process.stdout.write(JSON.stringify({
     "update verifier SQL and hash assertions to the current VehiclesDB provenance schema",
     "expose the pinned attribution text and source repository URL",
     "query model_id and current source_registry/model_market_evidence columns",
-    "decode source JSON arrays and compute deterministic per-model record SHA-256",
+    "decode source JSON arrays, retain source IDs, and hash normalized candidate rows without mislabelling them as upstream record hashes",
     "derive snapshot timestamp from the pinned manifest instead of a stale hard-coded date",
     "test query-only protection using the current model_id primary key"
   ]
