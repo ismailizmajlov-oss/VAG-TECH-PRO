@@ -212,19 +212,19 @@ def build_pack(snapshot_path: Path, lock_path: Path, output_dir: Path) -> dict[s
         },
         "limitations": lock["limitations"]
     }
-    (output_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    (output_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (output_dir / "source-manifest.json").write_bytes(lock_path.read_bytes())
     (output_dir / "snapshot.json").write_bytes(snapshot_path.read_bytes())
     (output_dir / "LICENSE-CC0-1.0.txt").write_text(
-        "Wikidata structured data is made available under CC0 1.0 Universal.\\n"
-        "License: https://creativecommons.org/publicdomain/zero/1.0/\\n"
-        "Scope: structured data only; no article prose or media assets are included.\\n",
+        "Wikidata structured data is made available under CC0 1.0 Universal.\n"
+        "License: https://creativecommons.org/publicdomain/zero/1.0/\n"
+        "Scope: structured data only; no article prose or media assets are included.\n",
         encoding="utf-8",
     )
     (output_dir / "ATTRIBUTION.txt").write_text(
-        "Source: Wikidata contributors — structured vehicle model/generation statements.\\n"
-        "License: CC0-1.0. Attribution is not required; this notice is provided for provenance.\\n"
-        "Pinned QID revisions and item URLs are listed in snapshot.json.\\n",
+        "Source: Wikidata contributors — structured vehicle model/generation statements.\n"
+        "License: CC0-1.0. Attribution is not required; this notice is provided for provenance.\n"
+        "Pinned QID revisions and item URLs are listed in snapshot.json.\n",
         encoding="utf-8",
     )
     return manifest
