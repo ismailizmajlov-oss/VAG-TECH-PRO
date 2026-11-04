@@ -605,6 +605,7 @@ def verify_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
     metadata_bundle = sha256_bytes("".join(x["sha256"] for x in sorted(metadata_files,key=lambda x:x["dataset_id"])).encode("ascii"))
     if metadata_bundle != manifest.get("metadata_bundle_sha256"):
         raise ValueError("RDW metadata bundle SHA-256 mismatch")
+    metadata_by_id = {x["dataset_id"]:x["sha256"] for x in metadata_files}
     db = sqlite3.connect(f"file:{db_path.resolve().as_posix()}?mode=ro", uri=True)
     try:
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
@@ -630,6 +631,10 @@ def verify_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
             raise ValueError("RDW transmission namespace/verification gate failed")
         if db.execute("SELECT count(*) FROM engine_transmission_pair_candidates WHERE pairing_confirmed<>0 OR exact_vehicle_fitment<>0 OR ru_eaeu_applicability<>0").fetchone()[0]:
             raise ValueError("RDW pair candidate was promoted")
+        if db.execute("SELECT count(*) FROM engine_transmission_pair_candidates WHERE pairing_status='unique_source_rows_candidate' AND (engine_row_count<>1 OR transmission_row_count<>1 OR engine_candidate_id IS NULL OR transmission_candidate_id IS NULL)").fetchone()[0]:
+            raise ValueError("RDW unique candidate pair has inconsistent row counts")
+        if db.execute("SELECT count(*) FROM engine_transmission_pair_candidates WHERE pairing_status<>'unique_source_rows_candidate' AND (engine_candidate_id IS NOT NULL OR transmission_candidate_id IS NOT NULL)").fetchone()[0]:
+            raise ValueError("RDW ambiguous pair was linked")
         snapshot_rows = db.execute("SELECT dataset_id,response_sha256,byte_size,row_count,snapshot_path FROM source_snapshots ORDER BY dataset_id,page_number").fetchall()
         if len(snapshot_rows) != manifest.get("snapshot_count"):
             raise ValueError("RDW snapshot row count differs from manifest")
@@ -648,6 +653,22 @@ def verify_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
                         raise ValueError("RDW raw registration snapshot contains an excluded field")
         if db.execute("SELECT count(*) FROM source_snapshots WHERE length(response_sha256)<>64").fetchone()[0]:
             raise ValueError("RDW snapshot hash missing")
+        provenance_rows = db.execute("SELECT dataset_id,metadata_sha256,query_sha256,snapshot_sha256,row_count FROM dataset_provenance ORDER BY dataset_id").fetchall()
+        if len(provenance_rows) != len(metadata_files):
+            raise ValueError("RDW dataset provenance count differs from metadata files")
+        snapshot_by_dataset = defaultdict(list)
+        for dataset_id,page_number,request_url,response_hash,row_count in db.execute("SELECT dataset_id,page_number,request_url,response_sha256,row_count FROM source_snapshots ORDER BY dataset_id,page_number"):
+            snapshot_by_dataset[dataset_id].append((request_url,response_hash,row_count))
+        for dataset_id,metadata_hash,query_hash,snapshot_hash,row_count in provenance_rows:
+            if metadata_by_id.get(dataset_id) != metadata_hash:
+                raise ValueError("RDW metadata hash differs between SQLite and manifest")
+            entries = snapshot_by_dataset.get(dataset_id,[])
+            expected_query_hash = sha256_bytes("\n".join(x[0] for x in entries).encode("utf-8"))
+            expected_snapshot_hash = sha256_bytes("".join(x[1] for x in entries).encode("ascii"))
+            if query_hash != expected_query_hash or snapshot_hash != expected_snapshot_hash:
+                raise ValueError("RDW per-dataset query or snapshot provenance hash mismatch")
+            if row_count != sum(x[2] for x in entries):
+                raise ValueError("RDW per-dataset row count differs from snapshots")
         if db.execute("SELECT count(*) FROM dataset_provenance WHERE data_license<>'CC0-1.0' OR rights_status<>'approved_by_published_license'").fetchone()[0]:
             raise ValueError("RDW dataset rights gate failed")
         if db.execute("SELECT count(*) FROM vehicle_type_approval_candidates WHERE market_scope<>'NL_REGISTRATION_OBSERVATION' OR exact_vehicle_fitment<>0 OR ru_eaeu_applicability<>0").fetchone()[0]:
