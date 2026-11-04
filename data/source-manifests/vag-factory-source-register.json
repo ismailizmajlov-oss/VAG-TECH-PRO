@@ -516,14 +516,28 @@
         "manufacturer_dtc_applicability"
       ],
       "rights": {
-        "data_license_status": "ODbL-1.0",
+        "data_license_status": "ODbL-1.0_declared_by_downstream_repository_only",
+        "downstream_license_url": "https://github.com/gor3a/vehicle-makes-models/blob/ee99776470a45214bf524cdfe22e5dbf4bd67f93/LICENSE-DATA",
+        "upstream_source": "autoevolution.com",
+        "upstream_terms_url": "https://www.autoevolution.com/static/terms.html",
+        "upstream_permission_obtained": false,
+        "written_permission_obtained": false,
+        "product_use_allowed": false,
+        "download_allowed": false,
+        "import_allowed": false,
+        "offline_cache_allowed": false,
+        "display_allowed": false,
+        "bundle_allowed": false,
+        "redistribution_allowed": false,
         "attribution_required": true,
         "attribution": "gor3a/vehicle-makes-models and autoevolution.com",
         "share_alike_required": true,
-        "public_redistribution_requires_ODbL_offer": true
+        "status": "quarantined_pending_written_upstream_permission",
+        "quarantine_reason": "The downstream ODbL declaration does not establish rights to extract and reuse Autoevolution-sourced data under the upstream terms. No written permission for VAG TECH PRO was obtained."
       },
-      "project_decision": "research_staging_only; market UNKNOWN; never infer engine or gearbox codes from labels; ODbL obligations must be preserved",
-      "evidence_status": "five_brand_files_inspected_2026-11-03; pinned_revision"
+      "project_decision": "quarantined_pending_written_upstream_permission; do not download, import, cache, display, bundle or redistribute any Autoevolution-derived records until written upstream permission explicitly covers each intended use.",
+      "evidence_status": "five_brand_files_inspected_2026-11-03; upstream rights review 2026-11-04; no product data acquisition permitted",
+      "quarantine_report": "quarantine/autoevolution-vag-identity-quarantine.json"
     },
     {
       "source_id": "riz4d-openvag-dtc-quarantine",
