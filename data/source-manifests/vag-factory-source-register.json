@@ -814,6 +814,94 @@
       ],
       "project_decision": "allow_separate_generic_educational_reference_pack_only_under_ODbL; do not merge with manufacturer-specific VAG data or present as exact repair advice",
       "evidence_status": "pinned_public_sample_license_sources_and_data_dictionary_reviewed_2026-11-04"
+    },
+    {
+      "source_id": "wikidata-vag-model-taxonomy",
+      "publisher": "Wikidata / Wikimedia Foundation",
+      "url": "https://www.wikidata.org/",
+      "endpoint_url": "https://query.wikidata.org/sparql",
+      "source_kind": "structured_vehicle_model_identity_snapshot",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "vehicle_scope": {
+        "manufacturer_label_whitelist": [
+          "Volkswagen",
+          "Volkswagen AG",
+          "Volkswagen Commercial Vehicles",
+          "Audi AG",
+          "Škoda Auto",
+          "SEAT",
+          "SEAT S.A.",
+          "Porsche AG",
+          "Bentley Motors Limited",
+          "Automobili Lamborghini S.p.A.",
+          "Bugatti Rimac"
+        ],
+        "entity_type": "car model (Q3231690), direct P31 statement only",
+        "model_identity_candidates_only": true,
+        "generation_mapping": false,
+        "engine_codes": false,
+        "gearbox_codes": false,
+        "ecu_data": false,
+        "dtc_data": false,
+        "repair_procedures": false,
+        "exact_vehicle_fitment": false,
+        "vin_fitment": false
+      },
+      "access": {
+        "status": "public_sparql",
+        "authentication_required": false,
+        "method": "bounded SPARQL POST",
+        "query_limit": 3000,
+        "retry_policy": "4 attempts with bounded exponential backoff",
+        "offline_snapshot_retained": true
+      },
+      "rights": {
+        "data_license_status": "CC0-1.0",
+        "owner": "Wikidata contributors; structured-data platform by Wikimedia Foundation",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "evidence_url": "https://www.wikidata.org/wiki/Wikidata:Licensing",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": false,
+        "attribution_recommended": true,
+        "share_alike_required": false,
+        "scope_note": "CC0 applies only to structured Wikidata statements queried; excludes article text, images, logos and third-party linked resources."
+      },
+      "provenance": {
+        "query_sha256_required": true,
+        "raw_snapshot_sha256_required": true,
+        "per_binding_sha256_required": true,
+        "source_revision": "wikidata-snapshot-<snapshot-sha256-prefix>",
+        "source_manifest": "data/source-manifests/wikidata-vag-taxonomy.json"
+      },
+      "applicability": {
+        "precision": "candidate_identity_only",
+        "review_status": "candidate",
+        "market_scope": "UNKNOWN",
+        "generation_verified": false,
+        "exact_vehicle_fitment": false,
+        "engine_code_fitment": false,
+        "transmission_code_fitment": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_fitment": false,
+        "diagnostic_execution_allowed": false,
+        "production_years_inferred": false
+      },
+      "project_decision": "allow_candidate_identity_taxonomy_only",
+      "limitations": [
+        "Manufacturer-label whitelist is a project-maintained acquisition filter, not an authoritative corporate ownership register.",
+        "No market scope or Russian/EAEU applicability is established.",
+        "No generation entities or verified generation relationships are imported.",
+        "Wikidata inception/dissolution statements are not production-year ranges.",
+        "No engine/gearbox codes, ECU, DTC, procedures, wiring, pinouts, torque values, adaptations, OEM parts or VIN fitment.",
+        "Completeness is unknown; absence from Wikidata is not evidence that a model did not exist."
+      ]
     }
   ],
   "minimum_fitment_evidence_fields": [
