@@ -63,7 +63,7 @@ function patchContractTest() {
 
 `;
   if (!source.includes(block.trim())) {
-    const anchor = 'test("Windows lifecycle test verifies in-place upgrade and user database preservation on uninstall", () => {\\n';
+    const anchor = 'test("Windows lifecycle test verifies in-place upgrade and user database preservation on uninstall", () => {\n';
     const count = source.split(anchor).length - 1;
     if (count !== 1) throw new Error("Lifecycle contract test insertion anchor missing");
     source = source.replace(anchor, block + anchor);
@@ -74,8 +74,8 @@ function patchContractTest() {
 function patchApiTests() {
   let source = read("tests/local-core-api.test.cjs");
   source = replaceOnce(source,
-    '  const headers = { host: "127.0.0.1:43123", origin: "http://127.0.0.1:43123" };\\n\\n  const admin = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: headers.host } }));',
-    '  const headers = { host: "127.0.0.1:43123", origin: "http://127.0.0.1:43123" };\\n\\n  delete process.env.VAG_TECH_PRO_DB_PATH;\\n  const missingDatabase = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: headers.host } }));\\n  assert.equal(missingDatabase.status, 503);\\n  assert.equal((await missingDatabase.json()).error, "Local desktop database path is not configured");\\n  process.env.VAG_TECH_PRO_DB_PATH = dbPath;\\n  const nonLoopback = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: "evil.example" } }));\\n  assert.equal(nonLoopback.status, 403);\\n  assert.equal((await nonLoopback.json()).error, "Local loopback request rejected");\\n\\n  const admin = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: headers.host } }));',
+    '  const headers = { host: "127.0.0.1:43123", origin: "http://127.0.0.1:43123" };\n\n  const admin = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: headers.host } }));',
+    '  const headers = { host: "127.0.0.1:43123", origin: "http://127.0.0.1:43123" };\n\n  delete process.env.VAG_TECH_PRO_DB_PATH;\n  const missingDatabase = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: headers.host } }));\n  assert.equal(missingDatabase.status, 503);\n  assert.equal((await missingDatabase.json()).error, "Local desktop database path is not configured");\n  process.env.VAG_TECH_PRO_DB_PATH = dbPath;\n  const nonLoopback = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: "evil.example" } }));\n  assert.equal(nonLoopback.status, 403);\n  assert.equal((await nonLoopback.json()).error, "Local loopback request rejected");\n\n  const admin = await GET(new Request(`${baseUrl}?action=admin-summary`, { headers: { host: headers.host } }));',
     "test distinct database and loopback gate failures");
   source = replaceOnce(source, '  assert.equal(crossOrigin.status, 404);', '  assert.equal(crossOrigin.status, 403);', "expect forbidden cross-origin mutation");
   source = replaceOnce(source, '  assert.equal(crossSiteWithoutOrigin.status, 404);', '  assert.equal(crossSiteWithoutOrigin.status, 403);', "expect forbidden cross-site request without origin");
