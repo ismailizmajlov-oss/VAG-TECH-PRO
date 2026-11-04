@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "pack_id": "mechanicdb-generic-repair-guidance-odbl",
+  "publisher": "MechanicDB / DataEngineered",
+  "source_repository": "https://github.com/MechanicDB/MechanicDB-public",
+  "source_revision": "c788dfe9ed1517d4cd0be27f5aacb4776abf4864",
+  "built_at_utc": "2026-11-04T16:34:02.583697+00:00",
+  "data_license": "ODbL-1.0",
+  "data_license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "rights_status": "approved_by_published_license",
+  "commercial_use_allowed": true,
+  "display_allowed": true,
+  "offline_cache_allowed": true,
+  "redistribution_allowed": true,
+  "share_alike_required": true,
+  "attribution_required": true,
+  "attribution_text": "MechanicDB — https://github.com/MechanicDB/MechanicDB-public",
+  "source_snapshot_sha256": "603619e65832d57b8eed9171c998ddb43c8542c1ceaad495e9576989d713546f",
+  "logical_content_sha256": "492c7fc86b7ea669b519294c601ad4b2bd774849abc5404c62562777fc3fb4d7",
+  "database_file": "generic-repair-guidance.sqlite",
+  "database_sha256": "78edf7af654c3599fc29407d58542359db5239c5f7611739600e66f24214ecd6",
+  "counts": {
+    "generic_sae_dtc_references": 75,
+    "generic_authored_guidance": 275,
+    "manufacturer_labelled_dtc_rows_excluded": 15,
+    "manufacturer_labelled_guidance_rows_excluded": 51,
+    "orphan_guidance_rows": 0,
+    "generic_dtc_descriptions_copied": 0,
+    "detailed_code_explanations_copied": 0,
+    "replacement_parts_rows_copied": 0,
+    "cost_or_labor_estimates_copied": 0
+  },
+  "source_files": {
+    "dtc_codes.csv": {
+      "source_url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/dtc_codes.csv",
+      "git_blob_sha1": "34fa7dd7a1cbdd5b0d2675f2c77a2b659c6069b4",
+      "sha256": "2dfae2637abbe5e24ceb98506b8df26703e454989fcee631b1e64ae77c820994",
+      "byte_size": 50399,
+      "record_count": 90,
+      "purpose": "Generic SAE DTC identifier crosswalk only; descriptions are not imported"
+    },
+    "diagnostic_fixes.csv": {
+      "source_url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/diagnostic_fixes.csv",
+      "git_blob_sha1": "5238ab82447a26e14227e932126d068ab47bf6e3",
+      "sha256": "e8484473d5924bad06fd75709480edde2fd3b1e498e02d196c53c60d02031c2b",
+      "byte_size": 134164,
+      "record_count": 326,
+      "purpose": "MechanicDB-authored generic diagnostic guidance; OEM-linked rows are excluded"
+    },
+    "LICENSE": {
+      "source_url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/LICENSE",
+      "git_blob_sha1": "20e7514419d20bdbcc89d6a2ebcff90d0d3575a8",
+      "sha256": "a9d8133a7e5d47ff31dd8c7919dabdce0c06d8d30c7dc350f933a4660d5776bb",
+      "byte_size": 2066,
+      "record_count": null,
+      "purpose": "Published ODbL sample-dataset licensing notice"
+    },
+    "LICENSE-upstream.txt": {
+      "source_url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/LICENSE-upstream.txt",
+      "git_blob_sha1": "9cbfaae3f07b8daa1685b4587e36c604a7a4ded1",
+      "sha256": "5106ad327a989f9f864f55f9111d055530af80c3109e9f26026bc2cd486087f5",
+      "byte_size": 1078,
+      "record_count": null,
+      "purpose": "Preserved upstream MIT attribution notice"
+    },
+    "SOURCES.md": {
+      "source_url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/SOURCES.md",
+      "git_blob_sha1": "99301063307b9fd10bef7b84cd5c9e7066aeceb9",
+      "sha256": "063fd953b50c15011b27834fd2febac635618f1ee172ec43eff097cdfbfed7c1",
+      "byte_size": 9497,
+      "record_count": null,
+      "purpose": "Provenance statement for authored guidance; verified but not bundled"
+    },
+    "DATA_DICTIONARY.md": {
+      "source_url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/DATA_DICTIONARY.md",
+      "git_blob_sha1": "808dea805df7d86b3ee1bf301fcef5455df25176",
+      "sha256": "28fbefadffa548200327815c9816fea6cf17f809150ea8cb4e53e4241039ea2a",
+      "byte_size": 36710,
+      "record_count": null,
+      "purpose": "Field semantics and consideration-order definition; verified but not bundled"
+    }
+  },
+  "pack_files": {
+    "generic-repair-guidance.sqlite": {
+      "sha256": "78edf7af654c3599fc29407d58542359db5239c5f7611739600e66f24214ecd6",
+      "byte_size": 274432
+    },
+    "LICENSE-ODbL.txt": {
+      "sha256": "a9d8133a7e5d47ff31dd8c7919dabdce0c06d8d30c7dc350f933a4660d5776bb",
+      "byte_size": 2066
+    },
+    "LICENSE-MIT.txt": {
+      "sha256": "5106ad327a989f9f864f55f9111d055530af80c3109e9f26026bc2cd486087f5",
+      "byte_size": 1078
+    },
+    "ATTRIBUTION.md": {
+      "sha256": "ef617195dd58163ef560916b8a73f6bf13c8071c61dfcd998ecedc6fcbabc417",
+      "byte_size": 1298
+    },
+    "schema_sql_sha256": "4a9f60718c6964e01ca147ebd6e9a8e634f9752f63fae1036ef6e64f706ab507"
+  },
+  "scope": {
+    "namespace": "generic_sae_iso",
+    "manufacturer": "UNKNOWN",
+    "market_scope": "UNKNOWN",
+    "applicability_level": "generic_only",
+    "vag_specific": false,
+    "exact_vehicle_fitment": false,
+    "model_generation_year_fitment": false,
+    "engine_gearbox_fitment": false,
+    "ecu_fitment": false,
+    "pr_code_fitment": false,
+    "vin_fitment": false,
+    "diagnostic_execution_allowed": false,
+    "oem_repair_procedure": false,
+    "technical_review_status": "not_independently_reviewed",
+    "safety_review_status": "not_assessed"
+  },
+  "limitations": [
+    "Generic educational reference only; not VAG-specific and not an OEM workshop procedure.",
+    "No Russian or EAEU market applicability is established.",
+    "No model, generation, year, engine, gearbox, ECU, PR-code or VIN fitment is established.",
+    "The source probability_rank is authored consideration order, not measured probability; it is stored as consideration_order.",
+    "Do not execute diagnostic commands or use these steps as a substitute for the exact OEM service procedure.",
+    "Safety-critical systems require the applicable manufacturer procedure and safety instructions."
+  ],
+  "exclusions": [
+    "All 15 manufacturer-labelled DTC rows and their 51 associated guidance rows.",
+    "All DTC descriptions and detailed code explanations.",
+    "All replacement-parts mappings, cost estimates and labor estimates.",
+    "All OEM procedures, wiring diagrams, pinouts, torque values, adaptations and ECU applicability."
+  ]
+}
