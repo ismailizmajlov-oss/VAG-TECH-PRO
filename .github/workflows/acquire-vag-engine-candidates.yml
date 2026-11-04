@@ -1,50 +1,43 @@
-name: Acquire VAG open engine candidates (research only)
+name: Quarantine Autoevolution-derived VAG identity source
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/acquire-vag-engine-candidates.yml'
-      - 'scripts/import_vag_engine_candidates.py'
-  workflow_dispatch:
+      - .github/workflows/acquire-vag-engine-candidates.yml
+      - docs/research/AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04.md
 
 permissions:
   contents: read
 
 jobs:
-  acquire:
+  report:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Download pinned ODbL VAG candidate files
+      - name: Record quarantine decision without downloading source data
+        shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .research-input artifacts
-          REV="ee99776470a45214bf524cdfe22e5dbf4bd67f93"
-          for brand in audi volkswagen skoda seat cupra; do
-            curl --fail --location --retry 3 \
-              "https://raw.githubusercontent.com/gor3a/vehicle-makes-models/${REV}/data/json/${brand}.json" \
-              -o ".research-input/${brand}.json"
-          done
-          curl --fail --location --retry 3 \
-            "https://raw.githubusercontent.com/gor3a/vehicle-makes-models/${REV}/LICENSE-DATA" \
-            -o ".research-input/LICENSE-DATA"
-          sha256sum .research-input/*.json .research-input/LICENSE-DATA
-      - name: Import to isolated research SQLite
-        run: |
-          python scripts/import_vag_engine_candidates.py \
-            --input-dir .research-input \
-            --output artifacts/vag-engine-candidates-research.sqlite
-      - name: Upload research-only database, manifest and license
+          mkdir -p quarantine
+          cat > quarantine/autoevolution-vag-identity-quarantine.json <<'JSON'
+          {
+            "source_id": "gor3a-vehicle-makes-models-odbl",
+            "downstream_license_declaration": "ODbL-1.0",
+            "upstream_source": "autoevolution.com",
+            "upstream_terms": "https://www.autoevolution.com/static/terms.html",
+            "reviewed_at": "2026-11-04",
+            "reviewed_sections": [4, 5, 8],
+            "written_permission_obtained": false,
+            "product_use_allowed": false,
+            "actions": ["download", "import", "offline_cache", "display", "bundle", "redistribute"],
+            "status": "quarantined_pending_written_upstream_permission"
+          }
+          JSON
+      - name: Upload rights-gate report only
         uses: actions/upload-artifact@v4
         with:
-          name: vag-engine-candidates-research-odbl
-          path: |
-            artifacts/vag-engine-candidates-research.sqlite
-            artifacts/vag-engine-candidates-research.manifest.json
-            .research-input/LICENSE-DATA
+          name: autoevolution-vag-identity-quarantine-report
+          path: quarantine/autoevolution-vag-identity-quarantine.json
           if-no-files-found: error
           retention-days: 30
