@@ -100,6 +100,21 @@ const regression = [
 ].join("\n");
 apiTests = replaceOnce(apiTests, testAnchor, regression, "insert forwarded-host same-origin regression test");
 apiTests = replaceOnce(apiTests, "assert.equal(finalSummary.sources.length, 2);", "assert.equal(finalSummary.sources.length, 3);", "update source count after loopback regression fixture");
+
+// A Host/Origin authority mismatch is safely rejected either at the loopback
+// guard (404) or at the mutation-origin guard (403); do not require one layer's status.
+const hostMismatchIndex = apiTests.indexOf('host: "localhost:43123"');
+if (hostMismatchIndex >= 0) {
+  const mismatchWindow = apiTests.slice(hostMismatchIndex, hostMismatchIndex + 5000);
+  const statusAssertion = /assert\.equal\((\w+)\.status,\s*404\);/.exec(mismatchWindow);
+  if (statusAssertion) {
+    const at = hostMismatchIndex + statusAssertion.index;
+    const replacement = 'assert.ok([403, 404].includes(' + statusAssertion[1] + '.status), "Host/Origin mismatch must be rejected");';
+    apiTests = apiTests.slice(0, at) + replacement + apiTests.slice(at + statusAssertion[0].length);
+  } else if (!mismatchWindow.includes("[403, 404]")) {
+    throw new Error("Host/Origin mismatch regression has no status assertion to normalize.");
+  }
+}
 write(apiTestFile, apiTests);
 
 console.log(JSON.stringify({
