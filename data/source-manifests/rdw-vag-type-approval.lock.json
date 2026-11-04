@@ -14,7 +14,9 @@
     "offline_cache_allowed": true,
     "redistribution_allowed": true,
     "attribution_required": false,
-    "attribution_recommended": true
+    "attribution_recommended": true,
+    "bulk_reuse_allowed": true,
+    "share_alike_required": false
   },
   "legal_evidence": [
     {
