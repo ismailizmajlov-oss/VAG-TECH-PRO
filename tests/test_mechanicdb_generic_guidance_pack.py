@@ -1,11 +1,12 @@
 import hashlib
 import json
+import os
 import sqlite3
 import unittest
 from pathlib import Path
 
 
-PACK_DIR = Path("build/generic-repair-guidance")
+PACK_DIR = Path(os.environ.get("MECHANICDB_PACK_DIR", "build/generic-repair-guidance"))
 MANIFEST_PATH = PACK_DIR / "manifest.json"
 DATABASE_PATH = PACK_DIR / "generic-repair-guidance.sqlite"
 
@@ -46,6 +47,46 @@ class MechanicDbGenericGuidancePackTests(unittest.TestCase):
         self.assertEqual(self.connection.execute("PRAGMA integrity_check").fetchone()[0], "ok")
         self.assertEqual(self.connection.execute("PRAGMA foreign_key_check").fetchall(), [])
         self.assertEqual(self.connection.execute("PRAGMA user_version").fetchone()[0], 1)
+
+    def test_logical_content_digest_is_stable_and_matches_database_rows(self):
+        source = self.connection.execute("SELECT * FROM source_registry").fetchone()
+        source_files = [
+            dict(row) for row in self.connection.execute(
+                "SELECT source_file_id,source_url,git_blob_sha1,sha256,byte_size,record_count,purpose "
+                "FROM source_files ORDER BY source_file_id"
+            )
+        ]
+        codes = [
+            dict(row) for row in self.connection.execute(
+                "SELECT dtc_code,source_record_id,system_category,source_file_sha256,source_line_no,source_line_sha256 "
+                "FROM generic_dtc_references ORDER BY dtc_code"
+            )
+        ]
+        guidance = [
+            dict(row) for row in self.connection.execute(
+                "SELECT guidance_id,dtc_code,consideration_order,skill_level,title,instructions,action_type,rationale,"
+                "source_file_sha256,source_line_no,source_line_sha256 "
+                "FROM generic_repair_guidance ORDER BY dtc_code,consideration_order,guidance_id"
+            )
+        ]
+        payload = {
+            "source_revision": source["source_revision"],
+            "data_license": source["data_license"],
+            "namespace": "generic_sae_iso",
+            "manufacturer": "UNKNOWN",
+            "market_scope": "UNKNOWN",
+            "applicability_level": "generic_only",
+            "vag_specific": False,
+            "diagnostic_execution_allowed": False,
+            "source_files": source_files,
+            "generic_dtc_references": codes,
+            "generic_repair_guidance": guidance,
+        }
+        canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        self.assertEqual(digest, self.manifest["logical_content_sha256"])
+        metadata = dict(self.connection.execute("SELECT key,value FROM pack_metadata").fetchall())
+        self.assertEqual(metadata["logical_content_sha256"], digest)
 
     def test_exact_generic_only_counts_and_exclusions(self):
         counts = self.manifest["counts"]
