@@ -81,7 +81,8 @@ def build_fixture_pack(root: Path, payloads=None):
     lock = root / "lock.json"
     lock_file(lock)
     payloads = payloads or fixtures()
-    metadata = {d:{"rowsUpdatedAt":"2026-11-05T00:00:00Z","metadata_sha256":hashlib.sha256((d+"-metadata").encode()).hexdigest()} for d in DATASET_IDS}
+    metadata_raws = {d:json.dumps({"id":d,"name":d,"rowsUpdatedAt":"2026-11-05T00:00:00Z"},sort_keys=True).encode() for d in DATASET_IDS}
+    metadata = {d:{"rowsUpdatedAt":"2026-11-05T00:00:00Z","metadata_sha256":hashlib.sha256(metadata_raws[d]).hexdigest()} for d in DATASET_IDS}
     snapshots = []
     queries = {}
     for i,dataset_id in enumerate(DATASET_IDS):
@@ -99,7 +100,7 @@ def build_fixture_pack(root: Path, payloads=None):
     metadata_dir.mkdir()
     metadata_files=[]
     for d in DATASET_IDS:
-        raw=(d+"-metadata").encode()
+        raw=metadata_raws[d]
         p=metadata_dir/(d+"-metadata.json")
         p.write_bytes(raw)
         metadata_files.append({"dataset_id":d,"path":"metadata/"+p.name,"sha256":hashlib.sha256(raw).hexdigest(),"byte_size":len(raw)})
