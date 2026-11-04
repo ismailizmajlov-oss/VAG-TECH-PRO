@@ -108,7 +108,7 @@ const finalCountAssertion = finalCountAssertions.find((assertion) => apiTests.in
 const finalSourceLog = '  console.log("[local-core test] final source ids", core.listSources(dbPath).map((row) => row.source_id));';
 if (!finalSourceLog || !finalCountAssertion) throw new Error("Final source summary assertion was not found");
 if (!apiTests.includes(finalSourceLog)) {
-  apiTests = replaceOnce(apiTests, finalCountAssertion, `${finalSourceLog}\\n  assert.equal(finalSummary.sources.length, 4);`, "log final source ids and assert four expected source fixtures");
+  apiTests = replaceOnce(apiTests, finalCountAssertion, `${finalSourceLog}\n  assert.equal(finalSummary.sources.length, 4);`, "log final source ids and assert four expected source fixtures");
 } else if (!apiTests.includes("assert.equal(finalSummary.sources.length, 4);")) {
   throw new Error("Final source summary must assert four expected source fixtures");
 }
