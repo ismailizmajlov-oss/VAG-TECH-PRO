@@ -7,7 +7,9 @@
     "model_year_match_is_not_exact_fitment": true,
     "vin_fitment_requires_primary_evidence": true,
     "oem_documents_may_not_be_redistributed_without_permission": true,
-    "manufacturer_data_requires_rights_review_before_storage_or_publication": true
+    "manufacturer_data_requires_rights_review_before_storage_or_publication": true,
+    "community_source_candidates_are_not_oem_verified": true,
+    "odbl_derived_databases_must_remain_separate_and_share_alike": true
   },
   "sources": [
     {
@@ -1000,6 +1002,376 @@
         "Completeness is unknown; absence from Wikidata is not evidence that a model did not exist."
       ],
       "limit_reached_means": "snapshot may be truncated; no completeness claim"
+    },
+    {
+      "source_id": "autodiag2-vag-community-v6",
+      "publisher": "AutoDiag2/database contributors",
+      "url": "https://github.com/autodiag2/database",
+      "release_tag": "v6",
+      "pinned_revision": "59b4e774c4023b2daaee179177615f17a5967ae1",
+      "source_asset_url": "https://github.com/autodiag2/database/releases/download/v6/ad_database.sqlite",
+      "source_asset_sha256": "61f9398f479d2d59a8b44c05da72cb5d519232e915bc7dcdf43f4bb5265baaf3",
+      "source_snapshot_sha256": "5b071814ec63516f3fc8c5dc114d746b86e67ab75476b604c2606678dfff5c1a",
+      "artifact_sha256": "aeaffa50d7ee0208503053b01d73d30e4ae18f4d28d3f64153c398815b36dc87",
+      "source_kind": "community_vehicle_version_engine_ecu_configuration_candidate_database",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "community_vehicle_version_ecu_candidate",
+      "verification_status": "community_reference_unverified",
+      "display_status": "candidate_only_not_oem_verified",
+      "counts": {
+        "vehicle_models": 110,
+        "vehicle_versions": 259,
+        "engine_candidates": 1083,
+        "ecu_candidates": 179,
+        "vehicle_configuration_candidates": 3170,
+        "dtc_candidates": 0,
+        "dtc_to_vehicle_ecu_links": 0,
+        "transmission_records": 0,
+        "verified_factory_engine_codes": 0,
+        "verified_vag_specific_dtc_rows": 0
+      },
+      "rights": {
+        "database_license": "ODbL-1.0",
+        "database_contents_license": "DbCL-1.0",
+        "source_code_license": "GPL-3.0-or-later_not_used",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "attribution": "AutoDiag2/database — https://github.com/autodiag2/database",
+        "license_file_sha256": "50a8762802c3303f5612c002bd35a3e617dcc7315ff7073f784b8682ea646cb5",
+        "readme_sha256": "993937e4edb4ddf03bf9c6435215d751ed8a867276cd16dc5086748d48bdae2d"
+      },
+      "limitations": [
+        "All retained rows are community candidates; market scope UNKNOWN.",
+        "Engine source fields are unverified labels and are not factory engine codes.",
+        "No gearbox/transmission records or verified engine/gearbox pairs are present.",
+        "No DTC rows are retained; 956 make-level DTC rows were excluded by the source policy.",
+        "ECU and vehicle configuration candidates do not prove exact vehicle or ECU fitment.",
+        "No diagnostic execution or repair advice is approved."
+      ],
+      "project_decision": "allow_separate_read_only_candidate_pack_only_under_ODbL_and_DbCL; do_not_promote_to_verified_vehicle_taxonomy_or_factory_codes; no gearbox inference; no diagnostic lookup",
+      "evidence_status": "pinned_v6_artifact_independently_audited_2026-11-05; source revision, asset hash, pack hash, internal checksums and SQLite integrity verified",
+      "exact_vehicle_fitment": false,
+      "ecu_fitment": false,
+      "diagnostic_execution_allowed": false,
+      "repair_advice_approved": false,
+      "engine_codes_verified": 0,
+      "transmission_records": 0
+    },
+    {
+      "source_id": "mechanicdb-vag-dtc-candidates-odbl",
+      "publisher": "MechanicDB / MechanicDB-public",
+      "url": "https://github.com/MechanicDB/MechanicDB-public",
+      "pinned_revision": "c788dfe9ed1517d4cd0be27f5aacb4776abf4864",
+      "source_kind": "community_make_labelled_manufacturer_controlled_dtc_candidate_subset",
+      "source_snapshot_sha256": "f123b251659b45f4acf64071329dec6dc3a4ba1c8b2f827ff1ad3b45e28e0c94",
+      "source_csv_sha256": "796fa2b18bdbff311f15eb4943b68adbf7241e564ce8eff32023a2d297694bff",
+      "artifact_sha256": "f294bf4ebe6384b2ad6a586244ba0c49011fb441c691006c460d8a070744a5d6",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "manufacturer_make_candidate",
+      "verification_status": "community_reference_unverified",
+      "display_status": "hidden_pending_technical_review",
+      "counts": {
+        "manufacturer_controlled_candidates": 2,
+        "audi_candidates": 1,
+        "volkswagen_candidates": 1,
+        "generic_sae_iso_rows": 0,
+        "repair_procedure_rows": 0,
+        "oem_part_rows": 0,
+        "exact_vehicle_fitment_rows": 0,
+        "ecu_fitment_rows": 0,
+        "pr_code_fitment_rows": 0
+      },
+      "source_line_evidence": [
+        {
+          "make": "Audi",
+          "code": "P3000",
+          "source_file": "upstream/dtc_codes.csv",
+          "physical_line": 77,
+          "source_line_sha256": "e253da2d9d245e39bc7da4e7ca578b1634d5aeb4ad0f793e04128220633ea965"
+        },
+        {
+          "make": "Volkswagen",
+          "code": "P1128",
+          "source_file": "upstream/dtc_codes.csv",
+          "physical_line": 91,
+          "source_line_sha256": "f97df50476af7b0d4bdeb13628396349bd4199fe75620fd2fd313b2f9e919a38"
+        }
+      ],
+      "rights": {
+        "database_license": "ODbL-1.0",
+        "documentation_license": "CC-BY-4.0",
+        "upstream_attribution_notice": "MIT",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": true,
+        "attribution": "MechanicDB — https://github.com/MechanicDB/MechanicDB-public",
+        "separate_pack_required": true,
+        "full_paid_dataset_included": false,
+        "license_file_sha256": "fe0faf3171a95b59dc606677657bd9743e76f4e1e66276fd86aa3cd193ba05bf",
+        "upstream_mit_notice_sha256": "cb4a2aba542fa28da9a59e39ae65c92ac0065e995bd275d2e529b49778b46eb0"
+      },
+      "limitations": [
+        "Rows are manufacturer-make-labelled community candidates, not confirmed VAG-specific DTC definitions.",
+        "Market scope UNKNOWN; no model, generation, year, engine, gearbox, ECU, PR-code or VIN fitment.",
+        "No generic SAE/ISO rows are included; generic DTC remains in a separate namespace.",
+        "No diagnostic execution, repair procedure, OEM part mapping or approved test plan."
+      ],
+      "project_decision": "allow_separate_candidate_pack_only_under_ODbL; keep hidden from normal DTC lookup pending technical review; never describe as verified VAG-specific or enable diagnostic execution",
+      "evidence_status": "pinned_source_csv_and_pack_independently_audited_2026-11-05; physical source-line hashes, pack hashes and SQLite integrity verified",
+      "exact_vehicle_fitment": false,
+      "ecu_fitment": false,
+      "pr_code_fitment": false,
+      "diagnostic_execution_allowed": false,
+      "repair_advice_approved": false
+    },
+    {
+      "source_id": "obdb-vag-signalsets-cc-by-sa",
+      "publisher": "OBDb community contributors",
+      "url": "https://github.com/obdb/",
+      "source_kind": "community_vehicle_specific_uds_signal_and_pid_candidate_database",
+      "pinned_source_repositories": [
+        {
+          "repository": "OBDb/Audi-A4",
+          "commit_sha": "c85ca605894dd4f839099077f13ad78192d81d14",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Audi-Q7",
+          "commit_sha": "8feee3fb4069a7c3be6841a70f1a06a4808e3261",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-Golf",
+          "commit_sha": "9a5635d49244757d6385c2496b6c73275ccb730e",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-Passat",
+          "commit_sha": "7d6e052a1bf8dcea58e0eafda41187ae31ba45f0",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-ID.4",
+          "commit_sha": "6d8e86890fbb0dc02e233be2071369ba677a9b79",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Seat-Tarraco",
+          "commit_sha": "084bbc5b300f1a7a0b656f342d99c3f7b49f3c02",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        }
+      ],
+      "source_manifest_path": "data/source-manifests/obdb-vag-signalsets.json",
+      "source_snapshot_sha256": "d3c54051e2f3f73c211e6d84c4e84541a60901e01eeee843b8357efa1e421aa1",
+      "source_file_count": 24,
+      "source_repository_count": 6,
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "vehicle_model_and_signal_candidate",
+      "verification_status": "unverified_community_candidate",
+      "display_status": "read_only_research_candidate",
+      "counts": {
+        "source_repositories": 6,
+        "generation_candidates": 32,
+        "ecu_candidates": 15,
+        "uds_command_candidates": 2315,
+        "signal_candidates": 2480,
+        "dtc_definitions": 0,
+        "repair_procedures": 0,
+        "approved_test_plans": 0,
+        "exact_vehicle_fitment_rows": 0,
+        "verified_generation_year_mappings": 0
+      },
+      "rights": {
+        "data_license": "CC-BY-SA-4.0",
+        "license_files_reviewed_at_each_pinned_commit": true,
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "attribution": "OBDb community contributors. Adapted by VAG TECH PRO into a separate read-only SQLite research database. The adapted database is licensed under CC BY-SA 4.0.",
+        "share_alike_notice_required": true
+      },
+      "technical_scope": {
+        "command_service": "0x22",
+        "all_command_records_execution_allowed": false,
+        "signal_byte_formats_are_unverified": true,
+        "diagnostic_execution_allowed": false,
+        "test_plan_approved": false,
+        "exact_vehicle_fitment": false,
+        "exact_ecu_fitment": false,
+        "exact_engine_gearbox_mapping": false,
+        "dtc_definitions": false,
+        "repair_procedures": false,
+        "wiring_diagrams": false,
+        "factory_pinouts": false,
+        "market_scope": "UNKNOWN"
+      },
+      "project_decision": "allow_separate_read_only_CC_BY_SA_research_pack_only; preserve attribution and share_alike; candidate discovery only; do not present as validated DTC/test plan or exact vehicle/ECU fitment; do not execute UDS commands",
+      "limitations": [
+        "Only six community repositories and 24 pinned source files are represented; this is not a complete VAG catalogue.",
+        "All generation, ECU, command and signal records remain unverified community candidates with UNKNOWN market scope.",
+        "All 2,315 commands are UDS service 0x22 ReadDataByIdentifier and execution is disabled.",
+        "A DID and byte format do not prove support by a specific ECU or vehicle.",
+        "No DTC definitions, approved diagnostic test plans, repair procedures, wiring diagrams, factory pinouts, torque values or exact engine/gearbox pairs.",
+        "The adapted research database must remain separately licensed CC BY-SA 4.0 with attribution; do not merge into a differently licensed proprietary database."
+      ],
+      "evidence_status": "pinned_source_commits_and_each_repository_LICENSE_file_reviewed_2026-11-05; prior pack audit records 24 file hashes, record hashes and SQLite integrity"
+    },
+    {
+      "source_id": "volkswagen-okapi-product-data-api",
+      "publisher": "Volkswagen AG",
+      "url": "https://productdata.volkswagenag.com/",
+      "terms_url": "https://productdata.volkswagenag.com/condition-of-use.html",
+      "catalog_documentation_url": "https://productdata.volkswagenag.com/product-catalog.html",
+      "cache_documentation_url": "https://productdata.volkswagenag.com/data-update.html",
+      "source_kind": "official_vw_product_configuration_catalog_api",
+      "source_revision": "public_terms_and_documentation_review_2026-11-05",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "publicly_listed_markets": [
+        "AR",
+        "AU",
+        "BH",
+        "BE",
+        "BR",
+        "IC",
+        "CN",
+        "CY",
+        "CZ",
+        "DK",
+        "EE",
+        "FI",
+        "FR",
+        "DE",
+        "GR",
+        "IS",
+        "IE",
+        "IT",
+        "JP",
+        "JO",
+        "KW",
+        "LV",
+        "LB",
+        "LT",
+        "LU",
+        "MT",
+        "MX",
+        "MD",
+        "NL",
+        "NO",
+        "OM",
+        "PL",
+        "PT",
+        "QA",
+        "RS",
+        "ZA",
+        "ES",
+        "SE",
+        "CH",
+        "TW",
+        "TR",
+        "UA",
+        "AE",
+        "GB"
+      ],
+      "ru_eaeu_support_confirmed": false,
+      "access": {
+        "authentication_required": true,
+        "client_id_and_secret_required": true,
+        "company_access_request_required": true,
+        "volkswagen_approval_required": true,
+        "approval_may_be_rejected": true,
+        "credentials_obtained": false,
+        "api_requests_made": false,
+        "external_account_created": false,
+        "contract_accepted": false,
+        "paid_terms_accepted": false
+      },
+      "product_scope": {
+        "models": true,
+        "vehicle_types": true,
+        "options": true,
+        "configuration_buildability": true,
+        "wltp_and_nedc_values": true,
+        "market_specific_technical_data": true,
+        "standard_equipment": true,
+        "repair_procedures": false,
+        "wiring_diagrams": false,
+        "pinouts": false,
+        "dtc_definitions": false,
+        "engine_factory_code_mapping": false,
+        "gearbox_factory_code_mapping": false,
+        "type_descriptions_may_include_engine_or_transmission_text": true,
+        "type_and_option_codes_are_not_proven_engine_or_gearbox_codes": true
+      },
+      "rights": {
+        "data_owner": "Volkswagen AG",
+        "license_type": "contractual_access_terms_not_open_data_license",
+        "display_allowed_after_approval": true,
+        "display_scope": "registered_application_only_for_the_contractual_purpose",
+        "third_party_disclosure_allowed_after_approval": true,
+        "cache_mechanism_documented": true,
+        "offline_cache_allowed": false,
+        "offline_cache_permission_status": "cache_mechanism_documented_but_offline_database_bundle_and_retention_after_termination_not_expressly_confirmed",
+        "redistribution_of_offline_database_allowed": false,
+        "redistribution_permission_status": "not_expressly_confirmed",
+        "contract_rights_duration": "for_duration_of_contractual_relationship",
+        "api_right_non_exclusive": true,
+        "api_right_non_transferable": true,
+        "api_right_revocable": true,
+        "api_right_non_sublicensable": true,
+        "current_price_status": "currently_free_but_vw_reserves_right_to_charge",
+        "credentials_confidential": true
+      },
+      "applicability": {
+        "precision": "official_market_specific_product_configuration_if_authorized",
+        "review_status": "permission_required",
+        "exact_vehicle_fitment": false,
+        "engine_code_fitment": false,
+        "transmission_code_fitment": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "market_scope": "UNKNOWN"
+      },
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "project_decision": "do_not_create_account_or_request_credentials_without_owner_action; do_not_ingest_or_bundle_offline_data_until_vw_approves_access_and_confirms_offline_cache_distribution_and_retention_rights_in_writing; RU_EAEU_market_coverage_not_confirmed; type descriptions are not factory engine or gearbox codes",
+      "limitations": [
+        "Access requires a company request with company name, address, contact and purpose; Volkswagen may reject at its discretion.",
+        "The terms are contractual and do not constitute an open data licence.",
+        "The terms allow registered applications to display/evaluate product data and allow disclosure to third parties, but do not expressly confirm redistribution of a bundled offline SQLite database.",
+        "Caching is documented using ETag and content-last-update headers; retention and redistribution after contract termination are not expressly confirmed.",
+        "Rights are non-exclusive, non-transferable, revocable and non-sublicensable for the duration of the contract.",
+        "Volkswagen currently offers OKAPI free of charge but reserves the right to introduce fees.",
+        "The public market list reviewed does not list Russia, Kazakhstan or Belarus; the list is explicitly non-exhaustive and authenticated /countries data was not queried.",
+        "Type descriptions may contain engine and gearbox descriptions, but no exact factory engine-code or gearbox-code fields were established from the public documentation.",
+        "OKAPI is product/configuration data, not a repair manual, DTC source, wiring diagram or pinout source."
+      ],
+      "evidence_status": "official_terms_catalog_and_cache_documentation_reviewed_2026-11-05; no credentials, account, API call or data snapshot"
     }
   ],
   "minimum_fitment_evidence_fields": [
