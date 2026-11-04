@@ -693,10 +693,10 @@ function patchAutoDiag2Docs() {
     ecus.toLocaleString("en-US") + " ECU candidates; " + configs.toLocaleString("en-US") +
     " configuration candidates; " + dtcs.toLocaleString("en-US") + " DTC rows | Separate SQLite; all market UNKNOWN and unverified; " +
     excluded.toLocaleString("en-US") + " upstream make-level DTC rows excluded because they used generic ECU labels and had no vehicle-configuration DTC links; no gearbox records, OEM confirmation, test plans, repairs or diagnostic execution; attribution/share-alike required |";
-  const rowPattern = /^\\| AutoDiag2 VAG-group community candidates.*$/m;
+  const rowPattern = /^\| AutoDiag2 VAG-group community candidates.*$/m;
   if (!rowPattern.test(readme)) throw new Error("AutoDiag2 README summary row was not found");
   readme = readme.replace(rowPattern, row);
-  const oldBulletPattern = /^- AutoDiag2 is a separate community dataset\\.[^\\n]*$/m;
+  const oldBulletPattern = /^- AutoDiag2 is a separate community dataset\.[^\n]*$/m;
   const bullet = "- AutoDiag2 is a separate community dataset. All " + excluded.toLocaleString("en-US") +
     " upstream make-level DTC records were excluded because they used generic ECU manufacturer labels and had no vehicle-configuration DTC links; the shipped filtered database contains " +
     dtcs.toLocaleString("en-US") + " DTC rows. All " + engineFields.toLocaleString("en-US") +
@@ -763,8 +763,8 @@ function patchAutoDiag2Docs() {
       '  const readme = fs.readFileSync(path.join(__dirname, "../data/research/README.md"), "utf8");',
       '  const verified = local.verifyAutoDiag2Pack(root);',
       '  assert.match(review, new RegExp(verified.databaseSha256));',
-      '  assert.match(review, /DTC candidates retained \\\\| 0/);',
-      '  assert.match(review, /Upstream make-level DTC records excluded \\\\| 956/);',
+      '  assert.match(review, /DTC candidates retained \\| 0/);',
+      '  assert.match(review, /Upstream make-level DTC records excluded \\| 956/);',
       '  assert.match(review, /956 upstream DTC rows were excluded/);',
       '  assert.match(readme, /0 DTC rows/);',
       '  assert.match(readme, /956 upstream make-level DTC records were excluded/);',
