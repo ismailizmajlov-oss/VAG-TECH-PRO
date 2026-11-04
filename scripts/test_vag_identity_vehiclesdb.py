@@ -86,6 +86,7 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
         "scope": {"makes": ["volkswagen", "audi"], "kinds": ["car"]},
         "approved_source_license_map": {"nl_rdw": "CC0-1.0", "us_fueleconomy": "US-PD"},
         "excluded_source_reasons": {"th_dlt": "Thailand is outside the product market scope."},
+        "not_in_release_sources": {"ro_drpciv": "Not present in pinned release manifest."},
         "expected_counts": {"sources": 2, "source_files": 4, "models": 2, "market_evidence": 2},
     }, indent=2), encoding="utf-8")
     return lock, source_db, upstream_manifest, attribution, license_file
@@ -102,6 +103,9 @@ class VehiclesDBIdentityPackTests(unittest.TestCase):
             self.assertEqual(result["counts"], {"sources": 2, "source_files": 4, "models": 2, "market_evidence": 2})
             self.assertEqual(verified["status"], "verified_identity_candidate_pack")
             self.assertEqual(verified["market_scope_countries"], ["nl", "us"])
+            self.assertEqual(verified["not_in_release_sources"], ["ro_drpciv"])
+            pack_manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(pack_manifest["not_in_release_sources"], {"ro_drpciv": "Not present in pinned release manifest."})
             db = sqlite3.connect(output / "vag-identity-vehiclesdb.sqlite")
             try:
                 self.assertEqual(db.execute("SELECT count(*) FROM model_candidates WHERE make_slug='toyota'").fetchone()[0], 0)
@@ -109,6 +113,16 @@ class VehiclesDBIdentityPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT count(*) FROM model_candidates WHERE fitment_status<>'not_established' OR year_start IS NOT NULL OR year_end IS NOT NULL").fetchone()[0], 0)
             finally:
                 db.close()
+
+    def test_not_in_release_source_cannot_appear_in_pinned_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lock, source_db, upstream, attribution, license_file = fixture(root)
+            upstream_data = json.loads(upstream.read_text(encoding="utf-8"))
+            upstream_data["sources"].append({"id": "ro_drpciv", "country": "ro", "license": "CC-BY-4.0"})
+            upstream.write_text(json.dumps(upstream_data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "marked not in pinned release is present"):
+                build_pack(lock, source_db, upstream, attribution, license_file, root / "pack")
 
     def test_license_drift_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
