@@ -270,7 +270,7 @@ def build_generation_query(model_qids: list[str]) -> str:
         raise ValueError("No parent model QIDs supplied to generation candidate query")
     return f"""PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
                 ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
 WHERE {{
@@ -508,7 +508,7 @@ def build_database(
             "source_bindings": len(rows),
             "models_with_members": db.execute("SELECT count(DISTINCT model_qid) FROM model_series_member_candidates").fetchone()[0],
             "manufacturers": db.execute("SELECT count(DISTINCT manufacturer_qid) FROM model_series_member_candidates").fetchone()[0],
-            "russian_labels": db.execute("SELECT count(*) FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND member_label_ru!=''").fetchone()[0],
+            "russian_labels": db.execute("SELECT count(DISTINCT member_qid) FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND member_label_ru!=''").fetchone()[0],
             "date_statements": db.execute("SELECT count(*) FROM series_member_date_statements").fetchone()[0],
         }
     finally:
@@ -641,7 +641,7 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
             "source_bindings": db.execute("SELECT count(*) FROM series_member_source_bindings").fetchone()[0],
             "models_with_members": db.execute("SELECT count(DISTINCT model_qid) FROM model_series_member_candidates").fetchone()[0],
             "manufacturers": db.execute("SELECT count(DISTINCT manufacturer_qid) FROM model_series_member_candidates").fetchone()[0],
-            "russian_labels": db.execute("SELECT count(*) FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND member_label_ru!=''").fetchone()[0],
+            "russian_labels": db.execute("SELECT count(DISTINCT member_qid) FROM model_series_member_candidates WHERE member_label_ru IS NOT NULL AND member_label_ru!=''").fetchone()[0],
             "date_statements": db.execute("SELECT count(*) FROM series_member_date_statements").fetchone()[0],
         }
         if counts != manifest["counts"]:
