@@ -39,3 +39,10 @@ It runs on changes to the workflow file on `main` and can also be run manually. 
 ## Important limitation
 
 OBDex covers generic SAE/ISO diagnostic definitions only. It does not establish VAG ECU-specific applicability, vehicle-generation fitment, factory wiring or repair procedures. OEM technical sources and exact model/engine/ECU applicability still require independent evidence and review.
+
+
+## CC0 VAG model identity candidates — Wikidata
+
+A separate acquisition workflow snapshots only structured Wikidata car-model statements (direct P31=Q3231690) for a curated manufacturer-label whitelist. The immutable snapshot retains the SPARQL query SHA-256, raw response SHA-256, per-binding SHA-256, QIDs, English/Russian labels and optional inception/dissolution statements. Structured Wikidata data is CC0 1.0; article text, images, logos and third-party resources are excluded.
+
+The snapshot is **candidate identity only**: market scope is UNKNOWN; no generation mapping, production-year inference, engine/gearbox codes, ECU, DTC, repair procedures, OEM parts or exact vehicle fitment are asserted. It cannot unlock vehicle-specific technical search. See [the source review](docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md) and [source manifest](data/source-manifests/wikidata-vag-taxonomy.json).
