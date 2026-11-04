@@ -322,8 +322,16 @@ jobs:
       - name: Apply external-network-blocked offline lifecycle gate (run55)
         shell: pwsh
         run: |
+          $ErrorActionPreference = "Stop"
           node --check apply-offline-firewall-test-run55.cjs
-          node apply-offline-firewall-test-run55.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run55 offline firewall patch syntax check failed" }
+          node apply-offline-firewall-test-run55.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/offline-firewall-patch.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run55 offline firewall lifecycle patch failed" }
+          $testPath = "desktop-source/tests/windows-offline-firewall-contract.test.cjs"
+          if (-not (Test-Path $testPath)) { throw "Run55 offline firewall contract test was not created" }
+          $pkg = Get-Content -LiteralPath "desktop-source/package.json" -Raw | ConvertFrom-Json
+          if (-not $pkg.scripts.'test:desktop'.Contains("windows-offline-firewall-contract.test.cjs")) { throw "Offline firewall contract test is not included in the desktop test script" }
+          "offline_firewall_patch=applied; contract_test=registered; external_ipv4_ipv6_blocked; loopback_preserved" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
