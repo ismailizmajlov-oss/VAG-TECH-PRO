@@ -317,6 +317,9 @@ def normalize_basis_rows(rows: list[dict[str, Any]], source_revision: str) -> li
         revision = text_value(row, "volgnummerrevisieuitvoering") or "0"
         if not all((approval, variant, execution)):
             continue
+        category = text_value(row, "voertuigcategorie")
+        if category and category.upper() != "M1":
+            continue
         key = (approval, variant, execution, revision)
         out[key] = {
             "revision_candidate_id": stable_id(*key),
@@ -393,12 +396,11 @@ def build_database(output_dir: Path, lock_path: Path, payloads: dict[str, list[d
     source_revision = "rdw-" + revision_bundle[:20]
 
     vehicles = normalize_vehicle_rows(payloads.get("m9d7-ebf2", []), source_revision)
-    approvals = sorted({v["type_approval_number"] for v in vehicles})
-    approval_set = set(approvals)
-    engines = [r for r in normalize_engine_rows(payloads.get("4by9-ammk", []), source_revision) if r["type_approval_number"] in approval_set]
-    transmissions = [r for r in normalize_transmission_rows(payloads.get("7rjk-eycs", []), source_revision) if r["type_approval_number"] in approval_set]
-    basis = [r for r in normalize_basis_rows(payloads.get("byxc-wwua", []), source_revision) if r["type_approval_number"] in approval_set]
-    designations = [r for r in normalize_designation_rows(payloads.get("x5v3-sewk", []), source_revision) if r["type_approval_number"] in approval_set]
+    vehicle_keys = {(v["type_approval_number"],v["variant_code"],v["execution_code"]) for v in vehicles}
+    engines = [r for r in normalize_engine_rows(payloads.get("4by9-ammk", []), source_revision) if (r["type_approval_number"],r["variant_code"],r["execution_code"]) in vehicle_keys]
+    transmissions = [r for r in normalize_transmission_rows(payloads.get("7rjk-eycs", []), source_revision) if (r["type_approval_number"],r["variant_code"],r["execution_code"]) in vehicle_keys]
+    basis = [r for r in normalize_basis_rows(payloads.get("byxc-wwua", []), source_revision) if (r["type_approval_number"],r["variant_code"],r["execution_code"]) in vehicle_keys]
+    designations = [r for r in normalize_designation_rows(payloads.get("x5v3-sewk", []), source_revision) if (r["type_approval_number"],r["variant_code"],r["execution_code"]) in vehicle_keys]
 
     if not vehicles:
         raise ValueError("RDW VAG M1 registration query returned no eligible type-approval candidates")
@@ -455,7 +457,7 @@ def build_database(output_dir: Path, lock_path: Path, payloads: dict[str, list[d
              for v in vehicles]
         )
         db.executemany(
-            "INSERT INTO approval_execution_revisions VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO approval_execution_revisions VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
             [(r["revision_candidate_id"],r["type_approval_number"],r["variant_code"],r["execution_code"],r["revision_number"],
               r["vehicle_category"],r["revision_start_date"],r["revision_end_date"],r["source_id"],r["source_revision"],
               r["applicability_precision"],r["exact_vehicle_fitment"])
@@ -469,14 +471,14 @@ def build_database(output_dir: Path, lock_path: Path, payloads: dict[str, list[d
              for e in engines]
         )
         db.executemany(
-            "INSERT INTO transmission_approval_candidates VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO transmission_approval_candidates VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             [(t["transmission_candidate_id"],t["type_approval_number"],t["variant_code"],t["execution_code"],t["revision_number"],
               t["sequence_number"],t["rdw_transmission_type_code"],t["gear_count_min"],t["gear_count_max"],t["code_namespace"],
               t["vag_factory_gearbox_code_verified"],t["source_id"],t["source_revision"],t["applicability_precision"])
              for t in transmissions]
         )
         db.executemany(
-            "INSERT INTO manufacturer_designation_candidates VALUES(?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO manufacturer_designation_candidates VALUES(?,?,?,?,?,?,?,?,?,?)",
             [(d["designation_candidate_id"],d["type_approval_number"],d["variant_code"],d["execution_code"],d["revision_number"],
               d["manufacturer_trade_name"],d["manufacturer_type_designation"],d["source_id"],d["source_revision"],d["applicability_precision"])
              for d in designations]
@@ -497,7 +499,7 @@ def build_database(output_dir: Path, lock_path: Path, payloads: dict[str, list[d
             )
             pair_id = stable_id(*key)
             db.execute(
-                "INSERT INTO engine_transmission_pair_candidates VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO engine_transmission_pair_candidates VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (pair_id,*key,es[0]["engine_candidate_id"] if unique else None,
                  ts[0]["transmission_candidate_id"] if unique else None,len(es),len(ts),status,0,0,0,SOURCE_ID,source_revision)
             )
