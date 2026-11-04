@@ -768,8 +768,8 @@ jobs:
           $sourceLine = Get-Content -LiteralPath "source-verification.txt" -Raw -ErrorAction SilentlyContinue
           $sourceHash = if ($sourceLine -match "source_archive_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
           $patchHash = if ($sourceLine -match "catalog_import_v2_patch_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
-          $wikidataDbHash = if ($sourceLine -match "database_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
-          $wikidataSnapshotHash = if ($sourceLine -match "snapshot_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          $wikidataDbHash = if ($sourceLine -match "wikidata_pack=[^\r\n]*database_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          $wikidataSnapshotHash = if ($sourceLine -match "wikidata_pack=[^\r\n]*snapshot_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
           foreach ($file in @(
             (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe"),
             (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe")
