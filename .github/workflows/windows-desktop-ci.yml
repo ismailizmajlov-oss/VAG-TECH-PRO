@@ -469,6 +469,10 @@ jobs:
 
       - name: Generate dependency lock for this run and install
         working-directory: desktop-source
+        timeout-minutes: 15
+        env:
+          npm_config_fetch_timeout: 120000
+          npm_config_fetch_retries: 2
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
