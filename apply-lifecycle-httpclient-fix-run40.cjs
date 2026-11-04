@@ -53,24 +53,18 @@ function patchLifecycleScript() {
 
 function patchContractTest() {
   let source = read("tests/windows-lifecycle-script-contract.test.cjs");
-  const block = `test("Windows lifecycle JSON mutations use explicit same-origin HttpClient headers", () => {
-  assert.match(script, /System\\.Net\\.Http\\.HttpClient/);
-  assert.match(script, /TryAddWithoutValidation/);
-  assert.match(script, /Origin/);
-  assert.match(script, /Sec-Fetch-Site/);
-  assert.match(script, /Local JSON request failed/);
-});
-
-`;
-  if (!source.includes(block.trim())) {
-    const anchor = 'test("Windows lifecycle test verifies in-place upgrade and user database preservation on uninstall", () => {\\n';
-    const count = source.split(anchor).length - 1;
-    if (count !== 1) throw new Error("Lifecycle contract test insertion anchor missing");
-    source = source.replace(anchor, block + anchor);
-  }
+  const block = [
+    'test("Windows lifecycle JSON mutations use explicit same-origin HttpClient headers", () => {',
+    '  assert.match(script, /System\\.Net\\.Http\\.HttpClient/);',
+    '  assert.match(script, /TryAddWithoutValidation/);',
+    '  assert.match(script, /Origin/);',
+    '  assert.match(script, /Sec-Fetch-Site/);',
+    '  assert.match(script, /Local JSON request failed/);',
+    '});',
+  ].join("\n");
+  if (!source.includes(block)) source = source.trimEnd() + "\n\n" + block + "\n";
   write("tests/windows-lifecycle-script-contract.test.cjs", source);
 }
-
 function patchApiTests() {
   let source = read("tests/local-core-api.test.cjs");
   source = replaceOnce(source,
