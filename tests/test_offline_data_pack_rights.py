@@ -20,11 +20,38 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
         self.assertNotIn("inspect_wal33d", source)
         self.assertNotIn("MANUFACTURER_CODE_RE", source)
-        self.assertIn('"source_id": "wal33d-vag-oem-dtc-mit"', source)
-        self.assertIn('"status": "permission_required"', source)
-        self.assertIn('"included": False', source)
-        self.assertIn("Permission-required manufacturer DTC source is not explicitly excluded", source)
+        self.assertEqual(
+            MODULE.REQUIRED_EXCLUSIONS["wal33d-vag-oem-dtc-mit"],
+            "permission_required",
+        )
         self.assertIn("No manufacturer-specific DTC pack is included", source)
+
+    def test_restricted_sources_fail_closed_when_missing_mislabeled_or_included(self):
+        valid = [
+            {
+                "source_id": "wal33d-vag-oem-dtc-mit",
+                "status": "permission_required",
+                "included": False,
+            },
+            {
+                "source_id": "gor3a-vehicle-makes-models-odbl",
+                "status": "quarantined_pending_upstream_permission",
+                "included": False,
+            },
+        ]
+        MODULE.validate_required_exclusions(valid)
+        with self.assertRaisesRegex(ValueError, "wal33d-vag-oem-dtc-mit"):
+            MODULE.validate_required_exclusions(valid[1:])
+        wrong_status = [dict(item) for item in valid]
+        wrong_status[0]["status"] = "approved"
+        with self.assertRaisesRegex(ValueError, "wal33d-vag-oem-dtc-mit"):
+            MODULE.validate_required_exclusions(wrong_status)
+        included = [dict(item) for item in valid]
+        included[0]["included"] = True
+        with self.assertRaisesRegex(ValueError, "wal33d-vag-oem-dtc-mit"):
+            MODULE.validate_required_exclusions(included)
+        with self.assertRaisesRegex(ValueError, "excluded_sources must be a list"):
+            MODULE.validate_required_exclusions(None)
 
     def test_generic_obdex_remains_explicitly_generic(self):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
