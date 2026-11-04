@@ -12,6 +12,10 @@ on:
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - scripts/build_offline_data_pack_index.py
       - scripts/verify_offline_data_pack_index.py
+      - scripts/vag_identity_vehiclesdb_common.py
+      - scripts/build_vag_identity_vehiclesdb.py
+      - scripts/verify_vag_identity_vehiclesdb.py
+      - scripts/test_vag_identity_vehiclesdb.py
       - tests/test_offline_data_pack_rights.py
       - data/source-manifests/obdex-generic-cc0.lock.json
       - data/source-manifests/obdb-vag-signalsets.json
@@ -24,6 +28,10 @@ on:
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - scripts/build_offline_data_pack_index.py
       - scripts/verify_offline_data_pack_index.py
+      - scripts/vag_identity_vehiclesdb_common.py
+      - scripts/build_vag_identity_vehiclesdb.py
+      - scripts/verify_vag_identity_vehiclesdb.py
+      - scripts/test_vag_identity_vehiclesdb.py
       - tests/test_offline_data_pack_rights.py
       - data/source-manifests/obdex-generic-cc0.lock.json
       - data/source-manifests/obdb-vag-signalsets.json
