@@ -79,6 +79,9 @@ jobs:
           }
           node --check apply-desktop-hardening-run35.cjs
           node apply-desktop-hardening-run35.cjs
+          node --check apply-local-core-host-origin-run51.cjs
+          node apply-local-core-host-origin-run51.cjs 2>&1 | Tee-Object -FilePath "local-core-host-origin-patch.log"
+          if ($LASTEXITCODE -ne 0) { throw "Local-core Host/Origin hardening patch failed" }
           "source_archive_sha256=$actual" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Download pinned open research packs
@@ -422,6 +425,7 @@ jobs:
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
             desktop-source/package-lock.json
             desktop-source/npm-lock.log
+            desktop-source/local-core-host-origin-patch.log
             desktop-source/npm-ci.log
             desktop-source/test.log
             desktop-source/verify-local-core.log
