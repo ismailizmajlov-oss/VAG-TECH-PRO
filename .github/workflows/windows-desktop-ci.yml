@@ -487,6 +487,11 @@ jobs:
           node --check apply-research-pack-hash-fix-run44.cjs
           node apply-research-pack-hash-fix-run44.cjs
           if ($LASTEXITCODE -ne 0) { throw "Research pack hash verification patch failed" }
+          node --check apply-vehiclesdb-schema-fix-run63.cjs
+          node apply-vehiclesdb-schema-fix-run63.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vehiclesdb-schema-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "VehiclesDB current-schema adaptation failed" }
+          $patchHash = (Get-FileHash apply-vehiclesdb-schema-fix-run63.cjs -Algorithm SHA256).Hash.ToLowerInvariant()
+          "vehiclesdb_schema_fix_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           node --check desktop-source/lib/local-research-db.cjs
           node --test desktop-source/tests/local-research-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/research-hash-targeted-test.log"
           if ($LASTEXITCODE -ne 0) { throw "Targeted research pack integrity test failed" }
