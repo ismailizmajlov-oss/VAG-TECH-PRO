@@ -131,12 +131,12 @@ function main(){
  if(!ui.includes("genericGuidanceSummary?.counts?.genericRepairGuidance"))ui=exact(ui,statsMarker,'\n      <article className="research-stat"><small>Общие рекомендации</small><strong>{formatNumber(genericGuidanceSummary?.counts?.genericRepairGuidance)}</strong><span>{formatNumber(genericGuidanceSummary?.counts?.genericDtcReferences)} общих DTC · ODbL-1.0</span></article>'+statsMarker,"statistics card");
  const boundaryMarker='\n    </div>\n\n    <div className="research-tabs"';
  if(!ui.includes("Общие заметки остаются отдельным generic SAE/ISO набором"))ui=exact(ui,boundaryMarker,'\n      {genericGuidanceSummary && <p>Общие заметки остаются отдельным generic SAE/ISO набором MechanicDB под ODbL-1.0: они не VAG-specific, рынок UNKNOWN, применимость к модели/поколению/году/двигателю/КПП/ECU не установлена; это не OEM-процедуры и не выполняемые тест-планы.</p>'+boundaryMarker,"scope boundary");
- const placeholder='placeholder={dataset === "vehicles" ?';
- if(!ui.includes('dataset === "generic-guidance" ? "DTC, узел или фраза из общей заметки'))ui=exact(ui,placeholder,'placeholder={dataset === "generic-guidance" ? "DTC, узел или фраза из общей заметки…" : dataset === "vehicles" ?',"search placeholder");
+ const placeholder='placeholder={dataset ===';
+ if(!ui.includes('dataset === "generic-guidance" ? "DTC, узел или фраза из общей заметки'))ui=exact(ui,placeholder,'placeholder={dataset === "generic-guidance" ? "DTC, узел или фраза из общей заметки…" : dataset ===',"search placeholder");
  const card=[
   '      {dataset === "generic-guidance" && rows.map((row) => <article className="research-result" key={row.guidanceId}>',
   '        <div className="research-result-top"><div><small>GENERIC SAE/ISO · {row.dtcCode} · {row.systemCategory || "категория не указана"}</small><h3>{row.title}</h3></div><span className="research-candidate">GENERIC ONLY</span></div>',
-  '        <div className="research-warning-line">{row.warning}</div>',
+  '        <div className="research-warning-line">Не использовать как тест-план или OEM-процедуру. {row.warning}</div>',
   '        <div className="research-data-grid">',
   '          <div><small>Порядок в источнике</small><b>{row.considerationOrder} · не вероятность</b></div>',
   '          <div><small>Уровень из источника</small><b>{row.skillLevel || "—"} · не оценка безопасности</b></div>',
