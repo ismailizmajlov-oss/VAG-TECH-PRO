@@ -330,10 +330,24 @@ replaceExactly(uiFile,
   '  { id: "dtc", label: "Общие DTC", hint: "CC0 · SAE/ISO, не VAG-specific" },\n',
   '  { id: "dtc", label: "Общие DTC", hint: "CC0 · SAE/ISO, не VAG-specific" },\n  { id: "mechanicdb", label: "DTC · кандидаты марок", hint: "ODbL · community · не OEM" },\n',
   "MechanicDB research tab");
-replaceExactly(uiFile,
-  'placeholder={dataset === "vehicles" ? "Модель, поколение или описание двигателя…" : dataset === "vehiclesdb" ? "Марка или модель… например Golf" : dataset === "dtc" ? "Код DTC или описание… например P0300" : dataset === "pids" ? "PID, режим или название параметра…" : "Марка, модель, ECU header, DID или сигнал…"}',
-  'placeholder={dataset === "vehicles" ? "Модель, поколение или описание двигателя…" : dataset === "vehiclesdb" ? "Марка или модель… например Golf" : dataset === "dtc" ? "Код DTC или описание… например P0300" : dataset === "mechanicdb" ? "P1128, P3000, Audi, Volkswagen…" : dataset === "pids" ? "PID, режим или название параметра…" : "Марка, модель, ECU header, DID или сигнал…"}',
-  "MechanicDB search placeholder");
+let uiSearchSource = readText(uiFile);
+const searchInputStart = uiSearchSource.indexOf('<input aria-label="Поиск по локальному справочнику"');
+if (searchInputStart < 0) fail("Local research search input is missing");
+const placeholderStart = uiSearchSource.indexOf("placeholder={", searchInputStart);
+const placeholderEnd = placeholderStart < 0 ? -1 : uiSearchSource.indexOf("}", placeholderStart);
+if (placeholderStart < 0 || placeholderEnd < 0) fail("Local research search placeholder expression is missing");
+let placeholderExpression = uiSearchSource.slice(placeholderStart, placeholderEnd + 1);
+if (!placeholderExpression.includes('dataset === "mechanicdb"')) {
+  const pidsBranch = ': dataset === "pids" ?';
+  const fallbackBranch = ': "Марка, модель, ECU header, DID или сигнал…"';
+  if (placeholderExpression.includes(pidsBranch)) {
+    placeholderExpression = placeholderExpression.replace(pidsBranch, ': dataset === "mechanicdb" ? "P1128, P3000, Audi, Volkswagen…" : dataset === "pids" ?');
+  } else if (placeholderExpression.includes(fallbackBranch)) {
+    placeholderExpression = placeholderExpression.replace(fallbackBranch, ': dataset === "mechanicdb" ? "P1128, P3000, Audi, Volkswagen…" : "Марка, модель, ECU header, DID или сигнал…"');
+  } else fail("Cannot locate a safe insertion point for the MechanicDB search placeholder");
+  uiSearchSource = uiSearchSource.slice(0, placeholderStart) + placeholderExpression + uiSearchSource.slice(placeholderEnd + 1);
+  writeText(uiFile, uiSearchSource);
+}
 replaceExactly(uiFile,
   '      {mechanicDb && <p>Отдельно хранится {formatNumber(mechanicDb.counts.manufacturerCandidates)} make-labelled DTC-кандидата MechanicDB в самостоятельной базе ODbL-1.0. Записи скрыты до независимой технической проверки; рынок UNKNOWN, точная применимость к модели, поколению, двигателю, КПП и ECU отсутствует. Эти записи не входят в поиск общих DTC и не являются подтверждёнными VAG-specific кодами.</p>}',
   '      {mechanicDb && <p>{formatNumber(mechanicDb.counts.manufacturerCandidates)} make-labelled DTC-кандидата MechanicDB доступны только в отдельной исследовательской вкладке. Это community reference, а не OEM-подтверждение: рынок UNKNOWN, точная применимость к модели, поколению, двигателю, КПП и ECU отсутствует. Они не входят в поиск общих DTC и не являются подтверждёнными VAG-specific кодами.</p>}',
