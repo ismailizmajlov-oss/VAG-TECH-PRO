@@ -1,0 +1,71 @@
+name: Wikidata VAG identity pack tests
+
+on:
+  push:
+    branches:
+      - research/wikidata-vag-identity-run61
+    paths:
+      - "data/source-manifests/wikidata-vag-identity-cc0.lock.json"
+      - "data/source-snapshots/wikidata-vag-identity-cc0.json"
+      - "scripts/build_wikidata_vag_identity_pack.py"
+      - "tests/test_wikidata_vag_identity_pack.py"
+      - ".github/workflows/wikidata-vag-identity-tests.yml"
+  pull_request:
+    paths:
+      - "data/source-manifests/wikidata-vag-identity-cc0.lock.json"
+      - "data/source-snapshots/wikidata-vag-identity-cc0.json"
+      - "scripts/build_wikidata_vag_identity_pack.py"
+      - "tests/test_wikidata_vag_identity_pack.py"
+      - ".github/workflows/wikidata-vag-identity-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-windows-pack:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout pinned source snapshot
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run rights, provenance and candidate-boundary tests
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tests -p "test_wikidata_vag_identity_pack.py" -v
+
+      - name: Build deterministic SQLite pack
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP "wikidata-vag-identity-cc0"
+          python scripts/build_wikidata_vag_identity_pack.py --snapshot data/source-snapshots/wikidata-vag-identity-cc0.json --lock data/source-manifests/wikidata-vag-identity-cc0.lock.json --output $out
+          if ($LASTEXITCODE -ne 0) { throw "Wikidata pack build failed" }
+
+      - name: Verify built database and manifest hashes
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP "wikidata-vag-identity-cc0"
+          @'
+          import hashlib, json, sqlite3, sys
+          from pathlib import Path
+          root = Path(sys.argv[1])
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+          db_path = root / manifest["database_file"]
+          actual = hashlib.sha256(db_path.read_bytes()).hexdigest()
+          assert actual == manifest["database_sha256"], "database SHA-256 mismatch"
+          db = sqlite3.connect(db_path)
+          try:
+              assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+              assert db.execute("SELECT count(*) FROM identity_candidates").fetchone()[0] == 20
+              assert db.execute("SELECT count(*) FROM identity_candidates WHERE market_scope <> 'UNKNOWN'").fetchone()[0] == 0
+              assert db.execute("SELECT count(*) FROM identity_candidates WHERE exact_vehicle_fitment <> 0 OR engine_fitment <> 0 OR transmission_fitment <> 0 OR ecu_fitment <> 0").fetchone()[0] == 0
+          finally:
+              db.close()
+          print(json.dumps({"pack_id": manifest["pack_id"], "rows": manifest["counts"]["total"], "database_sha256": actual}, indent=2))
+          '@ | python - $out
