@@ -146,7 +146,7 @@ function main(){
  const card=[
   '      {dataset === "generic-guidance" && rows.map((row) => <article className="research-result" key={row.guidanceId}>',
   '        <div className="research-result-top"><div><small>GENERIC SAE/ISO · {row.dtcCode} · {row.systemCategory || "категория не указана"}</small><h3>{row.title}</h3></div><span className="research-candidate">GENERIC ONLY</span></div>',
-  '        <div className="research-warning-line">Не использовать как тест-план или OEM-процедуру. {row.warning}</div>',
+  '        <div className="research-warning-line">Не VAG-specific; это не OEM-процедура и не использовать как тест-план. {row.warning}</div>',
   '        <div className="research-data-grid">',
   '          <div><small>Порядок в источнике</small><b>{row.considerationOrder} · не вероятность</b></div>',
   '          <div><small>Уровень из источника</small><b>{row.skillLevel || "—"} · не оценка безопасности</b></div>',
