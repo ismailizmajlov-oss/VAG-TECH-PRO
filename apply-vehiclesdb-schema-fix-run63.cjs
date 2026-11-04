@@ -55,7 +55,8 @@ source = replaceOnce(source, "upstreamRevision: vehiclesDbProvenance.upstream_ta
 source = replaceOnce(source, "snapshotGeneratedAt: vehiclesDbProvenance.built_at_utc,", "snapshotGeneratedAt: vehiclesDbPackManifest.built_at_utc,", "VehiclesDB snapshot timestamp");
 
 const functionStart = source.indexOf("function searchVehiclesDbCandidates(query, limit = 25, root) {");
-const functionEnd = source.indexOf("\nmodule.exports = {", functionStart);
+const nextFunction = source.indexOf("\nfunction searchUdsSignals(", functionStart);
+const functionEnd = nextFunction >= 0 ? nextFunction : source.indexOf("\nmodule.exports = {", functionStart);
 if (functionStart < 0 || functionEnd < 0) throw new Error("VehiclesDB search function boundaries not found");
 const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit = 25, root) {
   const q = validateQuery(query);
@@ -177,7 +178,10 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
   }
 }`;
 source = source.slice(0, functionStart) + newFunction + source.slice(functionEnd);
-if (/repository_url|provenance_id|model_candidate_id|source_model_id|body_types_raw|regions_raw|market_scope_summary_json|upstream_license|evidence_kind|upstream_attribution_required/.test(source.slice(source.indexOf("function searchVehiclesDbCandidates")))) {
+const vehiclesFunctionStart = source.indexOf("function searchVehiclesDbCandidates");
+const vehiclesFunctionEnd = source.indexOf("\nfunction searchUdsSignals", vehiclesFunctionStart) > 0 ? source.indexOf("\nfunction searchUdsSignals", vehiclesFunctionStart) : source.indexOf("\nmodule.exports = {", vehiclesFunctionStart);
+const patchedVehiclesFunction = source.slice(vehiclesFunctionStart, vehiclesFunctionEnd);
+if (/repository_url|provenance_id|model_candidate_id|source_model_id|body_types_raw|regions_raw|market_scope_summary_json|upstream_license|evidence_kind|upstream_attribution_required/.test(patchedVehiclesFunction)) {
   throw new Error("Legacy VehiclesDB column names remain in the candidate search function");
 }
 fs.writeFileSync(dbFile, source, "utf8");
