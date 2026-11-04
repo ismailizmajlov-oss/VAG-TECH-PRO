@@ -99,7 +99,19 @@ const regression = [
   testAnchor
 ].join("\n");
 apiTests = replaceOnce(apiTests, testAnchor, regression, "insert forwarded-host same-origin regression test");
-apiTests = replaceOnce(apiTests, "assert.equal(finalSummary.sources.length, 2);", 'console.log("[local-core test] final source ids", core.listSources(dbPath).map((row) => row.source_id));\n  assert.equal(finalSummary.sources.length, 3);', "log final source ids and update source count after loopback regression fixture");
+const finalCountAssertions = [
+  "assert.equal(finalSummary.sources.length, 2);",
+  "assert.equal(finalSummary.sources.length, 3);",
+  "assert.equal(finalSummary.sources.length, 4);",
+];
+const finalCountAssertion = finalCountAssertions.find((assertion) => apiTests.includes(assertion));
+const finalSourceLog = '  console.log("[local-core test] final source ids", core.listSources(dbPath).map((row) => row.source_id));';
+if (!finalSourceLog || !finalCountAssertion) throw new Error("Final source summary assertion was not found");
+if (!apiTests.includes(finalSourceLog)) {
+  apiTests = replaceOnce(apiTests, finalCountAssertion, `${finalSourceLog}\\n  assert.equal(finalSummary.sources.length, 4);`, "log final source ids and assert four expected source fixtures");
+} else if (!apiTests.includes("assert.equal(finalSummary.sources.length, 4);")) {
+  throw new Error("Final source summary must assert four expected source fixtures");
+}
 
 // Either guard may reject a Host/Origin mismatch: 404 at the loopback boundary
 // or 403 at the mutation-origin boundary. Both are safe; assert no mutation below.
