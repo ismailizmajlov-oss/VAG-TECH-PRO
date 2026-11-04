@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -52,6 +53,11 @@ class OfflineDataPackRightsTests(unittest.TestCase):
             MODULE.validate_required_exclusions(included)
         with self.assertRaisesRegex(ValueError, "excluded_sources must be a list"):
             MODULE.validate_required_exclusions(None)
+
+    def test_vehiclesdb_absent_source_is_not_misclassified_as_excluded(self):
+        lock = json.loads((ROOT / "data" / "source-manifests" / "vehiclesdb-vag-identity.lock.json").read_text(encoding="utf-8"))
+        self.assertIn("ro_drpciv", lock["not_in_release_sources"])
+        self.assertNotIn("ro_drpciv", lock["excluded_source_reasons"])
 
     def test_generic_obdex_remains_explicitly_generic(self):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
