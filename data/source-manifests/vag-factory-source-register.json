@@ -1581,6 +1581,80 @@
       ],
       "project_decision": "quarantine_no_import_no_display_no_cache; BSD-2-Clause repository code licence does not establish rights in potentially OEM ODX-derived CSV data; require the author's written provenance statement and data-specific reuse permission covering commercial use, display, offline cache and redistribution before any integration",
       "evidence_status": "repository_LICENSE_README_and_dtcs_csv_commit_reviewed_2026-11-05; commit c8376416 adds 657 CSV data rows without row-level source attribution"
+    },
+    {
+      "source_id": "dspl1236-vag-cp-docs-au57x-odis-mcd-extract",
+      "publisher": "dspl1236 / VAG-CP-Docs",
+      "url": "https://github.com/dspl1236/VAG-CP-Docs",
+      "readme_url": "https://github.com/dspl1236/VAG-CP-Docs/blob/main/README.md",
+      "license_url": "https://github.com/dspl1236/VAG-CP-Docs/blob/main/LICENSE",
+      "evidence_document_url": "https://github.com/dspl1236/VAG-CP-Docs/blob/main/technical/au57x-mcd-project-findings.md",
+      "source_kind": "community_documentation_derived_from_vw_odis_mcd_diagnostic_database",
+      "pinned_revision": "1d6948369cdaf6acc013907b5f35591f236ca649",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "au57x_platform_family_candidate_only_no_complete_vehicle_year_or_exact_ecu_part_mapping",
+      "verification_status": "underlying_oem_data_rights_unverified",
+      "display_status": "restricted_not_imported",
+      "source_data_evidence": {
+        "repository_head_sha": "8876c4d096f92943e8d3d168c5abaf7aa5d238c2",
+        "document_commit_sha": "1d6948369cdaf6acc013907b5f35591f236ca649",
+        "license_blob_sha1": "d24ff42419f757bcf906e00e434fe6c3ae84e773",
+        "readme_blob_sha1": "f6bce2af02c660494b9271fa5d4785aed62004de",
+        "technical_document_blob_sha1": "339a0f01eed596da1919f90452892eaf6e886be1",
+        "project_name": "AU57X ODIS MCD Project",
+        "project_revision": "DVR 72 / 072102",
+        "project_date": "2022-09-22",
+        "platform_scope": "Audi A6 C7 / A7 4G / A8 D4",
+        "build_host_claimed": "VWAGWOSOB127",
+        "converter_claimed": "VW-MCD 19.0.2.0",
+        "source_method_claimed": "AStringData.data.gz string extraction and DIDB HSQLDB dump; later ODIS MCD binary decoding",
+        "documented_cp_dtc_candidates": 3,
+        "row_level_provenance": "not_provided"
+      },
+      "counts": {
+        "documented_cp_dtc_candidates": 3,
+        "verified_vag_specific_dtc_rows": 0,
+        "verified_did_records": 0,
+        "exact_vehicle_fitment_rows": 0,
+        "exact_ecu_part_number_rows": 0
+      },
+      "evidence_scope": [
+        "AU57X ODIS MCD diagnostic identifiers and CP-related DTC candidates; source rights not cleared"
+      ],
+      "technical_scope": {
+        "make": "AUDI",
+        "platform_family": "AU57X",
+        "model_candidates": [
+          "A6 C7",
+          "A7 4G",
+          "A8 D4"
+        ],
+        "exact_model_years": false,
+        "exact_ecu_part_numbers": false,
+        "exact_hardware_software_revisions": false,
+        "market_scope_verified": false
+      },
+      "rights": {
+        "repository_content_license_claimed": "CC0-1.0",
+        "underlying_oem_data_rights": "not_established",
+        "commercial_use_allowed": "not_confirmed_for_underlying_oem_data",
+        "display_allowed": "not_confirmed_for_underlying_oem_data",
+        "offline_cache_allowed": "not_confirmed_for_underlying_oem_data",
+        "bulk_reuse_allowed": "not_confirmed_for_underlying_oem_data",
+        "redistribution_allowed": "not_confirmed_for_underlying_oem_data",
+        "permission_status": "not_cleared"
+      },
+      "quality_limits": [
+        "The repository claims CC0-1.0 for its documentation, but the reviewed AU57X document identifies its source as a Volkswagen Group ODIS MCD project built from a PDX source on a VW internal server; no VW AG licence or permission evidence is supplied.",
+        "The document describes extracted AStringData and DIDB diagnostic database content and proprietary ODIS MCD/PBL project structures. The underlying OEM rights cannot be cleared by the uploader's CC0 declaration alone.",
+        "The README states that the repository contains no material extracted through unauthorized access, but VAG TECH PRO cannot independently verify the acquisition authority or the right to sublicense the underlying OEM database.",
+        "The three documented CP DTC candidates and DID/channel identifiers are not imported, displayed, cached, or used for repair advice under the project's no-closed-catalogues policy.",
+        "Platform-family references do not establish exact model year, ECU part number, HW/SW revision, engine/gearbox, market or repair applicability."
+      ],
+      "project_decision": "restricted_no_import_no_display_no_cache; treat as closed OEM ODIS MCD-derived material until VW AG permission or independently verifiable source rights are provided; uploader CC0 declaration does not establish rights in underlying OEM diagnostic database",
+      "evidence_status": "repository_LICENSE_README_and_AU57X_MCD_findings_reviewed_2026-11-05"
     }
   ],
   "minimum_fitment_evidence_fields": [
