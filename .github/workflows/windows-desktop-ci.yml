@@ -4,7 +4,7 @@ name: VAG TECH PRO Windows x64 desktop
 on:
   push:
     branches:
-      - automation/windows-desktop-build-run43
+      - "automation/windows-desktop-build-run*"
   pull_request:
     branches:
       - main
