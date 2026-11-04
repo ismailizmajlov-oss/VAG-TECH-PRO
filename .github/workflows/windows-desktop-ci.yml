@@ -770,6 +770,9 @@ jobs:
           $patchHash = if ($sourceLine -match "catalog_import_v2_patch_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
           $wikidataDbHash = if ($sourceLine -match "wikidata_pack=[^\r\n]*database_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
           $wikidataSnapshotHash = if ($sourceLine -match "wikidata_pack=[^\r\n]*snapshot_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          $wikidataManifestHash = if ($sourceLine -match "wikidata_pack=[^\r\n]*manifest_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          $wikidataArtifactHash = if ($sourceLine -match "wikidata_artifact_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          $wikidataSourceRevision = if ($sourceLine -match "wikidata_source_revision=([^\r\n]+)") { $Matches[1].Trim() } else { $null }
           foreach ($file in @(
             (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe"),
             (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe")
@@ -778,7 +781,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; desktop_version = '0.2.3'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; desktop_version = '0.2.3'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Upload Windows installer and verification evidence
         if: always()
