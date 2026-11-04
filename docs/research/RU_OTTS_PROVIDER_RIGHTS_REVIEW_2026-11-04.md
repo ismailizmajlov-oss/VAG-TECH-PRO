@@ -30,3 +30,11 @@ This is historical system-context evidence, not a dataset licence. The report sa
 ## Review limitations
 
 This is a product source-rights gate, not a legal opinion. The provider terms were reviewed as published on 2026-11-04; terms can change. The FGIS legal-field review remains limited by the lack of a retrieved primary signed copy of the relevant Rosstandart orders.
+
+## Follow-up official EAEU catalogue check — 2026-11-05
+
+The official EAEU technical-regulation resource page at https://tech.eaeunion.org/tech/ru/registers/36 identifies the published resource as the **Unified Register of Conformity Assessment Bodies**. It exposes CSV/PDF/XML exports and OData, REST and S3 interfaces, with the page describing data published as of 2024-09-01. This is a real machine-readable EAEU resource, but it is not the vehicle type-approval/OTTS register and contains no basis for importing vehicle model, engine, gearbox or vehicle-configuration applicability.
+
+The EAEU Open Data Portal's general REST/OData documentation (https://opendata.eaeunion.org/opendata/ru/api/restapi) describes reuse of data that is actually published in the portal with minimal access restrictions. That general statement does not identify or license an absent OTTS dataset, nor does it override the separate terms of third-party OTTS providers.
+
+**Decision unchanged:** no OTTS rows or PDFs imported; no automated retrieval or caching enabled. Continue searching for a resource explicitly identified as vehicle type approvals and require its resource-specific licence/terms to cover bulk extraction, persistent offline cache, third-party display and redistribution before ingestion.
