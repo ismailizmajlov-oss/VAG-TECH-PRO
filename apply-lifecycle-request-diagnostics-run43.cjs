@@ -59,8 +59,8 @@ if (!route.includes('[local-core] loopback request rejected')) {
 let script = read(scriptFile);
 const oldThrow = '        throw "Local JSON request failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) origin=$origin fetchSite=same-origin proxy=disabled redirect=disabled location=$location $responseText"';
 const newThrow = [
-  '        $desktopLogPath = Join-Path $env:APPDATA "VAG TECH PRO\\logs\\desktop.log"
-        $desktopLogTail = if (Test-Path -LiteralPath $desktopLogPath) { (Get-Content -LiteralPath $desktopLogPath -Tail 80 | Out-String).Trim() } else { "<missing:$desktopLogPath>" }',
+  '        $desktopLogPath = Join-Path $env:APPDATA "VAG TECH PRO\\logs\\desktop.log"',
+  '        $desktopLogTail = if (Test-Path -LiteralPath $desktopLogPath) { (Get-Content -LiteralPath $desktopLogPath -Tail 80 | Out-String).Trim() } else { "<missing:$desktopLogPath>" }',
   '        throw "Local JSON request failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) origin=$origin fetchSite=same-origin proxy=disabled redirect=disabled location=$location desktopLogTail=$desktopLogTail $responseText"'
 ].join("\n");
 script = replaceOnce(script, oldThrow, newThrow, "include desktop server log tail in native request failure");
