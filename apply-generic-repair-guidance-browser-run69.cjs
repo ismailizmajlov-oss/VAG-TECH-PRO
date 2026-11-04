@@ -175,7 +175,6 @@ function main(){
  fs.writeFileSync(uiPath,ui,"utf8");
 
  const lifePath=path.join(desktop,"scripts/windows-installer-lifecycle.ps1");let life=fs.readFileSync(lifePath,"utf8");
- const lifeAnchor='    if ($summary.mode -ne "offline_local_sqlite_admin") { throw "The local SQLite API did not initialize in offline mode." }\n';
  if(!life.includes("api/local-research?dataset=generic-guidance-summary")){
   const checks=[
    '  # generic_repair_guidance is a separate local SQLite pack and must remain readable with external network blocked.',
@@ -184,7 +183,28 @@ function main(){
    '  $genericRows = Invoke-RestMethod -Uri "$baseUrl/api/local-research?dataset=generic-guidance&q=P0011" -TimeoutSec 20',
    '  if (@($genericRows.rows).Count -lt 1 -or $genericRows.rows[0].vagSpecific -ne $false -or $genericRows.rows[0].diagnosticExecutionAllowed -ne $false -or $genericRows.rows[0].exactVehicleFitment -ne $false) { throw "Generic guidance is missing or was promoted to VAG fitment/executable diagnostics." }',''
   ].join("\n");
-  life=exact(life,lifeAnchor,lifeAnchor+checks,"offline lifecycle generic guidance");
+  let insertionIndex=-1;
+  const guard=/if\s*\(\s*\$summary\.mode\s*-ne\s*["']offline_local_sqlite_admin["']\s*\)\s*\{/;
+  const match=guard.exec(life);
+  if(match){
+   const open=life.indexOf("{",match.index);let depth=0;
+   for(let i=open;i<life.length;i++){
+    if(life[i]==="{")depth++;
+    else if(life[i]==="}"){
+     depth--;
+     if(depth===0){insertionIndex=i+1;break;}
+    }
+   }
+  }
+  if(insertionIndex<0){
+   const summaryLine=life.match(/^[ \t]*\$summary\s*=.*dataset=summary.*$/m);
+   if(summaryLine)insertionIndex=life.indexOf(summaryLine[0])+summaryLine[0].length;
+  }
+  if(insertionIndex<0){
+   console.log("LIFECYCLE_SUMMARY_LINES\n"+life.split(/\r?\n/).filter(line=>/\$summary|offline_local_sqlite|Invoke-RestMethod/.test(line)).join("\n"));
+   fail("Offline lifecycle summary insertion point missing");
+  }
+  life=life.slice(0,insertionIndex)+"\n"+checks+"\n"+life.slice(insertionIndex);
  }
  fs.writeFileSync(lifePath,life,"utf8");
 
