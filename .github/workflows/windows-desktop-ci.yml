@@ -1,5 +1,5 @@
 name: VAG TECH PRO Windows x64 desktop
-# Run43 verification: re-run the pinned Windows x64 source, strict loopback security and installer lifecycle gates.
+# Run50 verification: pin native loopback authority, bypass system proxy and re-run Windows x64 lifecycle gates.
 
 on:
   push:
@@ -250,6 +250,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run41 strict Fetch Metadata patch failed" }
           "lifecycle_fetchmetadata=strict_same_origin_or_none" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply run42 loopback transport and proxy-bypass fix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-loopback-transport-fix-run42.cjs
+          node apply-lifecycle-loopback-transport-fix-run42.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-loopback-transport-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run42 loopback transport patch failed" }
+          "lifecycle_loopback_transport=proxy_bypass_host_pinned" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -389,7 +398,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run48
+          name: vag-tech-pro-windows-x64-run50
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
