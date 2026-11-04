@@ -25,7 +25,7 @@ if (!lifecycle.includes("VAG TECH PRO Offline IPv4")) {
     "try {",
     "  $ruleV4 = New-NetFirewallRule -DisplayName \"VAG TECH PRO Offline IPv4 $PID\" -Direction Outbound -Program $appExe -Action Block -Profile Any -RemoteAddress @(\"0.0.0.0-126.255.255.255\", \"128.0.0.0-255.255.255.255\")",
     "  $offlineFirewallRuleNames += $ruleV4.Name",
-    "  $ruleV6 = New-NetFirewallRule -DisplayName \"VAG TECH PRO Offline IPv6 $PID\" -Direction Outbound -Program $appExe -Action Block -Profile Any -RemoteAddress \"::/0\"",
+    "  $ruleV6 = New-NetFirewallRule -DisplayName \"VAG TECH PRO Offline IPv6 $PID\" -Direction Outbound -Program $appExe -Action Block -Profile Any -RemoteAddress @(\"::/1\", \"8000::/1\")",
     "  $offlineFirewallRuleNames += $ruleV6.Name",
     "  foreach ($ruleName in $offlineFirewallRuleNames) {",
     "    if (-not (Get-NetFirewallRule -Name $ruleName -ErrorAction SilentlyContinue)) { throw \"Offline firewall rule was not activated: $ruleName\" }",
@@ -76,8 +76,8 @@ const test = [
 fs.writeFileSync(testPath, test, "utf8");
 
 process.stdout.write(JSON.stringify({
-  lifecycle: "external IPv4/IPv6 blocked for app executable during install/backup/restore/upgrade/uninstall lifecycle",
-  loopback: "127.0.0.0/8 excluded from IPv4 block so local HTTP server remains reachable",
+  lifecycle: "external IPv4 and IPv6 blocked for app executable during install/backup/restore/upgrade/uninstall lifecycle",
+  loopback: "127.0.0.0/8 excluded from IPv4 block; desktop server binds to IPv4 loopback, while two valid IPv6 /1 prefixes block all IPv6 egress",
   cleanup: "firewall rules removed in finally",
   test: testName,
   desktopTestScript: pkg.scripts["test:desktop"]
