@@ -38,7 +38,7 @@ function main(){
  for(const n of ["dtc_codes.csv","diagnostic_fixes.csv"])if(!m.source_files?.[n]||!/^[a-f0-9]{64}$/.test(m.source_files[n].sha256||""))fail("Missing pinned source hash "+n);
  const register=json(path.join(repo,"data/source-manifests/vag-factory-source-register.json"));
  const source=(register.sources||[]).find(x=>x.source_id===sourceId);
- if(!source||source.data_license!=="ODbL-1.0"||source.market_scope!=="UNKNOWN"||source.project_decision!=="approved_for_generic_research_pack_only")fail("Generic source missing from rights register");
+ if(!source||source.rights?.data_license_status!=="ODbL-1.0"||!Array.isArray(source.market_scope)||!source.market_scope.includes("UNKNOWN")||!String(source.project_decision||"").includes("allow_separate_generic_educational_reference_pack_only_under_ODbL"))fail("Generic source missing from rights register");
  const sourceManifest=json(path.join(repo,"data/source-manifests/mechanicdb-generic-repair-guidance.json"));
  if(sourceManifest.source_id!==sourceId||sourceManifest.data_license!=="ODbL-1.0")fail("Source-specific manifest mismatch");
 
