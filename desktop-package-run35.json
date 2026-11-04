@@ -1,6 +1,6 @@
 {
   "name": "vag-tech-pro",
-  "version": "0.2.2",
+  "version": "0.2.0",
   "private": true,
   "engines": {
     "node": ">=22.5.0"

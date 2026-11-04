@@ -57,8 +57,9 @@ function approveSourceByOwner(dbPath, input, options = {}) {
     const now = (options.clock || (() => new Date()))().toISOString();
     db.exec("BEGIN IMMEDIATE");
     try {
-      const current = db.prepare("SELECT source_id,revision,market_scope,rights_status,status FROM sources WHERE source_id=?").get(sourceId);
+      const current = db.prepare("SELECT source_id,revision,market_scope,rights_status,status,source_url FROM sources WHERE source_id=?").get(sourceId);
       if (!current) throw new Error("Source rights approval candidate was not found");
+      if (typeof current.source_url !== "string" || !current.source_url.startsWith("https://")) throw new Error("Source rights approval requires a registered HTTPS source URL");
       if (current.status !== "candidate" || current.rights_status !== "permission_required") {
         throw new Error("Source rights approval requires a permission_required candidate; approved or blocked sources cannot be overwritten");
       }
@@ -286,6 +287,8 @@ test("owner approval records source rights only and never verifies technical rec
     owner_confirmation: "ПОДТВЕРЖДАЮ, ЧТО ИМЕЮ ПРАВО ИСПОЛЬЗОВАТЬ ЭТОТ ИСТОЧНИК В VAG TECH PRO НА УКАЗАННЫХ УСЛОВИЯХ: КОММЕРЧЕСКОЕ ИСПОЛЬЗОВАНИЕ, ПОКАЗ, ОФЛАЙН-КЭШ, МАССОВОЕ ИСПОЛЬЗОВАНИЕ И РАСПРОСТРАНЕНИЕ",
     approval_note: "Signed permission checked by owner",
   };
+  core.registerSourceCandidate(dbPath, { source_id: "source-without-url", publisher: "Rights holder", title: "No origin URL", source_type: "written_permission", revision: "rev-no-url", market_scope: "RU/EAEU" });
+  assert.throws(() => core.approveSourceByOwner(dbPath, { ...approval, source_id: "source-without-url", expected_revision: "rev-no-url" }), /registered HTTPS source URL/);
   assert.throws(() => core.approveSourceByOwner(dbPath, { ...approval, owner_confirmation: "" }), /exact owner confirmation/);
   assert.throws(() => core.approveSourceByOwner(dbPath, { ...approval, redistribution_allowed: false }), /explicit grants/);
   assert.throws(() => core.approveSourceByOwner(dbPath, { ...approval, license_sha256: "bad" }), /valid license, rights-evidence and source-snapshot/);
@@ -326,6 +329,10 @@ test("owner approval records source rights only and never verifies technical rec
 
 function patchApiTests() {
   let source = read("tests/local-core-api.test.cjs");
+  source = replaceExactly(source,
+    'const { execFileSync } = require("node:child_process");\nconst core = require("../lib/local-core-db.cjs");',
+    'const { execFileSync } = require("node:child_process");\nconst { DatabaseSync } = require("node:sqlite");\nconst core = require("../lib/local-core-db.cjs");',
+    "import DatabaseSync for the owner approval API audit assertion");
   const anchor = '  const crossOrigin = await POST(new Request(baseUrl, {';
   const block = String.raw`  const ownerApproval = {
     source_id: "fgis-otts-candidate", expected_revision: "2026-11-03", expected_market_scope: "RU/EAEU",
@@ -335,6 +342,11 @@ function patchApiTests() {
     share_alike_required: false, attribution_required: true, attribution_text: "Source: Rosstandart permission 2026-11",
     owner_confirmation: "ПОДТВЕРЖДАЮ, ЧТО ИМЕЮ ПРАВО ИСПОЛЬЗОВАТЬ ЭТОТ ИСТОЧНИК В VAG TECH PRO НА УКАЗАННЫХ УСЛОВИЯХ: КОММЕРЧЕСКОЕ ИСПОЛЬЗОВАНИЕ, ПОКАЗ, ОФЛАЙН-КЭШ, МАССОВОЕ ИСПОЛЬЗОВАНИЕ И РАСПРОСТРАНЕНИЕ",
   };
+  const deniedApprovalResponse = await POST(new Request(baseUrl, {
+    method: "POST", headers: { ...headers, "content-type": "application/json" },
+    body: JSON.stringify({ action: "source.approve-by-owner", approval: { ...ownerApproval, owner_confirmation: "wrong" } }),
+  }));
+  assert.equal(deniedApprovalResponse.status, 400);
   const approvalResponse = await POST(new Request(baseUrl, {
     method: "POST", headers: { ...headers, "content-type": "application/json" },
     body: JSON.stringify({ action: "source.approve-by-owner", approval: ownerApproval }),
