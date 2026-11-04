@@ -110,6 +110,22 @@ class VehiclesDBIdentityPackTests(unittest.TestCase):
             finally:
                 db.close()
 
+    def test_not_in_release_source_is_separate_from_manifest_exclusions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lock, source_db, upstream, attribution, license_file = fixture(root)
+            lock_data = json.loads(lock.read_text(encoding="utf-8"))
+            lock_data["not_in_release_sources"] = {"ro_drpciv": "Not present in pinned release; do not infer or add."}
+            lock.write_text(json.dumps(lock_data), encoding="utf-8")
+            output = root / "pack"
+            result = build_pack(lock, source_db, upstream, attribution, license_file, output)
+            self.assertEqual(result["not_in_release_sources"], lock_data["not_in_release_sources"])
+            manifest_data = json.loads(upstream.read_text(encoding="utf-8"))
+            manifest_data["sources"].append({"id": "ro_drpciv", "country": "ro", "license": "CC-BY-4.0"})
+            upstream.write_text(json.dumps(manifest_data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "not-in-release is present upstream"):
+                build_pack(lock, source_db, upstream, attribution, license_file, root / "pack2")
+
     def test_license_drift_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
