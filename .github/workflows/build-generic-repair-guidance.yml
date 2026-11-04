@@ -1,0 +1,42 @@
+name: Build generic MechanicDB repair-guidance pack
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/build_mechanicdb_generic_guidance.py"
+      - "data/sql/generic-repair-guidance.sql"
+      - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
+      - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
+      - "tests/test_mechanicdb_generic_guidance_pack.py"
+      - "tests/test_mechanicdb_generic_guidance_source_rights.py"
+      - ".github/workflows/build-generic-repair-guidance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-verify:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout pinned project branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build generic-only SQLite pack from pinned source
+        run: python scripts/build_mechanicdb_generic_guidance.py --output-dir build/generic-repair-guidance
+      - name: Verify SQLite, source hashes, row provenance and namespace boundaries
+        run: python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_pack.py" -v
+      - name: Verify source rights register
+        run: python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_source_rights.py" -v
+      - name: Upload reproducible research data pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-generic-repair-guidance-odbl
+          path: build/generic-repair-guidance/
+          if-no-files-found: error
+          retention-days: 90
