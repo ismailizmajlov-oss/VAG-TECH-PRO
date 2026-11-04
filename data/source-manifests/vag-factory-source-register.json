@@ -760,6 +760,60 @@
       ],
       "project_decision": "manual document-level lookup only after the current official query route is resolved; no scraping, bulk export, offline caching or redistribution until EEC/registry operator confirms the endpoint and reuse terms in writing",
       "evidence_status": "EEC Collegium Decision No. 88, official Interstandart FGIS page, and current portal redirect reviewed 2026-11-04"
+    },
+    {
+      "source_id": "mechanicdb-public-generic-repair-guidance",
+      "publisher": "MechanicDB / DataEngineered",
+      "url": "https://github.com/MechanicDB/MechanicDB-public",
+      "pinned_revision": "c788dfe9ed1517d4cd0be27f5aacb4776abf4864",
+      "source_kind": "generic_sae_iso_diagnostic_guidance_dataset",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "data_counts_as_published": {
+        "sample_dtc_rows": 90,
+        "generic_sae_dtc_identifiers": 75,
+        "manufacturer_labelled_dtc_rows_excluded": 15,
+        "generic_authored_guidance_rows": 275,
+        "manufacturer_labelled_guidance_rows_excluded": 51
+      },
+      "evidence_scope": [
+        "generic_sae_iso_dtc_identifiers",
+        "generic_authored_diagnostic_guidance"
+      ],
+      "applicability": {
+        "manufacturer": "UNKNOWN",
+        "vag_specific": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "ecu_mapping": false,
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "generic_code_only"
+      },
+      "rights": {
+        "data_license_status": "ODbL-1.0",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "redistribution_allowed_under_odbl": true,
+        "share_alike_required": true,
+        "attribution_required": true,
+        "attribution_text": "MechanicDB — https://github.com/MechanicDB/MechanicDB-public",
+        "full_paid_dataset_included": false,
+        "permission_status": "approved_by_published_license_for_free_sample_only",
+        "upstream_notice": "MIT notice preserved; DTC descriptions and detailed code explanations are not copied"
+      },
+      "limitations": [
+        "generic SAE/ISO namespace only",
+        "not VAG-specific and not OEM-confirmed",
+        "no Russian or EAEU market applicability",
+        "no model, generation, year, engine, gearbox, ECU, PR-code or VIN fitment",
+        "no diagnostic execution, OEM repair procedure, wiring diagram, pinout, torque value, adaptation or OEM parts mapping",
+        "technical and safety review not independently completed"
+      ],
+      "project_decision": "allow_separate_generic_educational_reference_pack_only_under_ODbL; do not merge with manufacturer-specific VAG data or present as exact repair advice",
+      "evidence_status": "pinned_public_sample_license_sources_and_data_dictionary_reviewed_2026-11-04"
     }
   ],
   "minimum_fitment_evidence_fields": [

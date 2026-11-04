@@ -1,0 +1,82 @@
+name: Build generic MechanicDB repair-guidance pack
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/build_mechanicdb_generic_guidance.py"
+      - "data/sql/generic-repair-guidance.sql"
+      - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
+      - "data/research/generic-repair-guidance/**"
+      - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
+      - "tests/test_mechanicdb_generic_guidance_pack.py"
+      - "tests/test_mechanicdb_generic_guidance_source_rights.py"
+      - ".github/workflows/build-generic-repair-guidance.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-verify:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - name: Checkout PR head branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build generic-only SQLite pack from pinned source
+        run: python scripts/build_mechanicdb_generic_guidance.py --output-dir build/generic-repair-guidance
+      - name: Verify newly built SQLite, hashes, row provenance and namespace boundaries
+        run: python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_pack.py" -v
+      - name: Verify source rights register
+        run: python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_source_rights.py" -v
+      - name: Publish the ODbL database in the repository or reject silent drift
+        shell: pwsh
+        env:
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $builtDir = "build/generic-repair-guidance"
+          $publishedDir = "data/research/generic-repair-guidance"
+          $publishedDb = Join-Path $publishedDir "generic-repair-guidance.sqlite"
+          if (Test-Path -LiteralPath $publishedDb) {
+            $built = Get-Content -LiteralPath (Join-Path $builtDir "manifest.json") -Raw | ConvertFrom-Json
+            $published = Get-Content -LiteralPath (Join-Path $publishedDir "manifest.json") -Raw | ConvertFrom-Json
+            if ($built.logical_content_sha256 -ne $published.logical_content_sha256) {
+              throw "Published ODbL pack content differs from the pinned rebuild. Create a reviewed, versioned successor pack."
+            }
+          } else {
+            New-Item -ItemType Directory -Path $publishedDir -Force | Out-Null
+            Copy-Item -Path (Join-Path $builtDir "*") -Destination $publishedDir -Recurse -Force
+            git add -- $publishedDir
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "data(pack): publish ODbL generic repair guidance SQLite"
+            if ($LASTEXITCODE -ne 0) { throw "Could not commit the generated ODbL data pack." }
+            git push origin "HEAD:$env:PR_HEAD_REF"
+            if ($LASTEXITCODE -ne 0) { throw "Could not publish the generated ODbL data pack to the PR branch." }
+          }
+      - name: Verify the exact committed SQLite pack
+        shell: pwsh
+        env:
+          MECHANICDB_PACK_DIR: data/research/generic-repair-guidance
+        run: |
+          $ErrorActionPreference = "Stop"
+          if (-not (Test-Path "data/research/generic-repair-guidance/generic-repair-guidance.sqlite")) {
+            throw "The ODbL SQLite pack was not published."
+          }
+          python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "Committed ODbL pack verification failed." }
+      - name: Upload the published reusable ODbL data pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-generic-repair-guidance-odbl
+          path: data/research/generic-repair-guidance/
+          if-no-files-found: error
+          retention-days: 90
