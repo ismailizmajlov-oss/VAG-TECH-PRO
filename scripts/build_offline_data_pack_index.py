@@ -21,7 +21,6 @@ from typing import Any
 ARTIFACTS = {
     "obdex": ("vag-tech-pro-obdex-cc0-2026-11-02", "obdex-generic-cc0"),
     "vehiclesdb": ("vag-identity-vehiclesdb-cc-by-4.0", "vehiclesdb-vag-identity"),
-    "odbl": ("vag-engine-candidates-research-odbl", "vag-engine-candidates-odbl"),
     "obdb": ("obdb-vag-research-cc-by-sa", "obdb-vag-signals-cc-by-sa"),
 }
 
@@ -267,72 +266,6 @@ def inspect_vehiclesdb(root: Path) -> dict[str, Any]:
     }
 
 
-def inspect_odbl(root: Path) -> dict[str, Any]:
-    db_path = find_one(root, "vag-engine-candidates-research.sqlite")
-    manifest_path = find_one(root, "vag-engine-candidates-research.manifest.json")
-    license_path = find_one(root, "LICENSE-DATA")
-    manifest = read_json(manifest_path)
-    if manifest.get("status") != "research_only" or manifest.get("license") != "ODbL-1.0":
-        raise ValueError("ODbL pack status/license mismatch")
-    if manifest.get("share_alike_required") is not True or manifest.get("market_scope") != "UNKNOWN":
-        raise ValueError("ODbL share-alike/market-scope boundary failed")
-    if manifest.get("production_import") is not False or manifest.get("exact_vehicle_fitment") is not False:
-        raise ValueError("ODbL pack cannot be production or exact fitment")
-    if manifest.get("rights_review_status") != "research_only_upstream_provenance_not_independently_verified":
-        raise ValueError("ODbL provenance limitation missing")
-    if sha256_file(db_path) != manifest.get("database_sha256") or sha256_file(license_path) != manifest.get("license_sha256"):
-        raise ValueError("ODbL database/license hash mismatch")
-    license_text = " ".join(license_path.read_text(encoding="utf-8-sig").split()).lower()
-    if "open database license (odbl) v1.0" not in license_text or "share-alike" not in license_text:
-        raise ValueError("ODbL license text missing")
-    db = sqlite_readonly(db_path)
-    counts = {
-        "makes": count(db, "make_candidates"),
-        "models": count(db, "model_candidates"),
-        "generations": count(db, "generation_candidates"),
-        "engine_variants": count(db, "engine_variant_candidates"),
-    }
-    if counts != manifest.get("counts") or counts != {"makes": 5, "models": 233, "generations": 823, "engine_variants": 5081}:
-        raise ValueError("ODbL candidate counts mismatch")
-    bad_candidates = db.execute(
-        """SELECT
-             (SELECT count(*) FROM make_candidates WHERE market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'make_name_candidate')
-           + (SELECT count(*) FROM model_candidates WHERE market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'model_name_candidate')
-           + (SELECT count(*) FROM generation_candidates WHERE market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'generation_name_candidate')
-           + (SELECT count(*) FROM engine_variant_candidates WHERE engine_code IS NOT NULL OR gearbox_code IS NOT NULL OR market_scope<>'UNKNOWN' OR review_status<>'candidate' OR applicability_precision<>'engine_variant_description_only' OR code_extraction_status<>'not_provided')"""
-    ).fetchone()[0]
-    if bad_candidates:
-        raise ValueError("ODbL candidate code/market/applicability boundary failed")
-    if db.execute("SELECT count(*) FROM research_sources WHERE rights_review_status<>'research_only_upstream_provenance_not_independently_verified' OR publication_status<>'research_only'").fetchone()[0]:
-        raise ValueError("ODbL source rights-review status mismatch")
-    if count(db, "source_file_artifacts") != 6 or count(db, "research_sources") != 5:
-        raise ValueError("ODbL source artifact provenance count mismatch")
-    db.close()
-    return {
-        "pack_id": "vag-engine-candidates-odbl",
-        "artifact_name": ARTIFACTS["odbl"][0],
-        "relative_dir": relative(root.parent, root),
-        "database_path": relative(root.parent, db_path),
-        "database_sha256": sha256_file(db_path),
-        "manifest_path": relative(root.parent, manifest_path),
-        "manifest_sha256": sha256_file(manifest_path),
-        "license": "ODbL-1.0",
-        "license_files": [relative(root.parent, license_path)],
-        "attribution_files": [relative(root.parent, manifest_path)],
-        "status": "research_only",
-        "product_eligibility": "not_eligible_pending_upstream_provenance_review",
-        "market_scope": "UNKNOWN",
-        "applicability_precision": manifest.get("applicability_precision"),
-        "counts": counts,
-        "source_revision": manifest.get("revision"),
-        "warnings": [
-            "ODbL 1.0 share-alike obligations apply to this separate database.",
-            "Upstream provenance from autoevolution.com has not been independently verified; research only.",
-            "No market scope, exact engine codes, gearbox codes, ECU fitment or exact vehicle fitment.",
-        ],
-    }
-
-
 def inspect_obdb(root: Path) -> dict[str, Any]:
     db_path = find_one(root, "vag-obdb-research.sqlite")
     manifest_path = find_one(root, "manifest.json")
@@ -418,23 +351,25 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     index = read_json(index_path)
     if index.get("bundle_status") != "verified_offline_data_packs_not_installer":
         raise ValueError("Offline bundle status is invalid")
-    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 4:
+    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 3:
         raise ValueError("Offline bundle target/database count mismatch")
     if index.get("license_separation_policy", {}).get("merged_databases") is not False:
         raise ValueError("The separate licensed SQLite databases must not be merged")
     excluded = index.get("excluded_sources", [])
-    if not any(
-        item.get("source_id") == "wal33d-vag-oem-dtc-mit"
-        and item.get("status") == "permission_required"
-        and item.get("included") is False
-        for item in excluded
-    ):
-        raise ValueError("Permission-required manufacturer DTC source is not explicitly excluded")
+    required_exclusions = {
+        "wal33d-vag-oem-dtc-mit": "permission_required",
+        "gor3a-vehicle-makes-models-odbl": "quarantined_pending_upstream_permission",
+    }
+    for source_id, status in required_exclusions.items():
+        if not any(item.get("source_id") == source_id and item.get("status") == status and item.get("included") is False for item in excluded):
+            raise ValueError(f"Restricted source is not explicitly excluded: {source_id}")
     listed = {item["path"]: item for item in index.get("bundle_files", [])}
     actual = {
         relative(root, p): p for p in root.rglob("*")
         if p.is_file() and p.name != "offline-data-pack-index.json"
     }
+    if any("vag-engine-candidates" in path.lower() for path in actual):
+        raise ValueError("Autoevolution-derived VAG identity data must not be present in the Windows bundle")
     if set(listed) != set(actual):
         raise ValueError("Bundle file list does not match actual files")
     for path, metadata in listed.items():
@@ -445,7 +380,6 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     expected_ids = {
         "obdex-generic-cc0",
         "vehiclesdb-vag-identity",
-        "vag-engine-candidates-odbl",
         "obdb-vag-signals-cc-by-sa",
     }
     packs = {pack["pack_id"]: pack for pack in index.get("packs", [])}
@@ -454,7 +388,6 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     inspectors = {
         "obdex-generic-cc0": inspect_obdex,
         "vehiclesdb-vag-identity": inspect_vehiclesdb,
-        "vag-engine-candidates-odbl": inspect_odbl,
         "obdb-vag-signals-cc-by-sa": inspect_obdb,
     }
     for pack_id, pack in packs.items():
@@ -511,7 +444,6 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
             inspector = {
                 "obdex": inspect_obdex,
                 "vehiclesdb": inspect_vehiclesdb,
-                "odbl": inspect_odbl,
                 "obdb": inspect_obdb,
             }[key]
             pack_descriptors.append(inspector(target_dir))
@@ -521,7 +453,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
             "bundle_id": "vag-tech-pro-windows-offline-data-packs",
             "bundle_status": "verified_offline_data_packs_not_installer",
             "target_platform": "windows-x64",
-"database_count": 4,
+"database_count": 3,
             "built_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_commit_sha": os.environ.get("GITHUB_SHA"),
             "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
@@ -537,12 +469,18 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                     "status": "permission_required",
                     "included": False,
                     "reason": "Repository-level MIT notice does not establish data-specific rights to display, cache or redistribute the manufacturer DTC records."
+                },
+                {
+                    "source_id": "gor3a-vehicle-makes-models-odbl",
+                    "status": "quarantined_pending_upstream_permission",
+                    "included": False,
+                    "reason": "The downstream ODbL notice does not establish rights in upstream Autoevolution data; its Terms of Use require express written permission for reuse and limit service use to personal use."
                 }
             ],
             "product_import_policy": [
                 "Generic OBD-II DTCs remain in the generic_sae_iso_obd2 namespace and are never relabeled VAG-specific.",
                 "Identity and community records remain candidates unless exact applicability is independently confirmed.",
-                "ODbL engine/generation candidate data is research-only pending upstream provenance review.",
+                "Autoevolution-derived ODbL generation/engine candidate data is quarantined and excluded pending written upstream permission.",
                 "Community UDS 0x22 signal data is read-only reference material; command execution is disabled.",
                 "No manufacturer-specific DTC pack is included until data-specific reuse, display, cache and redistribution rights are confirmed.",
                 "No pack in this bundle supplies verified VAG repair procedures, factory wiring diagrams, pinouts, torque values, adaptations or service schedules.",
