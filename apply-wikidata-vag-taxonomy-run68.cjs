@@ -875,6 +875,7 @@ function main() {
       repository: "ismailizmajlov-oss/VAG-TECH-PRO",
       branch: ARTIFACT.sourceBranch,
       commit: ARTIFACT.sourceCommit,
+      snapshot_commit: ARTIFACT.snapshotCommit,
       workflow_run_id: ARTIFACT.workflowRunId,
       artifact_id: ARTIFACT.artifactId,
       artifact_sha256: ARTIFACT.artifactSha256,
