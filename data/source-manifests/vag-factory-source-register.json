@@ -516,7 +516,7 @@
         "manufacturer_dtc_applicability"
       ],
       "rights": {
-        "data_license_status": "ODbL-1.0",
+        "data_license_status": "ODbL-1.0_declared_for_downstream_database_only; upstream_Autoevolution_content_rights_not_cleared",
         "attribution_required": true,
         "attribution": "gor3a/vehicle-makes-models and autoevolution.com",
         "share_alike_required": true,
@@ -544,7 +544,8 @@
             "commercial_use": false
           },
           "decision": "downstream ODbL declaration is not treated as proof of authority to license upstream Autoevolution material; quarantine pending written upstream permission"
-        }
+        },
+        "downstream_license_scope": "the downstream repository's own database rights and share-alike obligations only; not proof of authority over upstream Autoevolution content"
       },
       "project_decision": "quarantine_only_no_product_import_cache_display_or_redistribution_until_written_upstream_permission; ODbL obligations remain relevant to downstream database but do not cure upstream rights uncertainty",
       "evidence_status": "pinned_downstream_revision_and_Autoevolution_primary_terms_reviewed_2026-11-04"
