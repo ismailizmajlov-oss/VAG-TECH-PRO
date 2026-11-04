@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "source_id": "mechanicdb-public-generic-repair-guidance",
+  "publisher": "MechanicDB / DataEngineered",
+  "repository_url": "https://github.com/MechanicDB/MechanicDB-public",
+  "pinned_revision": "c788dfe9ed1517d4cd0be27f5aacb4776abf4864",
+  "reviewed_at": "2026-11-04",
+  "data_license": "ODbL-1.0",
+  "data_license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "rights": {
+    "status": "approved_by_published_license",
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "redistribution_allowed": true,
+    "share_alike_required": true,
+    "attribution_required": true,
+    "attribution_text": "MechanicDB — https://github.com/MechanicDB/MechanicDB-public",
+    "scope": "Free public sample dataset only; adapted database must remain available under ODbL-1.0"
+  },
+  "upstream_notice": {
+    "license": "MIT",
+    "file": "LICENSE-upstream.txt",
+    "scope": "Preserved as upstream attribution notice. The pack does not copy DTC descriptions or detailed code explanations from the upstream compilation."
+  },
+  "source_files": {
+    "dtc_codes.csv": {
+      "git_blob_sha1": "34fa7dd7a1cbdd5b0d2675f2c77a2b659c6069b4",
+      "purpose": "Generic SAE DTC identifier crosswalk only; descriptions and explanations are not imported",
+      "expected_rows": 90
+    },
+    "diagnostic_fixes.csv": {
+      "git_blob_sha1": "5238ab82447a26e14227e932126d068ab47bf6e3",
+      "purpose": "MechanicDB-authored generic diagnostic guidance; only rows linked to generic SAE codes are imported",
+      "expected_rows": 326
+    },
+    "LICENSE": {
+      "git_blob_sha1": "20e7514419d20bdbcc89d6a2ebcff90d0d3575a8",
+      "purpose": "Published ODbL sample-dataset licensing notice"
+    },
+    "LICENSE-upstream.txt": {
+      "git_blob_sha1": "9cbfaae3f07b8daa1685b4587e36c604a7ded1",
+      "purpose": "Preserved MIT upstream attribution notice"
+    },
+    "SOURCES.md": {
+      "git_blob_sha1": "99301063307b9fd10bef7b84cd5c9e7066aeceb9",
+      "purpose": "Verified provenance statement that repair guidance is original authored content; not bundled"
+    },
+    "DATA_DICTIONARY.md": {
+      "git_blob_sha1": "808dea805df7d86b3ee1bf301fcef5455df25176",
+      "purpose": "Verified field semantics, including authored consideration order; not bundled"
+    }
+  },
+  "expected_counts": {
+    "source_dtc_rows": 90,
+    "generic_sae_dtc_rows": 75,
+    "manufacturer_labelled_rows_excluded": 15,
+    "generic_guidance_rows": 275,
+    "manufacturer_labelled_guidance_rows_excluded": 51,
+    "orphan_guidance_rows": 0
+  },
+  "data_scope": {
+    "namespace": "generic_sae_iso",
+    "market_scope": "UNKNOWN",
+    "applicability_precision": "generic_code_only",
+    "vag_specific": false,
+    "exact_vehicle_fitment": false,
+    "model_generation_year_fitment": false,
+    "engine_gearbox_fitment": false,
+    "ecu_fitment": false,
+    "diagnostic_execution_allowed": false,
+    "oem_repair_procedure": false,
+    "oem_parts_mapping": false,
+    "safety_review_status": "not_assessed"
+  },
+  "import_policy": {
+    "import_allowed": true,
+    "display_allowed": true,
+    "purpose": "generic_educational_reference_only",
+    "excluded_content": [
+      "all generic DTC descriptions and detailed explanations",
+      "all 15 manufacturer-labelled DTC rows",
+      "all 51 manufacturer-labelled guidance rows",
+      "replacement-parts mappings",
+      "parts-cost and labor estimates",
+      "vehicle, generation, year, engine, gearbox, ECU, PR-code and VIN applicability"
+    ],
+    "ranking_semantics": "MechanicDB probability_rank is authored consideration order, not measured probability or guaranteed repair order; stored as consideration_order",
+    "technical_review_status": "not_independently_reviewed"
+  }
+}
