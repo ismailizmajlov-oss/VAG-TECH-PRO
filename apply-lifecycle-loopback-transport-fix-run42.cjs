@@ -34,16 +34,16 @@ const helperLines = [
   "}",
   "",
   "function Set-LoopbackRequestHeaders([System.Net.Http.HttpRequestMessage]$Request, [string]$BaseUrl) {",
-  "  $uri = [System.Uri]::new(\\"$BaseUrl/api/local-core\\")",
-  "  if ($uri.Scheme -ne \\"http\\" -or @(\\"127.0.0.1\\", \\"localhost\\", \\"::1\\", \\"[::1]\\") -notcontains $uri.Host) {",
-  "    throw \\"Refusing non-loopback lifecycle request: $($uri.AbsoluteUri)\\"",
+  "  $uri = [System.Uri]::new(\"$BaseUrl/api/local-core\")",
+  "  if ($uri.Scheme -ne \"http\" -or @(\"127.0.0.1\", \"localhost\", \"::1\", \"[::1]\") -notcontains $uri.Host) {",
+  "    throw \"Refusing non-loopback lifecycle request: $($uri.AbsoluteUri)\"",
   "  }",
   "  $origin = $uri.GetLeftPart([System.UriPartial]::Authority)",
   "  $Request.Headers.Host = $uri.Authority",
-  "  $Request.Headers.Remove(\\"Origin\\") | Out-Null",
-  "  $Request.Headers.Remove(\\"Sec-Fetch-Site\\") | Out-Null",
-  "  if (-not $Request.Headers.TryAddWithoutValidation(\\"Origin\\", $origin)) { throw \\"Could not set the same-origin Origin header.\\" }",
-  "  if (-not $Request.Headers.TryAddWithoutValidation(\\"Sec-Fetch-Site\\", \\"same-origin\\")) { throw \\"Could not set the same-origin Fetch Metadata header.\\" }",
+  "  $Request.Headers.Remove(\"Origin\") | Out-Null",
+  "  $Request.Headers.Remove(\"Sec-Fetch-Site\") | Out-Null",
+  "  if (-not $Request.Headers.TryAddWithoutValidation(\"Origin\", $origin)) { throw \"Could not set the same-origin Origin header.\" }",
+  "  if (-not $Request.Headers.TryAddWithoutValidation(\"Sec-Fetch-Site\", \"same-origin\")) { throw \"Could not set the same-origin Fetch Metadata header.\" }",
   "  return $origin",
   "}",
   ""
@@ -98,9 +98,9 @@ script = result.source;
 
 const localJsonError = [
   "      if (-not $response.IsSuccessStatusCode) {",
-  "        $finalUri = if ($response.RequestMessage -and $response.RequestMessage.RequestUri) { $response.RequestMessage.RequestUri.AbsoluteUri } else { \\"<unknown>\\" }",
-  "        $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { \\"<none>\\" }",
-  "        throw \\"Local JSON request failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) origin=$origin fetchSite=same-origin proxy=disabled redirect=disabled location=$location $responseText\\"",
+  "        $finalUri = if ($response.RequestMessage -and $response.RequestMessage.RequestUri) { $response.RequestMessage.RequestUri.AbsoluteUri } else { \"<unknown>\" }",
+  "        $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { \"<none>\" }",
+  "        throw \"Local JSON request failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) origin=$origin fetchSite=same-origin proxy=disabled redirect=disabled location=$location $responseText\"",
   "      }"
 ].join("\n");
 result = replaceExact(
@@ -113,9 +113,9 @@ script = result.source;
 
 const restoreError = [
   "    if (-not $response.IsSuccessStatusCode) {",
-  "      $finalUri = if ($response.RequestMessage -and $response.RequestMessage.RequestUri) { $response.RequestMessage.RequestUri.AbsoluteUri } else { \\"<unknown>\\" }",
-  "      $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { \\"<none>\\" }",
-  "      throw \\"SQLite restore failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) proxy=disabled redirect=disabled location=$location $responseText\\"",
+  "      $finalUri = if ($response.RequestMessage -and $response.RequestMessage.RequestUri) { $response.RequestMessage.RequestUri.AbsoluteUri } else { \"<unknown>\" }",
+  "      $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { \"<none>\" }",
+  "      throw \"SQLite restore failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) proxy=disabled redirect=disabled location=$location $responseText\"",
   "    }"
 ].join("\n");
 result = replaceExact(
@@ -128,9 +128,9 @@ script = result.source;
 
 const backupError = [
   "  if (-not $response.IsSuccessStatusCode) {",
-  "    $finalUri = if ($response.RequestMessage -and $response.RequestMessage.RequestUri) { $response.RequestMessage.RequestUri.AbsoluteUri } else { \\"<unknown>\\" }",
-  "    $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { \\"<none>\\" }",
-  "    throw \\"Backup export failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) proxy=disabled redirect=disabled location=$location\\"",
+  "    $finalUri = if ($response.RequestMessage -and $response.RequestMessage.RequestUri) { $response.RequestMessage.RequestUri.AbsoluteUri } else { \"<unknown>\" }",
+  "    $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { \"<none>\" }",
+  "    throw \"Backup export failed: HTTP $([int]$response.StatusCode) request=$($request.RequestUri.AbsoluteUri) final=$finalUri host=$($request.Headers.Host) proxy=disabled redirect=disabled location=$location\"",
   "  }"
 ].join("\n");
 result = replaceExact(
@@ -154,9 +154,9 @@ write(scriptFile, script);
 let tests = read(testFile);
 const contractTest = [
   'test("native lifecycle HTTP clients pin loopback authority and bypass system proxies", () => {',
-  '  assert.match(script, /UseProxy = \\\\$false/);',
-  '  assert.match(script, /AllowAutoRedirect = \\\\$false/);',
-  '  assert.match(script, /Headers\\\\.Host = \\\\$uri\\\\.Authority/);',
+  '  assert.match(script, /UseProxy = \\$false/);',
+  '  assert.match(script, /AllowAutoRedirect = \\$false/);',
+  '  assert.match(script, /Headers\\.Host = \\$uri\\.Authority/);',
   '  assert.match(script, /Set-LoopbackRequestHeaders/);',
   '  assert.match(script, /Sec-Fetch-Site/);',
   '  assert.match(script, /proxy=disabled/);',
