@@ -436,6 +436,7 @@ function patchDesktopSource(desktop) {
   if (!ui.includes('dataset === "wikidata-generations" ?')) {
     const anchor = ': dataset === "wikidata" ? "Марка или модель… например Golf" :';
     ui = exact(ui, anchor, 'dataset === "wikidata-generations" ? "Модель, серия или QID… например Octavia" : ' + anchor, "generation search placeholder");
+    if (ui.includes(": : dataset ===")) fail("Generation search placeholder contains duplicate ternary separator");
   }
   if (!ui.includes("Кандидаты серий Wikidata")) {
     const anchor = '      <article className="research-stat"><small>Модели Wikidata</small>';
@@ -510,6 +511,7 @@ function patchDesktopSource(desktop) {
       '  assert.match(component, /Поколения · кандидаты/);',
       '  assert.match(component, /P179\\/P527 — только кандидаты серий/);',
       '  assert.match(component, /series_member_candidate/);',
+      '  assert.doesNotMatch(component, /:\\s*:\\s*dataset/);',
       '  assert.match(component, /diagnosticExecutionAllowed/);',
       '  const route = fs.readFileSync(path.join(__dirname, "..", "app", "api", "local-research", "route.ts"), "utf8");',
       '  assert.match(route, /dataset === "wikidata-generations"/);',
