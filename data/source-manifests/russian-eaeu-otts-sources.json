@@ -356,7 +356,29 @@
       "status": "discovery_only",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion"
+      "hash_status": "not_downloaded_no_ingestion",
+      "legal_basis": {
+        "document": "Решение Коллегии ЕЭК от 26.07.2016 № 88",
+        "document_url": "https://www.alta.ru/tamdoc/16kr0088/",
+        "access_rule": "The decision defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
+        "reuse_boundary": "The decision describes public access and intergovernmental data exchange; it does not grant VAG TECH PRO bulk extraction, offline caching, third-party display or redistribution rights."
+      },
+      "current_portal_observation": {
+        "checked_at": "2026-11-04",
+        "root_url": "https://portal.eaeunion.org/",
+        "observed_redirect": "https://opendata.eaeunion.org/opendata/",
+        "ot_ts_specific_endpoint_resolved": false,
+        "note": "The open-data portal catalog exposes OData/REST resources, but a dedicated OTTS resource or dataset-specific reuse grant was not identified."
+      },
+      "access_and_reuse": {
+        "individual_public_query": "legal_basis_identified_under_decision_88; current OTTS-specific endpoint not resolved",
+        "ot_ts_odata_or_rest_api": "not_verified",
+        "bulk_export": "not_established",
+        "commercial_use": "not_confirmed_for_an_otts_dataset",
+        "third_party_display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "redistribution": "not_confirmed"
+      }
     },
     {
       "source_id": "hpt-su-otts-api",
