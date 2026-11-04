@@ -93,7 +93,7 @@ def build_fixture_pack(root: Path, payloads=None):
             "row_count":len(payloads[dataset_id]),"snapshot_name":dataset_id+"-page-0000.json",
             "response_bytes":raw,
         })
-        queries[dataset_id] = "fixture-query-"+dataset_id
+        queries[dataset_id] = "https://example.invalid/"+dataset_id
     output = root / "pack"
     manifest = build_database(output,lock,payloads,metadata,snapshots,queries,"2026-11-05T00:00:00+00:00")
     metadata_dir=output/"metadata"
