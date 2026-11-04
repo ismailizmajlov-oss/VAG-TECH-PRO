@@ -488,6 +488,112 @@
       },
       "project_decision": "quarantine_only; do not import definitions, repair solutions or mappings into production until data provenance and database rights are independently established",
       "evidence_status": "README_LICENSE_AND_DB_SCHEMA_REVIEWED_2026-11-03"
+    },
+    {
+      "source_id": "hpt-su-otts-aggregator",
+      "publisher": "HPT.SU / ИП Власов А.И.",
+      "url": "https://hpt.su/",
+      "terms_url": "https://hpt.su/p/oferta/",
+      "api_terms_url": "https://hpt.su/p/api-terms/",
+      "mcp_info_url": "https://hpt.su/mcp/",
+      "source_kind": "commercial_aggregated_ru_eaeu_vehicle_compliance_registry",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "market_scope_precision": "registry-level; each document's jurisdiction and vehicle scope must be read from its own issuing authority and document",
+      "document_types": [
+        "OTTS",
+        "OTSH",
+        "SBKTS",
+        "ZOETS",
+        "ZOTSH",
+        "ZOTTS",
+        "certificates",
+        "declarations",
+        "SUT"
+      ],
+      "evidence_scope": [
+        "type_approval",
+        "vehicle_compliance_document_metadata",
+        "individual_document_reference"
+      ],
+      "vehicle_scope": {
+        "supports_document_search": true,
+        "supports_vin_search": true,
+        "may_return_make_model_type_category_and_document_identifiers": true,
+        "exact_engine_gearbox_ecu_or_repair_applicability": "not established by registry-level search alone",
+        "individual_document_must_be_reviewed": true
+      },
+      "access": {
+        "status": "restricted_registration_or_subscription_required",
+        "public_mcp_free_tier": {
+          "requests_per_day": 50,
+          "registration_required": true,
+          "used_by_project": false
+        },
+        "rest_api": {
+          "active_api_subscription_required": true,
+          "used_by_project": false
+        },
+        "pdf_download": "requires subscription to the corresponding registry",
+        "notes": [
+          "The provider advertises a free 50-request/day MCP tier after registration; no account or key was created.",
+          "The API terms require an active API subscription for API use; no paid plan or API call was made.",
+          "The provider describes the service as an aggregator and disclaims responsibility for accuracy; verify every document against its issuing authority."
+        ]
+      },
+      "rights": {
+        "database_rights_claimed": "Russian Civil Code Article 1334 database right in the provider's compilation",
+        "dataset_open_license": "not granted",
+        "individual_document_own_use": {
+          "view_allowed": true,
+          "local_save_allowed": true,
+          "automated_extraction_for_own_needs_allowed": true,
+          "scope": "individual materials obtained through standard interfaces and authorized access"
+        },
+        "api_internal_use": {
+          "allowed": true,
+          "scope": "user's internal systems and own analytical products under the applicable plan",
+          "effective_access_requires_subscription": true
+        },
+        "bulk_automated_download_allowed": false,
+        "substantial_or_systematic_database_extraction_allowed": false,
+        "full_database_copy_allowed": false,
+        "third_party_equivalent_access_allowed": false,
+        "derivative_database_reproducing_provider_database_allowed": false,
+        "third_party_api_or_file_export_allowed": false,
+        "redistribution_allowed": false,
+        "api_key_sharing_allowed": false,
+        "server_code_license": "MIT applies only to the hptsu-mcp server software; it is not a license for HPT.SU database contents or underlying documents",
+        "permission_status": "no_project_permission_or_subscription_obtained"
+      },
+      "limitations": [
+        "A public page, free MCP tier or statement that documents originate from open sources is not an open-data license for the provider's compiled database.",
+        "The offer permits own-use of individual obtained documents but prohibits substantial or systematic extraction and derivative databases reproducing the provider database without written consent.",
+        "The API terms permit internal use but prohibit third-party equivalent access, redistribution of API data and systematic transfer of a full current database copy without separate written consent.",
+        "An OTTS is type-approval evidence, not an individual VIN build sheet and not proof of ECU, DTC, wiring, repair or exact engine/gearbox fitment."
+      ],
+      "project_decision": "restricted_no_bulk_import_no_product_pack; consider individual documents only for the owner's own use after authorized access and document-level rights/applicability review; no HPT.SU records are currently imported or cached",
+      "evidence_status": "provider_offer_api_terms_pricing_and_mcp_pages_reviewed_2026-11-04",
+      "terms_effective_dates": {
+        "offer": "2026-08-22",
+        "api_terms": "2026-05-27"
+      },
+      "rights_review_references": {
+        "offer_sections": [
+          "2.3",
+          "4.1.4",
+          "11.1-11.5"
+        ],
+        "api_terms_sections": [
+          "2.2",
+          "3.3",
+          "6.2-6.5",
+          "8.6"
+        ],
+        "pricing_page": "https://hpt.su/pricing/"
+      }
     }
   ],
   "minimum_fitment_evidence_fields": [
