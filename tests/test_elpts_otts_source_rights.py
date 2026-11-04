@@ -41,7 +41,7 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         source = self.source
         self.assertEqual(set(source["document_types"]), {"OTTS", "OTSH", "SBKTS", "ZOETS", "cancellation_notices"})
         self.assertIn("Do not treat an SBKTS record as an OTTS record", source["limitations"][2])
-        self.assertEqual(source["access"]["exact_OTTS_coverage"], "not_established")
+        self.assertIn("exact OTTS query coverage and completeness not established", source["access"]["individual_query_access"])
 
 
 if __name__ == "__main__":
