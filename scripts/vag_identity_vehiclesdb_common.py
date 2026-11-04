@@ -123,7 +123,17 @@ def _validate_inputs(lock: dict[str, Any], upstream: dict[str, Any], attribution
     if any(str(x).lower() in EXCLUDED_COUNTRIES for x in upstream.get("countries", [])):
         # Country presence in the upstream release is allowed; output evidence is filtered below.
         pass
-    upstream_sources = {str(item.get("id")): item for item in upstream.get("sources", []) if isinstance(item, dict)}
+    source_items = upstream.get("sources")
+    if not isinstance(source_items, list):
+        raise ValueError("VehiclesDB upstream manifest source list is missing")
+    upstream_sources: dict[str, dict[str, Any]] = {}
+    for item in source_items:
+        if not isinstance(item, dict) or not item.get("id"):
+            raise ValueError("VehiclesDB upstream source entry is malformed")
+        source_id = str(item["id"])
+        if source_id in upstream_sources:
+            raise ValueError(f"VehiclesDB upstream source ID is duplicated: {source_id}")
+        upstream_sources[source_id] = item
     absent_but_present = set(upstream_sources) & set(not_in_release)
     if absent_but_present:
         raise ValueError("VehiclesDB source marked not in pinned release is present: " + ", ".join(sorted(absent_but_present)))
@@ -242,18 +252,28 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
 
     source_db = connect_readonly(source_db_path)
     try:
-        required_tables = {"sources", "makes", "models", "availability"}
+        required_tables = {"makes", "models", "availability"}
         missing = required_tables - table_names(source_db)
         if missing:
             raise ValueError(f"VehiclesDB source SQLite is missing tables: {sorted(missing)}")
 
-        source_rows = {
-            row["id"]: dict(row)
-            for row in source_db.execute("SELECT id,country,name,url,license,license_url,evidence FROM sources")
-        }
+        source_rows: dict[str, dict[str, Any]] = {}
+        for source_id, item in upstream_sources.items():
+            required_fields = ("country", "name", "url", "license", "license_url", "evidence")
+            if any(item.get(field) in (None, "") for field in required_fields):
+                raise ValueError(f"VehiclesDB upstream source metadata is incomplete: {source_id}")
+            source_rows[source_id] = {
+                "id": source_id,
+                "country": item["country"],
+                "name": item["name"],
+                "url": item["url"],
+                "license": item["license"],
+                "license_url": item["license_url"],
+                "evidence": item["evidence"],
+            }
         if set(source_rows) != set(approved) | set(excluded):
-            raise ValueError("VehiclesDB SQLite source registry differs from pinned manifest")
-        upstream_source_rows = {str(item["id"]): item for item in upstream.get("sources", [])}
+            raise ValueError("VehiclesDB upstream source registry differs from pinned manifest")
+        upstream_source_rows = source_rows
         for source_id, expected_license in approved.items():
             row = source_rows[source_id]
             manifest_source = upstream_source_rows[source_id]
