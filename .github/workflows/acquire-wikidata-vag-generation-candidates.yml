@@ -1,0 +1,134 @@
+name: Acquire CC0 Wikidata VAG generation candidates
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/acquire-wikidata-vag-generation-candidates.yml"
+      - "scripts/build_wikidata_vag_generation_candidates.py"
+      - "scripts/build_wikidata_vag_taxonomy.py"
+      - "tests/test_wikidata_vag_generation_candidates.py"
+      - "tests/test_wikidata_generation_source_rights.py"
+      - "tests/fixtures/wikidata-vag-generation-sample.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "data/research/wikidata-vag-taxonomy/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/acquire-wikidata-vag-generation-candidates.yml"
+      - "scripts/build_wikidata_vag_generation_candidates.py"
+      - "scripts/build_wikidata_vag_taxonomy.py"
+      - "tests/test_wikidata_vag_generation_candidates.py"
+      - "tests/test_wikidata_generation_source_rights.py"
+      - "tests/fixtures/wikidata-vag-generation-sample.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wikidata-vag-generation-candidates-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - name: Checkout source and pinned parent model snapshots
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Test candidate parser, provenance and SQLite invariants
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tests -p "test_wikidata_vag_generation_candidates.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "Wikidata generation candidate tests failed." }
+          python -m unittest discover -s tests -p "test_wikidata_generation_source_rights.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "Wikidata generation source-rights tests failed." }
+
+      - name: Verify pinned parent model identity snapshot
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          $manifests = Get-ChildItem "data/research/wikidata-vag-taxonomy" -Directory | ForEach-Object {
+            $manifestPath = Join-Path $_.FullName "manifest.json"
+            if (Test-Path $manifestPath) { Get-Content $manifestPath -Raw | ConvertFrom-Json }
+          } | Where-Object { $_.source_id -eq "wikidata-vag-model-taxonomy" -and $_.data_license -eq "CC0-1.0" }
+          $latest = $manifests | Sort-Object built_at_utc -Descending | Select-Object -First 1
+          if (-not $latest) { throw "No pinned CC0 Wikidata VAG parent model pack found." }
+          $parentDir = Join-Path "data/research/wikidata-vag-taxonomy" $latest.snapshot_id
+          python scripts/build_wikidata_vag_taxonomy.py --verify-dir $parentDir --output-dir build/parent-model-verify
+          if ($LASTEXITCODE -ne 0) { throw "Parent model identity pack verification failed." }
+          Add-Content -Path $env:GITHUB_ENV -Value "PARENT_MODEL_PACK_ID=$($latest.pack_id)"
+          Add-Content -Path $env:GITHUB_ENV -Value "PARENT_MODEL_SNAPSHOT_SHA256=$($latest.source_snapshot_sha256)"
+
+      - name: Fetch and build live CC0 generation candidate snapshot
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          python scripts/build_wikidata_vag_generation_candidates.py --fetch --output-dir build/wikidata-vag-generation-candidates
+          if ($LASTEXITCODE -ne 0) { throw "Live Wikidata generation candidate pack build failed." }
+          $manifest = Get-Content "build/wikidata-vag-generation-candidates/manifest.json" -Raw | ConvertFrom-Json
+          Add-Content -Path $env:GITHUB_ENV -Value "WIKIDATA_GENERATION_PACK_DIR=build/wikidata-vag-generation-candidates"
+          Add-Content -Path $env:GITHUB_ENV -Value "WIKIDATA_GENERATION_SNAPSHOT_ID=$($manifest.snapshot_id)"
+          Add-Content -Path $env:GITHUB_ENV -Value "WIKIDATA_GENERATION_SOURCE_REVISION=$($manifest.source_revision)"
+          Add-Content -Path $env:GITHUB_ENV -Value "WIKIDATA_GENERATION_DATABASE_SHA256=$($manifest.database_sha256)"
+          Add-Content -Path $env:GITHUB_ENV -Value "WIKIDATA_GENERATION_SNAPSHOT_SHA256=$($manifest.source_snapshot_sha256)"
+          Add-Content -Path $env:GITHUB_ENV -Value "WIKIDATA_GENERATION_QUERY_SHA256=$($manifest.source_query_sha256)"
+          Add-Content -Path $env:GITHUB_ENV -Value "WIKIDATA_GENERATION_PACK_ID=$($manifest.pack_id)"
+          $manifest | ConvertTo-Json -Depth 20
+
+      - name: Re-verify generated pack and all row-level applicability boundaries
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          python scripts/build_wikidata_vag_generation_candidates.py --verify-dir build/wikidata-vag-generation-candidates --output-dir build/unused
+          if ($LASTEXITCODE -ne 0) { throw "Generated Wikidata generation candidate pack verification failed." }
+
+      - name: Publish immutable generation candidate snapshot to repository
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        shell: pwsh
+        run: |
+          $target = "data/research/wikidata-vag-generations/$env:WIKIDATA_GENERATION_SNAPSHOT_ID"
+          if (Test-Path $target) {
+            $existing = Get-Content (Join-Path $target "manifest.json") -Raw | ConvertFrom-Json
+            if ($existing.source_snapshot_sha256 -ne $env:WIKIDATA_GENERATION_SNAPSHOT_SHA256 -or $existing.database_sha256 -ne $env:WIKIDATA_GENERATION_DATABASE_SHA256) {
+              throw "Immutable Wikidata generation snapshot ID already exists with different content."
+            }
+            Write-Host "Identical immutable generation snapshot already published."
+          } else {
+            New-Item -ItemType Directory -Path $target -Force | Out-Null
+            Copy-Item "build/wikidata-vag-generation-candidates/*" $target -Recurse -Force
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add $target
+            git commit -m "data: publish Wikidata VAG series-member candidate snapshot $env:WIKIDATA_GENERATION_SNAPSHOT_ID"
+            git push
+          }
+
+      - name: Upload verified CC0 generation candidate pack
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wikidata-vag-generation-candidates-cc0
+          path: build/wikidata-vag-generation-candidates/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Record verified candidate-only result
+        if: always()
+        shell: pwsh
+        run: |
+          Write-Host "Wikidata generation candidates are never promoted to verified generations or exact vehicle fitment by this workflow."
+          Write-Host "Parent model pack: $env:PARENT_MODEL_PACK_ID"
+          Write-Host "Parent model snapshot: $env:PARENT_MODEL_SNAPSHOT_SHA256"
+          Write-Host "Generation snapshot: $env:WIKIDATA_GENERATION_SNAPSHOT_ID"
+          Write-Host "Source revision: $env:WIKIDATA_GENERATION_SOURCE_REVISION"
