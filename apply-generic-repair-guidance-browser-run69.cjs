@@ -100,7 +100,7 @@ function main(){
 
  const routePath=path.join(desktop,"app/api/local-research/route.ts");let route=fs.readFileSync(routePath,"utf8");
  if(!route.includes("generic-repair-guidance-db.cjs")){
-  const localBindingLine=route.split(/\r?\n/).find(line=>line.includes("localResearch")&&line.includes("local-research-db"));
+  const localBindingLine=route.split(/\r?\n/).find(line=>line.includes("localResearch")&&(/\bfrom\b/.test(line)||/\brequire\s*\(/.test(line)));
   if(!localBindingLine){
    console.log("LOCAL_RESEARCH_API_BINDINGS\n"+route.split(/\r?\n/).filter(line=>/localResearch|require|^import/.test(line)).slice(0,30).join("\n"));
    fail("Local research API binding not found");
