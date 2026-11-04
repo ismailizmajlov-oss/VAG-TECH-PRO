@@ -1,0 +1,1 @@
+Run 61: build the pinned CC0 Wikidata identity candidate SQLite pack into the Windows x64 desktop payload and validate its rights, revision provenance, SHA-256 and non-fitment boundaries.
