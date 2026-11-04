@@ -93,7 +93,8 @@ class WikidataVagGenerationCandidateTests(unittest.TestCase):
 
     def test_parent_manufacturer_mismatch_remains_candidate_and_is_flagged(self):
         payload = json.loads(json.dumps(self.fixture))
-        payload["results"]["bindings"][0]["memberManufacturer"]["value"] = "http://www.wikidata.org/entity/Q999"
+        for binding in payload["results"]["bindings"]:
+            binding["memberManufacturer"]["value"] = "http://www.wikidata.org/entity/Q999"
         output, manifest = self.build_fixture_pack(payload)
         db = sqlite3.connect(output / "wikidata-vag-generations.sqlite")
         try:
