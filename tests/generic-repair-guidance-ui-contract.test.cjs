@@ -32,7 +32,7 @@ test("generic guidance UI never claims VAG fitment or an actionable OEM procedur
   assert.match(card, /не VAG-specific/i);
   assert.match(card, /не OEM-процедура/i);
   assert.match(card, /не использовать как тест-план/i);
-  assert.match(component, /<\\/p>\\}/);
+  assert.match(component, /<\/p>\}/);
   assert.doesNotMatch(card, /onClick|<button/);
   assert.match(card, /diagnosticExecutionAllowed/);
   assert.match(card, /exactVehicleFitment/);
