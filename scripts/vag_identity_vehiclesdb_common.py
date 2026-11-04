@@ -109,11 +109,14 @@ def _validate_inputs(lock: dict[str, Any], upstream: dict[str, Any], attribution
 
     approved = lock.get("approved_source_license_map")
     excluded = lock.get("excluded_source_reasons")
+    not_in_release = lock.get("not_in_release_sources", {})
     scope = lock.get("scope")
-    if not isinstance(approved, dict) or not approved or not isinstance(excluded, dict) or not isinstance(scope, dict):
+    if not isinstance(approved, dict) or not approved or not isinstance(excluded, dict) or not isinstance(not_in_release, dict) or not isinstance(scope, dict):
         raise ValueError("VehiclesDB source-rights or scope lock is invalid")
     if set(approved) & set(excluded):
         raise ValueError("A VehiclesDB source cannot be both approved and excluded")
+    if (set(approved) | set(excluded)) & set(not_in_release):
+        raise ValueError("A VehiclesDB source cannot be both in-release and not-in-release")
     makes = scope.get("makes")
     kinds = scope.get("kinds")
     if not isinstance(makes, list) or not makes or not isinstance(kinds, list) or not kinds:
@@ -122,6 +125,9 @@ def _validate_inputs(lock: dict[str, Any], upstream: dict[str, Any], attribution
         # Country presence in the upstream release is allowed; output evidence is filtered below.
         pass
     upstream_sources = {str(item.get("id")): item for item in upstream.get("sources", []) if isinstance(item, dict)}
+    present_not_in_release = set(upstream_sources) & set(not_in_release)
+    if present_not_in_release:
+        raise ValueError(f"VehiclesDB source listed as not-in-release is present upstream: {sorted(present_not_in_release)}")
     if set(upstream_sources) != set(approved) | set(excluded):
         raise ValueError("VehiclesDB upstream source list differs from the pinned approved/excluded source map")
     for source_id, expected_license in approved.items():
@@ -421,6 +427,9 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
         "rights_status": APPROVED_RIGHTS_STATUS,
         "attribution_required": True,
         "attribution": lock["attribution"],
+        "approved_source_license_map": lock["approved_source_license_map"],
+        "excluded_source_reasons": lock["excluded_source_reasons"],
+        "not_in_release_sources": lock.get("not_in_release_sources", {}),
         "share_alike_required": False,
         "status": "identity_candidate_pack_verified",
         "verification_status": "identity_candidate",
@@ -480,6 +489,8 @@ def verify_pack(pack_dir: Path, lock_path: Path, *, strict_counts: bool = True) 
         lock, upstream, attribution_path.read_text(encoding="utf-8-sig"),
         license_path.read_text(encoding="utf-8-sig"),
     )
+    if manifest.get("not_in_release_sources", {}) != lock.get("not_in_release_sources", {}):
+        raise ValueError("VehiclesDB not-in-release source boundary mismatch")
     if manifest.get("status") != "identity_candidate_pack_verified" or manifest.get("dataset_license") != DATASET_LICENSE:
         raise ValueError("VehiclesDB pack status/license mismatch")
     if manifest.get("ru_evidence_present") is not False or manifest.get("fitment_claim") is not False:
