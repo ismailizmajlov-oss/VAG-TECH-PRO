@@ -28,6 +28,13 @@ GENERIC_OBD_CODE_RE = re.compile(
     r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P3[4-9][0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$"
 )
 
+# Sources without explicit data-specific display/cache/redistribution rights must
+# remain excluded from every distributable Windows offline data bundle.
+REQUIRED_EXCLUSIONS = {
+    "wal33d-vag-oem-dtc-mit": "permission_required",
+    "gor3a-vehicle-makes-models-odbl": "quarantined_pending_upstream_permission",
+}
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -346,6 +353,21 @@ def inspect_obdb(root: Path) -> dict[str, Any]:
 
 
 
+def validate_required_exclusions(excluded: Any) -> None:
+    """Fail closed unless every restricted source is explicitly absent from the bundle."""
+    if not isinstance(excluded, list):
+        raise ValueError("Offline bundle excluded_sources must be a list")
+    for source_id, status in REQUIRED_EXCLUSIONS.items():
+        if not any(
+            isinstance(item, dict)
+            and item.get("source_id") == source_id
+            and item.get("status") == status
+            and item.get("included") is False
+            for item in excluded
+        ):
+            raise ValueError(f"Restricted source is not explicitly excluded: {source_id}")
+
+
 def verify_bundle(root: Path) -> dict[str, Any]:
     index_path = root / "offline-data-pack-index.json"
     index = read_json(index_path)
@@ -356,13 +378,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     if index.get("license_separation_policy", {}).get("merged_databases") is not False:
         raise ValueError("The separate licensed SQLite databases must not be merged")
     excluded = index.get("excluded_sources", [])
-    required_exclusions = {
-        "wal33d-vag-oem-dtc-mit": "permission_required",
-        "gor3a-vehicle-makes-models-odbl": "quarantined_pending_upstream_permission",
-    }
-    for source_id, status in required_exclusions.items():
-        if not any(item.get("source_id") == source_id and item.get("status") == status and item.get("included") is False for item in excluded):
-            raise ValueError(f"Restricted source is not explicitly excluded: {source_id}")
+    validate_required_exclusions(excluded)
     listed = {item["path"]: item for item in index.get("bundle_files", [])}
     actual = {
         relative(root, p): p for p in root.rglob("*")
