@@ -1,5 +1,5 @@
 name: VAG TECH PRO Windows x64 desktop
-# Run51 verification: log the exact loopback rejection reason while keeping all security checks fail-closed.
+# Run52 fix: bind same-origin validation to the actual loopback Host header, not Next.js reconstructed request.url.
 
 on:
   push:
@@ -268,6 +268,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run43 loopback diagnostics patch failed" }
           "lifecycle_loopback_diagnostics=reason_logged_security_unchanged" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply run52 loopback Host-bound Origin fix
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-origin-host-fix-run52.cjs
+          node apply-lifecycle-origin-host-fix-run52.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-origin-host-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run52 loopback Host-bound Origin fix failed" }
+          "lifecycle_origin_validation=actual_loopback_host_header" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -407,7 +416,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run51
+          name: vag-tech-pro-windows-x64-run52
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
