@@ -1,5 +1,5 @@
 name: VAG TECH PRO Windows x64 desktop
-# Run37 verification: re-run the pinned Windows x64 source, data-rights and installer lifecycle gates.
+# Run41 verification: re-run the pinned Windows x64 source, strict loopback security and installer lifecycle gates.
 
 on:
   push:
