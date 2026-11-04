@@ -17,6 +17,18 @@ on:
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
+      - "scripts/build_mechanicdb_generic_guidance.py"
+      - "data/sql/generic-repair-guidance.sql"
+      - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
+      - "tests/test_mechanicdb_generic_guidance_pack.py"
+      - "tests/test_mechanicdb_generic_guidance_source_rights.py"
+      - "lib/generic-repair-guidance-db.cjs"
+      - "lib/generic-repair-guidance-db.d.cts"
+      - "scripts/verify-generic-repair-guidance.cjs"
+      - "tests/generic-repair-guidance-db.test.cjs"
+      - "tests/generic-repair-guidance-ui-contract.test.cjs"
       - "run*-*.patch.gz.b64"
       - "catalog-import-v2-run*.patch.gz.b64"
       - "ci-trigger-run*.txt"
@@ -35,6 +47,18 @@ on:
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
+      - "scripts/build_mechanicdb_generic_guidance.py"
+      - "data/sql/generic-repair-guidance.sql"
+      - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
+      - "tests/test_mechanicdb_generic_guidance_pack.py"
+      - "tests/test_mechanicdb_generic_guidance_source_rights.py"
+      - "lib/generic-repair-guidance-db.cjs"
+      - "lib/generic-repair-guidance-db.d.cts"
+      - "scripts/verify-generic-repair-guidance.cjs"
+      - "tests/generic-repair-guidance-db.test.cjs"
+      - "tests/generic-repair-guidance-ui-contract.test.cjs"
       - "run*-*.patch.gz.b64"
       - "catalog-import-v2-run*.patch.gz.b64"
       - "ci-trigger-run*.txt"
@@ -671,6 +695,25 @@ jobs:
           node --check apply-local-offline-workspace-test-contract-run66.cjs
           node apply-local-offline-workspace-test-contract-run66.cjs
           if ($LASTEXITCODE -ne 0) { throw "Offline workspace test contract update failed" }
+
+      - name: Build and integrate separately licensed generic MechanicDB guidance (run69)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-generic-repair-guidance"
+          python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_source_rights.py" -v 2>&1 | Tee-Object -FilePath "generic-guidance-source-rights.log"
+          if ($LASTEXITCODE -ne 0) { throw "MechanicDB source-rights gate failed" }
+          python scripts/build_mechanicdb_generic_guidance.py --output-dir $packDir 2>&1 | Tee-Object -FilePath "generic-guidance-pack-build.log"
+          if ($LASTEXITCODE -ne 0) { throw "MechanicDB ODbL pack build failed" }
+          $env:MECHANICDB_PACK_DIR = $packDir
+          python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_pack.py" -v 2>&1 | Tee-Object -FilePath "generic-guidance-pack-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "MechanicDB ODbL pack verification failed" }
+          node --check apply-generic-repair-guidance-browser-run69.cjs
+          node apply-generic-repair-guidance-browser-run69.cjs --desktop-root desktop-source --pack-dir $packDir 2>&1 | Tee-Object -FilePath "generic-guidance-integration-run69.log"
+          if ($LASTEXITCODE -ne 0) { throw "MechanicDB generic guidance desktop integration failed" }
+          $genericReport = Get-Content -LiteralPath "desktop-source/data/research/run69-integration-verification.json" -Raw | ConvertFrom-Json
+          "generic_mechanicdb_pack=ODbL-1.0; guidance=$($genericReport.counts.generic_authored_guidance); dtc=$($genericReport.counts.generic_sae_dtc_references); market=UNKNOWN; vag_specific=false; database_sha256=$($genericReport.database_sha256); snapshot_sha256=$($genericReport.source_snapshot_sha256); manifest_sha256=$($genericReport.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          Get-Content -LiteralPath "desktop-source/data/research/run69-integration-verification.json" -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Print local-core API test source around failing assertion
         shell: pwsh
