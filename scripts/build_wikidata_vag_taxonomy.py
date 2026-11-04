@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Build a provenance-preserving CC0 Wikidata VAG model-identity candidate pack.
 
+This commit re-runs the bounded live snapshot after the workflow was enabled on main.
+
 Only structured Wikidata statements are queried. No article text, images, engine
 codes, transmission codes, ECU data, DTC definitions, or repair procedures are
 collected. All model rows remain candidate identity records with UNKNOWN market
