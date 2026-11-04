@@ -54,7 +54,8 @@
         "verzekeringsgegevens"
       ],
       "market_scope": "NL_REGISTRATION_OBSERVATION",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "required": true
     },
     {
       "id": "4by9-ammk",
@@ -73,7 +74,8 @@
         "cilinderinhoud"
       ],
       "market_scope": "EU_TYPE_APPROVAL",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "required": true
     },
     {
       "id": "7rjk-eycs",
@@ -91,7 +93,8 @@
         "aantalversnellingenondergrens"
       ],
       "market_scope": "EU_TYPE_APPROVAL",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "required": true
     },
     {
       "id": "x5v3-sewk",
@@ -108,7 +111,8 @@
         "typeaanduidingfabrikant"
       ],
       "market_scope": "EU_TYPE_APPROVAL",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "required": true
     },
     {
       "id": "byxc-wwua",
@@ -125,7 +129,8 @@
         "einddatumrevisieuitvoering"
       ],
       "market_scope": "EU_TYPE_APPROVAL",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "required": true
     },
     {
       "id": "kyri-nuah",
@@ -141,7 +146,8 @@
         "merkcoderdw"
       ],
       "market_scope": "EU_TYPE_APPROVAL",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "required": false
     }
   ],
   "acquisition_policy": {
