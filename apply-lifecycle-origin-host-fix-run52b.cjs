@@ -107,6 +107,29 @@ apiTests = apiTests.replace(
   /assert\.equal\((\w+)\.status,\s*404\);/g,
   'assert.ok([403, 404].includes($1.status), "cross-origin/Host mismatch must be rejected");'
 );
+// Rejected requests must not mutate the source registry. Compare against a
+// per-request baseline because the forwarded-host regression and approved
+// fixture may already have added legitimate candidate/approved rows.
+for (const requestName of ["mismatchedHost", "originAliasMismatch", "missingOrigin"]) {
+  const marker = `  const ${requestName} = await POST(new Request(baseUrl, {`;
+  if (!apiTests.includes(marker)) throw new Error("Missing Host/Origin regression request: " + requestName);
+  const baselineName = "sourceCountBefore_" + requestName;
+  if (apiTests.includes(baselineName)) continue;
+  const start = apiTests.indexOf(marker);
+  const assertion = "  assert.equal(core.listSources(dbPath).length, 1);";
+  const assertionIndex = apiTests.indexOf(assertion, start);
+  const nextRequestIndex = apiTests.indexOf("\n  const ", start + marker.length);
+  if (assertionIndex < 0 || (nextRequestIndex >= 0 && assertionIndex > nextRequestIndex)) {
+    throw new Error("Could not locate the no-mutation assertion for " + requestName);
+  }
+  const snapshot = `  const ${baselineName} = core.listSources(dbPath).length;\n`;
+  apiTests = apiTests.slice(0, start) + snapshot + apiTests.slice(start);
+  const updatedAssertionIndex = apiTests.indexOf(assertion, start + snapshot.length);
+  apiTests = apiTests.slice(0, updatedAssertionIndex) +
+    `  assert.equal(core.listSources(dbPath).length, ${baselineName});` +
+    apiTests.slice(updatedAssertionIndex + assertion.length);
+}
+
 write(apiTestFile, apiTests);
 
 console.log(JSON.stringify({
