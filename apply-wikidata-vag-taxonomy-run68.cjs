@@ -465,7 +465,7 @@ function patchDesktopSource(desktopRoot) {
       '        !/CC0 1\\.0 Universal/i.test(wikidataLicense)) throw new Error("Wikidata model identity pack failed its CC0 provenance, rights or candidate-only gate");',
       ''
     ].join("\n");
-    source = source.slice(0, index) + "\n" + validation.join("\n") + source.slice(index);
+    source = source.slice(0, index) + "\n" + validation + source.slice(index);
   }
 
   const summaryObject = [
