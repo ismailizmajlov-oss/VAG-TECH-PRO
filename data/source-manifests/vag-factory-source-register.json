@@ -855,7 +855,8 @@
         "method": "bounded SPARQL POST",
         "query_limit": 3000,
         "retry_policy": "4 attempts with bounded exponential backoff",
-        "offline_snapshot_retained": true
+        "offline_snapshot_retained": true,
+        "completeness_status": "unknown"
       },
       "rights": {
         "data_license_status": "CC0-1.0",
@@ -901,7 +902,8 @@
         "Wikidata inception/dissolution statements are not production-year ranges.",
         "No engine/gearbox codes, ECU, DTC, procedures, wiring, pinouts, torque values, adaptations, OEM parts or VIN fitment.",
         "Completeness is unknown; absence from Wikidata is not evidence that a model did not exist."
-      ]
+      ],
+      "limit_reached_means": "snapshot may be truncated; no completeness claim"
     }
   ],
   "minimum_fitment_evidence_fields": [
