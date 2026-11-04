@@ -154,33 +154,64 @@ jobs:
             "X-GitHub-Api-Version" = "2022-11-28"
           }
           $encodedBranch = [uri]::EscapeDataString($branch)
-          $branchUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=$encodedBranch&per_page=30"
+          $branchUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=$encodedBranch&per_page=100"
           $run = $null
-          for ($attempt = 1; $attempt -le 12; $attempt++) {
-            $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers
-            $run = $response.workflow_runs |
+          $fallbackUsed = $false
+          $response = $null
+          try {
+            $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
+          } catch {
+            Write-Output "Initial branch data-pack lookup failed; retrying while checking for a previously successful bundle: $($_.Exception.Message)"
+          }
+          if ($null -ne $response) {
+            $currentRun = $response.workflow_runs |
               Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
               Sort-Object { [datetime]$_.created_at } -Descending |
               Select-Object -First 1
-            if ($null -ne $run -and $run.status -eq "completed") { break }
-            Start-Sleep -Seconds 15
-          }
-          $fallbackUsed = $false
-          if ($null -eq $run -or $run.status -ne "completed" -or $run.conclusion -ne "success") {
-            $previousBranchRun = $response.workflow_runs |
-              Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
-              Sort-Object { [datetime]$_.created_at } -Descending |
-              Select-Object -First 1
-            if ($null -ne $previousBranchRun) {
-              $run = $previousBranchRun
-              $fallbackUsed = $true
-              Write-Output "Using the previous successful bundle on this branch (run $($run.id)); the next step independently verifies every source/index hash against this checkout."
+            if ($null -ne $currentRun -and $currentRun.status -eq "completed" -and $currentRun.conclusion -eq "success") {
+              $run = $currentRun
+            } else {
+              $previousBranchRun = $response.workflow_runs |
+                Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+                Sort-Object { [datetime]$_.created_at } -Descending |
+                Select-Object -First 1
+              if ($null -ne $previousBranchRun) {
+                $run = $previousBranchRun
+                $fallbackUsed = $true
+                Write-Output "Using the previous successful same-branch bundle (run $($run.id)) immediately; the next step independently verifies all source/index hashes against this checkout."
+              }
             }
           }
-          if ($null -eq $run -or $run.status -ne "completed" -or $run.conclusion -ne "success") {
-            Write-Output "No successful branch bundle is available; trying the latest successful main-branch bundle. The next step independently verifies every source/index hash against this checkout."
-            $mainUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=main&per_page=30"
-            $mainResponse = Invoke-RestMethod -Method Get -Uri $mainUri -Headers $headers
+          if ($null -eq $run) {
+            for ($attempt = 1; $attempt -le 8; $attempt++) {
+              try {
+                $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
+                $currentRun = $response.workflow_runs |
+                  Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+                  Sort-Object { [datetime]$_.created_at } -Descending |
+                  Select-Object -First 1
+                if ($null -ne $currentRun -and $currentRun.status -eq "completed" -and $currentRun.conclusion -eq "success") {
+                  $run = $currentRun
+                  break
+                }
+                $previousBranchRun = $response.workflow_runs |
+                  Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+                  Sort-Object { [datetime]$_.created_at } -Descending |
+                  Select-Object -First 1
+                if ($null -ne $previousBranchRun) {
+                  $run = $previousBranchRun
+                  $fallbackUsed = $true
+                  break
+                }
+              } catch {
+                Write-Output "Data-pack lookup attempt $attempt failed: $($_.Exception.Message)"
+              }
+              Start-Sleep -Seconds 10
+            }
+          }
+          if ($null -eq $run) {
+            $mainUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=main&per_page=100"
+            $mainResponse = Invoke-RestMethod -Method Get -Uri $mainUri -Headers $headers -TimeoutSec 20
             $run = $mainResponse.workflow_runs |
               Where-Object { $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
               Sort-Object { [datetime]$_.created_at } -Descending |
@@ -188,10 +219,10 @@ jobs:
             $fallbackUsed = $true
           }
           if ($null -eq $run -or $run.status -ne "completed" -or $run.conclusion -ne "success") {
-            throw "No successful offline data-pack bundle is available for this revision or a hash-compatible main-branch fallback."
+            throw "No successful offline data-pack bundle is available for this revision or a hash-compatible fallback."
           }
           $artifactUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
-          $artifactResponse = Invoke-RestMethod -Method Get -Uri $artifactUri -Headers $headers
+          $artifactResponse = Invoke-RestMethod -Method Get -Uri $artifactUri -Headers $headers -TimeoutSec 20
           $artifact = $artifactResponse.artifacts |
             Where-Object { $_.name -eq "vag-tech-pro-windows-offline-data-packs" -and $_.expired -eq $false } |
             Select-Object -First 1
