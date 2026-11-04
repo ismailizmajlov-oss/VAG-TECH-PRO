@@ -147,12 +147,64 @@ def is_generic_sae_code(code: str) -> bool:
     return digits[0] in ("0", "3")
 
 
+def logical_content_hash(
+    source_info: dict[str, dict],
+    generic_codes: list[dict],
+    generic_fixes: list[dict],
+) -> str:
+    source_files = [
+        {
+            "source_file_id": name,
+            "source_url": info["source_url"],
+            "git_blob_sha1": info["git_blob_sha1"],
+            "sha256": info["sha256"],
+            "byte_size": info["byte_size"],
+            "record_count": info["record_count"],
+            "purpose": info["purpose"],
+        }
+        for name, info in sorted(source_info.items())
+    ]
+    codes = [
+        {key: row[key] for key in (
+            "dtc_code", "source_record_id", "system_category", "source_file_sha256",
+            "source_line_no", "source_line_sha256",
+        )}
+        for row in sorted(generic_codes, key=lambda item: item["dtc_code"])
+    ]
+    guidance = [
+        {key: row[key] for key in (
+            "guidance_id", "dtc_code", "consideration_order", "skill_level", "title",
+            "instructions", "action_type", "rationale", "source_file_sha256",
+            "source_line_no", "source_line_sha256",
+        )}
+        for row in sorted(generic_fixes, key=lambda item: (
+            item["dtc_code"], item["consideration_order"], item["guidance_id"]
+        ))
+    ]
+    payload = {
+        "source_revision": SOURCE_REVISION,
+        "data_license": "ODbL-1.0",
+        "namespace": "generic_sae_iso",
+        "manufacturer": "UNKNOWN",
+        "market_scope": "UNKNOWN",
+        "applicability_level": "generic_only",
+        "vag_specific": False,
+        "diagnostic_execution_allowed": False,
+        "source_files": source_files,
+        "generic_dtc_references": codes,
+        "generic_repair_guidance": guidance,
+    }
+    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return sha256(canonical.encode("utf-8"))
+
+
 def create_database(
     database_path: Path,
     schema_path: Path,
     source_info: dict[str, dict],
     generic_codes: list[dict],
     generic_fixes: list[dict],
+    logical_hash: str,
 ) -> None:
     if database_path.exists():
         database_path.unlink()
@@ -239,6 +291,7 @@ def create_database(
             "namespace": "generic_sae_iso",
             "market_scope": "UNKNOWN",
             "technical_review_status": "not_independently_reviewed",
+            "logical_content_sha256": logical_hash,
         }
         connection.executemany(
             "INSERT INTO pack_metadata(key,value) VALUES (?,?)",
@@ -354,9 +407,10 @@ def build(source_dir: Path, output_dir: Path, schema_path: Path) -> dict:
     if len(generic_fixes) != 275 or oem_fix_count != 51 or orphan_count != 0:
         fail(f"unexpected guidance counts: generic={len(generic_fixes)}, OEM-excluded={oem_fix_count}, orphan={orphan_count}")
 
+    logical_hash = logical_content_hash(source_info, generic_codes, generic_fixes)
     output_dir.mkdir(parents=True, exist_ok=True)
     database_path = output_dir / "generic-repair-guidance.sqlite"
-    create_database(database_path, schema_path, source_info, generic_codes, generic_fixes)
+    create_database(database_path, schema_path, source_info, generic_codes, generic_fixes, logical_hash)
 
     license_odbl = output_dir / "LICENSE-ODbL.txt"
     license_mit = output_dir / "LICENSE-MIT.txt"
@@ -391,6 +445,7 @@ def build(source_dir: Path, output_dir: Path, schema_path: Path) -> dict:
         "attribution_required": True,
         "attribution_text": ATTRIBUTION,
         "source_snapshot_sha256": source_snapshot_sha256,
+        "logical_content_sha256": logical_hash,
         "database_file": database_path.name,
         "database_sha256": database_sha256,
         "counts": {
