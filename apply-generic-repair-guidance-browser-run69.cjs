@@ -118,9 +118,26 @@ function main(){
  const uiPath=path.join(desktop,"components/local-research-catalog.tsx");let ui=fs.readFileSync(uiPath,"utf8");
  const type=ui.match(/^type Dataset = ([^;]+);$/m);if(!type)fail("Dataset type missing");
  if(!type[1].includes('"generic-guidance"'))ui=ui.replace(type[0],'type Dataset = '+type[1]+' | "generic-guidance";');
- const state='const [summary, setSummary] = useState<SummaryPack[]>([]);';
- if(!ui.includes("genericGuidanceSummary"))ui=exact(ui,state,state+'\n  const [genericGuidanceSummary, setGenericGuidanceSummary] = useState<ResearchRow | null>(null);',"UI state");
- const tabsStart=ui.indexOf("const tabs:"),tabsEnd=ui.indexOf("\n];",tabsStart);if(tabsStart<0||tabsEnd<0)fail("Tabs array missing");
+ const datasetTypeLine=ui.match(/^type Dataset = [^;]+;$/m)?.[0];if(!datasetTypeLine)fail("Dataset type line missing");
+  const genericTypes=[
+   'type GenericGuidanceRow = {',
+   '  guidanceId: string; dtcCode: string; systemCategory?: string | null; title: string; warning: string;',
+   '  considerationOrder: number; skillLevel?: string | null; actionType?: string | null; vagSpecific: boolean;',
+   '  marketScope: string; exactVehicleFitment: boolean; diagnosticExecutionAllowed: boolean; oemRepairProcedure: boolean;',
+   '  instructions: string; rationale?: string | null; sourceRevision: string; sourceFile: string; sourceLineNo: number;',
+   '  sourceLineSha256: string; sourceFileSha256: string; sourceSnapshotSha256: string; databaseSha256: string;',
+   '  sourceManifestSha256: string; sourceFileUrl?: string | null;',
+   '};',
+   'type GenericGuidanceSummary = {',
+   '  counts: { genericRepairGuidance: number; genericDtcReferences: number }; sourceUrl: string; sourceRevision: string;',
+   '  sourceSnapshotSha256: string; logicalContentSha256: string; databaseSha256: string; sourceManifestSha256: string;',
+   '  licenseSha256: string; attributionSha256: string; attributionText: string; rowEvidenceMode: string; warning: string;',
+   '};'
+  ].join("\n");
+  if(!ui.includes("type GenericGuidanceRow"))ui=exact(ui,datasetTypeLine,datasetTypeLine+"\n"+genericTypes,"generic guidance TypeScript models");
+  const state='const [summary, setSummary] = useState<SummaryPack[]>([]);';
+  if(!ui.includes("genericGuidanceSummary"))ui=exact(ui,state,state+'\n  const [genericGuidanceSummary, setGenericGuidanceSummary] = useState<GenericGuidanceSummary | null>(null);',"UI state");
+const tabsStart=ui.indexOf("const tabs:"),tabsEnd=ui.indexOf("\n];",tabsStart);if(tabsStart<0||tabsEnd<0)fail("Tabs array missing");
  if(!ui.includes('id: "generic-guidance"'))ui=ui.slice(0,tabsEnd)+'\n  { id: "generic-guidance", label: "Общие рекомендации", hint: "ODbL · SAE/ISO · не VAG-specific" },'+ui.slice(tabsEnd);
  if(!ui.includes("dataset=generic-guidance-summary")){
   const effect=ui.indexOf("useEffect(() => {"),cleanup=ui.indexOf("    return () => {",effect);if(effect<0||cleanup<0)fail("Summary effect cleanup missing");
@@ -140,11 +157,11 @@ function main(){
  const statsMarker='\n    </div>\n\n    <div className="research-boundary">';
  if(!ui.includes("genericGuidanceSummary?.counts?.genericRepairGuidance"))ui=exact(ui,statsMarker,'\n      <article className="research-stat"><small>Общие рекомендации</small><strong>{formatNumber(genericGuidanceSummary?.counts?.genericRepairGuidance)}</strong><span>{formatNumber(genericGuidanceSummary?.counts?.genericDtcReferences)} общих DTC · ODbL-1.0</span></article>'+statsMarker,"statistics card");
  const boundaryMarker='\n    </div>\n\n    <div className="research-tabs"';
- if(!ui.includes("Общие заметки остаются отдельным generic SAE/ISO набором"))ui=exact(ui,boundaryMarker,'\n      {genericGuidanceSummary && <p>Общие заметки остаются отдельным generic SAE/ISO набором MechanicDB под ODbL-1.0: они не VAG-specific, рынок UNKNOWN, применимость к модели/поколению/году/двигателю/КПП/ECU не установлена; это не OEM-процедуры и не выполняемые тест-планы.</p>'+boundaryMarker,"scope boundary");
- const placeholder='placeholder={dataset ===';
+ if(!ui.includes("Общие заметки остаются отдельным generic SAE/ISO набором"))ui=exact(ui,boundaryMarker,'\n      {genericGuidanceSummary && <p>Общие заметки остаются отдельным generic SAE/ISO набором MechanicDB под ODbL-1.0: они не VAG-specific, рынок UNKNOWN, применимость к модели/поколению/году/двигателю/КПП/ECU не установлена; это не OEM-процедуры и не выполняемые тест-планы.</p>}'+boundaryMarker,"scope boundary");
+  const placeholder='placeholder={dataset ===';
  if(!ui.includes('dataset === "generic-guidance" ? "DTC, узел или фраза из общей заметки'))ui=exact(ui,placeholder,'placeholder={dataset === "generic-guidance" ? "DTC, узел или фраза из общей заметки…" : dataset ===',"search placeholder");
  const card=[
-  '      {dataset === "generic-guidance" && rows.map((row) => <article className="research-result" key={row.guidanceId}>',
+  '      {dataset === "generic-guidance" && (rows as unknown as GenericGuidanceRow[]).map((row) => <article className="research-result" key={row.guidanceId}>',
   '        <div className="research-result-top"><div><small>GENERIC SAE/ISO · {row.dtcCode} · {row.systemCategory || "категория не указана"}</small><h3>{row.title}</h3></div><span className="research-candidate">GENERIC ONLY</span></div>',
   '        <div className="research-warning-line">Не VAG-specific; это не OEM-процедура и не использовать как тест-план. {row.warning}</div>',
   '        <div className="research-data-grid">',
