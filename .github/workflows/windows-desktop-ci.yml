@@ -46,12 +46,28 @@ jobs:
       CI: "true"
     steps:
       - name: Checkout build manifest and source payload
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Node.js 22 x64
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22.16.0
+
+      - name: Setup Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Validate offline data-pack tooling and rights boundaries
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python --version
+          python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
+          python scripts/test_vag_identity_vehiclesdb.py
+          python tests/test_offline_data_pack_rights.py
+
 
       - name: Reassemble and verify pinned desktop source archive
         shell: pwsh
@@ -105,7 +121,7 @@ jobs:
           "source_archive_sha256=$actual" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Download pinned open research packs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: vag-tech-pro-windows-offline-data-packs
           path: ${{ runner.temp }}/vag-tech-pro-data-packs
@@ -113,7 +129,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download MechanicDB candidate pack
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: mechanicdb-audi-vw-dtc-candidates-odbl-research
           path: ${{ runner.temp }}/vag-tech-pro-mechanicdb
@@ -159,7 +175,7 @@ jobs:
           "artifact_sha256=$artifactDigest" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
       - name: Download AutoDiag2 community candidate pack
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: autodiag2-vag-community-candidate-pack
           path: ${{ runner.temp }}/vag-tech-pro-autodiag2
@@ -524,7 +540,7 @@ jobs:
 
       - name: Upload Windows installer and verification evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: vag-tech-pro-windows-x64-run59
           path: |
