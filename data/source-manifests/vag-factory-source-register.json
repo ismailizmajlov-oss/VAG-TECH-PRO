@@ -1372,6 +1372,89 @@
         "OKAPI is product/configuration data, not a repair manual, DTC source, wiring diagram or pinout source."
       ],
       "evidence_status": "official_terms_catalog_and_cache_documentation_reviewed_2026-11-05; no credentials, account, API call or data snapshot"
+    },
+    {
+      "source_id": "vehiclesdb-vag-identity-cc-by-4.0",
+      "publisher": "VehiclesDB",
+      "url": "https://github.com/vehiclesdb/vehiclesdb",
+      "release_tag": "v2026.10.3",
+      "source_kind": "foreign_market_vehicle_make_model_identity_and_market_presence_candidate_database",
+      "source_manifest_path": "data/source-manifests/vehiclesdb-vag-identity.lock.json",
+      "source_snapshot_sha256": "b209771a518e71775aa5591a6ef64d0ccff73c47dd6699fad67f73add2b0ab11",
+      "upstream_catalog_sha256": "5889bb4b3ca35cf933d83f030a04120ccf4c86e25a5a050c5ff218068720bd62",
+      "upstream_manifest_sha256": "859d1173d674728b0616a17af2e1d67e3481328d1064c148f0a52af9c882d8b0",
+      "attribution_file_sha256": "bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21",
+      "license_file_sha256": "48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78",
+      "market_scope": [
+        "AR",
+        "AU",
+        "CA",
+        "DE",
+        "ES",
+        "FI",
+        "GB",
+        "IE",
+        "LU",
+        "MY",
+        "NL",
+        "NZ",
+        "UA",
+        "US"
+      ],
+      "market_scope_policy": "per_record_country_evidence_only",
+      "ru_eaeu_market_evidence_present": false,
+      "applicability_precision": "make_model_name_only_and_market_presence_only",
+      "verification_status": "identity_candidate",
+      "display_status": "foreign_market_identity_candidate_only",
+      "counts": {
+        "approved_source_registers": 14,
+        "model_name_candidates": 260,
+        "market_presence_evidence_rows": 1524
+      },
+      "rights": {
+        "data_license": "CC-BY-4.0",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": false,
+        "attribution": "Vehicle data by VehiclesDB (vehiclesdb.com)",
+        "unconditional_upstream_source_notices_required": true,
+        "source_specific_license_map_preserved": true,
+        "separate_pack_required": true
+      },
+      "technical_scope": {
+        "makes": [
+          "Volkswagen",
+          "Audi",
+          "Škoda",
+          "SEAT",
+          "CUPRA"
+        ],
+        "exact_vehicle_fitment": false,
+        "generation_data": false,
+        "production_years": false,
+        "engine_codes": false,
+        "gearbox_codes": false,
+        "ecu_fitment": false,
+        "pr_code_fitment": false,
+        "dtc_definitions": false,
+        "repair_procedures": false,
+        "wiring_diagrams": false,
+        "diagnostic_execution_allowed": false,
+        "ru_eaeu_market_evidence": false
+      },
+      "project_decision": "allow_separate_read_only_foreign_market_identity_candidate_pack_under_CC_BY_4_0_with_required_attribution_and_all_unconditional_upstream_notices; do_not_use_for_RU_EAEU_coverage_or_exact_fitment",
+      "limitations": [
+        "Only 260 make/model-name candidates and 1,524 market-presence evidence rows are included.",
+        "The 14 markets are AR, AU, CA, DE, ES, FI, GB, IE, LU, MY, NL, NZ, UA and US; Russia, Kazakhstan, Belarus, Armenia and Kyrgyzstan are absent.",
+        "Ukraine is not an EAEU market; no Russian/EAEU evidence is present.",
+        "No generation, production year, engine code, gearbox code, ECU, PR-code or exact vehicle fitment is included.",
+        "Per-record market evidence is presence-only and must not be converted into exact technical applicability.",
+        "Keep the database separate and preserve the CC BY 4.0 VehiclesDB credit plus all unconditional upstream source notices."
+      ],
+      "evidence_status": "pinned_v2026.10.3_manifest_LICENSE_and_ATTRIBUTION_reviewed_2026-11-05; audit records SQLite integrity and source-file hashes"
     }
   ],
   "minimum_fitment_evidence_fields": [
