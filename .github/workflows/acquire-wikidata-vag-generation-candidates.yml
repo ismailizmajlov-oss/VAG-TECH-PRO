@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/acquire-wikidata-vag-generation-candidates.yml"
+      - ".gitattributes"
       - "scripts/build_wikidata_vag_generation_candidates.py"
       - "scripts/build_wikidata_vag_taxonomy.py"
       - "tests/test_wikidata_vag_generation_candidates.py"
@@ -17,6 +18,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/acquire-wikidata-vag-generation-candidates.yml"
+      - ".gitattributes"
       - "scripts/build_wikidata_vag_generation_candidates.py"
       - "scripts/build_wikidata_vag_taxonomy.py"
       - "tests/test_wikidata_vag_generation_candidates.py"
