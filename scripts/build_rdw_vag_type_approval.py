@@ -17,13 +17,14 @@ from rdw_vag_type_approval_common import (
 
 BASE = "https://opendata.rdw.nl"
 PAGE_SIZE = 50000
-APPROVAL_BATCH_SIZE = 40
+APPROVAL_BATCH_SIZE = 80
 MAX_ROWS_PER_DATASET = 500000
 REQUIRED_DATASETS = ["m9d7-ebf2", "4by9-ammk", "7rjk-eycs", "byxc-wwua", "x5v3-sewk"]
 MAKE_FILTER = (
-    "upper(merk) in ('VOLKSWAGEN','VOLKSWAGEN AG','VW','AUDI','AUDI AG',"
+    "merk in ('VOLKSWAGEN','VOLKSWAGEN AG','VW','AUDI','AUDI AG',"
     "'SKODA','ŠKODA','SEAT','CUPRA','PORSCHE','BENTLEY','LAMBORGHINI','BUGATTI')"
     " AND europese_voertuigcategorie='M1'"
+    " AND voertuigsoort='Personenauto' AND datum_eerste_toelating_dt >= '1998-01-01T00:00:00.000'"
     " AND typegoedkeuringsnummer IS NOT NULL AND variant IS NOT NULL AND uitvoering IS NOT NULL"
 )
 
@@ -40,7 +41,9 @@ def request_bytes(url: str, retries: int = 5) -> bytes:
         )
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
-                return response.read()
+                payload = response.read()
+                time.sleep(0.08)
+                return payload
         except urllib.error.HTTPError as exc:
             last_error = exc
             if exc.code not in (429, 500, 502, 503, 504) or attempt + 1 == retries:
