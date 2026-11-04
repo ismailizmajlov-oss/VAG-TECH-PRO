@@ -55,3 +55,14 @@ The builder pins the upstream commit and verifies Git blob SHA-1 values for the 
 - ODbL 1.0: https://opendatacommons.org/licenses/odbl/1-0/
 - Source provenance: https://github.com/MechanicDB/MechanicDB-public/blob/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/SOURCES.md
 - Data dictionary: https://github.com/MechanicDB/MechanicDB-public/blob/c788dfe9ed1517d4cd0be27f5aacb4776/DATA_DICTIONARY.md
+
+## Published reproducible SQLite pack
+
+The reviewed pack is published in the repository at `data/research/generic-repair-guidance/` under ODbL 1.0, with the attribution and license notices alongside the SQLite file.
+
+- SQLite SHA-256: `78edf7af654c3599fc29407d58542359db5239c5f7611739600e66f24214ecd6`
+- Logical content SHA-256: `492c7fc86b7ea669b519294c601ad4b2bd774849abc5404c62562777fc3fb4d7`
+- Source snapshot SHA-256: `603619e65832d57b8eed9171c998ddb43c8542c1ceaad495e9576989d713546f`
+- Windows CI build and pack-publication run: https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/41868492071
+
+The workflow rebuilds from the pinned upstream revision on Windows, verifies source and row hashes, and rejects an in-place logical-content change to the published database. A changed dataset requires a reviewed successor pack rather than silently replacing this one.
