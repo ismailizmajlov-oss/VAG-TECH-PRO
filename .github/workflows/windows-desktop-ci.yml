@@ -241,6 +241,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run40 lifecycle patch failed" }
           "lifecycle_httpclient_fix=applied" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply run41 strict Fetch Metadata gate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-fetchmetadata-strict-run41.cjs
+          node apply-lifecycle-fetchmetadata-strict-run41.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-fetchmetadata-strict-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run41 strict Fetch Metadata patch failed" }
+          "lifecycle_fetchmetadata=strict_same_origin_or_none" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -345,7 +354,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run40
+          name: vag-tech-pro-windows-x64-run41
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
@@ -361,6 +370,7 @@ jobs:
             desktop-source/build-0.2.1.log
             desktop-source/runtime-preparation.json
             windows-lifecycle.log
+            lifecycle-fetchmetadata-strict-fix.log
             build-metadata.json
             source-verification.txt
           if-no-files-found: warn
