@@ -17,7 +17,7 @@ const WARNING = "Community manufacturer-labelled candidate only; not OEM-confirm
 function fail(message) { throw new Error(`[run59] ${message}`); }
 function readText(file) {
   if (!fs.existsSync(file)) fail(`Required file missing: ${path.relative(ROOT, file)}`);
-  return fs.readFileSync(file, "utf8");
+  return fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
 }
 function writeText(file, value) { fs.writeFileSync(file, value.replace(/\r\n/g, "\n"), "utf8"); }
 function replaceExactly(file, before, after, label) {
@@ -278,10 +278,15 @@ replaceExactly(typesFile,
   "MechanicDB TypeScript declaration");
 
 const routeFile = path.join(ROOT, "app", "api", "local-research", "route.ts");
-replaceExactly(routeFile,
-  '    else if (dataset === "vehiclesdb") rows = localResearch.searchVehiclesDbCandidates(query, limit);\n',
-  '    else if (dataset === "vehiclesdb") rows = localResearch.searchVehiclesDbCandidates(query, limit);\n    else if (dataset === "mechanicdb") rows = localResearch.searchMechanicDbCandidates(query, limit);\n',
-  "MechanicDB research API route");
+let routeSource = readText(routeFile);
+if (!routeSource.includes("localResearch.searchMechanicDbCandidates")) {
+  const unknownDatasetBranch = '    else return Response.json({ error: "Неизвестный локальный справочник."';
+  const unknownDatasetIndex = routeSource.indexOf(unknownDatasetBranch);
+  if (unknownDatasetIndex < 0) fail("Research API route unknown-dataset branch anchor is missing");
+  const routeInsert = '    else if (dataset === "mechanicdb") rows = localResearch.searchMechanicDbCandidates(query, limit);\n';
+  routeSource = routeSource.slice(0, unknownDatasetIndex) + routeInsert + routeSource.slice(unknownDatasetIndex);
+  writeText(routeFile, routeSource);
+}
 
 const uiFile = path.join(ROOT, "components", "local-research-catalog.tsx");
 replaceExactly(uiFile,
@@ -365,7 +370,7 @@ replaceExactly(dbTestFile,
 const uiTestFile = path.join(ROOT, "tests", "local-research-ui-contract.test.cjs");
 replaceExactly(uiTestFile,
   '  assert.doesNotMatch(component, /id: "mechanicdb"/);',
-  '  assert.match(component, /id: "mechanicdb", label: "DTC · кандидаты марок"/);\n  assert.match(component, /НЕ OEM-ПОДТВЕРЖДЁН/);\n  assert.match(component, /не являются подтверждёнными VAG-specific кодами/);\n  assert.doesNotMatch(component, /detailedTechnicalExplanation/);',
+  '  assert.match(component, /id: "mechanicdb", label: "DTC · кандидаты марок"/);\n  assert.match(component, /НЕ OEM-ПОДТВЕРЖДЁН/);\n  assert.match(component, /не являются подтверждёнными VAG-specific кодами/);\n  assert.doesNotMatch(component, /detailedTechnicalExplanation/);\n  const route = fs.readFileSync(path.join(__dirname, "..", "app", "api", "local-research", "route.ts"), "utf8");\n  assert.match(route, /dataset === "mechanicdb"/);\n  assert.match(route, /searchMechanicDbCandidates/);',
   "MechanicDB UI contract");
 
 const verifierFile = path.join(ROOT, "scripts", "verify-local-research-packs.cjs");
