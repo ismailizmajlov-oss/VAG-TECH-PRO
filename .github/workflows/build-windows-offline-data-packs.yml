@@ -3,6 +3,7 @@ name: Build verified Windows offline data-pack bundle
 on:
   push:
     branches:
+      - main
       - automation/windows-desktop-build-run57
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
@@ -20,14 +21,12 @@ on:
       - .github/workflows/build-windows-offline-data-packs.yml
       - .github/workflows/acquire-obdex-cc0.yml
       - .github/workflows/acquire-obdb-vag-signalsets.yml
-      - .github/workflows/acquire-vag-engine-candidates.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - scripts/build_offline_data_pack_index.py
       - scripts/verify_offline_data_pack_index.py
       - tests/test_offline_data_pack_rights.py
       - data/source-manifests/obdex-generic-cc0.lock.json
       - data/source-manifests/obdb-vag-signalsets.json
-      - data/source-manifests/vag-open-engine-candidates.lock.json
       - data/source-manifests/vehiclesdb-vag-identity.lock.json
   workflow_dispatch:
 
