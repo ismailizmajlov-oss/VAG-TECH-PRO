@@ -25,7 +25,6 @@ let page = fs.readFileSync(pageFile, "utf8");
 const oldType = "type DbRow = Record<string, any>;";
 const newType = [
   "type DbRow = {",
-  "  [key: string]: unknown;",
   "  id?: string;",
   "  name?: string;",
   "  slug?: string;",
@@ -205,7 +204,7 @@ const testContent = [
   '  assert.ok(start >= 0 && end > start, "explicit DbRow declaration must exist");',
   '  const declaration = page.slice(start, end);',
   '  assert.doesNotMatch(declaration, /\\bany\\b/);',
-  '  assert.match(declaration, /\\[key: string\\]: unknown;/);',
+  '  assert.doesNotMatch(declaration, /\\[key: string\\]/);',
   '  assert.match(page, /type IdentifiedDbRow = DbRow & \\{ id: string \\};/);',
   '  assert.doesNotMatch(page, /Record<string,\\s*any>/);',
   '  assert.doesNotMatch(page, /Date\\.now\\(\\)/);',
