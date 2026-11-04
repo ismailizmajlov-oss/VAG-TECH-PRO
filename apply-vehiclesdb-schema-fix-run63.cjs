@@ -74,7 +74,7 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
       "FROM model_candidates\\n" +
       "WHERE applicability_precision='make_model_name_only'\\n" +
       "  AND verification_status='identity_candidate' AND fitment_status='not_established'\\n" +
-      "  AND (make_name LIKE ? ESCAPE '\\\\' OR model_name LIKE ? ESCAPE '\\\\')\\n" +
+      "  AND (make_name LIKE ? ESCAPE '\\' OR model_name LIKE ? ESCAPE '\\')\\n" +
       "ORDER BY make_name, model_name\\n" +
       "LIMIT ?"
     ).all(pattern, pattern, clampLimit(limit));
