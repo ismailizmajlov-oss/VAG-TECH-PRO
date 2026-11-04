@@ -47,20 +47,44 @@ jobs:
           $builtDir = "build/generic-repair-guidance"
           $publishedDir = "data/research/generic-repair-guidance"
           $publishedDb = Join-Path $publishedDir "generic-repair-guidance.sqlite"
+          $builtManifestPath = Join-Path $builtDir "manifest.json"
+          $publishedManifestPath = Join-Path $publishedDir "manifest.json"
           if (Test-Path -LiteralPath $publishedDb) {
-            $built = Get-Content -LiteralPath (Join-Path $builtDir "manifest.json") -Raw | ConvertFrom-Json
-            $published = Get-Content -LiteralPath (Join-Path $publishedDir "manifest.json") -Raw | ConvertFrom-Json
+            $built = Get-Content -LiteralPath $builtManifestPath -Raw | ConvertFrom-Json
+            $published = Get-Content -LiteralPath $publishedManifestPath -Raw | ConvertFrom-Json
             if ($built.logical_content_sha256 -ne $published.logical_content_sha256) {
-              throw "Published ODbL pack content differs from the pinned rebuild. Create a reviewed, versioned successor pack."
+              throw "Published ODbL pack logical content differs from the pinned rebuild. Create a reviewed, versioned successor pack."
+            }
+            if ($built.source_revision -ne $published.source_revision -or $built.source_snapshot_sha256 -ne $published.source_snapshot_sha256) {
+              throw "Published ODbL pack source revision or source snapshot changed without a successor-pack review."
             }
           } else {
             New-Item -ItemType Directory -Path $publishedDir -Force | Out-Null
-            Copy-Item -Path (Join-Path $builtDir "*") -Destination $publishedDir -Recurse -Force
-            git add -- $publishedDir
-            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "data(pack): publish ODbL generic repair guidance SQLite"
-            if ($LASTEXITCODE -ne 0) { throw "Could not commit the generated ODbL data pack." }
+          }
+
+          # Reconcile every immutable pack artifact, not just the SQLite logical digest.
+          # This repairs stale license/attribution bytes only when the source revision and
+          # logical database content are unchanged; it never silently replaces new data.
+          Copy-Item -Path (Join-Path $builtDir "*") -Destination $publishedDir -Recurse -Force
+          $publishedManifest = Get-Content -LiteralPath $publishedManifestPath -Raw | ConvertFrom-Json
+          foreach ($entry in $publishedManifest.pack_files.PSObject.Properties) {
+            if ($entry.Name -eq "schema_sql_sha256") { continue }
+            $expected = $entry.Value.sha256
+            if (-not $expected) { throw "Missing SHA-256 for published pack file $($entry.Name)." }
+            $file = Join-Path $publishedDir $entry.Name
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Published pack file missing: $($entry.Name)." }
+            $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actual -ne $expected) { throw "Published pack file SHA-256 mismatch after reconciliation: $($entry.Name)." }
+          }
+
+          git add -- $publishedDir
+          $pending = git status --porcelain -- $publishedDir
+          if ($LASTEXITCODE -ne 0) { throw "Could not inspect staged ODbL pack changes." }
+          if ($pending) {
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "data(pack): reconcile verified ODbL generic repair guidance artifacts"
+            if ($LASTEXITCODE -ne 0) { throw "Could not commit the reconciled ODbL data pack." }
             git push origin "HEAD:$env:PR_HEAD_REF"
-            if ($LASTEXITCODE -ne 0) { throw "Could not publish the generated ODbL data pack to the PR branch." }
+            if ($LASTEXITCODE -ne 0) { throw "Could not publish the reconciled ODbL data pack to the PR branch." }
           }
       - name: Verify the exact committed SQLite pack
         shell: pwsh
