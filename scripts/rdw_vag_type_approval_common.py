@@ -590,6 +590,21 @@ def verify_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
     snapshot_hash = sha256_bytes("".join(sha256_file(p) for p in snapshot_files).encode("ascii"))
     if snapshot_hash != manifest.get("source_snapshot_sha256"):
         raise ValueError("RDW snapshot bundle SHA-256 mismatch")
+    metadata_files = manifest.get("metadata_files", [])
+    if not metadata_files:
+        raise ValueError("RDW raw metadata snapshots are missing")
+    for item in metadata_files:
+        metadata_path = output_dir / item["path"]
+        if not metadata_path.is_file() or sha256_file(metadata_path) != item.get("sha256"):
+            raise ValueError("RDW metadata snapshot SHA-256 mismatch")
+        if metadata_path.stat().st_size != item.get("byte_size"):
+            raise ValueError("RDW metadata snapshot byte-size mismatch")
+        metadata_json = json.loads(metadata_path.read_text(encoding="utf-8"))
+        if str(metadata_json.get("id")) != item.get("dataset_id"):
+            raise ValueError("RDW metadata snapshot dataset identity mismatch")
+    metadata_bundle = sha256_bytes("".join(x["sha256"] for x in sorted(metadata_files,key=lambda x:x["dataset_id"])).encode("ascii"))
+    if metadata_bundle != manifest.get("metadata_bundle_sha256"):
+        raise ValueError("RDW metadata bundle SHA-256 mismatch")
     db = sqlite3.connect(f"file:{db_path.resolve().as_posix()}?mode=ro", uri=True)
     try:
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
@@ -615,10 +630,30 @@ def verify_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
             raise ValueError("RDW transmission namespace/verification gate failed")
         if db.execute("SELECT count(*) FROM engine_transmission_pair_candidates WHERE pairing_confirmed<>0 OR exact_vehicle_fitment<>0 OR ru_eaeu_applicability<>0").fetchone()[0]:
             raise ValueError("RDW pair candidate was promoted")
+        snapshot_rows = db.execute("SELECT dataset_id,response_sha256,byte_size,row_count,snapshot_path FROM source_snapshots ORDER BY dataset_id,page_number").fetchall()
+        if len(snapshot_rows) != manifest.get("snapshot_count"):
+            raise ValueError("RDW snapshot row count differs from manifest")
+        for dataset_id,response_hash,byte_size,row_count,snapshot_path in snapshot_rows:
+            snapshot_path_obj = output_dir / snapshot_path
+            if not snapshot_path_obj.is_file() or sha256_file(snapshot_path_obj) != response_hash:
+                raise ValueError("RDW raw response snapshot SHA-256 mismatch")
+            if snapshot_path_obj.stat().st_size != byte_size:
+                raise ValueError("RDW raw response snapshot byte-size mismatch")
+            response_json = json.loads(snapshot_path_obj.read_text(encoding="utf-8"))
+            if not isinstance(response_json,list) or len(response_json) != row_count:
+                raise ValueError("RDW raw response snapshot row-count mismatch")
+            if dataset_id == "m9d7-ebf2":
+                for row in response_json:
+                    if set(str(k).lower() for k in row).intersection(FORBIDDEN_REGISTRY_FIELDS):
+                        raise ValueError("RDW raw registration snapshot contains an excluded field")
         if db.execute("SELECT count(*) FROM source_snapshots WHERE length(response_sha256)<>64").fetchone()[0]:
             raise ValueError("RDW snapshot hash missing")
         if db.execute("SELECT count(*) FROM dataset_provenance WHERE data_license<>'CC0-1.0' OR rights_status<>'approved_by_published_license'").fetchone()[0]:
             raise ValueError("RDW dataset rights gate failed")
+        if db.execute("SELECT count(*) FROM vehicle_type_approval_candidates WHERE market_scope<>'NL_REGISTRATION_OBSERVATION' OR exact_vehicle_fitment<>0 OR ru_eaeu_applicability<>0").fetchone()[0]:
+            raise ValueError("RDW vehicle market/applicability gate failed")
+        if db.execute("SELECT count(*) FROM engine_transmission_pair_candidates WHERE pairing_confirmed<>0 OR exact_vehicle_fitment<>0 OR ru_eaeu_applicability<>0").fetchone()[0]:
+            raise ValueError("RDW pair candidate was promoted")
     finally:
         db.close()
     return {"status":"verified_source_candidate_pack_only","counts":counts,"source_revision":manifest["source_revision"],"database_sha256":manifest["database_sha256"],"source_snapshot_sha256":manifest["source_snapshot_sha256"]}
