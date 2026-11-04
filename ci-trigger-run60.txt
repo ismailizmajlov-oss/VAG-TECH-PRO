@@ -1,0 +1,1 @@
+Run 60: rerun Windows x64 desktop and offline data-pack CI after replacing a stale source-rights string assertion with behavioral fail-closed tests.
