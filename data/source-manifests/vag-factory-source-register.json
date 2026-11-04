@@ -1461,6 +1461,7 @@
       "source_id": "rdw-vag-type-approval-cc0",
       "publisher": "RDW — Netherlands Vehicle Authority",
       "url": "https://opendata.rdw.nl/",
+      "endpoint_url": "https://opendata.rdw.nl/resource/",
       "source_kind": "official_eu_vehicle_type_approval_and_nl_registration_open_data",
       "dataset_ids": [
         "m9d7-ebf2",
@@ -1470,47 +1471,110 @@
         "byxc-wwua",
         "kyri-nuah"
       ],
-      "source_revision_policy": "capture each Socrata dataset metadata revision and exact query/snapshot SHA-256 at every ingest; never infer revision from a third-party mirror",
+      "source_revision_policy": "Capture live per-resource RDW metadata revision and exact filtered query/response SHA-256 at every ingest; do not infer revision from a third-party mirror.",
       "market_scope": [
         "EU_TYPE_APPROVAL",
         "NL_REGISTRATION_OBSERVATION"
       ],
-      "evidence_scope": [
-        "make_model_identity",
-        "eu_type_approval_number",
-        "variant_execution_key",
-        "rdw_engine_motorcode",
-        "rdw_transmission_type_code",
-        "gear_count",
-        "first_registration_observation"
-      ],
+      "market_scope_policy": "EU type-approval records are supplementary; vehicle registration observations are Netherlands-only. No RU/EAEU applicability is inferred.",
+      "ru_eaeu_market_evidence_present": false,
       "applicability_precision": "type_approval_variant_execution_candidate",
       "verification_status": "rights_cleared_data_not_yet_ingested",
       "display_status": "not_displayed_until_pack_and_query_integrity_verified",
+      "counts": {
+        "vehicle_variants": "pending",
+        "engine_candidates": "pending",
+        "transmission_candidates": "pending",
+        "unique_pair_candidates": "pending",
+        "ambiguous_pair_keys": "pending"
+      },
+      "access": {
+        "status": "public_socrata_api",
+        "authentication_required": false,
+        "method": "Filtered read-only Socrata JSON GET queries; VAG makes and M1 only; no full registry dump.",
+        "query_limit": 50000,
+        "retry_policy": "Five attempts with bounded exponential backoff for transient HTTP errors.",
+        "offline_snapshot_retained": true,
+        "completeness_status": "unknown_until_verified_ingest"
+      },
       "rights": {
-        "data_license": "CC0-1.0",
+        "data_license_status": "CC0-1.0",
+        "owner": "RDW — Netherlands Vehicle Authority; government catalogue identifies the vehicle type-approval dataset as CC0.",
         "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "evidence_url": "https://data.overheid.nl/dataset/324bac6c-9ac4-460c-a672-a5bc4785e364",
         "commercial_use_allowed": true,
         "display_allowed": true,
         "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
         "redistribution_allowed": true,
         "attribution_required": false,
         "attribution_recommended": true,
-        "permission_status": "approved_by_published_license",
-        "legal_evidence_urls": [
-          "https://www.rdw.nl/over-rdw/dienstverlening/open-data/algemene-informatie",
-          "https://data.overheid.nl/dataset/324bac6c-9ac4-460c-a672-a5bc4785e364",
-          "https://opendata.rdw.nl/"
-        ]
+        "share_alike_required": false,
+        "scope_note": "CC0/open-data scope applies to the public RDW technical datasets. Ingest must fail closed if live resource metadata advertises a conflicting licence. Only selected non-identifying technical fields from the vehicle registry are retained."
+      },
+      "applicability": {
+        "precision": "type_approval_variant_execution_candidate",
+        "review_status": "candidate",
+        "market_scope": "EU_TYPE_APPROVAL;NL_REGISTRATION_OBSERVATION",
+        "generation_verified": false,
+        "exact_vehicle_fitment": false,
+        "engine_code_fitment": false,
+        "transmission_code_fitment": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_fitment": false,
+        "diagnostic_execution_allowed": false,
+        "production_years_inferred": false
+      },
+      "vehicle_scope": {
+        "manufacturer_label_whitelist": [
+          "Volkswagen",
+          "Volkswagen AG",
+          "VW",
+          "Audi",
+          "Audi AG",
+          "Škoda",
+          "SEAT",
+          "CUPRA",
+          "Porsche",
+          "Bentley",
+          "Lamborghini",
+          "Bugatti"
+        ],
+        "entity_type": "Netherlands-registered M1 vehicle make/model records cross-referenced to EU type-approval variant and execution candidates.",
+        "model_identity_candidates_only": true,
+        "series_member_candidates_only": false,
+        "generation_mapping_verified": false,
+        "rdw_motorcode_candidates": true,
+        "vag_factory_engine_codes": false,
+        "rdw_transmission_type_candidates": true,
+        "vag_factory_gearbox_codes": false,
+        "ecu_data": false,
+        "dtc_data": false,
+        "repair_procedures": false,
+        "exact_vehicle_fitment": false,
+        "vin_fitment": false
+      },
+      "provenance": {
+        "source_manifest": "data/source-manifests/rdw-vag-type-approval.lock.json",
+        "snapshot_manifest_pattern": "data/research/rdw-vag-type-approval-cc0/manifest.json",
+        "metadata_sha256_required": true,
+        "query_sha256_required": true,
+        "raw_snapshot_sha256_required": true,
+        "source_snapshot_sha256_required": true,
+        "database_sha256_required": true,
+        "per_record_source_revision_required": true,
+        "no_license_plate_retention": true
       },
       "technical_scope": {
-        "make_model_and_type_approval_crosswalk": true,
-        "rdw_motorcode_field": true,
-        "rdw_transmission_type_code_field": true,
-        "gear_count_field": true,
+        "make_model_identity_candidates": true,
+        "type_approval_variant_execution_candidates": true,
+        "rdw_motorcode_candidates": true,
+        "rdw_transmission_type_candidates": true,
+        "gear_count_candidates": true,
         "exact_vehicle_fitment": false,
         "generation_mapping": false,
-        "production_year_range": false,
+        "model_year_verified": false,
         "vag_factory_engine_code_verified": false,
         "vag_factory_gearbox_code_verified": false,
         "ecu_fitment": false,
@@ -1523,45 +1587,16 @@
         "ru_eaeu_applicability": false,
         "diagnostic_execution_allowed": false
       },
-      "data_capture_policy": {
-        "vehicle_registry_dataset": "m9d7-ebf2",
-        "vehicle_registry_filter": "VAG make aliases AND Europese voertuigcategorie M1 AND typegoedkeuringsnummer/variant/uitvoering present",
-        "vehicle_registry_fields": [
-          "merk",
-          "handelsbenaming",
-          "type",
-          "typegoedkeuringsnummer",
-          "variant",
-          "uitvoering",
-          "datum_eerste_toelating_dt",
-          "europese_voertuigcategorie",
-          "voertuigsoort"
-        ],
-        "excluded_fields": [
-          "kenteken",
-          "houder_or_owner_data",
-          "tenaamstelling",
-          "insurance_status",
-          "personal_or_registration_identifiers"
-        ],
-        "approval_join_key": [
-          "typegoedkeuringsnummer",
-          "codevarianttgk",
-          "codeuitvoeringtgk",
-          "volgnummerrevisieuitvoering"
-        ],
-        "pairing_rule": "Only create a source-supported engine/transmission pair when the exact approval+variant+execution+revision key has exactly one engine row and exactly one transmission row; otherwise retain separate candidates and mark pairing ambiguous.",
-        "model_year_rule": "First-registration dates and type-approval revision dates are evidence dates, not model-year or production-date claims."
-      },
+      "project_decision": "allow_separate_read_only_CC0_type_approval_candidate_pack_after_live_metadata_query_snapshot_and_SQLite_hash_tests_pass; never claim RU_EAEU applicability, VAG factory gearbox-code equivalence or VIN-level fitment.",
       "limitations": [
-        "This is an EU type-approval / Netherlands registration supplement, not Russian or EAEU OTTS.",
-        "RDW motorcode is retained in its source namespace and is not automatically asserted to be a VAG factory engine code.",
-        "RDW codetypeversnellingsbak is a type-approval transmission-type code, not a VAG three-letter gearbox code.",
-        "No exact VIN, ECU, DTC, repair, wiring, pinout, torque or adaptation applicability is established.",
-        "A unique type-approval variant/execution pairing is not a VIN-level fitment statement."
+        "Supplementary EU type-approval and Netherlands registration evidence only; not Russian or EAEU OTTS.",
+        "RDW.motorcode is retained in its source namespace and is not automatically a VAG factory engine code.",
+        "RDW.codetypeversnellingsbak is a type-approval transmission-type code, not a VAG three-letter gearbox code.",
+        "A unique approval-variant-execution-revision key is still a candidate association, not a confirmed VAG engine/gearbox pairing or VIN fitment.",
+        "First-registration dates and type-approval revision dates are not model-year or production-date claims.",
+        "No ECU, DTC, repair, wiring, pinout, torque or adaptation applicability."
       ],
-      "project_decision": "Allow a separate read-only CC0 candidate pack only after live API metadata, query snapshots, SHA-256, SQLite integrity and one-to-one pairing tests pass; never use it to claim RU/EAEU applicability or VAG factory gearbox-code equivalence.",
-      "evidence_status": "RDW open-data policy, official vehicle registry sample fields, type-approval dataset metadata and RDW TGK schema crosswalk reviewed 2026-11-05; actual filtered VAG snapshots and row counts still to be captured by CI."
+      "evidence_status": "RDW official open-data policy and Dutch government CC0 catalogue reviewed 2026-11-05; actual filtered VAG snapshots and counts pending Windows CI acquisition."
     }
   ],
   "minimum_fitment_evidence_fields": [
