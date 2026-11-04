@@ -301,10 +301,6 @@ replaceExactly(uiFile,
   'placeholder={dataset === "vehicles" ? "Модель, поколение или описание двигателя…" : dataset === "vehiclesdb" ? "Марка или модель… например Golf" : dataset === "dtc" ? "Код DTC или описание… например P0300" : dataset === "mechanicdb" ? "P1128, P3000, Audi, Volkswagen…" : dataset === "pids" ? "PID, режим или название параметра…" : "Марка, модель, ECU header, DID или сигнал…"}',
   "MechanicDB search placeholder");
 replaceExactly(uiFile,
-  '      <article className="research-stat"><small>Модели VehiclesDB</small><strong>{formatNumber(vehiclesDb?.counts?.models)}</strong><span>{formatNumber(vehiclesDb?.counts?.marketEvidence)} зарубежных свидетельств · RU отсутствует</span></article>\n',
-  '      <article className="research-stat"><small>Модели VehiclesDB</small><strong>{formatNumber(vehiclesDb?.counts?.models)}</strong><span>{formatNumber(vehiclesDb?.counts?.marketEvidence)} зарубежных свидетельств · RU отсутствует</span></article>\n      <article className="research-stat"><small>DTC-кандидаты по марке</small><strong>{formatNumber(mechanicDb?.counts?.manufacturerCandidates)}</strong><span>ODbL · отдельная вкладка · не OEM</span></article>\n',
-  "MechanicDB summary statistic");
-replaceExactly(uiFile,
   '      {mechanicDb && <p>Отдельно хранится {formatNumber(mechanicDb.counts.manufacturerCandidates)} make-labelled DTC-кандидата MechanicDB в самостоятельной базе ODbL-1.0. Записи скрыты до независимой технической проверки; рынок UNKNOWN, точная применимость к модели, поколению, двигателю, КПП и ECU отсутствует. Эти записи не входят в поиск общих DTC и не являются подтверждёнными VAG-specific кодами.</p>}',
   '      {mechanicDb && <p>{formatNumber(mechanicDb.counts.manufacturerCandidates)} make-labelled DTC-кандидата MechanicDB доступны только в отдельной исследовательской вкладке. Это community reference, а не OEM-подтверждение: рынок UNKNOWN, точная применимость к модели, поколению, двигателю, КПП и ECU отсутствует. Они не входят в поиск общих DTC и не являются подтверждёнными VAG-specific кодами.</p>}',
   "MechanicDB boundary note");
@@ -312,7 +308,7 @@ replaceExactly(uiFile,
   '      {dataset === "dtc" && rows.map((row) => <article className="research-result" key={row.code}>',
   `      {dataset === "mechanicdb" && rows.map((row) => <article className="research-result" key={row.make + "-" + row.code}>
         <div className="research-result-top"><div><small>MECHANICDB · MANUFACTURER-LABELLED COMMUNITY CANDIDATE</small><h3 className="research-code">{row.code} · {row.make}</h3></div><span className="research-candidate">НЕ OEM-ПОДТВЕРЖДЁН</span></div>
-        <div className="research-data-grid"><div><small>Категория из источника</small><b>{row.category || "—"}</b></div><div><small>Группа неисправности из источника</small><b>{row.faultFamily || "—"}</b></div><div><small>Статус проверки</small><b>{row.reviewStatus}</b></div><div><small>Рынок / точность</small><b>{row.marketScope} · {row.applicabilityPrecision}</b></div></div>
+        <div className="research-data-grid"><div><small>Категория из источника</small><b>{row.category || "—"}</b></div><div><small>Группа неисправности из источника</small><b>{row.faultFamily || "—"}</b></div><div><small>Статус / рынок</small><b>{row.reviewStatus} · {row.marketScope}</b></div></div>
         <p className="research-description"><b>Описание из источника (не проверено):</b> {row.title}</p>
         <div className="research-warning-line">{row.warning}</div>
         <details className="research-details"><summary>Построчная provenance</summary><p>Ревизия {row.sourceRevision} · файл {row.sourceFile} · строка {row.sourceLineNo} · SHA строки {row.sourceLineSha256} · SHA файла {row.sourceFileSha256} · SHA БД {row.databaseSha256} · SHA манифеста {row.sourceManifestSha256} · SHA снимка {row.sourceSnapshotSha256}</p></details>
