@@ -311,7 +311,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node --check apply-lifecycle-origin-host-fix-run52.cjs
+          node --check apply-lifecycle-origin-host-fix-run52b.cjs
           node apply-lifecycle-origin-host-fix-run52b.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-origin-host-fix.log"
           if ($LASTEXITCODE -ne 0) { throw "Run52 loopback Host-bound Origin fix failed" }
           "lifecycle_origin_validation=actual_loopback_host_header" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
