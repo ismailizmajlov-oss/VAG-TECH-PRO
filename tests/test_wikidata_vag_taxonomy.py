@@ -22,7 +22,7 @@ class WikidataVagTaxonomyTests(unittest.TestCase):
             self.assertEqual(manifest["counts"]["model_entities"], 3)
             self.assertEqual(manifest["counts"]["source_bindings"], 3)
             self.assertEqual(manifest["counts"]["manufacturers"], 3)
-            self.assertEqual(manifest["data_license"], "CC0-1.0")
+            self.assertEqual(manifest["data_license"], "CC0-1.0")\n            self.assertEqual(manifest["completeness_status"], "unknown")\n            self.assertEqual(manifest["query_limit"], 3000)\n            self.assertFalse(manifest["limit_reached"])
             self.assertEqual(manifest["rights_status"], "approved_by_published_license")
             self.assertEqual(manifest["scope"]["market_scope"], "UNKNOWN")
             self.assertEqual(manifest["scope"]["applicability_precision"], "candidate_identity_only")
