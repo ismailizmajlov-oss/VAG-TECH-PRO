@@ -289,6 +289,21 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run53 owner source-rights approval patch failed" }
           "source_rights_approval=owner_attestation_only; all_five_rights; sha256_evidence; technical_review_separate" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply transactional local catalog importer v2 (run54)
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $patchPath = Join-Path $env:GITHUB_WORKSPACE "catalog-import-v2-run54.patch"
+          if (-not (Test-Path $patchPath)) { throw "Run54 catalog importer patch is missing" }
+          $patchHash = (Get-FileHash -LiteralPath $patchPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          git apply $patchPath
+          if ($LASTEXITCODE -ne 0) { throw "Run54 catalog importer patch did not apply cleanly" }
+          node --check lib/local-core-db.cjs
+          node --test tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/catalog-import-v2-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Local catalog importer v2 tests failed" }
+          "catalog_import_v2=transactional; normalized_catalog; exact_pairing; per_entity_provenance; patch_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -378,44 +393,51 @@ jobs:
           npm run typecheck 2>&1 | Tee-Object -FilePath typecheck.log
           if ($LASTEXITCODE -ne 0) { throw "TypeScript check failed" }
 
+      - name: Set first desktop package version 0.2.2
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.2'; l.version='0.2.2'; if (l.packages && l.packages['']) l.packages[''].version='0.2.2'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\\n');"
+
       - name: Build first Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.0.log
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.2.log
           if ($LASTEXITCODE -ne 0) { throw "Initial Windows NSIS build failed" }
-          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.0-x64.exe"
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.2-x64.exe"
           if (-not (Test-Path $installer)) { throw "Initial NSIS installer not found: $installer" }
           foreach ($module in @("next", "react", "react-dom")) {
             $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
             if (-not (Test-Path $runtimeModule)) { throw "Packaged runtime dependency is missing: $module ($runtimeModule)" }
           }
-          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") -Force
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe") -Force
 
       - name: Build upgrade Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.1'; l.version='0.2.1'; if (l.packages && l.packages['']) l.packages[''].version='0.2.1'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\n');"
-          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.1.log
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.3'; l.version='0.2.3'; if (l.packages && l.packages['']) l.packages[''].version='0.2.3'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n'); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2)+'\n');"
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.3.log
           if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
-          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.1-x64.exe"
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.3-x64.exe"
           if (-not (Test-Path $installer)) { throw "Upgrade NSIS installer not found: $installer" }
           foreach ($module in @("next", "react", "react-dom")) {
             $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
             if (-not (Test-Path $runtimeModule)) { throw "Packaged upgrade runtime dependency is missing: $module ($runtimeModule)" }
           }
-          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") -Force
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") -Force
 
       - name: Run clean install, offline, backup/restore, upgrade and uninstall lifecycle
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File "desktop-source/scripts/windows-installer-lifecycle.ps1" `
-            -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe") `
-            -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe") 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-lifecycle.log"
+            -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe") `
+            -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-lifecycle.log"
           if ($LASTEXITCODE -ne 0) { throw "Windows installer lifecycle test failed" }
 
       - name: Write build metadata
@@ -425,36 +447,38 @@ jobs:
           $items = @()
           $sourceLine = Get-Content -LiteralPath "source-verification.txt" -Raw -ErrorAction SilentlyContinue
           $sourceHash = if ($sourceLine -match "source_archive_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
+          $patchHash = if ($sourceLine -match "catalog_import_v2_patch_sha256=([a-f0-9]{64})") { $Matches[1] } else { $null }
           foreach ($file in @(
-            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.0-x64.exe"),
-            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.1-x64.exe")
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe"),
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe")
           )) {
             if (Test-Path $file) {
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; desktop_version = '0.2.1'; patch_set = 'run53-owner-source-rights-approval'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; catalog_import_v2_patch_sha256 = $patchHash; desktop_version = '0.2.3'; patch_set = 'run54-local-catalog-import-v2'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Upload Windows installer and verification evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run53
+          name: vag-tech-pro-windows-x64-run54
           path: |
-            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
-            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
+            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.2-x64.exe
+            ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.3-x64.exe
             desktop-source/package-lock.json
             desktop-source/npm-lock.log
             desktop-source/local-core-host-origin-patch.log
             desktop-source/npm-ci.log
             desktop-source/test.log
+            catalog-import-v2-tests.log
             desktop-source/verify-local-core.log
             desktop-source/verify-local-research.log
             desktop-source/lint.log
             desktop-source/typecheck.log
             desktop-dbrow-types-fix.log
-            desktop-source/build-0.2.0.log
-            desktop-source/build-0.2.1.log
+            desktop-source/build-0.2.2.log
+            desktop-source/build-0.2.3.log
             desktop-source/runtime-preparation.json
             research-hash-targeted-test.log
             windows-lifecycle.log
