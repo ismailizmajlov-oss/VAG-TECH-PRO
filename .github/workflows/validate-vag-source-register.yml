@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/russian-eaeu-otts-sources.json"
+      - "docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "data/source-manifests/openvag-dtc-candidate.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
@@ -15,6 +17,8 @@ on:
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
       - "tests/test_hptsu_source_rights.py"
       - "tests/test_fgis_source_rights.py"
+      - "tests/test_elpts_otts_source_rights.py"
+      - "tests/test_russian_otts_provider_rights_manifest.py"
       - "tests/test_wal33d_source_rights.py"
       - "tests/test_openvag_source_rights.py"
       - "tests/test_mechanicdb_generic_guidance_source_rights.py"
