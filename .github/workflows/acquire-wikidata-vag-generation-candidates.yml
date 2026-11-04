@@ -71,6 +71,7 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "PARENT_MODEL_SNAPSHOT_SHA256=$($latest.source_snapshot_sha256)"
 
       - name: Fetch and build live CC0 generation candidate snapshot
+        id: build_pack
         if: github.event_name != 'pull_request'
         shell: pwsh
         run: |
@@ -87,6 +88,7 @@ jobs:
           $manifest | ConvertTo-Json -Depth 20
 
       - name: Re-verify generated pack and all row-level applicability boundaries
+        id: verify_pack
         if: github.event_name != 'pull_request'
         shell: pwsh
         run: |
@@ -97,6 +99,10 @@ jobs:
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         shell: pwsh
         run: |
+          git fetch origin main
+          if ($LASTEXITCODE -ne 0) { throw "Could not fetch latest main before immutable snapshot publication." }
+          git reset --hard origin/main
+          if ($LASTEXITCODE -ne 0) { throw "Could not reset publication workspace to latest main." }
           $target = "data/research/wikidata-vag-generations/$env:WIKIDATA_GENERATION_SNAPSHOT_ID"
           if (Test-Path $target) {
             $existing = Get-Content (Join-Path $target "manifest.json") -Raw | ConvertFrom-Json
@@ -111,11 +117,16 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add $target
             git commit -m "data: publish Wikidata VAG series-member candidate snapshot $env:WIKIDATA_GENERATION_SNAPSHOT_ID"
-            git push
+            git fetch origin main
+            if ($LASTEXITCODE -ne 0) { throw "Could not fetch latest main before pushing generation snapshot." }
+            git rebase origin/main
+            if ($LASTEXITCODE -ne 0) { throw "Could not rebase immutable generation snapshot publication onto latest main." }
+            git push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { throw "Could not push immutable generation snapshot after rebase." }
           }
 
       - name: Upload verified CC0 generation candidate pack
-        if: github.event_name != 'pull_request'
+        if: always() && github.event_name != 'pull_request' && steps.build_pack.outcome == 'success' && steps.verify_pack.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: wikidata-vag-generation-candidates-cc0
