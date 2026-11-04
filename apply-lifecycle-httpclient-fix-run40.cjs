@@ -28,17 +28,26 @@ function patchLifecycleScript() {
   return Invoke-RestMethod -Uri "$BaseUrl/api/local-core" -Method Post -Headers @{ Origin = $BaseUrl } -ContentType "application/json" -Body ($Body | ConvertTo-Json -Depth 10) -TimeoutSec 30
 }`;
   const after = `function Invoke-LocalJsonPost([string]$BaseUrl, [hashtable]$Body) {
-  $client = [System.Net.Http.HttpClient]::new()
-  $request = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::Post, "$BaseUrl/api/local-core")
+  $normalizedBase = [System.Uri]::new($BaseUrl.TrimEnd("/"))
+  $endpoint = [System.Uri]::new($normalizedBase, "/api/local-core")
+  $origin = $normalizedBase.GetLeftPart([System.UriPartial]::Authority)
+  $handler = [System.Net.Http.HttpClientHandler]::new()
+  $handler.AllowAutoRedirect = $false
+  $client = [System.Net.Http.HttpClient]::new($handler)
+  $request = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::Post, $endpoint)
   try {
-    $request.Headers.TryAddWithoutValidation("Origin", $BaseUrl) | Out-Null
+    $request.Headers.Host = $normalizedBase.Authority
+    $request.Headers.TryAddWithoutValidation("Origin", $origin) | Out-Null
     $request.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin") | Out-Null
     $json = $Body | ConvertTo-Json -Depth 10 -Compress
     $request.Content = [System.Net.Http.StringContent]::new($json, [System.Text.Encoding]::UTF8, "application/json")
     $response = $client.SendAsync($request).GetAwaiter().GetResult()
     try {
       $responseText = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
-      if (-not $response.IsSuccessStatusCode) { throw "Local JSON request failed: HTTP $([int]$response.StatusCode) $responseText" }
+      if (-not $response.IsSuccessStatusCode) {
+        $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { "" }
+        throw "Local JSON request failed: HTTP $([int]$response.StatusCode) uri=$($endpoint.AbsoluteUri) origin=$origin host=$($request.Headers.Host) location=$location body=$responseText"
+      }
       if ([string]::IsNullOrWhiteSpace($responseText)) { return $null }
       return $responseText | ConvertFrom-Json
     } finally { $response.Dispose() }
@@ -63,6 +72,15 @@ function patchContractTest() {
     '});',
   ].join("\n");
   if (!source.includes(block)) source = source.trimEnd() + "\n\n" + block + "\n";
+  const normalizedOriginBlock = [
+    "test(\\"Windows lifecycle normalizes local Origin, pins Host and rejects redirects\\", () => {",
+    "  assert.ok(script.includes(\\"GetLeftPart\\"));",
+    "  assert.ok(script.includes(\\"Headers.Host\\"));",
+    "  assert.ok(script.includes(\\"AllowAutoRedirect\\"));",
+    "  assert.ok(script.includes(\\"Local JSON request failed: HTTP\\"));",
+    "});"
+  ].join("\\n");
+  if (!source.includes(normalizedOriginBlock)) source = source.trimEnd() + "\\n\\n" + normalizedOriginBlock + "\\n";
   write("tests/windows-lifecycle-script-contract.test.cjs", source);
 }
 function patchApiTests() {
