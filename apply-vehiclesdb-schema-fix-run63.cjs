@@ -32,7 +32,7 @@ source = replaceOnce(
         vehiclesDbProvenance.ru_evidence_present !== 0 || vehiclesDbProvenance.fitment_claim !== 0 ||
         vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||
         vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbPackManifest.fitment_claim !== false ||
-        vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution_required !== true ||
+        vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution?.required !== true ||
         vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models || vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||
         !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`,
   `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||
@@ -218,6 +218,12 @@ verifier = replaceOnce(
   'assert(vehiclesDbProvenance.catalog_sqlite_sha256 === vehiclesDbSnapshot.source_snapshot_sha256["catalog.sqlite"] && vehiclesDbProvenance.upstream_manifest_sha256 === vehiclesdb.upstream_manifest_sha256 && vehiclesDbProvenance.license_sha256 === vehiclesdb.license_file_sha256 && vehiclesDbProvenance.attribution_sha256 === vehiclesdb.attribution_sha256, "VehiclesDB embedded source hashes mismatch");',
   'assert(vehiclesDbProvenance.upstream_manifest_sha256 === vehiclesdb.upstream_manifest_sha256 && vehiclesDbProvenance.source_catalog_sha256 === vehiclesDbSnapshot.source_catalog_sha256 && vehiclesDbProvenance.license_sha256 === vehiclesdb.license_file_sha256 && vehiclesDbProvenance.attribution_sha256 === vehiclesdb.attribution_sha256 && vehiclesDbProvenance.lock_sha256 === vehiclesDbSnapshot.lock_sha256, "VehiclesDB embedded source hashes mismatch");',
   "VehiclesDB verifier embedded source hashes"
+);
+verifier = replaceOnce(
+  verifier,
+  'const sourceArtifacts = vehiclesDb.prepare("SELECT relative_path, sha256 FROM source_file_artifacts ORDER BY relative_path").all();\n    for (const artifact of sourceArtifacts) {\n      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.relative_path === "catalog.sqlite" ? "catalog.sqlite" : artifact.relative_path === "manifest.json" ? "manifest.json" : artifact.relative_path === "LICENSE" ? "LICENSE" : "ATTRIBUTION.md"];\n      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.relative_path}`);\n    }',
+  'const sourceArtifacts = vehiclesDb.prepare("SELECT source_path, sha256, source_role FROM source_file_artifacts ORDER BY source_path").all();\n    for (const artifact of sourceArtifacts) {\n      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.source_role];\n      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.source_path}`);\n    }',
+  "VehiclesDB source file artifact schema"
 );
 fs.writeFileSync(verifierFile, verifier, "utf8");
 
