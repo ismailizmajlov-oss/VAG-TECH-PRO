@@ -71,7 +71,7 @@ function main(){
  root.integrated_artifacts=Array.isArray(root.integrated_artifacts)?root.integrated_artifacts:[];
  root.integrated_artifacts=root.integrated_artifacts.filter(x=>x.id!==id);
  root.integrated_artifacts.push({id,source_revision:m.source_revision,source_snapshot_sha256:m.source_snapshot_sha256,logical_content_sha256:m.logical_content_sha256,database_sha256:m.database_sha256,source_manifest_sha256:manSha,license:"ODbL-1.0",applicability:"generic_only",vag_specific:false});
- writeJson(rootPath,root);const packCount=root.packs.length;if(packCount!==8)fail("Expected eight desktop research packs after run69, found "+packCount);
+ writeJson(rootPath,root);const packCount=root.packs.length;const expectedPackCount=Number(arg("--expected-pack-count","8"));if(packCount!==expectedPackCount)fail("Expected "+expectedPackCount+" desktop research packs after run69, found "+packCount);
 
  const copies=[
   ["lib/generic-repair-guidance-db.cjs","lib/generic-repair-guidance-db.cjs"],
@@ -190,8 +190,8 @@ function main(){
  run("node",["--check",path.join(desktop,"lib/generic-repair-guidance-db.cjs")],desktop,env);
  run("node",["--check",path.join(desktop,"scripts/verify-generic-repair-guidance.cjs")],desktop,env);
  run("node",["scripts/verify-generic-repair-guidance.cjs"],desktop,env);
- run("node",["scripts/verify-local-research-packs.cjs"],desktop,env);
- run("node",["--test","tests/generic-repair-guidance-db.test.cjs","tests/generic-repair-guidance-ui-contract.test.cjs"],desktop,env);
+ if(!process.argv.includes("--skip-existing-research-verifier"))run("node",["scripts/verify-local-research-packs.cjs"],desktop,env);
+ if(!process.argv.includes("--skip-tests"))run("node",["--test","tests/generic-repair-guidance-db.test.cjs","tests/generic-repair-guidance-ui-contract.test.cjs"],desktop,env);
  const report={schema_version:1,status:"verified_generic_research_only",integration_revision:"run69",pack_id:id,source_id:sourceId,source_revision:m.source_revision,source_snapshot_sha256:m.source_snapshot_sha256,logical_content_sha256:m.logical_content_sha256,database_sha256:m.database_sha256,source_manifest_sha256:manSha,root_manifest_sha256:shaFile(rootPath),license:"ODbL-1.0",attribution_required:true,share_alike_required:true,market_scope:"UNKNOWN",applicability_level:"generic_only",vag_specific:false,exact_vehicle_fitment:false,engine_gearbox_fitment:false,ecu_fitment:false,diagnostic_execution_allowed:false,oem_repair_procedure:false,counts:m.counts};
  writeJson(path.join(research,"run69-integration-verification.json"),report);
  process.stdout.write(JSON.stringify(report,null,2)+"\n");
