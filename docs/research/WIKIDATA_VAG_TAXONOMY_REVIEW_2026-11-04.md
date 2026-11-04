@@ -21,7 +21,7 @@ The query is pinned by its SHA-256. Each raw SPARQL binding receives a canonical
 - Wikidata inception/dissolution statements are not converted into production-year ranges.
 - No engine codes, gearbox codes, ECU, DTC, test plans, repair procedures, wiring diagrams, pinouts, torque specifications, adaptations, OEM parts or VIN fitment are imported.
 - Every row remains candidate identity only. The pack cannot satisfy the exact vehicle-configuration gate for technical search.
-- Completeness is unknown: missing manufacturer statements, labels or entities are not proof that a model did not exist.
+- Completeness is unknown: the query is capped at 3,000 bindings; if the limit is reached the snapshot may be truncated. Missing manufacturer statements, labels or entities are not proof that a model did not exist.
 
 ## Rights
 
