@@ -1,0 +1,1 @@
+Trigger the Windows 10/11 x64 desktop CI on the synchronized candidate branch. Build and test only; do not publish a release or expose artifacts to end users.
