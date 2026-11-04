@@ -190,7 +190,7 @@ let tests = fs.readFileSync(testFile, "utf8");
 tests = replaceOnce(
   tests,
   '  assert.equal(rows[0].snapshotGeneratedAt, "2026-11-03T07:21:36.7901580Z");',
-  '  const rootManifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));\n  const obdexPack = rootManifest.packs.find((pack) => pack.id === "obdex-generic-cc0");\\n  assert.equal(rows[0].snapshotGeneratedAt, obdexPack.snapshot_generated_at_utc);',
+  '  const rootManifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));\n  const obdexPack = rootManifest.packs.find((pack) => pack.id === "obdex-generic-cc0");\n  assert.equal(rows[0].snapshotGeneratedAt, obdexPack.snapshot_generated_at_utc);',
   "dynamic OBDex snapshot timestamp assertion"
 );
 tests = replaceOnce(
@@ -218,4 +218,4 @@ process.stdout.write(JSON.stringify({
     "derive snapshot timestamp from the pinned manifest instead of a stale hard-coded date",
     "test query-only protection using the current model_id primary key"
   ]
-}, null, 2) + "\\n");
+}, null, 2) + "\n");
