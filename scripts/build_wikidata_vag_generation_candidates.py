@@ -662,6 +662,23 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
             raise ValueError(f"candidate-only scope boundary changed: {field}")
     if scope.get("market_scope") != "UNKNOWN" or scope.get("applicability_precision") != "series_member_candidate" or scope.get("completeness_status") != "unknown" or manifest.get("completeness_status") != "unknown" or manifest.get("query_limit") != QUERY_LIMIT or manifest.get("query_batches", 0) < 1 or manifest.get("query_batch_size", 0) < 1:
         raise ValueError("candidate-only scope or query-batch metadata changed")
+    snapshot_bytes = (output_dir / "generation-snapshot.json").read_bytes()
+    snapshot_payload, snapshot_rows = parse_snapshot(snapshot_bytes)
+    query_bytes = (output_dir / "generation-query.rq").read_bytes()
+    if query_bytes != snapshot_payload.get("query", "").encode("utf-8"):
+        raise ValueError("query file does not match the exact queries stored in the raw snapshot")
+    if sha256(snapshot_bytes) != manifest.get("source_snapshot_sha256"):
+        raise ValueError("raw generation snapshot SHA-256 mismatch")
+    if sha256(query_bytes) != manifest.get("source_query_sha256"):
+        raise ValueError("generation query SHA-256 mismatch")
+    if logical_content_hash(snapshot_rows) != manifest.get("logical_content_sha256"):
+        raise ValueError("logical candidate content SHA-256 mismatch")
+    if snapshot_payload.get("parent_model_pack") != manifest.get("parent_model_pack"):
+        raise ValueError("pinned parent model pack metadata mismatch")
+    expected_batches = len(snapshot_payload.get("query_batches", [])) or 1
+    expected_batch_size = snapshot_payload.get("query_batch_size", len(snapshot_payload.get("parent_models", [])) or 1)
+    if expected_batches != manifest.get("query_batches") or expected_batch_size != manifest.get("query_batch_size"):
+        raise ValueError("query batch count or size does not match raw snapshot")
     for name, info in manifest["pack_files"].items():
         path = output_dir / name
         if not path.is_file() or file_info(path) != info:
@@ -708,8 +725,47 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
             raise ValueError("SQLite source registry applicability metadata mismatch")
         if source["source_revision"] != manifest["source_revision"] or source["source_snapshot_sha256"] != manifest["source_snapshot_sha256"] or source["source_query_sha256"] != manifest["source_query_sha256"]:
             raise ValueError("SQLite source registry revision/hash mismatch")
-        if source["parent_model_source_snapshot_sha256"] != manifest["parent_model_pack"]["source_snapshot_sha256"] or source["parent_model_database_sha256"] != manifest["parent_model_pack"]["database_sha256"]:
+        if source["parent_model_source_revision"] != manifest["parent_model_pack"]["source_revision"] or source["parent_model_source_snapshot_sha256"] != manifest["parent_model_pack"]["source_snapshot_sha256"] or source["parent_model_database_sha256"] != manifest["parent_model_pack"]["database_sha256"]:
             raise ValueError("Parent model-pack provenance mismatch")
+        for field in ("generation_verified","exact_vehicle_fitment","engine_code_fitment","transmission_code_fitment","ecu_fitment","dtc_fitment","repair_procedure_fitment","diagnostic_execution_allowed","production_years_inferred"):
+            if source[field] != 0:
+                raise ValueError(f"SQLite source registry candidate boundary changed: {field}")
+        if source["attribution_required"] != 0 or source["attribution_recommended"] != 1 or source["share_alike_required"] != 0:
+            raise ValueError("SQLite source registry attribution metadata mismatch")
+        if scope.get("generation_entities") != counts["member_entities"] or scope.get("relationship_properties") != ["P179","P527"]:
+            raise ValueError("Manifest generation candidate counts or relationship properties mismatch")
+        for row in snapshot_rows:
+            binding = db.execute(
+                "SELECT member_qid,model_qid,relation_property,source_binding_sha256,source_revision,source_snapshot_sha256,source_query_sha256 FROM series_member_source_bindings WHERE source_binding_index=?",
+                (row["binding_index"],)
+            ).fetchone()
+            expected = (
+                row["member_qid"], row["model_qid"], row["relation_property"], row["binding_sha256"],
+                manifest["source_revision"], manifest["source_snapshot_sha256"], manifest["source_query_sha256"]
+            )
+            if not binding or tuple(binding) != expected:
+                raise ValueError(f"Per-binding provenance mismatch at source binding {row['binding_index']}")
+        bad_date_hashes = db.execute(
+            """SELECT count(*) FROM series_member_date_statements d
+               JOIN series_member_source_bindings b USING(source_binding_index)
+               WHERE d.source_binding_sha256 != b.source_binding_sha256"""
+        ).fetchone()[0]
+        if bad_date_hashes:
+            raise ValueError("Date statement source-binding hash mismatch")
+        for candidate in db.execute(
+            "SELECT member_qid,model_qid,source_binding_indexes_json,source_binding_sha256s_json FROM model_series_member_candidates"
+        ):
+            indexes = json.loads(candidate["source_binding_indexes_json"])
+            hashes = json.loads(candidate["source_binding_sha256s_json"])
+            if len(indexes) != len(hashes) or not indexes:
+                raise ValueError("Candidate source-binding index/hash cardinality mismatch")
+            for index, digest in zip(indexes, hashes):
+                linked = db.execute(
+                    "SELECT member_qid,model_qid,source_binding_sha256 FROM series_member_source_bindings WHERE source_binding_index=?",
+                    (index,)
+                ).fetchone()
+                if not linked or tuple(linked) != (candidate["member_qid"], candidate["model_qid"], digest):
+                    raise ValueError("Candidate row does not match its per-binding provenance links")
     finally:
         db.close()
     return manifest
