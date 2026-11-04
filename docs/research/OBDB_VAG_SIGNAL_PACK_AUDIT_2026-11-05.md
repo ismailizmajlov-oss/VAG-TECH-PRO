@@ -48,3 +48,10 @@ Generation names and year ranges are community candidates. They are not promoted
 ## Product decision
 
 Keep the pack in a separate read-only CC BY-SA research namespace with the upstream repository revisions, file hashes, attribution and share-alike notice intact. It may support candidate discovery only. Do not merge it into the main proprietary database or enable command execution without a separate licence-compatibility review and independent technical validation.
+
+
+## License-file review added 2026-11-05
+
+The `LICENSE` file was fetched from each of the six repositories at the exact pinned commit listed in `data/source-manifests/vag-factory-source-register.json`. All six files identify **Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**. The pack therefore remains a separately licensed adapted database: retain contributor attribution and the CC BY-SA 4.0 share-alike notice for the adapted database. No repository's licence is inferred from the OBDb umbrella README alone.
+
+The licence review confirms permission for commercial use, display, offline caching and redistribution subject to CC BY-SA terms. It does not validate technical correctness, generation mapping, ECU support, RU/EAEU market applicability or safe execution. All command execution remains disabled.
