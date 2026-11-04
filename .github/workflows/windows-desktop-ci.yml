@@ -319,6 +319,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Local catalog importer v2 tests failed" }
           "catalog_import_v2_patch_sha256=$patchHash; catalog_import_v2=transactional; normalized_catalog; exact_pairing; per_entity_provenance" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply external-network-blocked offline lifecycle gate (run55)
+        shell: pwsh
+        run: |
+          node --check apply-offline-firewall-test-run55.cjs
+          node apply-offline-firewall-test-run55.cjs
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
