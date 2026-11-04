@@ -50,7 +50,7 @@ source = replaceOnce(
         !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`,
   "VehiclesDB provenance and candidate-only gate"
 );
-source = replaceOnce(source, "attributionUrl: safeHttpsUrl(vehiclesDbProvenance.attribution_url),", "attributionUrl: safeHttpsUrl(vehiclesDbPackManifest.attribution?.url),", "VehiclesDB attribution URL");
+source = replaceOnce(source, "attributionUrl: safeHttpsUrl(vehiclesDbProvenance.attribution_url),", "attributionUrl: safeHttpsUrl(vehiclesDbPackManifest.source_repository),", "VehiclesDB attribution URL");
 source = replaceOnce(source, "upstreamRevision: vehiclesDbProvenance.upstream_tag,", "upstreamRevision: vehiclesDbPackManifest.upstream_tag,", "VehiclesDB upstream revision");
 source = replaceOnce(source, "snapshotGeneratedAt: vehiclesDbProvenance.built_at_utc,", "snapshotGeneratedAt: vehiclesDbPackManifest.built_at_utc,", "VehiclesDB snapshot timestamp");
 
@@ -162,8 +162,8 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
         sourceUrl: safeHttpsUrl(packManifest.source_repository),
         sourceLicense: PACKS.vehiclesdb.license,
         attributionRequired: true,
-        attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",
-        attributionUrl: safeHttpsUrl(packManifest.attribution?.url),
+        attribution: typeof packManifest.attribution === "string" ? packManifest.attribution : "Vehicle data by VehiclesDB (vehiclesdb.com)",
+        attributionUrl: safeHttpsUrl(packManifest.source_repository),
         sourceSha256: packManifest.source_catalog_sha256,
         sourceRecordSha256,
         sourceManifestSha256: pack.source_manifest_sha256,
@@ -185,6 +185,23 @@ if (/repository_url|provenance_id|model_candidate_id|source_model_id|body_types_
   throw new Error("Legacy VehiclesDB column names remain in the candidate search function");
 }
 fs.writeFileSync(dbFile, source, "utf8");
+
+const verifierFile = path.join(root, "scripts", "verify-local-research-packs.cjs");
+if (!fs.existsSync(verifierFile)) throw new Error("Required research-pack verifier is missing: " + verifierFile);
+let verifier = fs.readFileSync(verifierFile, "utf8");
+verifier = replaceOnce(
+  verifier,
+  'assert(vehiclesDbSnapshot.dataset_id === "vehiclesdb-vag-identity-cc-by-4.0" && vehiclesDbSnapshot.dataset_license === vehiclesdb.license, "VehiclesDB dataset manifest identity/license mismatch");',
+  'assert(vehiclesDbSnapshot.pack_id === vehiclesdb.id && vehiclesDbSnapshot.dataset_license === vehiclesdb.license, "VehiclesDB dataset manifest identity/license mismatch");',
+  "VehiclesDB current pack identity"
+);
+verifier = replaceOnce(
+  verifier,
+  'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");',
+  'assert(vehiclesDbSnapshot.attribution_required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");',
+  "VehiclesDB current attribution flag"
+);
+fs.writeFileSync(verifierFile, verifier, "utf8");
 
 let tests = fs.readFileSync(testFile, "utf8");
 tests = replaceOnce(
@@ -213,6 +230,8 @@ process.stdout.write(JSON.stringify({
   testFile: path.relative(root, testFile),
   changes: [
     "use the current VehiclesDB dataset_provenance schema and manifest for rights/attribution fields",
+    "align the independent research-pack verifier with current pack_id and attribution_required fields",
+    "expose the pinned attribution text and source repository URL",
     "query model_id and current source_registry/model_market_evidence columns",
     "decode source JSON arrays and compute deterministic per-model record SHA-256",
     "derive snapshot timestamp from the pinned manifest instead of a stale hard-coded date",
