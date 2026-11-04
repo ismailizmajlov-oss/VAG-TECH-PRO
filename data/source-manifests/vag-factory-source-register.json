@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-04",
+  "updated_at": "2026-11-05",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -10,283 +10,6 @@
     "manufacturer_data_requires_rights_review_before_storage_or_publication": true
   },
   "sources": [
-    {
-      "source_id": "vw-maximum-commercial-repair-info-ru",
-      "publisher": "VW Максимум (Russian commercial Volkswagen repair information request page)",
-      "owner_named_by_source": "VOLKSWAGEN AG",
-      "url": "https://com.vw-maximum.ru/owners/service/repair-tech/",
-      "source_kind": "dealer_hosted_vin_request_channel_referencing_vw_ag_information",
-      "market_scope": [
-        "RU"
-      ],
-      "vehicle_scope": {
-        "makes": [
-          "Volkswagen"
-        ],
-        "vehicle_segment": [
-          "commercial"
-        ],
-        "per_request_vehicle_count": 1,
-        "vin_required": true,
-        "request_types": [
-          "technical_information",
-          "removal_installation",
-          "disassembly_assembly",
-          "wiring_diagram"
-        ],
-        "excludes": [
-          "vehicle_safety_system_information"
-        ]
-      },
-      "access": {
-        "status": "available_by_individual_request",
-        "eligible_applicants": [
-          "independent_service_station_legal_entity",
-          "individual_entrepreneur"
-        ],
-        "delivery": "email_after_invoice_payment",
-        "listed_price_rub_with_vat": 1400,
-        "scope_note": "Source page says the information is not processed, adapted or checked; completeness is not guaranteed for vehicles before 2000."
-      },
-      "rights": {
-        "data_license_status": "proprietary_oem_information",
-        "owner": "VOLKSWAGEN AG",
-        "redistribution_allowed": false,
-        "permission_required_for_database_reuse": "not_granted_by_page; obtain written permission",
-        "bulk_acquisition": false
-      },
-      "project_decision": "request_only_for_specific_commercial_vehicle_cases;_confirm_request_channel_authority_and_do_not_publish_without_written_reuse_permission",
-      "evidence_status": "source_page_reviewed_2026-11-03"
-    },
-    {
-      "source_id": "volkswagen-erwin-official",
-      "publisher": "Volkswagen AG erWin",
-      "url": "https://volkswagen.erwin-store.com/erwin/showInfoTour.do",
-      "terms_url": "https://volkswagen.erwin-store.com/erwin/showTermsOfBusiness.do",
-      "source_kind": "official_oem_service_information_portal",
-      "market_scope": [
-        "country_dependent",
-        "market_specific"
-      ],
-      "vehicle_scope": {
-        "vin_specific_identification": true,
-        "may_return_engine_code": true,
-        "document_types": [
-          "repair_manual",
-          "circuit_diagram",
-          "technical_servicing_manual",
-          "emission_test",
-          "maintenance_information"
-        ]
-      },
-      "access": {
-        "status": "commercial_subscription_or_flat_rate",
-        "new_portal_coverage_note": "The current page lists EU, Norway, Switzerland and United Kingdom; other countries are directed to check availability."
-      },
-      "rights": {
-        "data_license_status": "copyrighted_oem_content",
-        "purchased_information_user_right": "own_use_only",
-        "third_party_transfer_allowed": false,
-        "publication_or_forwarding": "prior_oem_approval_and_license_agreement_required",
-        "automated_mechanical_queries": "prohibited",
-        "no_russia_belarus_clause_observed_in_reviewed_terms": true,
-        "permission_for_vag_tech_pro": "not_obtained"
-      },
-      "project_decision": "blocked_for_bulk_download_storage_or_redistribution_until_written_oem_authorization_and_country_terms_review",
-      "evidence_status": "official_info_tour_and_terms_reviewed_2026-11-03"
-    },
-    {
-      "source_id": "nhtsa-tsbs-public-index",
-      "publisher": "National Highway Traffic Safety Administration",
-      "url": "https://catalog.data.gov/dataset/nhtsas-office-of-defects-investigation-odi-technical-service-bulletins-system-tsbs-downloadable-file",
-      "schema_url": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS.txt",
-      "source_kind": "government_summary_index",
-      "market_scope": [
-        "US_NAR"
-      ],
-      "fields_observed": [
-        "NHTSA_ID",
-        "TSB_document_ID",
-        "manufacturer_communication_date",
-        "manufacturer_campaign_or_software_version_ID",
-        "communication_type",
-        "make",
-        "model",
-        "model_year",
-        "NHTSA_component",
-        "manufacturer_component_system",
-        "manufacturer_component_subsystem",
-        "summary"
-      ],
-      "limitations": [
-        "not_all_manufacturer_service_bulletins_are_included",
-        "summary_index_does_not_guarantee_engine_code_or_ecu_part_number",
-        "US_market_index_does_not_prove_RU_applicability",
-        "underlying_oem_pdfs_may_have_separate_copyright_and_reuse_terms"
-      ],
-      "rights": {
-        "access_level": "public",
-        "current_data_gov_rights_field": "public",
-        "current_data_gov_license_field": "not_present_in_reviewed_page",
-        "dataset_license_status": "not_explicitly_confirmed_by_current_primary_catalog_record",
-        "third_party_public_domain_label_claim": "not accepted as authoritative evidence",
-        "bulk_reuse_allowed": "not_established",
-        "offline_cache_allowed": "not_established",
-        "display_and_redistribution_allowed": "not_established",
-        "permission_status": "not_obtained",
-        "underlying_oem_pdf_redistribution": "not_assumed; separate permission required"
-      },
-      "project_decision": "no_import_or_offline_cache_until_NHTSA_or_an_authoritative_current_license_record_confirms_bulk_reuse_display_caching_and_redistribution; public access alone is insufficient; keep US_NAR scope only",
-      "evidence_status": "NHTSA current dataset page, current TSBS field dictionary, and current Data.gov catalog reviewed 2026-11-04",
-      "last_dataset_update_reported_by_catalog": "2024-05-01",
-      "access": {
-        "status": "publicly_downloadable_official_files",
-        "current_file_evidence": {
-          "nhtsa_dataset_page": "https://www.nhtsa.gov/nhtsa-datasets-and-apis",
-          "current_schema_url": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS.txt",
-          "schema_last_updated": "2026-09-25",
-          "current_recent_archive": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS_RECEIVED_2025-2026.zip",
-          "recent_archive_last_updated": "2026-11-03",
-          "data_gov_dataset_page": "https://catalog.data.gov/dataset/nhtsas-office-of-defects-investigation-odi-technical-service-bulletins-system-tsbs-downloadable-file",
-          "data_gov_last_updated": "2026-09-03"
-        },
-        "rights_note": "Public download/access does not establish bulk reuse, offline caching, display or redistribution rights."
-      }
-    },
-    {
-      "source_id": "nhtsa-vpic",
-      "publisher": "National Highway Traffic Safety Administration",
-      "url": "https://vpic.nhtsa.dot.gov/about/",
-      "api_url": "https://vpic.nhtsa.dot.gov/api/",
-      "source_kind": "manufacturer_submitted_vin_decode_data",
-      "market_scope": [
-        "US"
-      ],
-      "model_year_scope": "1981_and_newer",
-      "fields_purpose": [
-        "basic_vin_decoding",
-        "manufacturer_information",
-        "equipment_plant_identification"
-      ],
-      "limitations": [
-        "not_a_Russian_market_factory_build_sheet",
-        "not_a_VAG_repair_procedure_source",
-        "does_not_establish_exact_ECU_or_service_bulletin_applicability_without_explicit_response_fields"
-      ],
-      "rights": {
-        "access": "public_api",
-        "reuse_terms": "review_api_terms_and_rate_limits_before_product_integration"
-      },
-      "project_decision": "optional_us_vin_decoder_only; not a source for RU engine_gearbox_ECU facts",
-      "evidence_status": "official_nhtsa_vpic_about_and_api_reviewed_2026-11-03"
-    },
-    {
-      "source_id": "rosstandart-fgis-registers-kts",
-      "publisher": "Rosstandart / FBU Interstandart",
-      "url": "https://www.interstandart.ru/page/fgis_01",
-      "source_kind": "official_vehicle_type_approval_register_system",
-      "market_scope": [
-        "RU",
-        "EAEU"
-      ],
-      "document_types": [
-        "OTTS",
-        "OTSH",
-        "SBKTS",
-        "cancellation_notices"
-      ],
-      "evidence_scope": [
-        "vehicle_type_approval",
-        "type_or_variant_homologation"
-      ],
-      "limitations": [
-        "not_individual_vin_factory_build_sheet",
-        "not_ecu_dtc_or_repair_procedure_source",
-        "bulk_api_and_redistribution_terms_not_verified"
-      ],
-      "rights": {
-        "access": "official FGIS registry information",
-        "bulk_export_rights": "not_established",
-        "offline_cache_rights": "not_established",
-        "display_and_redistribution_rights": "not_established",
-        "permission_status": "not_obtained",
-        "bulk_export_allowed": "not_established",
-        "offline_cache_allowed": "not_established",
-        "display_and_redistribution_allowed": "not_established"
-      },
-      "project_decision": "manual document-level verification only; software distribution is limited to accredited certification bodies/testing laboratories and requires licensed IBM/HCL Domino; no public bulk export or reuse grant established; do not bulk export, cache, display or redistribute registry records without written permission",
-      "evidence_status": "official_interstandart_registry_page_and_current_quest_procedure_reviewed_2026-11-04",
-      "access_details_url": "https://interstandart.ru/quest",
-      "access": {
-        "registry_web_access": "official_registry_information; public viewing is not a grant of bulk reuse rights",
-        "software_distribution": "application and documentation are issued by Interstandart after a formal request",
-        "eligibility": "the applicant organization must have accreditation scope covering TR TS 018/2011 or GOST 33670",
-        "delivery": "office, courier, or organization-addressed download link/FTP after formal request and acceptance act",
-        "dependency": "licensed IBM/HCL Domino is required to operate the supplied registry software",
-        "machine_readable_export": "a historical EAEU pilot described request-based export; current general public API or unrestricted export has not been established",
-        "official_access_evidence": {
-          "registry_page": "https://interstandart.ru/page/fgis_01",
-          "software_request_process": {
-            "formal_application_required": true,
-            "request_email": [
-              "interst@interstandart.ru",
-              "2364383@interstandart.ru"
-            ],
-            "stated_processing_time_business_days": [
-              2,
-              3
-            ],
-            "delivery_modes": [
-              "office pickup",
-              "courier",
-              "organization-addressed download link or FTP"
-            ],
-            "acceptance_act_provided": true
-          },
-          "eligible_organization": {
-            "type": [
-              "accredited certification body",
-              "accredited testing laboratory"
-            ],
-            "accreditation_scope_required": [
-              "TR TS 018/2011",
-              "GOST 33670"
-            ],
-            "ordinary_independent_workshop_eligibility": "not established by the official procedure"
-          },
-          "software_runtime": {
-            "platform": "IBM/HCL Domino",
-            "licensed_runtime_required": true,
-            "third_party_domino_license_accepted": true,
-            "interstandart_domino_license_lead_time_days": [
-              14,
-              60
-            ],
-            "project_license_obtained": false
-          },
-          "registry_role": "national part of the EAEU vehicle type-approval registers; source data is submitted by accredited certification bodies and testing laboratories"
-        }
-      }
-    },
-    {
-      "source_id": "ross-tech-official-factory-source-directory",
-      "publisher": "Ross-Tech Wiki",
-      "url": "https://wiki.ross-tech.com/wiki/index.php/Official_Factory_Repair_Information",
-      "source_kind": "secondary_navigation_directory",
-      "market_scope": [
-        "RoW",
-        "NAR"
-      ],
-      "evidence_scope": [
-        "portal_discovery_only"
-      ],
-      "rights": {
-        "data_license_status": "not_applicable_to_oem_portal_documents",
-        "reuse_of_linked_oem_materials": "not_granted"
-      },
-      "project_decision": "use_only_to_discover_primary_oem_portals; never as proof of repair procedure",
-      "evidence_status": "secondary_directory_reviewed_2026-11-03"
-    },
     {
       "source_id": "audatex-audavin-ru",
       "publisher": "Audatex / AudaVIN",
@@ -339,121 +62,49 @@
       "evidence_status": "provider_page_reviewed_2026-11-03"
     },
     {
-      "source_id": "vagtec-vag-catalogs-ru",
-      "publisher": "VAGtec",
-      "url": "https://vagtec.ru/allnews/153-news-6",
-      "source_kind": "independent_vag_parts_catalog_and_vin_order_check",
+      "source_id": "eaeu-otts-unified-register-public-portal",
+      "publisher": "Eurasian Economic Commission",
+      "url": "https://portal.eaeunion.org/",
+      "legal_basis_url": "https://www.alta.ru/tamdoc/16kr0088/",
+      "source_kind": "official_public_query_route_for_eaeu_vehicle_type_approval_register",
       "market_scope": [
-        "RU",
-        "UNKNOWN"
+        "EAEU"
       ],
-      "vehicle_scope": {
-        "makes": [
-          "AUDI",
-          "VOLKSWAGEN",
-          "SKODA",
-          "SEAT"
-        ],
-        "catalog_models_reported_from_year": 2010,
-        "vin_length": 17
+      "document_types": [
+        "OTTS",
+        "OTSH",
+        "SBKTS",
+        "cancellation_notices"
+      ],
+      "evidence_scope": [
+        "vehicle_type_approval",
+        "type_or_variant_homologation"
+      ],
+      "access": {
+        "legal_access_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
+        "current_portal_observation": "The portal root checked on 2026-11-04 redirects to the EAEU open-data portal; a current OTTS-specific search endpoint was not independently resolved.",
+        "machine_readable_api": "not_verified_for_OTTS",
+        "individual_query_access": "provided_by_decision_88_via_union_information_portal",
+        "bulk_export": "not_established",
+        "offline_cache": "not_established",
+        "automated_extraction": "not_established"
       },
-      "fields_observed": [
-        "parts_catalog_navigation",
-        "vin_based_order_fitment_check_claim"
-      ],
-      "not_confirmed": [
-        "full_factory_build_sheet",
-        "engine_code",
-        "gearbox_code",
-        "ecu_hw_sw",
-        "dtc",
-        "repair_procedure"
-      ],
       "rights": {
         "data_license_status": "not_established",
-        "redistribution_allowed": false,
-        "permission_required": true
+        "public_query_access": "legal_basis_identified_but_current_OTTS_endpoint_not_verified",
+        "bulk_reuse_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "display_and_redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true
       },
-      "project_decision": "request_api_and_reuse_terms; no scraping or import",
-      "evidence_status": "provider_page_reviewed_2026-11-03"
-    },
-    {
-      "source_id": "plan-parts-vag-api",
-      "publisher": "plan.parts",
-      "url": "https://plan.parts/ru/databases/vag",
-      "source_kind": "commercial_third_party_vag_catalog_api",
-      "market_scope": [
-        "RU",
-        "UNKNOWN"
+      "limitations": [
+        "Decision No. 88 describes information exchange and portal access but does not itself grant a VAG TECH PRO license to bulk copy, cache, redistribute or create a derivative database.",
+        "The EAEU open-data portal advertises OData/REST reuse for published resources, but inclusion of the OTTS register in that open-data catalog has not been established.",
+        "An OTTS establishes type/variant homologation only to the extent explicitly stated in the document; it is not an individual VIN build sheet and does not establish ECU, DTC, wiring or repair applicability."
       ],
-      "vehicle_scope": {
-        "makes": [
-          "VOLKSWAGEN",
-          "AUDI",
-          "SKODA",
-          "SEAT",
-          "PORSCHE"
-        ],
-        "vin_decode_claimed": true
-      },
-      "fields_claimed": [
-        "vin_decode",
-        "oem_part_numbers",
-        "assembly_diagrams",
-        "supersession_chains"
-      ],
-      "not_confirmed": [
-        "exact_RU_market_factory_build_sheet",
-        "engine_code",
-        "gearbox_code",
-        "ecu_hw_sw",
-        "manufacturer_dtc",
-        "repair_procedure"
-      ],
-      "rights": {
-        "data_license_status": "commercial_api_terms_to_review",
-        "redistribution_allowed": false,
-        "permission_required_for_local_cache_and_offline_distribution": true,
-        "permission_status": "not_obtained"
-      },
-      "project_decision": "technical_candidate_only; require sample API payload and written local-cache/offline redistribution terms",
-      "evidence_status": "provider_page_reviewed_2026-11-03"
-    },
-    {
-      "source_id": "vwts-independent-technical-archive",
-      "publisher": "Volkswagen Technical Site / VWTS",
-      "url": "https://www.volkswagen.msk.ru/",
-      "source_kind": "independent_technical_document_archive",
-      "market_scope": [
-        "UNKNOWN",
-        "EU",
-        "RU"
-      ],
-      "vehicle_scope": {
-        "makes": [
-          "VOLKSWAGEN",
-          "AUDI",
-          "SKODA",
-          "SEAT"
-        ]
-      },
-      "fields_claimed": [
-        "repair_manuals",
-        "engine_information",
-        "gearbox_information",
-        "electrical_system_documents"
-      ],
-      "not_confirmed": [
-        "VIN_specific_fitment_without_document_header",
-        "rights_for_each_document"
-      ],
-      "rights": {
-        "data_license_status": "per_document_rights_unverified",
-        "redistribution_allowed": false,
-        "permission_required": true
-      },
-      "project_decision": "use_for_document_discovery_only; no bulk copying or production import without per-document rights and exact applicability",
-      "evidence_status": "archive_index_reviewed_2026-11-03"
+      "project_decision": "manual document-level lookup only after the current official query route is resolved; no scraping, bulk export, offline caching or redistribution until EEC/registry operator confirms the endpoint and reuse terms in writing",
+      "evidence_status": "EEC Collegium Decision No. 88, official Interstandart FGIS page, and current portal redirect reviewed 2026-11-04"
     },
     {
       "source_id": "gor3a-vehicle-makes-models-odbl",
@@ -524,35 +175,6 @@
       },
       "project_decision": "research_staging_only; market UNKNOWN; never infer engine or gearbox codes from labels; ODbL obligations must be preserved",
       "evidence_status": "five_brand_files_inspected_2026-11-03; pinned_revision"
-    },
-    {
-      "source_id": "riz4d-openvag-dtc-quarantine",
-      "publisher": "riz4d/OpenVAG",
-      "url": "https://github.com/riz4d/OpenVAG",
-      "source_kind": "community_vag_dtc_and_component_database",
-      "market_scope": [
-        "UNKNOWN"
-      ],
-      "fields_claimed": [
-        "995_dtc_code_title_rows",
-        "1103_fault_variants",
-        "341_component_identifiers",
-        "712_dtc_component_links",
-        "276_related_code_links"
-      ],
-      "observed_limitations": [
-        "mixed_legacy_vag_numeric_and_generic_obd_code_formats",
-        "no_complete_document_level_provenance_chain_observed",
-        "no_reliable_exact_vehicle_engine_gearbox_ecu_hw_sw_fitment_matrix"
-      ],
-      "rights": {
-        "repository_code_license": "MIT",
-        "database_data_license": "not_separately_established_in_review",
-        "redistribution_allowed": false,
-        "permission_status": "not_cleared"
-      },
-      "project_decision": "quarantine_only; do not import definitions, repair solutions or mappings into production until data provenance and database rights are independently established",
-      "evidence_status": "README_LICENSE_AND_DB_SCHEMA_REVIEWED_2026-11-03"
     },
     {
       "source_id": "hpt-su-otts-aggregator",
@@ -661,6 +283,483 @@
       }
     },
     {
+      "source_id": "mechanicdb-public-generic-repair-guidance",
+      "publisher": "MechanicDB / DataEngineered",
+      "url": "https://github.com/MechanicDB/MechanicDB-public",
+      "pinned_revision": "c788dfe9ed1517d4cd0be27f5aacb4776abf4864",
+      "source_kind": "generic_sae_iso_diagnostic_guidance_dataset",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "data_counts_as_published": {
+        "sample_dtc_rows": 90,
+        "generic_sae_dtc_identifiers": 75,
+        "manufacturer_labelled_dtc_rows_excluded": 15,
+        "generic_authored_guidance_rows": 275,
+        "manufacturer_labelled_guidance_rows_excluded": 51
+      },
+      "evidence_scope": [
+        "generic_sae_iso_dtc_identifiers",
+        "generic_authored_diagnostic_guidance"
+      ],
+      "applicability": {
+        "manufacturer": "UNKNOWN",
+        "vag_specific": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "ecu_mapping": false,
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "generic_code_only"
+      },
+      "rights": {
+        "data_license_status": "ODbL-1.0",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "redistribution_allowed_under_odbl": true,
+        "share_alike_required": true,
+        "attribution_required": true,
+        "attribution_text": "MechanicDB — https://github.com/MechanicDB/MechanicDB-public",
+        "full_paid_dataset_included": false,
+        "permission_status": "approved_by_published_license_for_free_sample_only",
+        "upstream_notice": "MIT notice preserved; DTC descriptions and detailed code explanations are not copied"
+      },
+      "limitations": [
+        "generic SAE/ISO namespace only",
+        "not VAG-specific and not OEM-confirmed",
+        "no Russian or EAEU market applicability",
+        "no model, generation, year, engine, gearbox, ECU, PR-code or VIN fitment",
+        "no diagnostic execution, OEM repair procedure, wiring diagram, pinout, torque value, adaptation or OEM parts mapping",
+        "technical and safety review not independently completed"
+      ],
+      "project_decision": "allow_separate_generic_educational_reference_pack_only_under_ODbL; do not merge with manufacturer-specific VAG data or present as exact repair advice",
+      "evidence_status": "pinned_public_sample_license_sources_and_data_dictionary_reviewed_2026-11-04"
+    },
+    {
+      "source_id": "nhtsa-tsbs-public-index",
+      "publisher": "National Highway Traffic Safety Administration",
+      "url": "https://catalog.data.gov/dataset/nhtsas-office-of-defects-investigation-odi-technical-service-bulletins-system-tsbs-downloadable-file",
+      "schema_url": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS.txt",
+      "source_kind": "government_summary_index",
+      "market_scope": [
+        "US_NAR"
+      ],
+      "fields_observed": [
+        "NHTSA_ID",
+        "TSB_document_ID",
+        "manufacturer_communication_date",
+        "manufacturer_campaign_or_software_version_ID",
+        "communication_type",
+        "make",
+        "model",
+        "model_year",
+        "NHTSA_component",
+        "manufacturer_component_system",
+        "manufacturer_component_subsystem",
+        "summary"
+      ],
+      "limitations": [
+        "not_all_manufacturer_service_bulletins_are_included",
+        "summary_index_does_not_guarantee_engine_code_or_ecu_part_number",
+        "US_market_index_does_not_prove_RU_applicability",
+        "underlying_oem_pdfs_may_have_separate_copyright_and_reuse_terms"
+      ],
+      "rights": {
+        "access_level": "public",
+        "current_data_gov_rights_field": "public",
+        "current_data_gov_license_field": "not_present_in_reviewed_page",
+        "dataset_license_status": "not_explicitly_confirmed_by_current_primary_catalog_record",
+        "third_party_public_domain_label_claim": "not accepted as authoritative evidence",
+        "bulk_reuse_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "display_and_redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "underlying_oem_pdf_redistribution": "not_assumed; separate permission required"
+      },
+      "project_decision": "no_import_or_offline_cache_until_NHTSA_or_an_authoritative_current_license_record_confirms_bulk_reuse_display_caching_and_redistribution; public access alone is insufficient; keep US_NAR scope only",
+      "evidence_status": "NHTSA current dataset page, current TSBS field dictionary, and current Data.gov catalog reviewed 2026-11-04",
+      "last_dataset_update_reported_by_catalog": "2024-05-01",
+      "access": {
+        "status": "publicly_downloadable_official_files",
+        "current_file_evidence": {
+          "nhtsa_dataset_page": "https://www.nhtsa.gov/nhtsa-datasets-and-apis",
+          "current_schema_url": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS.txt",
+          "schema_last_updated": "2026-09-25",
+          "current_recent_archive": "https://static.nhtsa.gov/odi/ffdd/tsbs/TSBS_RECEIVED_2025-2026.zip",
+          "recent_archive_last_updated": "2026-11-03",
+          "data_gov_dataset_page": "https://catalog.data.gov/dataset/nhtsas-office-of-defects-investigation-odi-technical-service-bulletins-system-tsbs-downloadable-file",
+          "data_gov_last_updated": "2026-09-03"
+        },
+        "rights_note": "Public download/access does not establish bulk reuse, offline caching, display or redistribution rights."
+      }
+    },
+    {
+      "source_id": "nhtsa-vpic",
+      "publisher": "National Highway Traffic Safety Administration",
+      "url": "https://vpic.nhtsa.dot.gov/about/",
+      "api_url": "https://vpic.nhtsa.dot.gov/api/",
+      "source_kind": "manufacturer_submitted_vin_decode_data",
+      "market_scope": [
+        "US"
+      ],
+      "model_year_scope": "1981_and_newer",
+      "fields_purpose": [
+        "basic_vin_decoding",
+        "manufacturer_information",
+        "equipment_plant_identification"
+      ],
+      "limitations": [
+        "not_a_Russian_market_factory_build_sheet",
+        "not_a_VAG_repair_procedure_source",
+        "does_not_establish_exact_ECU_or_service_bulletin_applicability_without_explicit_response_fields"
+      ],
+      "rights": {
+        "access": "public_api",
+        "reuse_terms": "review_api_terms_and_rate_limits_before_product_integration"
+      },
+      "project_decision": "optional_us_vin_decoder_only; not a source for RU engine_gearbox_ECU facts",
+      "evidence_status": "official_nhtsa_vpic_about_and_api_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "plan-parts-vag-api",
+      "publisher": "plan.parts",
+      "url": "https://plan.parts/ru/databases/vag",
+      "source_kind": "commercial_third_party_vag_catalog_api",
+      "market_scope": [
+        "RU",
+        "UNKNOWN"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "VOLKSWAGEN",
+          "AUDI",
+          "SKODA",
+          "SEAT",
+          "PORSCHE"
+        ],
+        "vin_decode_claimed": true
+      },
+      "fields_claimed": [
+        "vin_decode",
+        "oem_part_numbers",
+        "assembly_diagrams",
+        "supersession_chains"
+      ],
+      "not_confirmed": [
+        "exact_RU_market_factory_build_sheet",
+        "engine_code",
+        "gearbox_code",
+        "ecu_hw_sw",
+        "manufacturer_dtc",
+        "repair_procedure"
+      ],
+      "rights": {
+        "data_license_status": "commercial_api_terms_to_review",
+        "redistribution_allowed": false,
+        "permission_required_for_local_cache_and_offline_distribution": true,
+        "permission_status": "not_obtained"
+      },
+      "project_decision": "technical_candidate_only; require sample API payload and written local-cache/offline redistribution terms",
+      "evidence_status": "provider_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "riz4d-openvag-dtc-quarantine",
+      "publisher": "riz4d/OpenVAG",
+      "url": "https://github.com/riz4d/OpenVAG",
+      "source_kind": "community_vag_dtc_and_component_database",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "fields_claimed": [
+        "995_dtc_code_title_rows",
+        "1103_fault_variants",
+        "341_component_identifiers",
+        "712_dtc_component_links",
+        "276_related_code_links"
+      ],
+      "observed_limitations": [
+        "mixed_legacy_vag_numeric_and_generic_obd_code_formats",
+        "no_complete_document_level_provenance_chain_observed",
+        "no_reliable_exact_vehicle_engine_gearbox_ecu_hw_sw_fitment_matrix"
+      ],
+      "rights": {
+        "repository_code_license": "MIT",
+        "database_data_license": "not_separately_established_in_review",
+        "redistribution_allowed": false,
+        "permission_status": "not_cleared"
+      },
+      "project_decision": "quarantine_only; do not import definitions, repair solutions or mappings into production until data provenance and database rights are independently established",
+      "evidence_status": "README_LICENSE_AND_DB_SCHEMA_REVIEWED_2026-11-03"
+    },
+    {
+      "source_id": "ross-tech-official-factory-source-directory",
+      "publisher": "Ross-Tech Wiki",
+      "url": "https://wiki.ross-tech.com/wiki/index.php/Official_Factory_Repair_Information",
+      "source_kind": "secondary_navigation_directory",
+      "market_scope": [
+        "RoW",
+        "NAR"
+      ],
+      "evidence_scope": [
+        "portal_discovery_only"
+      ],
+      "rights": {
+        "data_license_status": "not_applicable_to_oem_portal_documents",
+        "reuse_of_linked_oem_materials": "not_granted"
+      },
+      "project_decision": "use_only_to_discover_primary_oem_portals; never as proof of repair procedure",
+      "evidence_status": "secondary_directory_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "rosstandart-fgis-registers-kts",
+      "publisher": "Rosstandart / FBU Interstandart",
+      "url": "https://www.interstandart.ru/page/fgis_01",
+      "source_kind": "official_vehicle_type_approval_register_system",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "document_types": [
+        "OTTS",
+        "OTSH",
+        "SBKTS",
+        "cancellation_notices"
+      ],
+      "evidence_scope": [
+        "vehicle_type_approval",
+        "type_or_variant_homologation"
+      ],
+      "limitations": [
+        "not_individual_vin_factory_build_sheet",
+        "not_ecu_dtc_or_repair_procedure_source",
+        "bulk_api_and_redistribution_terms_not_verified"
+      ],
+      "rights": {
+        "access": "official FGIS registry information",
+        "bulk_export_rights": "not_established",
+        "offline_cache_rights": "not_established",
+        "display_and_redistribution_rights": "not_established",
+        "permission_status": "not_obtained",
+        "bulk_export_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "display_and_redistribution_allowed": "not_established"
+      },
+      "project_decision": "manual document-level verification only; software distribution is limited to accredited certification bodies/testing laboratories and requires licensed IBM/HCL Domino; no public bulk export or reuse grant established; do not bulk export, cache, display or redistribute registry records without written permission",
+      "evidence_status": "official_interstandart_registry_page_and_current_quest_procedure_reviewed_2026-11-04",
+      "access_details_url": "https://interstandart.ru/quest",
+      "access": {
+        "registry_web_access": "official_registry_information; public viewing is not a grant of bulk reuse rights",
+        "software_distribution": "application and documentation are issued by Interstandart after a formal request",
+        "eligibility": "the applicant organization must have accreditation scope covering TR TS 018/2011 or GOST 33670",
+        "delivery": "office, courier, or organization-addressed download link/FTP after formal request and acceptance act",
+        "dependency": "licensed IBM/HCL Domino is required to operate the supplied registry software",
+        "machine_readable_export": "a historical EAEU pilot described request-based export; current general public API or unrestricted export has not been established",
+        "official_access_evidence": {
+          "registry_page": "https://interstandart.ru/page/fgis_01",
+          "software_request_process": {
+            "formal_application_required": true,
+            "request_email": [
+              "interst@interstandart.ru",
+              "2364383@interstandart.ru"
+            ],
+            "stated_processing_time_business_days": [
+              2,
+              3
+            ],
+            "delivery_modes": [
+              "office pickup",
+              "courier",
+              "organization-addressed download link or FTP"
+            ],
+            "acceptance_act_provided": true
+          },
+          "eligible_organization": {
+            "type": [
+              "accredited certification body",
+              "accredited testing laboratory"
+            ],
+            "accreditation_scope_required": [
+              "TR TS 018/2011",
+              "GOST 33670"
+            ],
+            "ordinary_independent_workshop_eligibility": "not established by the official procedure"
+          },
+          "software_runtime": {
+            "platform": "IBM/HCL Domino",
+            "licensed_runtime_required": true,
+            "third_party_domino_license_accepted": true,
+            "interstandart_domino_license_lead_time_days": [
+              14,
+              60
+            ],
+            "project_license_obtained": false
+          },
+          "registry_role": "national part of the EAEU vehicle type-approval registers; source data is submitted by accredited certification bodies and testing laboratories"
+        }
+      }
+    },
+    {
+      "source_id": "vagtec-vag-catalogs-ru",
+      "publisher": "VAGtec",
+      "url": "https://vagtec.ru/allnews/153-news-6",
+      "source_kind": "independent_vag_parts_catalog_and_vin_order_check",
+      "market_scope": [
+        "RU",
+        "UNKNOWN"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "AUDI",
+          "VOLKSWAGEN",
+          "SKODA",
+          "SEAT"
+        ],
+        "catalog_models_reported_from_year": 2010,
+        "vin_length": 17
+      },
+      "fields_observed": [
+        "parts_catalog_navigation",
+        "vin_based_order_fitment_check_claim"
+      ],
+      "not_confirmed": [
+        "full_factory_build_sheet",
+        "engine_code",
+        "gearbox_code",
+        "ecu_hw_sw",
+        "dtc",
+        "repair_procedure"
+      ],
+      "rights": {
+        "data_license_status": "not_established",
+        "redistribution_allowed": false,
+        "permission_required": true
+      },
+      "project_decision": "request_api_and_reuse_terms; no scraping or import",
+      "evidence_status": "provider_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "volkswagen-erwin-official",
+      "publisher": "Volkswagen AG erWin",
+      "url": "https://volkswagen.erwin-store.com/erwin/showInfoTour.do",
+      "terms_url": "https://volkswagen.erwin-store.com/erwin/showTermsOfBusiness.do",
+      "source_kind": "official_oem_service_information_portal",
+      "market_scope": [
+        "country_dependent",
+        "market_specific"
+      ],
+      "vehicle_scope": {
+        "vin_specific_identification": true,
+        "may_return_engine_code": true,
+        "document_types": [
+          "repair_manual",
+          "circuit_diagram",
+          "technical_servicing_manual",
+          "emission_test",
+          "maintenance_information"
+        ]
+      },
+      "access": {
+        "status": "commercial_subscription_or_flat_rate",
+        "new_portal_coverage_note": "The current page lists EU, Norway, Switzerland and United Kingdom; other countries are directed to check availability."
+      },
+      "rights": {
+        "data_license_status": "copyrighted_oem_content",
+        "purchased_information_user_right": "own_use_only",
+        "third_party_transfer_allowed": false,
+        "publication_or_forwarding": "prior_oem_approval_and_license_agreement_required",
+        "automated_mechanical_queries": "prohibited",
+        "no_russia_belarus_clause_observed_in_reviewed_terms": true,
+        "permission_for_vag_tech_pro": "not_obtained"
+      },
+      "project_decision": "blocked_for_bulk_download_storage_or_redistribution_until_written_oem_authorization_and_country_terms_review",
+      "evidence_status": "official_info_tour_and_terms_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "vw-maximum-commercial-repair-info-ru",
+      "publisher": "VW Максимум (Russian commercial Volkswagen repair information request page)",
+      "owner_named_by_source": "VOLKSWAGEN AG",
+      "url": "https://com.vw-maximum.ru/owners/service/repair-tech/",
+      "source_kind": "dealer_hosted_vin_request_channel_referencing_vw_ag_information",
+      "market_scope": [
+        "RU"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "Volkswagen"
+        ],
+        "vehicle_segment": [
+          "commercial"
+        ],
+        "per_request_vehicle_count": 1,
+        "vin_required": true,
+        "request_types": [
+          "technical_information",
+          "removal_installation",
+          "disassembly_assembly",
+          "wiring_diagram"
+        ],
+        "excludes": [
+          "vehicle_safety_system_information"
+        ]
+      },
+      "access": {
+        "status": "available_by_individual_request",
+        "eligible_applicants": [
+          "independent_service_station_legal_entity",
+          "individual_entrepreneur"
+        ],
+        "delivery": "email_after_invoice_payment",
+        "listed_price_rub_with_vat": 1400,
+        "scope_note": "Source page says the information is not processed, adapted or checked; completeness is not guaranteed for vehicles before 2000."
+      },
+      "rights": {
+        "data_license_status": "proprietary_oem_information",
+        "owner": "VOLKSWAGEN AG",
+        "redistribution_allowed": false,
+        "permission_required_for_database_reuse": "not_granted_by_page; obtain written permission",
+        "bulk_acquisition": false
+      },
+      "project_decision": "request_only_for_specific_commercial_vehicle_cases;_confirm_request_channel_authority_and_do_not_publish_without_written_reuse_permission",
+      "evidence_status": "source_page_reviewed_2026-11-03"
+    },
+    {
+      "source_id": "vwts-independent-technical-archive",
+      "publisher": "Volkswagen Technical Site / VWTS",
+      "url": "https://www.volkswagen.msk.ru/",
+      "source_kind": "independent_technical_document_archive",
+      "market_scope": [
+        "UNKNOWN",
+        "EU",
+        "RU"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "VOLKSWAGEN",
+          "AUDI",
+          "SKODA",
+          "SEAT"
+        ]
+      },
+      "fields_claimed": [
+        "repair_manuals",
+        "engine_information",
+        "gearbox_information",
+        "electrical_system_documents"
+      ],
+      "not_confirmed": [
+        "VIN_specific_fitment_without_document_header",
+        "rights_for_each_document"
+      ],
+      "rights": {
+        "data_license_status": "per_document_rights_unverified",
+        "redistribution_allowed": false,
+        "permission_required": true
+      },
+      "project_decision": "use_for_document_discovery_only; no bulk copying or production import without per-document rights and exact applicability",
+      "evidence_status": "archive_index_reviewed_2026-11-03"
+    },
+    {
       "source_id": "wal33d-dtc-database",
       "publisher": "Wal33D / GitHub repository",
       "url": "https://github.com/Wal33D/dtc-database",
@@ -717,103 +816,98 @@
       "evidence_status": "repository_readme_and_integration_notes_reviewed_2026-11-04"
     },
     {
-      "source_id": "eaeu-otts-unified-register-public-portal",
-      "publisher": "Eurasian Economic Commission",
-      "url": "https://portal.eaeunion.org/",
-      "legal_basis_url": "https://www.alta.ru/tamdoc/16kr0088/",
-      "source_kind": "official_public_query_route_for_eaeu_vehicle_type_approval_register",
-      "market_scope": [
-        "EAEU"
-      ],
-      "document_types": [
-        "OTTS",
-        "OTSH",
-        "SBKTS",
-        "cancellation_notices"
-      ],
-      "evidence_scope": [
-        "vehicle_type_approval",
-        "type_or_variant_homologation"
-      ],
-      "access": {
-        "legal_access_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
-        "current_portal_observation": "The portal root checked on 2026-11-04 redirects to the EAEU open-data portal; a current OTTS-specific search endpoint was not independently resolved.",
-        "machine_readable_api": "not_verified_for_OTTS",
-        "individual_query_access": "provided_by_decision_88_via_union_information_portal",
-        "bulk_export": "not_established",
-        "offline_cache": "not_established",
-        "automated_extraction": "not_established"
-      },
-      "rights": {
-        "data_license_status": "not_established",
-        "public_query_access": "legal_basis_identified_but_current_OTTS_endpoint_not_verified",
-        "bulk_reuse_allowed": "not_established",
-        "offline_cache_allowed": "not_established",
-        "display_and_redistribution_allowed": "not_established",
-        "permission_status": "not_obtained",
-        "permission_required_before_product_import_or_distribution": true
-      },
-      "limitations": [
-        "Decision No. 88 describes information exchange and portal access but does not itself grant a VAG TECH PRO license to bulk copy, cache, redistribute or create a derivative database.",
-        "The EAEU open-data portal advertises OData/REST reuse for published resources, but inclusion of the OTTS register in that open-data catalog has not been established.",
-        "An OTTS establishes type/variant homologation only to the extent explicitly stated in the document; it is not an individual VIN build sheet and does not establish ECU, DTC, wiring or repair applicability."
-      ],
-      "project_decision": "manual document-level lookup only after the current official query route is resolved; no scraping, bulk export, offline caching or redistribution until EEC/registry operator confirms the endpoint and reuse terms in writing",
-      "evidence_status": "EEC Collegium Decision No. 88, official Interstandart FGIS page, and current portal redirect reviewed 2026-11-04"
-    },
-    {
-      "source_id": "mechanicdb-public-generic-repair-guidance",
-      "publisher": "MechanicDB / DataEngineered",
-      "url": "https://github.com/MechanicDB/MechanicDB-public",
-      "pinned_revision": "c788dfe9ed1517d4cd0be27f5aacb4776abf4864",
-      "source_kind": "generic_sae_iso_diagnostic_guidance_dataset",
+      "source_id": "wikidata-vag-generation-candidates",
+      "publisher": "Wikidata / Wikimedia Foundation",
+      "url": "https://www.wikidata.org/",
+      "endpoint_url": "https://query.wikidata.org/sparql",
+      "source_kind": "structured_vehicle_model_series_member_candidate_snapshot",
       "market_scope": [
         "UNKNOWN"
       ],
-      "data_counts_as_published": {
-        "sample_dtc_rows": 90,
-        "generic_sae_dtc_identifiers": 75,
-        "manufacturer_labelled_dtc_rows_excluded": 15,
-        "generic_authored_guidance_rows": 275,
-        "manufacturer_labelled_guidance_rows_excluded": 51
-      },
-      "evidence_scope": [
-        "generic_sae_iso_dtc_identifiers",
-        "generic_authored_diagnostic_guidance"
-      ],
-      "applicability": {
-        "manufacturer": "UNKNOWN",
-        "vag_specific": false,
+      "vehicle_scope": {
+        "manufacturer_label_whitelist": [
+          "Volkswagen",
+          "Volkswagen AG",
+          "Volkswagen Commercial Vehicles",
+          "Audi AG",
+          "Škoda Auto",
+          "SEAT",
+          "SEAT S.A.",
+          "Porsche AG",
+          "Bentley Motors Limited",
+          "Automobili Lamborghini S.p.A.",
+          "Bugatti Rimac"
+        ],
+        "entity_type": "car-model series-member candidates linked by P179/P527 to pinned parent model entities of class Q3231690",
+        "model_identity_candidates_only": true,
+        "series_member_candidates_only": true,
+        "generation_mapping_verified": false,
+        "engine_codes": false,
+        "gearbox_codes": false,
+        "ecu_data": false,
+        "dtc_data": false,
+        "repair_procedures": false,
         "exact_vehicle_fitment": false,
-        "model_generation_year_mapping": false,
-        "engine_gearbox_mapping": false,
-        "ecu_mapping": false,
-        "market_scope": "UNKNOWN",
-        "applicability_precision": "generic_code_only"
+        "vin_fitment": false
+      },
+      "access": {
+        "status": "public_sparql",
+        "authentication_required": false,
+        "method": "bounded SPARQL POST over pinned parent model QIDs",
+        "query_limit": 5000,
+        "retry_policy": "4 attempts with bounded exponential backoff",
+        "offline_snapshot_retained": true,
+        "completeness_status": "unknown"
       },
       "rights": {
-        "data_license_status": "ODbL-1.0",
+        "data_license_status": "CC0-1.0",
+        "owner": "Wikidata contributors; structured-data platform by Wikimedia Foundation",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "evidence_url": "https://www.wikidata.org/wiki/Wikidata:Licensing",
         "commercial_use_allowed": true,
         "display_allowed": true,
         "offline_cache_allowed": true,
-        "redistribution_allowed_under_odbl": true,
-        "share_alike_required": true,
-        "attribution_required": true,
-        "attribution_text": "MechanicDB — https://github.com/MechanicDB/MechanicDB-public",
-        "full_paid_dataset_included": false,
-        "permission_status": "approved_by_published_license_for_free_sample_only",
-        "upstream_notice": "MIT notice preserved; DTC descriptions and detailed code explanations are not copied"
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": false,
+        "attribution_recommended": true,
+        "share_alike_required": false,
+        "scope_note": "CC0 applies only to structured Wikidata statements queried; excludes article text, images, logos and third-party linked resources."
       },
+      "provenance": {
+        "parent_model_source_id": "wikidata-vag-model-taxonomy",
+        "parent_model_snapshot_sha256_required": true,
+        "parent_model_database_sha256_required": true,
+        "query_sha256_required": true,
+        "raw_snapshot_sha256_required": true,
+        "per_binding_sha256_required": true,
+        "source_revision": "wikidata-generation-candidates-<snapshot-sha256-prefix>",
+        "source_manifest": "data/research/wikidata-vag-generations/<snapshot-id>/manifest.json"
+      },
+      "applicability": {
+        "precision": "series_member_candidate",
+        "review_status": "candidate",
+        "market_scope": "UNKNOWN",
+        "generation_verified": false,
+        "exact_vehicle_fitment": false,
+        "engine_code_fitment": false,
+        "transmission_code_fitment": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_fitment": false,
+        "diagnostic_execution_allowed": false,
+        "production_years_inferred": false
+      },
+      "project_decision": "allow_candidate_series_member_taxonomy_only",
       "limitations": [
-        "generic SAE/ISO namespace only",
-        "not VAG-specific and not OEM-confirmed",
-        "no Russian or EAEU market applicability",
-        "no model, generation, year, engine, gearbox, ECU, PR-code or VIN fitment",
-        "no diagnostic execution, OEM repair procedure, wiring diagram, pinout, torque value, adaptation or OEM parts mapping",
-        "technical and safety review not independently completed"
+        "P179/P527 links are Wikidata series-member candidates, not verified vehicle generations.",
+        "Dates retain Wikidata property IDs P571/P576/P580/P582; no production-year ranges are inferred.",
+        "No Russian/EAEU market scope or exact vehicle fitment is established.",
+        "No engine/gearbox codes, ECU, DTC, repair procedures, wiring, pinouts, torque values, adaptations, or OEM parts.",
+        "Parent model QIDs come from the pinned CC0 Wikidata model-identity candidate pack.",
+        "Completeness is unknown; absence from Wikidata is not evidence that a generation did not exist."
       ],
-      "project_decision": "allow_separate_generic_educational_reference_pack_only_under_ODbL; do not merge with manufacturer-specific VAG data or present as exact repair advice",
-      "evidence_status": "pinned_public_sample_license_sources_and_data_dictionary_reviewed_2026-11-04"
+      "limit_reached_means": "snapshot may be truncated; no completeness claim"
     },
     {
       "source_id": "wikidata-vag-model-taxonomy",
