@@ -2,7 +2,9 @@ name: Validate VAG source-rights register
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - automation/windows-desktop-build-run61-integrated
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
