@@ -3,10 +3,26 @@ name: VAG TECH PRO Windows x64 desktop
 on:
   push:
     branches:
-      - automation/windows-desktop-build-run35
+      - "automation/windows-desktop-build-run*"
+    paths:
+      - "desktop-source-run*.zip.b64"
+      - "desktop-source-run*.zip.sha256"
+      - "desktop-source-run*.patch"
+      - "desktop-package-run*.json"
+      - "apply-*-run*.cjs"
+      - "run*-*.patch.gz.b64"
+      - "ci-trigger-run*.txt"
   pull_request:
     branches:
       - main
+    paths:
+      - "desktop-source-run*.zip.b64"
+      - "desktop-source-run*.zip.sha256"
+      - "desktop-source-run*.patch"
+      - "desktop-package-run*.json"
+      - "apply-*-run*.cjs"
+      - "run*-*.patch.gz.b64"
+      - "ci-trigger-run*.txt"
   workflow_dispatch:
 
 permissions:
