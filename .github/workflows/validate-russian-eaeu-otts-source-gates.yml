@@ -7,10 +7,13 @@ on:
       - "automation/**"
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
+      - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - data/source-manifests/vw-okapi-product-catalog.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
       - docs/research/VW_OKAPI_SOURCE_REVIEW_2026-11-03.md
       - tests/test_russian_eaeu_otts_manifest.py
+      - tests/test_russian_otts_provider_rights_manifest.py
+      - tests/test_elpts_otts_source_rights.py
       - tests/test_vw_okapi_source_manifest.py
       - package.json
       - scripts/import-authorized-fgis-otts-export.cjs
