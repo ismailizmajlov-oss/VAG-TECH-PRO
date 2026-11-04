@@ -1505,6 +1505,82 @@
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
       "evidence_status": "official_elpts_public_page_and_docs_portal_reviewed_2026-11-05; see docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md"
+    },
+    {
+      "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
+      "publisher": "bri3d / VW_Flash",
+      "url": "https://github.com/bri3d/VW_Flash",
+      "readme_url": "https://github.com/bri3d/VW_Flash/blob/master/README.md",
+      "license_url": "https://github.com/bri3d/VW_Flash/blob/master/LICENSE",
+      "data_file_url": "https://github.com/bri3d/VW_Flash/blob/master/data/dtcs.csv",
+      "source_kind": "community_vag_ecu_flashing_repository_with_simos18_dtc_csv",
+      "pinned_revision": "c8376416c4df7f12789679fb216c47b6e795ffc8",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "simos18_ecu_family_candidate_only_no_exact_ecu_vehicle_or_year_mapping",
+      "verification_status": "source_provenance_unverified",
+      "display_status": "quarantined_not_displayed",
+      "source_data_evidence": {
+        "commit_sha": "c8376416c4df7f12789679fb216c47b6e795ffc8",
+        "commit_date": "2021-11-09",
+        "commit_message": "add DTC support",
+        "file_path": "data/dtcs.csv",
+        "git_blob_sha1": "e5c65fff0c6f0d98aafb082ff1acefa483be016e",
+        "file_size_bytes": 60369,
+        "line_count": 658,
+        "data_rows": 657,
+        "fields": [
+          "code",
+          "pcode",
+          "name",
+          "symbol"
+        ],
+        "per_row_source_attribution": "not_provided_in_the_addition_commit_or_reviewed_README"
+      },
+      "counts": {
+        "dtc_csv_data_rows": 657,
+        "verified_vag_specific_dtc_rows": 0,
+        "exact_ecu_fitment_rows": 0,
+        "exact_vehicle_fitment_rows": 0
+      },
+      "evidence_scope": [
+        "Simos18 ECU-family DTC candidate data only"
+      ],
+      "technical_scope": {
+        "make_group_candidate": "Volkswagen Group",
+        "ecu_family_context": [
+          "Simos18.1/6",
+          "Simos18.10"
+        ],
+        "exact_ecu_identity_per_row": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "market_scope_verified": false,
+        "diagnostic_execution_allowed": false,
+        "repair_advice_approved": false
+      },
+      "rights": {
+        "repository_code_license": "BSD-2-Clause",
+        "database_data_license": "not_separately_established",
+        "data_license_covers_dtcs_csv": "not_verified",
+        "commercial_use_allowed": "not_established_for_dataset",
+        "display_allowed": "not_established_for_dataset",
+        "offline_cache_allowed": "not_established_for_dataset",
+        "bulk_reuse_allowed": "not_established_for_dataset",
+        "redistribution_allowed": "not_established_for_dataset",
+        "permission_status": "not_cleared"
+      },
+      "quality_limits": [
+        "The repository-level BSD-2-Clause licence is clear for the repository software, but the reviewed README and the commit that adds data/dtcs.csv do not identify the origin, author or separate licence of the CSV data.",
+        "The README documents extraction of factory Simos12/Simos18 ODX containers; the DTC CSV may be derived from OEM ODX material. This relationship is a provenance risk, not a proven finding, and must be clarified by the data author before any reuse.",
+        "The DTC CSV contains VAG-looking internal SV_ERR_SYM identifiers, but the file does not bind each row to an exact ECU part number, hardware/software revision, vehicle generation, model year, market, engine or gearbox.",
+        "A P-code-shaped value does not make a row generic SAE/ISO; do not merge this candidate into the generic DTC namespace.",
+        "No DTC rows are approved for display, offline cache, diagnostic advice or distribution."
+      ],
+      "project_decision": "quarantine_no_import_no_display_no_cache; BSD-2-Clause repository code licence does not establish rights in potentially OEM ODX-derived CSV data; require the author's written provenance statement and data-specific reuse permission covering commercial use, display, offline cache and redistribution before any integration",
+      "evidence_status": "repository_LICENSE_README_and_dtcs_csv_commit_reviewed_2026-11-05; commit c8376416 adds 657 CSV data rows without row-level source attribution"
     }
   ],
   "minimum_fitment_evidence_fields": [
