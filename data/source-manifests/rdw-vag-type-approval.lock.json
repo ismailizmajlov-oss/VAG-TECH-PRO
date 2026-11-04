@@ -175,7 +175,8 @@
     "no_full_registry_dump": true,
     "api_pagination_required": true,
     "metadata_and_filtered_response_sha256_required": true,
-    "api_rate_limit_backoff_required": true
+    "api_rate_limit_backoff_required": true,
+    "vehicle_registry_filter": "merk IN VAG make aliases AND europese_voertuigcategorie='M1' AND voertuigsoort='Personenauto' AND datum_eerste_toelating_dt >= '1998-01-01T00:00:00.000' AND typegoedkeuringsnummer/variant/uitvoering present"
   },
   "applicability_policy": {
     "market_scope": [
