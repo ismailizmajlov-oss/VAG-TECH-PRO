@@ -373,7 +373,7 @@ function patchDesktopSource(desktop) {
   let route = readText(routePath);
   route = exact(route,
     '    else if (dataset === "wikidata") rows = localResearch.searchWikidataCandidates(query, limit);',
-    '    else if (dataset === "wikidata") rows = localResearch.searchWikidataCandidates(query, limit);\n    else if (dataset === "wikidata-generations-summary") summary = localResearch.getWikidataGenerationSummary();\n    else if (dataset === "wikidata-generations") rows = localResearch.searchWikidataGenerationCandidates(query, limit);',
+    '    else if (dataset === "wikidata") rows = localResearch.searchWikidataCandidates(query, limit);\n    else if (dataset === "wikidata-generations-summary") {\n      const summary = localResearch.getWikidataGenerationSummary();\n      return Response.json({ ok: true, summary }, { headers });\n    }\n    else if (dataset === "wikidata-generations") rows = localResearch.searchWikidataGenerationCandidates(query, limit);',
     "generation API route");
   writeText(routePath, route);
 
@@ -381,31 +381,33 @@ function patchDesktopSource(desktop) {
   const dataset = ui.match(/type Dataset = ([^;]+);/);
   if (!dataset) fail("Research UI Dataset type missing");
   if (!dataset[1].includes('"wikidata-generations"')) ui = ui.replace(dataset[0], "type Dataset = " + dataset[1] + ' | "wikidata-generations";');
-  if (!ui.includes("type WikidataGenerationRow")) {
-    const rowType = [
-      "type WikidataGenerationSummary = {",
-      "  counts: { memberEntities: number; modelMemberLinks: number; sourceBindings: number; modelsWithMembers: number; manufacturers: number; russianLabels: number; dateStatements: number };",
-      "  marketScope: string; applicabilityPrecision: string; reviewStatus: string; generationVerified: boolean;",
-      "  exactVehicleFitment: boolean; diagnosticExecutionAllowed: boolean; sourceSnapshotSha256: string;",
-      "  sourceQuerySha256: string; databaseSha256: string; sourceManifestSha256: string; note: string;",
-      "};",
-      "type WikidataGenerationRow = {",
-      "  memberQid: string; modelQid: string; manufacturerQid: string | null;",
-      "  memberLabelEn: string; memberLabelRu: string | null; modelLabelEn: string; modelLabelRu: string | null;",
-      "  manufacturerLabelEn: string | null; memberUrl: string; modelUrl: string;",
-      "  relationProperties: string[]; memberTypeQids: string[]; memberManufacturerQids: string[];",
-      "  manufacturerRelationStatus: string; seriesOrdinals: string[];",
-      "  dateStatements: Array<{ propertyId: string; dateValue: string; sourceBindingIndex: number; sourceBindingSha256: string }>;",
-      "  sourceBindingIndexes: number[]; sourceBindingSha256s: string[]; sourceBindingCount: number;",
-      "  sourceRecordSha256: string; sourceRevision: string; sourceSnapshotSha256: string; sourceQuerySha256: string;",
-      "  databaseSha256: string; sourceManifestSha256: string; sourceUrl: string; sourceLicense: string;",
-      "  marketScope: string; applicabilityPrecision: string; reviewStatus: string;",
-      "  generationVerified: boolean; exactVehicleFitment: boolean; engineCodeFitment: boolean; transmissionCodeFitment: boolean;",
-      "  ecuFitment: boolean; dtcFitment: boolean; repairProcedureFitment: boolean; diagnosticExecutionAllowed: boolean; productionYearsInferred: boolean; warning: string;",
-      "};"
-    ].join("\n");
-    ui = ui.replace(dataset[0], dataset[0] + "\n" + rowType);
-  }
+  const generationSummaryType = [
+    "type WikidataGenerationSummary = {",
+    "  counts: { memberEntities: number; modelMemberLinks: number };",
+    "};"
+  ].join("\n");
+  const generationRowType = [
+    "type WikidataGenerationRow = {",
+    "  memberQid: string; modelQid: string; manufacturerQid: string | null;",
+    "  memberLabelEn: string; memberLabelRu: string | null; modelLabelEn: string; modelLabelRu: string | null;",
+    "  manufacturerLabelEn: string | null; memberUrl: string; modelUrl: string;",
+    "  relationProperties: string[]; memberTypeQids: string[]; memberManufacturerQids: string[];",
+    "  manufacturerRelationStatus: string; seriesOrdinals: string[];",
+    "  dateStatements: Array<{ propertyId: string; dateValue: string; sourceBindingIndex: number; sourceBindingSha256: string }>;",
+    "  sourceRecordSha256: string; sourceRevision: string; sourceSnapshotSha256: string; sourceQuerySha256: string;",
+    "  databaseSha256: string; sourceManifestSha256: string;",
+    "  marketScope: string; applicabilityPrecision: string; reviewStatus: string; warning: string;",
+    "};"
+  ].join("\n");
+  const typeAnchor = "type SummaryPack =";
+  const typeIndex = ui.indexOf(typeAnchor);
+  if (typeIndex < 0) fail("Research UI SummaryPack type anchor missing");
+  const missingGenerationTypes = [];
+  if (!ui.includes("type WikidataGenerationSummary = {")) missingGenerationTypes.push(generationSummaryType);
+  if (!ui.includes("type WikidataGenerationRow = {")) missingGenerationTypes.push(generationRowType);
+  if (missingGenerationTypes.length) ui = ui.slice(0, typeIndex) + missingGenerationTypes.join("\n") + "\n" + ui.slice(typeIndex);
+  if (!ui.includes("type WikidataGenerationSummary = {") || !ui.includes("type WikidataGenerationRow = {")) fail("Wikidata generation UI types were not inserted");
+
   if (!ui.includes("wikidataGenerationSummary")) {
     const stateAnchor = '  const [genericGuidanceSummary, setGenericGuidanceSummary] = useState<GenericGuidanceSummary | null>(null);';
     ui = exact(ui, stateAnchor, stateAnchor + '\n  const [wikidataGenerationSummary, setWikidataGenerationSummary] = useState<WikidataGenerationSummary | null>(null);', "generation summary state");
@@ -517,6 +519,9 @@ function patchDesktopSource(desktop) {
       '  assert.doesNotMatch(placeholder, /:\\s*:\\s*dataset/);',
       '  assert.match(component, /diagnosticExecutionAllowed/);',
       '  const route = fs.readFileSync(path.join(__dirname, "..", "app", "api", "local-research", "route.ts"), "utf8");',
+      '  assert.match(component, /type WikidataGenerationSummary =/);',
+      '  assert.match(component, /type WikidataGenerationRow =/);',
+      '  assert.match(route, /dataset === "wikidata-generations-summary"\\)\\s*\\{\\s*const summary = localResearch\\.getWikidataGenerationSummary\\(\\);\\s*return Response\\.json\\(\\{ ok: true, summary \\}, \\{ headers \\}\\);\\s*\\}/);',
       '  assert.match(route, /dataset === "wikidata-generations"/);',
       "});",
       ""
