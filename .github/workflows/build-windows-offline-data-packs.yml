@@ -1,0 +1,110 @@
+name: Build verified Windows offline data-pack bundle
+
+on:
+  push:
+    branches:
+      - main
+      - automation/windows-desktop-build-run57
+    paths:
+      - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/acquire-obdex-cc0.yml
+      - .github/workflows/acquire-obdb-vag-signalsets.yml
+      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
+      - scripts/build_offline_data_pack_index.py
+      - scripts/verify_offline_data_pack_index.py
+      - scripts/vag_identity_vehiclesdb_common.py
+      - scripts/build_vag_identity_vehiclesdb.py
+      - scripts/verify_vag_identity_vehiclesdb.py
+      - scripts/test_vag_identity_vehiclesdb.py
+      - tests/test_offline_data_pack_rights.py
+      - data/source-manifests/obdex-generic-cc0.lock.json
+      - data/source-manifests/obdb-vag-signalsets.json
+      - data/source-manifests/vehiclesdb-vag-identity.lock.json
+  pull_request:
+    paths:
+      - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/acquire-obdex-cc0.yml
+      - .github/workflows/acquire-obdb-vag-signalsets.yml
+      - .github/workflows/acquire-vag-identity-vehiclesdb.yml
+      - scripts/build_offline_data_pack_index.py
+      - scripts/verify_offline_data_pack_index.py
+      - scripts/vag_identity_vehiclesdb_common.py
+      - scripts/build_vag_identity_vehiclesdb.py
+      - scripts/verify_vag_identity_vehiclesdb.py
+      - scripts/test_vag_identity_vehiclesdb.py
+      - tests/test_offline_data_pack_rights.py
+      - data/source-manifests/obdex-generic-cc0.lock.json
+      - data/source-manifests/obdb-vag-signalsets.json
+      - data/source-manifests/vehiclesdb-vag-identity.lock.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: vag-tech-pro-windows-offline-data-packs
+  cancel-in-progress: false
+
+jobs:
+  obdex-generic:
+    name: Acquire generic CC0 OBD-II data
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-obdex-cc0.yml
+
+  obdb-vag-signals:
+    name: Acquire CC BY-SA community UDS signal candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-obdb-vag-signalsets.yml
+
+  vag-identity:
+    name: Acquire CC BY VAG make/model identity candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/acquire-vag-identity-vehiclesdb.yml
+
+  package:
+    name: Assemble and independently verify Windows offline SQLite packs
+    needs:
+      - obdex-generic
+      - obdb-vag-signals
+      - vag-identity
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Download verified source-pack artifacts from this workflow run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist/source-artifacts
+          merge-multiple: false
+
+      - name: Compile Windows data-pack assembler and verifier
+        run: |
+          python -m py_compile scripts/build_offline_data_pack_index.py
+          python -m py_compile scripts/verify_offline_data_pack_index.py
+
+      - name: Enforce rights-filtered bundle registry
+        run: python -m unittest discover -s tests -p "test_offline_data_pack_rights.py"
+
+
+      - name: Assemble separate SQLite databases and license notices
+        run: python scripts/build_offline_data_pack_index.py --input-dir dist/source-artifacts --output-dir dist/windows-offline-data-packs
+
+      - name: Re-open and independently verify the completed bundle
+        run: python scripts/verify_offline_data_pack_index.py --pack-dir dist/windows-offline-data-packs
+
+      - name: Upload verified Windows offline data-pack bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: vag-tech-pro-windows-offline-data-packs
+          path: dist/windows-offline-data-packs/
+          if-no-files-found: error
+          retention-days: 30
