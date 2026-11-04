@@ -34,7 +34,7 @@ def lock_file(path: Path) -> None:
         "pack_id":"rdw-vag-type-approval-cc0",
         "data_license":"CC0-1.0",
         "rights_status":"approved_by_published_license",
-        "rights":{"commercial_use_allowed":True,"display_allowed":True,"offline_cache_allowed":True,"redistribution_allowed":True},
+        "rights":{"commercial_use_allowed":True,"display_allowed":True,"offline_cache_allowed":True,"bulk_reuse_allowed":True,"redistribution_allowed":True,"share_alike_required":False},
         "applicability_policy":{"ru_eaeu_applicability":False},
         "datasets":[{"id":x,"required":True} for x in DATASET_IDS],
     }
