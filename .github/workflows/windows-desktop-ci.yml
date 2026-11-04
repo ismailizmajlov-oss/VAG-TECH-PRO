@@ -329,7 +329,7 @@ jobs:
           node --check desktop-source/scripts/prepare-electron-runtime.cjs
           node --check desktop-source/electron/main.cjs
 
-      - name: Generate deterministic dependency lock and install
+      - name: Generate dependency lock for this run and install
         working-directory: desktop-source
         shell: pwsh
         run: |
@@ -339,6 +339,8 @@ jobs:
           if (-not (Test-Path package-lock.json)) { throw "package-lock.json was not generated" }
           npm ci --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-ci.log
           if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
+          npm audit --audit-level=high 2>&1 | Tee-Object -FilePath npm-audit.log
+          if ($LASTEXITCODE -ne 0) { throw "npm audit reported high or critical dependency vulnerabilities" }
 
       - name: Apply fail-closed research pack hash verification fix
         shell: pwsh
@@ -485,6 +487,7 @@ jobs:
             desktop-source/npm-lock.log
             desktop-source/local-core-host-origin-patch.log
             desktop-source/npm-ci.log
+            desktop-source/npm-audit.log
             desktop-source/test.log
             catalog-import-v2-tests.log
             desktop-source/verify-local-core.log
