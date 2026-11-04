@@ -99,7 +99,6 @@ def download_sources(source_dir: Path) -> None:
                 target.write_bytes(response.read())
 
 
-# License notices are written as raw bytes; .gitattributes keeps those bytes stable on Windows.
 def read_source_file(source_dir: Path, name: str) -> tuple[bytes, dict]:
     path = source_dir / name
     if not path.is_file():
