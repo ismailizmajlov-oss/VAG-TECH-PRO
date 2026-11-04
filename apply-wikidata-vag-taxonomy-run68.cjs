@@ -657,15 +657,20 @@ function patchDesktopSource(desktopRoot) {
     if (ui.split(anchor).length - 1 !== 1) fail("Wikidata research result insertion anchor is missing");
     ui = ui.replace(anchor, card + anchor);
   }
+  const wikidataBoundaryNote = '      <p>Wikidata добавляет только структурированные названия моделей и производителей. Русскоязычная метка не доказывает российский рынок; даты P571/P576 не являются годами выпуска. Поколения, двигатели, КПП, ECU и точная применимость не подтверждены.</p>\n';
+  const wikidataAttribution = '      <p>Wikidata structured data — CC0 1.0 Universal: <a href="https://www.wikidata.org/" target="_blank" rel="noopener noreferrer">Wikidata</a>. Атрибуция рекомендуется, но не обязательна; лицензия не распространяется на статьи, изображения, логотипы и OEM-материалы Wikimedia.</p>\n';
   if (!ui.includes("Wikidata structured data — CC0 1.0 Universal")) {
-    const anchor = '      <p>SQLite SHA-256 · VehiclesDB identity:';
-    if (ui.split(anchor).length - 1 !== 1) fail("Wikidata attribution insertion anchor is missing");
-    ui = ui.replace(anchor, '      <p>Wikidata structured data — CC0 1.0 Universal: <a href="https://www.wikidata.org/" target="_blank" rel="noopener noreferrer">Wikidata</a>. Атрибуция рекомендуется, но не обязательна; лицензия не распространяется на статьи, изображения, логотипы и OEM-материалы Wikimedia.</p>\n' + anchor);
+    const index = ui.indexOf(wikidataBoundaryNote);
+    if (index < 0) fail("Wikidata boundary note is missing before attribution insertion");
+    const insertionPoint = index + wikidataBoundaryNote.length;
+    ui = ui.slice(0, insertionPoint) + wikidataAttribution + ui.slice(insertionPoint);
   }
   if (!ui.includes("SQLite SHA-256 · Wikidata")) {
-    const anchor = '      <p>SQLite SHA-256 · VehiclesDB identity:';
-    if (ui.split(anchor).length - 1 !== 1) fail("Wikidata UI hash-summary anchor is missing");
-    ui = ui.replace(anchor, '      <p>SQLite SHA-256 · Wikidata identity: {wikidata?.databaseSha256 || "недоступен"} · snapshot SHA-256: {wikidata?.sourceSnapshotSha256 || "недоступен"} · query SHA-256: {wikidata?.sourceQuerySha256 || "недоступен"} · manifest SHA-256: {wikidata?.sourceManifestSha256 || "недоступен"}</p>\n' + anchor);
+    const index = ui.indexOf(wikidataAttribution);
+    if (index < 0) fail("Wikidata attribution is missing before hash-summary insertion");
+    const insertionPoint = index + wikidataAttribution.length;
+    const hashSummary = '      <p>SQLite SHA-256 · Wikidata identity: {wikidata?.databaseSha256 || "недоступен"} · snapshot SHA-256: {wikidata?.sourceSnapshotSha256 || "недоступен"} · query SHA-256: {wikidata?.sourceQuerySha256 || "недоступен"} · manifest SHA-256: {wikidata?.sourceManifestSha256 || "недоступен"}</p>\n';
+    ui = ui.slice(0, insertionPoint) + hashSummary + ui.slice(insertionPoint);
   }
   writeText(uiFile, ui);
 
