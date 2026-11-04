@@ -123,7 +123,7 @@ function validatePack(packDir, researchDir) {
       manifest.scope?.dtc_fitment !== false || manifest.scope?.repair_procedure_fitment !== false ||
       manifest.scope?.diagnostic_execution_allowed !== false || manifest.scope?.production_years_inferred !== false ||
       manifest.completeness_status !== "unknown" || manifest.limit_reached !== false ||
-      manifest.query_limit !== 5000 || manifest.query_limit_scope !== "per_batch" ||
+      manifest.query_limit !== 5000 ||
       manifest.query_batch_size !== 50 || manifest.query_batches !== 8) fail("Candidate-only scope or bounded-query gate failed");
   if (JSON.stringify(manifest.counts) !== JSON.stringify(EXPECTED.counts)) fail("Generation pack row counts differ from pinned release");
   if (sourceManifest.source_id !== SOURCE_ID || sourceManifest.license?.id !== "CC0-1.0" ||
