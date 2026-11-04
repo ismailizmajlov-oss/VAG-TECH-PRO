@@ -639,6 +639,62 @@
         ],
         "pricing_page": "https://hpt.su/pricing/"
       }
+    },
+    {
+      "source_id": "wal33d-dtc-database",
+      "publisher": "Wal33D / GitHub repository",
+      "url": "https://github.com/Wal33D/dtc-database",
+      "readme_url": "https://github.com/Wal33D/dtc-database#readme",
+      "integration_notes_url": "https://github.com/Wal33D/dtc-database/blob/main/INTEGRATION.md",
+      "license_url": "https://github.com/Wal33D/dtc-database/blob/main/LICENSE",
+      "source_kind": "community_aggregated_obd2_dtc_database",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "market_scope_precision": "not stated by publisher; no RU/EAEU market filter documented",
+      "data_format": "SQLite plus 37 source text files",
+      "data_counts_as_published": {
+        "headline_total_codes": "28,220+",
+        "snapshot_total_definitions": 18805,
+        "generic_sae_j2012_definitions": 9415,
+        "manufacturer_specific_definitions": 9390,
+        "unique_dtc_codes": 12128,
+        "manufacturers_excluding_generic": 33
+      },
+      "evidence_scope": [
+        "generic_obd2_dtc_definitions",
+        "manufacturer_specific_dtc_definitions"
+      ],
+      "applicability": {
+        "manufacturer_list_published": false,
+        "audi_or_volkswagen_presence_independently_verified": false,
+        "model_generation_year_mapping": "not documented",
+        "ecu_mapping": "not documented",
+        "engine_or_gearbox_mapping": "not documented",
+        "repair_test_plan_or_wiring_content": "not documented"
+      },
+      "access": {
+        "status": "public_repository; no project download or import performed"
+      },
+      "rights": {
+        "repository_level_license_declared": "MIT",
+        "integration_document_claim": "all three sister projects are MIT licensed",
+        "per_source_file_attribution": "not documented in reviewed README/INTEGRATION pages",
+        "underlying_data_provenance": "not established",
+        "maintainer_authority_to_relicense_all_37_source_files": "not independently verified",
+        "dataset_redistribution_rights": "not independently verified",
+        "product_import_allowed": false,
+        "project_permission_status": "not_verified"
+      },
+      "quality_limits": [
+        "The README headline says 28,220+ codes while the current snapshot table reports 18,805 definition rows; the discrepancy is unresolved.",
+        "The README reports 33 manufacturers but does not enumerate them in the reviewed sections, so Audi/VW presence cannot be assumed.",
+        "The repository declares MIT at project level, but the reviewed documentation does not identify the origin, author, license and retrieval date of each of the 37 source text files.",
+        "Manufacturer-specific is not synonymous with VAG-specific, OEM-confirmed or applicable to a particular model, generation, year, ECU, engine or gearbox.",
+        "No model-year-ECU applicability or repair test plan is established by the published snapshot."
+      ],
+      "project_decision": "quarantine_no_import_until_per_file_provenance_and_rights_verified; keep generic SAE definitions separate from manufacturer-specific candidates; do not label any row VAG-specific or infer model/year/ECU applicability; no records imported or cached",
+      "evidence_status": "repository_readme_and_integration_notes_reviewed_2026-11-04"
     }
   ],
   "minimum_fitment_evidence_fields": [
