@@ -52,14 +52,14 @@ function main(){
  const entry={
   id,kind:"generic_repair_guidance",database:dbRel,database_sha256:m.database_sha256,
   license_file:licRel,license_file_sha256:licSha,upstream_license_file:mitRel,upstream_license_file_sha256:mitSha,
-  attribution_file:attrRel,attribution_sha256:attrSha,license:"ODbL-1.0",license_status:"approved_by_published_license_for_free_sample_only",
-  source_manifest_file:manRel,source_manifest_sha256:manSha,publisher:m.publisher,dataset:"MechanicDB generic SAE/ISO repair guidance",
-  source_url:m.source_repository,upstream_revision:m.source_revision,snapshot_generated_at_utc:m.built_at_utc,
+  attribution_file:attrRel,attribution_sha256:attrSha,license:"ODbL-1.0",license_url:m.data_license_url,license_status:"approved_by_published_license_for_free_sample_only",rights_status:m.rights_status,
+  source_id:sourceId,source_manifest_file:manRel,source_manifest_sha256:manSha,publisher:m.publisher,dataset:"MechanicDB generic SAE/ISO repair guidance",
+  source_url:m.source_repository,source_repository:m.source_repository,upstream_revision:m.source_revision,snapshot_generated_at_utc:m.built_at_utc,
   source_snapshot_sha256:m.source_snapshot_sha256,logical_content_sha256:m.logical_content_sha256,
   source_file_sha256:Object.fromEntries(Object.entries(m.source_files).map(x=>[x[0],x[1].sha256])),counts:m.counts,
   market_scope:"UNKNOWN",applicability_precision:"generic_only_no_vehicle_fitment",namespace:"generic_sae_iso",manufacturer:"UNKNOWN",
   vag_specific:false,exact_vehicle_fitment:false,model_generation_year_fitment:false,engine_gearbox_fitment:false,ecu_fitment:false,
-  diagnostic_execution_allowed:false,oem_repair_procedure:false,technical_review_status:"not_independently_reviewed",safety_review_status:"not_assessed",
+  diagnostic_execution_allowed:false,oem_repair_procedure:false,technical_review_status:"not_independently_reviewed",safety_review_status:"not_assessed",row_evidence_mode:"pinned source-file and source-line SHA-256 values are recorded; upstream CSV files are not bundled",
   review_status:"research_only",fitment_claim:false,execution_allowed:false,commercial_use_allowed:true,display_allowed:true,
   cache_allowed:true,redistribution_allowed:true,share_alike_required:true,attribution_required:true,attribution_text:m.attribution_text,limitations:m.limitations
  };
