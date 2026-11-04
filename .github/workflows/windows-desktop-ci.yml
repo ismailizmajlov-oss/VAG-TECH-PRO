@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - automation/windows-desktop-build-run61-integrated
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - "desktop-source-run*.zip.b64"
@@ -18,6 +17,9 @@ on:
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
+      - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
+      - "data/source-manifests/wikidata-vag-generation-candidates.json"
+      - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
