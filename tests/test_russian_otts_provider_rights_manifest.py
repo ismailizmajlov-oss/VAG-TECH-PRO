@@ -44,7 +44,7 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
         self.assertIn("SBKTS", source["document_types"])
         self.assertIn("exact_OTTS_coverage", source["access"])
         self.assertEqual(source["access"]["exact_OTTS_coverage"], "not_established")
-        self.assertIn("no scraping", source["notes"][2])
+        self.assertIn("Require written permission", source["notes"][3])
 
     def test_all_ru_eaeu_otts_candidates_remain_non_imported_without_clear_rights(self):
         for source_id in ("rosstandart-fgis-reestr-kts", "eaeu-open-data-portal", "hpt-su-otts-api", "otts-bot", "otts-baza-ru", "elpts-national-otts-register"):
