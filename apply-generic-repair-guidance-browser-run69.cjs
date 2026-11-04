@@ -100,10 +100,16 @@ function main(){
 
  const routePath=path.join(desktop,"app/api/local-research/route.ts");let route=fs.readFileSync(routePath,"utf8");
  if(!route.includes("generic-repair-guidance-db.cjs")){
-  const localImportLine=route.split(/\\r?\\n/).find(line=>/^\\s*import\\b/.test(line)&&line.includes("local-research-db"));
-  if(!localImportLine)fail("Local research API import not found");
-  const genericImport=localImportLine.includes("@/")?'import * as genericGuidance from "@/lib/generic-repair-guidance-db.cjs";':'import * as genericGuidance from "../../../lib/generic-repair-guidance-db.cjs";';
-  route=exact(route,localImportLine,localImportLine+"\\n"+genericImport,"API import");
+  const localBindingLine=route.split(/\r?\n/).find(line=>line.includes("localResearch")&&line.includes("local-research-db"));
+  if(!localBindingLine){
+   console.log("LOCAL_RESEARCH_API_BINDINGS\n"+route.split(/\r?\n/).filter(line=>/localResearch|require|^import/.test(line)).slice(0,30).join("\n"));
+   fail("Local research API binding not found");
+  }
+  const spec=localBindingLine.includes("@/")?"@/lib/generic-repair-guidance-db.cjs":"../../../lib/generic-repair-guidance-db.cjs";
+  const genericBinding=/require\s*\(/.test(localBindingLine)
+   ? 'const genericGuidance = require("'+spec+'");'
+   : 'import * as genericGuidance from "'+spec+'";';
+  route=exact(route,localBindingLine,localBindingLine+"\n"+genericBinding,"API import");
  }
  if(!route.includes('dataset === "generic-guidance-summary"'))route=exact(route,'    if (dataset === "summary") {','    if (dataset === "generic-guidance-summary") {\n      return Response.json(genericGuidance.getSummary(), { headers });\n    }\n    if (dataset === "summary") {',"API summary endpoint");
  if(!route.includes('dataset === "generic-guidance"'))route=exact(route,'    else return Response.json({ error: "Неизвестный локальный справочник." }, { status: 404, headers });','    else if (dataset === "generic-guidance") rows = genericGuidance.search(query, limit);\n    else return Response.json({ error: "Неизвестный локальный справочник." }, { status: 404, headers });',"API search endpoint");
