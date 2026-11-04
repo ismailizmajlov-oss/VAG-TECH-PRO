@@ -622,6 +622,14 @@ jobs:
           py -3 (Join-Path $env:GITHUB_WORKSPACE "apply-exact-vehicle-config-match-run64.py")
           if ($LASTEXITCODE -ne 0) { throw "Exact vehicle configuration match guard failed" }
 
+      - name: Align offline workspace tests with exact engine and gearbox match gate (run66)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-local-offline-workspace-test-contract-run66.cjs
+          node apply-local-offline-workspace-test-contract-run66.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Offline workspace test contract update failed" }
+
       - name: Print local-core API test source around failing assertion
         shell: pwsh
         run: |
