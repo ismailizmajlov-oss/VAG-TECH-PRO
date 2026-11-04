@@ -4,7 +4,7 @@ The Windows offline bundle contains exactly three separate research databases:
 
 1. **OBDex generic OBD-II** — CC0-1.0 data, generic SAE/ISO namespace only, no manufacturer-specific codes and no VAG fitment claim.
 2. **OBDb VAG signal candidates** — CC BY-SA 4.0, six pinned upstream repositories, attribution and share-alike notices retained. Community UDS 0x22 signal candidates only; execution disabled.
-3. **VehiclesDB identity candidates** — CC BY 4.0 with upstream notices and attribution retained. Foreign-market make/model name evidence only; no Russian evidence, generation/year, engine, gearbox, ECU or exact fitment.
+3. **VehiclesDB identity candidates** — CC BY 4.0 with upstream notices and attribution retained. Foreign-market make/model name evidence only; no Russian evidence, generation/year, engine, gearbox, ECU or exact fitment. In the pinned v2026.10.3 upstream manifest, 14 source registries are approved and 4 present source registries are excluded; the Romanian ID `ro_drpciv` is absent from that release and is recorded separately as a negative presence check, not as an excluded upstream source.
 
 Each SQLite database remains separate under its own license. No records are merged across packs.
 
