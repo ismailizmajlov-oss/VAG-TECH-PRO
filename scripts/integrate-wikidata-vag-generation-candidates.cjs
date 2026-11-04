@@ -496,14 +496,9 @@ type WikidataGenerationRow = {",
   }
   let packTest = readText(packTestPath);
   if (!packTest.includes("wikidata_vag_generation_candidates")) {
-    packTest += [
-      "",
-      'test("Wikidata generation candidate pack is registered separately", () => {',
-      "  const result = verify();",
-      "  assert.deepEqual(result.wikidata_vag_generation_candidates, { memberEntities: 9, modelMemberLinks: 10, sourceBindings: 14, modelsWithMembers: 6, manufacturers: 3, russianLabels: 5, dateStatements: 2 });",
-      "});",
-      ""
-    ].join("\n");
+    const anchor = '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 376, sourceBindings: 376, manufacturers: 5, russianLabels: 171, dateStatements: 21 });';
+    const addition = anchor + '\n  assert.deepEqual(result.wikidata_vag_generation_candidates, { memberEntities: 9, modelMemberLinks: 10, sourceBindings: 14, modelsWithMembers: 6, manufacturers: 3, russianLabels: 5, dateStatements: 2 });';
+    packTest = exact(packTest, anchor, addition, "generation candidate pack test assertion");
     writeText(packTestPath, packTest);
   }
   let uiTest = readText(uiTestPath);
@@ -515,6 +510,7 @@ type WikidataGenerationRow = {",
       '  assert.match(component, /P179\\/P527 — только кандидаты серий/);',
       '  assert.match(component, /series_member_candidate/);',
       '  assert.match(component, /diagnosticExecutionAllowed/);',
+      '  const route = fs.readFileSync(path.join(__dirname, "..", "app", "api", "local-research", "route.ts"), "utf8");',
       '  assert.match(route, /dataset === "wikidata-generations"/);',
       "});",
       ""
@@ -523,12 +519,12 @@ type WikidataGenerationRow = {",
   }
 
   let verifier = readText(verifierPath);
-  verifier = verifier.replace("manifest.packs.length !== 8", "manifest.packs.length !== 9");
+  verifier = verifier.replace(/manifest\\.packs\\.length\\s*===\\s*8/, "manifest.packs.length === 9");
+  verifier = verifier.replace(/Expected eight separately licensed research packs/g, "Expected nine separately licensed research packs");
   if (!verifier.includes("wikidata-vag-generation-candidates-cc0")) {
     const anchor = '  const wikidata = byId["wikidata-vag-model-taxonomy-cc0"];\n';
     verifier = exact(verifier, anchor, anchor + '  const wikidataGenerations = byId["wikidata-vag-generation-candidates-cc0"];\n', "generation verifier pack lookup");
-    const requireAnchor = '  assert(wikidata, "Wikidata model identity pack must be registered");';
-    if (verifier.includes(requireAnchor)) verifier = verifier.replace(requireAnchor, requireAnchor + '\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");');
+    verifier = verifier.replace('  const wikidataGenerations = byId["wikidata-vag-generation-candidates-cc0"];\n', '  const wikidataGenerations = byId["wikidata-vag-generation-candidates-cc0"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n');
     const summaryAnchor = '  const wikidataSummary = localResearch.getResearchSummary(RESEARCH).packs.find((pack) => pack.id === "wikidata-vag-model-taxonomy-cc0");';
     if (verifier.includes(summaryAnchor)) {
       verifier = verifier.replace(summaryAnchor, summaryAnchor + '\n  const wikidataGenerationSummary = localResearch.getWikidataGenerationSummary(RESEARCH);');
