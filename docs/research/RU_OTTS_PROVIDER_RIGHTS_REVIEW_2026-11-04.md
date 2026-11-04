@@ -14,6 +14,12 @@ No newly reviewed commercial OTTS aggregator provides a public licence that perm
 | [Rosstandart FGIS «Реестры КТС»](https://www.interstandart.ru/page/fgis_01) | Official registry/search obligation | Official registry status and public search fields do not themselves establish bulk export, third-party display, persistent cache or redistribution rights. | Permission required; owner-supplied export plus matching licence/written permission required. |
 | [EAEU Open Data Portal](https://opendata.eaeunion.org/opendata/ru/api/restapi) | General OData/REST open-data portal | The reviewed catalogue search did not identify a specific OTTS/vehicle type-approval resource, resource-level licence, exact endpoint or bulk/caching terms. A portal-wide statement is not sufficient to clear an unidentified resource. | Permission required; continue exact resource discovery; no import. |
 
+## Additional official historical context
+
+A 2018 NAMI research report commissioned under a contract with the Eurasian Economic Commission describes the EAEU national conformity registers as providing free Internet access to necessary information. It also records that the registries were populated with scanned PDF copies and that missing attributes made search difficult. See the official EEC-hosted report, section 2.1, page 16: https://eec.eaeunion.org/upload/iblock/ffb/Otchet-OTTS-etap-1_664.pdf
+
+This is historical system-context evidence, not a dataset licence. The report says its results were intended for official use by the EEC; it does not grant VAG TECH PRO bulk extraction, commercial display, persistent offline caching, PDF redistribution or database redistribution rights. The 2026 catalog review still did not resolve a dedicated OTTS open-data resource with dataset-specific terms. The ingestion gate therefore remains closed.
+
 ## Consequence for acquisition
 
 1. Do not treat search-result visibility, a free API request allowance, a paid PDF download, or a software client's MIT licence as permission to reproduce a database.
