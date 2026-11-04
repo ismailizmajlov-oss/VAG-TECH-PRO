@@ -72,15 +72,13 @@ function patchContractTest() {
     '});',
   ].join("\n");
   if (!source.includes(block)) source = source.trimEnd() + "\n\n" + block + "\n";
-  const normalizedOriginBlock = [
-    "test(\\"Windows lifecycle normalizes local Origin, pins Host and rejects redirects\\", () => {",
-    "  assert.ok(script.includes(\\"GetLeftPart\\"));",
-    "  assert.ok(script.includes(\\"Headers.Host\\"));",
-    "  assert.ok(script.includes(\\"AllowAutoRedirect\\"));",
-    "  assert.ok(script.includes(\\"Local JSON request failed: HTTP\\"));",
-    "});"
-  ].join("\\n");
-  if (!source.includes(normalizedOriginBlock)) source = source.trimEnd() + "\\n\\n" + normalizedOriginBlock + "\\n";
+  const normalizedOriginBlock = `test("Windows lifecycle normalizes local Origin, pins Host and rejects redirects", () => {
+  assert.ok(script.includes("GetLeftPart"));
+  assert.ok(script.includes("Headers.Host"));
+  assert.ok(script.includes("AllowAutoRedirect"));
+  assert.ok(script.includes("Local JSON request failed: HTTP"));
+});`;
+  if (!source.includes(normalizedOriginBlock)) source = source.trimEnd() + "\n\n" + normalizedOriginBlock + "\n";
   write("tests/windows-lifecycle-script-contract.test.cjs", source);
 }
 function patchApiTests() {
