@@ -80,6 +80,7 @@ jobs:
 
       - name: Compile Windows-targeted data pipeline scripts
         run: |
+          python -m py_compile scripts/vag_identity_vehiclesdb_common.py
           python -m py_compile scripts/build_vag_identity_vehiclesdb.py
           python -m py_compile scripts/verify_vag_identity_vehiclesdb.py
           python -m py_compile scripts/test_vag_identity_vehiclesdb.py
