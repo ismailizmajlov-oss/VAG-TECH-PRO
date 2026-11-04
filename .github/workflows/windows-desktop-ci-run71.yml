@@ -804,19 +804,19 @@ jobs:
           npm run typecheck 2>&1 | Tee-Object -FilePath typecheck.log
           if ($LASTEXITCODE -ne 0) { throw "TypeScript check failed" }
 
-      - name: Set first desktop package version 0.2.2
+      - name: Set first desktop package version 0.2.3
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.2'; l.version='0.2.2'; if (l.packages && l.packages['']) l.packages[''].version='0.2.2'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.4'; l.version='0.2.4'; if (l.packages && l.packages['']) l.packages[''].version='0.2.4'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
 
       - name: Build first Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.2.log
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.4.log
           if ($LASTEXITCODE -ne 0) { throw "Initial Windows NSIS build failed" }
           $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.3-x64.exe"
           if (-not (Test-Path $installer)) { throw "Initial NSIS installer not found: $installer" }
@@ -827,6 +827,10 @@ jobs:
           $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path (Get-Location) "release/win-unpacked/resources/research-data"
           node -e 'const s=require("./lib/local-research-db.cjs").getResearchSummary(); const p=s.packs.find(x=>x.id==="wikidata-vag-model-taxonomy-cc0"); if(!p || p.counts.models!==376 || p.counts.russianLabels!==171 || p.marketScope!=="UNKNOWN" || p.fitmentClaim!==false) throw new Error("Packaged Wikidata offline resource verification failed"); console.log(JSON.stringify(p));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata offline resource verification failed" }
+          node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==9 || g.counts.modelMemberLinks!==10 || g.counts.sourceBindings!==14 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata generation candidate verification failed" }
+          node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==9 || g.counts.modelMemberLinks!==10 || g.counts.sourceBindings!==14 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata generation candidate verification failed" }
           node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged generic MechanicDB offline resource verification failed" }
 
