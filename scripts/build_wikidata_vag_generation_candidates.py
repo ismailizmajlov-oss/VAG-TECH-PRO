@@ -30,6 +30,7 @@ SOURCE_REVISION_PREFIX = "wikidata-generation-candidates-"
 USER_AGENT = "VAG-TECH-PRO/0.1 (+https://github.com/ismailizmajlov-oss/VAG-TECH-PRO)"
 MODEL_PACK_ROOT = Path("data/research/wikidata-vag-taxonomy")
 QUERY_LIMIT = 5000
+QUERY_BATCH_SIZE = 50
 
 LICENSE_NOTICE = """Wikidata structured data notice
 
@@ -303,8 +304,27 @@ LIMIT {QUERY_LIMIT}
 
 def fetch_live_snapshot(repo_root: Path) -> bytes:
     parent_manifest, parent_db_path, parent_models = latest_model_pack(repo_root)
-    query = build_generation_query([row["model_qid"] for row in parent_models])
-    raw_results = fetch_sparql(query)
+    model_qids = sorted(row["model_qid"] for row in parent_models)
+    batches = []
+    query_parts = []
+    chunks = [model_qids[index:index + QUERY_BATCH_SIZE] for index in range(0, len(model_qids), QUERY_BATCH_SIZE)]
+    for batch_index, chunk in enumerate(chunks, start=1):
+        query = build_generation_query(chunk)
+        raw_results = fetch_sparql(query)
+        result_payload = json.loads(raw_results)
+        bindings = result_payload.get("results", {}).get("bindings", [])
+        batches.append({
+            "batch_index": batch_index,
+            "model_qids": chunk,
+            "query_sha256": sha256(query.encode("utf-8")),
+            "result_count": len(bindings),
+            "results": result_payload,
+            "query": query,
+        })
+        query_parts.append(f"# batch {batch_index}/{len(chunks)}; model_qids={len(chunk)}\n{query}")
+        if batch_index < len(chunks):
+            time.sleep(1)
+    combined_query = "\n\n".join(query_parts) + "\n"
     payload = {
         "schema_version": 1,
         "retrieved_at_utc": utc_now(),
@@ -317,17 +337,33 @@ def fetch_live_snapshot(repo_root: Path) -> bytes:
             "model_entities": parent_manifest["counts"]["model_entities"],
         },
         "parent_models": parent_models,
-        "query": query,
-        "results": json.loads(raw_results),
+        "query": combined_query,
+        "query_batch_size": QUERY_BATCH_SIZE,
+        "query_batches": batches,
     }
     return canonical_json(payload)
 
 def parse_snapshot(snapshot_bytes: bytes) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     payload = json.loads(snapshot_bytes)
     parent_models = payload.get("parent_models")
-    bindings = payload.get("results", {}).get("bindings")
+    if "query_batches" in payload:
+        batches = payload.get("query_batches")
+        if not isinstance(batches, list) or not batches:
+            raise ValueError("Generation snapshot query_batches must be a non-empty list")
+        bindings = []
+        for batch in batches:
+            batch_bindings = batch.get("results", {}).get("results", {}).get("bindings")
+            if not isinstance(batch_bindings, list):
+                raise ValueError("Generation snapshot batch has no results.bindings array")
+            if sha256(batch.get("query", "").encode("utf-8")) != batch.get("query_sha256"):
+                raise ValueError("Generation snapshot batch query SHA-256 mismatch")
+            if len(batch_bindings) != batch.get("result_count"):
+                raise ValueError("Generation snapshot batch result_count mismatch")
+            bindings.extend(batch_bindings)
+    else:
+        bindings = payload.get("results", {}).get("bindings")
     if not isinstance(parent_models, list) or not isinstance(bindings, list):
-        raise ValueError("Generation snapshot must include parent_models and results.bindings")
+        raise ValueError("Generation snapshot must include parent_models and SPARQL bindings")
     parent_by_qid = {item["model_qid"]: item for item in parent_models}
     parsed: list[dict[str, Any]] = []
     for index, binding in enumerate(bindings, start=1):
@@ -571,7 +607,12 @@ def build_pack(snapshot_bytes: bytes, output_dir: Path) -> dict[str, Any]:
         "parent_model_pack": parent,
         "counts": counts,
         "query_limit": QUERY_LIMIT,
-        "limit_reached": len(rows) >= QUERY_LIMIT,
+        "query_batch_size": payload.get("query_batch_size", len(payload.get("parent_models", [])) or 1),
+        "query_batches": len(payload.get("query_batches", [])) or 1,
+        "limit_reached": (
+            any(batch.get("result_count", 0) >= QUERY_LIMIT for batch in payload.get("query_batches", []))
+            if payload.get("query_batches") else len(rows) >= QUERY_LIMIT
+        ),
         "completeness_status": "unknown",
         "scope": {
             "namespace": "vag_model_series_member_candidate",
@@ -619,8 +660,8 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
     for field in ("generation_verified", "exact_vehicle_fitment", "engine_code_fitment", "transmission_code_fitment", "ecu_fitment", "dtc_fitment", "repair_procedure_fitment", "diagnostic_execution_allowed", "production_years_inferred"):
         if scope.get(field) is not False:
             raise ValueError(f"candidate-only scope boundary changed: {field}")
-    if scope.get("market_scope") != "UNKNOWN" or scope.get("applicability_precision") != "series_member_candidate" or scope.get("completeness_status") != "unknown" or manifest.get("completeness_status") != "unknown" or manifest.get("query_limit") != QUERY_LIMIT:
-        raise ValueError("candidate-only scope metadata changed")
+    if scope.get("market_scope") != "UNKNOWN" or scope.get("applicability_precision") != "series_member_candidate" or scope.get("completeness_status") != "unknown" or manifest.get("completeness_status") != "unknown" or manifest.get("query_limit") != QUERY_LIMIT or manifest.get("query_batches", 0) < 1 or manifest.get("query_batch_size", 0) < 1:
+        raise ValueError("candidate-only scope or query-batch metadata changed")
     for name, info in manifest["pack_files"].items():
         path = output_dir / name
         if not path.is_file() or file_info(path) != info:
