@@ -14,6 +14,7 @@ export type GenericRepairGuidanceSummary = {
   upstreamLicenseSha256: string;
   attributionSha256: string;
   attributionText: string;
+  rowEvidenceMode: string;
   attributionRequired: true;
   shareAlikeRequired: true;
   marketScope: "UNKNOWN";
