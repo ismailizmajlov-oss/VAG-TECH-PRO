@@ -1,1 +1,1 @@
-Post-ready-for-review synchronization trigger for Windows 10/11 x64 desktop CI. Run the pinned build and lifecycle tests; do not publish or release.
+Run72 trigger: execute the Windows 10/11 x64 validation pipeline after narrowing the Wikidata generation placeholder guard to the JSX placeholder expression. This is a validation-only run; do not publish a release or deploy.
