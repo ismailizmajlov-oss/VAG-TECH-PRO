@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - automation/windows-desktop-build-run61-integrated
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - "desktop-source-run*.zip.b64"
