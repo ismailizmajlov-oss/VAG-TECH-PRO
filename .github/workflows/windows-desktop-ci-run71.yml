@@ -794,6 +794,22 @@ jobs:
           npm run verify:local-research 2>&1 | Tee-Object -FilePath verify-local-research.log
           if ($LASTEXITCODE -ne 0) { throw "Research pack verification failed" }
 
+      - name: Capture generated research UI source around parser diagnostics
+        if: always()
+        shell: pwsh
+        run: |
+          $path = "desktop-source/app/research/page.tsx"
+          if (Test-Path -LiteralPath $path) {
+            $lines = Get-Content -LiteralPath $path
+            $start = [Math]::Max(1, 300)
+            $end = [Math]::Min($lines.Length, 325)
+            for ($line = $start; $line -le $end; $line++) {
+              Write-Host ("{0}: {1}" -f $line, $lines[$line - 1])
+            }
+          } else {
+            Write-Host "Generated research UI source is not present."
+          }
+
       - name: Run ESLint and TypeScript project check
         working-directory: desktop-source
         shell: pwsh
@@ -971,6 +987,9 @@ jobs:
             desktop-source/vehicle-config-match-guard-verification.json
             desktop-source/lint.log
             desktop-source/typecheck.log
+            desktop-source/app/research/page.tsx
+            desktop-source/app/api/local-research/route.ts
+            desktop-source/lib/local-research-db.cjs
             desktop-dbrow-types-fix.log
             desktop-source/build-0.2.2.log
             desktop-source/build-0.2.3.log
