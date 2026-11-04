@@ -16,12 +16,12 @@
   "attribution_required": false,
   "attribution_recommended": true,
   "share_alike_required": false,
-  "source_revision": "wikidata-snapshot-2d10b144bc8f",
-  "source_snapshot_sha256": "2d10b144bc8f96016fde9488f91c3db8187d4649c4d07505d818221e51934387",
+  "source_revision": "wikidata-snapshot-7a99f275966b",
+  "source_snapshot_sha256": "7a99f275966bd408d00dd74e52eab241fcf6f83305abdb6a09a4a05ebe94eba4",
   "source_query_sha256": "f8fbeb478d48887b9bc458f29f5e8369fc1bc3327dace391154ba1cefa5b027a",
-  "logical_content_sha256": "24056b345ac9da0dbd3898adcf46a79da306f0192c94bc97727a44e2afe3370e",
-  "database_sha256": "660e9458fea3477fc877014f0a3db9b1857f2988a83c0efd39801723598235bc",
-  "pack_manifest_sha256": "7ccda80646d31bd0fdd287e79a993b24a936855f5fcab38ce2a2590a9423f6c5",
+  "logical_content_sha256": "1d85420b1981b4bb07ca03d8236d2862e265b7d9ac4d3ddce10232c1b4b02c18",
+  "database_sha256": "39732875dff952041707a449168917c173c532db91a9950ec006a94ec9240a34",
+  "pack_manifest_sha256": "fe6c5d168b41d02ea6b6a336b3868e2cb9f943dd28051c81f2d1b1d719024665",
   "desktop_pack_id": "wikidata-vag-model-taxonomy-cc0",
   "desktop_pack_manifest": "desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/manifest.json",
   "desktop_database": "desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/wikidata-vag-taxonomy.sqlite",
@@ -97,23 +97,11 @@
   ],
   "source_artifact": {
     "repository": "ismailizmajlov-oss/VAG-TECH-PRO",
-    "branch": "research/wikidata-live-run67",
-    "commit": "5d7069d180db626ea0d10ef7292900a12b4a82e1",
-    "workflow_run_id": 41875660206,
-    "artifact_id": 13346487773,
-    "artifact_sha256": "5b6ec0423ceaab6dcd7f2ba69cc968fc38c19cf868b9c5eb277a18ec85966b03"
-  },
-  "built_at_utc": "2026-11-04T17:14:57Z",
-  "query_result_limit": 3000,
-  "query_result_limit_reached": false,
-  "independent_audit": {
-    "audit_date_utc": "2026-11-04",
-    "sqlite_integrity_check": "ok",
-    "foreign_key_violations": 0,
-    "source_binding_hashes_checked": 376,
-    "source_binding_hash_errors": 0,
-    "entity_binding_cardinality_mismatches": 0,
-    "candidate_scope_violations": 0,
-    "audit_document": "docs/research/WIKIDATA_VAG_TAXONOMY_AUDIT_2026-11-05.md"
+    "branch": "main",
+    "commit": "786caeedb535b9b9984e70452dafb420cc760b0a",
+    "snapshot_commit": "813479dce981cd167f19896fc9023d8b5fb3bf56",
+    "workflow_run_id": 41905383209,
+    "artifact_id": 13360765168,
+    "artifact_sha256": "a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609"
   }
 }

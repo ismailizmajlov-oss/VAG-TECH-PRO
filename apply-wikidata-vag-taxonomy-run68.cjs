@@ -882,9 +882,38 @@ function main() {
     },
   };
   if (fs.existsSync(sourceRegistryPath)) {
+    const previousRaw = fs.readFileSync(sourceRegistryPath, "utf8");
     const previousRegistry = readJson(sourceRegistryPath);
-    if (previousRegistry.source_snapshot_sha256 !== sourceRegistryManifest.source_snapshot_sha256 ||
-        previousRegistry.database_sha256 !== sourceRegistryManifest.database_sha256) fail("A different Wikidata source snapshot is already registered; refusing to overwrite it");
+    const sameSnapshot = previousRegistry.source_snapshot_sha256 === sourceRegistryManifest.source_snapshot_sha256 &&
+      previousRegistry.database_sha256 === sourceRegistryManifest.database_sha256;
+    if (!sameSnapshot) {
+      const compatiblePrevious = previousRegistry.source_id === sourceRegistryManifest.source_id &&
+        previousRegistry.publisher === sourceRegistryManifest.publisher && previousRegistry.license === "CC0-1.0" &&
+        previousRegistry.license_url === sourceRegistryManifest.license_url && previousRegistry.rights_status === "approved_by_published_license" &&
+        previousRegistry.commercial_use_allowed === true && previousRegistry.display_allowed === true &&
+        previousRegistry.offline_cache_allowed === true && previousRegistry.bulk_reuse_allowed === true && previousRegistry.redistribution_allowed === true &&
+        previousRegistry.attribution_required === false && previousRegistry.share_alike_required === false &&
+        previousRegistry.market_scope === "UNKNOWN" && previousRegistry.applicability_precision === "candidate_identity_only" &&
+        previousRegistry.review_status === "candidate" && previousRegistry.exact_vehicle_fitment === false &&
+        previousRegistry.generation_verified === false && previousRegistry.engine_code_fitment === false &&
+        previousRegistry.transmission_code_fitment === false && previousRegistry.ecu_fitment === false &&
+        previousRegistry.dtc_fitment === false && previousRegistry.repair_procedure_fitment === false &&
+        previousRegistry.diagnostic_execution_allowed === false &&
+        /^[a-f0-9]{64}$/.test(previousRegistry.source_snapshot_sha256 || "") &&
+        /^[a-f0-9]{64}$/.test(previousRegistry.database_sha256 || "") &&
+        typeof previousRegistry.source_revision === "string" && previousRegistry.source_revision.length > 0;
+      if (!compatiblePrevious) fail("Existing Wikidata registry is not a compatible CC0 candidate-only snapshot; refusing to overwrite it");
+      const historyDir = path.join(ROOT, "data", "source-manifests", "history");
+      fs.mkdirSync(historyDir, { recursive: true });
+      const historyPath = path.join(historyDir, "wikidata-vag-model-taxonomy-" + previousRegistry.source_snapshot_sha256.slice(0, 12) + "-" + previousRegistry.database_sha256.slice(0, 8) + ".json");
+      const previousHash = sha256(Buffer.from(previousRaw, "utf8"));
+      if (fs.existsSync(historyPath)) {
+        if (sha256File(historyPath) !== previousHash) fail("Archived Wikidata source registry history does not match the previous manifest");
+      } else {
+        fs.writeFileSync(historyPath, previousRaw, { flag: "wx" });
+      }
+      console.log("Archived previous candidate-only Wikidata source registry: " + path.relative(ROOT, historyPath));
+    }
   }
   atomicWriteJson(sourceRegistryPath, sourceRegistryManifest);
   const registryManifestSha = sha256File(sourceRegistryPath);
