@@ -21,6 +21,12 @@ The five VAG group files were inspected in the upstream JSON structure. Counts o
 
 These are upstream dataset counts, not counts of Russian-market vehicles and not OEM-certified fitments.
 
+## Rights review update — 2026-11-04
+
+The upstream source is `autoevolution.com`. Its current terms were reviewed (sections 4, 5 and 8): they do not grant VAG TECH PRO the required rights for bulk download, import, offline caching, display, bundling or redistribution. No written permission was obtained. The downstream repository's ODbL-1.0 declaration cannot by itself establish rights to reuse third-party Autoevolution content under the upstream terms.
+
+Decision: `gor3a-vehicle-makes-models-odbl` is **quarantined pending written upstream permission**. Product use is not allowed. The source register records every prohibited action, and the acquisition workflow now produces only a quarantine report. Do not ship any previously generated copy of this dataset.
+
 ## Critical data-quality finding
 
 The five brand files contain generation names, year ranges, body type and descriptive engine variants. The inspected engine records do **not** contain explicit factory engine codes or gearbox codes. Their transmission field is a descriptive label (for example, a number of speeds/type), not a gearbox code. Therefore:
@@ -32,7 +38,7 @@ The five brand files contain generation names, year ranges, body type and descri
 - do not create exact engine–gearbox pairings from a descriptive transmission string;
 - require at least one independent primary or official market-specific source before promoting any claim; two independent sources are preferred for critical fitment.
 
-The importer `scripts/import_vag_engine_candidates.py` preserves these boundaries and asserts that the upstream schema has not unexpectedly added code fields. The GitHub Actions workflow downloads the five pinned files, imports a separate SQLite research database, checks SQLite integrity/foreign keys and uploads it as a research artifact. It never touches production SQLite.
+The importer `scripts/import_vag_engine_candidates.py` is retained only as historical/schema-test code. It must not be run against Autoevolution-derived source data while the rights gate is closed. The current GitHub Actions acquisition workflow emits a quarantine report only; it does not download or import the five source files. Any previously generated Autoevolution-derived candidate pack is not eligible for product builds and must be removed from the desktop bundle.
 
 ## Independent market cross-check plan
 
