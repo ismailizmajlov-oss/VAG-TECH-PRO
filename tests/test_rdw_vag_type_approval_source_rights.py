@@ -59,7 +59,7 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
 
     def test_review_explicitly_excludes_ru_eaeu_and_factory_code_claims(self):
         review=(ROOT/"docs/research/RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md").read_text(encoding="utf-8")
-        self.assertIn("not Russian or EAEU OTTS",review)
+        self.assertIn("Russian or EAEU OTTS evidence",review)
         self.assertIn("not a VAG three-letter gearbox code",review)
         self.assertIn("not VIN-level fitment",review)
         self.assertIn("not yet ingested",review.lower())
