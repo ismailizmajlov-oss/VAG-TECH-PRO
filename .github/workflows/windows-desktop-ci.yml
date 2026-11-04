@@ -167,7 +167,18 @@ jobs:
           }
           $fallbackUsed = $false
           if ($null -eq $run -or $run.status -ne "completed" -or $run.conclusion -ne "success") {
-            Write-Output "No successful data-pack run is ready for $expectedHeadSha; trying the latest successful main-branch bundle. The next step independently verifies every source/index hash against this checkout."
+            $previousBranchRun = $response.workflow_runs |
+              Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+              Sort-Object { [datetime]$_.created_at } -Descending |
+              Select-Object -First 1
+            if ($null -ne $previousBranchRun) {
+              $run = $previousBranchRun
+              $fallbackUsed = $true
+              Write-Output "Using the previous successful bundle on this branch (run $($run.id)); the next step independently verifies every source/index hash against this checkout."
+            }
+          }
+          if ($null -eq $run -or $run.status -ne "completed" -or $run.conclusion -ne "success") {
+            Write-Output "No successful branch bundle is available; trying the latest successful main-branch bundle. The next step independently verifies every source/index hash against this checkout."
             $mainUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=main&per_page=30"
             $mainResponse = Invoke-RestMethod -Method Get -Uri $mainUri -Headers $headers
             $run = $mainResponse.workflow_runs |
