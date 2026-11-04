@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "pack_id": "wikidata-vag-generation-candidates-cc0-5c1c7c37593b",
+  "snapshot_id": "5c1c7c37593b",
+  "built_at_utc": "2026-11-04T20:30:35Z",
+  "publisher": "Wikidata / Wikimedia Foundation",
+  "source_repository": "https://www.wikidata.org/",
+  "source_endpoint": "https://query.wikidata.org/sparql",
+  "source_id": "wikidata-vag-generation-candidates",
+  "data_license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "rights_status": "approved_by_published_license",
+  "commercial_use_allowed": true,
+  "display_allowed": true,
+  "offline_cache_allowed": true,
+  "bulk_reuse_allowed": true,
+  "redistribution_allowed": true,
+  "attribution_required": false,
+  "attribution_recommended": true,
+  "share_alike_required": false,
+  "attribution_text": "Wikidata structured data, CC0 1.0 Universal.",
+  "source_revision": "wikidata-generation-candidates-5c1c7c37593b",
+  "source_snapshot_sha256": "5c1c7c37593b5a86c7497153c4b29307f1c26922e21d3fabe08e6929c66d4495",
+  "source_query_sha256": "bedc320b0181a5682c99b50b9b648bf85e5ba3adb619f39c07a7b31bf44acb5b",
+  "logical_content_sha256": "7c986a30b4c77cfce3ff3689b255bb577bfb0c2f690952d8f43de6915b955f7e",
+  "database_sha256": "866807139e33365997c402809f4ce2dba64e9cbadcd685d40db4ac309b2f93a5",
+  "parent_model_pack": {
+    "database_sha256": "39732875dff952041707a449168917c173c532db91a9950ec006a94ec9240a34",
+    "model_entities": 376,
+    "pack_id": "wikidata-vag-model-taxonomy-cc0-7a99f275966b",
+    "snapshot_id": "7a99f275966b",
+    "source_revision": "wikidata-snapshot-7a99f275966b",
+    "source_snapshot_sha256": "7a99f275966bd408d00dd74e52eab241fcf6f83305abdb6a09a4a05ebe94eba4"
+  },
+  "counts": {
+    "member_entities": 9,
+    "model_member_links": 10,
+    "source_bindings": 14,
+    "models_with_members": 6,
+    "manufacturers": 3,
+    "russian_labels": 5,
+    "date_statements": 2
+  },
+  "query_limit": 5000,
+  "query_batch_size": 50,
+  "query_batches": 8,
+  "limit_reached": false,
+  "completeness_status": "unknown",
+  "scope": {
+    "namespace": "vag_model_series_member_candidate",
+    "market_scope": "UNKNOWN",
+    "completeness_status": "unknown",
+    "applicability_precision": "series_member_candidate",
+    "review_status": "candidate",
+    "generation_entities": 9,
+    "generation_verified": false,
+    "exact_vehicle_fitment": false,
+    "engine_code_fitment": false,
+    "transmission_code_fitment": false,
+    "ecu_fitment": false,
+    "dtc_fitment": false,
+    "repair_procedure_fitment": false,
+    "diagnostic_execution_allowed": false,
+    "production_years_inferred": false,
+    "relationship_properties": [
+      "P179",
+      "P527"
+    ]
+  },
+  "exclusions": [
+    "Series-member links are candidates, not verified vehicle generations.",
+    "No production-year ranges are inferred from Wikidata date properties.",
+    "No Russian/EAEU market scope or exact vehicle fitment.",
+    "No engine or gearbox codes, ECU identities, DTC definitions, or diagnostic test plans.",
+    "No repair procedures, wiring diagrams, pinouts, torque values, adaptations, or OEM parts.",
+    "No article text, images, logos, or third-party linked resources."
+  ],
+  "pack_files": {
+    "generation-snapshot.json": {
+      "sha256": "5c1c7c37593b5a86c7497153c4b29307f1c26922e21d3fabe08e6929c66d4495",
+      "byte_size": 97303
+    },
+    "generation-query.rq": {
+      "sha256": "bedc320b0181a5682c99b50b9b648bf85e5ba3adb619f39c07a7b31bf44acb5b",
+      "byte_size": 13478
+    },
+    "LICENSE-NOTICE.txt": {
+      "sha256": "414343e70e6920de3daa5a0073f30cdb282de7ca0354bbce250a253ba8ba561c",
+      "byte_size": 402
+    },
+    "ATTRIBUTION.md": {
+      "sha256": "237996fdbbf7e3346cdbbe46567a4b6df4a39227e25991735a009a04476310de",
+      "byte_size": 745
+    },
+    "wikidata-vag-generations.sqlite": {
+      "sha256": "866807139e33365997c402809f4ce2dba64e9cbadcd685d40db4ac309b2f93a5",
+      "byte_size": 65536
+    }
+  }
+}
