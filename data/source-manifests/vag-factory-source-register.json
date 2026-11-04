@@ -1491,7 +1491,7 @@
       "access": {
         "status": "public_socrata_api",
         "authentication_required": false,
-        "method": "Filtered read-only Socrata JSON GET queries; VAG makes and M1 only; no full registry dump.",
+        "method": "Filtered read-only Socrata JSON GET queries; exact VAG make values, EU category M1, vehicle kind Personenauto and first registration from 1998-01-01 only; no full registry dump.",
         "query_limit": 50000,
         "retry_policy": "Five attempts with bounded exponential backoff for transient HTTP errors.",
         "offline_snapshot_retained": true,
