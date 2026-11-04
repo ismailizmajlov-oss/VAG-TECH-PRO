@@ -304,7 +304,7 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
             evidence_by_model.setdefault((item["kind"], item["model_id"]), []).append(item)
 
         model_query = f"""SELECT m.kind,m.id,m.make_id,m.slug,m.name,
-                                  mk.slug AS make_slug,mk.name AS make_name
+                                  lower(m.make_id) AS make_slug,mk.name AS make_name
                            FROM models m
                            JOIN makes mk ON mk.kind=m.kind AND mk.id=m.make_id
                            WHERE lower(m.make_id) IN ({make_placeholders})
