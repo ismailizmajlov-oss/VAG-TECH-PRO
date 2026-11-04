@@ -39,7 +39,7 @@ EXPECTED_FILES = {
         "record_count": None,
     },
     "LICENSE-upstream.txt": {
-        "git_blob_sha1": "9cbfaae3f07b8daa1685b4587e36c604a7ded1",
+        "git_blob_sha1": "9cbfaae3f07b8daa1685b4587e36c604a7a4ded1",
         "purpose": "Preserved upstream MIT attribution notice",
         "record_count": None,
     },
