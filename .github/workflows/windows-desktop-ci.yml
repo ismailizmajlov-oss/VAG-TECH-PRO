@@ -352,6 +352,19 @@ jobs:
           $pkg = Get-Content -LiteralPath "desktop-source/package.json" -Raw | ConvertFrom-Json
           if (-not $pkg.scripts.'test:desktop'.Contains("windows-offline-firewall-contract.test.cjs")) { throw "Offline firewall contract test is not included in the desktop test script" }
           "offline_firewall_patch=applied; contract_test=registered; external_ipv4_ipv6_blocked; loopback_preserved" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+      - name: Apply separately namespaced MechanicDB candidate browser (run59)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-mechanicdb-candidate-browser-run59.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run59 MechanicDB candidate-browser patch syntax check failed" }
+          node apply-mechanicdb-candidate-browser-run59.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/mechanicdb-candidate-browser-patch.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run59 MechanicDB candidate-browser patch failed" }
+          $verification = "desktop-source/data/research/mechanicdb-candidate-browser-verification.json"
+          if (-not (Test-Path $verification)) { throw "Run59 candidate-browser verification evidence was not written" }
+          $evidence = Get-Content -LiteralPath $verification -Raw | ConvertFrom-Json
+          if ($evidence.status -ne "verified_candidate_reference_only" -or $evidence.rows.generic_namespace_rows -ne 0 -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.vag_oem_confirmation -ne $false -or $evidence.diagnostic_execution_allowed -ne $false) { throw "Run59 candidate-browser evidence failed the separation/safety gate" }
+          "mechanicdb_candidate_browser=separate_namespace; rows=2; OEM_fitment=none; generic_DTC_leakage=0; execution=disabled" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
@@ -513,7 +526,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run54
+          name: vag-tech-pro-windows-x64-run59
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.2-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.3-x64.exe
