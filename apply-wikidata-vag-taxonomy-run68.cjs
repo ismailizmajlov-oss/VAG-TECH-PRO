@@ -794,6 +794,72 @@ function main() {
   const rootPack = rootManifest.packs.find((pack) => pack.id === PACK_ID);
   if (!rootPack || rootPack.database_sha256 !== verified.manifest.database_sha256 ||
       sha256File(safeJoin(researchDir, rootPack.database)) !== rootPack.database_sha256) fail("Final desktop Wikidata pack manifest/database verification failed");
+  const sourceRegistryPath = path.join(ROOT, "data", "source-manifests", "wikidata-vag-model-taxonomy.json");
+  const sourceRegistryManifest = {
+    schema_version: 1,
+    source_id: verified.manifest.source_id,
+    publisher: verified.manifest.publisher,
+    source_type: "official_structured_data_identity_taxonomy",
+    source_url: verified.manifest.source_repository,
+    source_endpoint: verified.manifest.source_endpoint,
+    license: "CC0-1.0",
+    license_url: verified.manifest.license_url,
+    rights_status: "approved_by_published_license",
+    commercial_use_allowed: true,
+    display_allowed: true,
+    offline_cache_allowed: true,
+    bulk_reuse_allowed: true,
+    redistribution_allowed: true,
+    attribution_required: false,
+    attribution_recommended: true,
+    share_alike_required: false,
+    source_revision: verified.manifest.source_revision,
+    source_snapshot_sha256: verified.manifest.source_snapshot_sha256,
+    source_query_sha256: verified.manifest.source_query_sha256,
+    logical_content_sha256: verified.manifest.logical_content_sha256,
+    database_sha256: verified.manifest.database_sha256,
+    pack_manifest_sha256: rootPack.source_manifest_sha256,
+    desktop_pack_id: PACK_ID,
+    desktop_pack_manifest: "desktop-source/data/research/" + PACK_ID + "/manifest.json",
+    desktop_database: "desktop-source/data/research/" + rootPack.database,
+    snapshot_file: "desktop-source/data/research/" + rootPack.snapshot_file,
+    query_file: "desktop-source/data/research/" + rootPack.query_file,
+    integration_report_file: "desktop-source/data/research/" + rootPack.integration_report_file,
+    market_scope: "UNKNOWN",
+    applicability_precision: "candidate_identity_only",
+    review_status: "candidate",
+    completeness_status: "unknown",
+    fitment_claim: false,
+    exact_vehicle_fitment: false,
+    generation_verified: false,
+    generation_entities: 0,
+    model_years_inferred: false,
+    engine_code_fitment: false,
+    transmission_code_fitment: false,
+    ecu_fitment: false,
+    dtc_fitment: false,
+    repair_procedure_fitment: false,
+    diagnostic_execution_allowed: false,
+    counts: rootPack.counts,
+    manufacturer_whitelist: verified.manifest.manufacturer_whitelist,
+    scope: verified.manifest.scope,
+    limitations: verified.manifest.exclusions,
+    source_artifact: {
+      repository: "ismailizmajlov-oss/VAG-TECH-PRO",
+      branch: ARTIFACT.sourceBranch,
+      commit: ARTIFACT.sourceCommit,
+      workflow_run_id: ARTIFACT.workflowRunId,
+      artifact_id: ARTIFACT.artifactId,
+      artifact_sha256: ARTIFACT.artifactSha256,
+    },
+  };
+  if (fs.existsSync(sourceRegistryPath)) {
+    const previousRegistry = readJson(sourceRegistryPath);
+    if (previousRegistry.source_snapshot_sha256 !== sourceRegistryManifest.source_snapshot_sha256 ||
+        previousRegistry.database_sha256 !== sourceRegistryManifest.database_sha256) fail("A different Wikidata source snapshot is already registered; refusing to overwrite it");
+  }
+  atomicWriteJson(sourceRegistryPath, sourceRegistryManifest);
+  const registryManifestSha = sha256File(sourceRegistryPath);
   const local = require(path.join(desktopRoot, "lib", "local-research-db.cjs"));
   const summary = local.getResearchSummary(researchDir);
   const packSummary = summary.packs.find((pack) => pack.id === PACK_ID);
@@ -808,6 +874,7 @@ function main() {
     source_query_sha256: verified.manifest.source_query_sha256,
     database_sha256: verified.manifest.database_sha256,
     source_manifest_sha256: rootPack.source_manifest_sha256,
+    registry_manifest_sha256: registryManifestSha,
     root_manifest_sha256: sha256File(path.join(researchDir, "manifest.json")),
     counts: packSummary.counts,
     search_sample_count: sample.length,
