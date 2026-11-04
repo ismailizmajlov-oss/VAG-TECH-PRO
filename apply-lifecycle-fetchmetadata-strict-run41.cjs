@@ -10,9 +10,12 @@ function write(file, value) {
   fs.writeFileSync(path.join(root, file), value, "utf8");
 }
 function replaceOnce(source, before, after, label) {
-  if (source.includes(after)) return source;
   const count = source.split(before).length - 1;
-  if (count !== 1) throw new Error(label + ": expected exactly one anchor, found " + count);
+  if (count === 0) {
+    if (source.includes(after)) return source;
+    throw new Error(label + ": neither the original nor the patched anchor is present");
+  }
+  if (count !== 1) throw new Error(label + ": expected exactly one original anchor, found " + count);
   return source.replace(before, after);
 }
 
@@ -28,12 +31,17 @@ function patchRoute() {
 function patchApiTest() {
   const file = "tests/local-core-api.test.cjs";
   let source = read(file);
-  source = replaceOnce(
-    source,
-    'headers: { ...headers, "sec-fetch-site": "cross-site", "content-type": "application/json" },',
-    'headers: { ...headers, "sec-fetch-site": "same-origin", "content-type": "application/json" },',
-    "native HttpClient must identify its request as same-origin"
-  );
+  const oldNativeHeader = [
+    '  const nativeClientWithFetchMetadata = await POST(new Request(baseUrl, {',
+    '    method: "POST",',
+    '    headers: { ...headers, "sec-fetch-site": "cross-site", "content-type": "application/json" },'
+  ].join("\\n");
+  const newNativeHeader = [
+    '  const nativeClientWithFetchMetadata = await POST(new Request(baseUrl, {',
+    '    method: "POST",',
+    '    headers: { ...headers, "sec-fetch-site": "same-origin", "content-type": "application/json" },'
+  ].join("\\n");
+  source = replaceOnce(source, oldNativeHeader, newNativeHeader, "native HttpClient must identify its request as same-origin");
   const before = [
     '  assert.equal(nativeClientWithFetchMetadata.status, 201);',
     '  assert.equal(core.listSources(dbPath).length, 2);'
