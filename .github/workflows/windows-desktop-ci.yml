@@ -4,7 +4,7 @@ name: VAG TECH PRO Windows x64 desktop
 on:
   push:
     branches:
-      - "automation/windows-desktop-build-run*"
+      - main
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - "desktop-source-run*.zip.b64"
@@ -12,6 +12,7 @@ on:
       - "desktop-source-run*.patch"
       - "desktop-package-run*.json"
       - "apply-*-run*.cjs"
+      - "scripts/sync-desktop-research-manifest.cjs"
       - "run*-*.patch.gz.b64"
       - "catalog-import-v2-run*.patch.gz.b64"
       - "ci-trigger-run*.txt"
@@ -25,6 +26,7 @@ on:
       - "desktop-source-run*.patch"
       - "desktop-package-run*.json"
       - "apply-*-run*.cjs"
+      - "scripts/sync-desktop-research-manifest.cjs"
       - "run*-*.patch.gz.b64"
       - "catalog-import-v2-run*.patch.gz.b64"
       - "ci-trigger-run*.txt"
@@ -297,6 +299,9 @@ jobs:
           $obdexDb = Join-Path $research "obdex-generic-cc0/generated/obdex-generic-research.sqlite"
           if (-not (Test-Path $obdexDb)) { throw "Missing generated generic OBDex SQLite database." }
           Copy-Item -LiteralPath $obdexDb -Destination (Join-Path $research "obdex-generic-cc0/generic-obdex-research.sqlite") -Force
+          node scripts/sync-desktop-research-manifest.cjs --pack-dir $packs --research-dir $research 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/offline-data-pack-manifest-sync.log"
+          if ($LASTEXITCODE -ne 0) { throw "Offline data-pack manifest synchronization failed" }
+          "offline_research_manifest=sha256_verified_from_current_pack_bundle" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           $mechanicTarget = Join-Path $research "mechanicdb-vag-dtc-candidates-odbl"
           New-Item -ItemType Directory -Force -Path $mechanicTarget | Out-Null
           Copy-Item -Path (Join-Path $mechanic "*") -Destination $mechanicTarget -Recurse -Force
@@ -441,6 +446,8 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           node --check apply-mechanicdb-candidate-browser-run59.cjs
+          node --check scripts/sync-desktop-research-manifest.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Desktop research-manifest sync script syntax check failed" }
           if ($LASTEXITCODE -ne 0) { throw "Run59 MechanicDB candidate-browser patch syntax check failed" }
           node apply-mechanicdb-candidate-browser-run59.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/mechanicdb-candidate-browser-patch.log"
           if ($LASTEXITCODE -ne 0) { throw "Run59 MechanicDB candidate-browser patch failed" }
