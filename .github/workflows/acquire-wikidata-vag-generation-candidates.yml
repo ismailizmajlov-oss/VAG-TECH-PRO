@@ -12,7 +12,6 @@ on:
       - "tests/test_wikidata_vag_generation_candidates.py"
       - "tests/test_wikidata_generation_source_rights.py"
       - "tests/fixtures/wikidata-vag-generation-sample.json"
-      - "data/source-manifests/vag-factory-source-register.json"
       - "data/research/wikidata-vag-taxonomy/**"
   pull_request:
     branches: [main]
@@ -24,7 +23,6 @@ on:
       - "tests/test_wikidata_vag_generation_candidates.py"
       - "tests/test_wikidata_generation_source_rights.py"
       - "tests/fixtures/wikidata-vag-generation-sample.json"
-      - "data/source-manifests/vag-factory-source-register.json"
 
 permissions:
   contents: write
