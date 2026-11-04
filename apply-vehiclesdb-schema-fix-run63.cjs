@@ -219,20 +219,21 @@ verifier = replaceOnce(
   'assert(vehiclesDbProvenance.upstream_manifest_sha256 === vehiclesdb.upstream_manifest_sha256 && vehiclesDbProvenance.source_catalog_sha256 === vehiclesDbSnapshot.source_catalog_sha256 && vehiclesDbProvenance.license_sha256 === vehiclesdb.license_file_sha256 && vehiclesDbProvenance.attribution_sha256 === vehiclesdb.attribution_sha256 && vehiclesDbProvenance.lock_sha256 === vehiclesDbSnapshot.lock_sha256, "VehiclesDB embedded source hashes mismatch");',
   "VehiclesDB verifier embedded source hashes"
 );
-verifier = replaceOnce(
-  verifier,
-  String.raw`const sourceArtifacts = vehiclesDb.prepare("SELECT relative_path, sha256 FROM source_file_artifacts ORDER BY relative_path").all();
-    for (const artifact of sourceArtifacts) {
-      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.relative_path === "catalog.sqlite" ? "catalog.sqlite" : artifact.relative_path === "manifest.json" ? "manifest.json" : artifact.relative_path === "LICENSE" ? "LICENSE" : "ATTRIBUTION.md"];
-      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.relative_path}`);
-    }`,
-  String.raw`const sourceArtifacts = vehiclesDb.prepare("SELECT source_path, sha256, source_role FROM source_file_artifacts ORDER BY source_path").all();
-    for (const artifact of sourceArtifacts) {
-      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.source_role];
-      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.source_path}`);
-    }`,
-  "VehiclesDB source file artifact schema"
-);
+const sourceArtifactBefore = [
+  'const sourceArtifacts = vehiclesDb.prepare("SELECT relative_path, sha256 FROM source_file_artifacts ORDER BY relative_path").all();',
+  '    for (const artifact of sourceArtifacts) {',
+  '      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.relative_path === "catalog.sqlite" ? "catalog.sqlite" : artifact.relative_path === "manifest.json" ? "manifest.json" : artifact.relative_path === "LICENSE" ? "LICENSE" : "ATTRIBUTION.md"];',
+  '      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.relative_path}`);',
+  '    }',
+].join("\n");
+const sourceArtifactAfter = [
+  'const sourceArtifacts = vehiclesDb.prepare("SELECT source_path, sha256, source_role FROM source_file_artifacts ORDER BY source_path").all();',
+  '    for (const artifact of sourceArtifacts) {',
+  '      const expected = vehiclesDbSnapshot.source_snapshot_sha256[artifact.source_role];',
+  '      assert(expected === artifact.sha256, `VehiclesDB source artifact hash mismatch for ${artifact.source_path}`);',
+  '    }',
+].join("\n");
+verifier = replaceOnce(verifier, sourceArtifactBefore, sourceArtifactAfter, "VehiclesDB source file artifact schema");
 fs.writeFileSync(verifierFile, verifier, "utf8");
 
 let tests = fs.readFileSync(testFile, "utf8");
