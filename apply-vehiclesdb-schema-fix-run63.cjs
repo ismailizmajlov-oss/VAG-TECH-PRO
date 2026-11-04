@@ -50,7 +50,7 @@ source = replaceOnce(
         !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`,
   "VehiclesDB provenance and candidate-only gate"
 );
-source = replaceOnce(source, "attributionUrl: safeHttpsUrl(vehiclesDbProvenance.attribution_url),", "attributionUrl: safeHttpsUrl(vehiclesDbPackManifest.source_repository),", "VehiclesDB attribution URL");
+source = replaceOnce(source, "attributionUrl: safeHttpsUrl(vehiclesDbProvenance.attribution_url),", "attributionUrl: safeHttpsUrl(vehiclesDbPackManifest.attribution?.url),", "VehiclesDB attribution URL");
 source = replaceOnce(source, "upstreamRevision: vehiclesDbProvenance.upstream_tag,", "upstreamRevision: vehiclesDbPackManifest.upstream_tag,", "VehiclesDB upstream revision");
 source = replaceOnce(source, "snapshotGeneratedAt: vehiclesDbProvenance.built_at_utc,", "snapshotGeneratedAt: vehiclesDbPackManifest.built_at_utc,", "VehiclesDB snapshot timestamp");
 
@@ -163,7 +163,7 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
         sourceLicense: PACKS.vehiclesdb.license,
         attributionRequired: true,
         attribution: typeof packManifest.attribution === "string" ? packManifest.attribution : "Vehicle data by VehiclesDB (vehiclesdb.com)",
-        attributionUrl: safeHttpsUrl(packManifest.source_repository),
+        attributionUrl: safeHttpsUrl(packManifest.attribution?.url),
         sourceSha256: packManifest.source_catalog_sha256,
         sourceRecordSha256,
         sourceManifestSha256: pack.source_manifest_sha256,
