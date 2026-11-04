@@ -99,8 +99,12 @@ function main(){
  writeJson(pkgPath,pkg);
 
  const routePath=path.join(desktop,"app/api/local-research/route.ts");let route=fs.readFileSync(routePath,"utf8");
- const localImport='import * as localResearch from "../../../lib/local-research-db.cjs";';
- if(!route.includes("generic-repair-guidance-db.cjs"))route=exact(route,localImport,localImport+'\nimport * as genericGuidance from "../../../lib/generic-repair-guidance-db.cjs";',"API import");
+ if(!route.includes("generic-repair-guidance-db.cjs")){
+  const localImportLine=route.split(/\\r?\\n/).find(line=>/^\\s*import\\b/.test(line)&&line.includes("local-research-db"));
+  if(!localImportLine)fail("Local research API import not found");
+  const genericImport=localImportLine.includes("@/")?'import * as genericGuidance from "@/lib/generic-repair-guidance-db.cjs";':'import * as genericGuidance from "../../../lib/generic-repair-guidance-db.cjs";';
+  route=exact(route,localImportLine,localImportLine+"\\n"+genericImport,"API import");
+ }
  if(!route.includes('dataset === "generic-guidance-summary"'))route=exact(route,'    if (dataset === "summary") {','    if (dataset === "generic-guidance-summary") {\n      return Response.json(genericGuidance.getSummary(), { headers });\n    }\n    if (dataset === "summary") {',"API summary endpoint");
  if(!route.includes('dataset === "generic-guidance"'))route=exact(route,'    else return Response.json({ error: "Неизвестный локальный справочник." }, { status: 404, headers });','    else if (dataset === "generic-guidance") rows = genericGuidance.search(query, limit);\n    else return Response.json({ error: "Неизвестный локальный справочник." }, { status: 404, headers });',"API search endpoint");
  fs.writeFileSync(routePath,route,"utf8");
