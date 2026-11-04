@@ -5,3 +5,4 @@ workflow_revision=17f51a446623b8d518cd320e15ce0e541605758a
 trigger_reason=run54 importer plus run55 offline firewall lifecycle gate
 run59_patch=apply-mechanicdb-candidate-browser-run59.cjs
 run59_workflow_revision=5cb0c93a784929bdb693e11e30b1fc5ff34549cf
+run59_script_revision=f482735d0a50a479a997cb67d98008b5a0f8bbdc
