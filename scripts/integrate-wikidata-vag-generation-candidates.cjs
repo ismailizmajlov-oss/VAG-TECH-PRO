@@ -435,7 +435,7 @@ function patchDesktopSource(desktop) {
   }
   if (!ui.includes('dataset === "wikidata-generations" ?')) {
     const anchor = ': dataset === "wikidata" ? "Марка или модель… например Golf" :';
-    ui = exact(ui, anchor, ': dataset === "wikidata-generations" ? "Модель, серия или QID… например Octavia" : ' + anchor, "generation search placeholder");
+    ui = exact(ui, anchor, 'dataset === "wikidata-generations" ? "Модель, серия или QID… например Octavia" : ' + anchor, "generation search placeholder");
   }
   if (!ui.includes("Кандидаты серий Wikidata")) {
     const anchor = '      <article className="research-stat"><small>Модели Wikidata</small>';
