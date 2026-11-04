@@ -34,7 +34,7 @@
       "Automobili Lamborghini S.p.A.",
       "Bugatti Rimac"
     ],
-    "entity_type": "car model (Q3231690) or subclass",
+    "entity_type": "car model (Q3231690), direct P31 statement only",
     "snapshot_sha256_required": true,
     "query_sha256_required": true,
     "per_binding_sha256_required": true
