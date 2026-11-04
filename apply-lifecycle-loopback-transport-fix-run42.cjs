@@ -162,10 +162,15 @@ result = replaceExact(
 );
 script = result.source;
 
-if (script.includes("$client = [System.Net.Http.HttpClient]::new()") ||
+const staleHandlerBlock = [
+  "  $handler = [System.Net.Http.HttpClientHandler]::new()",
+  "  $handler.AllowAutoRedirect = $false",
+  "  $client = [System.Net.Http.HttpClient]::new($handler)"
+].join("\n");
+if (script.includes(staleHandlerBlock) ||
+    script.includes("$client = [System.Net.Http.HttpClient]::new()") ||
     script.includes("$client = [System.Net.Http.HttpClient]::new($handler)") ||
     script.includes("$backupClient = [System.Net.Http.HttpClient]::new()") ||
-    script.includes("$handler = [System.Net.Http.HttpClientHandler]::new()") ||
     !script.includes("$handler.UseProxy = $false") ||
     !script.includes("$handler.AllowAutoRedirect = $false") ||
     !script.includes("$Request.Headers.Host = $uri.Authority") ||
