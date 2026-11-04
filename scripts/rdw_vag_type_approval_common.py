@@ -199,8 +199,10 @@ def validate_lock(lock: dict[str, Any]) -> None:
     if lock.get("data_license") != LICENSE or lock.get("rights_status") != "approved_by_published_license":
         raise ValueError("RDW CC0 rights gate failed")
     rights = lock.get("rights", {})
-    if any(rights.get(k) is not True for k in ("commercial_use_allowed","display_allowed","offline_cache_allowed","redistribution_allowed")):
+    if any(rights.get(k) is not True for k in ("commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed")):
         raise ValueError("RDW reuse scope is incomplete")
+    if rights.get("share_alike_required") is not False:
+        raise ValueError("RDW CC0 pack must not acquire a share-alike restriction")
     if lock.get("applicability_policy", {}).get("ru_eaeu_applicability") is not False:
         raise ValueError("RDW pack must not claim RU/EAEU applicability")
     required = {"m9d7-ebf2","4by9-ammk","7rjk-eycs","byxc-wwua","x5v3-sewk"}
