@@ -19,6 +19,9 @@ on:
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
+      - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
+      - "data/source-manifests/wikidata-vag-generation-candidates.json"
+      - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
@@ -365,7 +368,7 @@ jobs:
         with:
           name: wikidata-vag-model-taxonomy-cc0
           path: ${{ runner.temp }}/vag-tech-pro-wikidata
-          run-id: 41875660206
+          run-id: 41905383209
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify pinned Wikidata artifact digest and source revision
@@ -375,16 +378,16 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
-          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/41875660206/artifacts?per_page=100"
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/41905383209/artifacts?per_page=100"
           $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
-          $artifact = $response.artifacts | Where-Object { $_.id -eq 13346487773 -and $_.name -eq "wikidata-vag-model-taxonomy-cc0" -and $_.expired -eq $false } | Select-Object -First 1
+          $artifact = $response.artifacts | Where-Object { $_.id -eq 13360765168 -and $_.name -eq "wikidata-vag-model-taxonomy-cc0" -and $_.expired -eq $false } | Select-Object -First 1
           if ($null -eq $artifact) { throw "Pinned Wikidata artifact is missing or expired." }
-          if ($artifact.digest -ne "sha256:5b6ec0423ceaab6dcd7f2ba69cc968fc38c19cf868b9c5eb277a18ec85966b03") { throw "Pinned Wikidata artifact digest mismatch: $($artifact.digest)" }
+          if ($artifact.digest -ne "sha256:a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609") { throw "Pinned Wikidata artifact digest mismatch: $($artifact.digest)" }
           $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-wikidata"
           $manifest = Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json
-          if ($manifest.pack_id -ne "wikidata-vag-model-taxonomy-cc0-2d10b144bc8f" -or $manifest.source_revision -ne "wikidata-snapshot-2d10b144bc8f") { throw "Wikidata snapshot revision mismatch." }
+          if ($manifest.pack_id -ne "wikidata-vag-model-taxonomy-cc0-7a99f275966b" -or $manifest.source_revision -ne "wikidata-snapshot-7a99f275966b") { throw "Wikidata snapshot revision mismatch." }
           if ($manifest.data_license -ne "CC0-1.0" -or $manifest.rights_status -ne "approved_by_published_license" -or $manifest.scope.market_scope -ne "UNKNOWN" -or $manifest.scope.applicability_precision -ne "candidate_identity_only") { throw "Wikidata rights or candidate-only scope mismatch." }
-          "wikidata_artifact_sha256=5b6ec0423ceaab6dcd7f2ba69cc968fc38c19cf868b9c5eb277a18ec85966b03" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "wikidata_artifact_sha256=a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "wikidata_source_revision=$($manifest.source_revision)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Assemble and verify offline SQLite research packs
