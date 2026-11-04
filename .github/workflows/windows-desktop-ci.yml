@@ -1,10 +1,10 @@
 name: VAG TECH PRO Windows x64 desktop
-# Run41 verification: re-run the pinned Windows x64 source, strict loopback security and installer lifecycle gates.
+# Run42 verification: re-run the pinned Windows x64 source, strict loopback security and installer lifecycle gates.
 
 on:
   push:
     branches:
-      - automation/windows-desktop-build-run41
+      - automation/windows-desktop-build-run42
   pull_request:
     branches:
       - main
@@ -354,7 +354,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run41
+          name: vag-tech-pro-windows-x64-run42
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
