@@ -282,6 +282,14 @@ jobs:
           node --test desktop-source/tests/local-research-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/research-hash-targeted-test.log"
           if ($LASTEXITCODE -ne 0) { throw "Targeted research pack integrity test failed" }
 
+      - name: Apply React lint and lifecycle cleanup fixes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-eslint-fix-run45.cjs
+          node apply-desktop-eslint-fix-run45.cjs
+          if ($LASTEXITCODE -ne 0) { throw "React lint fix patch failed" }
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
