@@ -61,7 +61,7 @@ result = replaceAllExact(
   "$client = [System.Net.Http.HttpClient]::new()",
   "$client = New-LoopbackHttpClient",
   "replace direct local HttpClient construction",
-  2
+  1
 );
 script = result.source;
 result = replaceExact(
