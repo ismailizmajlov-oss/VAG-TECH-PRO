@@ -1456,6 +1456,55 @@
         "Keep the database separate and preserve the CC BY 4.0 VehiclesDB credit plus all unconditional upstream source notices."
       ],
       "evidence_status": "pinned_v2026.10.3_manifest_LICENSE_and_ATTRIBUTION_reviewed_2026-11-05; audit records SQLite integrity and source-file hashes"
+    },
+    {
+      "source_id": "elpts-national-otts-register-public-query",
+      "publisher": "АО «Электронный паспорт» / national part of the EAEU unified vehicle type-approval register",
+      "url": "https://elpts.ru/",
+      "access_details_url": "https://docs.elpts.ru/ncher/esbkts",
+      "source_kind": "official_public_query_route_for_vehicle_type_approval_documents",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "document_types": [
+        "OTTS",
+        "OTSH",
+        "SBKTS",
+        "ZOETS",
+        "cancellation_notices"
+      ],
+      "evidence_scope": [
+        "vehicle_type_approval_document_discovery",
+        "document_metadata_only"
+      ],
+      "access": {
+        "public_query_route": "The elpts.ru public page lists the national part of the unified OTTS/OTSH/SBKTS register; docs.elpts.ru/ncher/esbkts is a publicly reachable document-register page titled ESBKTS with visible OTTS, OTSH and ZOETS filter labels.",
+        "machine_readable_api": "not_verified",
+        "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
+        "bulk_export": "not_established",
+        "offline_cache": "not_established",
+        "automated_extraction": "not_established",
+        "pdf_download_and_redistribution": "not_established"
+      },
+      "rights": {
+        "data_license_status": "not_established",
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true
+      },
+      "limitations": [
+        "The public docs page title identifies an SBKTS register; visible OTTS/OTSH/ZOETS labels do not prove that all OTTS records are exposed, complete or downloadable.",
+        "The elpts.ru page identifies a national part of the unified OTTS/OTSH/SBKTS register, but no dataset-specific open licence or terms granting bulk extraction, offline SQLite caching, third-party display or redistribution were found.",
+        "Do not treat an SBKTS record as an OTTS record; document type and issuing authority must remain explicit.",
+        "An OTTS is type-approval evidence only to the extent stated in the document; it does not establish individual VIN build data, ECU/DTC, wiring, repair applicability or an exact engine/gearbox pairing unless the primary document explicitly ties those values together."
+      ],
+      "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
+      "evidence_status": "official_elpts_public_page_and_docs_portal_reviewed_2026-11-05; see docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md"
     }
   ],
   "minimum_fitment_evidence_fields": [
