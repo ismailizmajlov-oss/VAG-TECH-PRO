@@ -2,38 +2,37 @@ name: Validate VAG source-rights register
 
 on:
   push:
-    branches:
-      - main
-      - automation/windows-desktop-build-run61-integrated
+    branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/wikidata-vag-generation-candidates.json"
+      - "data/source-manifests/openvag-dtc-candidate.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
-      - "scripts/build_mechanicdb_generic_guidance.py"
-      - "data/sql/generic-repair-guidance.sql"
-      - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
-      - "tests/test_mechanicdb_generic_guidance_source_rights.py"
-      - "tests/test_mechanicdb_generic_guidance_pack.py"
       - "docs/research/HPT_SU_SOURCE_RIGHTS_REVIEW_2026-11-04.md"
       - "docs/research/FGIS_OTTS_ACCESS_RESTRICTIONS_2026-11-04.md"
       - "docs/research/WAL33D_DTC_SOURCE_REVIEW_2026-11-04.md"
+      - "docs/research/OPENVAG_DTC_SOURCE_REVIEW_2026-11-04.md"
+      - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
       - "tests/test_hptsu_source_rights.py"
       - "tests/test_fgis_source_rights.py"
       - "tests/test_wal33d_source_rights.py"
+      - "tests/test_openvag_source_rights.py"
+      - "tests/test_mechanicdb_generic_guidance_source_rights.py"
+      - "tests/test_wikidata_generation_source_rights.py"
       - ".github/workflows/validate-vag-source-register.yml"
   pull_request:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
-      - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
-      - "scripts/build_mechanicdb_generic_guidance.py"
-      - "data/sql/generic-repair-guidance.sql"
-      - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
-      - "tests/test_mechanicdb_generic_guidance_source_rights.py"
-      - "tests/test_mechanicdb_generic_guidance_pack.py"
+      - "data/source-manifests/wikidata-vag-generation-candidates.json"
+      - "data/source-manifests/openvag-dtc-candidate.json"
       - "docs/research/HPT_SU_SOURCE_RIGHTS_REVIEW_2026-11-04.md"
       - "docs/research/FGIS_OTTS_ACCESS_RESTRICTIONS_2026-11-04.md"
+      - "docs/research/OPENVAG_DTC_SOURCE_REVIEW_2026-11-04.md"
       - "tests/test_hptsu_source_rights.py"
       - "tests/test_fgis_source_rights.py"
+      - "tests/test_openvag_source_rights.py"
+      - "tests/test_wikidata_generation_source_rights.py"
       - ".github/workflows/validate-vag-source-register.yml"
 
 permissions:
@@ -41,12 +40,11 @@ permissions:
 
 jobs:
   validate-data-source-rights:
-    runs-on: windows-2025
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          architecture: "x64"
       - name: Validate DTC and RU/EAEU source-rights boundaries
         run: python -m unittest discover -s tests -p "test_*source_rights.py" -v
