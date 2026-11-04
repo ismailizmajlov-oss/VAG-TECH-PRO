@@ -658,7 +658,7 @@ function patchDesktopSource(desktopRoot) {
     ui = ui.replace(anchor, card + anchor);
   }
   if (!ui.includes("Wikidata structured data — CC0 1.0 Universal")) {
-    const anchor = '      <p>VAG identity — ODbL-1.0:';
+    const anchor = '      <p>SQLite SHA-256 · VehiclesDB identity:';
     if (ui.split(anchor).length - 1 !== 1) fail("Wikidata attribution insertion anchor is missing");
     ui = ui.replace(anchor, '      <p>Wikidata structured data — CC0 1.0 Universal: <a href="https://www.wikidata.org/" target="_blank" rel="noopener noreferrer">Wikidata</a>. Атрибуция рекомендуется, но не обязательна; лицензия не распространяется на статьи, изображения, логотипы и OEM-материалы Wikimedia.</p>\n' + anchor);
   }
