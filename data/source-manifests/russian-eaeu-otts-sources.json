@@ -368,7 +368,8 @@
         "root_url": "https://portal.eaeunion.org/",
         "observed_redirect": "https://opendata.eaeunion.org/opendata/",
         "ot_ts_specific_endpoint_resolved": false,
-        "note": "The open-data portal catalog exposes OData/REST resources, but a dedicated OTTS resource or dataset-specific reuse grant was not identified."
+        "note": "The open-data portal catalog exposes OData/REST resources, but a dedicated OTTS resource or dataset-specific reuse grant was not identified.",
+        "historical_context_note": "A 2018 EEC-commissioned NAMI report describes free Internet access to necessary information in national EAEU registers and scanned PDF records, but it is historical context only and does not grant bulk reuse, caching, third-party display or redistribution rights."
       },
       "access_and_reuse": {
         "individual_public_query": "legal_basis_identified_under_decision_88; current OTTS-specific endpoint not resolved",
@@ -378,7 +379,29 @@
         "third_party_display": "not_confirmed",
         "offline_cache": "not_confirmed",
         "redistribution": "not_confirmed"
-      }
+      },
+      "supporting_documents": [
+        {
+          "document_id": "eec-nami-otts-e-document-workflow-report-2018",
+          "title": "Отчет о НИР: анализ международного опыта и практики применения электронного документооборота в области оценки соответствия колесных транспортных средств (этап 1)",
+          "publisher": "ФГУП «НАМИ» по договору с Евразийской экономической комиссией",
+          "source_url": "https://eec.eaeunion.org/upload/iblock/ffb/Otchet-OTTS-etap-1_664.pdf",
+          "published_year": 2018,
+          "relevant_pages": [
+            16
+          ],
+          "historical_findings": [
+            "The report describes national EAEU member-state registers and says necessary information was available through free Internet access.",
+            "It reports that registry entries included scanned PDF copies and that missing attributes made search difficult."
+          ],
+          "rights_boundary": "This historical technical report does not grant VAG TECH PRO a licence for bulk extraction, persistent offline caching, commercial display or redistribution of register records or PDFs.",
+          "report_use_status": "supporting_legal_and_system_context_only",
+          "data_ingested": false,
+          "source_snapshot_sha256": null,
+          "hash_status": "not_downloaded_no_ingestion",
+          "historical_context_only": true
+        }
+      ]
     },
     {
       "source_id": "hpt-su-otts-api",
