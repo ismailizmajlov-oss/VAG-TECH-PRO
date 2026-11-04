@@ -223,6 +223,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "VAG identity provenance exclusion failed" }
           "vag_identity_source=excluded_pending_upstream_provenance_review" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply run38 loopback Origin fix for native lifecycle requests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-origin-fix-run38.cjs
+          node apply-lifecycle-origin-fix-run38.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-origin-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run38 local API request-origin fix failed" }
+          "lifecycle_origin_fix=applied" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -327,7 +336,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run37
+          name: vag-tech-pro-windows-x64-run38
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
