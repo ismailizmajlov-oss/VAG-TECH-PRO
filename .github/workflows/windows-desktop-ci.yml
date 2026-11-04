@@ -771,6 +771,9 @@ jobs:
           $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path (Get-Location) "release/win-unpacked/resources/research-data"
           node -e 'const s=require("./lib/local-research-db.cjs").getResearchSummary(); const p=s.packs.find(x=>x.id==="wikidata-vag-model-taxonomy-cc0"); if(!p || p.counts.models!==376 || p.counts.russianLabels!==171 || p.marketScope!=="UNKNOWN" || p.fitmentClaim!==false) throw new Error("Packaged Wikidata offline resource verification failed"); console.log(JSON.stringify(p));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata offline resource verification failed" }
+          node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged generic MechanicDB offline resource verification failed" }
+
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.2-x64.exe") -Force
 
@@ -791,6 +794,9 @@ jobs:
           $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path (Get-Location) "release/win-unpacked/resources/research-data"
           node -e 'const s=require("./lib/local-research-db.cjs").getResearchSummary(); const p=s.packs.find(x=>x.id==="wikidata-vag-model-taxonomy-cc0"); if(!p || p.counts.models!==376 || p.counts.russianLabels!==171 || p.marketScope!=="UNKNOWN" || p.fitmentClaim!==false) throw new Error("Packaged upgrade Wikidata offline resource verification failed"); console.log(JSON.stringify(p));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade Wikidata offline resource verification failed" }
+          node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged upgrade generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade generic MechanicDB offline resource verification failed" }
+
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") -Force
 
