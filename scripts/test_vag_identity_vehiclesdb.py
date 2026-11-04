@@ -19,17 +19,10 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
     source_db = source_dir / "catalog.sqlite"
     db = sqlite3.connect(source_db)
     db.executescript("""
-    CREATE TABLE sources(id TEXT PRIMARY KEY,country TEXT,name TEXT,url TEXT,license TEXT,license_url TEXT,evidence TEXT);
     CREATE TABLE makes(kind TEXT,id TEXT,slug TEXT,name TEXT,PRIMARY KEY(kind,id));
     CREATE TABLE models(kind TEXT,id TEXT,make_id TEXT,slug TEXT,name TEXT,global_decile INTEGER,mass_decile INTEGER,PRIMARY KEY(kind,id));
     CREATE TABLE availability(kind TEXT,model_id TEXT,country TEXT,evidence TEXT,source TEXT,PRIMARY KEY(kind,model_id,country,source));
     """)
-    sources = [
-        ("nl_rdw", "nl", "Dutch vehicle register", "https://example.invalid/nl", "CC0-1.0", "https://example.invalid/nl-license", "registration"),
-        ("us_fueleconomy", "us", "US fuel economy catalog", "https://example.invalid/us", "US-PD", "https://example.invalid/us-license", "approval"),
-        ("th_dlt", "th", "Thai DLT", "https://example.invalid/th", "TH-OpenDataCommon", "https://example.invalid/th-license", "registration"),
-    ]
-    db.executemany("INSERT INTO sources VALUES(?,?,?,?,?,?,?)", sources)
     makes = [
         ("car", "volkswagen", "volkswagen", "Volkswagen"),
         ("car", "audi", "audi", "Audi"),
@@ -59,9 +52,9 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
         "license": "CC-BY-4.0",
         "countries": ["nl", "us", "th"],
         "sources": [
-            {"id": "nl_rdw", "country": "nl", "license": "CC0-1.0"},
-            {"id": "us_fueleconomy", "country": "us", "license": "US-PD"},
-            {"id": "th_dlt", "country": "th", "license": "TH-OpenDataCommon"},
+            {"id": "nl_rdw", "country": "nl", "name": "Dutch vehicle register", "url": "https://example.invalid/nl", "license": "CC0-1.0", "license_url": "https://example.invalid/nl-license", "evidence": "registration"},
+            {"id": "us_fueleconomy", "country": "us", "name": "US fuel economy catalog", "url": "https://example.invalid/us", "license": "US-PD", "license_url": "https://example.invalid/us-license", "evidence": "approval"},
+            {"id": "th_dlt", "country": "th", "name": "Thai DLT", "url": "https://example.invalid/th", "license": "TH-OpenDataCommon", "license_url": "https://example.invalid/th-license", "evidence": "registration"},
         ],
     }, indent=2), encoding="utf-8")
     attribution = source_dir / "ATTRIBUTION.md"
