@@ -5,7 +5,10 @@ import json
 import sqlite3
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from rdw_vag_type_approval_common import (
     build_database, normalize_vehicle_rows, normalize_engine_rows,
