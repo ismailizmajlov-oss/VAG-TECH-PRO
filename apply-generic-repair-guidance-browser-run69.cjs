@@ -165,7 +165,7 @@ function main(){
  fs.writeFileSync(uiPath,ui,"utf8");
 
  const lifePath=path.join(desktop,"scripts/windows-installer-lifecycle.ps1");let life=fs.readFileSync(lifePath,"utf8");
- const lifeAnchor='  if ($summary.mode -ne "offline_local_sqlite_admin") { throw "The local SQLite API did not initialize in offline mode." }\n';
+ const lifeAnchor='    if ($summary.mode -ne "offline_local_sqlite_admin") { throw "The local SQLite API did not initialize in offline mode." }\n';
  if(!life.includes("api/local-research?dataset=generic-guidance-summary")){
   const checks=[
    '  # generic_repair_guidance is a separate local SQLite pack and must remain readable with external network blocked.',
