@@ -37,7 +37,9 @@
     "entity_type": "car model (Q3231690), direct P31 statement only",
     "snapshot_sha256_required": true,
     "query_sha256_required": true,
-    "per_binding_sha256_required": true
+    "per_binding_sha256_required": true,
+    "query_limit": 3000,
+    "completeness_status": "unknown"
   },
   "applicability": {
     "market_scope": "UNKNOWN",
@@ -51,7 +53,8 @@
     "dtc_fitment": false,
     "repair_procedure_fitment": false,
     "diagnostic_execution_allowed": false,
-    "production_years_inferred": false
+    "production_years_inferred": false,
+    "completeness_status": "unknown"
   },
   "exclusions": [
     "No engine or gearbox codes",
