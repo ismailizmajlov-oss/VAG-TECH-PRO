@@ -1,4 +1,3 @@
-# The Windows workflow checks raw license/attribution bytes after checkout; .gitattributes pins LF or binary semantics.
 import hashlib
 import json
 import os
