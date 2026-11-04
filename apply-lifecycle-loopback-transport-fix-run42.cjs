@@ -34,7 +34,8 @@ const helperLines = [
   "}",
   "",
   "function Set-LoopbackRequestHeaders([System.Net.Http.HttpRequestMessage]$Request, [string]$BaseUrl) {",
-  "  $uri = [System.Uri]::new(\"$BaseUrl/api/local-core\")",
+  "  $base = [System.Uri]::new($BaseUrl.TrimEnd(\"/\"))",
+  "  $uri = [System.Uri]::new($base, \"/api/local-core\")",
   "  if ($uri.Scheme -ne \"http\" -or @(\"127.0.0.1\", \"localhost\", \"::1\", \"[::1]\") -notcontains $uri.Host) {",
   "    throw \"Refusing non-loopback lifecycle request: $($uri.AbsoluteUri)\"",
   "  }",
@@ -56,11 +57,22 @@ if (!script.includes("function New-LoopbackHttpClient")) {
 }
 
 let result;
+result = replaceExact(
+  script,
+  [
+    "  $handler = [System.Net.Http.HttpClientHandler]::new()",
+    "  $handler.AllowAutoRedirect = $false",
+    "  $client = [System.Net.Http.HttpClient]::new($handler)"
+  ].join("\n"),
+  "  $client = New-LoopbackHttpClient",
+  "replace run40 lifecycle HttpClient handler with proxy-bypassing client"
+);
+script = result.source;
 result = replaceAllExact(
   script,
   "$client = [System.Net.Http.HttpClient]::new()",
   "$client = New-LoopbackHttpClient",
-  "replace direct local HttpClient construction",
+  "replace remaining direct local HttpClient construction",
   1
 );
 script = result.source;
@@ -74,7 +86,11 @@ script = result.source;
 
 result = replaceExact(
   script,
-  '    $request.Headers.TryAddWithoutValidation("Origin", $BaseUrl) | Out-Null\n    $request.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin") | Out-Null',
+  [
+    "    $request.Headers.Host = $normalizedBase.Authority",
+    '    $request.Headers.TryAddWithoutValidation("Origin", $origin) | Out-Null',
+    '    $request.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin") | Out-Null'
+  ].join("\n"),
   "    $origin = Set-LoopbackRequestHeaders $request $BaseUrl",
   "pin JSON mutation request to explicit loopback authority"
 );
@@ -105,7 +121,12 @@ const localJsonError = [
 ].join("\n");
 result = replaceExact(
   script,
-  '      if (-not $response.IsSuccessStatusCode) { throw "Local JSON request failed: HTTP $([int]$response.StatusCode) $responseText" }',
+  [
+    "      if (-not $response.IsSuccessStatusCode) {",
+    '        $location = if ($response.Headers.Location) { $response.Headers.Location.ToString() } else { "" }',
+    '        throw "Local JSON request failed: HTTP $([int]$response.StatusCode) uri=$($endpoint.AbsoluteUri) origin=$origin host=$($request.Headers.Host) location=$location body=$responseText"',
+    "      }"
+  ].join("\n"),
   localJsonError,
   "add loopback JSON transport diagnostics"
 );
@@ -142,10 +163,13 @@ result = replaceExact(
 script = result.source;
 
 if (script.includes("$client = [System.Net.Http.HttpClient]::new()") ||
+    script.includes("$client = [System.Net.Http.HttpClient]::new($handler)") ||
     script.includes("$backupClient = [System.Net.Http.HttpClient]::new()") ||
+    script.includes("$handler = [System.Net.Http.HttpClientHandler]::new()") ||
     !script.includes("$handler.UseProxy = $false") ||
     !script.includes("$handler.AllowAutoRedirect = $false") ||
     !script.includes("$Request.Headers.Host = $uri.Authority") ||
+    !script.includes("Set-LoopbackRequestHeaders $request $BaseUrl") ||
     !script.includes('TryAddWithoutValidation("Sec-Fetch-Site", "same-origin")')) {
   throw new Error("Loopback transport hardening is incomplete.");
 }
