@@ -1,0 +1,5 @@
+VAG TECH PRO Windows x64 validation trigger.
+Base revision: ddb52052012110cfeb1ddc1727653a657f12b23c
+Includes: source-rights catalogue evidence, owner-gated native Windows 10/11 lifecycle workflow, CI run-status recorder, and corrected project README.
+Purpose: complete the current 0.2.3 -> 0.2.4 NSIS build, offline pack checks, Windows Server lifecycle and publish a verifiable CI status record.
+No production release is authorized.
