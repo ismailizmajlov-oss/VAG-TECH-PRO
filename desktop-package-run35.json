@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint . --max-warnings=0",
+    "lint": "eslint . --ignore-pattern release/** --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:desktop && npm run test:local-core && npm run test:research",
     "test:desktop": "node --test tests/desktop-runtime.test.cjs tests/windows-lifecycle-script-contract.test.cjs tests/diagnostic-worksheet.test.cjs",
