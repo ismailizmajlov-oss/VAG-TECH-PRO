@@ -53,6 +53,15 @@ EMISSIONS_COLUMNS = (
     "exhaustEmissionLevelCode", "exhaustEmissionLevelCodeShort",
 )
 ATTRIBUTION = "Source: Federal Roads Office (FEDRO/ASTRA), Type Approval System (TAS) open data."
+SOURCE_ID = "astra-fedro-tas-type-approvals-open-data-ch"
+PUBLISHER = "Federal Roads Office (FEDRO / ASTRA), Swiss Confederation"
+RIGHTS_EVIDENCE_URL = "https://opendata.astra.admin.ch/ivzod/5000-Newsletter/2026_1/Newsletter_Fahrzeugdaten_1_2026_EN.pdf"
+EXPECTED_DATA_PRODUCT_URLS = {
+    "passenger_car_index": f"{BASE}/4300-Datensaetze/TAS_Personenwagen.xlsb",
+    "other_automobile_index_xlsb": f"{BASE}/4300-Datensaetze/TAS_restliche_Automobilgruppen.xlsb",
+    "emissions_and_gearbox_variants_xlsb": f"{BASE}/4300-Datensaetze/TAS_Emission.xlsb",
+    "json_schema": f"{BASE}/4250-json-Schema/govServices_TypeApproval_Schema.json",
+}
 
 
 def sha256_file(path: Path) -> str:
@@ -193,18 +202,40 @@ def _read_rows(path: Path, expected_sheet: str, expected_rows: int):
 
 
 def _check_rights(source_manifest: dict[str, Any]) -> None:
+    if source_manifest.get("source_id") != SOURCE_ID:
+        raise ValueError("ASTRA source identity mismatch")
+    if source_manifest.get("publisher") != PUBLISHER:
+        raise ValueError("ASTRA publisher identity mismatch")
+    if source_manifest.get("source_kind") != "official_open_government_vehicle_type_approval_data":
+        raise ValueError("ASTRA source kind mismatch")
+    if source_manifest.get("market_scope") != ["CH"]:
+        raise ValueError("ASTRA pack market scope must remain CH only")
+
     rights = source_manifest.get("rights", {})
     if rights.get("rights_status") != "approved_by_published_ogd_terms":
         raise ValueError("ASTRA OGD rights status is not approved")
+    if "Swiss Open Government Data (OGD)" not in rights.get("data_license_status", ""):
+        raise ValueError("ASTRA OGD licence basis is missing")
+    if "EMBAG/EMOTA" not in rights.get("legal_basis", ""):
+        raise ValueError("ASTRA OGD legal basis is missing")
+    if rights.get("evidence_url") != RIGHTS_EVIDENCE_URL:
+        raise ValueError("ASTRA OGD rights evidence URL is not the reviewed FEDRO notice")
+    if "2026-02-23" not in rights.get("evidence", ""):
+        raise ValueError("ASTRA OGD evidence date is missing")
     for key in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed",
                 "bulk_reuse_allowed", "redistribution_allowed", "attribution_required"):
-        expected = key != "attribution_required" or True
         if rights.get(key) is not True:
             raise ValueError(f"ASTRA OGD rights gate failed: {key}")
     if rights.get("attribution") != ATTRIBUTION:
         raise ValueError("Required FEDRO/ASTRA attribution text changed or is missing")
-    if source_manifest.get("market_scope") != ["CH"]:
-        raise ValueError("ASTRA pack market scope must remain CH only")
+
+    products = source_manifest.get("data_products", {})
+    for key, expected_url in EXPECTED_DATA_PRODUCT_URLS.items():
+        if products.get(key) != expected_url:
+            raise ValueError(f"ASTRA source URL mismatch: {key}")
+    if products.get("official_newsletter") != RIGHTS_EVIDENCE_URL:
+        raise ValueError("ASTRA rights evidence and data-product manifest disagree")
+
     policy = source_manifest.get("import_policy", {})
     if policy.get("namespace") != "separate_read_only_research_pack":
         raise ValueError("ASTRA pack must remain a separate read-only research namespace")
@@ -359,7 +390,9 @@ def _value(row: dict[str, Any], key: str) -> str | None:
 
 
 def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
-    source_manifest = json.loads(source_manifest_path.read_text(encoding="utf-8-sig"))
+    source_manifest_bytes = source_manifest_path.read_bytes()
+    source_manifest_sha256 = hashlib.sha256(source_manifest_bytes).hexdigest()
+    source_manifest = json.loads(source_manifest_bytes.decode("utf-8-sig"))
     _check_rights(source_manifest)
     snapshot = source_manifest["snapshot"]
     source_revision = str(snapshot["source_data_date"])
@@ -415,6 +448,7 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
             "market_scope": "CH",
             "source_revision": source_revision,
             "source_snapshot_date": source_revision,
+            "source_manifest_sha256": source_manifest_sha256,
             "retrieved_at_utc": timestamp,
             "rights_status": "approved_by_published_ogd_terms",
             "license_name": "Swiss Open Government Data (OGD)",
@@ -667,6 +701,8 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
         raise
 
     database_hash = sha256_file(database_path)
+    source_snapshot_payload = json.dumps(file_evidence, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    source_snapshot_sha256 = hashlib.sha256(source_snapshot_payload.encode("utf-8")).hexdigest()
     pack_manifest = {
         "schema_version": 2,
         "pack_id": "astra-ch-tas-vag-open-data",
@@ -675,6 +711,9 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
         "source_id": source_manifest["source_id"],
         "source_revision": source_revision,
         "source_snapshot_date": source_revision,
+        "source_manifest_sha256": source_manifest_sha256,
+        "source_snapshot_sha256": source_snapshot_sha256,
+        "source_manifest_file": source_manifest_path.name,
         "market_scope": ["CH"],
         "rights": source_manifest["rights"],
         "attribution": ATTRIBUTION,
@@ -737,6 +776,8 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
     )
     report = {
         "status": "verified_research_only",
+        "source_manifest_sha256": source_manifest_sha256,
+        "source_snapshot_sha256": source_snapshot_sha256,
         "database_sha256": database_hash,
         "database_size_bytes": database_path.stat().st_size,
         "integrity_check": "ok",
