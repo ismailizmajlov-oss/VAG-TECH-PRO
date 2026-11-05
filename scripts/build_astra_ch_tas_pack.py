@@ -21,7 +21,7 @@ from typing import Any
 BASE = "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS"
 VAG_MAKES = {
     "AUDI", "BENTLEY", "BUGATTI", "CUPRA", "LAMBORGHINI",
-    "PORSCHE", "SEAT", "SKODA", "ŠKODA", "VOLKSWAGEN", "VW",
+    "PORSCHE", "SEAT", "SKODA", "VW",
 }
 INDEX_KEYS = ("passenger_cars", "other_automobiles", "emissions")
 REQUIRED_APPROVAL_FIELDS = {
@@ -243,6 +243,9 @@ def _check_rights(source_manifest: dict[str, Any]) -> None:
         raise ValueError("ASTRA source must never be imported as RU/EAEU production fitment")
     if policy.get("exact_brand_match_only") is not True:
         raise ValueError("ASTRA make filter must use exact source labels")
+    manifest_makes = policy.get("brands_to_filter")
+    if not isinstance(manifest_makes, list) or {normalize_text(value).upper() for value in manifest_makes} != VAG_MAKES:
+        raise ValueError("ASTRA exact make whitelist does not match the pinned source labels")
 
 
 def _create_schema(db: sqlite3.Connection) -> None:
