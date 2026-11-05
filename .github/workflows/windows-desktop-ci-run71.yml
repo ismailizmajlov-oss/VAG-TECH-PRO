@@ -213,7 +213,7 @@ jobs:
             }
           }
           if ($null -eq $run) {
-            for ($attempt = 1; $attempt -le 8; $attempt++) {
+            for ($attempt = 1; $attempt -le 60; $attempt++) {
               try {
                 $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
                 $currentRun = $response.workflow_runs |
