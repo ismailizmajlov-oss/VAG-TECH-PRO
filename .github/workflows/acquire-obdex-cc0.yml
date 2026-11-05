@@ -1,6 +1,7 @@
 name: Build licensed OBDex generic SQLite snapshot
 
 on:
+  workflow_call:
   pull_request:
     paths:
       - .github/workflows/acquire-obdex-cc0.yml
