@@ -36,6 +36,18 @@ class Wal33DDtcSourceRightsTests(unittest.TestCase):
         applicability = self.source["applicability"]
         self.assertFalse(applicability["manufacturer_list_published"])
         self.assertFalse(applicability["audi_or_volkswagen_presence_independently_verified"])
+        observed = self.source["observed_source_files"]
+        self.assertEqual(observed["audi_codes.txt"]["rows"], 129)
+        self.assertEqual(observed["audi_codes.txt"]["overlap_with_p_codes_file"], 127)
+        self.assertEqual(observed["volkswagen_codes.txt"]["rows"], 528)
+        self.assertEqual(observed["volkswagen_codes.txt"]["overlap_with_p_codes_file"], 22)
+        self.assertRegex(observed["audi_codes.txt"]["retrieved_content_sha256"], r"^[a-f0-9]{64}$")
+        self.assertRegex(observed["volkswagen_codes.txt"]["retrieved_content_sha256"], r"^[a-f0-9]{64}$")
+        self.assertTrue(self.source["namespace_audit"]["build_script_classifies_all_non_p_b_c_u_files_as_manufacturer_specific"])
+        self.assertEqual(self.source["rights"]["root_license_file_present"], True)
+        self.assertEqual(self.source["rights"]["root_license_blob_sha1"], "9cbfaae3f07b8daa1685b4587e36c604a7a4ded1")
+        self.assertFalse(self.source["rights"]["product_import_allowed"])
+
         self.assertEqual(applicability["model_generation_year_mapping"], "not documented")
         self.assertEqual(applicability["ecu_mapping"], "not documented")
         self.assertEqual(applicability["engine_or_gearbox_mapping"], "not documented")
