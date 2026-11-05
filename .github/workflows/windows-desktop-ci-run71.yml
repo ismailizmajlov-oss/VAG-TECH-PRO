@@ -24,6 +24,9 @@ on:
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/russian-eaeu-otts-sources.json"
+      - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      - "tests/test_otts_bot_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/generic-repair-guidance.sql"
@@ -56,6 +59,9 @@ on:
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/russian-eaeu-otts-sources.json"
+      - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      - "tests/test_otts_bot_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/generic-repair-guidance.sql"
@@ -109,6 +115,7 @@ jobs:
           python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
+          python tests/test_otts_bot_source_rights.py
 
 
       - name: Reassemble and verify pinned desktop source archive
