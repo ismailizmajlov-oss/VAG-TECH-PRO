@@ -1595,7 +1595,7 @@
       "source_id": "elpts-national-otts-register-public-query",
       "publisher": "АО «Электронный паспорт» / national part of the EAEU unified vehicle type-approval register",
       "url": "https://elpts.ru/",
-      "access_details_url": "https://docs.elpts.ru/ncher/esbkts",
+      "access_details_url": "https://docs.elpts.ru/ncher/otts",
       "source_kind": "official_public_query_route_for_vehicle_type_approval_documents",
       "market_scope": [
         "RU",
@@ -1613,7 +1613,7 @@
         "document_metadata_only"
       ],
       "access": {
-        "public_query_route": "The elpts.ru public page lists the national part of the unified OTTS/OTSH/SBKTS register; docs.elpts.ru/ncher/esbkts is a publicly reachable document-register page titled ESBKTS with visible OTTS, OTSH and ZOETS filter labels.",
+        "public_query_route": "A distinct official OTTS page is visible at docs.elpts.ru/ncher/otts; separate OTSH and SBKTS pages were also observed. The SBKTS page title remains distinct even though it exposes other document-type filters.",
         "machine_readable_api": "not_verified",
         "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
         "bulk_export": "not_established",
@@ -1635,10 +1635,35 @@
         "The public docs page title identifies an SBKTS register; visible OTTS/OTSH/ZOETS labels do not prove that all OTTS records are exposed, complete or downloadable.",
         "The elpts.ru page identifies a national part of the unified OTTS/OTSH/SBKTS register, but no dataset-specific open licence or terms granting bulk extraction, offline SQLite caching, third-party display or redistribution were found.",
         "Do not treat an SBKTS record as an OTTS record; document type and issuing authority must remain explicit.",
-        "An OTTS is type-approval evidence only to the extent stated in the document; it does not establish individual VIN build data, ECU/DTC, wiring, repair applicability or an exact engine/gearbox pairing unless the primary document explicitly ties those values together."
+        "An OTTS is type-approval evidence only to the extent stated in the document; it does not establish individual VIN build data, ECU/DTC, wiring, repair applicability or an exact engine/gearbox pairing unless the primary document explicitly ties those values together.",
+        "A distinct OTTS page was observed on 2026-11-06; its rendered total label is a UI observation under visible date filters, not a verified full-corpus count or permission to extract records."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "official_elpts_public_page_and_docs_portal_reviewed_2026-11-05; see docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md"
+      "evidence_status": "official ELPTS public OTTS/OTSH/SBKTS pages rechecked 2026-11-06; public query visibility observed but no dataset-specific reuse rights or bulk API established; see docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-06.md",
+      "public_page_observations": {
+        "observed_at": "2026-11-06",
+        "ot_ts": {
+          "url": "https://docs.elpts.ru/ncher/otts",
+          "page_title": "ОТТС",
+          "visible_total_label": "Всего оформлено: 14822",
+          "visible_date_filters": [
+            "04.11.2026",
+            "05.11.2026"
+          ],
+          "count_interpretation": "UI observation only; not a verified complete-corpus count"
+        },
+        "ot_sh": {
+          "url": "https://docs.elpts.ru/ncher/otsh",
+          "page_title": "ОТШ",
+          "visible_total_label": "Всего оформлено: 828",
+          "count_interpretation": "UI observation only; not a verified complete-corpus count"
+        },
+        "sbkts": {
+          "url": "https://docs.elpts.ru/ncher/esbkts",
+          "page_title": "ЭСБКТС",
+          "note": "Visible OTTS/OTSH/ZOETS filters do not establish completeness for those document classes"
+        }
+      }
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
