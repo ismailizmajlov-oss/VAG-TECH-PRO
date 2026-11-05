@@ -38,6 +38,7 @@ The current research snapshots contain useful public data, but none of the follo
 | Wikidata model taxonomy | 376 model entities, including 171 Russian labels | CC0-1.0; candidate identity only, market UNKNOWN |
 | Wikidata series membership | 9 member entities, 10 model/member links and 14 source bindings | CC0-1.0; series-member candidates, not verified generations or year ranges |
 | MechanicDB generic guidance | 275 generic guidance rows and 75 generic SAE DTC references | ODbL-1.0; generic educational reference only, no VAG or exact-vehicle applicability |
+| AutoDiag2 VAG community candidates | 110 model candidates, 259 version candidates, 1,083 unverified engine fields, 179 ECU candidates and 3,170 configuration candidates; 956 unattributed make-level DTC rows excluded, 0 retained | ODbL-1.0 / DbCL-1.0; separate read-only research pack, market UNKNOWN; no verified engine codes, transmission records or exact fitment |
 | MechanicDB manufacturer-labelled DTC candidates | 2 rows | ODbL-1.0; quarantined from normal DTC lookup pending technical review; not OEM-confirmed |
 
 Each pack remains in its own namespace with its own manifest, attribution/license material, source revision and hashes. Share-Alike obligations are retained. Generic DTC and generic repair guidance are not linked to a VAG configuration or ECU.
