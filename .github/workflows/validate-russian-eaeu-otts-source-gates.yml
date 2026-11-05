@@ -8,6 +8,7 @@ on:
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
+      - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
       - data/source-manifests/vw-okapi-product-catalog.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
       - docs/research/VW_OKAPI_SOURCE_REVIEW_2026-11-03.md
@@ -24,6 +25,7 @@ on:
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
+      - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
       - data/source-manifests/vw-okapi-product-catalog.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
       - docs/research/VW_OKAPI_SOURCE_REVIEW_2026-11-03.md

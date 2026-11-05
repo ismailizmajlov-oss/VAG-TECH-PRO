@@ -34,6 +34,19 @@ class FgisSourceRightsTests(unittest.TestCase):
         self.assertEqual(evidence["software_runtime"]["platform"], "IBM/HCL Domino")
         self.assertFalse(evidence["software_runtime"]["project_license_obtained"])
 
+    def test_order_2038_public_search_is_distinct_from_bulk_reuse(self):
+        publication = self.source["access"]["public_site_publication_contract"]
+        self.assertTrue(publication["official_site_search_required"])
+        self.assertEqual(publication["effective_from"], "2025-10-01")
+        self.assertIn("Annex 2", publication["public_fields_namespace"])
+        self.assertEqual(publication["endpoint_status"], "not_resolved")
+        self.assertFalse(publication["primary_official_copy_retrieved"])
+        self.assertEqual(self.source["rights"]["bulk_export_rights"], "not_established")
+        self.assertEqual(self.source["rights"]["offline_cache_rights"], "not_established")
+        self.assertEqual(self.source["rights"]["display_and_redistribution_rights"], "not_established")
+        self.assertIn("public search", self.source["project_decision"])
+        self.assertIn("do not bulk export", self.source["project_decision"])
+
     def test_no_bulk_or_offline_reuse_permission_is_claimed(self):
         rights = self.source["rights"]
         self.assertEqual(rights["bulk_export_rights"], "not_established")

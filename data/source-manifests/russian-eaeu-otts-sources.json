@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-11-05",
+  "reviewed_at": "2026-11-06",
   "product_market": [
     "RU",
     "EAEU"
@@ -38,7 +38,21 @@
             "Adds internal FGIS Annex 1 attributes 86 (resumption reason) and 87 (resumption date).",
             "Updates public Annex 2 field 25 and adds public fields 27 and 28 for early termination based on a cancellation notice."
           ]
-        }
+        },
+        "secondary_republication_sources": [
+          {
+            "url": "https://law.tks.ru/document/779154",
+            "quality": "secondary_republication",
+            "reviewed_at": "2026-11-06",
+            "note": "Contains Order 2038 and Annex 1/Annex 2 field lists; not the primary official signed copy."
+          },
+          {
+            "url": "https://base.garant.ru/412785907/",
+            "quality": "secondary_republication",
+            "reviewed_at": "2026-11-06",
+            "note": "Confirms Order 2038 and its requirement to publish/search Annex 2 electronic-record fields on the official Rosstandart website; not the primary official signed copy."
+          }
+        ]
       },
       "market_scope": [
         "RU",
@@ -311,7 +325,7 @@
           }
         ],
         "access_and_reuse": {
-          "public_search": "required_by_order_for_annex_2_fields",
+          "public_search": "required_by_order_for_annex_2_fields_of_electronically_issued_records; exact_official_endpoint_not_resolved",
           "documented_public_bulk_api": "not_identified",
           "commercial_use": "not_confirmed",
           "third_party_display": "not_confirmed",
@@ -325,7 +339,17 @@
           "order_2335_secondary_copy_reviewed": true,
           "official_primary_order_copy_retrieved": false,
           "official_public_search_endpoint_resolved": false,
-          "reviewed_at": "2026-11-03"
+          "reviewed_at": "2026-11-06",
+          "secondary_order_copies_reviewed": [
+            "https://law.tks.ru/document/779154",
+            "https://base.garant.ru/412785907/"
+          ],
+          "official_site_endpoints_checked": [
+            "https://www.gost.ru/portal/gost/home/activity/documents",
+            "https://www.rst.gov.ru/portal/gost/home/activity/documents"
+          ],
+          "primary_official_order_copy_retrieved": false,
+          "review_note": "Order 2038 public-site search obligation was rechecked against two secondary republications. Direct public search endpoint and primary signed copy remain unresolved; this bounded search result is not proof that no official route exists."
         }
       },
       "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
