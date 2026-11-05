@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "tests/test_sync_vag_source_register_source_rights.py"
+      - "scripts/sync_vag_source_register.py"
       - "tests/test_automotive9_vw_dtc_source_rights.py"
       - "docs/research/AUTOMOTIVE_9_VW_DTC_SOURCE_REVIEW_2026-11-06.md"
       - ".github/workflows/acquire-astra-ch-tas-vag-probe.yml"
@@ -47,6 +49,8 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "tests/test_sync_vag_source_register_source_rights.py"
+      - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "data/source-manifests/openvag-dtc-candidate.json"
       - "docs/research/HPT_SU_SOURCE_RIGHTS_REVIEW_2026-11-04.md"
