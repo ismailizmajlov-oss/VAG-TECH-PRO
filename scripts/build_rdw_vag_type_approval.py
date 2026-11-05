@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from rdw_vag_type_approval_common import (
-    build_database, sha256_bytes, validate_lock, verify_pack
+    build_database, sha256_bytes, validate_lock, validate_resource_metadata, verify_pack
 )
 
 BASE = "https://opendata.rdw.nl"
@@ -59,12 +59,11 @@ def request_bytes(url: str, retries: int = 5) -> bytes:
             time.sleep(min(2 ** attempt, 20))
     raise RuntimeError(f"RDW request failed: {last_error}")
 
-def fetch_metadata(dataset_id: str) -> tuple[dict[str, Any], bytes]:
+def fetch_metadata(dataset_id: str, metadata_gate: dict[str, Any]) -> tuple[dict[str, Any], bytes]:
     url = f"{BASE}/api/views/{dataset_id}.json"
     raw = request_bytes(url)
     metadata = json.loads(raw.decode("utf-8"))
-    if str(metadata.get("id")) != dataset_id:
-        raise ValueError(f"RDW metadata id mismatch for {dataset_id}")
+    publisher = validate_resource_metadata(dataset_id, metadata, metadata_gate)
     license_values = [
         str(metadata.get(k) or "")
         for k in ("licenseId", "licenseName", "license")
@@ -78,6 +77,7 @@ def fetch_metadata(dataset_id: str) -> tuple[dict[str, Any], bytes]:
         "rowsUpdatedAt": metadata.get("rowsUpdatedAt"),
         "metadataUpdatedAt": metadata.get("metadataUpdatedAt"),
         "viewLastModified": metadata.get("viewLastModified"),
+        **publisher,
         "metadata_sha256": sha256_bytes(raw),
         "license_metadata": joined or "not_explicit_in_socrata_metadata; covered_by_RDW_open_data_policy_and_parent_CC0_catalogue",
     }
@@ -157,7 +157,7 @@ def fetch_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
     metadata: dict[str, dict[str, Any]] = {}
     metadata_raw: dict[str, bytes] = {}
     for dataset_id in REQUIRED_DATASETS:
-        metadata[dataset_id], metadata_raw[dataset_id] = fetch_metadata(dataset_id)
+        metadata[dataset_id], metadata_raw[dataset_id] = fetch_metadata(dataset_id, lock["live_metadata_gate"])
 
     snapshots: list[dict[str, Any]] = []
     payloads: dict[str, list[dict[str, Any]]] = {}
