@@ -1,5 +1,5 @@
 name: VAG TECH PRO Windows x64 desktop
-# Run41 verification: re-run the pinned Windows x64 source, strict loopback security and installer lifecycle gates.
+# Run65 verification: normalize the loopback Host authority while retaining strict same-origin and Fetch Metadata checks.
 
 on:
   push:
@@ -250,6 +250,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run41 strict Fetch Metadata patch failed" }
           "lifecycle_fetchmetadata=strict_same_origin_or_none" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Apply run65 loopback Host-authority fix for Next-normalized URLs
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-lifecycle-loopback-host-authority-run65.cjs
+          node apply-lifecycle-loopback-host-authority-run65.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-loopback-host-authority-fix.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run65 loopback Host-authority patch failed" }
+          "lifecycle_loopback_host_authority=verified" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+
       - name: Prepare packaged Next.js production runtime dependencies
         shell: pwsh
         run: |
@@ -354,7 +364,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-windows-x64-run41
+          name: vag-tech-pro-windows-x64-run65
           path: |
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.0-x64.exe
             ${{ runner.temp }}/VAG-TECH-PRO-Setup-0.2.1-x64.exe
