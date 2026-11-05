@@ -194,6 +194,9 @@ function normalizeRecord(record, index, manifest) {
     exact_transmission_fitment_claim: 0,
     exact_ecu_fitment_claim: 0
   };
+  if (normalized.electronically_issued_flag !== true) {
+    fail(`${prefix}.electronically_issued_flag must be true for the Annex 2 public-search scope`);
+  }
   for (const field of TEXT_FIELDS) {
     if (normalized[field] !== undefined && normalized[field] !== null && typeof normalized[field] !== 'string') fail(`${prefix}.${field} must be text`);
   }
