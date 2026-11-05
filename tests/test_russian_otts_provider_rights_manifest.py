@@ -47,7 +47,7 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
         self.assertIn("Require written permission", source["notes"][3])
 
     def test_all_ru_eaeu_otts_candidates_remain_non_imported_without_clear_rights(self):
-        for source_id in ("rosstandart-fgis-reestr-kts", "eaeu-open-data-portal", "hpt-su-otts-api", "otts-bot", "otts-baza-ru", "elpts-national-otts-register"):
+        for source_id in ("rosstandart-fgis-registers-kts", "eaeu-open-data-portal", "hpt-su-otts-api", "otts-bot", "otts-baza-ru", "elpts-national-otts-register"):
             source = self.sources[source_id]
             self.assertFalse(source["data_ingested"], source_id)
             self.assertIsNone(source["source_snapshot_sha256"], source_id)
