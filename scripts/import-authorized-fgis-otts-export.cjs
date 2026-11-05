@@ -7,6 +7,7 @@ const crypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 
 const SOURCE_ID = 'rosstandart-fgis-kts';
+const OFFICIAL_SOURCE_DOMAINS = Object.freeze(['rst.gov.ru', 'gost.ru', 'interstandart.ru']);
 const EXPECTED_NAMESPACE = 'annex_2_publication_fields';
 const EXPECTED_PRECISION = 'type_approval_document_metadata_only';
 const MAX_EXPORT_BYTES = 25 * 1024 * 1024;
@@ -67,14 +68,26 @@ function cleanText(value, label, max = MAX_TEXT, required = false) {
   if (typeof value !== 'string') fail(`${label} must be a string`);
   const text = value.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
   if (required && !text) fail(`${label} is required`);
-  if (text.length > max) fail(`${label} exceeds ${max} characters`);
-  return text || null;
-}
 function validUrl(value, label, required = false) {
   if (!value && !required) return null;
+  if (typeof value !== 'string') fail(`${label} must be an absolute HTTPS URL`);
   let parsed;
   try { parsed = new URL(value); } catch { fail(`${label} must be an absolute HTTPS URL`); }
   if (parsed.protocol !== 'https:') fail(`${label} must use HTTPS`);
+  return parsed.toString();
+}
+function validOfficialSourceUrl(value, label, required = false) {
+  const normalized = validUrl(value, label, required);
+  if (!normalized) return null;
+  const parsed = new URL(normalized);
+  const host = parsed.hostname.toLowerCase();
+  const allowed = OFFICIAL_SOURCE_DOMAINS.some((domain) => host === domain || host.endsWith(`.${domain}`));
+  if (!allowed) fail(`${label} must use a verified Rosstandart/Interstandart official host`);
+  if (parsed.username || parsed.password) fail(`${label} must not contain URL credentials`);
+  if (parsed.port) fail(`${label} must not use a non-default port`);
+  return normalized;
+}
+(parsed.protocol !== 'https:') fail(`${label} must use HTTPS`);
   return parsed.toString();
 }
 function validDate(value, label) {
@@ -138,7 +151,7 @@ function normalizeRecord(record, index, manifest) {
   const approvalNumber = cleanText(record.approval_registration_number, `${prefix}.approval_registration_number`, 180, true);
   const make = cleanText(record.make, `${prefix}.make`, 80, true);
   if (!VAG_MAKES.has(make)) fail(`${prefix}.make is not one of the supported VAG brands`);
-  const sourceUrl = validUrl(record.source_url, `${prefix}.source_url`, true);
+  const sourceUrl = validOfficialSourceUrl(record.source_url, `${prefix}.source_url`, true);
   const fieldNumbers = record.source_field_numbers;
   if (!fieldNumbers || typeof fieldNumbers !== 'object' || Array.isArray(fieldNumbers)) fail(`${prefix}.source_field_numbers is required`);
   for (const [field, number] of Object.entries(fieldNumbers)) {
@@ -213,7 +226,7 @@ function validatePackage(input, manifest, licenseBytes, permissionBytes) {
   if (!Array.isArray(manifest.market_scope) || !manifest.market_scope.includes('RU') || !manifest.market_scope.includes('EAEU_TR_TS_018_2011')) {
     fail('market_scope must include RU and EAEU_TR_TS_018_2011');
   }
-  validUrl(manifest.source_url, 'source_url', true);
+  validOfficialSourceUrl(manifest.source_url, 'source_url', true);
   if (!/^\d{4}-\d{2}-\d{2}T/.test(String(manifest.retrieved_at || '')) || !Number.isFinite(Date.parse(manifest.retrieved_at))) fail('retrieved_at must be a valid ISO timestamp');
   if (!Array.isArray(input.records) || input.records.length < 1 || input.records.length > MAX_RECORDS) fail(`records must contain 1..${MAX_RECORDS} rows`);
   const seenKeys = new Set();
