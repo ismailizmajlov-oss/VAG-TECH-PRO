@@ -34,8 +34,9 @@ if (!packageJson.scripts || typeof packageJson.scripts["build:desktop"] !== "str
   throw new Error("Desktop build script is missing.");
 }
 const oldBuild = "npm run build && electron-builder --win nsis --x64";
-const newBuild = "npm run build && node scripts/prepare-electron-runtime.cjs && electron-builder --win nsis --x64";
-if (packageJson.scripts["build:desktop"] === oldBuild) {
+const oldBuildWithPublishPolicy = oldBuild + " --publish never";
+const newBuild = "npm run build && node scripts/prepare-electron-runtime.cjs && electron-builder --win nsis --x64 --publish never";
+if (packageJson.scripts["build:desktop"] === oldBuild || packageJson.scripts["build:desktop"] === oldBuildWithPublishPolicy) {
   packageJson.scripts["build:desktop"] = newBuild;
 } else if (packageJson.scripts["build:desktop"] !== newBuild) {
   throw new Error("Unexpected build:desktop command; refusing to replace an unreviewed build pipeline.");
@@ -159,7 +160,7 @@ const testContent = [
   'const preparation = fs.readFileSync(path.join(root, "scripts", "prepare-electron-runtime.cjs"), "utf8");',
   '',
   'test("Windows desktop build merges only production dependencies into the standalone runtime", () => {',
-  '  assert.match(pkg.scripts["build:desktop"], /npm run build && node scripts\\/prepare-electron-runtime\\.cjs && electron-builder --win nsis --x64/);',
+  '  assert.match(pkg.scripts["build:desktop"], /npm run build && node scripts\\/prepare-electron-runtime\\.cjs && electron-builder --win nsis --x64 --publish never$/);',
   '  const resources = pkg.build.extraResources;',
   '  assert.ok(resources.some((item) => item.from === ".next/standalone" && item.to === "app-runtime" && item.filter.includes("!node_modules/**/*")));',
   '  assert.ok(resources.some((item) => item.from === ".next/standalone/node_modules" && item.to === "app-runtime/node_modules"));',
