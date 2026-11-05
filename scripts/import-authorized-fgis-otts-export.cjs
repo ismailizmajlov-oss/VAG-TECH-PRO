@@ -66,8 +66,11 @@ function cleanText(value, label, max = MAX_TEXT, required = false) {
     return null;
   }
   if (typeof value !== 'string') fail(`${label} must be a string`);
-  const text = value.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
+  const text = value.replace(/[\\u0000-\\u001f\\u007f]/g, ' ').replace(/\\s+/g, ' ').trim();
   if (required && !text) fail(`${label} is required`);
+  if (text.length > max) fail(`${label} exceeds ${max} characters`);
+  return text || null;
+}
 function validUrl(value, label, required = false) {
   if (!value && !required) return null;
   if (typeof value !== 'string') fail(`${label} must be an absolute HTTPS URL`);
@@ -86,9 +89,6 @@ function validOfficialSourceUrl(value, label, required = false) {
   if (parsed.username || parsed.password) fail(`${label} must not contain URL credentials`);
   if (parsed.port) fail(`${label} must not use a non-default port`);
   return normalized;
-}
-(parsed.protocol !== 'https:') fail(`${label} must use HTTPS`);
-  return parsed.toString();
 }
 function validDate(value, label) {
   if (value === null || value === undefined || value === '') return null;
