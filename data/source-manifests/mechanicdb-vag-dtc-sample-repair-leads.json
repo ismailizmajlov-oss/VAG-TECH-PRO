@@ -234,6 +234,7 @@
     "community_repair_leads_visible": true,
     "community_repair_leads_verified": false,
     "community_repair_lead_count": 6,
-    "community_part_name_candidate_count": 6
+    "community_part_name_candidate_count": 6,
+    "diagnostic_execution_allowed": false
   }
 }
