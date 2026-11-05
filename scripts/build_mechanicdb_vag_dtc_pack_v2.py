@@ -202,7 +202,7 @@ def build_database(db_path: Path, manifest: dict, source_files: dict, dtcs: list
         ))
         for relative, item in source_files.items():
             db.execute("INSERT INTO source_files VALUES (?,?,?,?,?,?,?)", (
-                relative, item["url"], manifest["source_revision"], item["git_blob_sha1"],
+                relative, item["source_url"], manifest["source_revision"], item["git_blob_sha1"],
                 item["sha256"], item["byte_size"], item["file_kind"],
             ))
         dtc_file = source_files["upstream/dtc_codes.csv"]
@@ -322,7 +322,7 @@ def main() -> int:
         dst = output / relative
         shutil.copyfile(src, dst)
         source_files[relative] = {
-            "url": declared["url"],
+            "source_url": declared["url"],
             "git_blob_sha1": declared["git_blob_sha1"],
             "sha256": sha256_file(dst),
             "byte_size": dst.stat().st_size,
@@ -361,9 +361,14 @@ def main() -> int:
         "source_repository":manifest["repository"],"source_revision":manifest["source_revision"],"snapshot_date":manifest["snapshot_date"],
         "built_at_utc":datetime.now(timezone.utc).isoformat(),"data_license":"ODbL-1.0",
         "data_license_url":manifest["data_license_url"],"upstream_license":"MIT","documentation_license":"CC-BY-4.0",
+        "commercial_use_allowed":True,"commercial_use_allowed_under_odbl":True,"cache_allowed":True,
+        "redistribution_allowed":True,"redistribution_allowed_under_odbl":True,"offline_cache_allowed":True,
         "rights_status":"approved_by_published_license","commercial_use_allowed":True,"display_allowed":True,
         "offline_cache_allowed":True,"redistribution_allowed":True,"share_alike_required":True,"attribution_required":True,
         "source_snapshot_sha256":snapshot_sha256,"database_path":db_path.name,"database_sha256":sha256_file(db_path),
+        "source_workflow":{"workflow_file":".github/workflows/acquire-mechanicdb-vag-repair-leads-run72.yml",
+            "run_id":int(__import__("os").environ.get("GITHUB_RUN_ID","0")),"artifact_id":None,
+            "commit":__import__("os").environ.get("GITHUB_SHA",revision if "revision" in locals() else PINNED_REVISION),"artifact_sha256":None},
         "counts":{"manufacturer_controlled_candidates":2,"audi_candidates":1,"volkswagen_candidates":1,"generic_dtc_rows":0,
                   "repair_procedure_rows":0,"part_rows":0,"community_repair_lead_rows":6,"community_part_candidate_rows":6},
         "market_scope":"UNKNOWN","applicability_precision":"manufacturer_make_candidate",
