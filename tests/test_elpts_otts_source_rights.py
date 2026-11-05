@@ -37,6 +37,19 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         self.assertIn("offline caching", source["project_decision"])
         self.assertIn("written permission", source["project_decision"])
 
+
+    def test_new_public_search_routes_remain_discovery_only(self):
+        source = self.source
+        observations = source["public_page_observations"]
+        self.assertEqual(observations["observed_at"], "2026-11-06")
+        self.assertEqual(observations["ot_ts"]["url"], "https://docs.elpts.ru/ncher/otts")
+        self.assertEqual(observations["ot_sh"]["url"], "https://docs.elpts.ru/ncher/otsh")
+        self.assertIn("not a verified complete-corpus count", observations["ot_ts"]["count_interpretation"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(source["rights"]["offline_cache_allowed"], "not_established")
+        self.assertEqual(source["rights"]["bulk_reuse_allowed"], "not_established")
+        self.assertTrue(source["rights"]["permission_required_before_product_import_or_distribution"])
+
     def test_otts_sbKts_and_zoets_are_not_collapsed(self):
         source = self.source
         self.assertEqual(set(source["document_types"]), {"OTTS", "OTSH", "SBKTS", "ZOETS", "cancellation_notices"})
