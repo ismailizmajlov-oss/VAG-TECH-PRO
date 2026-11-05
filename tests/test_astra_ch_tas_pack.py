@@ -95,7 +95,7 @@ class AstraChTasPackTests(unittest.TestCase):
             (None, "ambiguous_approval_version"),
         )
 
-    def test_missing_or_non_exact_variant_version_scope_is_not_linked(self):
+    def test_missing_variant_version_scope_is_not_linked(self):
         index = {("1AB701", "AUDI"): [{
             "approval_row_id": 11,
             "variant": "AEL",
@@ -110,6 +110,14 @@ class AstraChTasPackTests(unittest.TestCase):
             resolve_scope_link(index, "1AB701", "AUDI", "AEL/", "m6"),
             (None, "version_scope_missing"),
         )
+
+    def test_non_exact_variant_version_scope_is_not_linked(self):
+        index = {("1AB701", "AUDI"): [{
+            "approval_row_id": 11,
+            "variant": "AEL",
+            "version": "V1",
+            "gearbox_classes": ["m6"],
+        }]}
         self.assertEqual(
             resolve_scope_link(index, "1AB701", "AUDI", "AEL/V2", "m6"),
             (None, "no_exact_version_match"),
