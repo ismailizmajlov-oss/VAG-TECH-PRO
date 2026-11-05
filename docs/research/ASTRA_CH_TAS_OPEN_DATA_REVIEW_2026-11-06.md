@@ -103,6 +103,18 @@ These are Swiss type-approval rows, not Russian/EAEU vehicle counts or individua
 
 The emissions workbook schema exposes `chTypeApprovalNumber`, `makeName`, `gearboxNumber`, `chGearboxType`, `chMapping` and `versionDefined`. It contains one row per gearbox/emissions variant. The official type-approval JSON exposes the same gearbox classification under `gearboxEmissionsN.chGearboxType` and its `versionDefined` scope.
 
-The six sample CUPRA JSON records all use `versionDefined="*"`; the approval index also shows `version="*"` for these variants. This is a wildcard, not an exact version. The importer must preserve it as approval/variant-wide scope and must not promote it to exact version fitment.
+The six sample CUPRA JSON records all have `version="*"`, while `gearboxEmissionsN.versionDefined` contains the composite raw `variant/version` scope (for example, approval 1XZ904 has `variant="CXDNPAX0"` and `versionDefined="CXDNPAX0/*"`). The trailing `*` is a wildcard version, not an exact version. The importer must compare the complete composite string and preserve the wildcard as approval/variant-wide scope.
 
 The emissions data does not expose a VAG factory gearbox code in the reviewed schema. `chGearboxType` and `chMapping` are Swiss approval/emissions classifications and must remain separate from any future VAG gearbox-code field. The index's `engineType` remains an official engine-type designation; `chEngineCodeAsMarkedOnTheEngine` remains a separate stamped marking and can differ (e.g. DNPA vs DNP).
+
+
+## Exact variant/version scope-link correction (2026-11-06)
+
+A review of the pinned official JSON sample values exposed a linker defect in the first research-pack build: the builder compared gearboxEmissionsN.versionDefined to the approval's version field alone. The official source stores the emissions-row scope as the composite variant/version string. For example, approval 1XZ904 has variant=CXDNPAX0, version=*, and gearboxEmissions1.versionDefined=CXDNPAX0/*. The prior comparison could not match this correctly.
+
+The corrected linker now requires all of the following:
+1. a unique approval record for the same chTypeApprovalNumber + makeName;
+2. exact string equality between versionDefined and that approval's raw variant + "/" + version;
+3. the emissions row's chGearboxType must be explicitly present in the same approval record's gearboxEmissionsN.chGearboxType list.
+
+On the pinned 2026-10-29 snapshot, this yields 5,420 exact variant/version rows, 28,489 variant-wide rows where the version is *, and 19,505 unlinked rows. The unlinked rows remain unlinked; no fuzzy matching or model-name inference is used. These links remain CH type-approval-scope associations only. They do not establish VAG factory gearbox codes, individual-vehicle fitment, Russian/EAEU applicability or repair applicability.
