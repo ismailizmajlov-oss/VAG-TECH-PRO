@@ -44,6 +44,20 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
             self.assertTrue(provenance[field],field)
         self.assertEqual(provenance["source_manifest"],"data/source-manifests/rdw-vag-type-approval.lock.json")
 
+    def test_verified_pack_snapshot_counts_and_hashes_are_recorded(self):
+        pack=self.source["latest_verified_pack"]
+        self.assertEqual(pack["workflow_run_id"],41935787910)
+        self.assertEqual(pack["source_revision"],"rdw-f22fe72ed46ca4f240c6")
+        self.assertEqual(pack["counts"]["vehicle_variants"],99413)
+        self.assertEqual(pack["counts"]["engine_candidates"],101395)
+        self.assertEqual(pack["counts"]["transmission_candidates"],99482)
+        self.assertEqual(pack["counts"]["unique_source_row_pair_candidates"],97905)
+        self.assertEqual(pack["counts"]["ambiguous_or_incomplete_pair_keys"],1832)
+        for key in ("database_sha256","source_snapshot_sha256","metadata_bundle_sha256","source_manifest_sha256","artifact_sha256"):
+            self.assertRegex(pack[key],r"^[a-f0-9]{64}$")
+        self.assertEqual(self.source["verification_status"],"verified_source_candidate_pack_only")
+        self.assertEqual(self.source["display_status"],"candidate_only_read_only")
+
     def test_lock_matches_rights_and_namespaces(self):
         self.assertEqual(self.lock["pack_id"],"rdw-vag-type-approval-cc0")
         self.assertEqual(self.lock["data_license"],"CC0-1.0")
