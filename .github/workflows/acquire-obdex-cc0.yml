@@ -138,7 +138,19 @@ jobs:
           const mode09 = readJson("mode09.json");
           const meta = readJson("meta.json");
           const license = readBytes("UPSTREAM-LICENSE.txt").toString("utf8");
-          const families = new Set(["P0","P2","P3","B0","C0","U0","U3"]);
+          const expectedGenericRanges = ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx","U3xxx"];
+          const expectedExcludedRanges = ["P1xxx","P30xx-P33xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"];
+          if (
+            JSON.stringify(sourceManifest.scope.generic_code_ranges) !== JSON.stringify(expectedGenericRanges) ||
+            JSON.stringify(sourceManifest.scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(expectedExcludedRanges)
+          ) {
+            throw new Error("OBDex source lock code-range policy mismatch");
+          }
+          const allowedPrefixes = new Set(["P0","P2","B0","C0","U0","U3"]);
+          const p3GenericCode = /^P3[4-9][0-9A-F]{2}$/;
+          const isGenericDtc = (code) =>
+            /^[PBCU][0-3][0-9A-F]{3}$/.test(code) &&
+            (allowedPrefixes.has(code.slice(0,2)) || p3GenericCode.test(code));
           const hashes = Object.fromEntries(
             ["generic.min.json","mode01.json","mode09.json","meta.json","UPSTREAM-LICENSE.txt"]
               .map((name) => [name, sha256(readBytes(name))])
@@ -166,8 +178,8 @@ jobs:
           const dtcs = generic.map((row) => {
             const safeSourceReferences = quarantineSourceReferences(row);
             const code = String(row?.code ?? "").trim().toUpperCase();
-            if (!/^[PBCU][0-3][0-9A-F]{3}$/.test(code) || !families.has(code.slice(0,2))) {
-              throw new Error("Non-generic or malformed DTC in OBDex projection: " + code);
+            if (!isGenericDtc(code)) {
+              throw new Error("Non-generic or manufacturer-controlled DTC in OBDex projection: " + code);
             }
             if (dtcSeen.has(code)) throw new Error("Duplicate OBDex DTC: " + code);
             dtcSeen.add(code);
