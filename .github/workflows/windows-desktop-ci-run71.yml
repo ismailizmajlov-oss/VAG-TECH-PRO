@@ -24,6 +24,8 @@ on:
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      - "tests/test_openvag_source_rights.py"
       - "data/source-manifests/russian-eaeu-otts-sources.json"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
@@ -59,6 +61,8 @@ on:
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      - "tests/test_openvag_source_rights.py"
       - "data/source-manifests/russian-eaeu-otts-sources.json"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
@@ -116,6 +120,7 @@ jobs:
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
           python tests/test_otts_bot_source_rights.py
+          python tests/test_openvag_source_rights.py
 
 
       - name: Reassemble and verify pinned desktop source archive
