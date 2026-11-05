@@ -22,7 +22,7 @@ class AstraChTasSourceRightsTests(unittest.TestCase):
                     "bulk_reuse_allowed", "redistribution_allowed", "attribution_required"):
             self.assertIs(rights[key], True)
         self.assertIn("FEDRO", rights["attribution"])
-        self.assertIn("2026-02-23", self.source["evidence_status"])
+        self.assertIn("2026-02-23", rights["evidence"])
 
     def test_market_and_applicability_are_strictly_swiss_type_approval_scope(self):
         self.assertEqual(self.source["market_scope"], ["CH"])
