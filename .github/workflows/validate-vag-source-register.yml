@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - ".github/workflows/acquire-vag-engine-candidates.yml"
+      - "scripts/import_vag_engine_candidates.py"
+      - "docs/research/AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04.md"
+      - "tests/test_gor3a_source_rights.py"
       - "tests/test_sync_vag_source_register_source_rights.py"
       - "scripts/sync_vag_source_register.py"
       - "tests/test_automotive9_vw_dtc_source_rights.py"
@@ -48,6 +52,10 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - ".github/workflows/acquire-vag-engine-candidates.yml"
+      - "scripts/import_vag_engine_candidates.py"
+      - "docs/research/AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04.md"
+      - "tests/test_gor3a_source_rights.py"
       - "tests/test_sync_vag_source_register_source_rights.py"
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
