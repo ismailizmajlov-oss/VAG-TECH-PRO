@@ -361,7 +361,23 @@
         "document": "Решение Коллегии ЕЭК от 26.07.2016 № 88",
         "document_url": "https://www.alta.ru/tamdoc/16kr0088/",
         "access_rule": "The decision defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
-        "reuse_boundary": "The decision describes public access and intergovernmental data exchange; it does not grant VAG TECH PRO bulk extraction, offline caching, third-party display or redistribution rights."
+        "reuse_boundary": "The decision describes public access and intergovernmental data exchange; it does not grant VAG TECH PRO bulk extraction, offline caching, third-party display or redistribution rights.",
+        "related_register_rule": {
+          "document": "Решение Коллегии Евразийской экономической комиссии от 02.12.2014 № 225",
+          "document_url": "https://rulaws.ru/acts/Reshenie-Kollegii-Evraziyskoy-ekonomicheskoy-komissii-ot-02.12.2014-N-225/",
+          "source_quality": "secondary_legal_reproduction_reviewed; primary_signed_EEC_copy_not_retrieved",
+          "provisions": {
+            "9": "Authorized bodies publish specified unified-register fields on their official websites within five working days after registration.",
+            "13": "Information held in national parts of the unified register is provided to interested persons upon request by the authorized bodies."
+          },
+          "reuse_boundary": "Publication and request-based disclosure do not grant VAG TECH PRO commercial bulk reuse, automated extraction, offline caching, third-party display, redistribution or PDF redistribution rights."
+        },
+        "historical_machine_readable_export_evidence": {
+          "document_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "claim": "Official EEC report describes a historical temporary-register pilot with machine-readable export in response to requests from interested persons; it also records that the earlier unified-register XML exchange did not provide machine-readable export.",
+          "status": "historical_pilot_only_not_evidence_of_current_api_or_reuse_license",
+          "reuse_boundary": "Does not establish a currently operating export service, a public bulk API, or redistribution rights."
+        }
       },
       "current_portal_observation": {
         "checked_at": "2026-11-04",
@@ -377,6 +393,14 @@
         "commercial_use": "not_confirmed_for_an_otts_dataset",
         "third_party_display": "not_confirmed",
         "offline_cache": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "rights": {
+        "dataset_specific_terms_confirmed": false,
+        "commercial_use": "not_confirmed_for_an_otts_dataset",
+        "display": "not_confirmed_for_an_otts_dataset",
+        "offline_cache": "not_confirmed_for_an_otts_dataset",
+        "bulk_reuse": "not_confirmed",
         "redistribution": "not_confirmed"
       }
     },
