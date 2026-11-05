@@ -186,10 +186,21 @@
         "attribution_required": true,
         "attribution": "gor3a/vehicle-makes-models and autoevolution.com",
         "share_alike_required": true,
-        "public_redistribution_requires_ODbL_offer": true
+        "public_redistribution_requires_ODbL_offer": true,
+        "upstream_rights_status": "not_established",
+        "upstream_permission_status": "not_obtained",
+        "downstream_license_scope": "repository_declared_odbl_only_not_proof_of_upstream_autoevolution_rights",
+        "permission_required_uses": [
+          "commercial_use",
+          "display",
+          "offline_caching",
+          "bulk_reuse",
+          "redistribution"
+        ],
+        "acquisition_workflow_gate": "VAG_GOR3A_AUTODEVOLUTION_REUSE_APPROVED"
       },
-      "project_decision": "research_staging_only; market UNKNOWN; never infer engine or gearbox codes from labels; ODbL obligations must be preserved",
-      "evidence_status": "five_brand_files_inspected_2026-11-03; pinned_revision"
+      "project_decision": "quarantine_no_download_no_import_no_cache_no_display_no_bundling_no_redistribution_until_written_permission_from_upstream_rights_holder; downstream ODbL declaration is not proof of rights in Autoevolution-derived material; never infer factory engine or gearbox codes",
+      "evidence_status": "five_brand_files_inspected_2026-11-03; AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04; upstream permission not obtained"
     },
     {
       "source_id": "hpt-su-otts-aggregator",
