@@ -156,7 +156,8 @@ test('imports a rights-cleared Annex 2 export into a review-only SQLite staging 
       assert.equal(snapshot.source_manifest_sha256, sha(fs.readFileSync(f.manifestPath)));
       const recordHashes = db.prepare('SELECT t.canonical_source_record_sha256, r.canonical_sha256 FROM type_approval_records t JOIN raw_source_records r USING (source_record_key)').get();
       assert.equal(recordHashes.canonical_source_record_sha256, recordHashes.canonical_sha256);
-      assert.equal(snapshot.rights_status, 'verified_for_metadata_offline_distribution');
+      assert.equal(snapshot.rights_status, 'owner_attested_not_independently_verified');
+      assert.notEqual(snapshot.rights_status, 'verified_for_metadata_offline_distribution');
       assert.equal(snapshot.import_status, 'staging_only_not_published');
       assert.equal(snapshot.commercial_use_allowed, 1);
       assert.equal(snapshot.offline_cache_allowed, 1);
