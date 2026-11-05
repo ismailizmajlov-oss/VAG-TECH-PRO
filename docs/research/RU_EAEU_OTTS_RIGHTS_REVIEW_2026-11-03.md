@@ -80,3 +80,18 @@ Machine-readable rights and field metadata are stored in:
 - data/source-manifests/russian-eaeu-otts-sources.json
 
 No source snapshot hash is claimed for sources that were not downloaded. Their source_snapshot_sha256 remains null and hash_status records why.
+
+## Additional EAEU register access evidence reviewed 2026-11-05
+
+The EEC Board Decision No. 225 of 2014-12-02, which governs the unified register of vehicle type approvals, provides two relevant access rules in the reviewed text:
+
+- Paragraph 9 requires authorized bodies to publish specified register fields on their official websites within five working days after registration.
+- Paragraph 13 states that information held in national parts of the unified register is provided to interested persons upon request by the authorized bodies.
+
+Reference text reviewed: https://rulaws.ru/acts/Reshenie-Kollegii-Evraziyskoy-ekonomicheskoy-komissii-ot-02.12.2014-N-225/ . This is a secondary legal reproduction, not a primary signed EEC publication; no primary-document SHA-256 is claimed.
+
+An official EEC report on the historical temporary-register pilot describes a machine-readable export service that responded to requests from interested persons. The report also explains that the earlier unified-register XML exchange did not provide a machine-readable export. This is evidence of a historical pilot capability only; it does not establish that the service is currently operating, that a current public API exists, or that a reusable bulk dataset is licensed:
+
+- Official EEC report: https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf
+
+**Rights conclusion is unchanged.** Publication on official sites and request-based disclosure do not, by themselves, grant VAG TECH PRO commercial reuse, systematic extraction, persistent SQLite caching, offline third-party display, redistribution, or PDF redistribution rights. Keep the EAEU source at `discovery_only` / `permission_required`, with `data_ingested=false`, until the relevant operator confirms the exact reuse scope in writing or publishes a dataset-specific open licence. Do not automate requests or infer a current export endpoint from the historical pilot report.
