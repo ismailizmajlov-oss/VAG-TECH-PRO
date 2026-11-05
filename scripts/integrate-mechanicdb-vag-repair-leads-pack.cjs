@@ -90,20 +90,24 @@ function verifyArtifact(input, sourceManifestPath) {
       pack.diagnostic_execution_allowed !== false || pack.repair_procedures_included !== false ||
       pack.community_repair_leads_included !== true || pack.community_repair_leads_verified !== false ||
       pack.oem_part_numbers_included !== false || pack.cost_or_labor_estimates_included !== false ||
-      pack.external_part_search_urls_included !== false) fail("MechanicDB v2 candidate-only/display boundary changed");
+      pack.external_part_search_urls_included !== false || pack.display_policy?.repair_leads_visible !== true ||
+      pack.display_policy?.repair_leads_verified !== false || pack.display_policy?.manufacturer_repair_procedure !== false ||
+      pack.display_policy?.part_names_visible !== true || pack.display_policy?.exact_vehicle_fitment !== false ||
+      pack.display_policy?.vag_oem_confirmation !== false || pack.display_policy?.diagnostic_execution_allowed !== false) fail("MechanicDB v2 candidate-only/display boundary changed");
   const expectedCounts = {
     manufacturer_controlled_candidates: 2, audi_candidates: 1, volkswagen_candidates: 1,
     generic_dtc_rows: 0, repair_procedure_rows: 0, part_rows: 0,
     community_repair_lead_rows: 6, community_part_candidate_rows: 6,
   };
-  if (JSON.stringify(pack.counts) !== JSON.stringify(expectedCounts)) fail("MechanicDB v2 pack counts changed");
+  if (Object.keys(expectedCounts).some((key) => pack.counts?.[key] !== expectedCounts[key]) || Object.keys(pack.counts || {}).length !== Object.keys(expectedCounts).length) fail("MechanicDB v2 pack counts changed");
   if (pack.database_sha256 !== EXPECTED_DATABASE_SHA256 || pack.source_snapshot_sha256 !== EXPECTED_SNAPSHOT_SHA256) fail("MechanicDB v2 database/snapshot hash is not the pinned artifact");
 
   const sums = parseSums(sumsPath);
   const packFiles = pack.pack_files || {};
   const packFileNames = Object.keys(packFiles).sort();
-  const sumsNames = [...sums.keys()].filter((name) => name !== "SHA256SUMS.txt").sort();
-  if (JSON.stringify(packFileNames) !== JSON.stringify(sumsNames)) fail("SHA256SUMS and pack_files describe different file sets");
+  const sumsNames = [...sums.keys()].sort();
+  const declaredWithoutSums = packFileNames.filter((name) => name !== "SHA256SUMS.txt").sort();
+  if (JSON.stringify(declaredWithoutSums) !== JSON.stringify(sumsNames)) fail("SHA256SUMS and pack_files describe different file sets");
   for (const [relative, metadata] of Object.entries(packFiles)) {
     const file = safeRelative(root, relative);
     const stat = fs.lstatSync(file);
@@ -128,12 +132,25 @@ function verifyArtifact(input, sourceManifestPath) {
       sourceManifest.data_license !== "ODbL-1.0" || sourceManifest.rights_status !== "approved_by_published_license" ||
       sourceManifest.share_alike_required !== true || sourceManifest.attribution_required !== true ||
       sourceManifest.display_allowed !== true || sourceManifest.cache_allowed !== true ||
-      sourceManifest.redistribution_allowed !== true) fail("Project source manifest rights/revision mismatch");
+      sourceManifest.redistribution_allowed !== true || sourceManifest.commercial_use_status !== "allowed_under_odbl") fail("Project source manifest rights/revision mismatch");
+  const sourcePolicy = sourceManifest.product_policy || {};
+  if (sourcePolicy.display_status !== "candidate_reference_visible_separate_namespace" ||
+      sourcePolicy.repair_procedure_status !== "community_authored_not_factory_not_verified" ||
+      sourcePolicy.vehicle_fitment_claim !== false || sourcePolicy.ecu_fitment_claim !== false ||
+      sourcePolicy.pr_code_claim !== false || sourcePolicy.production_import !== false ||
+      sourcePolicy.oem_part_numbers_included !== false || sourcePolicy.cost_or_labor_estimates_included !== false ||
+      sourcePolicy.external_part_search_urls_included !== false || sourcePolicy.diagnostic_execution_allowed !== false) {
+    fail("Project source manifest product-policy boundary changed");
+  }
+  if (pack.source_workflow?.run_id !== 41956857684 || pack.source_workflow?.commit !== "5f4f42c6660bee92f13f7950d9677aadc76f03cc") fail("MechanicDB source workflow provenance mismatch");
   for (const [name, metadata] of Object.entries(sourceManifest.source_files || {})) {
     const relative = "upstream/" + name;
     const built = sourceFiles[relative];
     if (!built || built.git_blob_sha1 !== metadata.git_blob_sha1 || built.source_url !== metadata.url) fail("Project/upstream source manifest mismatch: " + name);
   }
+  const selected = sourceManifest.selected_records || {};
+  const selectedFixes = new Map((selected.community_fix_candidates || []).map((item) => [String(item.fields.fix_id), item]));
+  const selectedParts = new Map((selected.community_part_candidates || []).map((item) => [String(item.fields.part_id), item]));
 
   for (const [sourcePath, evidenceList] of [
     ["upstream/dtc_codes.csv", pack.source_line_evidence || []],
@@ -183,7 +200,7 @@ function verifyArtifact(input, sourceManifestPath) {
           row.diagnostic_execution_allowed !== 0 || row.repair_procedure_included !== 0 || row.oem_part_number_included !== 0)) {
       fail("MechanicDB v2 DTC candidate boundary failed");
     }
-    const fixes = db.prepare("SELECT fix_id,dtc_code,oem_make,fix_title,consideration_order,namespace,verification_status,market_scope,applicability_precision,diagnostic_execution_allowed,manufacturer_procedure,oem_part_number,cost_estimates_included,source_file,source_line_no,source_line_sha256,source_file_sha256,source_revision FROM community_fix_candidates ORDER BY fix_id").all();
+    const fixes = db.prepare("SELECT fix_id,code_id,dtc_code,oem_make,fix_title,consideration_order,namespace,verification_status,market_scope,applicability_precision,diagnostic_execution_allowed,manufacturer_procedure,oem_part_number,cost_estimates_included,source_file,source_line_no,source_line_sha256,source_file_sha256,source_revision FROM community_fix_candidates ORDER BY fix_id").all();
     if (fixes.length !== 6 || fixes.some((row) => row.namespace !== "community_repair_lead" ||
         row.verification_status !== "community_reference_unverified" || row.market_scope !== "UNKNOWN" ||
         row.applicability_precision !== "manufacturer_make_candidate" || row.diagnostic_execution_allowed !== 0 ||
@@ -192,12 +209,28 @@ function verifyArtifact(input, sourceManifestPath) {
         !/^[a-f0-9]{64}$/.test(row.source_line_sha256) || !/^[a-f0-9]{64}$/.test(row.source_file_sha256))) {
       fail("MechanicDB v2 community repair-lead boundary failed");
     }
-    const parts = db.prepare("SELECT part_id,namespace,verification_status,market_scope,applicability_precision,oem_part_number,source_file,source_revision FROM community_part_candidates").all();
+    for (const row of fixes) {
+      const expected = selectedFixes.get(String(row.fix_id));
+      if (!expected || expected.line_no !== row.source_line_no || String(expected.fields.code_id) !== String(row.code_id) ||
+          expected.fields.fix_title !== row.fix_title || Number(expected.fields.probability_rank) !== row.consideration_order ||
+          row.source_line_sha256 !== (pack.community_fix_line_evidence || []).find((item) => String(item.fix_id) === String(row.fix_id))?.source_line_sha256) {
+        fail("MechanicDB v2 community repair-lead row differs from reviewed source selection: " + row.fix_id);
+      }
+    }
+    const parts = db.prepare("SELECT part_id,fix_id,part_name,namespace,verification_status,market_scope,applicability_precision,oem_part_number,source_file,source_line_no,source_line_sha256,source_revision FROM community_part_candidates").all();
     if (parts.length !== 6 || parts.some((row) => row.namespace !== "community_part_name_candidate" ||
         row.verification_status !== "community_reference_unverified" || row.market_scope !== "UNKNOWN" ||
         row.applicability_precision !== "manufacturer_make_candidate" || row.oem_part_number !== 0 ||
         row.source_file !== "upstream/replacement_parts.csv" || row.source_revision !== SOURCE_REVISION)) {
       fail("MechanicDB v2 generic part-name candidate boundary failed");
+    }
+    for (const row of parts) {
+      const expected = selectedParts.get(String(row.part_id));
+      if (!expected || expected.line_no !== row.source_line_no || expected.fields.part_name !== row.part_name ||
+          String(expected.fields.fix_id) !== String(row.fix_id) ||
+          row.source_line_sha256 !== (pack.community_part_line_evidence || []).find((item) => String(item.part_id) === String(row.part_id))?.source_line_sha256) {
+        fail("MechanicDB v2 community part candidate differs from reviewed source selection: " + row.part_id);
+      }
     }
     const metadata = Object.fromEntries(db.prepare("SELECT key,value FROM pack_metadata").all().map((row) => [row.key,row.value]));
     if (metadata.verified_repair_procedure_rows !== "0" || metadata.oem_part_number_rows !== "0" ||
@@ -227,7 +260,8 @@ function atomicWriteJson(file, value) {
     fs.renameSync(temp, file);
     if (movedOld) fs.rmSync(backup, { force: true });
   } catch (error) {
-    if (movedOld && !fs.existsSync(file) && fs.existsSync(backup)) fs.renameSync(backup, file);
+    if (fs.existsSync(file)) fs.rmSync(file, { force: true });
+    if (movedOld && fs.existsSync(backup)) fs.renameSync(backup, file);
     fs.rmSync(temp, { force: true });
     throw error;
   }
