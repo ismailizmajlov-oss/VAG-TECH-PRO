@@ -83,8 +83,15 @@ def resolve_scope_link(
     approval_number: Any,
     make_name: Any,
     version_defined: Any,
+    ch_gearbox_type: Any,
 ) -> tuple[int | None, str]:
-    """Link only a unique exact approval+make+version scope; '*' stays wildcard."""
+    """Link exact approval variant/version scope and a gearbox class listed by that approval.
+
+    ASTRA's versionDefined is the composite raw scope variant/version. A '*' in
+    either component is preserved as a wildcard and is never promoted to exact
+    version fitment. This is an approval-scope association, not a factory VAG
+    engine/gearbox code pair or production fitment claim.
+    """
     approval = normalize_text(approval_number)
     make = normalize_text(make_name).upper()
     scope = normalize_text(version_defined)
@@ -95,14 +102,36 @@ def resolve_scope_link(
         return None, "approval_record_missing"
     if not scope:
         return None, "version_scope_missing"
-    matches = [row for row in candidates if normalize_text(row["version"]) == scope]
+
+    scoped_candidates = [
+        row for row in candidates
+        if normalize_text(row.get("variant")) and normalize_text(row.get("version"))
+    ]
+    if not scoped_candidates:
+        return None, "version_scope_missing"
+
+    matches = [
+        row for row in scoped_candidates
+        if scope == f'{normalize_text(row["variant"])}/{normalize_text(row["version"])}'
+    ]
     if len(matches) > 1:
         return None, "ambiguous_approval_version"
-    if len(matches) == 1:
-        if scope == "*":
-            return int(matches[0]["approval_row_id"]), "linked_wildcard_approval_variant"
-        return int(matches[0]["approval_row_id"]), "linked_exact_approval_version"
-    return None, "no_exact_version_match"
+    if len(matches) != 1:
+        return None, "no_exact_version_match"
+
+    match = matches[0]
+    gearbox_type = normalize_text(ch_gearbox_type)
+    allowed_gearbox_classes = {
+        normalize_text(value)
+        for value in match.get("gearbox_classes", [])
+        if normalize_text(value)
+    }
+    if not gearbox_type or gearbox_type not in allowed_gearbox_classes:
+        return None, "gearbox_class_not_in_approval"
+
+    if normalize_text(match["variant"]) == "*" or normalize_text(match["version"]) == "*":
+        return int(match["approval_row_id"]), "linked_wildcard_approval_variant"
+    return int(match["approval_row_id"]), "linked_exact_approval_version"
 
 
 def _download_or_verify(url: str, destination: Path, expected: dict[str, Any]) -> dict[str, Any]:
@@ -190,7 +219,7 @@ def _create_schema(db: sqlite3.Connection) -> None:
     PRAGMA foreign_keys=ON;
     PRAGMA journal_mode=DELETE;
     PRAGMA synchronous=FULL;
-    PRAGMA user_version=1;
+    PRAGMA user_version=2;
 
     CREATE TABLE pack_metadata (
       key TEXT PRIMARY KEY,
@@ -280,7 +309,7 @@ def _create_schema(db: sqlite3.Connection) -> None:
       scope_link_status TEXT NOT NULL CHECK(scope_link_status IN (
         'linked_exact_approval_version','linked_wildcard_approval_variant',
         'approval_key_missing','approval_record_missing','version_scope_missing',
-        'ambiguous_approval_version','no_exact_version_match'
+        'ambiguous_approval_version','no_exact_version_match','gearbox_class_not_in_approval'
       )),
       classification_kind TEXT NOT NULL DEFAULT 'swiss_type_approval_gearbox_classification'
         CHECK(classification_kind='swiss_type_approval_gearbox_classification'),
@@ -358,7 +387,14 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
     fd, temp_name = tempfile.mkstemp(prefix="astra-ch-tas-", suffix=".sqlite", dir=output_dir)
     os.close(fd)
     temp_path = Path(temp_name)
-    counts: dict[str, Any] = {"approval_rows": {}, "emissions_gearbox_rows": {}, "linked_scope_rows": 0, "unlinked_scope_rows": 0}
+    counts: dict[str, Any] = {
+        "approval_rows": {},
+        "emissions_gearbox_rows": {},
+        "linked_scope_rows": 0,
+        "unlinked_scope_rows": 0,
+        "scope_link_counts": {},
+        "scope_link_counts_by_make": {},
+    }
     try:
         db = sqlite3.connect(temp_path)
         db.execute("PRAGMA foreign_keys=ON")
@@ -372,7 +408,7 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
                  evidence["sha256"], source_revision, "approved_by_published_ogd_terms", "CH"),
             )
         metadata = {
-            "schema_version": "1",
+            "schema_version": "2",
             "pack_id": "astra-ch-tas-vag-open-data",
             "pack_status": "verified_research_only",
             "publisher": source_manifest["publisher"],
@@ -461,7 +497,9 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
                 )
                 approval_row = {
                     "approval_row_id": int(cursor.lastrowid),
+                    "variant": _value(row, "variant"),
                     "version": _value(row, "version"),
+                    "gearbox_classes": gearbox_classes,
                     "engine_type_designation": _value(row, "engineType"),
                     "stamped_engine_marking": _value(row, "chEngineCodeAsMarkedOnTheEngine"),
                 }
@@ -478,6 +516,8 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
 
         emission_evidence = file_evidence["emissions"]
         emission_counts: Counter[str] = Counter()
+        scope_link_counts: Counter[str] = Counter()
+        scope_link_counts_by_make: dict[str, Counter[str]] = defaultdict(Counter)
         emission_inserted = 0
         for row_number, header, row in _workbook_rows(
             input_dir / emission_evidence["file_name"], "Emissionsdaten", int(expected_indexes["emissions"])
@@ -491,14 +531,20 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
             if not approval or not make:
                 raise ValueError(f"VAG emissions row lacks approval number or make at row {row_number}")
             linked_id, link_status = resolve_scope_link(
-                approval_index, approval, make, row.get("versionDefined")
+                approval_index, approval, make, row.get("versionDefined"),
+                row.get("chGearboxType"),
             )
             if link_status == "linked_exact_approval_version":
                 precision = "approval_version_exact"
+                link_bucket = "exact"
             elif link_status == "linked_wildcard_approval_variant":
                 precision = "approval_variant_wildcard"
+                link_bucket = "wildcard"
             else:
                 precision = "unlinked_scope"
+                link_bucket = "unlinked"
+            scope_link_counts[link_bucket] += 1
+            scope_link_counts_by_make[make.upper()][link_bucket] += 1
             row_hash = canonical_row_sha256(row)
             locator = f"{emission_evidence['url']}#sheet=Emissionsdaten&row={row_number}"
             cursor = db.execute(
@@ -552,6 +598,46 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
             raise ValueError(f"VAG emissions/gearbox total changed: {emission_inserted}")
         counts["emissions_gearbox_rows"] = {"total": emission_inserted, "by_make": dict(sorted(emission_counts.items()))}
 
+        expected_scope_links = snapshot.get("vag_emissions_scope_link_counts")
+        if not isinstance(expected_scope_links, dict):
+            raise ValueError("Pinned VAG emissions scope-link counts are missing from source manifest")
+        actual_scope_links = {
+            "exact": int(scope_link_counts.get("exact", 0)),
+            "wildcard": int(scope_link_counts.get("wildcard", 0)),
+            "unlinked": int(scope_link_counts.get("unlinked", 0)),
+        }
+        expected_scope_links_total = {
+            key: int(expected_scope_links.get(key, -1))
+            for key in ("exact", "wildcard", "unlinked")
+        }
+        if actual_scope_links != expected_scope_links_total:
+            raise ValueError(
+                f"VAG emissions scope-link counts changed: {actual_scope_links} != {expected_scope_links_total}"
+            )
+        actual_scope_links_by_make = {
+            make_key: {
+                key: int(scope_link_counts_by_make[make_key].get(key, 0))
+                for key in ("exact", "wildcard", "unlinked")
+            }
+            for make_key in sorted(scope_link_counts_by_make)
+        }
+        expected_scope_links_by_make = expected_scope_links.get("by_make")
+        if not isinstance(expected_scope_links_by_make, dict):
+            raise ValueError("Pinned per-make VAG emissions scope-link counts are missing")
+        normalized_expected_links_by_make = {
+            str(make_key).upper(): {
+                key: int(values.get(key, -1))
+                for key in ("exact", "wildcard", "unlinked")
+            }
+            for make_key, values in expected_scope_links_by_make.items()
+        }
+        if actual_scope_links_by_make != normalized_expected_links_by_make:
+            raise ValueError(
+                f"Per-make VAG emissions scope-link counts changed: {actual_scope_links_by_make} != {normalized_expected_links_by_make}"
+            )
+        counts["scope_link_counts"] = actual_scope_links
+        counts["scope_link_counts_by_make"] = actual_scope_links_by_make
+
         db.execute("COMMIT")
         integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
         foreign_key_errors = db.execute("PRAGMA foreign_key_check").fetchall()
@@ -582,7 +668,7 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
 
     database_hash = sha256_file(database_path)
     pack_manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "pack_id": "astra-ch-tas-vag-open-data",
         "status": "verified_research_only",
         "publisher": source_manifest["publisher"],
@@ -635,8 +721,10 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
         "Scope is Switzerland (CH) only. This pack is not Russian/EAEU OTTS data. It does not establish model year, "
         "generation, VIN-level fitment, VAG factory engine/gearbox codes, ECU, DTC, repair procedures, wiring diagrams, "
         "pinouts, torque values, adaptations or service intervals. Swiss gearbox classes remain Swiss approval "
-        "classifications. Any engine/gearbox scope link is an approval-row association only and is never production "
-        "fitment. Wildcard '*' is not exact-version applicability.\n\n"
+        "classifications. Emissions rows are linked only when versionDefined exactly equals the approval's raw "
+        "variant/version composite and the Swiss gearbox class is listed in that approval record. This remains an "
+        "approval-scope association only, never a factory VAG engine/gearbox pair or production fitment. Wildcard "
+        "'*' is not exact-version applicability.\n\n"
         "Excluded: paid datasets, holder/personal information, eDatenblatt portal output and PDF reproductions.\n",
         encoding="utf-8",
     )
