@@ -62,7 +62,10 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertIn("Russian or EAEU OTTS evidence",review)
         self.assertIn("not a VAG three-letter gearbox code",review)
         self.assertIn("not VIN-level fitment",review)
-        self.assertIn("not yet ingested",review.lower())
+        self.assertIn("Windows CI run `41935787910`",review)
+        self.assertIn("97,905",review)
+        self.assertIn("1,832",review)
+        self.assertIn("not confirmed VAG engine/gearbox pairing",review.lower())
 
 if __name__=="__main__":
     unittest.main()
