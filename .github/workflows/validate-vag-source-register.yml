@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "tests/test_automotive9_vw_dtc_source_rights.py"
+      - "docs/research/AUTOMOTIVE_9_VW_DTC_SOURCE_REVIEW_2026-11-06.md"
       - ".github/workflows/acquire-astra-ch-tas-vag-probe.yml"
       - "scripts/probe_astra_ch_tas.py"
       - "tests/test_astra_ch_tas_source_rights.py"
