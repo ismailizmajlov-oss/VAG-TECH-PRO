@@ -15,7 +15,7 @@ permissions:
 jobs:
   probe:
     runs-on: windows-2022
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,6 +27,19 @@ jobs:
         run: |
           python scripts/probe_astra_ch_tas.py --output-dir artifacts/astra-ch-tas-probe
           if ($LASTEXITCODE -ne 0) { throw "ASTRA TAS schema probe failed" }
+      - name: Build separate CH-only VAG homologation SQLite research pack
+        run: |
+          python -m unittest discover -s tests -p "test_astra_ch_tas_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "ASTRA CH pack policy tests failed" }
+          python scripts/build_astra_ch_tas_pack.py --input-dir artifacts/astra-ch-tas-probe/downloaded --output-dir artifacts/astra-ch-tas-pack
+          if ($LASTEXITCODE -ne 0) { throw "ASTRA CH pack build failed" }
+      - name: Upload verified CH-only SQLite pack and provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: astra-ch-tas-vag-open-data-pack
+          path: artifacts/astra-ch-tas-pack/**
+          if-no-files-found: error
+          retention-days: 90
       - name: Upload schema and provenance probe report
         uses: actions/upload-artifact@v4
         with:
