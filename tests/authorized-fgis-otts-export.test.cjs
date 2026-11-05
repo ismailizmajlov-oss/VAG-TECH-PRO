@@ -114,6 +114,18 @@ function run(f, mode = 'license') {
     ...evidenceArgs, '--output', f.outputPath], { encoding: 'utf8' });
 }
 
+test('preserves supported VAG make labels while sanitizing control characters', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-make-sanitization-'));
+  try {
+    const f = fixture(dir);
+    for (const make of ['Volkswagen', 'Audi', 'Škoda', 'SEAT', 'CUPRA']) {
+      const record = { ...f.input.records[0], make: `${make}\\u0000` };
+      const normalized = normalizeRecord(record, 0, f.manifest).normalized;
+      assert.equal(normalized.make, make);
+    }
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
 test('imports a rights-cleared Annex 2 export into a review-only SQLite staging database', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-authorized-'));
   try {
