@@ -60,18 +60,22 @@ def _read_and_validate(source_path: Path) -> tuple[bytes, dict[str, Any]]:
 
 
 def sync(source_path: str | Path, desktop_root: str | Path) -> dict[str, Any]:
-    source = Path(source_path).resolve()
-    root = Path(desktop_root).resolve()
+    source = Path(source_path).absolute()
+    root = Path(desktop_root).absolute()
     if not root.exists() or not root.is_dir() or root.is_symlink():
         raise ValueError("Desktop staging root must be an existing regular directory")
 
     raw, manifest = _read_and_validate(source)
     expected_hash = _sha256(raw)
 
-    destination_dir = root / "data" / "source-manifests"
-    destination_dir.mkdir(parents=True, exist_ok=True)
-    if destination_dir.is_symlink():
-        raise ValueError("Desktop source-manifests directory must not be a symlink")
+    data_dir = root / "data"
+    if data_dir.exists() and (data_dir.is_symlink() or not data_dir.is_dir()):
+        raise ValueError("Desktop data path must be a regular directory")
+    data_dir.mkdir(exist_ok=True)
+    destination_dir = data_dir / "source-manifests"
+    if destination_dir.exists() and (destination_dir.is_symlink() or not destination_dir.is_dir()):
+        raise ValueError("Desktop source-manifests path must be a regular directory")
+    destination_dir.mkdir(exist_ok=True)
     destination = destination_dir / "vag-factory-source-register.json"
     if destination.exists() and (destination.is_symlink() or not destination.is_file()):
         raise ValueError("Desktop source register destination must be a regular file")
