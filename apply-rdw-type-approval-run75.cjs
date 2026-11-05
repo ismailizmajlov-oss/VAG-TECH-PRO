@@ -480,6 +480,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
 const local = require("../lib/local-research-db.cjs");
+const { countsMatch } = require("../lib/rdw-type-approval-db.cjs");
 const research = path.join(__dirname, "..", "data", "research");
 
 test("RDW pack verifies as a separate CC0 EU/NL candidate source", () => {
@@ -513,6 +514,14 @@ test("RDW search preserves source namespaces and never claims exact fitment", ()
     assert.ok(["EU_TYPE_APPROVAL", "NL_REGISTRATION_OBSERVATION"].includes(row.marketScope));
     assert.equal(row.applicabilityPrecision, "type_approval_variant_execution_candidate");
   }
+});
+
+test("RDW manifest count verification ignores JSON key order but rejects count drift", () => {
+  const databaseCounts = { vehicle_variants: 99412, engine_candidates: 101395 };
+  const sortedManifestCounts = JSON.parse('{"engine_candidates":101395,"vehicle_variants":99412}');
+  assert.equal(countsMatch(databaseCounts, sortedManifestCounts), true);
+  assert.equal(countsMatch(databaseCounts, { ...sortedManifestCounts, engine_candidates: 101394 }), false);
+  assert.equal(countsMatch(databaseCounts, { ...sortedManifestCounts, unexpected: 0 }), false);
 });
 `;
   writeText(path.join(desktop, "tests", "rdw-type-approval-db.test.cjs"), dbTest);
