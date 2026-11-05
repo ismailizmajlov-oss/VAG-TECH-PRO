@@ -262,6 +262,19 @@ test('accepts a written-permission package only when the exact permission docume
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
+test('rejects records outside the electronically issued Annex 2 public-search scope', () => {
+  for (const flag of [false, null]) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-electronic-scope-'));
+    try {
+      const f = fixture(dir, { record: { electronically_issued_flag: flag } });
+      const result = run(f);
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /electronically_issued_flag must be true for the Annex 2 public-search scope/);
+      assert.equal(fs.existsSync(f.outputPath), false);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+  }
+});
+
 test('rejects any public field value that is not explicitly mapped to its Annex 2 field number', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-unmapped-field-'));
   try {
