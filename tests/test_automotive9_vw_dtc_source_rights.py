@@ -45,6 +45,9 @@ class Automotive9VwDtcSourceRightsTests(unittest.TestCase):
         provenance = self.source["provenance"]
         self.assertEqual(provenance["upstream_head_commit"], "e5cf6906badc81e2bdac3ec7b7c1bba5c01fa108")
         self.assertEqual(provenance["source_file_git_blob_sha1"], "9a2f7303a0d28a9e60259c3c91646484d04d4266")
+        self.assertEqual(provenance["retrieved_content_sha256"], "1f0b6c9b096bbb36d042e622d8aa89c616fbdd0b7e5386117000afb01e917fba")
+        self.assertEqual(provenance["retrieved_content_byte_size"], 857212)
+        self.assertRegex(provenance["retrieved_content_sha256"], r"^[a-f0-9]{64}$")
         counts = self.source["counts"]
         self.assertEqual(counts["source_file_entries"], 9137)
         self.assertEqual(counts["numeric_legacy_or_component_keys"], 7131)
