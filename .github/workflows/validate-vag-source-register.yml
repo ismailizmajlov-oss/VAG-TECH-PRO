@@ -63,6 +63,8 @@ on:
       - "tests/test_openvag_source_rights.py"
       - "tests/test_wikidata_generation_source_rights.py"
       - ".github/workflows/validate-vag-source-register.yml"
+      - "docs/research/AUTOMOTIVE_9_VW_DTC_SOURCE_REVIEW_2026-11-06.md"
+      - "tests/test_automotive9_vw_dtc_source_rights.py"
 
 permissions:
   contents: read
