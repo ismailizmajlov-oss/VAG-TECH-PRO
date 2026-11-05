@@ -354,7 +354,7 @@ recommend repairs from this pack. The generic SAE/ISO DTC database remains separ
     else:
         existing.update(root_entry)
     root_manifest["generated_at_utc"] = built_at
-    root_manifest_path.write_text(json.dumps(root_manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    root_manifest_path.write_text(json.dumps(root_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     sums = [
         f"{source_hash}  {SOURCE_RELATIVE}",
