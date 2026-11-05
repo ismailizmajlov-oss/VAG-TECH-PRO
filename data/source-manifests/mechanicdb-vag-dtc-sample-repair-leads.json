@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "source_id": "mechanicdb-vag-dtc-sample-odbl",
+  "publisher": "MechanicDB / MechanicDB-public",
+  "repository": "https://github.com/MechanicDB/MechanicDB-public",
+  "source_revision": "c788dfe9ed1517d4cd0be27f5aacb4776abf4864",
+  "snapshot_date": "2026-10-30",
+  "data_license": "ODbL-1.0",
+  "data_license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "upstream_license": "MIT",
+  "documentation_license": "CC-BY-4.0",
+  "commercial_use_status": "allowed_under_odbl_free_sample_terms; no paid/full database content",
+  "share_alike_required": true,
+  "attribution_required": true,
+  "display_allowed": true,
+  "cache_allowed": true,
+  "redistribution_allowed": true,
+  "rights_status": "approved_by_published_license",
+  "source_files": {
+    "dtc_codes.csv": {
+      "url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/dtc_codes.csv",
+      "git_blob_sha1": "34fa7dd7a1cbdd5b0d2675f2c77a2b659c6069b4"
+    },
+    "diagnostic_fixes.csv": {
+      "url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/diagnostic_fixes.csv",
+      "git_blob_sha1": "5238ab82447a26e14227e932126d068ab47bf6e3"
+    },
+    "replacement_parts.csv": {
+      "url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/replacement_parts.csv",
+      "git_blob_sha1": "a540edcbbb323f7416f0ca6a1aad1b69d37c1e80"
+    },
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/LICENSE",
+      "git_blob_sha1": "20e7514419d20bdbcc89d6a2ebcff90d0d3575a8"
+    },
+    "LICENSE-upstream.txt": {
+      "url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/LICENSE-upstream.txt",
+      "git_blob_sha1": "9cbfaae3f07b8daa1685b4587e36c604a7a4ded1"
+    },
+    "SOURCES.md": {
+      "url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/SOURCES.md",
+      "git_blob_sha1": "99301063307b9fd10bef7b84cd5c9e7066aeceb9"
+    },
+    "DATA_DICTIONARY.md": {
+      "url": "https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/c788dfe9ed1517d4cd0be27f5aacb4776abf4864/DATA_DICTIONARY.md",
+      "git_blob_sha1": "808dea805df7d86b3ee1bf301fcef5455df25176"
+    }
+  },
+  "source_row_counts": {
+    "dtc_codes": 90,
+    "diagnostic_fixes": 326,
+    "replacement_parts": 449,
+    "source_oem_codes": 15,
+    "source_generic_codes": 75,
+    "source_non_vag_oem_codes": 13,
+    "vag_make_codes": 2,
+    "vag_fix_candidates": 6,
+    "vag_part_candidates": 6
+  },
+  "selected_records": {
+    "manufacturer_dtc_candidates": [
+      {
+        "line_no": 77,
+        "fields": {
+          "code_id": "9344",
+          "dtc_code": "P3000",
+          "system_category": "Powertrain",
+          "is_oem_specific": "1",
+          "oem_make": "Audi",
+          "fault_family": "hv_system_voltage_performance",
+          "short_description": "Fuel level is too low, High voltage battery assembly failure, High voltage battery is not sufficiently charged",
+          "detailed_technical_explanation": "Code P3000 (Fuel level is too low, High voltage battery assembly failure, High voltage battery is not sufficiently charged) sets when the overall HV bus voltage - measured system-wide rather than at any single battery pack or contactor - reads outside its expected window or fails an ECM performance check. Because this is a system-level measurement, causes span a genuinely low/high pack state of charge, a contactor not fully seating, or a fault in the HV bus voltage-sense circuit itself rather than any single named component."
+        }
+      },
+      {
+        "line_no": 91,
+        "fields": {
+          "code_id": "15386",
+          "dtc_code": "P1128",
+          "system_category": "Powertrain",
+          "is_oem_specific": "1",
+          "oem_make": "Volkswagen",
+          "fault_family": "fuel_trim_general",
+          "short_description": "Long Term Fuel Trim Bank 1 System Too Lean",
+          "detailed_technical_explanation": "Code P1128 (Long Term Fuel Trim Bank 1 System Too Lean) sets when overall short- or long-term fuel trim for a bank moves outside its normal operating window without a specific lean or rich bias being isolated. Causes span vacuum leaks, a fuel delivery imbalance, or a fuel/air metering sensor reading incorrectly for that bank."
+        }
+      }
+    ],
+    "community_fix_candidates": [
+      {
+        "line_no": 271,
+        "fields": {
+          "fix_id": "33105",
+          "code_id": "9344",
+          "fix_title": "Check HV battery state of charge",
+          "probability_rank": "1",
+          "difficulty_level": "Professional Required",
+          "step_by_step_instructions": "1. Verify the HV system is de-energized and locked out per the manufacturer's procedure before any inspection • 2. Read HV battery state of charge on a scan tool • 3. Charge the pack to a normal operating range if low • 4. Clear the code and recheck bus voltage at a normal state of charge",
+          "action_type": "",
+          "procedure_rationale": ""
+        }
+      },
+      {
+        "line_no": 272,
+        "fields": {
+          "fix_id": "33106",
+          "code_id": "9344",
+          "fix_title": "Inspect main HV contactors for full seating",
+          "probability_rank": "2",
+          "difficulty_level": "Professional Required",
+          "step_by_step_instructions": "1. Verify the HV system is de-energized and locked out per the manufacturer's procedure, then confirm zero volts with a rated meter • 2. Inspect the main positive/negative contactors for feedback confirming full seating • 3. Test contactor operation per the manufacturer's procedure • 4. Repair or replace a contactor found not seating fully",
+          "action_type": "",
+          "procedure_rationale": ""
+        }
+      },
+      {
+        "line_no": 273,
+        "fields": {
+          "fix_id": "33107",
+          "code_id": "9344",
+          "fix_title": "Test HV bus voltage-sense circuit",
+          "probability_rank": "3",
+          "difficulty_level": "Professional Required",
+          "step_by_step_instructions": "1. Verify the HV system is de-energized and locked out per the manufacturer's procedure, then confirm zero volts with a rated meter • 2. Inspect the bus voltage-sense wiring and connectors for damage or corrosion • 3. Repair or replace the sense circuit as needed • 4. Restore the HV system per procedure and clear the code • 5. Confirm bus voltage reads correctly across a drive cycle",
+          "action_type": "",
+          "procedure_rationale": ""
+        }
+      },
+      {
+        "line_no": 319,
+        "fields": {
+          "fix_id": "54784",
+          "code_id": "15386",
+          "fix_title": "Inspect for vacuum leaks and check fuel trim data with a scan tool",
+          "probability_rank": "1",
+          "difficulty_level": "Easy DIY",
+          "step_by_step_instructions": "1. Review short- and long-term fuel trim values by bank on a scan tool • 2. Smoke-test the intake for leaks matching the trending bank • 3. Repair any leak found • 4. Clear codes and recheck trims after a drive cycle",
+          "action_type": "",
+          "procedure_rationale": ""
+        }
+      },
+      {
+        "line_no": 320,
+        "fields": {
+          "fix_id": "54785",
+          "code_id": "15386",
+          "fix_title": "Clean throttle body and check MAF/MAP sensor readings",
+          "probability_rank": "2",
+          "difficulty_level": "Easy DIY",
+          "step_by_step_instructions": "1. Clean the throttle body bore and blade of carbon buildup • 2. Compare MAF/MAP readings against expected values at idle and 2,500 RPM • 3. Address any sensor reading found out of spec • 4. Clear codes and monitor trim recovery",
+          "action_type": "",
+          "procedure_rationale": ""
+        }
+      },
+      {
+        "line_no": 321,
+        "fields": {
+          "fix_id": "54786",
+          "code_id": "15386",
+          "fix_title": "Diagnose fuel delivery imbalance affecting one bank",
+          "probability_rank": "3",
+          "difficulty_level": "Professional Required",
+          "step_by_step_instructions": "1. Compare fuel pressure and injector pulse width between banks • 2. Identify a restricted injector, filter sock, or fuel rail issue isolated to one bank • 3. Repair or replace the faulted component • 4. Clear codes and confirm trims converge between banks",
+          "action_type": "",
+          "procedure_rationale": ""
+        }
+      }
+    ],
+    "community_part_candidates": [
+      {
+        "line_no": 376,
+        "fields": {
+          "part_id": "45037",
+          "fix_id": "33105",
+          "part_name": "HV contactor terminal kit"
+        }
+      },
+      {
+        "line_no": 377,
+        "fields": {
+          "part_id": "45038",
+          "fix_id": "33106",
+          "part_name": "Insulated HV service gloves"
+        }
+      },
+      {
+        "line_no": 378,
+        "fields": {
+          "part_id": "45039",
+          "fix_id": "33107",
+          "part_name": "Rated HV multimeter"
+        }
+      },
+      {
+        "line_no": 448,
+        "fields": {
+          "part_id": "72741",
+          "fix_id": "54784",
+          "part_name": "Intake gasket set"
+        }
+      },
+      {
+        "line_no": 449,
+        "fields": {
+          "part_id": "72742",
+          "fix_id": "54785",
+          "part_name": "Throttle body cleaner spray"
+        }
+      },
+      {
+        "line_no": 450,
+        "fields": {
+          "part_id": "72743",
+          "fix_id": "54786",
+          "part_name": "Fuel injector (as needed by bank)"
+        }
+      }
+    ]
+  },
+  "product_policy": {
+    "generic_dtc_rows": 0,
+    "vehicle_fitment_claim": false,
+    "ecu_fitment_claim": false,
+    "pr_code_claim": false,
+    "production_import": false,
+    "review_status": "community_reference_unverified",
+    "display_status": "candidate_reference_visible_separate_namespace",
+    "repair_procedure_status": "community_authored_not_factory_not_verified",
+    "oem_part_numbers_included": false,
+    "cost_or_labor_estimates_included": false,
+    "external_part_search_urls_included": false,
+    "market_scope": "UNKNOWN",
+    "applicability_precision": "manufacturer_make_only_candidate",
+    "community_repair_leads_visible": true,
+    "community_repair_leads_verified": false,
+    "community_repair_lead_count": 6,
+    "community_part_name_candidate_count": 6,
+    "diagnostic_execution_allowed": false
+  }
+}
