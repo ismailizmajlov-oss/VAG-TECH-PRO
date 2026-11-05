@@ -6,13 +6,20 @@ on:
     paths:
       - '.github/workflows/acquire-vag-engine-candidates.yml'
       - 'scripts/import_vag_engine_candidates.py'
+      - 'data/source-manifests/vag-factory-source-register.json'
+      - 'docs/research/AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04.md'
+      - 'tests/test_gor3a_source_rights.py'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  # Autoevolution-derived material is quarantined. This job must remain skipped until
+  # the owner has written permission for commercial use, display, offline caching,
+  # bulk reuse and redistribution, and has updated the source-rights register.
   acquire:
+    if: ${{ vars.VAG_GOR3A_AUTODEVOLUTION_REUSE_APPROVED == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
