@@ -127,3 +127,103 @@ jobs:
             ${{ runner.temp }}/vag-tech-pro-win10-11/windows-lifecycle-staging/build-metadata.json
           if-no-files-found: warn
           retention-days: 30
+  record-build-status:
+    name: Record upstream Windows build, test and artifact evidence for the next automation run
+    needs:
+      - native-windows-client-lifecycle
+    if: ${{ always() }}
+    runs-on: windows-2025
+    timeout-minutes: 10
+    concurrency:
+      group: vag-tech-pro-status-record
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      UPSTREAM_RUN_ID: ${{ github.event.workflow_run.id }}
+      UPSTREAM_RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+      UPSTREAM_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      UPSTREAM_STATUS: ${{ github.event.workflow_run.status }}
+      UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+      UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+      UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      UPSTREAM_URL: ${{ github.event.workflow_run.html_url }}
+      WIN10_11_RUNNER_AVAILABLE: ${{ vars.VAG_TECH_PRO_WIN10_11_RUNNER_AVAILABLE }}
+      NATIVE_JOB_RESULT: ${{ needs.native-windows-client-lifecycle.result }}
+    steps:
+      - name: Checkout status branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Query upstream Windows jobs and artifacts and persist the latest verified run
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+          $base = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$env:UPSTREAM_RUN_ID"
+          $jobsResponse = Invoke-RestMethod -Method Get -Uri "$base/jobs?per_page=100" -Headers $headers
+          $artifactsResponse = Invoke-RestMethod -Method Get -Uri "$base/artifacts?per_page=100" -Headers $headers
+          $jobRows = @($jobsResponse.jobs | ForEach-Object {
+            [ordered]@{
+              id = $_.id
+              name = $_.name
+              status = $_.status
+              conclusion = $_.conclusion
+              runner_name = $_.runner_name
+              started_at = $_.started_at
+              completed_at = $_.completed_at
+            }
+          })
+          $artifactRows = @($artifactsResponse.artifacts | ForEach-Object {
+            [ordered]@{
+              id = $_.id
+              name = $_.name
+              size_in_bytes = $_.size_in_bytes
+              expired = $_.expired
+              created_at = $_.created_at
+              expires_at = $_.expires_at
+            }
+          })
+          $record = [ordered]@{
+            schema_version = 1
+            recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
+            upstream_workflow = "VAG TECH PRO Windows x64 desktop validation run71"
+            run_id = [long]$env:UPSTREAM_RUN_ID
+            run_number = [int]$env:UPSTREAM_RUN_NUMBER
+            run_attempt = [int]$env:UPSTREAM_RUN_ATTEMPT
+            status = $env:UPSTREAM_STATUS
+            conclusion = $env:UPSTREAM_CONCLUSION
+            head_sha = $env:UPSTREAM_SHA
+            head_branch = $env:UPSTREAM_BRANCH
+            html_url = $env:UPSTREAM_URL
+            jobs = $jobRows
+            artifacts = $artifactRows
+            native_windows_10_11 = [ordered]@{
+              runner_gate_enabled = ($env:WIN10_11_RUNNER_AVAILABLE -eq "true")
+              lifecycle_job_result = $env:NATIVE_JOB_RESULT
+              required_runner_labels = @("self-hosted", "windows", "x64", "vag-tech-pro-win10-11")
+            }
+            release_ready = $false
+            release_readiness_note = "CI evidence only; licensed VAG repair data, exact factory fitment, Windows 10/11 native lifecycle and owner-approved source rights must be independently satisfied."
+          }
+          $directory = Join-Path $env:GITHUB_WORKSPACE "ci-status"
+          New-Item -ItemType Directory -Path $directory -Force | Out-Null
+          $statusPath = Join-Path $directory "latest-windows-run.json"
+          $record | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $statusPath -Encoding UTF8
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "ci-status/latest-windows-run.json"
+          git commit -m "ci: record Windows validation run $env:UPSTREAM_RUN_NUMBER"
+          if ($LASTEXITCODE -ne 0) { throw "Could not commit the Windows validation status record." }
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw "Could not rebase the Windows validation status record onto main." }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw "Could not publish the Windows validation status record." }
