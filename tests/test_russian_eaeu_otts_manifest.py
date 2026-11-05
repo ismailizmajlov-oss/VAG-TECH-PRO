@@ -59,6 +59,25 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(verification["official_public_search_endpoint_resolved"])
         self.assertIsNone(legal["primary_signed_pdf_sha256"])
 
+    def test_eaeu_register_publication_and_request_access_do_not_grant_product_reuse(self):
+        eaeu = self.sources["eaeu-open-data-portal"]
+        self.assertEqual(eaeu["status"], "discovery_only")
+        legal = eaeu["legal_basis"]
+        rule = legal["related_register_rule"]
+        self.assertEqual(rule["document"], "Решение Коллегии Евразийской экономической комиссии от 02.12.2014 № 225")
+        self.assertIn("upon request", rule["provisions"]["13"].lower())
+        self.assertIn("five working days", rule["provisions"]["9"].lower())
+        pilot = legal["historical_machine_readable_export_evidence"]
+        self.assertEqual(pilot["status"], "historical_pilot_only_not_evidence_of_current_api_or_reuse_license")
+        rights = eaeu["rights"]
+        self.assertFalse(rights["dataset_specific_terms_confirmed"])
+        self.assertEqual(rights["commercial_use"], "not_confirmed_for_an_otts_dataset")
+        self.assertEqual(rights["display"], "not_confirmed_for_an_otts_dataset")
+        self.assertEqual(rights["offline_cache"], "not_confirmed_for_an_otts_dataset")
+        self.assertEqual(rights["bulk_reuse"], "not_confirmed")
+        self.assertEqual(rights["redistribution"], "not_confirmed")
+        self.assertFalse(eaeu["data_ingested"])
+
     def test_other_otts_sources_keep_their_separate_rights_gates(self):
         eaeu = self.sources["eaeu-open-data-portal"]
         self.assertEqual(eaeu["status"], "discovery_only")
