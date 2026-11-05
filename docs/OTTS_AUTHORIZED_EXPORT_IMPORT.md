@@ -36,7 +36,7 @@ The manifest must explicitly include:
 - `commercial_use_allowed=true`, `display_allowed=true`, `offline_cache_allowed=true`, and `bulk_export_allowed=true`;
 - an explicit `pdf_redistribution_allowed` boolean. This metadata-only importer never includes PDF binaries, even when PDF rights are true.
 
-The importer verifies the supplied license/permission file's SHA-256 against the manifest. This is an integrity check, not a legal opinion: the owner must verify that the actual terms cover the intended commercial use, display, caching and offline distribution before marking the manifest approved.
+The importer verifies only that the supplied license/permission file bytes match the SHA-256 declared in the manifest. This proves file integrity, not the authenticity of the reviewer, the authority of the person who approved the rights, or the legal scope of the document. The SQLite `rights_status` is therefore always `owner_attested_not_independently_verified`; it must never be interpreted as a legal clearance or as proof that VAG TECH PRO has redistribution rights. A project owner must separately inspect the complete evidence, confirm that it covers this exact application and distribution model, and record that decision through the project's controlled source-rights review before any production promotion.
 
 ## Data semantics and safety
 
