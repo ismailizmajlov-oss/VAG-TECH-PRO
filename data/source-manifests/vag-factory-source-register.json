@@ -1752,6 +1752,81 @@
       ],
       "project_decision": "restricted_no_import_no_display_no_cache; treat as closed OEM ODIS MCD-derived material until VW AG permission or independently verifiable source rights are provided; uploader CC0 declaration does not establish rights in underlying OEM diagnostic database",
       "evidence_status": "repository_LICENSE_README_and_AU57X_MCD_findings_reviewed_2026-11-05"
+    },
+    {
+      "source_id": "vag-wiki-community-technical-hub",
+      "publisher": "VAG-Wiki Project (independent, unaffiliated)",
+      "url": "https://vag-wiki.com/",
+      "terms_url": "https://vag-wiki.com/terms-of-service",
+      "source_kind": "independent_vag_technical_reference_website",
+      "source_revision": "terms_legal_revision_2026.01; pages reviewed 2026-11-05",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "evidence_scope": [
+        "web_reference_claims_for_model_generations",
+        "engine_family_and_engine_code_index_claims",
+        "transmission_torque_rating_claims",
+        "fluid_and_lubrication_reference_claims"
+      ],
+      "observed_claims": {
+        "homepage_claims": [
+          "engine code indexing (EA888, EA288)",
+          "transmission torque ratings (DSG/Tiptronic)",
+          "fluid and lubrication standards"
+        ],
+        "data_provenance_statement": "Terms state that technical specifications, torque settings and diagnostic codes are compiled from various independent sources; reviewed pages do not identify per-record primary sources or a reproducible source revision.",
+        "accuracy_statement": "Terms disclaim guarantee that data is error-free or reflects the latest factory updates."
+      },
+      "rights": {
+        "dataset_license": "not_found_in_reviewed_pages",
+        "commercial_use_for_product": "not_established",
+        "product_display_rights": "not_established",
+        "offline_cache_rights": "not_granted",
+        "bulk_automated_extraction_allowed": false,
+        "redistribution_allowed": false,
+        "written_permission_for_bulk_or_redistribution_required": true,
+        "permission_status": "not_obtained",
+        "source_terms_revision": "2026.01",
+        "terms_explicitly_prohibit_unauthorized_mass_scraping": true,
+        "terms_explicitly_prohibit_automated_data_extraction_without_prior_authorization": true,
+        "terms_explicitly_prohibit_redistribution_without_prior_authorization": true
+      },
+      "applicability": {
+        "manufacturer_scope": "VAG-labelled web content only",
+        "exact_vehicle_fitment": false,
+        "model_generation_year_fitment": "not independently verified",
+        "engine_code_fitment": "not independently verified",
+        "gearbox_code_fitment": "not independently verified",
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_fitment": false,
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "unverified_web_reference_only",
+        "technical_review_status": "not_independently_reviewed"
+      },
+      "product_import_allowed": false,
+      "project_decision": "quarantined_no_bulk_extraction_no_offline_cache_no_product_display_or_redistribution_without_prior_written_permission_and_record_level_provenance; may be consulted manually as an external reference only where the site's terms permit",
+      "limitations": [
+        "The homepage describes the site as an independent technical reference and disclaims affiliation with Volkswagen AG.",
+        "The terms of service (Legal Revision 2026.01) prohibit unauthorized mass scraping, automated data extraction and redistribution without prior authorization.",
+        "No dataset-specific open license or written permission covering commercial product use, local SQLite caching, bulk reuse or redistribution was found in the reviewed pages.",
+        "The terms state that technical specifications, torque settings and diagnostic codes are compiled from various independent sources and disclaim a guarantee of accuracy or currency.",
+        "No per-record primary-source citations, source revisions, raw-document hashes or independent technical review evidence were established.",
+        "No Russian/EAEU market scope, exact model/generation/year applicability, engine/gearbox pairing, ECU mapping or VAG-specific DTC applicability is established.",
+        "Do not scrape, crawl, automate, cache, copy, bundle or redistribute the site data unless prior written permission explicitly covers each intended use."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://vag-wiki.com/",
+          "reviewed_at": "2026-11-05",
+          "evidence": "Homepage lines 9, 20-24, 45 describe independent technical database, claimed technical scope and non-affiliation."
+        },
+        {
+          "url": "https://vag-wiki.com/terms-of-service",
+          "reviewed_at": "2026-11-05",
+          "evidence": "Legal Revision 2026.01; sections 1, 2, 3 and 3.5 prohibit unauthorized mass-scraping, automated extraction and redistribution; describe mixed independent sources and accuracy disclaimer."
+        }
+      ]
     }
   ],
   "minimum_fitment_evidence_fields": [
