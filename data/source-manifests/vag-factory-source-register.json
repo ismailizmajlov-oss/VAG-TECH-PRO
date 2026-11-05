@@ -1742,14 +1742,18 @@
       "market_scope_policy": "EU type-approval records are supplementary; vehicle registration observations are Netherlands-only. No RU/EAEU applicability is inferred.",
       "ru_eaeu_market_evidence_present": false,
       "applicability_precision": "type_approval_variant_execution_candidate",
-      "verification_status": "rights_cleared_data_not_yet_ingested",
-      "display_status": "not_displayed_until_pack_and_query_integrity_verified",
+      "verification_status": "verified_source_candidate_pack_only",
+      "display_status": "candidate_only_read_only",
       "counts": {
-        "vehicle_variants": "pending",
-        "engine_candidates": "pending",
-        "transmission_candidates": "pending",
-        "unique_pair_candidates": "pending",
-        "ambiguous_pair_keys": "pending"
+        "vehicle_variants": 99413,
+        "engine_candidates": 101395,
+        "transmission_candidates": 99482,
+        "approval_revision_candidates": 94806,
+        "manufacturer_designation_candidates": 115876,
+        "unique_source_row_pair_candidates": 97905,
+        "ambiguous_or_incomplete_pair_keys": 1832,
+        "unique_pair_candidates": 97905,
+        "ambiguous_pair_keys": 1832
       },
       "access": {
         "status": "public_socrata_api",
@@ -1758,7 +1762,7 @@
         "query_limit": 50000,
         "retry_policy": "Five attempts with bounded exponential backoff for transient HTTP errors.",
         "offline_snapshot_retained": true,
-        "completeness_status": "unknown_until_verified_ingest"
+        "completeness_status": "verified_filtered_vag_snapshot_only_not_full_registry"
       },
       "rights": {
         "data_license_status": "CC0-1.0",
@@ -1859,7 +1863,29 @@
         "First-registration dates and type-approval revision dates are not model-year or production-date claims.",
         "No ECU, DTC, repair, wiring, pinout, torque or adaptation applicability."
       ],
-      "evidence_status": "RDW official open-data policy and Dutch government CC0 catalogue reviewed 2026-11-05; actual filtered VAG snapshots and counts pending Windows CI acquisition."
+      "evidence_status": "RDW official open-data policy and Dutch government CC0 catalogue reviewed 2026-11-05; filtered VAG snapshots and SQLite pack integrity verified in Windows CI run 41935787910 on 2026-11-04; snapshot is supplementary EU/NL candidate evidence only.",
+      "latest_verified_pack": {
+        "workflow_run_id": 41935787910,
+        "artifact_id": 13375260341,
+        "artifact_sha256": "8441e229cdc17c46c5ca116e6ed7ef0db647c5045b82e35dc3cc1047df7996c6",
+        "fetched_at_utc": "2026-11-04T23:50:00.973615+00:00",
+        "source_revision": "rdw-f22fe72ed46ca4f240c6",
+        "source_manifest_sha256": "b02f2bd71be8ba36da973cc689e8b1347101dd4bd0ce10185244e206d5420c3c",
+        "source_snapshot_sha256": "8dfe246668ef2996113d217b476175a0e4bad0e927b8b9aaeb9b3c5a51118f77",
+        "database_sha256": "efd2db4f7c7795404882e5a2fe47526535acf99ce9db0449669d7c11de352995",
+        "metadata_bundle_sha256": "e00ad3908a54bcd0eb34f160be3faf1765803c0f6b352d8a22ae55ef6a0afb6f",
+        "counts": {
+          "vehicle_variants": 99413,
+          "engine_candidates": 101395,
+          "transmission_candidates": 99482,
+          "approval_revision_candidates": 94806,
+          "manufacturer_designation_candidates": 115876,
+          "unique_source_row_pair_candidates": 97905,
+          "ambiguous_or_incomplete_pair_keys": 1832,
+          "unique_pair_candidates": 97905,
+          "ambiguous_pair_keys": 1832
+        }
+      }
     }
   ],
   "minimum_fitment_evidence_fields": [
