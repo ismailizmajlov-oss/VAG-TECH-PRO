@@ -195,52 +195,77 @@ jobs:
           } catch {
             Write-Output "Initial branch data-pack lookup failed; retrying while checking for a previously successful bundle: $($_.Exception.Message)"
           }
+          if ($null -eq $response) {
+            for ($attempt = 1; $attempt -le 3 -and $null -eq $response; $attempt++) {
+              try {
+                $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
+              } catch {
+                Write-Output "Initial branch data-pack lookup retry $attempt failed: $($_.Exception.Message)"
+              }
+              if ($null -eq $response) { Start-Sleep -Seconds 10 }
+            }
+          }
+
+          $currentRun = $null
           if ($null -ne $response) {
             $currentRun = $response.workflow_runs |
               Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
               Sort-Object { [datetime]$_.created_at } -Descending |
               Select-Object -First 1
-            if ($null -ne $currentRun -and $currentRun.status -eq "completed" -and $currentRun.conclusion -eq "success") {
+          }
+
+          if ($null -ne $currentRun) {
+            # A data-pack workflow for this exact source commit takes precedence over
+            # any older bundle. Never fall back while the matching run is queued or in progress.
+            if ($currentRun.status -eq "completed") {
+              if ($currentRun.conclusion -ne "success") {
+                throw "The offline data-pack workflow for this exact source commit failed: run $($currentRun.id), conclusion $($currentRun.conclusion)."
+              }
               $run = $currentRun
             } else {
+              for ($attempt = 1; $attempt -le 60; $attempt++) {
+                Start-Sleep -Seconds 10
+                try {
+                  $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
+                  $currentRun = $response.workflow_runs |
+                    Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+                    Sort-Object { [datetime]$_.created_at } -Descending |
+                    Select-Object -First 1
+                  if ($null -eq $currentRun) { continue }
+                  if ($currentRun.status -eq "completed") {
+                    if ($currentRun.conclusion -ne "success") {
+                      throw "The offline data-pack workflow for this exact source commit failed: run $($currentRun.id), conclusion $($currentRun.conclusion)."
+                    }
+                    $run = $currentRun
+                    break
+                  }
+                  Write-Output "Waiting for current-revision Windows offline data-pack run $($currentRun.id), status $($currentRun.status), attempt $attempt/60."
+                } catch {
+                  if ($_.Exception.Message -like "The offline data-pack workflow for this exact source commit failed:*") { throw }
+                  Write-Output "Current-revision data-pack lookup attempt $attempt failed: $($_.Exception.Message)"
+                }
+              }
+              if ($null -eq $run) {
+                throw "The current-revision Windows offline data-pack workflow did not complete successfully within the wait window; refusing an older bundle."
+              }
+            }
+          } else {
+            # No data-pack run was triggered for this commit. Reuse is permitted only
+            # after the next step verifies every source, index and database hash.
+            $previousBranchRun = @()
+            if ($null -ne $response) {
               $previousBranchRun = $response.workflow_runs |
                 Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
                 Sort-Object { [datetime]$_.created_at } -Descending |
                 Select-Object -First 1
-              if ($null -ne $previousBranchRun) {
-                $run = $previousBranchRun
-                $fallbackUsed = $true
-                Write-Output "Using the previous successful same-branch bundle (run $($run.id)) immediately; the next step independently verifies all source/index hashes against this checkout."
-              }
+            }
+            if ($null -ne $previousBranchRun -and @($previousBranchRun).Count -gt 0) {
+              $run = $previousBranchRun
+              $fallbackUsed = $true
+              Write-Output "No current-revision data-pack run exists; using previous successful same-branch bundle $($run.id), subject to independent hash verification."
             }
           }
-          if ($null -eq $run) {
-            for ($attempt = 1; $attempt -le 60; $attempt++) {
-              try {
-                $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
-                $currentRun = $response.workflow_runs |
-                  Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
-                  Sort-Object { [datetime]$_.created_at } -Descending |
-                  Select-Object -First 1
-                if ($null -ne $currentRun -and $currentRun.status -eq "completed" -and $currentRun.conclusion -eq "success") {
-                  $run = $currentRun
-                  break
-                }
-                $previousBranchRun = $response.workflow_runs |
-                  Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
-                  Sort-Object { [datetime]$_.created_at } -Descending |
-                  Select-Object -First 1
-                if ($null -ne $previousBranchRun) {
-                  $run = $previousBranchRun
-                  $fallbackUsed = $true
-                  break
-                }
-              } catch {
-                Write-Output "Data-pack lookup attempt $attempt failed: $($_.Exception.Message)"
-              }
-              Start-Sleep -Seconds 10
-            }
-          }
+
           if ($null -eq $run) {
             $mainUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=main&per_page=100"
             $mainResponse = Invoke-RestMethod -Method Get -Uri $mainUri -Headers $headers -TimeoutSec 20
@@ -253,7 +278,7 @@ jobs:
           if ($null -eq $run -or $run.status -ne "completed" -or $run.conclusion -ne "success") {
             throw "No successful offline data-pack bundle is available for this revision or a hash-compatible fallback."
           }
-          $artifactUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
+                    $artifactUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
           $artifactResponse = Invoke-RestMethod -Method Get -Uri $artifactUri -Headers $headers -TimeoutSec 20
           $artifact = $artifactResponse.artifacts |
             Where-Object { $_.name -eq "vag-tech-pro-windows-offline-data-packs" -and $_.expired -eq $false } |
