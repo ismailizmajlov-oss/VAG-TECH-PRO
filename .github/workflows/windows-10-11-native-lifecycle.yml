@@ -64,6 +64,7 @@ jobs:
           $metadataPath = Join-Path $artifactRoot "build-metadata.json"
           $metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
           if ($metadata.desktop_version -ne "0.2.5") { throw "Unexpected desktop version in build metadata: $($metadata.desktop_version)" }
+          if ($metadata.rdw_vehicle_variants -lt 1 -or $metadata.rdw_engine_candidates -lt 1 -or $metadata.rdw_transmission_candidates -lt 1 -or $metadata.rdw_ru_eaeu_applicability -ne $false -or $metadata.rdw_exact_vehicle_fitment -ne $false -or $metadata.rdw_database_sha256 -notmatch "^[a-f0-9]{64}$" -or $metadata.rdw_source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") { throw "Build metadata does not describe the verified RDW EU/NL candidate-only pack." }
           $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
           $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.5-x64.exe"
           foreach ($file in @($installer, $upgradeInstaller)) {
@@ -75,7 +76,7 @@ jobs:
           }
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
-          foreach ($required in @("data/research/manifest.json", "lib/local-core-db.cjs", "scripts/verify-local-core.cjs")) {
+          foreach ($required in @("data/research/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "data/research/rdw-vag-type-approval-cc0/manifest.json", "data/research/rdw-vag-type-approval-cc0/rdw-vag-type-approval.sqlite", "data/research/rdw-vag-type-approval-cc0/source-lock.json", "data/research/rdw-vag-type-approval-cc0/source-register.json", "lib/rdw-type-approval-db.cjs", "scripts/verify-rdw-type-approval.cjs", "lib/local-core-db.cjs", "scripts/verify-local-core.cjs")) {
             if (-not (Test-Path -LiteralPath (Join-Path $desktopRoot $required))) { throw "Offline lifecycle contract file is missing: $required" }
           }
           if (-not (Test-Path -LiteralPath $lifecycle)) { throw "Windows lifecycle script is missing." }
@@ -98,6 +99,7 @@ jobs:
           "installer_0_2_5_sha256=$((Get-FileHash -LiteralPath $upgradeInstaller -Algorithm SHA256).Hash.ToLowerInvariant())" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
           "windows_client=$($os.Caption); version=$($os.Version); build=$($os.BuildNumber); architecture=$($os.OSArchitecture)" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
           "desktop_version=$($metadata.desktop_version)" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
+          "rdw_source_revision=$($metadata.rdw_source_revision); variants=$($metadata.rdw_vehicle_variants); engine_candidates=$($metadata.rdw_engine_candidates); transmission_candidates=$($metadata.rdw_transmission_candidates); RU_EAEU_applicability=$($metadata.rdw_ru_eaeu_applicability)" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
 
       - name: Run clean install, offline launch, backup/restore, upgrade and uninstall preservation
         shell: powershell
