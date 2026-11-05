@@ -2179,6 +2179,84 @@
       },
       "project_decision": "approved for a separately namespaced CH homologation research pack after schema validation; never treat CH approvals as RU/EAEU approval or exact individual-vehicle fitment",
       "evidence_status": "official ASTRA/FEDRO OGD newsletter, official ASTRA vehicle-data page, official open-data reuse FAQ and EMBAG Art.10 reviewed 2026-11-06"
+    },
+    {
+      "source_id": "automotive-9-vw-dtc-candidate",
+      "publisher": "Automotive-9 / dtc-codes",
+      "url": "https://github.com/Automotive-9/dtc-codes",
+      "source_kind": "manufacturer_labelled_dtc_json_candidate",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "VOLKSWAGEN"
+        ],
+        "models": "not_provided",
+        "generations": "not_provided",
+        "model_years": "not_provided",
+        "engine_codes": "not_provided",
+        "gearbox_codes": "not_provided",
+        "ecu_fitment": "not_provided"
+      },
+      "provenance": {
+        "upstream_branch": "main",
+        "upstream_head_commit": "e5cf6906badc81e2bdac3ec7b7c1bba5c01fa108",
+        "last_data_upload_commit": "10244f095c78c53800ec9d6b5cabc980ad7c4528",
+        "source_file": "Volkswagen.json",
+        "source_file_git_blob_sha1": "9a2f7303a0d28a9e60259c3c91646484d04d4266",
+        "source_file_retrieved_at_utc": "2026-11-06",
+        "row_level_source_attribution": "not_found",
+        "reproducible_data_acquisition": "not_found"
+      },
+      "counts": {
+        "source_file_entries": 9137,
+        "numeric_legacy_or_component_keys": 7131,
+        "sae_shaped_keys": 2006,
+        "semicolon_joined_descriptions": 5339,
+        "numeric_key_rows_with_embedded_sae_code_text": 2153,
+        "numeric_key_rows_with_component_or_function_like_labels": 3691,
+        "empty_descriptions": 2
+      },
+      "data_quality": {
+        "namespace_homogeneous": false,
+        "mixed_generic_and_legacy_identifiers": true,
+        "component_or_function_identifiers_present": true,
+        "multiple_descriptions_in_single_value": true,
+        "exact_vehicle_or_ecu_applicability_present": false,
+        "technical_review_status": "failed_initial_triage"
+      },
+      "rights": {
+        "data_license_status": "no_license_found",
+        "root_license_file_present": false,
+        "readme_data_license_statement_present": false,
+        "row_level_source_provenance_present": false,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_reuse": "not_confirmed",
+        "redistribution": "not_confirmed",
+        "permission_status": "not_cleared"
+      },
+      "applicability": {
+        "precision": "unverified_mixed_namespace",
+        "vag_specific_verified": false,
+        "exact_vehicle_fitment": false,
+        "generation_verified": false,
+        "model_year_verified": false,
+        "engine_code_fitment": false,
+        "transmission_code_fitment": false,
+        "ecu_fitment": false,
+        "diagnostic_execution_allowed": false,
+        "repair_advice_approved": false
+      },
+      "verification_status": "quarantined_unverified_mixed_namespace",
+      "display_status": "quarantined_no_display",
+      "cache_status": "quarantined_no_offline_cache",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "project_decision": "quarantine_no_import_no_display_no_cache_no_redistribution; the repository has no data licence or row-level provenance, and its Volkswagen file mixes numeric legacy/component identifiers with SAE-shaped codes and multi-description rows.",
+      "evidence_status": "README, absent LICENSE path, Volkswagen.json, main branch head and file blob SHA reviewed 2026-11-06; see docs/research/AUTOMOTIVE_9_VW_DTC_SOURCE_REVIEW_2026-11-06.md"
     }
   ],
   "minimum_fitment_evidence_fields": [
