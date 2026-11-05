@@ -80,7 +80,8 @@
         "SBKTS Appendix 1 field 68 is gearbox make/type, but SBKTS is an individual-vehicle safety certificate, not an OTTS type-approval record.",
         "Do not use SBKTS personal data or package certificate PDFs without separate rights and privacy review.",
         "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
-        "The 28 public Annex 2 search fields contain approval identifiers/status and vehicle identity descriptors (make, commercial name, type, base vehicle/chassis, modifications, category and environmental class), but no engine or gearbox technical designation/code, ECU, DTC, repair or wiring fields. The Annex 1 PDF reference is not a grant to cache or redistribute the PDF. Never infer an engine/gearbox pair from Annex 2 metadata."
+        "The 28 public Annex 2 search fields contain approval identifiers/status and vehicle identity descriptors (make, commercial name, type, base vehicle/chassis, modifications, category and environmental class), but no engine or gearbox technical designation/code, ECU, DTC, repair or wiring fields. The Annex 1 PDF reference is not a grant to cache or redistribute the PDF. Never infer an engine/gearbox pair from Annex 2 metadata.",
+        "The Annex 2 public-site search obligation reviewed in Order 2038 applies to electronically issued records; a metadata export using this public-search namespace must retain field 20 and must not silently treat a missing/false electronic-issuance flag as a publicly searchable record."
       ],
       "ot_ts_attribute_map": [
         {
@@ -362,8 +363,10 @@
           "dtc_and_test_plans": "not_present_in_public_annex2_fields",
           "repair_procedures_wiring_pinouts_torque_adaptations_service_intervals": "not_present_in_public_annex2_fields",
           "annex_1_pdf": "field_19_is_a_document_reference_only; pdf_binary_and_reuse_rights_are_separate",
-          "annex_1_internal_schema": "distinct_internal_fgis_namespace; not interchangeable_with_public_annex2_and_not_established_as_public_searchable"
-        }
+          "annex_1_internal_schema": "distinct_internal_fgis_namespace; not interchangeable_with_public_annex2_and_not_established_as_public_searchable",
+          "public_search_scope": "electronically_issued_records_only"
+        },
+        "official_site_search_scope": "electronically_issued_records_only"
       },
       "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
     },
