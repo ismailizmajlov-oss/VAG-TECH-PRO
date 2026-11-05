@@ -38,9 +38,11 @@ def main():
         fail("Unsupported pack schema or upstream revision")
     if m.get("data_license")!="ODbL-1.0" or m.get("rights_status")!="approved_by_published_license":
         fail("ODbL rights gate failed")
-    if not all(m.get(k) is True for k in ("commercial_use_allowed","display_allowed","offline_cache_allowed","redistribution_allowed","share_alike_required","attribution_required")):
+    if not all(m.get(k) is True for k in ("commercial_use_allowed","commercial_use_allowed_under_odbl","display_allowed","offline_cache_allowed","redistribution_allowed","redistribution_allowed_under_odbl","share_alike_required","attribution_required")):
         fail("Published ODbL rights are incomplete")
     for rel,meta in m["source_files"].items():
+        if not meta.get("source_url","").startswith("https://raw.githubusercontent.com/MechanicDB/MechanicDB-public/"):
+            fail(f"Unpinned source URL: {rel}")
         f=root/rel
         if not f.is_file() or f.stat().st_size!=meta["byte_size"] or sha256_file(f)!=meta["sha256"]:
             fail(f"Source file hash mismatch: {rel}")
@@ -82,6 +84,11 @@ def main():
             verify_line(root,(r["source_file"],r["source_line_no"],r["source_line_sha256"],r["source_file_sha256"],r["source_revision"]),"upstream/replacement_parts.csv")
     finally:
         db.close()
+    fix_evidence={(x["fix_id"],x["source_file"],x["source_line_no"],x["source_line_sha256"]) for x in m.get("community_fix_line_evidence",[])}
+    part_evidence={(x["part_id"],x["fix_id"],x["source_file"],x["source_line_no"],x["source_line_sha256"]) for x in m.get("community_part_line_evidence",[])}
+    if len(fix_evidence)!=6 or len(part_evidence)!=6: fail("Pack manifest per-line repair/part evidence is incomplete")
+    workflow=m.get("source_workflow",{})
+    if workflow.get("workflow_file")!=".github/workflows/acquire-mechanicdb-vag-repair-leads-run72.yml" or workflow.get("commit")!=__import__("os").environ.get("GITHUB_SHA",workflow.get("commit")): fail("Acquisition workflow provenance mismatch")
     counts=m["counts"]
     if counts.get("manufacturer_controlled_candidates")!=2 or counts.get("generic_dtc_rows")!=0 or counts.get("community_repair_lead_rows")!=6 or counts.get("community_part_candidate_rows")!=6 or counts.get("repair_procedure_rows")!=0 or counts.get("part_rows")!=0:
         fail("Pack manifest counts or namespace boundary mismatch")
