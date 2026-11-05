@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/windows-10-11-native-lifecycle.yml"
       - "desktop-source-run*.zip.b64"
       - "desktop-source-run*.zip.sha256"
       - "desktop-source-run*.patch"
@@ -43,6 +44,7 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/windows-10-11-native-lifecycle.yml"
       - "desktop-source-run*.zip.b64"
       - "desktop-source-run*.zip.sha256"
       - "desktop-source-run*.patch"
