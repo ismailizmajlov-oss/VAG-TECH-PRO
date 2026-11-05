@@ -890,6 +890,8 @@ jobs:
           node --check apply-rdw-type-approval-run76.cjs
           node apply-rdw-type-approval-run76.cjs --desktop-root desktop-source --pack-dir $packDir 2>&1 | Tee-Object -FilePath rdw-desktop-integration-run76.log
           if ($LASTEXITCODE -ne 0) { throw "RDW offline desktop integration failed" }
+          node apply-rdw-lifecycle-fix-run77.cjs --desktop-root desktop-source
+          if ($LASTEXITCODE -ne 0) { throw "RDW lifecycle version gate patch failed" }
           $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path (Get-Location) "desktop-source/data/research"
           Push-Location desktop-source
           npm test 2>&1 | Tee-Object -FilePath rdw-desktop-tests.log
