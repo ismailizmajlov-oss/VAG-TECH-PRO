@@ -66,7 +66,7 @@ function cleanText(value, label, max = MAX_TEXT, required = false) {
     return null;
   }
   if (typeof value !== 'string') fail(`${label} must be a string`);
-  const text = value.replace(/[\\u0000-\\u001f\\u007f]/g, ' ').replace(/\\s+/g, ' ').trim();
+  const text = value.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
   if (required && !text) fail(`${label} is required`);
   if (text.length > max) fail(`${label} exceeds ${max} characters`);
   return text || null;
