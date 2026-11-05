@@ -61,3 +61,24 @@ The OGD decision applies only to the published open-data products. It does not e
 5. Add desktop search for this CH research pack only after integrity, provenance and no-cross-join tests pass.
 
 No ASTRA record has been imported into the product database by this review. The field-level probe is the next implementation step.
+
+
+## Field-level schema probe completed (2026-11-05)
+
+The Windows 2022 probe downloaded the official passenger-car XLSB, official JSON schema and six individual CUPRA approval JSON records. The probe completed successfully.
+
+Pinned snapshot evidence:
+- `TAS_Personenwagen.xlsb`: 30,761,711 bytes; SHA-256 `0f66370e7414d0bfabf2cf1e97df3b8e190f4a66ba38d2012e2791cb5c9b2774`.
+- `govServices_TypeApproval_Schema.json`: 65,421 bytes; SHA-256 `5fb35f59455aca0983a36328bfb11e418e05f7af98b82579874ca216b2523d9d`.
+- Six official per-approval JSON records were downloaded with HTTP 200 and individually hashed; their hashes and observed values are pinned in the source manifest.
+
+Confirmed fields include `chTypeApprovalNumber`, `makeName`, `type`, `variant`, `version`, `manufacturerOfTheEngine`, `engineType`, `chEngineCodeAsMarkedOnTheEngine`, and `gearboxEmissions1..4.versionDefined` / `chGearboxType`.
+
+Important semantic distinction from the official records:
+- CUPRA Formentor approval 1XZ904 has `engineType=DNPA`, while `chEngineCodeAsMarkedOnTheEngine=DNP`; the stamped marking is not the same value as the engine-type designation.
+- Approval 1XZ734 has `engineType=DPCA` and stamped marking `DPC`.
+- Approval 1XZ326 has `engineType=DNFB` and stamped marking `DNF`.
+- The linked `chGearboxType` is `m7a` for these Formentor records. CUPRA Born approvals show `m1a`.
+- `gearboxEmissionsN.versionDefined` carries the variant/version scope for the gearbox/emissions row.
+
+Therefore the source can provide an official **engine-type designation** and a Swiss gearbox-type classification at approval/variant/version scope. It does **not** provide a confirmed VAG gearbox code in the reviewed schema. Neither `engineType` nor the stamped marking is promoted to a confirmed VAG engine-code record without independent validation. The separate emissions XLSB and non-passenger-car index are being probed before pack construction.

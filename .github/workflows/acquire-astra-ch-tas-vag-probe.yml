@@ -23,7 +23,7 @@ jobs:
           python-version: "3.12"
       - name: Install pinned XLSB reader
         run: python -m pip install --disable-pip-version-check pyxlsb==1.0.10
-      - name: Probe official ASTRA passenger-car index, JSON schema and VAG approval records
+      - name: Probe passenger-car, other-automobile and emissions XLSB indexes, JSON schema and VAG approval records
         run: |
           python scripts/probe_astra_ch_tas.py --output-dir artifacts/astra-ch-tas-probe
           if ($LASTEXITCODE -ne 0) { throw "ASTRA TAS schema probe failed" }

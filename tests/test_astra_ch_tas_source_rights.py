@@ -35,8 +35,11 @@ class AstraChTasSourceRightsTests(unittest.TestCase):
 
     def test_engine_and_gearbox_fields_are_not_assumed_before_schema_probe(self):
         fields = self.manifest["field_status"]
-        self.assertEqual(fields["engine_code"], "schema_probe_pending")
-        self.assertEqual(fields["gearbox_code_and_variant_linkage"], "schema_probe_pending")
+        self.assertIn("official_engine_type_designation", fields["engine_type"])
+        self.assertIn("not_automatically_equate", fields["engine_type"])
+        self.assertIn("shorter_than_engine_type", fields["stamped_engine_marking"])
+        self.assertIn("classification_not_vag_gearbox_code", fields["swiss_gearbox_type"])
+        self.assertEqual(fields["vag_gearbox_code"], "not_provided_by_reviewed_json_schema")
         self.assertTrue(self.manifest["import_policy"]["never_cross_join_engine_and_gearbox_variants"])
 
     def test_source_products_are_official_machine_readable_astra_products(self):
