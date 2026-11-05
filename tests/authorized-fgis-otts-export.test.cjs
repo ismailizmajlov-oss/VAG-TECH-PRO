@@ -119,7 +119,7 @@ test('preserves supported VAG make labels while sanitizing control characters', 
   try {
     const f = fixture(dir);
     for (const make of ['Volkswagen', 'Audi', 'Škoda', 'SEAT', 'CUPRA']) {
-      const record = { ...f.input.records[0], make: `${make}\\u0000` };
+      const record = { ...f.input.records[0], make: `${make}\u0000` };
       const normalized = normalizeRecord(record, 0, f.manifest).normalized;
       assert.equal(normalized.make, make);
     }
