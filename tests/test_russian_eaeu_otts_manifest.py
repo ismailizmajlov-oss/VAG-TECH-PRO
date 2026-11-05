@@ -33,6 +33,8 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(contract["importer_document_types_supported"], ["OTTS", "EOTTS"])
         self.assertEqual(contract["document_type_envelope_namespace"], "source_record_envelope_not_annex_2_field")
         self.assertIn("SBKTS", contract["importer_document_types_excluded"])
+        self.assertEqual(contract["importer_package_schema_version"], 2)
+        self.assertEqual(contract["importer_staging_database_schema_version"], 2)
         self.assertTrue(contract["field_numbers_are_not_interchangeable"])
         self.assertEqual(contract["internal_fgis_attribute_namespace"], "annex_1_internal_database_fields")
         self.assertEqual(contract["public_site_search_namespace"], "annex_2_publication_fields")
