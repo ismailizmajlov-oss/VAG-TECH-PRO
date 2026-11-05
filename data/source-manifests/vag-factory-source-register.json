@@ -1827,6 +1827,64 @@
           "evidence": "Legal Revision 2026.01; sections 1, 2, 3 and 3.5 prohibit unauthorized mass-scraping, automated extraction and redistribution; describe mixed independent sources and accuracy disclaimer."
         }
       ]
+    },
+    {
+      "source_id": "otts-bot",
+      "publisher": "OTTS.BOT",
+      "url": "https://www.otts.bot/",
+      "terms_url": "https://www.otts.bot/terms",
+      "source_kind": "commercial_aggregated_ru_eaeu_vehicle_compliance_database",
+      "source_revision": "published_user_agreement_last_updated_2026-08-26; reviewed_2026-11-05",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "provider_displayed_counts": {
+        "observed_at": "2026-11-05",
+        "ot_ts_records": 74115,
+        "sbkts_records": 224744,
+        "otsh_records": 1655,
+        "independently_audited": false
+      },
+      "access": {
+        "public_search": "free",
+        "one_document_download": "500 RUB per document",
+        "subscription_advertised": "990 RUB for 3 days to 29900 RUB per year",
+        "project_access_used": false,
+        "paid_terms_accepted": false
+      },
+      "rights": {
+        "dataset_license": "not_granted",
+        "commercial_use_allowed": "not_confirmed",
+        "third_party_display_allowed": false,
+        "offline_cache_allowed": "not_confirmed_for_distribution",
+        "automated_collection": "prohibited_beyond_ordinary_user_scenario_without_separate_written_permission",
+        "bulk_export": "not_authorized",
+        "redistribution": "prohibited_under_published_user_agreement_clause_3",
+        "underlying_document_rights": "belong_to_respective_rightsholders",
+        "permission_status": "not_cleared"
+      },
+      "applicability": {
+        "exact_factory_engine_code": false,
+        "exact_gearbox_code": false,
+        "engine_gearbox_pairing": false,
+        "exact_ecu_dtc_fitment": false,
+        "exact_vehicle_fitment": false,
+        "market_scope_precision": "aggregator_registry_level_only",
+        "applicability_precision": "document_metadata_only_pending_primary_document_review"
+      },
+      "limitations": [
+        "The provider-displayed record counts are dynamic and not independently audited.",
+        "Free search does not grant a dataset licence or permission for automated collection, persistent offline caching, third-party display or redistribution.",
+        "The User Agreement prohibits automated collection/scraping and mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of database information and documents as a proprietary information product.",
+        "The operator states that rights to the underlying documents belong to their respective rightsholders.",
+        "No exact factory engine code, gearbox code, engine/gearbox pairing, ECU mapping or repair applicability was established from the public interface.",
+        "The provider advertises paid document downloads and subscriptions; the project did not create an account, subscribe, pay, query automatically or download records."
+      ],
+      "project_decision": "restricted_no_automated_collection_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_covering_bulk_reuse_display_caching_and_redistribution",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "evidence_status": "homepage_and_user_agreement_reviewed_2026-11-05; agreement_last_updated_2026-08-26"
     }
   ],
   "minimum_fitment_evidence_fields": [
