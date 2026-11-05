@@ -71,6 +71,8 @@ Recorded run artifacts (GitHub artifact API SHA-256 digests):
 
 The run status is recorded in [`ci-status/latest-windows-run.json`](ci-status/latest-windows-run.json), with upstream run ID, source SHA, job conclusions, artifact IDs/digests, and native-client gate state. This is CI evidence, not a public release; `release_ready=false`. The source commit tested by run 161 is the parent of the status-record commit on `main`; the status-only commit does not change the tested desktop source.
 
+The run 161 build log explicitly reports that no code-signing certificate was configured and signing was skipped for the application, uninstaller and NSIS installer. The generated EXE is therefore unsigned; a production distribution still needs an owner-provided Windows code-signing certificate and protected signing workflow (or an explicit owner decision to accept unsigned distribution).
+
 This is Windows-hosted CI and Windows Server 2022 evidence, **not a native Windows 10/11 client test**. The separate native Windows 10/11 workflow was skipped because the owner-controlled runner gate is disabled and no owner-provided isolated Windows 10/11 x64 runner is registered. Required labels are `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`; the owner must also set `VAG_TECH_PRO_WIN10_11_RUNNER_AVAILABLE=true`. No runner or external account is created by the project.
 
 Installer code signing was skipped because no signing certificate is configured. The installers remain CI artifacts, not a public release. No paid signing service or certificate has been acquired.
