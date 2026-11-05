@@ -73,7 +73,6 @@ jobs:
       UPSTREAM_RUN_ID: ${{ github.run_id }}
       UPSTREAM_RUN_NUMBER: ${{ github.run_number }}
       UPSTREAM_ATTEMPT: ${{ github.run_attempt }}
-      UPSTREAM_STATUS: ${{ job.status }}
       UPSTREAM_CONCLUSION: ${{ needs.probe-and-build.result }}
       UPSTREAM_SHA: ${{ github.sha }}
       UPSTREAM_BRANCH: ${{ github.ref_name }}
@@ -128,8 +127,9 @@ jobs:
             run_id = [long]$env:UPSTREAM_RUN_ID
             run_number = [int]$env:UPSTREAM_RUN_NUMBER
             run_attempt = [int]$env:UPSTREAM_ATTEMPT
-            status = $run.status
-            conclusion = $run.conclusion
+            run_status_at_record = $run.status
+            run_conclusion_at_record = $run.conclusion
+            build_job_result = $env:UPSTREAM_CONCLUSION
             head_sha = $env:UPSTREAM_SHA
             head_branch = $env:UPSTREAM_BRANCH
             html_url = $env:UPSTREAM_URL
@@ -144,7 +144,7 @@ jobs:
             ru_eaeu_applicability = $false
             pack_artifact_present = ($null -ne $packArtifact)
             probe_artifact_present = ($null -ne $probeArtifact)
-            pack_ready = ($run.conclusion -eq "success" -and $null -ne $packArtifact -and -not $packArtifact.expired)
+            pack_ready = ($env:UPSTREAM_CONCLUSION -eq "success" -and $null -ne $packArtifact -and -not $packArtifact.expired)
             release_ready = $false
             release_readiness_note = "Separate CH-only homologation research pack; never RU/EAEU fitment, VAG gearbox-code confirmation or repair applicability."
           }
