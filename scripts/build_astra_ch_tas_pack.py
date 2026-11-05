@@ -412,6 +412,9 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
     for key, (expected, url, filename) in definitions.items():
         file_evidence[key] = _download_or_verify(url, input_dir / filename, expected)
 
+    source_snapshot_payload = json.dumps(file_evidence, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    source_snapshot_sha256 = hashlib.sha256(source_snapshot_payload.encode("utf-8")).hexdigest()
+
     expected_indexes = snapshot["index_row_counts"]
     expected_make_counts = snapshot["vag_approval_counts"]
     expected_emissions_counts = snapshot.get("vag_emissions_gearbox_rows")
@@ -452,6 +455,7 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
             "source_revision": source_revision,
             "source_snapshot_date": source_revision,
             "source_manifest_sha256": source_manifest_sha256,
+            "source_snapshot_sha256": source_snapshot_sha256,
             "retrieved_at_utc": timestamp,
             "rights_status": "approved_by_published_ogd_terms",
             "license_name": "Swiss Open Government Data (OGD)",
@@ -704,8 +708,6 @@ def build_pack(input_dir: Path, output_dir: Path, source_manifest_path: Path) ->
         raise
 
     database_hash = sha256_file(database_path)
-    source_snapshot_payload = json.dumps(file_evidence, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    source_snapshot_sha256 = hashlib.sha256(source_snapshot_payload.encode("utf-8")).hexdigest()
     pack_manifest = {
         "schema_version": 2,
         "pack_id": "astra-ch-tas-vag-open-data",
