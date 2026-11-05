@@ -21,7 +21,9 @@ class AstraChTasPackTests(unittest.TestCase):
     def test_exact_make_filter_does_not_accept_similar_labels(self):
         self.assertTrue(is_vag_make("AUDI"))
         self.assertTrue(is_vag_make("vw"))
-        self.assertTrue(is_vag_make("ŠKODA"))
+        self.assertTrue(is_vag_make("SKODA"))
+        self.assertFalse(is_vag_make("ŠKODA"))
+        self.assertFalse(is_vag_make("Volkswagen"))
         self.assertFalse(is_vag_make("Volkswagen Commercial Vehicles"))
         self.assertFalse(is_vag_make("VW Nutzfahrzeuge"))
         self.assertFalse(is_vag_make("Audi AG"))
