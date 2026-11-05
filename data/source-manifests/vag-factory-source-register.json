@@ -339,6 +339,70 @@
       "evidence_status": "pinned_public_sample_license_sources_and_data_dictionary_reviewed_2026-11-04"
     },
     {
+      "source_id": "obdex-generic-cc0",
+      "publisher": "foerbsnavi / OBDex",
+      "url": "https://github.com/foerbsnavi/OBDex",
+      "pinned_revision": "09c8aac3d7cb3477a8d9345dfff90b82457b64d1",
+      "source_manifest_path": "data/source-manifests/obdex-generic-cc0.lock.json",
+      "source_kind": "generic_sae_iso_obd2_dtc_and_pid_reference_dataset",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "data_counts_as_published": {
+        "generic_dtc_rows": 9533,
+        "generic_pid_rows": 132,
+        "vag_specific_dtc_rows": 0,
+        "exact_vehicle_fitment_rows": 0,
+        "production_rows": 0
+      },
+      "evidence_scope": [
+        "generic_sae_iso_obd2_dtc_identifiers",
+        "generic_obd2_mode_01_pids",
+        "generic_obd2_mode_09_vehicle_information_pids"
+      ],
+      "applicability": {
+        "manufacturer": "UNKNOWN",
+        "vag_specific": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "ecu_mapping": false,
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "generic_code_only"
+      },
+      "rights": {
+        "data_license_status": "CC0-1.0 for upstream data files only",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": false,
+        "attribution_recommended": true,
+        "source_reference_policy": {
+          "validation": "syntax_only",
+          "external_fetch": false,
+          "rights_review": "not_inherited_from_cc0_dataset",
+          "allowed_schemes": [
+            "https",
+            "http"
+          ],
+          "display_policy": "external_reference_link_only"
+        },
+        "source_references_quarantined": true,
+        "external_reference_content_copied": false,
+        "permission_status": "approved_by_published_CC0_for_upstream_data_files_only"
+      },
+      "limitations": [
+        "Generic SAE/ISO OBD-II reference data only; not a VAG factory diagnostic corpus.",
+        "No VAG-specific DTC definitions, manufacturer subcodes or ECU-specific fault descriptions.",
+        "No exact vehicle, generation, year, engine, gearbox, ECU or RU/EAEU applicability.",
+        "External source documents are not included; source URLs are preserved only in raw source records, never fetched or displayed.",
+        "Repair estimates, costs and generic repair text are not promoted as OEM repair advice."
+      ],
+      "project_decision": "allow_separate_generic_CC0_reference_pack_only; keep separate from VAG-specific data and exact vehicle fitment",
+      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-05; per-source-file_and_per-row_SHA256; SQLite_integrity_verified"
+    },
+    {
       "source_id": "nhtsa-tsbs-public-index",
       "publisher": "National Highway Traffic Safety Administration",
       "url": "https://catalog.data.gov/dataset/nhtsas-office-of-defects-investigation-odi-technical-service-bulletins-system-tsbs-downloadable-file",
