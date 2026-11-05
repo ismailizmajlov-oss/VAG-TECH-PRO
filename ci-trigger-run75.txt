@@ -1,0 +1,1 @@
+Run75: integrate the pinned ODbL MechanicDB community repair-lead sample as title-only, separately namespaced offline research; run full Windows 10/11 x64 NSIS build, clean install, offline, upgrade, backup/restore and uninstall lifecycle verification.
