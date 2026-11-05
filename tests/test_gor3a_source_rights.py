@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTER = ROOT / "data/source-manifests/vag-factory-source-register.json"
 WORKFLOW = ROOT / ".github/workflows/acquire-vag-engine-candidates.yml"
 REVIEW = ROOT / "docs/research/AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04.md"
+CANDIDATE_REVIEW = ROOT / "docs/research/VAG_OPEN_ENGINE_CANDIDATES_2026-11-03.md"
 
 
 class Gor3aUpstreamRightsTests(unittest.TestCase):
@@ -40,6 +41,12 @@ class Gor3aUpstreamRightsTests(unittest.TestCase):
         )
         self.assertIn("VAG_GOR3A_AUTODEVOLUTION_REUSE_APPROVED", workflow)
         self.assertIn("AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04.md", workflow)
+
+    def test_candidate_document_discloses_disabled_acquisition(self):
+        candidate_review = CANDIDATE_REVIEW.read_text(encoding="utf-8")
+        self.assertIn("skipped by default", candidate_review)
+        self.assertIn("VAG_GOR3A_AUTODEVOLUTION_REUSE_APPROVED", candidate_review)
+        self.assertIn("written permission", candidate_review)
 
     def test_primary_rights_review_blocks_copying_until_written_permission(self):
         review = REVIEW.read_text(encoding="utf-8")
