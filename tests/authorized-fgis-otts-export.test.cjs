@@ -28,7 +28,7 @@ function fixture(dir, overrides = {}) {
     schema_version: 1,
     source_id: 'rosstandart-fgis-kts',
     publisher: 'TEST ONLY — synthetic Rosstandart source fixture',
-    source_url: 'https://example.invalid/fgis',
+    source_url: 'https://www.interstandart.ru/TEST_FIXTURE/fgis',
     source_revision: '2038_as_amended_by_2335',
     retrieved_at: '2026-11-03T12:00:00.000Z',
     market_scope: ['RU', 'EAEU_TR_TS_018_2011'],
@@ -65,7 +65,7 @@ function fixture(dir, overrides = {}) {
     annex_1_pdf: 'https://example.invalid/approval.pdf',
     electronically_issued_flag: true,
     publication_date: '2020-01-02',
-    source_url: 'https://example.invalid/fgis/record/1',
+    source_url: 'https://www.rst.gov.ru/TEST_FIXTURE/record/1',
     source_field_namespace: 'annex_2_publication_fields',
     source_field_numbers: {
       approval_registration_number: 4,
@@ -89,6 +89,25 @@ function fixture(dir, overrides = {}) {
   fs.writeFileSync(inputPath, JSON.stringify(input, null, 2));
   return { licensePath, permissionPath, manifestPath, inputPath, outputPath, licenseBytes, permissionBytes, manifest, input };
 }
+test('rejects unverified, lookalike, credential-bearing and non-standard-port source URLs', () => {
+  const cases = [
+    { label: 'manifest host', overrides: { manifest: { source_url: 'https://example.invalid/fgis' } }, expected: /source_url must use a verified Rosstandart\/Interstandart official host/ },
+    { label: 'record lookalike host', overrides: { record: { source_url: 'https://rst.gov.ru.evil.example/record/1' } }, expected: /source_url must use a verified Rosstandart\/Interstandart official host/ },
+    { label: 'URL credentials', overrides: { manifest: { source_url: 'https://user@www.rst.gov.ru/fgis' } }, expected: /source_url must not contain URL credentials/ },
+    { label: 'non-standard port', overrides: { record: { source_url: 'https://www.rst.gov.ru:8443/record/1' } }, expected: /source_url must not use a non-default port/ }
+  ];
+  for (const item of cases) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-source-host-'));
+    try {
+      const f = fixture(dir, item.overrides);
+      const result = run(f);
+      assert.notEqual(result.status, 0, item.label);
+      assert.match(result.stderr, item.expected, item.label);
+      assert.equal(fs.existsSync(f.outputPath), false, item.label);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+  }
+});
+
 function run(f, mode = 'license') {
   const evidenceArgs = mode === 'permission' ? ['--permission-document', f.permissionPath] : ['--license-text', f.licensePath];
   return spawnSync(process.execPath, [script, '--input', f.inputPath, '--manifest', f.manifestPath,
