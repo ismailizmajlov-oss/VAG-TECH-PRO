@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "pack_id": "rdw-vag-type-approval-cc0",
+  "source_id": "rdw-vag-type-approval-cc0",
+  "publisher": "RDW — Netherlands Vehicle Authority",
+  "source_root": "https://opendata.rdw.nl/",
+  "source_revision_policy": "Capture the current metadata JSON for every dataset on each ingest; source_revision is the ordered set of dataset updatedAt values plus SHA-256 of metadata and filtered response snapshots.",
+  "data_license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "rights_status": "approved_by_published_license",
+  "rights": {
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": false,
+    "attribution_recommended": true,
+    "bulk_reuse_allowed": true,
+    "share_alike_required": false
+  },
+  "legal_evidence": [
+    {
+      "url": "https://www.rdw.nl/over-rdw/dienstverlening/open-data/algemene-informatie",
+      "claim": "RDW states non-sensitive type-approval data is open data and available free without restrictions."
+    },
+    {
+      "url": "https://data.overheid.nl/dataset/324bac6c-9ac4-460c-a672-a5bc4785e364",
+      "claim": "Dutch government catalogue entry for vehicle type approvals identifies CC0 licensing."
+    },
+    {
+      "url": "https://opendata.rdw.nl/",
+      "claim": "Official RDW Socrata open-data portal and resource endpoint."
+    }
+  ],
+  "datasets": [
+    {
+      "id": "m9d7-ebf2",
+      "name": "Open Data RDW: Gekentekende_voertuigen",
+      "url": "https://opendata.rdw.nl/resource/m9d7-ebf2.json",
+      "role": "NL registration evidence and make/model/type-approval/variant/execution crosswalk",
+      "selected_fields": [
+        "merk",
+        "handelsbenaming",
+        "type",
+        "typegoedkeuringsnummer",
+        "variant",
+        "uitvoering",
+        "datum_eerste_toelating_dt",
+        "europese_voertuigcategorie",
+        "voertuigsoort"
+      ],
+      "excluded_fields": [
+        "kenteken",
+        "houdergegevens",
+        "tenaamstelling",
+        "verzekeringsgegevens"
+      ],
+      "market_scope": "NL_REGISTRATION_OBSERVATION",
+      "license": "CC0-1.0",
+      "required": true
+    },
+    {
+      "id": "4by9-ammk",
+      "name": "Open Data RDW: TGK Aandrijving Uitvoering",
+      "url": "https://opendata.rdw.nl/resource/4by9-ammk.json",
+      "role": "engine/motor approval data",
+      "selected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "volgnummeraandrijving",
+        "motorcode",
+        "typegoedkeuringsnummermotor",
+        "aantalcilinders",
+        "cilinderinhoud"
+      ],
+      "market_scope": "EU_TYPE_APPROVAL",
+      "license": "CC0-1.0",
+      "required": true
+    },
+    {
+      "id": "7rjk-eycs",
+      "name": "Open Data RDW: TGK Versnelling Uitvoering",
+      "url": "https://opendata.rdw.nl/resource/7rjk-eycs.json",
+      "role": "transmission type and gear-count approval data",
+      "selected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "volgnummerversnelling",
+        "codetypeversnellingsbak",
+        "aantalversnellingenbovengrens",
+        "aantalversnellingenondergrens"
+      ],
+      "market_scope": "EU_TYPE_APPROVAL",
+      "license": "CC0-1.0",
+      "required": true
+    },
+    {
+      "id": "x5v3-sewk",
+      "name": "Open Data RDW: TGK Handelsbenaming Fabrikant",
+      "url": "https://opendata.rdw.nl/resource/x5v3-sewk.json",
+      "role": "manufacturer model/type designation cross-reference",
+      "selected_fields": [
+        "typegoedkeuringsnummer",
+        "codevariantgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "volgnummerhandelsbenamingfabr",
+        "handelsbenamingfabrikant",
+        "typeaanduidingfabrikant"
+      ],
+      "market_scope": "EU_TYPE_APPROVAL",
+      "license": "CC0-1.0",
+      "required": true
+    },
+    {
+      "id": "byxc-wwua",
+      "name": "Open Data RDW: TGK Basis Uitvoering",
+      "url": "https://opendata.rdw.nl/resource/byxc-wwua.json",
+      "role": "type-approval execution category and revision validity",
+      "selected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "voertuigcategorie",
+        "begindatumrevisieuitvoering",
+        "einddatumrevisieuitvoering"
+      ],
+      "market_scope": "EU_TYPE_APPROVAL",
+      "license": "CC0-1.0",
+      "required": true
+    },
+    {
+      "id": "kyri-nuah",
+      "name": "Open Data RDW: TGK Merk Uitvoering",
+      "url": "https://opendata.rdw.nl/resource/kyri-nuah.json",
+      "role": "RDW manufacturer code at approval execution",
+      "selected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "volgnummermerk",
+        "merkcoderdw"
+      ],
+      "market_scope": "EU_TYPE_APPROVAL",
+      "license": "CC0-1.0",
+      "required": false
+    }
+  ],
+  "acquisition_policy": {
+    "filter_to_vag_make_aliases": [
+      "VOLKSWAGEN",
+      "VOLKSWAGEN AG",
+      "VW",
+      "AUDI",
+      "AUDI AG",
+      "SKODA",
+      "ŠKODA",
+      "SEAT",
+      "CUPRA",
+      "PORSCHE",
+      "BENTLEY",
+      "LAMBORGHINI",
+      "BUGATTI"
+    ],
+    "passenger_vehicle_categories": [
+      "M1"
+    ],
+    "no_registration_identifiers_retained": true,
+    "no_full_registry_dump": true,
+    "api_pagination_required": true,
+    "metadata_and_filtered_response_sha256_required": true,
+    "api_rate_limit_backoff_required": true,
+    "vehicle_registry_filter": "merk IN VAG make aliases AND europese_voertuigcategorie='M1' AND voertuigsoort='Personenauto' AND datum_eerste_toelating_dt >= '1998-01-01T00:00:00.000' AND typegoedkeuringsnummer/variant/uitvoering present"
+  },
+  "applicability_policy": {
+    "market_scope": [
+      "NL_REGISTRATION_OBSERVATION",
+      "EU_TYPE_APPROVAL"
+    ],
+    "precision": "type_approval_variant_execution_candidate",
+    "exact_vehicle_fitment": false,
+    "generation_verified": false,
+    "model_year_verified": false,
+    "engine_code_namespace": "RDW.motorcode",
+    "vag_factory_engine_code_verified": false,
+    "transmission_code_namespace": "RDW.codetypeversnellingsbak",
+    "vag_factory_gearbox_code_verified": false,
+    "pair_only_if_one_engine_and_one_transmission_per_exact_approval_variant_execution_revision": true,
+    "ambiguous_pairs_remain_unlinked": true,
+    "ru_eaeu_applicability": false
+  },
+  "expected_counts": "unknown_until_first_verified_ingest",
+  "outputs": {
+    "database": "rdw-vag-type-approval.sqlite",
+    "manifest": "manifest.json",
+    "raw_snapshot_directory": "snapshots/",
+    "license_file": "LICENSE-CC0-1.0.txt",
+    "attribution_file": "ATTRIBUTION.md"
+  },
+  "status": "rights_cleared_source_not_yet_ingested"
+}

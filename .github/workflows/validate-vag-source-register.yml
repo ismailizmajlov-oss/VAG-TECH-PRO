@@ -5,6 +5,15 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/rdw-vag-type-approval.lock.json"
+      - "docs/research/RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md"
+      - "scripts/build_rdw_vag_type_approval.py"
+      - "scripts/rdw_vag_type_approval_common.py"
+      - "scripts/verify_rdw_vag_type_approval.py"
+      - "lib/rdw-type-approval-db.cjs"
+      - "lib/rdw-type-approval-db.d.cts"
+      - "tests/test_rdw_vag_type_approval.py"
+      - "tests/test_rdw_vag_type_approval_source_rights.py"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "data/source-manifests/openvag-dtc-candidate.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
@@ -33,6 +42,15 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/rdw-vag-type-approval.lock.json"
+      - "docs/research/RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md"
+      - "scripts/build_rdw_vag_type_approval.py"
+      - "scripts/rdw_vag_type_approval_common.py"
+      - "scripts/verify_rdw_vag_type_approval.py"
+      - "lib/rdw-type-approval-db.cjs"
+      - "lib/rdw-type-approval-db.d.cts"
+      - "tests/test_rdw_vag_type_approval.py"
+      - "tests/test_rdw_vag_type_approval_source_rights.py"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "data/source-manifests/openvag-dtc-candidate.json"
       - "docs/research/HPT_SU_SOURCE_RIGHTS_REVIEW_2026-11-04.md"
@@ -64,3 +82,5 @@ jobs:
           python-version: "3.12"
       - name: Validate DTC and RU/EAEU source-rights boundaries
         run: python -m unittest discover -s tests -p "test_*source_rights.py" -v
+      - name: Validate RDW CC0 pack builder, data model and source-rights gates
+        run: python -m unittest discover -s tests -p "test_rdw_vag_type_approval*.py" -v
