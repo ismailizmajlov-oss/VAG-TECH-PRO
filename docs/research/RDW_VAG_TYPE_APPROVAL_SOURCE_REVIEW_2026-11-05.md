@@ -119,3 +119,14 @@ This pack contributes no:
 - OEM parts applicability or VIN-specific build data.
 
 **Project decision:** allow a separate, read-only CC0 candidate pack after every live ingest passes metadata, hash, SQLite, privacy and ambiguity tests. Keep its market and code namespaces visible in the UI. Never use it as a substitute for Russian/EAEU OTTS or licensed VAG factory service data.
+
+## Live publisher metadata gate
+
+The live ingest now fails closed for every required Socrata resource unless its raw metadata confirms all of the following:
+
+- `provenance = official`;
+- the resource owner display name contains `RDW`;
+- `assetType = dataset`;
+- `publicationStage = published`.
+
+The exact owner name, provenance, asset type and publication stage are copied into the pack manifest and cross-checked against the retained raw metadata snapshot and SHA-256. Missing or conflicting metadata blocks the build. This is an ownership/publication gate, not a substitute for the separate CC0 legal evidence recorded in the source lock. The pack remains EU/NL candidate-only and cannot establish Russian/EAEU applicability, VAG factory engine/gearbox codes, generation, model year or VIN-level fitment.
