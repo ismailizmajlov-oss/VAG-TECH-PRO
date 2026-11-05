@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "scripts/probe_astra_ch_tas.py"
+      - "scripts/build_astra_ch_tas_pack.py"
+      - "tests/test_astra_ch_tas_pack.py"
+      - "docs/research/ASTRA_CH_TAS_OPEN_DATA_REVIEW_2026-11-06.md"
       - "data/source-manifests/astra-ch-tas-open-data.json"
       - ".github/workflows/acquire-astra-ch-tas-vag-probe.yml"
   workflow_dispatch:
