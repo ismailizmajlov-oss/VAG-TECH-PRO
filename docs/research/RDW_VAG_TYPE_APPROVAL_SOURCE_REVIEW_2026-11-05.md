@@ -21,7 +21,7 @@ The source register records CC0-1.0 with commercial use, display, offline cachin
 
 A third-party schema reference was consulted only to cross-check RDW field names and resource IDs: https://github.com/j3lte/rdw-data. It is **not** an imported data source and no third-party code is copied into VAG TECH PRO.
 
-## RDW resources pinned for the proposed pack
+## RDW resources included in the verified pack
 
 | Resource | RDW dataset ID | Intended use |
 |---|---|---|
