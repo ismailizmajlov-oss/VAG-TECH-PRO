@@ -81,7 +81,8 @@
         "Do not use SBKTS personal data or package certificate PDFs without separate rights and privacy review.",
         "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
         "The 28 public Annex 2 search fields contain approval identifiers/status and vehicle identity descriptors (make, commercial name, type, base vehicle/chassis, modifications, category and environmental class), but no engine or gearbox technical designation/code, ECU, DTC, repair or wiring fields. The Annex 1 PDF reference is not a grant to cache or redistribute the PDF. Never infer an engine/gearbox pair from Annex 2 metadata.",
-        "The Annex 2 public-site search obligation reviewed in Order 2038 applies to electronically issued records; a metadata export using this public-search namespace must retain field 20 and must not silently treat a missing/false electronic-issuance flag as a publicly searchable record."
+        "The Annex 2 public-site search obligation reviewed in Order 2038 applies to electronically issued records; a metadata export using this public-search namespace must retain field 20 and must not silently treat a missing/false electronic-issuance flag as a publicly searchable record.",
+        "The Annex 2 field map is shared across several document classes; the staging importer accepts only explicit OTTS/EOTTS record types and rejects OTSH/EOTSH, SBKTS/ESBKTS and cancellation notices. Document type is source-envelope metadata, not an Annex 2 field number."
       ],
       "ot_ts_attribute_map": [
         {
@@ -369,7 +370,19 @@
           "engine_gearbox_mapping_allowed": false,
           "technical_data_import_allowed": false
         },
-        "official_site_search_scope": "electronically_issued_records_only"
+        "official_site_search_scope": "electronically_issued_records_only",
+        "importer_document_types_supported": [
+          "OTTS",
+          "EOTTS"
+        ],
+        "importer_document_types_excluded": [
+          "OTSH",
+          "EOTSH",
+          "SBKTS",
+          "ESBKTS",
+          "cancellation_notices"
+        ],
+        "document_type_envelope_namespace": "source_record_envelope_not_annex_2_field"
       },
       "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
     },
