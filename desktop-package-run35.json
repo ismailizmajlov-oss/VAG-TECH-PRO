@@ -17,7 +17,7 @@
     "test:research": "node --test tests/local-research-db.test.cjs tests/local-research-packs.test.cjs tests/local-research-ui-contract.test.cjs tests/autodiag2-pack-integration.test.cjs tests/vag-identity-provenance-exclusion.test.cjs tests/generic-repair-guidance-db.test.cjs tests/generic-repair-guidance-ui-contract.test.cjs",
     "verify:local-core": "node scripts/verify-local-core.cjs",
     "verify:local-research": "node scripts/verify-all-local-research-packs.cjs && node scripts/verify-generic-repair-guidance.cjs",
-    "build:desktop": "npm run build && electron-builder --win nsis --x64",
+    "build:desktop": "npm run build && electron-builder --win nsis --x64 --publish never",
     "dist:win": "npm run build:desktop"
   },
   "dependencies": {

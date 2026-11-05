@@ -873,7 +873,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          npm run build:desktop -- --publish never 2>&1 | Tee-Object -FilePath build-0.2.3.log
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.3.log
           if ($LASTEXITCODE -ne 0) { throw "Initial Windows NSIS build failed" }
           $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.3-x64.exe"
           if (-not (Test-Path $installer)) { throw "Initial NSIS installer not found: $installer" }
@@ -898,7 +898,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.4'; l.version='0.2.4'; if (l.packages && l.packages['']) l.packages[''].version='0.2.4'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
-          npm run build:desktop -- --publish never 2>&1 | Tee-Object -FilePath build-0.2.4.log
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.4.log
           if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
           $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.4-x64.exe"
           if (-not (Test-Path $installer)) { throw "Upgrade NSIS installer not found: $installer" }
