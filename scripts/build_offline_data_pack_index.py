@@ -33,6 +33,7 @@ GENERIC_OBD_CODE_RE = re.compile(
 REQUIRED_EXCLUSIONS = {
     "wal33d-vag-oem-dtc-mit": "permission_required",
     "gor3a-vehicle-makes-models-odbl": "quarantined_pending_upstream_permission",
+    "vag-wiki-community-technical-hub": "quarantined_no_reuse_permission",
 }
 
 
@@ -491,12 +492,19 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                     "status": "quarantined_pending_upstream_permission",
                     "included": False,
                     "reason": "The downstream ODbL notice does not establish rights in upstream Autoevolution data; its Terms of Use require express written permission for reuse and limit service use to personal use."
+                },
+                {
+                    "source_id": "vag-wiki-community-technical-hub",
+                    "status": "quarantined_no_reuse_permission",
+                    "included": False,
+                    "reason": "VAG-Wiki Terms of Service Legal Revision 2026.01 prohibit unauthorized mass scraping, automated extraction and redistribution; no dataset-specific license or written permission for offline product use was found."
                 }
             ],
             "product_import_policy": [
                 "Generic OBD-II DTCs remain in the generic_sae_iso_obd2 namespace and are never relabeled VAG-specific.",
                 "Identity and community records remain candidates unless exact applicability is independently confirmed.",
                 "Autoevolution-derived ODbL generation/engine candidate data is quarantined and excluded pending written upstream permission.",
+                "VAG-Wiki independent reference data is quarantined; no automated extraction or product bundle without prior written permission and per-record provenance.",
                 "Community UDS 0x22 signal data is read-only reference material; command execution is disabled.",
                 "No manufacturer-specific DTC pack is included until data-specific reuse, display, cache and redistribution rights are confirmed.",
                 "No pack in this bundle supplies verified VAG repair procedures, factory wiring diagrams, pinouts, torque values, adaptations or service schedules.",

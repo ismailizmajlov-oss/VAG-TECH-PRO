@@ -130,7 +130,7 @@ function sync(packRootArg, researchRootArg) {
   const byId = Object.fromEntries((index.packs || []).map((item) => [item.pack_id, item]));
   const required = ["obdex-generic-cc0", "obdb-vag-signals-cc-by-sa", "vehiclesdb-vag-identity"];
   for (const id of required) if (!byId[id]) fail(`Offline data-pack bundle is missing ${id}`);
-  for (const sourceId of ["wal33d-vag-oem-dtc-mit", "gor3a-vehicle-makes-models-odbl"]) {
+  for (const sourceId of ["wal33d-vag-oem-dtc-mit", "gor3a-vehicle-makes-models-odbl", "vag-wiki-community-technical-hub"]) {
     if (!(index.excluded_sources || []).some((item) => item.source_id === sourceId && item.included === false)) fail(`Restricted source is not explicitly excluded: ${sourceId}`);
   }
   for (const item of index.bundle_files || []) {

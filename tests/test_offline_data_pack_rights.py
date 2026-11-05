@@ -39,6 +39,11 @@ class OfflineDataPackRightsTests(unittest.TestCase):
                 "status": "quarantined_pending_upstream_permission",
                 "included": False,
             },
+            {
+                "source_id": "vag-wiki-community-technical-hub",
+                "status": "quarantined_no_reuse_permission",
+                "included": False,
+            },
         ]
         MODULE.validate_required_exclusions(valid)
         with self.assertRaisesRegex(ValueError, "wal33d-vag-oem-dtc-mit"):
@@ -53,6 +58,16 @@ class OfflineDataPackRightsTests(unittest.TestCase):
             MODULE.validate_required_exclusions(included)
         with self.assertRaisesRegex(ValueError, "excluded_sources must be a list"):
             MODULE.validate_required_exclusions(None)
+
+    def test_vag_wiki_reference_is_excluded_from_every_offline_bundle(self):
+        self.assertEqual(
+            MODULE.REQUIRED_EXCLUSIONS["vag-wiki-community-technical-hub"],
+            "quarantined_no_reuse_permission",
+        )
+        source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
+        self.assertIn('"source_id": "vag-wiki-community-technical-hub"', source)
+        self.assertIn("no dataset-specific license or written permission", source)
+        self.assertIn("VAG-Wiki independent reference data is quarantined", source)
 
     def test_vehiclesdb_absent_source_is_not_misclassified_as_excluded(self):
         lock = json.loads((ROOT / "data" / "source-manifests" / "vehiclesdb-vag-identity.lock.json").read_text(encoding="utf-8"))
