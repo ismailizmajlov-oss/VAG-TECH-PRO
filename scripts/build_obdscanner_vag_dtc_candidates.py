@@ -75,7 +75,7 @@ def main() -> None:
     rows: list[tuple[Any, ...]] = []
     seen: set[str] = set()
     for code, definition in sorted(codes.items()):
-        if not isinstance(code, str) or len(code) != 5 or not code.startswith("P1") or not code[2:].isalnum():
+        if not isinstance(code, str) or len(code) != 5 or not code.startswith("P1") or not code[2:].isdigit():
             raise SystemExit(f"Non-manufacturer-specific or malformed code in VAG-family pack: {code!r}")
         if code in seen:
             raise SystemExit(f"Duplicate DTC code: {code}")
@@ -296,6 +296,65 @@ recommend repairs from this pack. The generic SAE/ISO DTC database remains separ
     manifest_path = output / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     manifest_hash = sha256(manifest_path.read_bytes())
+
+    root_manifest_path = output.parent / "manifest.json"
+    if not root_manifest_path.is_file():
+        raise SystemExit("The existing desktop research root manifest is missing")
+    root_manifest = json.loads(root_manifest_path.read_text(encoding="utf-8"))
+    if root_manifest.get("schema_version") != 1 or not isinstance(root_manifest.get("packs"), list):
+        raise SystemExit("The desktop research root manifest schema is invalid")
+    root_entry = {
+        "id": PACK_ID,
+        "kind": "vag_family_dtc_candidates",
+        "database": f"{PACK_ID}/{DATABASE_NAME}",
+        "database_sha256": database_hash,
+        "license_file": f"{PACK_ID}/LICENSE-WAL33D-MIT.txt",
+        "license_file_sha256": upstream_license_hash,
+        "upstream_license_file": f"{PACK_ID}/LICENSE-OBDSCANNER-MIT.txt",
+        "upstream_license_file_sha256": obd_license_hash,
+        "license": "MIT",
+        "license_status": "published_MIT_license_verified",
+        "source_manifest_file": f"{PACK_ID}/manifest.json",
+        "source_manifest_sha256": manifest_hash,
+        "attribution_file": f"{PACK_ID}/ATTRIBUTION.txt",
+        "attribution_sha256": attribution_hash,
+        "source_file": f"{PACK_ID}/{SOURCE_RELATIVE}",
+        "source_file_sha256": source_hash,
+        "publisher": "OBDScanner / Pavel Arkhipov; upstream Wal33D / Waleed Judah",
+        "dataset": "VAG-family P1xxx DTC candidates",
+        "source_url": OBDSCANNER_REPO,
+        "upstream_source_url": UPSTREAM_REPO,
+        "upstream_revision": args.source_revision,
+        "source_snapshot_sha256": source_hash,
+        "counts": manifest["counts"],
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "manufacturer_family_candidate",
+        "review_status": "community_reference_unverified",
+        "display_status": "candidate_reference_visible_separate_namespace",
+        "product_eligibility": "candidate_reference_only_visible_separate_namespace",
+        "fitment_claim": False,
+        "execution_allowed": False,
+        "commercial_use_allowed": True,
+        "display_allowed": True,
+        "cache_allowed": True,
+        "redistribution_allowed": True,
+        "attribution_required": True,
+        "share_alike_required": False,
+        "vag_oem_confirmation": False,
+        "exact_vehicle_fitment": False,
+        "ecu_fitment": False,
+        "diagnostic_execution_allowed": False,
+        "repair_procedures_included": False,
+        "oem_part_numbers_included": False,
+        "limitations": manifest["limitations"],
+    }
+    existing = next((item for item in root_manifest["packs"] if item.get("id") == PACK_ID), None)
+    if existing is None:
+        root_manifest["packs"].append(root_entry)
+    else:
+        existing.update(root_entry)
+    root_manifest["generated_at_utc"] = built_at
+    root_manifest_path.write_text(json.dumps(root_manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
 
     sums = [
         f"{source_hash}  {SOURCE_RELATIVE}",
