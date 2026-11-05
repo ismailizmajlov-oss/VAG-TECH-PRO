@@ -59,6 +59,9 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         scope = contract["public_annex2_technical_data_scope"]
         self.assertEqual(scope["scope"], "document_identity_and_registry_status_metadata_only")
         self.assertEqual(scope["public_search_scope"], "electronically_issued_records_only")
+        self.assertFalse(scope["production_fitment_claim"])
+        self.assertFalse(scope["engine_gearbox_mapping_allowed"])
+        self.assertFalse(scope["technical_data_import_allowed"])
         self.assertEqual(scope["engine_type_or_code"], "not_present_in_public_annex2_fields")
         self.assertEqual(scope["gearbox_type_or_code"], "not_present_in_public_annex2_fields")
         self.assertEqual(scope["engine_gearbox_pair"], "cannot_be_established_from_public_annex2_fields")
