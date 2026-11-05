@@ -69,6 +69,8 @@ on:
       - ".github/workflows/validate-vag-source-register.yml"
       - "docs/research/AUTOMOTIVE_9_VW_DTC_SOURCE_REVIEW_2026-11-06.md"
       - "tests/test_automotive9_vw_dtc_source_rights.py"
+      - "docs/research/VW_GIS_DIAGNOSTICS_DATA_RIGHTS_REVIEW_2026-11-06.md"
+      - "tests/test_vw_gis_diagnostics_data_source_rights.py"
 
 permissions:
   contents: read
