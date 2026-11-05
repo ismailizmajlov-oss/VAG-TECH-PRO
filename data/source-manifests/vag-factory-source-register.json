@@ -921,7 +921,12 @@
         "maintainer_authority_to_relicense_all_37_source_files": "not independently verified",
         "dataset_redistribution_rights": "not independently verified",
         "product_import_allowed": false,
-        "project_permission_status": "not_verified"
+        "project_permission_status": "not_verified",
+        "root_license_file_present": true,
+        "root_license_blob_sha1": "9cbfaae3f07b8daa1685b4587e36c604a7a4ded1",
+        "readme_license_declaration": "MIT",
+        "downstream_reuse_statement": "Steer licenses page states its manufacturer-specific DTC titles are used from Wal33D/dtc-database under MIT; this is downstream evidence, not independent proof of upstream source authority.",
+        "data_file_authority": "not_verified"
       },
       "quality_limits": [
         "The README headline says 28,220+ codes while the current snapshot table reports 18,805 definition rows; the discrepancy is unresolved.",
@@ -930,8 +935,43 @@
         "Manufacturer-specific is not synonymous with VAG-specific, OEM-confirmed or applicable to a particular model, generation, year, ECU, engine or gearbox.",
         "No model-year-ECU applicability or repair test plan is established by the published snapshot."
       ],
-      "project_decision": "quarantine_no_import_until_per_file_provenance_and_rights_verified; keep generic SAE definitions separate from manufacturer-specific candidates; do not label any row VAG-specific or infer model/year/ECU applicability; no records imported or cached",
-      "evidence_status": "repository_readme_and_integration_notes_reviewed_2026-11-04"
+      "project_decision": "quarantine_no_import_until_per_file_provenance_and_rights_verified; root MIT declaration and downstream reuse statement do not establish authority over all upstream definitions; manufacturer filename classification also mislabels generic-code overlaps. Keep generic and manufacturer-labelled namespaces separate; do not label any row VAG-specific or infer model/year/ECU applicability.",
+      "evidence_status": "Root MIT LICENSE and README declaration, INTEGRATION.md, build_database.py and the Audi/Volkswagen/generic source files inspected 2026-11-06; exact per-file hashes and namespace-overlap counts recorded.",
+      "observed_source_files": {
+        "volkswagen_codes.txt": {
+          "rows": 528,
+          "unique_codes": 528,
+          "byte_size": 28200,
+          "git_blob_sha1": "a8afd432644e8cad718e42cdd18cc1931a75bb08",
+          "retrieved_content_sha256": "fd6bf267f1db3a1a44279a21b1c69cba19ee96d2b2821e0b238cdf54b3a71579",
+          "overlap_with_p_codes_file": 22
+        },
+        "audi_codes.txt": {
+          "rows": 129,
+          "unique_codes": 129,
+          "byte_size": 19817,
+          "git_blob_sha1": "96cac4cd186eae8b7b74d151c5a3dc36c9cb8870",
+          "retrieved_content_sha256": "7544034366a6d674aa9554604048c4c42d00d4e51c0b5aa381ba53dd79017567",
+          "overlap_with_p_codes_file": 127
+        },
+        "p_codes.txt": {
+          "rows": 7389,
+          "unique_codes": 7387,
+          "byte_size": 420833,
+          "git_blob_sha1": "423c74177d6dde23c1de657e2cf8659248107527",
+          "retrieved_content_sha256": "1e51ce1f30da167e8bd44066fbdc26b516742c7cdec4f2e8948ae6b4fdb45aa2",
+          "role": "source file classified as GENERIC by build_database.py"
+        }
+      },
+      "namespace_audit": {
+        "build_script_classifies_all_non_p_b_c_u_files_as_manufacturer_specific": true,
+        "audi_file_codes_overlapping_generic_p_file": 127,
+        "audi_file_total_codes": 129,
+        "volkswagen_file_codes_overlapping_generic_p_file": 22,
+        "volkswagen_file_total_codes": 528,
+        "p_file_duplicate_rows": 2,
+        "implication": "Manufacturer labels in these files are not proof that every code is manufacturer-specific; the Audi file is almost entirely duplicated in the generic P-code source."
+      }
     },
     {
       "source_id": "wikidata-vag-generation-candidates",
