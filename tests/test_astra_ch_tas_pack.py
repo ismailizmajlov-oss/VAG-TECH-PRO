@@ -35,53 +35,87 @@ class AstraChTasPackTests(unittest.TestCase):
             canonical_row_sha256({"makeName": "VW", "approval": "1AB"}),
         )
 
-    def test_exact_version_link_requires_unique_exact_scope(self):
+    def test_exact_variant_version_link_requires_unique_composite_scope(self):
         index = {
             ("1AB701", "AUDI"): [
-                {"approval_row_id": 11, "version": "C4-AEL"},
-                {"approval_row_id": 12, "version": "C4-ABC"},
+                {
+                    "approval_row_id": 11,
+                    "variant": "C4-AEL",
+                    "version": "V1",
+                    "gearbox_classes": ["m6"],
+                },
+                {
+                    "approval_row_id": 12,
+                    "variant": "C4-ABC",
+                    "version": "V2",
+                    "gearbox_classes": ["a4"],
+                },
             ]
         }
         self.assertEqual(
-            resolve_scope_link(index, "1AB701", "AUDI", "C4-AEL"),
+            resolve_scope_link(index, "1AB701", "AUDI", "C4-AEL/V1", "m6"),
             (11, "linked_exact_approval_version"),
         )
         self.assertEqual(
-            resolve_scope_link(index, "1AB701", "AUDI", "C4"),
+            resolve_scope_link(index, "1AB701", "AUDI", "C4-AEL", "m6"),
+            (None, "no_exact_version_match"),
+        )
+        self.assertEqual(
+            resolve_scope_link(index, "1AB701", "AUDI", "C4-AEL/V1", "a4"),
+            (None, "gearbox_class_not_in_approval"),
+        )
+
+    def test_wildcard_version_is_preserved_as_variant_wide_not_exact_fitment(self):
+        index = {
+            ("1XZ904", "CUPRA"): [{
+                "approval_row_id": 21,
+                "variant": "CXDNPAX0",
+                "version": "*",
+                "gearbox_classes": ["m7a"],
+            }]
+        }
+        self.assertEqual(
+            resolve_scope_link(index, "1XZ904", "CUPRA", "CXDNPAX0/*", "m7a"),
+            (21, "linked_wildcard_approval_variant"),
+        )
+        self.assertEqual(
+            resolve_scope_link(index, "1XZ904", "CUPRA", "*", "m7a"),
             (None, "no_exact_version_match"),
         )
 
-    def test_wildcard_is_preserved_as_wildcard_not_exact_fitment(self):
-        index = {("1XZ904", "CUPRA"): [{"approval_row_id": 21, "version": "*"}]}
-        self.assertEqual(
-            resolve_scope_link(index, "1XZ904", "CUPRA", "*"),
-            (21, "linked_wildcard_approval_variant"),
-        )
-
-    def test_ambiguous_duplicate_approval_version_is_not_linked(self):
+    def test_ambiguous_duplicate_approval_variant_version_is_not_linked(self):
         index = {
             ("1AB701", "AUDI"): [
-                {"approval_row_id": 11, "version": "AEL"},
-                {"approval_row_id": 12, "version": "AEL"},
+                {"approval_row_id": 11, "variant": "AEL", "version": "V1", "gearbox_classes": ["m6"]},
+                {"approval_row_id": 12, "variant": "AEL", "version": "V1", "gearbox_classes": ["m6"]},
             ]
         }
         self.assertEqual(
-            resolve_scope_link(index, "1AB701", "AUDI", "AEL"),
+            resolve_scope_link(index, "1AB701", "AUDI", "AEL/V1", "m6"),
             (None, "ambiguous_approval_version"),
         )
 
-    def test_missing_or_non_exact_scope_is_not_linked(self):
-        index = {("1AB701", "AUDI"): [{"approval_row_id": 11, "version": ""}]}
+    def test_missing_or_non_exact_variant_version_scope_is_not_linked(self):
+        index = {("1AB701", "AUDI"): [{
+            "approval_row_id": 11,
+            "variant": "AEL",
+            "version": "",
+            "gearbox_classes": ["m6"],
+        }]}
         self.assertEqual(
-            resolve_scope_link(index, "1AB701", "AUDI", ""),
+            resolve_scope_link(index, "1AB701", "AUDI", "", "m6"),
             (None, "version_scope_missing"),
         )
         self.assertEqual(
-            resolve_scope_link(index, "1AB701", "AUDI", "C4 / C4B Motor: AEL/103 kW"),
+            resolve_scope_link(index, "1AB701", "AUDI", "AEL/", "m6"),
+            (None, "version_scope_missing"),
+        )
+        self.assertEqual(
+            resolve_scope_link(index, "1AB701", "AUDI", "AEL/V2", "m6"),
             (None, "no_exact_version_match"),
         )
         self.assertEqual(
-            resolve_scope_link(index, "1ZZ999", "AUDI", "AEL"),
+            resolve_scope_link(index, "1ZZ999", "AUDI", "AEL/V1", "m6"),
             (None, "approval_record_missing"),
         )
 
