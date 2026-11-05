@@ -55,3 +55,7 @@ Decision: quarantine; do not import its DTC descriptions or repair solutions int
 - ECU identity and DTC applicability only from a traceable technical document or lawfully reusable dataset.
 
 No records are promoted to production by this research pass.
+
+## Current acquisition gate (2026-11-06)
+
+The earlier acquisition workflow is now **skipped by default**. The source is quarantined because the downstream ODbL declaration does not establish rights in the declared Autoevolution-derived upstream material. No download, SQLite staging import, cache, display, bundle or redistribution is permitted until the upstream rights holder provides written permission covering commercial use, product display, offline caching, bulk reuse and redistribution. The owner-controlled workflow variable `VAG_GOR3A_AUTODEVOLUTION_REUSE_APPROVED` is a fail-closed switch only; setting it is not a substitute for the written evidence or an updated source-rights register. The current workflow has no approved permission and must remain skipped.
