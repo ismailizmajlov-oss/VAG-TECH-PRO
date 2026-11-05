@@ -82,6 +82,10 @@ jobs:
 
           # Windows PowerShell 5.1 needs UseBasicParsing to avoid an IE dependency.
           $scriptText = Get-Content -LiteralPath $lifecycle -Raw
+          $stopNeedle = '$ErrorActionPreference = "Stop"'
+          if (-not $scriptText.Contains($stopNeedle)) { throw "Lifecycle script startup contract is missing." }
+          $assemblyGuard = 'if (-not ("System.Net.Http.HttpClient" -as [type])) { Add-Type -AssemblyName System.Net.Http }'
+          $scriptText = $scriptText.Replace($stopNeedle, $stopNeedle + "`r`n" + $assemblyGuard)
           $needle = "Invoke-WebRequest -Uri $baseUrl -TimeoutSec 20"
           if (-not $scriptText.Contains($needle)) { throw "Lifecycle script no longer matches the reviewed PowerShell 5.1 compatibility point." }
           $scriptText = $scriptText.Replace($needle, "Invoke-WebRequest -UseBasicParsing -Uri $baseUrl -TimeoutSec 20")
