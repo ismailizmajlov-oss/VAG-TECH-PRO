@@ -20,7 +20,7 @@ class OttsBotRightsBoundaryTests(unittest.TestCase):
         self.assertEqual(source["status"], "restricted_no_automated_collection_or_redistribution_without_written_permission")
         self.assertEqual(source["license"]["permission_status"], "not_cleared")
         self.assertIn("prohibited", source["license"]["automated_extraction"])
-        self.assertEqual(source["license"]["redistribution"], "prohibited_under_published_user_agreement")
+        self.assertEqual(source["license"]["redistribution"], "prohibited_under_published_user_agreement_clause_3")
         self.assertFalse(source["technical_scope"]["exact_vehicle_fitment"])
         self.assertEqual(source["technical_scope"]["engine_gearbox_pairing"], "not_established")
 
