@@ -27,6 +27,9 @@ on:
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_openvag_source_rights.py"
       - "data/source-manifests/russian-eaeu-otts-sources.json"
+      - "scripts/import-authorized-fgis-otts-export.cjs"
+      - "tests/authorized-fgis-otts-export.test.cjs"
+      - "docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
@@ -64,6 +67,9 @@ on:
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_openvag_source_rights.py"
       - "data/source-manifests/russian-eaeu-otts-sources.json"
+      - "scripts/import-authorized-fgis-otts-export.cjs"
+      - "tests/authorized-fgis-otts-export.test.cjs"
+      - "docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
@@ -121,6 +127,7 @@ jobs:
           python tests/test_offline_data_pack_rights.py
           python tests/test_otts_bot_source_rights.py
           python tests/test_openvag_source_rights.py
+          node --test tests/authorized-fgis-otts-export.test.cjs
 
 
       - name: Reassemble and verify pinned desktop source archive
