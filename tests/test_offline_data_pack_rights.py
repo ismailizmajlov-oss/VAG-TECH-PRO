@@ -94,6 +94,9 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         })
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
+        self.assertIn("const p3GenericCode = /^P3[4-9][0-9A-F]{2}$/;", workflow)
+        self.assertIn("sourceManifest.scope.generic_code_ranges", workflow)
+        self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
 
 
     def test_obdex_source_register_is_generic_and_not_vag_fitment(self):
