@@ -203,5 +203,13 @@
     "license_file": "LICENSE-CC0-1.0.txt",
     "attribution_file": "ATTRIBUTION.md"
   },
-  "status": "rights_cleared_source_not_yet_ingested"
+  "status": "rights_cleared_source_not_yet_ingested",
+  "live_metadata_gate": {
+    "expected_provenance": "official",
+    "expected_owner_name_contains": "RDW",
+    "expected_asset_type": "dataset",
+    "expected_publication_stage": "published",
+    "fail_closed_on_missing_or_conflicting_metadata": true,
+    "evidence_note": "Socrata resource metadata must identify an official published dataset owned by the RDW publisher. The separate government catalogue and RDW open-data policy establish CC0 reuse scope; public reachability alone is not accepted."
+  }
 }
