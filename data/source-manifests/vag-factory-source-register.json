@@ -1885,6 +1885,81 @@
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "evidence_status": "homepage_and_user_agreement_reviewed_2026-11-05; agreement_last_updated_2026-08-26"
+    },
+    {
+      "source_id": "openvag-riz4d-dtc-candidate",
+      "publisher": "riz4d / OpenVAG",
+      "url": "https://github.com/riz4d/OpenVAG",
+      "readme_url": "https://github.com/riz4d/OpenVAG/blob/main/README.md",
+      "database_schema_url": "https://github.com/riz4d/OpenVAG/blob/main/db/schema.sql",
+      "database_documentation_url": "https://github.com/riz4d/OpenVAG/blob/main/db/README.md",
+      "license_url": "https://github.com/riz4d/OpenVAG/blob/main/LICENSE",
+      "source_kind": "community_vag_labelled_dtc_and_component_database_candidate",
+      "repository_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "publisher_claimed_counts": {
+        "dtc_code_title_combinations": 995,
+        "fault_variants": 1103,
+        "component_identifiers": 341,
+        "dtc_component_links": 712,
+        "related_code_links": 276,
+        "fts_rows": 1103,
+        "database_size_approx_bytes": 2100000,
+        "independently_rebuilt": false
+      },
+      "evidence_scope": [
+        "VAG-labelled legacy five-digit DTC identifiers",
+        "combined VAG/OBD/internal code strings",
+        "P/B/C/U-shaped code strings",
+        "community fault variants, symptoms, causes and solutions",
+        "VAG-style component identifier candidates"
+      ],
+      "provenance": {
+        "row_level_source_attribution": "not_found_in_reviewed_README_schema_or_database_documentation",
+        "source_snapshot_revision": "not_provided",
+        "source_snapshot_sha256": "not_available",
+        "database_file_in_repository": false,
+        "database_gitignored": "db/openvag.db is listed in .gitignore",
+        "reproducible_seed_script": "README references scripts/init_db.py, but that path is absent from the reviewed main branch; no seed.sql or seed_db.py was found",
+        "schema_file_present": true,
+        "source_origin": "not_established"
+      },
+      "rights": {
+        "repository_code_license": "MIT",
+        "dataset_specific_license": "not_established",
+        "mit_license_covers_database_rows": "not_demonstrated",
+        "commercial_use_of_database": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_status": "not_cleared"
+      },
+      "applicability": {
+        "manufacturer_label": "VAG_claimed_by_publisher",
+        "exact_model_generation_year_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "exact_ecu_part_number_hw_sw_fitment": false,
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "community_vag_labelled_code_and_component_candidates_only",
+        "technical_review_status": "not_independently_reviewed"
+      },
+      "limitations": [
+        "The README and db/README.md publish row counts and a schema but do not identify per-row source documents, authors, source revisions or source URLs.",
+        "The root MIT LICENSE grants rights in the licensed software; no separate dataset licence or evidence of the database content's acquisition and sublicensing rights was found.",
+        "The SQLite database is excluded by .gitignore and is not present in the repository snapshot; no reproducible seed/import script was found on the reviewed main branch.",
+        "The schema mixes five-digit legacy VAG-looking identifiers with combined, generic P-code, body, chassis and network-shaped strings; namespace and provenance must be established per row before any use.",
+        "No exact model, generation, model year, Russian/EAEU market, engine, gearbox, ECU part number or HW/SW applicability is supplied by the reviewed database documentation.",
+        "The published solutions and special notes are not traceable to a primary technical document or revision and are not approved repair instructions."
+      ],
+      "project_decision": "quarantined_no_import_no_display_no_cache_no_redistribution_until_dataset_origin_row_level_provenance_and_explicit_data_reuse_rights_are_verified; require maintainer evidence for each upstream source and a reproducible snapshot",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "evidence_status": "README_db_README_schema_LICENSE_gitignore_and_main_branch_commit_history_reviewed_2026-11-05"
     }
   ],
   "minimum_fitment_evidence_fields": [
