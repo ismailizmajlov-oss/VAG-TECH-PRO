@@ -1,0 +1,6 @@
+VAG TECH PRO Windows x64 validation trigger
+Date: 2026-11-06
+Purpose: rebuild the current main revision after the Automotive-9 DTC quarantine, Wal33D namespace audit, and official VW GIS contractual-rights review.
+No quarantined DTC or OEM ODX records are included in production SQLite packs.
+Required verification: source-rights tests, desktop/local-core tests, NSIS x64 clean install and in-place upgrade lifecycle, offline launch, SQLite integrity, backup/restore, and uninstall data preservation.
+Native Windows 10/11 remains owner-runner gated; do not mark it passed if skipped.
