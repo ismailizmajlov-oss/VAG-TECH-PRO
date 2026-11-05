@@ -1,0 +1,1 @@
+Trigger a fresh Windows x64 validation of the current source-rights registry, offline data-pack checks, desktop build, NSIS installer and lifecycle evidence. No production deployment or release publication is authorized.
