@@ -295,7 +295,7 @@
       "PORSCHE",
       "SEAT",
       "SKODA",
-      "VOLKSWAGEN"
+      "VW"
     ],
     "exact_brand_match_only": true,
     "production_import": false,
