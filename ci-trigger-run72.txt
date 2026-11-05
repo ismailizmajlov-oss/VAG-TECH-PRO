@@ -1,0 +1,4 @@
+VAG TECH PRO Windows x64 validation trigger.
+Base revision: 45a180242c52a9206a5322d6b48c3504c55071d9
+Purpose: rerun pinned Windows NSIS build, offline data-pack verification, clean install, upgrade, backup/restore and uninstall lifecycle after the run71 source integration.
+No product data or application source changed.
