@@ -364,7 +364,10 @@
           "repair_procedures_wiring_pinouts_torque_adaptations_service_intervals": "not_present_in_public_annex2_fields",
           "annex_1_pdf": "field_19_is_a_document_reference_only; pdf_binary_and_reuse_rights_are_separate",
           "annex_1_internal_schema": "distinct_internal_fgis_namespace; not interchangeable_with_public_annex2_and_not_established_as_public_searchable",
-          "public_search_scope": "electronically_issued_records_only"
+          "public_search_scope": "electronically_issued_records_only",
+          "production_fitment_claim": false,
+          "engine_gearbox_mapping_allowed": false,
+          "technical_data_import_allowed": false
         },
         "official_site_search_scope": "electronically_issued_records_only"
       },
