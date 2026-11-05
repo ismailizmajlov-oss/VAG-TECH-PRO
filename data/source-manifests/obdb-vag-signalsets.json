@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "dataset_id": "obdb-vag-signalsets-cc-by-sa",
+  "license_id": "CC-BY-SA-4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "attribution": "OBDb community contributors. Adapted by VAG TECH PRO into a separate read-only SQLite research database. The adapted database is licensed under CC BY-SA 4.0.",
+  "purpose": "Read-only community diagnostic signal definitions for research. This dataset contains no DTC definitions, no repair procedures, no factory wiring diagrams and no exact vehicle fitment.",
+  "sources": [
+    {
+      "source_id": "obdb-audi-a4",
+      "repository": "OBDb/Audi-A4",
+      "repository_url": "https://github.com/OBDb/Audi-A4",
+      "make": "Audi",
+      "model": "A4",
+      "commit_sha": "c85ca605894dd4f839099077f13ad78192d81d14",
+      "commit_date": "2026-11-02T19:57:44Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A4"
+    },
+    {
+      "source_id": "obdb-audi-q7",
+      "repository": "OBDb/Audi-Q7",
+      "repository_url": "https://github.com/OBDb/Audi-Q7",
+      "make": "Audi",
+      "model": "Q7",
+      "commit_sha": "8feee3fb4069a7c3be6841a70f1a06a4808e3261",
+      "commit_date": "2026-11-02T01:37:11Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q7"
+    },
+    {
+      "source_id": "obdb-volkswagen-golf",
+      "repository": "OBDb/Volkswagen-Golf",
+      "repository_url": "https://github.com/OBDb/Volkswagen-Golf",
+      "make": "Volkswagen",
+      "model": "Golf",
+      "commit_sha": "9a5635d49244757d6385c2496b6c73275ccb730e",
+      "commit_date": "2026-11-02T23:12:21Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Golf"
+    },
+    {
+      "source_id": "obdb-volkswagen-passat",
+      "repository": "OBDb/Volkswagen-Passat",
+      "repository_url": "https://github.com/OBDb/Volkswagen-Passat",
+      "make": "Volkswagen",
+      "model": "Passat",
+      "commit_sha": "7d6e052a1bf8dcea58e0eafda41187ae31ba45f0",
+      "commit_date": "2026-11-02T20:13:11Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Passat"
+    },
+    {
+      "source_id": "obdb-volkswagen-id4",
+      "repository": "OBDb/Volkswagen-ID.4",
+      "repository_url": "https://github.com/OBDb/Volkswagen-ID.4",
+      "make": "Volkswagen",
+      "model": "ID.4",
+      "commit_sha": "6d8e86890fbb0dc02e233be2071369ba677a9b79",
+      "commit_date": "2026-11-02T00:10:28Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_ID.4"
+    },
+    {
+      "source_id": "obdb-seat-tarraco",
+      "repository": "OBDb/Seat-Tarraco",
+      "repository_url": "https://github.com/OBDb/Seat-Tarraco",
+      "make": "SEAT",
+      "model": "Tarraco",
+      "commit_sha": "084bbc5b300f1a7a0b656f342d99c3f7b49f3c02",
+      "commit_date": "2026-11-02T01:49:35Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Tarraco"
+    }
+  ]
+}
