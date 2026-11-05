@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Regression checks for the Windows Server 2022 lifecycle workflow script."""
 
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,7 +43,19 @@ def main() -> None:
     if step.index('$lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"') < positions[1]:
         raise SystemExit("Lifecycle script path is resolved before desktopRoot initialization")
 
-    print("Windows desktop workflow contract: lifecycle path initialization order is valid.")
+    package_manifest = json.loads((ROOT / "desktop-package-run35.json").read_text(encoding="utf-8"))
+    build = package_manifest.get("build", {})
+    resources = build.get("extraResources", [])
+    if not any(item.get("from") == "data/source-manifests" and item.get("to") == "source-manifests" for item in resources if isinstance(item, dict)):
+        raise SystemExit("Windows package does not include the source-rights register in extraResources")
+    if build.get("afterPack") != "scripts/verify-source-register-after-pack.cjs":
+        raise SystemExit("Windows package does not verify the packaged source-rights register afterPack")
+    if "tests/source-register-after-pack.test.cjs" not in package_manifest.get("scripts", {}).get("test:desktop", ""):
+        raise SystemExit("Source-register packaging tests are not part of the desktop test suite")
+    apply_text = (ROOT / "apply-desktop-hardening-run35.cjs").read_text(encoding="utf-8")
+    if "sourceRegisterVerifierPath" not in apply_text or "sourceRegisterTestPath" not in apply_text:
+        raise SystemExit("Windows build does not generate the source-register afterPack verifier and tests")
+    print("Windows desktop workflow contract: lifecycle paths and packaged source-rights register are valid.")
 
 
 if __name__ == "__main__":
