@@ -5,6 +5,15 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "tests/test_rdw_vag_type_approval_source_rights.py"
+      - "tests/test_rdw_vag_type_approval.py"
+      - "lib/rdw-type-approval-db.d.cts"
+      - "lib/rdw-type-approval-db.cjs"
+      - "scripts/verify_rdw_vag_type_approval.py"
+      - "scripts/rdw_vag_type_approval_common.py"
+      - "scripts/build_rdw_vag_type_approval.py"
+      - "docs/research/RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md"
+      - "data/source-manifests/rdw-vag-type-approval.lock.json"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "data/source-manifests/openvag-dtc-candidate.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
@@ -62,3 +71,5 @@ jobs:
           python-version: "3.12"
       - name: Validate DTC and RU/EAEU source-rights boundaries
         run: python -m unittest discover -s tests -p "test_*source_rights.py" -v
+      - name: Validate RDW CC0 pack builder, data model and source-rights gates
+        run: python -m unittest discover -s tests -p "test_rdw_vag_type_approval*.py" -v
