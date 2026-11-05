@@ -79,7 +79,7 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertIn("Windows CI run `41935787910`",review)
         self.assertIn("97,905",review)
         self.assertIn("1,832",review)
-        self.assertIn("not a confirmed VAG engine/gearbox pairing",review.lower())
+        self.assertIn("not a confirmed vag engine/gearbox pairing",review.lower())
 
 if __name__=="__main__":
     unittest.main()
