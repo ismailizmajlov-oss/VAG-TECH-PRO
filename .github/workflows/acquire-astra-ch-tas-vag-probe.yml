@@ -1,4 +1,4 @@
-name: Probe official ASTRA CH TAS VAG open-data schema
+name: Acquire and validate official ASTRA CH TAS VAG research pack
 
 on:
   push:
@@ -15,8 +15,12 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: vag-tech-pro-astra-ch-pack-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  probe:
+  probe-and-build:
     runs-on: windows-2022
     timeout-minutes: 40
     steps:
@@ -30,7 +34,7 @@ jobs:
         run: |
           python scripts/probe_astra_ch_tas.py --output-dir artifacts/astra-ch-tas-probe
           if ($LASTEXITCODE -ne 0) { throw "ASTRA TAS schema probe failed" }
-      - name: Build separate CH-only VAG homologation SQLite research pack
+      - name: Run CH-only pack policy tests and build the separate SQLite research pack
         run: |
           python -m unittest discover -s tests -p "test_astra_ch_tas_pack.py" -v
           if ($LASTEXITCODE -ne 0) { throw "ASTRA CH pack policy tests failed" }
@@ -50,3 +54,110 @@ jobs:
           path: artifacts/astra-ch-tas-probe/astra-ch-tas-schema-probe.json
           if-no-files-found: error
           retention-days: 30
+
+  record-pack-build:
+    name: Record pack build, rights, scope and artifact evidence
+    needs:
+      - probe-and-build
+    if: ${{ always() }}
+    runs-on: windows-2025
+    timeout-minutes: 10
+    concurrency:
+      group: vag-tech-pro-astra-status-record
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      UPSTREAM_RUN_ID: ${{ github.run_id }}
+      UPSTREAM_RUN_NUMBER: ${{ github.run_number }}
+      UPSTREAM_ATTEMPT: ${{ github.run_attempt }}
+      UPSTREAM_STATUS: ${{ job.status }}
+      UPSTREAM_CONCLUSION: ${{ needs.probe-and-build.result }}
+      UPSTREAM_SHA: ${{ github.sha }}
+      UPSTREAM_BRANCH: ${{ github.ref_name }}
+      UPSTREAM_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Checkout status branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Query upstream run and persist verified artifact metadata
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+          $base = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$env:UPSTREAM_RUN_ID"
+          $run = Invoke-RestMethod -Method Get -Uri $base -Headers $headers
+          $jobsResponse = Invoke-RestMethod -Method Get -Uri "$base/jobs?per_page=100" -Headers $headers
+          $artifactsResponse = Invoke-RestMethod -Method Get -Uri "$base/artifacts?per_page=100" -Headers $headers
+          $jobRows = @($jobsResponse.jobs | ForEach-Object {
+            [ordered]@{
+              id = $_.id
+              name = $_.name
+              status = $_.status
+              conclusion = $_.conclusion
+              runner_name = $_.runner_name
+              started_at = $_.started_at
+              completed_at = $_.completed_at
+            }
+          })
+          $artifactRows = @($artifactsResponse.artifacts | ForEach-Object {
+            [ordered]@{
+              id = $_.id
+              name = $_.name
+              size_in_bytes = $_.size_in_bytes
+              digest = $_.digest
+              expired = $_.expired
+              created_at = $_.created_at
+              expires_at = $_.expires_at
+            }
+          })
+          $packArtifact = $artifactRows | Where-Object { $_.name -eq "astra-ch-tas-vag-open-data-pack" } | Select-Object -First 1
+          $probeArtifact = $artifactRows | Where-Object { $_.name -eq "astra-ch-tas-vag-schema-probe" } | Select-Object -First 1
+          $record = [ordered]@{
+            schema_version = 1
+            recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
+            workflow = "Acquire and validate official ASTRA CH TAS VAG research pack"
+            run_id = [long]$env:UPSTREAM_RUN_ID
+            run_number = [int]$env:UPSTREAM_RUN_NUMBER
+            run_attempt = [int]$env:UPSTREAM_ATTEMPT
+            status = $run.status
+            conclusion = $run.conclusion
+            head_sha = $env:UPSTREAM_SHA
+            head_branch = $env:UPSTREAM_BRANCH
+            html_url = $env:UPSTREAM_URL
+            jobs = $jobRows
+            artifacts = $artifactRows
+            source_id = "astra-fedro-tas-type-approvals-open-data-ch"
+            source_revision = "2026-10-29"
+            rights_status = "approved_by_published_ogd_terms"
+            attribution_required = $true
+            market_scope = @("CH")
+            production_import = $false
+            ru_eaeu_applicability = $false
+            pack_artifact_present = ($null -ne $packArtifact)
+            probe_artifact_present = ($null -ne $probeArtifact)
+            pack_ready = ($run.conclusion -eq "success" -and $null -ne $packArtifact -and -not $packArtifact.expired)
+            release_ready = $false
+            release_readiness_note = "Separate CH-only homologation research pack; never RU/EAEU fitment, VAG gearbox-code confirmation or repair applicability."
+          }
+          $directory = Join-Path $env:GITHUB_WORKSPACE "ci-status"
+          New-Item -ItemType Directory -Path $directory -Force | Out-Null
+          $statusPath = Join-Path $directory "latest-astra-ch-tas-pack.json"
+          $record | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $statusPath -Encoding UTF8
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "ci-status/latest-astra-ch-tas-pack.json"
+          git commit -m "ci: record ASTRA CH research pack build $env:UPSTREAM_RUN_NUMBER"
+          if ($LASTEXITCODE -ne 0) { throw "Could not commit ASTRA pack status record." }
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw "Could not rebase ASTRA pack status record onto main." }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw "Could not publish ASTRA pack status record." }
