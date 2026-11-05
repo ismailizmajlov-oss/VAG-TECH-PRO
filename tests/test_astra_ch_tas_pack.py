@@ -1,3 +1,4 @@
+import copy
 import json
 import sqlite3
 import unittest
@@ -137,6 +138,31 @@ class AstraChTasPackTests(unittest.TestCase):
         self.assertFalse(manifest["import_policy"]["production_import"])
         self.assertFalse(manifest["import_policy"]["ru_eaeu_applicability"])
         self.assertEqual(manifest["snapshot"]["vag_emissions_gearbox_rows"]["total"], 53414)
+
+    def test_source_identity_and_official_rights_evidence_are_pinned(self):
+        manifest = json.loads(
+            (ROOT / "data/source-manifests/astra-ch-tas-open-data.json").read_text(encoding="utf-8")
+        )
+        cases = [
+            ("source_id", lambda item: item.__setitem__("source_id", "unrelated-source"),
+             "source identity mismatch"),
+            ("publisher", lambda item: item.__setitem__("publisher", "unrelated publisher"),
+             "publisher identity mismatch"),
+            ("source_kind", lambda item: item.__setitem__("source_kind", "community_dataset"),
+             "source kind mismatch"),
+            ("rights_evidence", lambda item: item["rights"].__setitem__("evidence_url", "https://example.invalid/license.pdf"),
+             "rights evidence URL"),
+            ("passenger_index_url", lambda item: item["data_products"].__setitem__("passenger_car_index", "https://example.invalid/index.xlsb"),
+             "source URL mismatch"),
+            ("production_import", lambda item: item["import_policy"].__setitem__("production_import", True),
+             "never be imported as RU/EAEU production fitment"),
+        ]
+        for label, mutate, expected_error in cases:
+            with self.subTest(case=label):
+                altered = copy.deepcopy(manifest)
+                mutate(altered)
+                with self.assertRaisesRegex(ValueError, expected_error):
+                    _check_rights(altered)
 
     def test_schema_enforces_ch_only_and_never_claims_factory_codes(self):
         db = sqlite3.connect(":memory:")
