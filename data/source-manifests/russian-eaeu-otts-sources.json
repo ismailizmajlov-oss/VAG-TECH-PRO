@@ -382,7 +382,9 @@
           "ESBKTS",
           "cancellation_notices"
         ],
-        "document_type_envelope_namespace": "source_record_envelope_not_annex_2_field"
+        "document_type_envelope_namespace": "source_record_envelope_not_annex_2_field",
+        "importer_package_schema_version": 2,
+        "importer_staging_database_schema_version": 2
       },
       "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
     },
