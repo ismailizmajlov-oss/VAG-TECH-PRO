@@ -47,6 +47,22 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
             source["important_limitations"],
         )
 
+    def test_public_annex2_does_not_expose_powertrain_or_repair_fitment(self):
+        source = self.sources["rosstandart-fgis-reestr-kts"]
+        contract = source["publication_contract"]
+        fields = contract["public_site_search_fields"]
+        self.assertEqual(len(fields), 28)
+        names = {item["name"] for item in fields}
+        technical_terms = ("engine", "gearbox", "transmission", "ecu", "dtc", "wiring", "pinout", "torque")
+        self.assertFalse(any(any(term in name.lower() for term in technical_terms) for name in names))
+        scope = contract["public_annex2_technical_data_scope"]
+        self.assertEqual(scope["scope"], "document_identity_and_registry_status_metadata_only")
+        self.assertEqual(scope["engine_type_or_code"], "not_present_in_public_annex2_fields")
+        self.assertEqual(scope["gearbox_type_or_code"], "not_present_in_public_annex2_fields")
+        self.assertEqual(scope["engine_gearbox_pair"], "cannot_be_established_from_public_annex2_fields")
+        self.assertFalse(source.get("data_ingested"))
+        self.assertIn("no engine or gearbox technical designation/code", " ".join(source["important_limitations"]))
+
     def test_legal_revision_and_source_quality_are_explicit(self):
         source = self.sources["rosstandart-fgis-reestr-kts"]
         legal = source["legal_basis"]
