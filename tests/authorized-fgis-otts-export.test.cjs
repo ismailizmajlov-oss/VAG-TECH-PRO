@@ -52,6 +52,7 @@ function fixture(dir, overrides = {}) {
   };
   const record = {
     source_record_key: 'TEST-OTTS-001',
+    document_type: 'OTTS',
     approval_registration_number: 'E-RU.TEST.00001',
     make: 'Volkswagen',
     commercial_name: 'Synthetic Test Vehicle',
@@ -84,7 +85,7 @@ function fixture(dir, overrides = {}) {
     },
     ...overrides.record
   };
-  const input = { schema_version: 1, package_type: 'rosstandart_fgis_annex2_export', records: [record] };
+  const input = { schema_version: 2, package_type: 'rosstandart_fgis_annex2_export', document_types: overrides.documentTypes || ['OTTS'], records: [record] };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
   fs.writeFileSync(inputPath, JSON.stringify(input, null, 2));
   return { licensePath, permissionPath, manifestPath, inputPath, outputPath, licenseBytes, permissionBytes, manifest, input };
@@ -104,12 +105,14 @@ test('imports a rights-cleared Annex 2 export into a review-only SQLite staging 
     const db = new DatabaseSync(f.outputPath, { readOnly: true });
     try {
       assert.equal(db.prepare('PRAGMA integrity_check').get().integrity_check, 'ok');
+      assert.equal(db.prepare('PRAGMA user_version').get().user_version, 2);
       assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);
       assert.equal(db.prepare('SELECT COUNT(*) AS n FROM type_approval_records').get().n, 1);
       assert.equal(db.prepare('SELECT COUNT(*) AS n FROM raw_source_records').get().n, 1);
       assert.equal(db.prepare('SELECT COUNT(*) AS n FROM record_field_provenance').get().n, 13);
       const row = db.prepare('SELECT * FROM type_approval_records').get();
       assert.equal(row.make, 'Volkswagen');
+      assert.equal(row.document_type, 'OTTS');
       assert.equal(row.source_field_namespace, 'annex_2_publication_fields');
       assert.equal(row.applicability_precision, 'type_approval_document_metadata_only');
       assert.equal(row.review_status, 'needs_review');
@@ -132,11 +135,14 @@ test('imports a rights-cleared Annex 2 export into a review-only SQLite staging 
       assert.equal(snapshot.pdf_redistribution_allowed, 0);
     } finally { db.close(); }
     const sidecar = JSON.parse(fs.readFileSync(`${f.outputPath}.manifest.json`, 'utf8'));
+    assert.equal(sidecar.schema_version, 2);
+    assert.equal(sidecar.database_user_version, 2);
     assert.equal(sidecar.record_count, 1);
     assert.equal(sidecar.integrity_check, 'ok');
     assert.equal(sidecar.rights_basis, 'open_license');
     assert.equal(sidecar.license_identifier, 'CC0-1.0-TEST-FIXTURE');
     assert.deepEqual(sidecar.market_scope, ['RU', 'EAEU_TR_TS_018_2011']);
+    assert.deepEqual(sidecar.document_types, ['OTTS']);
     assert.equal(sidecar.commercial_use_allowed, true);
     assert.equal(sidecar.offline_cache_allowed, true);
     assert.equal(sidecar.pdf_redistribution_allowed, false);
@@ -259,6 +265,41 @@ test('accepts a written-permission package only when the exact permission docume
       assert.equal(snapshot.permission_document_sha256, sha(permissionBytes));
       assert.equal(snapshot.license_text_sha256, null);
     } finally { db.close(); }
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('rejects OTSH and SBKTS records from the OTTS metadata importer', () => {
+  for (const documentType of ['OTSH', 'EOTSH', 'SBKTS', 'ESBKTS', 'CANCELLATION_NOTICE']) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-document-type-'));
+    try {
+      const f = fixture(dir, { record: { document_type: documentType }, documentTypes: [documentType] });
+      const result = run(f);
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /document_types may contain only unique OTTS\/EOTTS values|document_type must be OTTS or EOTTS/);
+      assert.equal(fs.existsSync(f.outputPath), false);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+  }
+});
+
+test('requires package document_types to match the record-level document type', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-document-type-mismatch-'));
+  try {
+    const f = fixture(dir, { documentTypes: ['EOTTS'] });
+    const result = run(f);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /document_types must exactly match/);
+    assert.equal(fs.existsSync(f.outputPath), false);
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('rejects a missing document type in a public Annex 2 record', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-document-type-missing-'));
+  try {
+    const f = fixture(dir, { record: { document_type: undefined } });
+    const result = run(f);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /document_type is required/);
+    assert.equal(fs.existsSync(f.outputPath), false);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 

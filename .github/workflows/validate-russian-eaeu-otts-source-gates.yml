@@ -9,6 +9,11 @@ on:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
+      - .github/workflows/acquire-astra-ch-tas-vag-probe.yml
+      - data/source-manifests/astra-ch-tas-open-data.json
+      - docs/research/ASTRA_CH_TAS_OPEN_DATA_REVIEW_2026-11-06.md
+      - scripts/build_astra_ch_tas_pack.py
+      - tests/test_astra_ch_tas_pack.py
       - data/source-manifests/vw-okapi-product-catalog.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
       - docs/research/VW_OKAPI_SOURCE_REVIEW_2026-11-03.md
@@ -26,6 +31,11 @@ on:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
+      - .github/workflows/acquire-astra-ch-tas-vag-probe.yml
+      - data/source-manifests/astra-ch-tas-open-data.json
+      - docs/research/ASTRA_CH_TAS_OPEN_DATA_REVIEW_2026-11-06.md
+      - scripts/build_astra_ch_tas_pack.py
+      - tests/test_astra_ch_tas_pack.py
       - data/source-manifests/vw-okapi-product-catalog.json
       - docs/research/RU_EAEU_OTTS_RIGHTS_REVIEW_2026-11-03.md
       - docs/research/VW_OKAPI_SOURCE_REVIEW_2026-11-03.md
@@ -70,3 +80,5 @@ jobs:
         run: node --check scripts/import-authorized-fgis-otts-export.cjs
       - name: Run transactional SQLite importer tests on Windows
         run: node --test tests/authorized-fgis-otts-export.test.cjs
+      - name: Run ASTRA CH source rights and exact scope-link tests
+        run: python -m unittest discover -s tests -p "test_astra_ch_tas_pack.py" -v

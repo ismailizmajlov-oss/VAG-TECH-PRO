@@ -272,7 +272,7 @@
     "repair_procedure_applicability": false,
     "diagnostic_execution_allowed": false,
     "production_fitment_status": "approval_level_ch_research_evidence_only",
-    "research_pack_status": "separate CH-only VAG research pack built; exact variant/version scope linking and Swiss gearbox-class membership are enforced; no RU/EAEU or production fitment",
+    "research_pack_status": "builder_implemented; full CI pack artifact not yet verified or recorded; separate CH-only research evidence; no RU/EAEU or production fitment",
     "engine_type": "preserve engineType as the official approval engine-type designation; do not relabel it as a confirmed VAG engine code without independent corroboration",
     "stamped_engine_marking": "preserve chEngineCodeAsMarkedOnTheEngine separately; sample values DNP/DPC/DNF/EBJ/ECW show it can be shorter than engineType",
     "gearbox": "preserve chGearboxType as Swiss type-approval gearbox classification; it is not a VAG gearbox code",
@@ -303,7 +303,10 @@
     "preserve_per_record_sha256": true,
     "preserve_snapshot_revision": true,
     "preserve_original_approval_variant_version": true,
-    "never_cross_join_engine_and_gearbox_variants": true
+    "never_cross_join_engine_and_gearbox_variants": true,
+    "pack_build_evidence_status": "not_yet_recorded",
+    "pack_build_workflow": ".github/workflows/acquire-astra-ch-tas-vag-probe.yml",
+    "pack_artifact_sha256": null
   },
   "project_decision": "approved for a separate CH homologation research pack using exact VAG make rows from both indexes and emissions rows linked only by exact approval variant/version scope plus gearbox-class membership; preserve wildcard scope; official engine-type designation and Swiss gearbox classification only; no confirmed VAG gearbox code, no RU/EAEU applicability",
   "evidence_status": "official ASTRA/FEDRO OGD newsletter, official ASTRA vehicle-data page, official open-data reuse FAQ and EMBAG Art.10 reviewed 2026-11-06"

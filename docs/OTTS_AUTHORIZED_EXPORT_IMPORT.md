@@ -8,7 +8,8 @@ The FGIS source remains `permission_required` in the source register. Public-sit
 
 ## Inputs
 
-- `--input export.json`: JSON with `schema_version: 1`, `package_type: "rosstandart_fgis_annex2_export"`, and `records`.
+- `--input export.json`: JSON with `schema_version: 2`, `package_type: "rosstandart_fgis_annex2_export"`, `document_types`, and `records`.
+- The package must declare `document_types` and every record must carry an explicit `document_type`. Only `OTTS` and `EOTTS` are accepted; `OTSH`/`EOTSH`, `SBKTS`/`ESBKTS` and cancellation notices are rejected. `document_type` is source-envelope metadata, not an Annex 2 field number.
 - `--manifest source-manifest.json`: source ID/revision, publisher, source URL, retrieval timestamp, RU/EAEU market scope, and an owner-reviewed rights statement.
 - `--license-text LICENSE.txt`: required for `rights.basis="open_license"`.
 - `--permission-document permission.pdf`: required for `rights.basis="written_permission"`.
@@ -39,7 +40,7 @@ The importer verifies the supplied license/permission file's SHA-256 against the
 
 ## Data semantics and safety
 
-- The input field namespace must be `annex_2_publication_fields`; field numbers are checked against the 28-field public Annex 2 map.
+- The input field namespace must be `annex_2_publication_fields`; field numbers are checked against the 28-field public Annex 2 map. The document-type envelope is stored separately and cannot be inferred from the shared field list.
 - The reviewed public-search obligation is limited to electronically issued records; field 20 (`electronically_issued_flag`) must be present and true for every staged row.
 - Public Annex 2 is document/vehicle identity metadata only. It contains no engine or gearbox technical designation/code, engine/gearbox pairing, ECU, DTC, repair, wiring, pinout, torque, adaptation or service-interval fields. A field-19 Annex 1 PDF reference is not a PDF binary or a reuse grant.
 - Annex 1 internal FGIS field numbers are rejected if presented as Annex 2 field numbers.
@@ -47,6 +48,7 @@ The importer verifies the supplied license/permission file's SHA-256 against the
 - Engine codes, gearbox codes, ECU identifiers, PR codes, VIN patterns and exact configuration claims are rejected. They are not public Annex 2 fields.
 - Every row is stored with source URL, source revision, source-field numbers, market scope, a stable canonical-JSON row SHA-256 and `type_approval_document_metadata_only` applicability precision. The full export's SHA-256 identifies the exact original input bytes; the per-row hash is over canonicalized parsed JSON, not a claim about original byte offsets.
 - Every row remains `needs_review` and `blocked_pending_technical_review`; exact engine, transmission and ECU fitment claims are hard-coded to zero.
+- Input package schema 2 and SQLite `PRAGMA user_version=2` explicitly version the document-type envelope and staging schema. The output sidecar manifest is schema 2; no existing database is overwritten or silently upgraded.
 - The SQLite write uses a transaction, temporary files, integrity and foreign-key checks, and refuses to overwrite an existing output. A sidecar manifest records source URL/revision, market scope, license/permission identifiers and hashes, owner-review metadata, rights flags, and the database hash. The original export and rights-evidence files remain with the owner; their exact hashes are pinned in the database and sidecar.
 
 This staging database is not merged into the production vehicle catalogue. A separate technical review and a separately authorized mapping step are required before any record can become a verified vehicle configuration.

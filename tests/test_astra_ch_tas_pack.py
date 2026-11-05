@@ -139,6 +139,9 @@ class AstraChTasPackTests(unittest.TestCase):
         self.assertEqual(manifest["market_scope"], ["CH"])
         self.assertFalse(manifest["import_policy"]["production_import"])
         self.assertFalse(manifest["import_policy"]["ru_eaeu_applicability"])
+        self.assertEqual(manifest["import_policy"]["pack_build_evidence_status"], "not_yet_recorded")
+        self.assertIsNone(manifest["import_policy"]["pack_artifact_sha256"])
+        self.assertIn("full CI pack artifact not yet verified", manifest["applicability_policy"]["research_pack_status"])
         self.assertEqual(manifest["snapshot"]["vag_emissions_gearbox_rows"]["total"], 53414)
 
     def test_source_identity_and_official_rights_evidence_are_pinned(self):

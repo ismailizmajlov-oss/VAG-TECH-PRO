@@ -26,7 +26,7 @@ The FEDRO newsletter states that:
 - holder codes are not disclosed; and
 - current-generation data sheets are not offered as PDF prints.
 
-The probe workflow will fetch the official passenger-car index, JSON schema and a small set of public VAG-group approval records. It records source hashes and field names before any production-facing import is attempted.
+The official Windows probe runs have fetched and pinned the passenger-car index, other-automobile index, emissions/gearbox index and JSON schema, plus six sample approval JSON records. Source file sizes, SHA-256 hashes, row counts and sample field values are recorded in the source manifest.
 
 ## Rights and attribution
 
@@ -52,16 +52,15 @@ The OGD decision applies only to the published open-data products. It does not e
 - Model year, generation, production date and VIN-level fitment are not inferred from an approval number or first-registration date.
 - This source does not provide VAG DTCs, ECU definitions, repair procedures, wiring diagrams, pinouts, torque values or adaptation instructions.
 
-## Import plan
+## Implementation status — 2026-11-06
 
-1. Probe the official XLSB index, JSON schema and a small VAG sample; record SHA-256, source date and exact field paths.
-2. Build a Windows CI acquisition step that filters only exact VAG make names from the official passenger-car index.
-3. Fetch only the corresponding individual ASTRA JSON records and, where needed, the exact linked emission/gearbox rows.
-4. Import into a separate read-only SQLite research pack with source ID, snapshot, record URL, per-file SHA-256, CH market scope, approval/variant/version and explicit applicability precision.
-5. Add desktop search for this CH research pack only after integrity, provenance and no-cross-join tests pass.
+1. **Completed:** official source indexes, JSON schema and six sample VAG approval records were probed; source sizes, SHA-256 hashes, row counts and field paths are pinned.
+2. **Completed in code:** exact source make whitelist, official source identity/URL/rights gates, exact composite variant/version scope linker, wildcard preservation and CH-only SQLite schema are implemented.
+3. **Completed in tests:** exact-version, wildcard, missing-scope, ambiguous-scope, wrong-gearbox-class, exact-make, source-identity, rights and CH-only boundary tests are present. The Windows source-contract workflow has passed these unit tests.
+4. **Not yet verified:** the full generated SQLite pack artifact has not yet been confirmed by a recorded CI pack-build run. The source manifest deliberately records `pack_build_evidence_status=not_yet_recorded`; no desktop integration or production release is claimed.
+5. **Not permitted by this source:** RU/EAEU fitment, VAG gearbox-code confirmation, individual-vehicle/VIN fitment, model-year inference or repair-data applicability.
 
-No ASTRA record has been imported into the product database by this review. The field-level probe is the next implementation step.
-
+The builder now records the raw source-manifest SHA-256, a deterministic source-snapshot hash, per-file hashes and the generated database hash. The pack remains a separate CH-only read-only research namespace.
 
 ## Field-level schema probe completed (2026-11-05)
 

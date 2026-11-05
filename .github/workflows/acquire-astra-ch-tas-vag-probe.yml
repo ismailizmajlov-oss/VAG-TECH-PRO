@@ -11,6 +11,10 @@ on:
       - "data/source-manifests/astra-ch-tas-open-data.json"
       - ".github/workflows/acquire-astra-ch-tas-vag-probe.yml"
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Validate Russian EAEU and VAG OEM source contracts"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -21,10 +25,13 @@ concurrency:
 
 jobs:
   probe-and-build:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: windows-2022
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -74,8 +81,8 @@ jobs:
       UPSTREAM_RUN_NUMBER: ${{ github.run_number }}
       UPSTREAM_ATTEMPT: ${{ github.run_attempt }}
       UPSTREAM_CONCLUSION: ${{ needs.probe-and-build.result }}
-      UPSTREAM_SHA: ${{ github.sha }}
-      UPSTREAM_BRANCH: ${{ github.ref_name }}
+      UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
       UPSTREAM_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - name: Checkout status branch
