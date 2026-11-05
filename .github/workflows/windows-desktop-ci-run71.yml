@@ -21,6 +21,7 @@ on:
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "tests/test_sync_vag_source_register_source_rights.py"
+      - "tests/test_windows_desktop_workflow_contract.py"
       - "scripts/sync_vag_source_register.py"
       - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
@@ -66,6 +67,7 @@ on:
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "tests/test_sync_vag_source_register_source_rights.py"
+      - "tests/test_windows_desktop_workflow_contract.py"
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
@@ -126,6 +128,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           python --version
+          python tests/test_windows_desktop_workflow_contract.py
           python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
@@ -1113,12 +1116,12 @@ jobs:
             if ($null -eq $expected -or $expected.sha256 -ne $actual) { throw "Windows installer artifact hash mismatch: $name" }
           }
           if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 9 -or $metadata.wikidata_generation_model_member_links -ne 10 -or $metadata.wikidata_generation_source_bindings -ne 14) { throw "Build metadata does not describe the pinned generation candidate pack." }
+          $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $sourceRegisterPath = Join-Path $desktopRoot "data/source-manifests/vag-factory-source-register.json"
           if (-not (Test-Path -LiteralPath $sourceRegisterPath -PathType Leaf)) { throw "Bundled source-rights register is missing from Windows artifact." }
           $sourceRegisterActualHash = (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant()
           $sourceRegister = Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json
           if ($metadata.vag_source_register_sha256 -ne $sourceRegisterActualHash -or $metadata.vag_source_register_source_count -ne @($sourceRegister.sources).Count -or $metadata.vag_source_register_updated_at -ne $sourceRegister.updated_at) { throw "Bundled source-rights register does not match build metadata." }
-          $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
           foreach ($required in @("data/research/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
