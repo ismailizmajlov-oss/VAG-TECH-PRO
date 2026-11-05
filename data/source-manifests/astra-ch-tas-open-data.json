@@ -180,7 +180,7 @@
         "PORSCHE": {
           "exact": 949,
           "wildcard": 82,
-          "unlinked": 724
+          "unlinked": 580
         },
         "SEAT": {
           "exact": 915,
@@ -195,7 +195,7 @@
         "VW": {
           "exact": 1079,
           "wildcard": 11451,
-          "unlinked": 12802
+          "unlinked": 12806
         }
       }
     }
