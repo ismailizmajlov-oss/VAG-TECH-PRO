@@ -1924,7 +1924,8 @@
         "expected_owner_name_contains": "RDW",
         "expected_asset_type": "dataset",
         "expected_publication_stage": "published",
-        "fail_closed_on_missing_or_conflicting_metadata": true
+        "fail_closed_on_missing_or_conflicting_metadata": true,
+        "evidence_note": "Socrata resource metadata must identify an official published dataset owned by the RDW publisher. The separate government catalogue and RDW open-data policy establish CC0 reuse scope; public reachability alone is not accepted."
       }
     },
     {
