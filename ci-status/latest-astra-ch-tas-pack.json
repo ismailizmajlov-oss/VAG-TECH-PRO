@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-05T19:16:40.0283080Z",
+  "workflow": "Acquire and validate official ASTRA CH TAS VAG research pack",
+  "run_id": 42090269144,
+  "run_number": 11,
+  "run_attempt": 1,
+  "run_status_at_record": "in_progress",
+  "run_conclusion_at_record": null,
+  "build_job_result": "success",
+  "head_sha": "283e9ab863e7adbba26bbfcf04151fc1e9ecfe7b",
+  "head_branch": "main",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42090269144",
+  "jobs": [
+    {
+      "id": 127466157300,
+      "name": "probe-and-build",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000001292",
+      "started_at": "2026-11-05T19:03:57Z",
+      "completed_at": "2026-11-05T19:16:27Z"
+    },
+    {
+      "id": 127473212828,
+      "name": "Record pack build, rights, scope and artifact evidence",
+      "status": "in_progress",
+      "conclusion": null,
+      "runner_name": "GitHub Actions 1000001310",
+      "started_at": "2026-11-05T19:16:30Z",
+      "completed_at": null
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13446610029,
+      "name": "astra-ch-tas-vag-schema-probe",
+      "size_in_bytes": 32967,
+      "digest": "sha256:e9647fa2be78dabd05b68f65e632db7330611a5689c526f42ae29a139dede3d3",
+      "expired": false,
+      "created_at": "2026-11-05T19:16:24Z",
+      "expires_at": "2026-12-05T19:16:23Z"
+    },
+    {
+      "id": 13444454818,
+      "name": "astra-ch-tas-vag-open-data-pack",
+      "size_in_bytes": 10161705,
+      "digest": "sha256:f6315b3e9d0431b39d56a9c042e5766ad4e1539c392fdfd2ab5e3f490f0eceb1",
+      "expired": false,
+      "created_at": "2026-11-05T19:16:23Z",
+      "expires_at": "2027-02-03T19:03:55Z"
+    }
+  ],
+  "source_id": "astra-fedro-tas-type-approvals-open-data-ch",
+  "source_revision": "2026-10-29",
+  "rights_status": "approved_by_published_ogd_terms",
+  "attribution_required": true,
+  "market_scope": [
+    "CH"
+  ],
+  "production_import": false,
+  "ru_eaeu_applicability": false,
+  "pack_artifact_present": true,
+  "probe_artifact_present": true,
+  "pack_ready": true,
+  "release_ready": false,
+  "release_readiness_note": "Separate CH-only homologation research pack; never RU/EAEU fitment, VAG gearbox-code confirmation or repair applicability."
+}
