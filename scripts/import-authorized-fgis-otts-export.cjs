@@ -286,7 +286,7 @@ function createSchema(db) {
       rights_reviewed_by TEXT NOT NULL,
       rights_reviewed_at TEXT NOT NULL,
       rights_approval_reference TEXT NOT NULL,
-      rights_status TEXT NOT NULL CHECK (rights_status = 'verified_for_metadata_offline_distribution'),
+      rights_status TEXT NOT NULL CHECK (rights_status = 'owner_attested_not_independently_verified'),
       import_status TEXT NOT NULL CHECK (import_status = 'staging_only_not_published'),
       record_count INTEGER NOT NULL CHECK (record_count > 0),
       created_at TEXT NOT NULL
@@ -378,7 +378,7 @@ function buildDatabase({ inputBytes, manifestBytes, input, manifest, records, ri
         rightsResult.licenseTextSha256, rights.permission_document_url || null, rightsResult.permissionDocumentSha256,
         1, 1, 1, 1, rights.pdf_redistribution_allowed === true ? 1 : 0,
         rights.reviewed_by, rights.reviewed_at, rights.approval_reference,
-        'verified_for_metadata_offline_distribution', 'staging_only_not_published', records.length, new Date().toISOString()
+        'owner_attested_not_independently_verified', 'staging_only_not_published', records.length, new Date().toISOString()
       );
       const insertRecord = db.prepare(`INSERT INTO type_approval_records (
         approval_form_accounting_number, application_form_accounting_numbers, supplementary_sheet_accounting_numbers,
