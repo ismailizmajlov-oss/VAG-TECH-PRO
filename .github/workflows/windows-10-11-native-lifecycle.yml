@@ -9,7 +9,7 @@ name: VAG TECH PRO native Windows 10/11 x64 lifecycle validation
 on:
   workflow_run:
     workflows:
-      - VAG TECH PRO Windows x64 desktop validation run71
+      - VAG TECH PRO Windows x64 desktop validation run76
     branches:
       - main
     types:
@@ -39,7 +39,7 @@ jobs:
       - name: Download installers and lifecycle contract from the successful Windows build
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: vag-tech-pro-windows-x64-run70
+          name: vag-tech-pro-windows-x64-run76
           path: ${{ runner.temp }}/vag-tech-pro-win10-11
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -63,9 +63,9 @@ jobs:
           $artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-win10-11/windows-lifecycle-staging"
           $metadataPath = Join-Path $artifactRoot "build-metadata.json"
           $metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
-          if ($metadata.desktop_version -ne "0.2.4") { throw "Unexpected desktop version in build metadata: $($metadata.desktop_version)" }
-          $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.3-x64.exe"
-          $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
+          if ($metadata.desktop_version -ne "0.2.5") { throw "Unexpected desktop version in build metadata: $($metadata.desktop_version)" }
+          $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
+          $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.5-x64.exe"
           foreach ($file in @($installer, $upgradeInstaller)) {
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Windows installer artifact is missing: $file" }
             $name = [System.IO.Path]::GetFileName($file)
@@ -94,8 +94,8 @@ jobs:
           $isolatedAppData = Join-Path $env:RUNNER_TEMP "vag-tech-pro-win10-11-appdata"
           if (Test-Path -LiteralPath $isolatedAppData) { Remove-Item -LiteralPath $isolatedAppData -Recurse -Force }
           New-Item -ItemType Directory -Path $isolatedAppData -Force | Out-Null
-          "installer_0_2_3_sha256=$((Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant())" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
-          "installer_0_2_4_sha256=$((Get-FileHash -LiteralPath $upgradeInstaller -Algorithm SHA256).Hash.ToLowerInvariant())" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
+          "installer_0_2_4_sha256=$((Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant())" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
+          "installer_0_2_5_sha256=$((Get-FileHash -LiteralPath $upgradeInstaller -Algorithm SHA256).Hash.ToLowerInvariant())" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
           "windows_client=$($os.Caption); version=$($os.Version); build=$($os.BuildNumber); architecture=$($os.OSArchitecture)" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
           "desktop_version=$($metadata.desktop_version)" | Out-File -FilePath (Join-Path $env:RUNNER_TEMP "windows-10-11-verification.txt") -Append -Encoding utf8
 
@@ -105,8 +105,8 @@ jobs:
           $ErrorActionPreference = "Stop"
           $artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-win10-11/windows-lifecycle-staging"
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
-          $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.3-x64.exe"
-          $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
+          $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
+          $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.5-x64.exe"
           $env:APPDATA = Join-Path $env:RUNNER_TEMP "vag-tech-pro-win10-11-appdata"
           Set-Location $desktopRoot
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
@@ -195,7 +195,7 @@ jobs:
           $record = [ordered]@{
             schema_version = 1
             recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-            upstream_workflow = "VAG TECH PRO Windows x64 desktop validation run71"
+            upstream_workflow = "VAG TECH PRO Windows x64 desktop validation run76"
             run_id = [long]$env:UPSTREAM_RUN_ID
             run_number = [int]$env:UPSTREAM_RUN_NUMBER
             run_attempt = [int]$env:UPSTREAM_RUN_ATTEMPT
