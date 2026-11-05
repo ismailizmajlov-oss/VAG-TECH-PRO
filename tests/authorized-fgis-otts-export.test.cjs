@@ -191,14 +191,20 @@ test('rejects Annex 1 field numbers in an Annex 2 record', () => {
 });
 
 test('rejects engine, gearbox, ECU, VIN and PR-code claims from the public Annex 2 export', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-no-fitment-'));
-  try {
-    const f = fixture(dir, { record: { engine_code: 'TEST' } });
-    const result = run(f);
-    assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /not part of Annex 2/);
-    assert.equal(fs.existsSync(f.outputPath), false);
-  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+  const forbiddenTechnicalFields = [
+    'engine_code', 'engine_type', 'gearbox_code', 'gearbox_type',
+    'transmission_code', 'ecu_id', 'dtc_code', 'wiring_diagram', 'torque_value'
+  ];
+  for (const field of forbiddenTechnicalFields) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-no-fitment-'));
+    try {
+      const f = fixture(dir, { record: { [field]: 'TEST' } });
+      const result = run(f);
+      assert.notEqual(result.status, 0, field);
+      assert.match(result.stderr, new RegExp(field + ' is not part of Annex 2|is not an allowed Annex 2 field'));
+      assert.equal(fs.existsSync(f.outputPath), false);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+  }
 });
 
 test('requires a matching permission document for written-permission imports', () => {
