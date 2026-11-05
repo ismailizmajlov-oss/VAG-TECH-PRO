@@ -1,0 +1,3 @@
+VAG TECH PRO Windows x64 validation trigger run74
+Requested validation: source assembly, research pack verification, exact engine/gearbox applicability gate, NSIS x64 builds, clean install, offline launch, backup/restore, in-place upgrade, SQLite preservation and uninstall preservation.
+No production deployment, release publication, payments, external accounts or data-rights promotion.
