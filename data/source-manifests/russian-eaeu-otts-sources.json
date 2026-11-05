@@ -440,33 +440,75 @@
       "source_id": "otts-bot",
       "publisher": "OTTS.BOT",
       "source_type": "commercial_otts_aggregator",
-      "source_url": "https://otts.bot/terms",
-      "terms_url": "https://otts.bot/terms",
+      "source_url": "https://www.otts.bot/",
+      "terms_url": "https://www.otts.bot/terms",
       "market_scope": [
         "RU",
         "EAEU"
       ],
-      "terms_revision": "2026-08-26",
+      "terms_revision": "last_updated_2026-08-26; reviewed_2026-11-05",
       "license": {
         "identifier": null,
+        "dataset_license": "not_granted",
         "commercial_use": "not_confirmed",
-        "display": "not_confirmed_for_third_party_catalogue",
-        "offline_cache": "not_confirmed",
-        "automated_extraction": "prohibited_without_separate_written_permission",
-        "bulk_export": "not_confirmed",
-        "redistribution": "prohibited_under_published_user_agreement"
+        "display": "not_authorized_as_a_third_party_proprietary_catalogue_under_published_terms",
+        "offline_cache": "not_confirmed_for_distribution",
+        "automated_extraction": "prohibited_beyond_ordinary_user_scenario_without_separate_written_permission",
+        "bulk_export": "not_authorized",
+        "redistribution": "prohibited_under_published_user_agreement_clause_3",
+        "underlying_document_rights": "belong_to_their_respective_rightsholders; operator_disclaims_ownership_of_document_content",
+        "permission_status": "not_cleared"
       },
       "status": "restricted_no_automated_collection_or_redistribution_without_written_permission",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "hash_status": "terms_review_only",
+      "hash_status": "terms_review_only_no_dataset_snapshot",
       "notes": [
-        "The published user agreement prohibits automated collection/scraping and mass requests beyond ordinary user scenarios.",
-        "The agreement prohibits resale, publication or redistribution of obtained documents and database information as a proprietary information product.",
-        "The partner programme requires a contributor to warrant that they hold rights to grant the operator placement/use rights; it does not grant VAG TECH PRO any reuse rights.",
-        "No account, paid document access, automated request, download or import was used.",
-        "Require separate written permission covering bulk extraction, persistent offline caching, third-party display and redistribution before any product integration."
-      ]
+        "The homepage displayed 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records on 2026-11-05; these are provider-displayed live counts, not an independently audited dataset.",
+        "The public page advertises free search, one-off PDF delivery for 500 RUB and subscriptions from 990 RUB for 3 days to 29,900 RUB per year; no paid access or terms were accepted.",
+        "Published User Agreement, last updated 2026-08-26, clause 3 prohibits automated collection/scraping or mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of obtained documents and database information as a proprietary information product.",
+        "Clause 5 states that the database structure and website content belong to the operator while rights to the documents themselves belong to their respective rightsholders.",
+        "The partner programme grants placement/use rights to the operator from a contributor who warrants their own rights; it does not grant VAG TECH PRO any reuse rights.",
+        "The public page's engine and technical-characteristics sections are described as not yet populated; no exact factory engine code, gearbox code, pairing, ECU or repair applicability was established.",
+        "No account, subscription, payment, automated request, download, cache or import was used.",
+        "Do not scrape, bulk-query, cache, display or redistribute this aggregator's records or documents in VAG TECH PRO without separate written permission expressly covering each intended use."
+      ],
+      "observed_counts": {
+        "observed_at": "2026-11-05",
+        "provider_displayed": true,
+        "ot_ts_records": 74115,
+        "sbkts_records": 224744,
+        "otsh_records": 1655,
+        "limitation": "Provider-displayed live counts only; not independently audited and not a rights-cleared export."
+      },
+      "access": {
+        "search": "free public web search",
+        "one_document_download": "500 RUB per document; provider page states registration is not required for one-off download",
+        "subscription": "provider page lists plans from 990 RUB for 3 days to 29900 RUB per year",
+        "regular_database_access": "paid subscription tiers advertised",
+        "project_use": "no account, subscription, API key, payment, automated query or download used"
+      },
+      "technical_scope": {
+        "search_fields_observed": [
+          "approval_number",
+          "make",
+          "commercial_name",
+          "vehicle_type",
+          "category",
+          "environmental_class",
+          "modifications",
+          "chassis",
+          "VIN",
+          "applicant",
+          "manufacturer"
+        ],
+        "exact_factory_engine_code": "not_established",
+        "exact_gearbox_code": "not_established",
+        "engine_gearbox_pairing": "not_established",
+        "ecu_dtc_or_repair_applicability": "not_established",
+        "exact_vehicle_fitment": false,
+        "applicability_precision": "aggregator_document_metadata_only_until_each_primary_document_is_independently_reviewed"
+      }
     },
     {
       "source_id": "otts-baza-ru",
