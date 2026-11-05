@@ -234,11 +234,13 @@ function main() {
     if (count !== 1) fail("Local research DB RDW insertion anchor count: " + count);
     core = core.replace(anchor, wrapper + "\n\n" + anchor);
   }
-  const exportBefore = "  searchMechanicDbCandidates,\n  validateQuery,";
-  const exportAfter = "  searchMechanicDbCandidates,\n  getRdwTypeApprovalSummary,\n  searchRdwTypeApprovalCandidates,\n  validateQuery,";
-  if (!core.includes(exportAfter)) {
-    if (!core.includes(exportBefore)) fail("Local research DB export anchor missing");
-    core = core.replace(exportBefore, exportAfter);
+  const exportAnchor = "  validateQuery,";
+  const exportInsert = "  getRdwTypeApprovalSummary,\n  searchRdwTypeApprovalCandidates,\n  validateQuery,";
+  if (!core.includes("  getRdwTypeApprovalSummary,")) {
+    const exportAnchorCount = core.split(exportAnchor).length - 1;
+    if (exportAnchorCount !== 1) fail("Local research DB export anchor count: " + exportAnchorCount);
+    if (!core.includes("  searchWikidataCandidates,")) fail("Wikidata research export is missing before RDW integration");
+    core = core.replace(exportAnchor, exportInsert);
   }
   writeText(coreFile, core);
 
