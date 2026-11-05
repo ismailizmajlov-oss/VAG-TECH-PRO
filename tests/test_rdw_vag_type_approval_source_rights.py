@@ -28,6 +28,7 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertEqual(gate["expected_asset_type"],"dataset")
         self.assertEqual(gate["expected_publication_stage"],"published")
         self.assertTrue(gate["fail_closed_on_missing_or_conflicting_metadata"])
+        self.assertEqual(gate,self.source["live_metadata_gate"])
 
     def test_market_and_applicability_are_candidate_only_and_not_eaeu(self):
         self.assertEqual(set(self.source["market_scope"]),{"EU_TYPE_APPROVAL","NL_REGISTRATION_OBSERVATION"})
