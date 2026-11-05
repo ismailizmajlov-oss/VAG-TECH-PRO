@@ -40,10 +40,11 @@ The current research snapshots contain useful public data, but none of the follo
 | MechanicDB generic guidance | 275 generic guidance rows and 75 generic SAE DTC references | ODbL-1.0; generic educational reference only, no VAG or exact-vehicle applicability |
 | AutoDiag2 VAG community candidates | 110 model candidates, 259 version candidates, 1,083 unverified engine fields, 179 ECU candidates and 3,170 configuration candidates; 956 unattributed make-level DTC rows excluded, 0 retained | ODbL-1.0 / DbCL-1.0; separate read-only research pack, market UNKNOWN; no verified engine codes, transmission records or exact fitment |
 | MechanicDB manufacturer-labelled DTC candidates | 2 rows | ODbL-1.0; quarantined from normal DTC lookup pending technical review; not OEM-confirmed |
+| ASTRA / FEDRO Swiss TAS VAG research | 45,215 VAG-group type-approval index rows and 53,414 emissions/gearbox rows in the 2026-10-29 source snapshot; 5,420 exact variant/version links, 28,489 wildcard-scope links, 19,505 unlinked | Swiss OGD with FEDRO attribution; separate CH-only research namespace; `engineType` and stamped marking stay distinct; `chGearboxType` is not a VAG gearbox code; no RU/EAEU or repair fitment |
 
 Each pack remains in its own namespace with its own manifest, attribution/license material, source revision and hashes. Share-Alike obligations are retained. Generic DTC and generic repair guidance are not linked to a VAG configuration or ECU.
 
-## Production-data status — 2026-11-05
+## Production-data status — 2026-11-06
 
 **VAG TECH PRO is not yet a professional repair database or a release candidate.**
 
@@ -61,20 +62,17 @@ The current source register records the EAEU, Rosstandart/Interstandart, ELPTS, 
 
 The desktop source is stored as a SHA-256-pinned source payload plus deterministic patches and is assembled by [the Windows x64 CI workflow](.github/workflows/windows-desktop-ci-run71.yml). The pipeline is configured to build two NSIS x64 installers (0.2.3 and 0.2.4), validate the packaged offline research resources, and test clean install, offline launch, backup/restore, in-place upgrade and uninstall preservation. A separate Windows Server 2022 lifecycle job checks compatibility. A workflow-run recorder is configured to write `ci-status/latest-windows-run.json` after each completed run; the record is evidence only after that file exists and contains a completed run. A workflow definition alone is not evidence that a run passed.
 
-The latest inspected Windows build, [run 94 / 42024171000](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42024171000), completed successfully for commit `f8e02d161f74a7bf4f585a1bb3398499ba25522d`; the result was recorded on `main` by commit [f57dd0a](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/commit/f57dd0a21ef1b9ab501848c8dcf74785c6a17c7f). It built NSIS x64 installers 0.2.3 and 0.2.4. Build metadata from the Windows artifact records:
-- `VAG-TECH-PRO-Setup-0.2.3-x64.exe`: 254,761,885 bytes; SHA-256 `b1ca4a39bdc626da37db566930b6367c9eb813983aa39e70b8ad23b3a3369112`.
-- `VAG-TECH-PRO-Setup-0.2.4-x64.exe`: 254,761,891 bytes; SHA-256 `1c2dff28d440e4de3012b043f44941b9878e2685cb3febb79dad4d402a6780f1`.
-- Installer/evidence artifact `vag-tech-pro-windows-x64-run70`: 532,088,522 bytes; artifact ZIP SHA-256 `ae15cee35bc1760c15252c7db21a9cae71064e9e507409cb62e24eddb8cd4f55`.
+The latest recorded Windows x64 validation run, [run 133 / 42082743016](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42082743016), completed successfully for source commit `be5808150ccc7f5977dee3ef6992d59887ae01db` on 2026-11-05. It built NSIS x64 installers 0.2.3 and 0.2.4. The primary job passed desktop/local-core/research tests, ESLint, TypeScript, clean installation, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity checks and uninstall preservation. A separate Windows Server 2022 compatibility job passed the same installer lifecycle.
 
-The primary Windows CI job passed the automated desktop/local-core/research tests, ESLint and TypeScript checks, both NSIS builds, and an external-network-blocked lifecycle: clean install, offline launch, SQLite backup/restore, in-place upgrade, integrity checks and uninstall preservation. A separate Windows Server 2022 compatibility job completed the lifecycle successfully; its evidence is artifact `vag-tech-pro-windows-2022-lifecycle-run70` (3,762 bytes; artifact ZIP SHA-256 `4a7a0cf6db22be93a68128ff1f7fdc9611d4b97e27f1e41d38ef07253c92c91e`).
+Recorded run artifacts:
+- `vag-tech-pro-windows-x64-run70`: 532,121,647 bytes; artifact ZIP SHA-256 `43829fbc3a4788aa585c6b2e7b64160662a50c20da286b0286b4a64e4acf4260`.
+- `vag-tech-pro-windows-2022-lifecycle-run70`: 3,762 bytes; artifact ZIP SHA-256 `da0a462145278d23186cda89beb8703a89f62e82cdda7a4aabf27b7c07229096`.
 
-This is **Windows-hosted CI and Windows Server 2022 evidence, not a native Windows 10/11 client test**. The separate [native Windows 10/11 workflow run 10 / 42022177539](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42022177539) completed its recorder job, but the client lifecycle job was skipped because the owner-controlled runner gate is disabled and no owner-provided isolated Windows 10/11 x64 runner is registered. No runner or external account is created by the project.
+This is CI evidence, not a public release. The status record keeps `release_ready=false`. Importantly, run 133 built commit `be5808150ccc7f5977dee3ef6992d59887ae01db`; later ASTRA CH scope-link and pack-workflow changes on `main` are newer than that build and are not covered by run 133. A new Windows validation run must pass against the current source before those changes are considered build-verified.
 
-Installer code signing was skipped because no signing certificate is configured. The installers remain CI artifacts, not a public release. The CI status record explicitly keeps `release_ready=false`; passing build/lifecycle checks does not clear the data-rights, factory-fitment or native-client blockers.
+This is Windows-hosted CI and Windows Server 2022 evidence, **not a native Windows 10/11 client test**. The separate native Windows 10/11 workflow was skipped because the owner-controlled runner gate is disabled and no owner-provided isolated Windows 10/11 x64 runner is registered. Required labels are `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`; the owner must also set `VAG_TECH_PRO_WIN10_11_RUNNER_AVAILABLE=true`. No runner or external account is created by the project.
 
-A separate [native Windows 10/11 x64 lifecycle workflow](.github/workflows/windows-10-11-native-lifecycle.yml) is now wired to successful desktop CI runs. It is deliberately owner-gated: the repository owner must attach an isolated Windows 10/11 x64 self-hosted runner with labels `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11` and set `VAG_TECH_PRO_WIN10_11_RUNNER_AVAILABLE=true`. No runner or external account is created by this project workflow.
-
-The inspected installer logs show that code signing was skipped because no signing certificate is configured. No paid signing service or certificate has been acquired.
+Installer code signing was skipped because no signing certificate is configured. The installers remain CI artifacts, not a public release. No paid signing service or certificate has been acquired.
 
 ## Release blockers
 
