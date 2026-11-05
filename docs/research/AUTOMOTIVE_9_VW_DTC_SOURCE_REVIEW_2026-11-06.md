@@ -21,6 +21,8 @@ No dataset records were imported into VAG TECH PRO. Only source metadata, the Gi
 
 The README badge links to a different repository, `MCDxAI/open-source-dtc-databases`, but the reviewed file does not identify that project as the legal source of each row or establish a licence for the copied JSON. No rights are inferred from a badge link or from public GitHub visibility.
 
+The UTF-8 content returned by the pinned GitHub contents response was hashed without retaining it in the product: byte size `857212`, SHA-256 `1f0b6c9b096bbb36d042e622d8aa89c616fbdd0b7e5386117000afb01e917fba`. This is a retrieval-integrity hash, not permission to cache or redistribute the source file; the product source snapshot remains absent.
+
 ## Independent structural triage
 
 The JSON parses and contains 9,137 keys. The key/value structure is not a clean, homogeneous DTC dictionary:
