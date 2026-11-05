@@ -8,7 +8,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const { DatabaseSync } = require('node:sqlite');
-const { normalizeRecord } = require('../scripts/import-authorized-fgis-otts-export.cjs');
+const { normalizeRecord, validateSourceIdentity, loadSourceContext } = require('../scripts/import-authorized-fgis-otts-export.cjs');
 
 const script = path.resolve(__dirname, '../scripts/import-authorized-fgis-otts-export.cjs');
 const sha = (bytes) => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -26,9 +26,9 @@ function fixture(dir, overrides = {}) {
 
   const manifest = {
     schema_version: 1,
-    source_id: 'rosstandart-fgis-kts',
+    source_id: 'rosstandart-fgis-registers-kts',
     publisher: 'TEST ONLY — synthetic Rosstandart source fixture',
-    source_url: 'https://www.interstandart.ru/TEST_FIXTURE/fgis',
+    source_url: 'https://www.interstandart.ru/page/fgis_01',
     source_revision: '2038_as_amended_by_2335',
     retrieved_at: '2026-11-03T12:00:00.000Z',
     market_scope: ['RU', 'EAEU_TR_TS_018_2011'],
@@ -89,6 +89,27 @@ function fixture(dir, overrides = {}) {
   fs.writeFileSync(inputPath, JSON.stringify(input, null, 2));
   return { licensePath, permissionPath, manifestPath, inputPath, outputPath, licenseBytes, permissionBytes, manifest, input };
 }
+test('binds the package to the same canonical FGIS identity in both authoritative manifests', () => {
+  const context = loadSourceContext();
+  const manifest = { source_revision: '2038_as_amended_by_2335' };
+  const sourceUrl = 'https://www.interstandart.ru/page/fgis_01';
+  assert.equal(context.sourceRecord.source_id, 'rosstandart-fgis-registers-kts');
+  assert.equal(context.russianSource.source_id, 'rosstandart-fgis-registers-kts');
+  assert.doesNotThrow(() => validateSourceIdentity(manifest, sourceUrl, context));
+  const mismatched = { ...context, russianSource: { ...context.russianSource, source_id: 'rosstandart-fgis-reestr-kts' } };
+  assert.throws(() => validateSourceIdentity(manifest, sourceUrl, mismatched), /FGIS source identity differs across authoritative manifests/);
+});
+
+test('rejects source URL and host-policy drift between authoritative manifests', () => {
+  const context = loadSourceContext();
+  const manifest = { source_revision: '2038_as_amended_by_2335' };
+  const sourceUrl = 'https://www.interstandart.ru/page/fgis_01';
+  const urlMismatch = { ...context, russianSource: { ...context.russianSource, source_url: 'https://www.rst.gov.ru/other-register' } };
+  assert.throws(() => validateSourceIdentity(manifest, sourceUrl, urlMismatch), /package source_url does not match both authoritative FGIS source manifests/);
+  const policyMismatch = { ...context, sourceRecord: { ...context.sourceRecord, source_url_host_policy: { ...context.sourceRecord.source_url_host_policy, allowed_domains: ['example.invalid'] } } };
+  assert.throws(() => validateSourceIdentity(manifest, sourceUrl, policyMismatch), /official FGIS source URL host policy differs/);
+});
+
 test('rejects unverified, lookalike, credential-bearing and non-standard-port source URLs', () => {
   const cases = [
     { label: 'manifest host', overrides: { manifest: { source_url: 'https://example.invalid/fgis' } }, expected: /source_url must use a verified Rosstandart\/Interstandart official host/ },

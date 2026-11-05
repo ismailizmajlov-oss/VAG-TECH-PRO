@@ -715,6 +715,17 @@
           "primary_official_copy_retrieved": false,
           "interpretation": "The order establishes a public-site publication/search obligation for the specified electronic-record fields. It does not establish an OTTS bulk API, a dataset licence, or permission for commercial reuse, offline caching, third-party display or redistribution."
         }
+      },
+      "source_url_host_policy": {
+        "scheme": "https",
+        "allowed_domains": [
+          "rst.gov.ru",
+          "gost.ru",
+          "interstandart.ru"
+        ],
+        "allow_subdomains": true,
+        "reject_url_credentials": true,
+        "reject_non_default_ports": true
       }
     },
     {

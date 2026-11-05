@@ -16,7 +16,7 @@
   },
   "sources": [
     {
-      "source_id": "rosstandart-fgis-reestr-kts",
+      "source_id": "rosstandart-fgis-registers-kts",
       "publisher": "Росстандарт / ФБУ «КВФ «Интерстандарт»",
       "source_type": "official_vehicle_type_approval_register",
       "source_url": "https://www.interstandart.ru/page/fgis_01",
@@ -368,7 +368,18 @@
         },
         "official_site_search_scope": "electronically_issued_records_only"
       },
-      "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
+      "ot_ts_attribute_map_scope": "annex_1_internal_database_fields",
+      "source_url_host_policy": {
+        "scheme": "https",
+        "allowed_domains": [
+          "rst.gov.ru",
+          "gost.ru",
+          "interstandart.ru"
+        ],
+        "allow_subdomains": true,
+        "reject_url_credentials": true,
+        "reject_non_default_ports": true
+      }
     },
     {
       "source_id": "eaeu-open-data-portal",

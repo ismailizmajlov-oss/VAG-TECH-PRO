@@ -14,7 +14,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         cls.sources = {item["source_id"]: item for item in cls.manifest["sources"]}
 
     def test_rosstandart_fgis_stays_blocked_without_reuse_rights(self):
-        source = self.sources["rosstandart-fgis-reestr-kts"]
+        source = self.sources["rosstandart-fgis-registers-kts"]
         self.assertEqual(source["status"], "permission_required")
         self.assertFalse(source["data_ingested"])
         self.assertIsNone(source["source_snapshot_sha256"])
@@ -25,7 +25,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(source["license"]["pdf_redistribution"], "not_confirmed")
 
     def test_public_annex2_and_internal_annex1_field_numbers_are_separate(self):
-        source = self.sources["rosstandart-fgis-reestr-kts"]
+        source = self.sources["rosstandart-fgis-registers-kts"]
         contract = source["publication_contract"]
         self.assertTrue(contract["official_site_search_required"])
         self.assertEqual(contract["effective_from"], "2025-10-01")
@@ -49,7 +49,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         )
 
     def test_public_annex2_does_not_expose_powertrain_or_repair_fitment(self):
-        source = self.sources["rosstandart-fgis-reestr-kts"]
+        source = self.sources["rosstandart-fgis-registers-kts"]
         contract = source["publication_contract"]
         fields = contract["public_site_search_fields"]
         self.assertEqual(len(fields), 28)
@@ -66,7 +66,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertIn("no engine or gearbox technical designation/code", " ".join(source["important_limitations"]))
 
     def test_legal_revision_and_source_quality_are_explicit(self):
-        source = self.sources["rosstandart-fgis-reestr-kts"]
+        source = self.sources["rosstandart-fgis-registers-kts"]
         legal = source["legal_basis"]
         self.assertEqual(legal["current_revision"], "2038_as_amended_by_2335")
         self.assertEqual(legal["latest_amendment_found"]["document"], "Приказ Росстандарта от 30.10.2025 № 2335")
