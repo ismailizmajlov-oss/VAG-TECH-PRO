@@ -2074,6 +2074,86 @@
       ],
       "project_decision": "quarantine_no_import_no_offline_pack; API docs claim commercial use with attribution and client-side caching, but published Terms prohibit copying substantial parts for commercial reuse; no explicit dataset licence or bulk/offline redistribution grant; torque records lack row-level primary provenance, revision and exact VAG fitment; require written permission and row-level source evidence before reconsideration",
       "evidence_status": "API docs, published Terms, About page and torque page reviewed 2026-11-06; no API calls, records downloaded or data imported"
+    },
+    {
+      "source_id": "astra-fedro-tas-type-approvals-open-data-ch",
+      "publisher": "Federal Roads Office (FEDRO / ASTRA), Swiss Confederation",
+      "url": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/",
+      "source_kind": "official_open_government_vehicle_type_approval_data",
+      "market_scope": [
+        "CH"
+      ],
+      "snapshot": {
+        "observed_directory_last_modified": "2026-10-29",
+        "source_data_date": "2026-10-29",
+        "update_frequency": "monthly",
+        "approval_generation": "third_generation",
+        "stated_approval_count": ">200000",
+        "individual_json_per_approval": true
+      },
+      "data_products": {
+        "passenger_car_index": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4300-Datensaetze/TAS_Personenwagen.xlsb",
+        "passenger_car_index_csv": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4300-Datensaetze/TAS_Automobil.csv",
+        "json_records_directory": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4100-json-Files/",
+        "json_schema": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4250-json-Schema/govServices_TypeApproval_Schema.json",
+        "emissions_and_gearbox_variants": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4300-Datensaetze/TAS_Emission.csv",
+        "official_newsletter": "https://opendata.astra.admin.ch/ivzod/5000-Newsletter/2026_1/Newsletter_Fahrzeugdaten_1_2026_EN.pdf",
+        "official_vehicle_data_page": "https://www.astra.admin.ch/de/fahrzeugdaten",
+        "general_open_data_reuse_faq": "https://opendata.swiss/en/faq",
+        "legal_basis": "https://www.data-sharing.ch/en/index1"
+      },
+      "rights": {
+        "data_license_status": "Swiss Open Government Data (OGD); official FEDRO newsletter explicitly states free use as OGD; no separate CC license identifier is assigned in the reviewed source notice",
+        "legal_basis": "Swiss Federal Act on the Use of Electronic Means to Carry Out Official Tasks (EMBAG/EMOTA), Art. 10, subject to statutory exceptions",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "attribution": "Source: Federal Roads Office (FEDRO/ASTRA), Type Approval System (TAS) open data.",
+        "rights_status": "approved_by_published_ogd_terms",
+        "evidence": "FEDRO Newsletter dated 2026-02-23 states all type-approval data products are free to use as OGD and FEDRO must be cited",
+        "evidence_url": "https://opendata.astra.admin.ch/ivzod/5000-Newsletter/2026_1/Newsletter_Fahrzeugdaten_1_2026_EN.pdf",
+        "excluded_products": [
+          "paid standard datasets",
+          "personal or holder data",
+          "eDatenblatt portal output unless separately reviewed",
+          "PDF reproductions of current-generation approvals"
+        ]
+      },
+      "coverage": {
+        "vehicle_group": "passenger cars",
+        "approval_generation": "third_generation",
+        "json_files_available": true,
+        "first_and_second_generation_json_available": false,
+        "holder_code_disclosed": false,
+        "current_generation_pdf_prints_offered": false,
+        "monthly_updates": true
+      },
+      "field_status": {
+        "make_type_variant_version": "schema_probe_pending",
+        "engine_code": "schema_probe_pending",
+        "gearbox_code_and_variant_linkage": "schema_probe_pending",
+        "approval_number": "schema_probe_pending",
+        "model_year": "not_assumed",
+        "ecu_dtc_repair_content": "not_provided_by_this_source"
+      },
+      "applicability_policy": {
+        "market_scope": "CH only",
+        "approval_level": "type approval only",
+        "variant_version": "use only values explicitly present in the approval record",
+        "engine_gearbox_pair": "do not create a Cartesian product; preserve only explicit per-record or per-row linkage after schema verification",
+        "model_generation_year": "do not infer from approval number or first-registration date",
+        "vin_fitment": false,
+        "individual_vehicle_fitment": false,
+        "repair_procedure_applicability": false,
+        "diagnostic_execution_allowed": false,
+        "production_fitment_status": "not_approved",
+        "research_pack_status": "schema_probe_pending"
+      },
+      "project_decision": "approved for a separately namespaced CH homologation research pack after schema validation; never treat CH approvals as RU/EAEU approval or exact individual-vehicle fitment",
+      "evidence_status": "official ASTRA/FEDRO OGD newsletter, official ASTRA vehicle-data page, official open-data reuse FAQ and EMBAG Art.10 reviewed 2026-11-06"
     }
   ],
   "minimum_fitment_evidence_fields": [

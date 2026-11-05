@@ -1,0 +1,36 @@
+name: Probe official ASTRA CH TAS VAG open-data schema
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/probe_astra_ch_tas.py"
+      - "data/source-manifests/astra-ch-tas-open-data.json"
+      - ".github/workflows/acquire-astra-ch-tas-vag-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned XLSB reader
+        run: python -m pip install --disable-pip-version-check pyxlsb==1.0.10
+      - name: Probe official ASTRA passenger-car index, JSON schema and VAG approval records
+        run: |
+          python scripts/probe_astra_ch_tas.py --output-dir artifacts/astra-ch-tas-probe
+          if ($LASTEXITCODE -ne 0) { throw "ASTRA TAS schema probe failed" }
+      - name: Upload schema and provenance probe report
+        uses: actions/upload-artifact@v4
+        with:
+          name: astra-ch-tas-vag-schema-probe
+          path: artifacts/astra-ch-tas-probe/astra-ch-tas-schema-probe.json
+          if-no-files-found: error
+          retention-days: 30
