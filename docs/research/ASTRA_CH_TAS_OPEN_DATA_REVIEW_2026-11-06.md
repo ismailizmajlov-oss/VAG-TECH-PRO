@@ -82,3 +82,27 @@ Important semantic distinction from the official records:
 - `gearboxEmissionsN.versionDefined` carries the variant/version scope for the gearbox/emissions row.
 
 Therefore the source can provide an official **engine-type designation** and a Swiss gearbox-type classification at approval/variant/version scope. It does **not** provide a confirmed VAG gearbox code in the reviewed schema. Neither `engineType` nor the stamped marking is promoted to a confirmed VAG engine-code record without independent validation. The separate emissions XLSB and non-passenger-car index are being probed before pack construction.
+
+
+## Full index and emissions workbook probe completed (2026-11-05)
+
+A second Windows 2022 probe parsed all three official XLSB products (no scan cap was reached):
+
+| Product | Rows scanned | SHA-256 |
+|---|---:|---|
+| Passenger-car index | 128,490 | `0f66370e7414d0bfabf2cf1e97df3b8e190f4a66ba38d2012e2791cb5c9b2774` |
+| Other-automobile index | 83,301 | `fbf916b53c9e25f146108445ac984f38ebb04b12e4019119db1b7d90f6329768` |
+| Emissions / gearbox rows | 282,866 | `dd89f6ba2ed7df8206a23b893dcc7d8ef2c7839bf6917446513e02617217c86d` |
+
+The two vehicle indexes contain **45,215 VAG-group approval rows** in the 2026-10-29 CH snapshot:
+
+- Passenger cars: Audi 14,510; Bentley 286; Bugatti 9; Cupra 222; Lamborghini 263; Porsche 1,374; Seat 3,443; Skoda 4,101; VW 13,696 — total 37,904.
+- Other automobile groups: Lamborghini 124; Seat 12; Skoda 15; VW 7,160 — total 7,311.
+
+These are Swiss type-approval rows, not Russian/EAEU vehicle counts or individual-vehicle fitments. Make names are exact source labels; `VW` is preserved as `VW`, not silently rewritten to `Volkswagen`.
+
+The emissions workbook schema exposes `chTypeApprovalNumber`, `makeName`, `gearboxNumber`, `chGearboxType`, `chMapping` and `versionDefined`. It contains one row per gearbox/emissions variant. The official type-approval JSON exposes the same gearbox classification under `gearboxEmissionsN.chGearboxType` and its `versionDefined` scope.
+
+The six sample CUPRA JSON records all use `versionDefined="*"`; the approval index also shows `version="*"` for these variants. This is a wildcard, not an exact version. The importer must preserve it as approval/variant-wide scope and must not promote it to exact version fitment.
+
+The emissions data does not expose a VAG factory gearbox code in the reviewed schema. `chGearboxType` and `chMapping` are Swiss approval/emissions classifications and must remain separate from any future VAG gearbox-code field. The index's `engineType` remains an official engine-type designation; `chEngineCodeAsMarkedOnTheEngine` remains a separate stamped marking and can differ (e.g. DNPA vs DNP).

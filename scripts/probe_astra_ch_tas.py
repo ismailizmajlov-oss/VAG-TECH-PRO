@@ -25,10 +25,8 @@ MAX_SCAN_ROWS = 300000
 def fetch(url: str, path: Path) -> dict:
     request = urllib.request.Request(url, headers={"User-Agent": "VAG-TECH-PRO/0.1 (offline research source verification)"})
     with urllib.request.urlopen(request, timeout=240) as response:
-        status = response.status
-        final_url = response.geturl()
-        digest = hashlib.sha256()
-        size = 0
+        status, final_url = response.status, response.geturl()
+        digest, size = hashlib.sha256(), 0
         with path.open("wb") as stream:
             while True:
                 chunk = response.read(1024 * 1024)
@@ -73,16 +71,17 @@ def compact_row(header, values):
     if not header:
         return values[:20]
     wanted = {
-        "chTypeApprovalNumber", "makeName", "commercialName", "type", "variant", "version",
-        "manufacturerOfTheEngine", "engineType", "chEngineCodeAsMarkedOnTheEngine",
-        "chFuelType", "engineCapacity", "maximumNetPower",
+        "chTypeApprovalNumber", "makeName", "VehicleType", "commercialName", "type", "variant", "version",
+        "gearboxNumber", "totalnumberchGearboxType", "chGearboxType", "chMapping", "versionDefined",
+        "chFinalDriveRatio", "manufacturerOfTheEngine", "engineType", "chEngineCodeAsMarkedOnTheEngine",
+        "chFuelType", "engineCapacity", "maximumNetPower", "maximumTorque",
         "gearboxEmissions1.chGearboxType", "gearboxEmissions2.chGearboxType",
         "gearboxEmissions3.chGearboxType", "gearboxEmissions4.chGearboxType",
     }
     return {header[i]: values[i] if i < len(values) else None for i in range(len(header)) if header[i] in wanted}
 
 
-def probe_xlsb(path: Path, match_approvals=False):
+def probe_xlsb(path: Path):
     result = {"status": "not_run", "sheets": []}
     try:
         from pyxlsb import open_workbook
@@ -108,16 +107,16 @@ def probe_xlsb(path: Path, match_approvals=False):
                             sheet_result["header"] = header
                             make_index = header.index("makeName") if "makeName" in header else None
                             approval_index = header.index("chTypeApprovalNumber") if "chTypeApprovalNumber" in header else None
-                        if match_approvals:
-                            joined = {str(v).strip().upper() for v in values if v is not None}
-                            if joined.intersection(SAMPLES) and len(sheet_result["approval_match_rows"]) < 60:
-                                sheet_result["approval_match_rows"].append({"row_index": row_index, "values": compact_row(header, values)})
-                        elif make_index is not None and make_index < len(values):
+                        if make_index is not None and make_index < len(values):
                             make = str(values[make_index] or "").strip().upper()
                             if make in VAG_ALIASES:
                                 make_counts[make] += 1
                                 if len(samples_by_make[make]) < 5:
                                     samples_by_make[make].append({"row_index": row_index, "values": compact_row(header, values)})
+                        if approval_index is not None and approval_index < len(values):
+                            approval = str(values[approval_index] or "").strip().upper()
+                            if approval in SAMPLES and len(sheet_result["approval_match_rows"]) < 60:
+                                sheet_result["approval_match_rows"].append({"row_index": row_index, "values": compact_row(header, values)})
                         if row_index + 1 >= MAX_SCAN_ROWS:
                             sheet_result["scan_limit_reached"] = True
                             break
@@ -135,8 +134,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
-    out = args.output_dir
-    cache = out / "downloaded"
+    out, cache = args.output_dir, args.output_dir / "downloaded"
     cache.mkdir(parents=True, exist_ok=True)
     report = {
         "source_id": "astra-fedro-tas-type-approvals-open-data-ch",
@@ -148,23 +146,17 @@ def main():
         "schema": {},
         "sample_records": [],
     }
-
     for name, url in INDEXES.items():
         path = cache / (name + ".xlsb")
-        print(f"Downloading {name} index: {url}", flush=True)
+        print(f"Downloading {name}: {url}", flush=True)
         report["downloads"][name] = fetch(url, path)
         print(f"Downloaded {name}: {report['downloads'][name]['size_bytes']} bytes; sha256={report['downloads'][name]['sha256']}", flush=True)
-        report["workbook_probes"][name] = probe_xlsb(path, match_approvals=(name == "emissions"))
+        report["workbook_probes"][name] = probe_xlsb(path)
         print(f"Parsed {name}: {report['workbook_probes'][name]['status']}", flush=True)
-
     schema_path = cache / "govServices_TypeApproval_Schema.json"
     report["downloads"]["json_schema"] = fetch(SCHEMA_URL, schema_path)
     schema = json.loads(schema_path.read_text(encoding="utf-8-sig"))
-    report["schema"] = {
-        "top_level_keys": list(schema.keys()) if isinstance(schema, dict) else [],
-        "relevant_paths": sorted(set(collect_paths(schema)))[:1000],
-    }
-
+    report["schema"] = {"top_level_keys": list(schema.keys()) if isinstance(schema, dict) else [], "relevant_paths": sorted(set(collect_paths(schema)))[:1000]}
     for approval in SAMPLES:
         url = f"{BASE}/4100-json-Files/MV_{approval}.json"
         record_path = cache / f"MV_{approval}.json"
@@ -179,13 +171,7 @@ def main():
                 "relevant_values": collect_values(payload),
             })
         except Exception as exc:
-            report["sample_records"].append({
-                "approval": approval,
-                "url": url,
-                "status": "probe_error",
-                "error": f"{type(exc).__name__}: {exc}",
-            })
-
+            report["sample_records"].append({"approval": approval, "url": url, "status": "probe_error", "error": f"{type(exc).__name__}: {exc}"})
     successful = sum(1 for item in report["sample_records"] if "download" in item)
     report["sample_success_count"] = successful
     report["probe_status"] = "completed" if successful else "no_sample_records_downloaded"
@@ -197,6 +183,7 @@ def main():
         "sample_success_count": successful,
         "downloads": {k: {"size_bytes": v["size_bytes"], "sha256": v["sha256"]} for k,v in report["downloads"].items()},
         "workbook_statuses": {k: v["status"] for k,v in report["workbook_probes"].items()},
+        "vag_counts": {k: {s["name"]: s["vag_make_counts"] for s in v.get("sheets",[])} for k,v in report["workbook_probes"].items()},
         "report": str(report_path),
     }, ensure_ascii=False))
     if successful == 0:

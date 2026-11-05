@@ -40,6 +40,8 @@ class AstraChTasSourceRightsTests(unittest.TestCase):
         self.assertIn("shorter_than_engine_type", fields["stamped_engine_marking"])
         self.assertIn("classification_not_vag_gearbox_code", fields["swiss_gearbox_type"])
         self.assertEqual(fields["vag_gearbox_code"], "not_provided_by_reviewed_json_schema")
+        self.assertIn("wildcard", self.manifest["applicability_policy"]["variant_version"])
+        self.assertEqual(self.manifest["snapshot"]["vag_approval_counts"]["combined_total"], 45215)
         self.assertTrue(self.manifest["import_policy"]["never_cross_join_engine_and_gearbox_variants"])
 
     def test_source_products_are_official_machine_readable_astra_products(self):

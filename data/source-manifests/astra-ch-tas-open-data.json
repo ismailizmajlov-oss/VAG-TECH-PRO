@@ -36,7 +36,9 @@
         "stamped_engine_marking": "DNP",
         "ch_gearbox_type": "m7a",
         "variant": "CXDNPAX0",
-        "version": "*"
+        "version": "*",
+        "gearbox_version_defined": "*",
+        "applicability_precision": "approval_variant_wildcard_version"
       },
       {
         "approval": "1XZ734",
@@ -45,7 +47,9 @@
         "stamped_engine_marking": "DPC",
         "ch_gearbox_type": "m7a",
         "variant": "CXDPCAX0",
-        "version": "*"
+        "version": "*",
+        "gearbox_version_defined": "*",
+        "applicability_precision": "approval_variant_wildcard_version"
       },
       {
         "approval": "1XZ326",
@@ -54,7 +58,9 @@
         "stamped_engine_marking": "DNF",
         "ch_gearbox_type": "m7a",
         "variant": "CXDNFBX1",
-        "version": "*"
+        "version": "*",
+        "gearbox_version_defined": "*",
+        "applicability_precision": "approval_variant_wildcard_version"
       },
       {
         "approval": "1XZ781",
@@ -63,7 +69,9 @@
         "stamped_engine_marking": "EBJ",
         "ch_gearbox_type": "m1a",
         "variant": "BEBJCL1FX2",
-        "version": "*"
+        "version": "*",
+        "gearbox_version_defined": "*",
+        "applicability_precision": "approval_variant_wildcard_version"
       },
       {
         "approval": "1XZ516",
@@ -72,7 +80,9 @@
         "stamped_engine_marking": "ECW",
         "ch_gearbox_type": "m1a",
         "variant": "BECWBD8SX2",
-        "version": "*"
+        "version": "*",
+        "gearbox_version_defined": "*",
+        "applicability_precision": "approval_variant_wildcard_version"
       },
       {
         "approval": "1XZ386",
@@ -81,9 +91,50 @@
         "stamped_engine_marking": "ECW",
         "ch_gearbox_type": "m1a",
         "variant": "BECWAD8SX2",
-        "version": "*"
+        "version": "*",
+        "gearbox_version_defined": "*",
+        "applicability_precision": "approval_variant_wildcard_version"
       }
-    ]
+    ],
+    "other_automobile_index": {
+      "url": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4300-Datensaetze/TAS_restliche_Automobilgruppen.xlsb",
+      "size_bytes": 20096918,
+      "sha256": "fbf916b53c9e25f146108445ac984f38ebb04b12e4019119db1b7d90f6329768",
+      "probe_run_id": 42078941255
+    },
+    "emissions_index": {
+      "url": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4300-Datensaetze/TAS_Emission.xlsb",
+      "size_bytes": 19229813,
+      "sha256": "dd89f6ba2ed7df8206a23b893dcc7d8ef2c7839bf6917446513e02617217c86d",
+      "probe_run_id": 42078941255
+    },
+    "index_row_counts": {
+      "passenger_cars": 128490,
+      "other_automobiles": 83301,
+      "emissions": 282866
+    },
+    "vag_approval_counts": {
+      "passenger_cars": {
+        "AUDI": 14510,
+        "BENTLEY": 286,
+        "BUGATTI": 9,
+        "CUPRA": 222,
+        "LAMBORGHINI": 263,
+        "PORSCHE": 1374,
+        "SEAT": 3443,
+        "SKODA": 4101,
+        "VW": 13696,
+        "total": 37904
+      },
+      "other_automobiles": {
+        "LAMBORGHINI": 124,
+        "SEAT": 12,
+        "SKODA": 15,
+        "VW": 7160,
+        "total": 7311
+      },
+      "combined_total": 45215
+    }
   },
   "data_products": {
     "passenger_car_index": "https://opendata.astra.admin.ch/ivzod/4000-Typengenehmigungen_TAS/4300-Datensaetze/TAS_Personenwagen.xlsb",
@@ -119,36 +170,45 @@
     ]
   },
   "coverage": {
-    "vehicle_group": "passenger cars",
+    "vehicle_group": "passenger cars and other automobile groups",
     "approval_generation": "third_generation",
     "json_files_available": true,
     "first_and_second_generation_json_available": false,
     "holder_code_disclosed": false,
     "current_generation_pdf_prints_offered": false,
-    "monthly_updates": true
+    "monthly_updates": true,
+    "index_generation_coverage": "approval generation is not inferred from the workbook; preserve the source approval date and type/variant/version as separate fields",
+    "json_generation_note": "FEDRO describes the individual JSON set as third-generation approval records; do not extend this coverage statement to any other data product without its own evidence",
+    "index_counts": {
+      "passenger_car_rows": 128490,
+      "other_automobile_rows": 83301,
+      "total_index_rows": 211791,
+      "vag_approval_rows": 45215
+    }
   },
   "field_status": {
-    "make_name_commercial_name_type_variant_version": "confirmed_in_official_passenger_car_index_and_json_schema",
+    "make_name_commercial_name_type_variant_version": "confirmed_in_official_passenger_car_and_other_automobile_indexes_and_json_schema",
     "engine_type": "confirmed_official_engine_type_designation; do_not_automatically_equate_to_vag_engine_code",
     "stamped_engine_marking": "confirmed_field_chEngineCodeAsMarkedOnTheEngine; may_be_shorter_than_engine_type_and_must_be_preserved_separately",
-    "gearbox_variant_scope": "confirmed_field_gearboxEmissionsN.versionDefined",
+    "gearbox_variant_scope": "confirmed_field_gearboxEmissionsN.versionDefined; sample values are wildcard '*', so do not claim exact version applicability",
     "swiss_gearbox_type": "confirmed_field_gearboxEmissionsN.chGearboxType; values_seen_m7a_and_m1a; classification_not_vag_gearbox_code",
     "vag_gearbox_code": "not_provided_by_reviewed_json_schema",
     "model_year": "not_assumed",
-    "ecu_dtc_repair_material": "not_provided_by_this_source"
+    "ecu_dtc_repair_material": "not_provided_by_this_source",
+    "emissions_gearbox_rows": "confirmed_official_emissions_index_fields_chTypeApprovalNumber_makeName_gearboxNumber_chGearboxType_chMapping_versionDefined"
   },
   "applicability_policy": {
     "market_scope": "CH only",
     "approval_level": "type approval only",
-    "variant_version": "use only values explicitly present in the approval record",
-    "engine_gearbox_pair": "associate engineType only with gearboxEmissionsN rows whose versionDefined explicitly matches the approval variant/version; do not infer a VAG gearbox code or cross-join variants",
-    "model_generation_year": "do not infer from approval number or first-registration date",
+    "variant_version": "preserve raw variant and version; if version or versionDefined is '*', mark wildcard and do not claim exact version fitment",
+    "engine_gearbox_pair": "associate engineType with each explicit emissions row only by exact chTypeApprovalNumber plus versionDefined; wildcard '*' remains approval/variant-wide, not exact version; no VAG gearbox code is present in the reviewed schema",
+    "model_generation_year": "preserve dateOfApproval separately; it is not a vehicle model year or production-year range",
     "vin_fitment": false,
     "individual_vehicle_fitment": false,
     "repair_procedure_applicability": false,
     "diagnostic_execution_allowed": false,
     "production_fitment_status": "approval_level_ch_research_evidence_only",
-    "research_pack_status": "field_schema_confirmed; emissions_and_other_automobile_probe_pending",
+    "research_pack_status": "index and emissions schemas confirmed; VAG-only import implementation pending",
     "engine_type": "preserve engineType as the official approval engine-type designation; do not relabel it as a confirmed VAG engine code without independent corroboration",
     "stamped_engine_marking": "preserve chEngineCodeAsMarkedOnTheEngine separately; sample values DNP/DPC/DNF/EBJ/ECW show it can be shorter than engineType",
     "gearbox": "preserve chGearboxType as Swiss type-approval gearbox classification; it is not a VAG gearbox code"
@@ -175,6 +235,6 @@
     "preserve_original_approval_variant_version": true,
     "never_cross_join_engine_and_gearbox_variants": true
   },
-  "project_decision": "approved for a separately namespaced CH homologation research pack after full index/emissions validation; official engine type and Swiss gearbox classification only; no confirmed VAG gearbox code, no RU/EAEU applicability",
+  "project_decision": "approved for a separate CH homologation research pack using exact VAG make rows from both indexes and linked emissions rows; preserve wildcard scope; official engine-type designation and Swiss gearbox classification only; no confirmed VAG gearbox code, no RU/EAEU applicability",
   "evidence_status": "official ASTRA/FEDRO OGD newsletter, official ASTRA vehicle-data page, official open-data reuse FAQ and EMBAG Art.10 reviewed 2026-11-06"
 }
