@@ -96,5 +96,19 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
 
 
+    def test_obdex_source_register_is_generic_and_not_vag_fitment(self):
+        registry = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        source = next(item for item in registry["sources"] if item["source_id"] == "obdex-generic-cc0")
+        self.assertEqual(source["pinned_revision"], "09c8aac3d7cb3477a8d9345dfff90b82457b64d1")
+        self.assertEqual(source["rights"]["data_license_status"], "CC0-1.0 for upstream data files only")
+        self.assertEqual(source["market_scope"], ["UNKNOWN"])
+        self.assertFalse(source["applicability"]["vag_specific"])
+        self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
+        self.assertEqual(source["data_counts_as_published"]["vag_specific_dtc_rows"], 0)
+        self.assertEqual(source["data_counts_as_published"]["production_rows"], 0)
+        self.assertFalse(source["rights"]["source_reference_policy"]["external_fetch"])
+        self.assertTrue(source["rights"]["source_references_quarantined"])
+
+
 if __name__ == "__main__":
     unittest.main()
