@@ -2207,7 +2207,10 @@
         "source_file_git_blob_sha1": "9a2f7303a0d28a9e60259c3c91646484d04d4266",
         "source_file_retrieved_at_utc": "2026-11-06",
         "row_level_source_attribution": "not_found",
-        "reproducible_data_acquisition": "not_found"
+        "reproducible_data_acquisition": "not_found",
+        "retrieved_content_sha256": "1f0b6c9b096bbb36d042e622d8aa89c616fbdd0b7e5386117000afb01e917fba",
+        "retrieved_content_byte_size": 857212,
+        "hash_method": "SHA-256 of UTF-8 bytes returned by the pinned GitHub contents response; source file remains quarantined and is not packaged"
       },
       "counts": {
         "source_file_entries": 9137,
