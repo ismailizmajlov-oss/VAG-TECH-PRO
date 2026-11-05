@@ -204,26 +204,26 @@ jobs:
             Accept = "application/vnd.github+json"
             "X-GitHub-Api-Version" = "2022-11-28"
           }
-          $encodedBranch = [uri]::EscapeDataString($branch)
-          $branchUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=$encodedBranch&per_page=100"
+          $workflowPath = ".github/workflows/build-windows-offline-data-packs.yml"
+          $runsUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs?per_page=100"
           $run = $null
           $fallbackUsed = $false
           $response = $null
           try {
-            $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
+            $response = Invoke-RestMethod -Method Get -Uri $runsUri -Headers $headers -TimeoutSec 20
           } catch {
             Write-Output "Initial branch data-pack lookup failed; retrying while checking for a previously successful bundle: $($_.Exception.Message)"
           }
           if ($null -ne $response) {
             $currentRun = $response.workflow_runs |
-              Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+              Where-Object { $_.path -eq $workflowPath -and $_.head_branch -eq $branch -and $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
               Sort-Object { [datetime]$_.created_at } -Descending |
               Select-Object -First 1
             if ($null -ne $currentRun -and $currentRun.status -eq "completed" -and $currentRun.conclusion -eq "success") {
               $run = $currentRun
             } else {
               $previousBranchRun = $response.workflow_runs |
-                Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+                Where-Object { $_.path -eq $workflowPath -and $_.head_branch -eq $branch -and $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
                 Sort-Object { [datetime]$_.created_at } -Descending |
                 Select-Object -First 1
               if ($null -ne $previousBranchRun) {
@@ -236,9 +236,9 @@ jobs:
           if ($null -eq $run) {
             for ($attempt = 1; $attempt -le 60; $attempt++) {
               try {
-                $response = Invoke-RestMethod -Method Get -Uri $branchUri -Headers $headers -TimeoutSec 20
+                $response = Invoke-RestMethod -Method Get -Uri $runsUri -Headers $headers -TimeoutSec 20
                 $currentRun = $response.workflow_runs |
-                  Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+                  Where-Object { $_.path -eq $workflowPath -and $_.head_branch -eq $branch -and $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
                   Sort-Object { [datetime]$_.created_at } -Descending |
                   Select-Object -First 1
                 if ($null -ne $currentRun -and $currentRun.status -eq "completed" -and $currentRun.conclusion -eq "success") {
@@ -246,7 +246,7 @@ jobs:
                   break
                 }
                 $previousBranchRun = $response.workflow_runs |
-                  Where-Object { $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+                  Where-Object { $_.path -eq $workflowPath -and $_.head_branch -eq $branch -and $_.head_sha -ne $expectedHeadSha -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
                   Sort-Object { [datetime]$_.created_at } -Descending |
                   Select-Object -First 1
                 if ($null -ne $previousBranchRun) {
@@ -261,10 +261,9 @@ jobs:
             }
           }
           if ($null -eq $run) {
-            $mainUri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-windows-offline-data-packs.yml/runs?branch=main&per_page=100"
-            $mainResponse = Invoke-RestMethod -Method Get -Uri $mainUri -Headers $headers -TimeoutSec 20
+            $mainResponse = Invoke-RestMethod -Method Get -Uri $runsUri -Headers $headers -TimeoutSec 20
             $run = $mainResponse.workflow_runs |
-              Where-Object { $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+              Where-Object { $_.path -eq $workflowPath -and $_.head_branch -eq "main" -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
               Sort-Object { [datetime]$_.created_at } -Descending |
               Select-Object -First 1
             $fallbackUsed = $true
