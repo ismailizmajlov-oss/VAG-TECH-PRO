@@ -205,10 +205,43 @@ def validate_lock(lock: dict[str, Any]) -> None:
         raise ValueError("RDW CC0 pack must not acquire a share-alike restriction")
     if lock.get("applicability_policy", {}).get("ru_eaeu_applicability") is not False:
         raise ValueError("RDW pack must not claim RU/EAEU applicability")
+    gate = lock.get("live_metadata_gate", {})
+    expected_gate = {
+        "expected_provenance": "official",
+        "expected_owner_name_contains": "RDW",
+        "expected_asset_type": "dataset",
+        "expected_publication_stage": "published",
+    }
+    if any(gate.get(k) != v for k, v in expected_gate.items()):
+        raise ValueError("RDW live metadata publisher/ownership gate is missing or weakened")
     required = {"m9d7-ebf2","4by9-ammk","7rjk-eycs","byxc-wwua","x5v3-sewk"}
     actual = {str(x.get("id")) for x in lock.get("datasets", []) if x.get("required", True)}
     if actual != required:
         raise ValueError("RDW required dataset set differs from the pinned lock")
+
+def validate_resource_metadata(dataset_id: str, metadata: dict[str, Any], gate: dict[str, Any]) -> dict[str, str]:
+    if str(metadata.get("id")) != dataset_id:
+        raise ValueError(f"RDW metadata id mismatch for {dataset_id}")
+    provenance = str(metadata.get("provenance") or "").strip().lower()
+    if provenance != gate.get("expected_provenance"):
+        raise ValueError(f"RDW resource {dataset_id} is not published with official provenance")
+    asset_type = str(metadata.get("assetType") or "").strip().lower()
+    if asset_type != gate.get("expected_asset_type"):
+        raise ValueError(f"RDW resource {dataset_id} is not a published dataset asset")
+    publication_stage = str(metadata.get("publicationStage") or "").strip().lower()
+    if publication_stage != gate.get("expected_publication_stage"):
+        raise ValueError(f"RDW resource {dataset_id} is not in the published state")
+    owner = metadata.get("owner") or {}
+    owner_name = str(owner.get("displayName") or owner.get("display_name") or "").strip()
+    expected_owner = str(gate.get("expected_owner_name_contains") or "").strip().lower()
+    if not owner_name or not expected_owner or expected_owner not in owner_name.lower():
+        raise ValueError(f"RDW resource {dataset_id} is not owned by the expected RDW publisher")
+    return {
+        "publisher_provenance": provenance,
+        "owner_name": owner_name,
+        "asset_type": asset_type,
+        "publication_stage": publication_stage,
+    }
 
 def normalize_vehicle_rows(rows: list[dict[str, Any]], source_revision: str) -> list[dict[str, Any]]:
     out = {}
@@ -429,6 +462,10 @@ def build_database(output_dir: Path, lock_path: Path, payloads: dict[str, list[d
                 "data_license": LICENSE,
                 "license_url": LICENSE_URL,
                 "rights_status": "approved_by_published_license",
+                "publisher_provenance": meta["publisher_provenance"],
+                "owner_name": meta["owner_name"],
+                "asset_type": meta["asset_type"],
+                "publication_stage": meta["publication_stage"],
                 "metadata_revision": revision,
                 "metadata_sha256": metadata_sha,
                 "query_sha256": query_sha,
@@ -602,8 +639,11 @@ def verify_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
         if metadata_path.stat().st_size != item.get("byte_size"):
             raise ValueError("RDW metadata snapshot byte-size mismatch")
         metadata_json = json.loads(metadata_path.read_text(encoding="utf-8"))
-        if str(metadata_json.get("id")) != item.get("dataset_id"):
-            raise ValueError("RDW metadata snapshot dataset identity mismatch")
+        gate = lock.get("live_metadata_gate", {})
+        verified_metadata = validate_resource_metadata(item["dataset_id"], metadata_json, gate)
+        provenance_entry = next((x for x in manifest.get("dataset_provenance", []) if x.get("dataset_id") == item["dataset_id"]), None)
+        if not provenance_entry or any(provenance_entry.get(k) != v for k, v in verified_metadata.items()):
+            raise ValueError("RDW publisher/ownership metadata differs from the manifest")
     metadata_bundle = sha256_bytes("".join(x["sha256"] for x in sorted(metadata_files,key=lambda x:x["dataset_id"])).encode("ascii"))
     if metadata_bundle != manifest.get("metadata_bundle_sha256"):
         raise ValueError("RDW metadata bundle SHA-256 mismatch")
