@@ -19,7 +19,7 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertIsNone(source["source_snapshot_sha256"])
         self.assertEqual(source["license"]["automated_extraction"], "prohibited_beyond_ordinary_user_scenario_without_separate_written_permission")
-        self.assertEqual(source["license"]["redistribution"], "prohibited_under_published_user_agreement")
+        self.assertEqual(source["license"]["redistribution"], "prohibited_under_published_user_agreement_clause_3")
 
     def test_otts_baza_is_not_cleared_for_bulk_offline_product_reuse(self):
         source = self.sources["otts-baza-ru"]
