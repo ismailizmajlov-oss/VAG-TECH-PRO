@@ -29,6 +29,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         contract = source["publication_contract"]
         self.assertTrue(contract["official_site_search_required"])
         self.assertEqual(contract["effective_from"], "2025-10-01")
+        self.assertEqual(contract["official_site_search_scope"], "electronically_issued_records_only")
         self.assertTrue(contract["field_numbers_are_not_interchangeable"])
         self.assertEqual(contract["internal_fgis_attribute_namespace"], "annex_1_internal_database_fields")
         self.assertEqual(contract["public_site_search_namespace"], "annex_2_publication_fields")
@@ -57,6 +58,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(any(any(term in name.lower() for term in technical_terms) for name in names))
         scope = contract["public_annex2_technical_data_scope"]
         self.assertEqual(scope["scope"], "document_identity_and_registry_status_metadata_only")
+        self.assertEqual(scope["public_search_scope"], "electronically_issued_records_only")
         self.assertEqual(scope["engine_type_or_code"], "not_present_in_public_annex2_fields")
         self.assertEqual(scope["gearbox_type_or_code"], "not_present_in_public_annex2_fields")
         self.assertEqual(scope["engine_gearbox_pair"], "cannot_be_established_from_public_annex2_fields")
