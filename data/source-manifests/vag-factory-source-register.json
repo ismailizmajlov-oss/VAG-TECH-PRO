@@ -1552,7 +1552,25 @@
         "Per-record market evidence is presence-only and must not be converted into exact technical applicability.",
         "Keep the database separate and preserve the CC BY 4.0 VehiclesDB credit plus all unconditional upstream source notices."
       ],
-      "evidence_status": "pinned_v2026.10.3_manifest_LICENSE_and_ATTRIBUTION_reviewed_2026-11-05; audit records SQLite integrity and source-file hashes"
+      "evidence_status": "pinned_v2026.10.3_manifest_LICENSE_ATTRIBUTION_and_all_four_upstream_file_hashes_and_sizes_reviewed_2026-11-05; audit records SQLite integrity and source-file hashes",
+      "upstream_source_files": {
+        "catalog.sqlite": {
+          "byte_size": 9781248,
+          "sha256": "5889bb4b3ca35cf933d83f030a04120ccf4c86e25a5a050c5ff218068720bd62"
+        },
+        "manifest.json": {
+          "byte_size": 11249,
+          "sha256": "859d1173d674728b0616a17af2e1d67e3481328d1064c148f0a52af9c882d8b0"
+        },
+        "ATTRIBUTION.md": {
+          "byte_size": 9615,
+          "sha256": "bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21"
+        },
+        "LICENSE": {
+          "byte_size": 1319,
+          "sha256": "48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78"
+        }
+      }
     },
     {
       "source_id": "elpts-national-otts-register-public-query",

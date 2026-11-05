@@ -39,6 +39,7 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
         self.assertEqual(pinned["ATTRIBUTION.md"]["sha256"], source["attribution_file_sha256"])
         self.assertEqual(pinned["LICENSE"]["sha256"], source["license_file_sha256"])
         self.assertTrue(all(item["byte_size"] > 0 for item in pinned.values()))
+        self.assertEqual(source["upstream_source_files"], pinned)
 
     def test_foreign_market_scope_is_not_misrepresented_as_ru_eaeu(self):
         source = SOURCES["vehiclesdb-vag-identity-cc-by-4.0"]
