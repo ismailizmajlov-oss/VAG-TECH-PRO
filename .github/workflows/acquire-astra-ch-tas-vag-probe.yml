@@ -96,10 +96,12 @@ jobs:
           $run = Invoke-RestMethod -Method Get -Uri $base -Headers $headers
           $jobsResponse = Invoke-RestMethod -Method Get -Uri "$base/jobs?per_page=100" -Headers $headers
           $artifactsResponse = Invoke-RestMethod -Method Get -Uri "$base/artifacts?per_page=100" -Headers $headers
-          $sourceManifestText = git show "$($env:UPSTREAM_SHA):data/source-manifests/astra-ch-tas-open-data.json"
-          if ($LASTEXITCODE -ne 0) { throw "Could not read the source manifest from the exact build commit." }
+          $sourceManifestUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/contents/data/source-manifests/astra-ch-tas-open-data.json?ref=$env:UPSTREAM_SHA"
+          $sourceManifestApi = Invoke-RestMethod -Method Get -Uri $sourceManifestUri -Headers $headers
+          if ($sourceManifestApi.encoding -ne "base64") { throw "Unexpected source-manifest API encoding." }
           $sourceManifestPath = Join-Path $env:RUNNER_TEMP "astra-source-manifest.json"
-          $sourceManifestText | Set-Content -LiteralPath $sourceManifestPath -Encoding UTF8
+          $sourceManifestBytes = [Convert]::FromBase64String(($sourceManifestApi.content -replace "\\s", ""))
+          [System.IO.File]::WriteAllBytes($sourceManifestPath, $sourceManifestBytes)
           $sourceManifest = Get-Content -LiteralPath $sourceManifestPath -Raw | ConvertFrom-Json
           $sourceManifestHash = (Get-FileHash -LiteralPath $sourceManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
           $jobRows = @($jobsResponse.jobs | ForEach-Object {
