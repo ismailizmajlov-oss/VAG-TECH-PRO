@@ -1884,7 +1884,8 @@
       "project_decision": "restricted_no_automated_collection_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_covering_bulk_reuse_display_caching_and_redistribution",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "homepage_and_user_agreement_reviewed_2026-11-05; agreement_last_updated_2026-08-26"
+      "evidence_status": "homepage_and_user_agreement_reviewed_2026-11-05; agreement_last_updated_2026-08-26",
+      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
     },
     {
       "source_id": "openvag-riz4d-dtc-candidate",
@@ -1959,7 +1960,8 @@
       "project_decision": "quarantined_no_import_no_display_no_cache_no_redistribution_until_dataset_origin_row_level_provenance_and_explicit_data_reuse_rights_are_verified; require maintainer evidence for each upstream source and a reproducible snapshot",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "README_db_README_schema_LICENSE_gitignore_and_main_branch_commit_history_reviewed_2026-11-05"
+      "evidence_status": "README_db_README_schema_LICENSE_gitignore_and_main_branch_commit_history_reviewed_2026-11-05",
+      "rights_review_document": "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
     }
   ],
   "minimum_fitment_evidence_fields": [
