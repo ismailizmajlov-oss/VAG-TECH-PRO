@@ -9,6 +9,7 @@ on:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
+      - .github/workflows/acquire-astra-ch-tas-vag-probe.yml
       - data/source-manifests/astra-ch-tas-open-data.json
       - docs/research/ASTRA_CH_TAS_OPEN_DATA_REVIEW_2026-11-06.md
       - scripts/build_astra_ch_tas_pack.py
@@ -30,6 +31,7 @@ on:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
+      - .github/workflows/acquire-astra-ch-tas-vag-probe.yml
       - data/source-manifests/astra-ch-tas-open-data.json
       - docs/research/ASTRA_CH_TAS_OPEN_DATA_REVIEW_2026-11-06.md
       - scripts/build_astra_ch_tas_pack.py
