@@ -1,0 +1,1 @@
+Run Windows x64 validation for the current FGIS importer provenance-host guard and control-character sanitization regression tests. No registry records are included or imported.
