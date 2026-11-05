@@ -1,58 +1,59 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-05T19:16:40.0283080Z",
+  "recorded_at_utc": "2026-11-05T19:30:56.6810366Z",
   "workflow": "Acquire and validate official ASTRA CH TAS VAG research pack",
-  "run_id": 42090269144,
-  "run_number": 11,
+  "run_id": 42091150760,
+  "run_number": 20,
   "run_attempt": 1,
   "run_status_at_record": "in_progress",
   "run_conclusion_at_record": null,
   "build_job_result": "success",
-  "head_sha": "283e9ab863e7adbba26bbfcf04151fc1e9ecfe7b",
+  "head_sha": "3d432ec2e52ed29d705ea3f458c1bc2acef62ea7",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42090269144",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42091150760",
   "jobs": [
     {
-      "id": 127466157300,
+      "id": 127473391851,
       "name": "probe-and-build",
       "status": "completed",
       "conclusion": "success",
-      "runner_name": "GitHub Actions 1000001292",
-      "started_at": "2026-11-05T19:03:57Z",
-      "completed_at": "2026-11-05T19:16:27Z"
+      "runner_name": "GitHub Actions 1000001312",
+      "started_at": "2026-11-05T19:16:51Z",
+      "completed_at": "2026-11-05T19:30:42Z"
     },
     {
-      "id": 127473212828,
+      "id": 127481121049,
       "name": "Record pack build, rights, scope and artifact evidence",
       "status": "in_progress",
       "conclusion": null,
-      "runner_name": "GitHub Actions 1000001310",
-      "started_at": "2026-11-05T19:16:30Z",
+      "runner_name": "GitHub Actions 1000001324",
+      "started_at": "2026-11-05T19:30:45Z",
       "completed_at": null
     }
   ],
   "artifacts": [
     {
-      "id": 13446610029,
+      "id": 13447116349,
       "name": "astra-ch-tas-vag-schema-probe",
       "size_in_bytes": 32967,
-      "digest": "sha256:e9647fa2be78dabd05b68f65e632db7330611a5689c526f42ae29a139dede3d3",
+      "digest": "sha256:5beddf70656a5edb294d4fd0b17632ad3e92532cabf42d32413e432d5d508eee",
       "expired": false,
-      "created_at": "2026-11-05T19:16:24Z",
-      "expires_at": "2026-12-05T19:16:23Z"
+      "created_at": "2026-11-05T19:30:38Z",
+      "expires_at": "2026-12-05T19:30:37Z"
     },
     {
-      "id": 13444454818,
+      "id": 13446731961,
       "name": "astra-ch-tas-vag-open-data-pack",
-      "size_in_bytes": 10161705,
-      "digest": "sha256:f6315b3e9d0431b39d56a9c042e5766ad4e1539c392fdfd2ab5e3f490f0eceb1",
+      "size_in_bytes": 10161939,
+      "digest": "sha256:14357302d6a548dace0df1a8170709fd1b23092947bd28d71851be4470b78c85",
       "expired": false,
-      "created_at": "2026-11-05T19:16:23Z",
-      "expires_at": "2027-02-03T19:03:55Z"
+      "created_at": "2026-11-05T19:30:36Z",
+      "expires_at": "2027-02-03T19:09:20Z"
     }
   ],
   "source_id": "astra-fedro-tas-type-approvals-open-data-ch",
   "source_revision": "2026-10-29",
+  "source_manifest_sha256": "ed24973210858fa63e48783df2efd4464b5943e7e57d62ec53660ac0ba7893d0",
   "rights_status": "approved_by_published_ogd_terms",
   "attribution_required": true,
   "market_scope": [
