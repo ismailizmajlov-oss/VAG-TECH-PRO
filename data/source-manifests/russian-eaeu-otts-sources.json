@@ -79,7 +79,8 @@
         "The OTTS attribute list does not provide a dedicated gearbox-code field.",
         "SBKTS Appendix 1 field 68 is gearbox make/type, but SBKTS is an individual-vehicle safety certificate, not an OTTS type-approval record.",
         "Do not use SBKTS personal data or package certificate PDFs without separate rights and privacy review.",
-        "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace."
+        "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
+        "The 28 public Annex 2 search fields contain approval identifiers/status and vehicle identity descriptors (make, commercial name, type, base vehicle/chassis, modifications, category and environmental class), but no engine or gearbox technical designation/code, ECU, DTC, repair or wiring fields. The Annex 1 PDF reference is not a grant to cache or redistribute the PDF. Never infer an engine/gearbox pair from Annex 2 metadata."
       ],
       "ot_ts_attribute_map": [
         {
@@ -350,6 +351,18 @@
           ],
           "primary_official_order_copy_retrieved": false,
           "review_note": "Order 2038 public-site search obligation was rechecked against two secondary republications. Direct public search endpoint and primary signed copy remain unresolved; this bounded search result is not proof that no official route exists."
+        },
+        "public_annex2_technical_data_scope": {
+          "public_annex2_field_count": 28,
+          "scope": "document_identity_and_registry_status_metadata_only",
+          "engine_type_or_code": "not_present_in_public_annex2_fields",
+          "gearbox_type_or_code": "not_present_in_public_annex2_fields",
+          "engine_gearbox_pair": "cannot_be_established_from_public_annex2_fields",
+          "ecu_identifiers": "not_present_in_public_annex2_fields",
+          "dtc_and_test_plans": "not_present_in_public_annex2_fields",
+          "repair_procedures_wiring_pinouts_torque_adaptations_service_intervals": "not_present_in_public_annex2_fields",
+          "annex_1_pdf": "field_19_is_a_document_reference_only; pdf_binary_and_reuse_rights_are_separate",
+          "annex_1_internal_schema": "distinct_internal_fgis_namespace; not interchangeable_with_public_annex2_and_not_established_as_public_searchable"
         }
       },
       "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
