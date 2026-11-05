@@ -88,6 +88,30 @@ def _source_snapshot(source_db: Path, source_manifest: Path, attribution: Path, 
     }
 
 
+def _validate_source_file_pins(lock: dict[str, Any], snapshot: dict[str, dict[str, Any]]) -> None:
+    expected = lock.get("expected_source_files")
+    required_names = {"catalog.sqlite", "manifest.json", "ATTRIBUTION.md", "LICENSE"}
+    if not isinstance(expected, dict) or set(expected) != required_names or set(snapshot) != required_names:
+        raise ValueError("VehiclesDB expected source-file pins must cover exactly the four upstream files")
+    for name in sorted(required_names):
+        pin = expected.get(name)
+        if not isinstance(pin, dict):
+            raise ValueError(f"VehiclesDB source-file pin is malformed: {name}")
+        expected_size = pin.get("byte_size")
+        expected_hash = pin.get("sha256")
+        if (type(expected_size) is not int or expected_size < 0
+                or not isinstance(expected_hash, str) or len(expected_hash) != 64
+                or any(char not in "0123456789abcdef" for char in expected_hash.lower())):
+            raise ValueError(f"VehiclesDB source-file pin is invalid: {name}")
+        actual = snapshot[name]
+        if actual["byte_size"] != expected_size or actual["sha256"] != expected_hash.lower():
+            raise ValueError(
+                f"VehiclesDB pinned source file mismatch: {name} "
+                f"(expected sha256={expected_hash.lower()} bytes={expected_size}; "
+                f"got sha256={actual['sha256']} bytes={actual['byte_size']})"
+            )
+
+
 def _validate_inputs(lock: dict[str, Any], upstream: dict[str, Any], attribution_text: str, license_text: str) -> tuple[dict[str, str], dict[str, str], list[str], list[str]]:
     if lock.get("schema_version") != 1 or lock.get("dataset_id") != "vehiclesdb-vag-identity-cc-by-4.0":
         raise ValueError("VehiclesDB lock identity/schema mismatch")
@@ -232,6 +256,7 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
     approved, excluded, scoped_makes, scoped_kinds = _validate_inputs(lock, upstream, attribution_text, license_text)
     not_in_release = lock["not_in_release_sources"]
     snapshot = _source_snapshot(source_db_path, upstream_manifest_path, attribution_path, license_path)
+    _validate_source_file_pins(lock, snapshot)
     pinned_counts = expected_counts(lock)
 
     if output_dir.exists() and any(output_dir.iterdir()):
@@ -533,8 +558,13 @@ def verify_pack(pack_dir: Path, lock_path: Path, *, strict_counts: bool = True) 
         "ATTRIBUTION.md": attribution_path,
         "LICENSE": license_path,
     }
+    source_snapshot_files = {
+        name: {"path": path, "byte_size": path.stat().st_size, "sha256": sha256_file(path)}
+        for name, path in path_map.items()
+    }
+    _validate_source_file_pins(lock, source_snapshot_files)
     for name, path in path_map.items():
-        if not path.is_file() or sha256_file(path) != source_snapshot.get(name):
+        if not path.is_file() or source_snapshot_files[name]["sha256"] != source_snapshot.get(name):
             raise ValueError(f"VehiclesDB source snapshot hash mismatch: {name}")
 
     db = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)

@@ -2,6 +2,7 @@
 """Synthetic safety tests for the VehiclesDB VAG identity-candidate pack."""
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
 import tempfile
@@ -65,6 +66,12 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
         "You are free to share and adapt the material for any purpose, even commercially.",
         encoding="utf-8",
     )
+    expected_source_files = {
+        "catalog.sqlite": {"byte_size": source_db.stat().st_size, "sha256": hashlib.sha256(source_db.read_bytes()).hexdigest()},
+        "manifest.json": {"byte_size": upstream_manifest.stat().st_size, "sha256": hashlib.sha256(upstream_manifest.read_bytes()).hexdigest()},
+        "ATTRIBUTION.md": {"byte_size": attribution.stat().st_size, "sha256": hashlib.sha256(attribution.read_bytes()).hexdigest()},
+        "LICENSE": {"byte_size": license_file.stat().st_size, "sha256": hashlib.sha256(license_file.read_bytes()).hexdigest()},
+    }
     lock = root / "lock.json"
     lock.write_text(json.dumps({
         "schema_version": 1,
@@ -80,6 +87,7 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
         "approved_source_license_map": {"nl_rdw": "CC0-1.0", "us_fueleconomy": "US-PD"},
         "excluded_source_reasons": {"th_dlt": "Thailand is outside the product market scope."},
         "not_in_release_sources": {"ro_drpciv": "Not present in pinned release manifest."},
+        "expected_source_files": expected_source_files,
         "expected_counts": {"sources": 2, "source_files": 4, "models": 2, "market_evidence": 2},
     }, indent=2), encoding="utf-8")
     return lock, source_db, upstream_manifest, attribution, license_file
@@ -106,6 +114,36 @@ class VehiclesDBIdentityPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT count(*) FROM model_candidates WHERE fitment_status<>'not_established' OR year_start IS NOT NULL OR year_end IS NOT NULL").fetchone()[0], 0)
             finally:
                 db.close()
+
+    def test_upstream_source_file_hash_drift_is_rejected_before_pack_build(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lock, source_db, upstream, attribution, license_file = fixture(root)
+            with source_db.open("ab") as stream:
+                stream.write(b"unexpected upstream mutation")
+            with self.assertRaisesRegex(ValueError, "pinned source file mismatch: catalog.sqlite"):
+                build_pack(lock, source_db, upstream, attribution, license_file, root / "pack")
+
+    def test_pack_verifier_rejects_source_snapshot_drift_against_upstream_pin(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lock, source_db, upstream, attribution, license_file = fixture(root)
+            output = root / "pack"
+            build_pack(lock, source_db, upstream, attribution, license_file, output)
+            with (output / "source-snapshot" / "catalog.sqlite").open("ab") as stream:
+                stream.write(b"post-build tamper")
+            with self.assertRaisesRegex(ValueError, "pinned source file mismatch: catalog.sqlite"):
+                verify_pack(output, lock)
+
+    def test_missing_source_file_pins_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lock, source_db, upstream, attribution, license_file = fixture(root)
+            lock_data = json.loads(lock.read_text(encoding="utf-8"))
+            lock_data.pop("expected_source_files")
+            lock.write_text(json.dumps(lock_data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "expected source-file pins"):
+                build_pack(lock, source_db, upstream, attribution, license_file, root / "pack")
 
     def test_not_in_release_source_cannot_appear_in_pinned_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

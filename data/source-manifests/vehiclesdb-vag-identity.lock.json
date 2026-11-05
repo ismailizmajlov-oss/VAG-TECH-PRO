@@ -79,5 +79,23 @@
   },
   "not_in_release_sources": {
     "ro_drpciv": "Not present in the pinned VehiclesDB v2026.10.3 manifest; record as absent, not as an excluded source in this release."
+  },
+  "expected_source_files": {
+    "catalog.sqlite": {
+      "byte_size": 9781248,
+      "sha256": "5889bb4b3ca35cf933d83f030a04120ccf4c86e25a5a050c5ff218068720bd62"
+    },
+    "manifest.json": {
+      "byte_size": 11249,
+      "sha256": "859d1173d674728b0616a17af2e1d67e3481328d1064c148f0a52af9c882d8b0"
+    },
+    "ATTRIBUTION.md": {
+      "byte_size": 9615,
+      "sha256": "bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21"
+    },
+    "LICENSE": {
+      "byte_size": 1319,
+      "sha256": "48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78"
+    }
   }
 }

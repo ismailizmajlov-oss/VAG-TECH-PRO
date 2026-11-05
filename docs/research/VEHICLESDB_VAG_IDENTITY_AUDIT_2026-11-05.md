@@ -1,6 +1,6 @@
 # VehiclesDB VAG identity pack — independent audit
 
-Audit date: 2026-11-04 UTC  
+Audit date: 2026-11-05 UTC  
 Scope: rights, provenance, SQLite integrity and market/applicability boundaries.
 
 ## Pinned pack and licence
@@ -17,6 +17,15 @@ Scope: rights, provenance, SQLite integrity and market/applicability boundaries.
 - Upstream manifest SHA-256: `859d1173d674728b0616a17af2e1d67e3481328d1064c148f0a52af9c882d8b0`
 - Attribution file SHA-256: `bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21`
 - Licence file SHA-256: `48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78`
+
+The source lock now pins both SHA-256 and exact byte size for all four upstream files. The acquisition workflow fails closed if a tag is moved, an upstream file changes in place, a CDN response is altered, or a file is truncated—even when the upstream manifest version and row counts still match.
+
+| Upstream file | Bytes | SHA-256 |
+|---|---:|---|
+| `dist/catalog.sqlite` | 9,781,248 | `5889bb4b3ca35cf933d83f030a04120ccf4c86e25a5a050c5ff218068720bd62` |
+| `manifest.json` | 11,249 | `859d1173d674728b0616a17af2e1d67e3481328d1064c148f0a52af9c882d8b0` |
+| `ATTRIBUTION.md` | 9,615 | `bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21` |
+| `LICENSE` | 1,319 | `48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78` |
 
 ## Contents
 

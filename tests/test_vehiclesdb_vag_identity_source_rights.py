@@ -29,6 +29,16 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
         self.assertTrue(source["upstream_manifest_sha256"])
         self.assertTrue(source["attribution_file_sha256"])
         self.assertTrue(source["license_file_sha256"])
+        pinned = LOCK["expected_source_files"]
+        self.assertEqual(
+            set(pinned),
+            {"catalog.sqlite", "manifest.json", "ATTRIBUTION.md", "LICENSE"},
+        )
+        self.assertEqual(pinned["catalog.sqlite"]["sha256"], source["upstream_catalog_sha256"])
+        self.assertEqual(pinned["manifest.json"]["sha256"], source["upstream_manifest_sha256"])
+        self.assertEqual(pinned["ATTRIBUTION.md"]["sha256"], source["attribution_file_sha256"])
+        self.assertEqual(pinned["LICENSE"]["sha256"], source["license_file_sha256"])
+        self.assertTrue(all(item["byte_size"] > 0 for item in pinned.values()))
 
     def test_foreign_market_scope_is_not_misrepresented_as_ru_eaeu(self):
         source = SOURCES["vehiclesdb-vag-identity-cc-by-4.0"]
