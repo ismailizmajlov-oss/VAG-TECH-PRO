@@ -40,6 +40,7 @@ The importer verifies the supplied license/permission file's SHA-256 against the
 ## Data semantics and safety
 
 - The input field namespace must be `annex_2_publication_fields`; field numbers are checked against the 28-field public Annex 2 map.
+- The reviewed public-search obligation is limited to electronically issued records; field 20 (`electronically_issued_flag`) must be present and true for every staged row.
 - Public Annex 2 is document/vehicle identity metadata only. It contains no engine or gearbox technical designation/code, engine/gearbox pairing, ECU, DTC, repair, wiring, pinout, torque, adaptation or service-interval fields. A field-19 Annex 1 PDF reference is not a PDF binary or a reuse grant.
 - Annex 1 internal FGIS field numbers are rejected if presented as Annex 2 field numbers.
 - Only Volkswagen, Audi, Škoda, SEAT and CUPRA make names are accepted.
