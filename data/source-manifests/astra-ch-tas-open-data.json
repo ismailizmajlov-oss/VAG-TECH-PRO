@@ -134,6 +134,18 @@
         "total": 7311
       },
       "combined_total": 45215
+    },
+    "vag_emissions_gearbox_rows": {
+      "AUDI": 16759,
+      "BENTLEY": 286,
+      "BUGATTI": 9,
+      "CUPRA": 222,
+      "LAMBORGHINI": 439,
+      "PORSCHE": 1611,
+      "SEAT": 4006,
+      "SKODA": 4746,
+      "VW": 25336,
+      "total": 53414
     }
   },
   "data_products": {
