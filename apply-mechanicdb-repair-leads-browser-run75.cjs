@@ -185,7 +185,7 @@ function patchRoute() {
   let route = readText(routePath);
   if (!route.includes('dataset === "mechanicdb-fixes-summary"')) {
     const anchor = '    else if (dataset === "wikidata-generations") rows = localResearch.searchWikidataGenerationCandidates(query, limit);';
-    const addition = anchor + '\n    else if (dataset === "mechanicdb-fixes-summary") {\\n      const summary = localResearch.getMechanicDbRepairLeadsSummary();\\n      return Response.json({ ok: true, summary }, { headers });\\n    }\\n    else if (dataset === "mechanicdb-fixes") rows = localResearch.searchMechanicDbRepairLeads(query, limit);';
+    const addition = [anchor, '    else if (dataset === "mechanicdb-fixes-summary") {', '      const summary = localResearch.getMechanicDbRepairLeadsSummary();', '      return Response.json({ ok: true, summary }, { headers });', '    }', '    else if (dataset === "mechanicdb-fixes") rows = localResearch.searchMechanicDbRepairLeads(query, limit);'].join("\n");
     route = exact(route, anchor, addition, "MechanicDB repair-lead API route");
     writeText(routePath, route);
   }
@@ -218,7 +218,8 @@ function patchUi() {
   const stateAnchor = '  const [wikidataGenerationSummary, setWikidataGenerationSummary] = useState<WikidataGenerationSummary | null>(null);';
   if (!ui.includes("mechanicDbRepairLeadsSummary")) {
     if (!ui.includes(stateAnchor)) fail("Wikidata generation summary state missing before MechanicDB repair-lead UI patch");
-    ui = exact(ui, stateAnchor, stateAnchor + '\n  const [mechanicDbRepairLeadsSummary, setMechanicDbRepairLeadsSummary] = useState<MechanicDbRepairLeadsSummary | null>(null);', "MechanicDB repair-lead summary state");
+    const stateLine = '  const [mechanicDbRepairLeadsSummary, setMechanicDbRepairLeadsSummary] = useState<MechanicDbRepairLeadsSummary | null>(null);';
+    ui = exact(ui, stateAnchor, stateAnchor + '\n' + stateLine, "MechanicDB repair-lead summary state");
     const effect = [
       "",
       "  useEffect(() => {",
@@ -231,7 +232,7 @@ function patchUi() {
       "    return () => { active = false; };",
       "  }, [dataset]);"
     ].join("\n");
-    const insertAt = ui.indexOf(stateAnchor) + stateAnchor.length;
+    const insertAt = ui.indexOf(stateLine) + stateLine.length;
     ui = ui.slice(0, insertAt) + effect + ui.slice(insertAt);
   }
 
