@@ -1999,6 +1999,81 @@
       "source_snapshot_sha256": null,
       "evidence_status": "README_db_README_schema_LICENSE_gitignore_and_main_branch_commit_history_reviewed_2026-11-05",
       "rights_review_document": "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+    },
+    {
+      "source_id": "autotools-brightcoding-public-api-candidate",
+      "publisher": "AutoTools / BrightCoding",
+      "url": "https://autotools.brightcoding.dev/",
+      "api_docs_url": "https://autotools.brightcoding.dev/docs",
+      "terms_url": "https://autotools.brightcoding.dev/terms",
+      "about_url": "https://autotools.brightcoding.dev/about",
+      "torque_reference_url": "https://autotools.brightcoding.dev/tools/torque-specs",
+      "source_kind": "third_party_public_automotive_api_torque_obd_vehicle_reference",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "applicability_precision": "generic_workshop_guidance_candidate_no_exact_vehicle_fitment",
+      "verification_status": "rights_and_row_provenance_not_cleared",
+      "display_status": "quarantined_not_displayed",
+      "source_data_evidence": {
+        "reviewed_at": "2026-11-06",
+        "api_docs_claim": "free_for_personal_and_commercial_use_with_attribution",
+        "api_docs_cache_statement": "cache_results_on_your_side",
+        "terms_restriction": "do_not_copy_substantial_parts_of_content_for_commercial_reuse",
+        "torque_page_claim": "common_workshop_figures_from_technical_documentation",
+        "about_page_claim": "figures_are_estimates_and_must_be_verified_against_official_manual",
+        "per_row_primary_source": "not_supplied_in_reviewed_public_documentation",
+        "per_row_revision": "not_supplied_in_reviewed_public_documentation",
+        "exact_vag_vehicle_engine_gearbox_fitment": "not_demonstrated",
+        "api_records_downloaded": false,
+        "source_snapshot_sha256": null
+      },
+      "counts": {
+        "imported_rows": 0,
+        "verified_vag_torque_rows": 0,
+        "exact_vehicle_fitment_rows": 0,
+        "approved_critical_torque_values": 0
+      },
+      "evidence_scope": [
+        "generic_torque_reference_candidate",
+        "generic_obd_reference_candidate",
+        "vehicle_information_api_candidate"
+      ],
+      "applicability": {
+        "manufacturer": "UNKNOWN",
+        "vag_specific": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "ecu_mapping": false,
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "generic_workshop_guidance_candidate_no_exact_vehicle_fitment",
+        "critical_torque_use_allowed": false
+      },
+      "rights": {
+        "api_docs_claimed_commercial_use": "with_attribution",
+        "api_docs_claimed_client_cache": "allowed_by_documentation_statement",
+        "published_terms_commercial_copying": "prohibited_for_substantial_parts",
+        "terms_and_api_docs_consistency": "conflicting_or_ambiguous",
+        "dataset_license": "not_established",
+        "commercial_use_for_offline_redistributed_pack": "not_established",
+        "display_in_third_party_offline_app": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "offline_cache_for_redistribution": "not_established",
+        "redistribution_allowed": "not_established",
+        "attribution_required": "claimed_by_api_documentation",
+        "permission_status": "clarification_required"
+      },
+      "limitations": [
+        "API documentation says free for personal and commercial use with attribution and says clients may cache results; published Terms of Use separately prohibit copying substantial parts of the content for commercial reuse.",
+        "No explicit dataset licence or unambiguous permission for bulk extraction, offline packaging or redistribution with VAG TECH PRO was identified.",
+        "Torque values are described as common workshop figures from technical documentation and as indicative; no per-row primary document, revision, vehicle generation, engine, gearbox or market evidence was identified.",
+        "The torque page requires verification against the vehicle's official service manual; these values cannot be used as critical repair specifications.",
+        "The API documentation identifies NHTSA, Transport Canada and EPA for some vehicle data; those scopes are US/Canada-specific and do not establish Russian/EAEU applicability.",
+        "Generic OBD endpoints do not establish VAG-specific DTC definitions or exact ECU applicability."
+      ],
+      "project_decision": "quarantine_no_import_no_offline_pack; API docs claim commercial use with attribution and client-side caching, but published Terms prohibit copying substantial parts for commercial reuse; no explicit dataset licence or bulk/offline redistribution grant; torque records lack row-level primary provenance, revision and exact VAG fitment; require written permission and row-level source evidence before reconsideration",
+      "evidence_status": "API docs, published Terms, About page and torque page reviewed 2026-11-06; no API calls, records downloaded or data imported"
     }
   ],
   "minimum_fitment_evidence_fields": [
