@@ -4,7 +4,7 @@
 
 **Rights:** cleared for a separate CC0-1.0, read-only research pack, subject to a per-resource metadata check at ingest.
 
-**Data status:** not yet ingested. No RDW row is currently promoted into the vehicle/engine/gearbox core tables by this review.
+**Data status:** a filtered VAG-only snapshot was acquired and integrity-verified by Windows CI run `41935787910` on 2026-11-04. It remains a separate read-only candidate pack; no RDW row is promoted into the confirmed vehicle/engine/gearbox core tables.
 
 **Product scope:** supplementary EU type-approval and Netherlands registration evidence only. This is **not** Russian or EAEU OTTS evidence and must never be presented as such.
 
@@ -88,6 +88,25 @@ A public RDW response contains a Volkswagen Golf record with:
 
 The registration identifier is deliberately omitted. This confirms that the registry exposes the approval/variant/execution crosswalk needed to query the TGK tables; it does **not** by itself confirm an engine or transmission pairing.
 
+## Verified snapshot — Windows CI run 41935787910
+
+- Pack revision: `rdw-f22fe72ed46ca4f240c6`
+- Fetch time: `2026-11-04T23:50:00.973615+00:00`
+- Filtered vehicle variants: **99,413**
+- Engine approval candidates: **101,395**
+- Transmission approval candidates: **99,482**
+- Approval/execution revision candidates: **94,806**
+- Manufacturer designation candidates: **115,876**
+- Unique source-row engine/transmission pair candidates: **97,905**
+- Ambiguous or incomplete pair keys: **1,832**
+- Raw snapshot bundle SHA-256: `8dfe246668ef2996113d217b476175a0e4bad0e927b8b9aaeb9b3c5a51118f77`
+- SQLite SHA-256: `efd2db4f7c7795404882e5a2fe47526535acf99ce9db0449669d7c11de352995`
+- Metadata bundle SHA-256: `e00ad3908a54bcd0eb34f160be3faf1765803c0f6b352d8a22ae55ef6a0afb6f`
+- Source-lock SHA-256: `b02f2bd71be8ba36da973cc689e8b1347101dd4bd0ce10185244e206d5420c3c`
+- Uploaded artifact SHA-256: `8441e229cdc17c46c5ca116e6ed7ef0db647c5045b82e35dc3cc1047df7996c6`
+
+The build verified SQLite integrity and foreign keys, all raw snapshot hashes and row counts, per-resource metadata/query/snapshot provenance, privacy exclusions, CC0 reuse permissions, and the candidate-only namespace. The pair count is a source-row association only; it is not a confirmed VAG engine/gearbox pairing. A subsequent desktop integration build must repeat the live metadata and hash checks rather than rely on this prior artifact.
+
 ## Explicit exclusions
 
 This pack contributes no:
@@ -99,4 +118,4 @@ This pack contributes no:
 - repair procedures, wiring diagrams, pinouts, torque values, adaptations or maintenance schedules;
 - OEM parts applicability or VIN-specific build data.
 
-**Project decision:** allow a separate, read-only CC0 candidate pack after the importer and all integrity/ambiguity tests pass. Keep its market and code namespaces visible in the UI. Never use it as a substitute for Russian/EAEU OTTS or licensed VAG factory service data.
+**Project decision:** allow a separate, read-only CC0 candidate pack after every live ingest passes metadata, hash, SQLite, privacy and ambiguity tests. Keep its market and code namespaces visible in the UI. Never use it as a substitute for Russian/EAEU OTTS or licensed VAG factory service data.
