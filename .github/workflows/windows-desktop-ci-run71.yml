@@ -1,4 +1,4 @@
-name: VAG TECH PRO Windows x64 desktop validation run71
+name: VAG TECH PRO Windows x64 desktop validation run75
 # Run52 fix: bind same-origin validation to the actual loopback Host header, not Next.js reconstructed request.url.
 
 on:
@@ -24,6 +24,11 @@ on:
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
+      - "data/source-manifests/mechanicdb-vag-dtc-sample-repair-leads.json"
+      - "scripts/integrate-mechanicdb-vag-repair-leads-pack.cjs"
+      - "scripts/verify_mechanicdb_vag_dtc_pack_v2.py"
+      - "tests/test_mechanicdb_vag_repair_leads_pack_policy.py"
+      - "docs/research/MECHANICDB_VAG_DTC_SAMPLE_REVIEW_2026-11-05.md"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/generic-repair-guidance.sql"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
@@ -55,6 +60,11 @@ on:
       - "scripts/sync-desktop-research-manifest.cjs"
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
+      - "data/source-manifests/mechanicdb-vag-dtc-sample-repair-leads.json"
+      - "scripts/integrate-mechanicdb-vag-repair-leads-pack.cjs"
+      - "scripts/verify_mechanicdb_vag_dtc_pack_v2.py"
+      - "tests/test_mechanicdb_vag_repair_leads_pack_policy.py"
+      - "docs/research/MECHANICDB_VAG_DTC_SAMPLE_REVIEW_2026-11-05.md"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/generic-repair-guidance.sql"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
@@ -297,6 +307,33 @@ jobs:
           path: ${{ runner.temp }}/vag-tech-pro-mechanicdb
           run-id: 41622526550
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download pinned MechanicDB repair-lead pack (run72)
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: mechanicdb-audi-vw-dtc-candidates-repair-leads-odbl-research
+          path: \${{ runner.temp }}/vag-tech-pro-mechanicdb-repair-leads
+          run-id: 41956857684
+          github-token: \${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify pinned MechanicDB repair-lead artifact and published rights
+        shell: pwsh
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-mechanicdb-repair-leads"
+          if (-not (Test-Path (Join-Path $packDir "manifest.json"))) { throw "Pinned MechanicDB repair-lead artifact did not extract to the expected root." }
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $api = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/41956857684/artifacts?per_page=100"
+          $response = Invoke-RestMethod -Headers $headers -Uri $api -TimeoutSec 30
+          $artifact = $response.artifacts | Where-Object { $_.id -eq 13383726909 -and $_.name -eq "mechanicdb-audi-vw-dtc-candidates-repair-leads-odbl-research" } | Select-Object -First 1
+          if (-not $artifact -or $artifact.expired -ne $false -or $artifact.digest -ne "sha256:aaabbb30cc3c616e8136ad31d6371073e42d8ae1c5461b67e80f921a8724d490") { throw "Pinned MechanicDB artifact ID/digest/retention does not match the approved run72 evidence." }
+          python scripts/verify_mechanicdb_vag_dtc_pack_v2.py --root "$packDir"
+          if ($LASTEXITCODE -ne 0) { throw "MechanicDB v2 pack verification failed." }
+          python tests/test_mechanicdb_vag_repair_leads_pack_policy.py
+          if ($LASTEXITCODE -ne 0) { throw "MechanicDB published-license/source-policy test failed." }
+          "MechanicDB run72 artifact id=13383726909 digest=sha256:aaabbb30cc3c616e8136ad31d6371073e42d8ae1c5461b67e80f921a8724d490; ODbL-1.0; 2 make-labelled DTC candidates; 6 community repair-lead titles; 6 part-name candidates; 0 generic DTC rows; 0 OEM procedures; execution disabled." | Add-Content -LiteralPath "$env:GITHUB_WORKSPACE/source-verification.txt"
 
       - name: Resolve latest successful AutoDiag2 policy-gated pack
         id: autodiag2-run
@@ -771,6 +808,30 @@ jobs:
           "wikidata_generation_pack=CC0-1.0; members=9; model_member_links=10; source_bindings=14; market=UNKNOWN; generation=unverified; exact_fitment=none; engine_gearbox_ECU_DTC_repair=none; database_sha256=$($evidence.database_sha256); snapshot_sha256=$($evidence.source_snapshot_sha256); query_sha256=$($evidence.source_query_sha256); manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           Get-Content -LiteralPath $evidencePath -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
+      - name: Integrate pinned ODbL MechanicDB repair-lead research pack (run75)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-mechanicdb-repair-leads"
+          $sourceManifestTarget = "desktop-source/data/source-manifests/mechanicdb-vag-dtc-sample-repair-leads.json"
+          New-Item -ItemType Directory -Path (Split-Path $sourceManifestTarget) -Force | Out-Null
+          Copy-Item -LiteralPath "data/source-manifests/mechanicdb-vag-dtc-sample-repair-leads.json" -Destination $sourceManifestTarget -Force
+          Copy-Item -LiteralPath "scripts/integrate-mechanicdb-vag-repair-leads-pack.cjs" -Destination "desktop-source/scripts/integrate-mechanicdb-vag-repair-leads-pack.cjs" -Force
+          node --check desktop-source/scripts/integrate-mechanicdb-vag-repair-leads-pack.cjs
+          Push-Location desktop-source
+          try {
+            node scripts/integrate-mechanicdb-vag-repair-leads-pack.cjs --input "$packDir" --source-manifest "data/source-manifests/mechanicdb-vag-dtc-sample-repair-leads.json" --artifact-sha256 "aaabbb30cc3c616e8136ad31d6371073e42d8ae1c5461b67e80f921a8724d490" --run-id 41956857684 --artifact-id 13383726909 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/mechanicdb-repair-leads-import-run75.log"
+            if ($LASTEXITCODE -ne 0) { throw "Transactional MechanicDB repair-lead import failed." }
+          } finally { Pop-Location }
+          node --check apply-mechanicdb-repair-leads-browser-run75.cjs
+          node apply-mechanicdb-repair-leads-browser-run75.cjs desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/mechanicdb-repair-leads-browser-run75.log"
+          if ($LASTEXITCODE -ne 0) { throw "MechanicDB repair-lead browser integration failed." }
+          $evidencePath = "desktop-source/data/research/mechanicdb-repair-leads-browser-verification.json"
+          $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
+          if ($evidence.status -ne "integrated_verified_community_reference_titles_only" -or $evidence.counts.repairLeads -ne 6 -or $evidence.searches.audi_p3000 -ne 3 -or $evidence.searches.volkswagen_p1128 -ne 3 -or $evidence.generic_namespace_leakage -ne 0 -or $evidence.detailed_steps_exposed -ne $false -or $evidence.part_names_exposed -ne $false) { throw "MechanicDB repair-lead browser evidence failed." }
+          "mechanicdb_repair_leads=6_titles_only; part_name_candidates=6_hidden; generic_DTC_leakage=0; OEM_procedures=0; exact_fitment=none; execution=disabled; database_sha256=$($evidence.database_sha256); source_snapshot_sha256=$($evidence.source_snapshot_sha256); artifact_sha256=$($evidence.artifact_sha256)" | Add-Content -LiteralPath "$env:GITHUB_WORKSPACE/source-verification.txt"
+          Get-Content -LiteralPath $evidencePath -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
       - name: Print local-core API test source around failing assertion
         shell: pwsh
         run: |
@@ -820,21 +881,21 @@ jobs:
           npm run typecheck 2>&1 | Tee-Object -FilePath typecheck.log
           if ($LASTEXITCODE -ne 0) { throw "TypeScript check failed" }
 
-      - name: Set first desktop package version 0.2.3
+      - name: Set first desktop package version 0.2.5
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.3'; l.version='0.2.3'; if (l.packages && l.packages['']) l.packages[''].version='0.2.3'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.5'; l.version='0.2.5'; if (l.packages && l.packages['']) l.packages[''].version='0.2.5'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
 
       - name: Build first Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.3.log
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.5.log
           if ($LASTEXITCODE -ne 0) { throw "Initial Windows NSIS build failed" }
-          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.3-x64.exe"
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.5-x64.exe"
           if (-not (Test-Path $installer)) { throw "Initial NSIS installer not found: $installer" }
           foreach ($module in @("next", "react", "react-dom")) {
             $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
@@ -845,21 +906,23 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata offline resource verification failed" }
           node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==9 || g.counts.modelMemberLinks!==10 || g.counts.sourceBindings!==14 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata generation candidate verification failed" }
+          node -e 'const l=require("./lib/local-research-db.cjs"); const s=l.getMechanicDbRepairLeadsSummary(); const a=l.searchMechanicDbRepairLeads("P3000",10); const v=l.searchMechanicDbRepairLeads("P1128",10); if(s.counts.repairLeads!==6||s.counts.partNameCandidates!==6||a.length!==3||v.length!==3||s.marketScope!=="UNKNOWN"||s.diagnosticExecutionAllowed!==false||l.searchGenericDtcs("P3000",10).length!==0||l.searchGenericDtcs("P1128",10).length!==0) throw new Error("Packaged MechanicDB repair-lead title-only check failed"); console.log(JSON.stringify({repairLeads:s.counts.repairLeads,partsHidden:s.counts.partNameCandidates,market:s.marketScope,execution:s.diagnosticExecutionAllowed}));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged MechanicDB repair-lead candidate-only verification failed" }
           node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged generic MechanicDB offline resource verification failed" }
 
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
-          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") -Force
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.5-x64.exe") -Force
 
       - name: Build upgrade Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.4'; l.version='0.2.4'; if (l.packages && l.packages['']) l.packages[''].version='0.2.4'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
-          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.4.log
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const l=JSON.parse(fs.readFileSync('package-lock.json','utf8')); p.version='0.2.6'; l.version='0.2.6'; if (l.packages && l.packages['']) l.packages[''].version='0.2.6'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); fs.writeFileSync('package-lock.json', JSON.stringify(l,null,2));"
+          npm run build:desktop 2>&1 | Tee-Object -FilePath build-0.2.6.log
           if ($LASTEXITCODE -ne 0) { throw "Upgrade Windows NSIS build failed" }
-          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.4-x64.exe"
+          $installer = Join-Path (Get-Location) "release/VAG-TECH-PRO-Setup-0.2.6-x64.exe"
           if (-not (Test-Path $installer)) { throw "Upgrade NSIS installer not found: $installer" }
           foreach ($module in @("next", "react", "react-dom")) {
             $runtimeModule = Join-Path (Get-Location) ("release/win-unpacked/resources/app-runtime/node_modules/" + $module + "/package.json")
@@ -870,19 +933,21 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade Wikidata offline resource verification failed" }
           node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==9 || g.counts.modelMemberLinks!==10 || g.counts.sourceBindings!==14 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata generation candidate verification failed" }
+          node -e 'const l=require("./lib/local-research-db.cjs"); const s=l.getMechanicDbRepairLeadsSummary(); const a=l.searchMechanicDbRepairLeads("P3000",10); const v=l.searchMechanicDbRepairLeads("P1128",10); if(s.counts.repairLeads!==6||s.counts.partNameCandidates!==6||a.length!==3||v.length!==3||s.marketScope!=="UNKNOWN"||s.diagnosticExecutionAllowed!==false||l.searchGenericDtcs("P3000",10).length!==0||l.searchGenericDtcs("P1128",10).length!==0) throw new Error("Packaged MechanicDB repair-lead title-only check failed"); console.log(JSON.stringify({repairLeads:s.counts.repairLeads,partsHidden:s.counts.partNameCandidates,market:s.marketScope,execution:s.diagnosticExecutionAllowed}));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged MechanicDB repair-lead candidate-only verification failed" }
           node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged upgrade generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade generic MechanicDB offline resource verification failed" }
 
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
-          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.4-x64.exe") -Force
+          Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.6-x64.exe") -Force
 
       - name: Run clean install, offline, backup/restore, upgrade and uninstall lifecycle
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File "desktop-source/scripts/windows-installer-lifecycle.ps1" `
-            -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") `
-            -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.4-x64.exe") 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-lifecycle.log"
+            -InstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.5-x64.exe") `
+            -UpgradeInstallerPath (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.6-x64.exe") 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/windows-lifecycle.log"
           if ($LASTEXITCODE -ne 0) { throw "Windows installer lifecycle test failed" }
 
       - name: Write build metadata
@@ -917,16 +982,23 @@ jobs:
           $generationMemberCount = if ($generationReport) { $generationReport.counts.member_entities } else { $null }
           $generationLinkCount = if ($generationReport) { $generationReport.counts.model_member_links } else { $null }
           $generationBindingCount = if ($generationReport) { $generationReport.counts.source_bindings } else { $null }
+          $repairLeadEvidence = Get-Content -LiteralPath "desktop-source/data/research/mechanicdb-repair-leads-browser-verification.json" -Raw | ConvertFrom-Json
+          $repairLeadCount = [int]$repairLeadEvidence.counts.repairLeads
+          $repairPartCount = [int]$repairLeadEvidence.counts.partNameCandidates
+          $repairLeadDbHash = [string]$repairLeadEvidence.database_sha256
+          $repairLeadSnapshotHash = [string]$repairLeadEvidence.source_snapshot_sha256
+          $repairLeadArtifactHash = [string]$repairLeadEvidence.artifact_sha256
+          $repairLeadManifestHash = [string](Get-FileHash -Algorithm SHA256 -LiteralPath "desktop-source/data/research/mechanicdb-vag-dtc-sample-repair-leads-odbl/manifest.json").Hash.ToLowerInvariant()
 
           foreach ($file in @(
-            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe"),
-            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.4-x64.exe")
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.5-x64.exe"),
+            (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.6-x64.exe")
           )) {
             if (Test-Path $file) {
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run70-wikidata-generation-candidates'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; mechanicdb_repair_lead_rows = $repairLeadCount; mechanicdb_part_name_candidates = $repairPartCount; mechanicdb_repair_lead_database_sha256 = $repairLeadDbHash; mechanicdb_repair_lead_snapshot_sha256 = $repairLeadSnapshotHash; mechanicdb_repair_lead_manifest_sha256 = $repairLeadManifestHash; mechanicdb_repair_lead_artifact_sha256 = $repairLeadArtifactHash; desktop_version = '0.2.6'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run70-wikidata-generation-candidates+run75-mechanicdb-repair-leads-title-only'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Stage Windows 2022 lifecycle verification payload
         if: always()
@@ -936,7 +1008,7 @@ jobs:
           $stage = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging"
           if (Test-Path $stage) { Remove-Item -LiteralPath $stage -Recurse -Force }
           New-Item -ItemType Directory -Path $stage -Force | Out-Null
-          foreach ($name in @("VAG-TECH-PRO-Setup-0.2.3-x64.exe", "VAG-TECH-PRO-Setup-0.2.4-x64.exe")) {
+          foreach ($name in @("VAG-TECH-PRO-Setup-0.2.5-x64.exe", "VAG-TECH-PRO-Setup-0.2.6-x64.exe")) {
             $source = Join-Path $env:RUNNER_TEMP $name
             if (Test-Path $source) { Copy-Item -LiteralPath $source -Destination (Join-Path $stage $name) -Force }
           }
@@ -956,7 +1028,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: vag-tech-pro-windows-x64-run70
+          name: vag-tech-pro-windows-x64-run75
           path: |
             desktop-source/package-lock.json
             desktop-source/npm-lock.log
@@ -982,6 +1054,11 @@ jobs:
             desktop-source/tests/generic-repair-guidance-ui-contract.test.cjs
             desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/integration-verification.json
             desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/desktop-integration-verification.json
+            desktop-source/data/research/mechanicdb-vag-dtc-sample-repair-leads-odbl/**
+            desktop-source/data/research/mechanicdb-repair-leads-browser-verification.json
+            desktop-source/data/source-manifests/mechanicdb-vag-dtc-sample-repair-leads.json
+            mechanicdb-repair-leads-import-run75.log
+            mechanicdb-repair-leads-browser-run75.log
             desktop-source/vehicle-config-match-guard-verification.json
             desktop-source/lint.log
             desktop-source/typecheck.log
@@ -990,7 +1067,7 @@ jobs:
             desktop-source/lib/local-research-db.cjs
             desktop-dbrow-types-fix.log
             desktop-source/build-0.2.2.log
-            desktop-source/build-0.2.3.log
+            desktop-source/build-0.2.5.log
             desktop-source/runtime-preparation.json
             research-hash-targeted-test.log
             windows-lifecycle.log
@@ -1010,8 +1087,8 @@ jobs:
       - name: Download installers and offline lifecycle contract
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: vag-tech-pro-windows-x64-run70
-          path: ${{ runner.temp }}/vag-tech-pro-run70-artifact
+          name: vag-tech-pro-windows-x64-run75
+          path: ${{ runner.temp }}/vag-tech-pro-run75-artifact
           run-id: ${{ github.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -1024,10 +1101,10 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run70-artifact/windows-lifecycle-staging"
+          $artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run75-artifact/windows-lifecycle-staging"
           $metadata = Get-Content -LiteralPath (Join-Path $artifactRoot "build-metadata.json") -Raw | ConvertFrom-Json
-          $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.3-x64.exe"
-          $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
+          $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.5-x64.exe"
+          $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.6-x64.exe"
           foreach ($file in @($installer, $upgradeInstaller)) {
             if (-not (Test-Path $file)) { throw "Windows installer artifact is missing: $file" }
             $name = [System.IO.Path]::GetFileName($file)
@@ -1035,11 +1112,11 @@ jobs:
             $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
             if ($null -eq $expected -or $expected.sha256 -ne $actual) { throw "Windows installer artifact hash mismatch: $name" }
           }
-          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 9 -or $metadata.wikidata_generation_model_member_links -ne 10 -or $metadata.wikidata_generation_source_bindings -ne 14) { throw "Build metadata does not describe the pinned generation candidate pack." }
+          if ($metadata.desktop_version -ne "0.2.6" -or $metadata.wikidata_generation_member_entities -ne 9 -or $metadata.wikidata_generation_model_member_links -ne 10 -or $metadata.wikidata_generation_source_bindings -ne 14 -or $metadata.mechanicdb_repair_lead_rows -ne 6 -or $metadata.mechanicdb_part_name_candidates -ne 6 -or $metadata.mechanicdb_repair_lead_database_sha256 -ne "b0708f055c485018b69263904f60f66124f90f758da9bc597f2145d46ffe5c7d" -or $metadata.mechanicdb_repair_lead_snapshot_sha256 -ne "3e1357acba252f4aa1f49b94438540b1448fb23663f5a6be5cdfd4e74f2f0eb2" -or $metadata.mechanicdb_repair_lead_artifact_sha256 -ne "aaabbb30cc3c616e8136ad31d6371073e42d8ae1c5461b67e80f921a8724d490") { throw "Build metadata does not describe the pinned generation and MechanicDB repair-lead candidate packs." }
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
-          foreach ($required in @("data/research/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
+          foreach ($required in @("data/research/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "data/research/mechanicdb-vag-dtc-sample-repair-leads-odbl/manifest.json", "data/research/mechanicdb-vag-dtc-sample-repair-leads-odbl/PROJECT-SOURCE-MANIFEST.json", "data/research/mechanicdb-vag-dtc-sample-repair-leads-odbl/mechanicdb-vag-dtc-candidates.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
             if (-not (Test-Path (Join-Path $desktopRoot $required))) { throw "Offline lifecycle evidence file is missing: $required" }
           }
           Set-Location $desktopRoot
@@ -1050,10 +1127,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: vag-tech-pro-windows-2022-lifecycle-run70
+          name: vag-tech-pro-windows-2022-lifecycle-run75
           path: |
-            ${{ runner.temp }}/vag-tech-pro-run70-artifact/windows-lifecycle-staging/build-metadata.json
-            ${{ runner.temp }}/vag-tech-pro-run70-artifact/windows-lifecycle-staging/source-verification.txt
+            ${{ runner.temp }}/vag-tech-pro-run75-artifact/windows-lifecycle-staging/build-metadata.json
+            ${{ runner.temp }}/vag-tech-pro-run75-artifact/windows-lifecycle-staging/source-verification.txt
             windows-2022-lifecycle.log
           if-no-files-found: warn
           retention-days: 30
