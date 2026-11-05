@@ -2300,6 +2300,92 @@
       "source_snapshot_sha256": null,
       "project_decision": "quarantine_no_import_no_display_no_cache_no_redistribution; the repository has no data licence or row-level provenance, and its Volkswagen file mixes numeric legacy/component identifiers with SAE-shaped codes and multi-description rows.",
       "evidence_status": "README, absent LICENSE path, Volkswagen.json, main branch head and file blob SHA reviewed 2026-11-06; see docs/research/AUTOMOTIVE_9_VW_DTC_SOURCE_REVIEW_2026-11-06.md"
+    },
+    {
+      "source_id": "vw-gis-diagnostics-data-oem-odx",
+      "publisher": "Volkswagen Group Info Services AG / Volkswagen Group brand R&D departments",
+      "url": "https://www.drivesomethinggreater.com/solutions/all-solutions/Diagnostics-Data",
+      "terms_url": "https://www.drivesomethinggreater.com/service/terms-of-use",
+      "api_documentation_url": "https://www.drivesomethinggreater.com/developer-hub/api-specifications/diagnostics-data-api-downloads",
+      "imprint_url": "https://www.drivesomethinggreater.com/service/Imprint",
+      "source_kind": "official_vag_oem_dtc_odx_subscription",
+      "market_scope": [
+        "EEA",
+        "UK",
+        "CH"
+      ],
+      "market_scope_precision": "Published Europe package covers 70 platforms for the EU market; public page also mentions a worldwide package of 75 platforms but does not enumerate country coverage.",
+      "vehicle_scope": {
+        "brands": [
+          "Volkswagen Passenger Cars",
+          "Volkswagen Commercial Vehicles",
+          "Audi",
+          "Škoda",
+          "SEAT",
+          "CUPRA",
+          "Bentley",
+          "Lamborghini"
+        ],
+        "platform_count_europe": 70,
+        "platform_count_worldwide": 75,
+        "exact_model_year_ecu_applicability": "available only within the licensed ODX package; not inspected"
+      },
+      "fields_published": [
+        "DTC code",
+        "plain-text error description",
+        "reference values",
+        "ODX file per ECU",
+        "potential ECU fault codes"
+      ],
+      "revision_policy": {
+        "update_cadence": "twice yearly, May and November",
+        "latest_release_date": "not accessed; API-key protected"
+      },
+      "access": {
+        "data_hub_operator": "Volkswagen Group Info Services AG",
+        "customer_type": "business customers",
+        "account_provider": "Volkswagen AG ONE Business ID",
+        "data_distribution_agreement_required": true,
+        "subscription_pricing": "set forth in the individual DDA; not publicly stated",
+        "api_key_required_for_zip_download": true,
+        "api_automation": "public page says data currently delivered by Data Hub download; automated API under development",
+        "customer_headquarters_eligibility": [
+          "EEA",
+          "CH",
+          "UK"
+        ],
+        "sfd_agreement_required": true,
+        "separate_vw_ag_encryption_key_agreement_required": true
+      },
+      "rights": {
+        "data_license_status": "contractual_restricted_no_public_license",
+        "authorized_customer_own_product_use": "allowed only under applicable DDA and other agreements",
+        "offline_cache_allowed": "not_established_without_DDA_and_written_permission",
+        "bulk_reuse_allowed": "not_established_without_DDA_and_written_permission",
+        "redistribution_allowed": "not_established; specific express written permission required by Data Hub terms",
+        "further_use_or_remarketing": "not_permitted unless expressly authorized",
+        "download_reproduce_transmit_sell_or_distribute_without_specific_written_permission": false,
+        "permission_status": "not_obtained",
+        "data_distribution_agreement_signed": false,
+        "one_business_id_created": false,
+        "api_key_obtained": false,
+        "sfd_agreement_signed": false,
+        "vw_ag_encryption_key_agreement_signed": false
+      },
+      "applicability": {
+        "official_vag_oem_source": true,
+        "exact_vehicle_fitment": "not inspected; depends on licensed ODX content and its platform/ECU identifiers",
+        "ecu_fitment": "not inspected",
+        "russian_eaeu_coverage": "not established by the published Europe package",
+        "repair_procedure_or_wiring_coverage": "not claimed by this DTC-focused product page",
+        "diagnostic_execution_allowed": false
+      },
+      "verification_status": "official_source_identified_contractual_access_not_obtained",
+      "display_status": "not_available_no_display",
+      "cache_status": "not_available_no_offline_cache",
+      "data_ingested": false,
+      "project_decision": "do_not_create_account_or_subscribe_or_download; obtain owner-approved written DDA and explicit permission for offline caching, integration and redistribution before any import; public terms restrict downloading/reproducing/transmitting/selling/distributing without specific express written permission.",
+      "evidence_status": "Official product page, Data Hub terms, API download page and imprint reviewed 2026-11-06."
     }
   ],
   "minimum_fitment_evidence_fields": [
