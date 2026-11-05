@@ -6,7 +6,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 
-const SOURCE_ID = 'rosstandart-fgis-kts';
+const SOURCE_ID = 'rosstandart-fgis-registers-kts';
 const OFFICIAL_SOURCE_DOMAINS = Object.freeze(['rst.gov.ru', 'gost.ru', 'interstandart.ru']);
 const EXPECTED_NAMESPACE = 'annex_2_publication_fields';
 const EXPECTED_PRECISION = 'type_approval_document_metadata_only';
@@ -105,6 +105,43 @@ function readJson(file, maxBytes, label) {
   try { return { value: JSON.parse(bytes.toString('utf8')), bytes }; }
   catch { fail(`${label} is not valid JSON`); }
 }
+function loadSourceContext() {
+  const registerPath = path.resolve(__dirname, '../data/source-manifests/vag-factory-source-register.json');
+  const russianManifestPath = path.resolve(__dirname, '../data/source-manifests/russian-eaeu-otts-sources.json');
+  const register = readJson(registerPath, MAX_MANIFEST_BYTES, 'central VAG source register').value;
+  const russianManifest = readJson(russianManifestPath, MAX_MANIFEST_BYTES, 'Russian/EAEU source manifest').value;
+  const sourceRecord = Array.isArray(register.sources) ? register.sources.find((item) => item.source_id === SOURCE_ID) : null;
+  const russianSource = Array.isArray(russianManifest.sources) ? russianManifest.sources.find((item) => item.source_id === SOURCE_ID) : null;
+  if (!sourceRecord) fail('canonical FGIS source is missing from the central VAG source register');
+  if (!russianSource) fail('canonical FGIS source is missing from the Russian/EAEU source manifest');
+  return { sourceRecord, russianSource };
+}
+function validateSourceIdentity(manifest, manifestSourceUrl, sourceContext = loadSourceContext()) {
+  const { sourceRecord, russianSource } = sourceContext;
+  if (sourceRecord.source_id !== SOURCE_ID || russianSource.source_id !== SOURCE_ID) fail('FGIS source identity differs across authoritative manifests');
+  const centralUrl = validOfficialSourceUrl(sourceRecord.url, 'central source register URL', true);
+  const russianUrl = validOfficialSourceUrl(russianSource.source_url, 'Russian/EAEU source manifest URL', true);
+  if (manifestSourceUrl !== centralUrl || manifestSourceUrl !== russianUrl) fail('package source_url does not match both authoritative FGIS source manifests');
+  const expectedDomains = OFFICIAL_SOURCE_DOMAINS.slice().sort();
+  const policyMatches = (policy) => policy && policy.scheme === 'https' && policy.allow_subdomains === true &&
+    policy.reject_url_credentials === true && policy.reject_non_default_ports === true &&
+    Array.isArray(policy.allowed_domains) && JSON.stringify(policy.allowed_domains.slice().sort()) === JSON.stringify(expectedDomains);
+  if (!policyMatches(sourceRecord.source_url_host_policy) || !policyMatches(russianSource.source_url_host_policy)) {
+    fail('official FGIS source URL host policy differs across the authoritative manifests and importer');
+  }
+  if (!Array.isArray(sourceRecord.market_scope) || !sourceRecord.market_scope.includes('RU') || !sourceRecord.market_scope.includes('EAEU')) {
+    fail('central FGIS source register does not declare RU and EAEU market scope');
+  }
+  if (!Array.isArray(russianSource.market_scope) || !russianSource.market_scope.includes('RU') || !russianSource.market_scope.includes('EAEU_TR_TS_018_2011')) {
+    fail('Russian/EAEU FGIS source manifest does not declare RU and TR TS 018/2011 scope');
+  }
+  if (russianSource.legal_basis?.current_revision !== manifest.source_revision ||
+      russianSource.publication_contract?.legal_basis_revision !== manifest.source_revision) {
+    fail('package source revision does not match the reviewed Russian/EAEU source manifest');
+  }
+  return { sourceId: SOURCE_ID, sourceUrl: manifestSourceUrl, sourceRevision: manifest.source_revision };
+}
+
 function validateRights(manifest, licenseBytes, permissionBytes) {
   const rights = manifest.rights;
   if (!rights || typeof rights !== 'object' || Array.isArray(rights)) fail('rights object is required');
@@ -226,7 +263,8 @@ function validatePackage(input, manifest, licenseBytes, permissionBytes) {
   if (!Array.isArray(manifest.market_scope) || !manifest.market_scope.includes('RU') || !manifest.market_scope.includes('EAEU_TR_TS_018_2011')) {
     fail('market_scope must include RU and EAEU_TR_TS_018_2011');
   }
-  validOfficialSourceUrl(manifest.source_url, 'source_url', true);
+  const manifestSourceUrl = validOfficialSourceUrl(manifest.source_url, 'source_url', true);
+  validateSourceIdentity(manifest, manifestSourceUrl);
   if (!/^\d{4}-\d{2}-\d{2}T/.test(String(manifest.retrieved_at || '')) || !Number.isFinite(Date.parse(manifest.retrieved_at))) fail('retrieved_at must be a valid ISO timestamp');
   if (!Array.isArray(input.records) || input.records.length < 1 || input.records.length > MAX_RECORDS) fail(`records must contain 1..${MAX_RECORDS} rows`);
   const seenKeys = new Set();
@@ -519,4 +557,4 @@ if (require.main === module) {
   try { run(parseArgs(process.argv.slice(2))); }
   catch (error) { console.error(`Authorized FGIS OTTS import blocked: ${error.message}`); process.exitCode = 1; }
 }
-module.exports = { run, parseArgs, validateRights, validatePackage, normalizeRecord, FIELD_NUMBERS, EXPECTED_NAMESPACE, EXPECTED_PRECISION };
+module.exports = { run, parseArgs, validateRights, validatePackage, validateSourceIdentity, loadSourceContext, normalizeRecord, FIELD_NUMBERS, EXPECTED_NAMESPACE, EXPECTED_PRECISION };
