@@ -21,6 +21,14 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertTrue(rights["attribution_recommended"])
         self.assertFalse(rights["share_alike_required"])
 
+    def test_live_metadata_gate_requires_official_rdW_owner_and_published_dataset(self):
+        gate=self.lock["live_metadata_gate"]
+        self.assertEqual(gate["expected_provenance"],"official")
+        self.assertEqual(gate["expected_owner_name_contains"],"RDW")
+        self.assertEqual(gate["expected_asset_type"],"dataset")
+        self.assertEqual(gate["expected_publication_stage"],"published")
+        self.assertTrue(gate["fail_closed_on_missing_or_conflicting_metadata"])
+
     def test_market_and_applicability_are_candidate_only_and_not_eaeu(self):
         self.assertEqual(set(self.source["market_scope"]),{"EU_TYPE_APPROVAL","NL_REGISTRATION_OBSERVATION"})
         self.assertFalse(self.source["ru_eaeu_market_evidence_present"])
