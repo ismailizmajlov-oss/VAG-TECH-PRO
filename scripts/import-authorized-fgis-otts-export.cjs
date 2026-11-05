@@ -209,7 +209,7 @@ function normalizeRecord(record, index, manifest) {
 }
 function validatePackage(input, manifest, licenseBytes, permissionBytes) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) fail('export root must be an object');
-  if (input.schema_version !== 1 || input.package_type !== 'rosstandart_fgis_annex2_export') fail('unsupported export package type or schema version');
+  if (input.schema_version !== 2 || input.package_type !== 'rosstandart_fgis_annex2_export') fail('unsupported export package type or schema version');
   if (!Array.isArray(input.document_types) || input.document_types.length < 1 || input.document_types.length > SUPPORTED_DOCUMENT_TYPES.size) {
     fail('document_types must explicitly list one or more supported OTTS/EOTTS document types');
   }
@@ -261,7 +261,7 @@ function createSchema(db) {
   db.exec(`
     PRAGMA foreign_keys = ON;
     PRAGMA journal_mode = DELETE;
-    PRAGMA user_version = 1;
+    PRAGMA user_version = 2;
     PRAGMA application_id = 1447117908;
     CREATE TABLE source_snapshot (
       id INTEGER PRIMARY KEY CHECK (id = 1),
@@ -441,7 +441,8 @@ function buildDatabase({ inputBytes, manifestBytes, input, manifest, records, ri
       if (unsafe) fail('staging database contains an exact-fitment claim or an opened publication status');
       const snapshot = check.prepare('SELECT * FROM source_snapshot WHERE id=1').get();
       result = {
-        schema_version: 1,
+        schema_version: 2,
+        database_user_version: 2,
         package_type: 'authorized_fgis_otts_metadata_staging',
         output: path.basename(outputPath),
         source_id: SOURCE_ID,
