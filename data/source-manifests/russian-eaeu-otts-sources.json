@@ -573,7 +573,7 @@
       "publisher": "АО «Электронный паспорт»",
       "source_type": "public_document_register_query_route_for_eaeu_vehicle_approval_records",
       "source_url": "https://elpts.ru/",
-      "access_details_url": "https://docs.elpts.ru/ncher/esbkts",
+      "access_details_url": "https://docs.elpts.ru/ncher/otts",
       "market_scope": [
         "RU",
         "EAEU"
@@ -586,7 +586,7 @@
         "cancellation_notices"
       ],
       "access": {
-        "public_query": "public page observed; elpts.ru lists the national part of the unified OTTS/OTSH/SBKTS register; docs.elpts.ru page titled ESBKTS displays OTTS, OTSH and ZOETS filter labels",
+        "public_query": "A distinct official OTTS page is publicly visible at docs.elpts.ru/ncher/otts; separate OTSH and SBKTS pages were also observed. Public visibility does not establish completeness or reuse rights.",
         "machine_readable_api": "not_verified",
         "exact_OTTS_coverage": "not_established",
         "bulk_export": "not_established",
@@ -616,8 +616,33 @@
         "The public docs page is titled as an SBKTS register while exposing OTTS/OTSH/ZOETS filter labels; do not assume complete OTTS coverage.",
         "Keep OTTS, OTSH, SBKTS and ZOETS in separate document namespaces.",
         "No account, subscription, API key, payment, automated request, bulk download, PDF download or import was used.",
-        "Require written permission or a resource-specific open licence covering commercial use, bulk extraction, offline cache, display and redistribution before product integration."
-      ]
+        "Require written permission or a resource-specific open licence covering commercial use, bulk extraction, offline cache, display and redistribution before product integration.",
+        "A separate public OTTS search page was observed on 2026-11-06 at https://docs.elpts.ru/ncher/otts; the rendered total label is retained only as a UI observation, not a verified corpus count. See docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-06.md."
+      ],
+      "public_page_observations": {
+        "observed_at": "2026-11-06",
+        "ot_ts_page": {
+          "url": "https://docs.elpts.ru/ncher/otts",
+          "page_title": "ОТТС",
+          "visible_total_label": "Всего оформлено: 14822",
+          "visible_date_filters": [
+            "04.11.2026",
+            "05.11.2026"
+          ],
+          "count_interpretation": "UI observation only; not treated as a verified complete-corpus count because active filter semantics were not independently established"
+        },
+        "ot_sh_page": {
+          "url": "https://docs.elpts.ru/ncher/otsh",
+          "page_title": "ОТШ",
+          "visible_total_label": "Всего оформлено: 828",
+          "count_interpretation": "UI observation only; not treated as a verified complete-corpus count"
+        },
+        "sbkts_page": {
+          "url": "https://docs.elpts.ru/ncher/esbkts",
+          "page_title": "ЭСБКТС",
+          "note": "Visible OTTS/OTSH/ZOETS filters do not change the page's title or prove document-type completeness"
+        }
+      }
     }
   ]
 }
