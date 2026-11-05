@@ -9,6 +9,7 @@ const { DatabaseSync } = require('node:sqlite');
 const SOURCE_ID = 'rosstandart-fgis-kts';
 const EXPECTED_NAMESPACE = 'annex_2_publication_fields';
 const EXPECTED_PRECISION = 'type_approval_document_metadata_only';
+const SUPPORTED_DOCUMENT_TYPES = new Set(['OTTS', 'EOTTS']);
 const MAX_EXPORT_BYTES = 25 * 1024 * 1024;
 const MAX_MANIFEST_BYTES = 512 * 1024;
 const MAX_EVIDENCE_BYTES = 10 * 1024 * 1024;
@@ -35,7 +36,7 @@ const FIELD_NUMBERS = new Map([
   ['early_termination_reason_based_on_cancellation_notice', 28]
 ]);
 const ALLOWED_RECORD_KEYS = new Set([
-  'source_record_key', 'source_field_namespace', 'source_field_numbers', 'source_url',
+  'source_record_key', 'document_type', 'source_field_namespace', 'source_field_numbers', 'source_url',
   ...FIELD_NUMBERS.keys()
 ]);
 const DATE_FIELDS = new Set([
@@ -43,7 +44,7 @@ const DATE_FIELDS = new Set([
   'early_termination_date', 'publication_date', 'early_termination_date_based_on_cancellation_notice'
 ]);
 const TEXT_FIELDS = [
-  'approval_form_accounting_number', 'application_form_accounting_numbers',
+  'document_type', 'approval_form_accounting_number', 'application_form_accounting_numbers',
   'supplementary_sheet_accounting_numbers', 'approval_registration_number',
   'certification_body_name', 'certification_body_address', 'certification_body_phone',
   'certification_body_email', 'certification_body_accreditation_certificate_number',
@@ -129,6 +130,8 @@ function validateRights(manifest, licenseBytes, permissionBytes) {
 function normalizeRecord(record, index, manifest) {
   const prefix = `records[${index}]`;
   if (!record || typeof record !== 'object' || Array.isArray(record)) fail(`${prefix} must be an object`);
+  const documentType = cleanText(record.document_type, `${prefix}.document_type`, 20, true);
+  if (!SUPPORTED_DOCUMENT_TYPES.has(documentType)) fail(`${prefix}.document_type must be OTTS or EOTTS; OTSH and SBKTS records are not accepted by this importer`);
   for (const key of Object.keys(record)) {
     if (FORBIDDEN_FITMENT_KEYS.has(key)) fail(`${prefix}.${key} is not part of Annex 2 and cannot be imported as exact fitment`);
     if (!ALLOWED_RECORD_KEYS.has(key)) fail(`${prefix}.${key} is not an allowed Annex 2 field or provenance key`);
@@ -158,6 +161,7 @@ function normalizeRecord(record, index, manifest) {
     application_form_accounting_numbers: Array.isArray(record.application_form_accounting_numbers) ? record.application_form_accounting_numbers.map((v, i) => cleanText(v, `${prefix}.application_form_accounting_numbers[${i}]`, 180, true)).join('; ') : cleanText(record.application_form_accounting_numbers, `${prefix}.application_form_accounting_numbers`, 1000),
     supplementary_sheet_accounting_numbers: Array.isArray(record.supplementary_sheet_accounting_numbers) ? record.supplementary_sheet_accounting_numbers.map((v, i) => cleanText(v, `${prefix}.supplementary_sheet_accounting_numbers[${i}]`, 180, true)).join('; ') : cleanText(record.supplementary_sheet_accounting_numbers, `${prefix}.supplementary_sheet_accounting_numbers`, 1000),
     source_record_key: key,
+    document_type: documentType,
     approval_registration_number: approvalNumber,
     make,
     commercial_name: cleanText(record.commercial_name, `${prefix}.commercial_name`, 180, true),
@@ -206,6 +210,13 @@ function normalizeRecord(record, index, manifest) {
 function validatePackage(input, manifest, licenseBytes, permissionBytes) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) fail('export root must be an object');
   if (input.schema_version !== 1 || input.package_type !== 'rosstandart_fgis_annex2_export') fail('unsupported export package type or schema version');
+  if (!Array.isArray(input.document_types) || input.document_types.length < 1 || input.document_types.length > SUPPORTED_DOCUMENT_TYPES.size) {
+    fail('document_types must explicitly list one or more supported OTTS/EOTTS document types');
+  }
+  const declaredDocumentTypes = input.document_types.map((value, index) => cleanText(value, `document_types[${index}]`, 20, true));
+  if (new Set(declaredDocumentTypes).size !== declaredDocumentTypes.length || declaredDocumentTypes.some((value) => !SUPPORTED_DOCUMENT_TYPES.has(value))) {
+    fail('document_types may contain only unique OTTS/EOTTS values; OTSH and SBKTS are excluded');
+  }
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) fail('source manifest must be an object');
   if (manifest.schema_version !== 1 || manifest.source_id !== SOURCE_ID) fail(`source manifest must identify ${SOURCE_ID}`);
   cleanText(manifest.source_revision, 'source_revision', 120, true);
@@ -221,14 +232,18 @@ function validatePackage(input, manifest, licenseBytes, permissionBytes) {
   const records = input.records.map((record, index) => {
     const row = normalizeRecord(record, index, manifest);
     const key = row.normalized.source_record_key.toLowerCase();
-    const approval = row.normalized.approval_registration_number.toUpperCase();
+    const approval = `${row.normalized.document_type}|${row.normalized.approval_registration_number.toUpperCase()}`;
     if (seenKeys.has(key)) fail(`duplicate source_record_key: ${row.normalized.source_record_key}`);
-    if (seenNumbers.has(approval)) fail(`duplicate approval_registration_number: ${row.normalized.approval_registration_number}`);
+    if (seenNumbers.has(approval)) fail(`duplicate approval_registration_number for ${row.normalized.document_type}: ${row.normalized.approval_registration_number}`);
     seenKeys.add(key); seenNumbers.add(approval);
     return row;
   });
+  const actualDocumentTypes = [...new Set(records.map((row) => row.normalized.document_type))].sort();
+  if (canonicalJson(actualDocumentTypes) !== canonicalJson([...declaredDocumentTypes].sort())) {
+    fail('input.document_types must exactly match the document_type values present in records');
+  }
   const rightsResult = validateRights(manifest, licenseBytes, permissionBytes);
-  return { records, rightsResult };
+  return { records, rightsResult, documentTypes: actualDocumentTypes };
 }
 function parseArgs(argv) {
   const values = {};
@@ -258,6 +273,7 @@ function createSchema(db) {
       source_snapshot_sha256 TEXT NOT NULL CHECK (length(source_snapshot_sha256) = 64),
       source_manifest_sha256 TEXT NOT NULL CHECK (length(source_manifest_sha256) = 64),
       market_scope_json TEXT NOT NULL,
+      document_types_json TEXT NOT NULL,
       applicability_precision TEXT NOT NULL,
       rights_basis TEXT NOT NULL,
       license_identifier TEXT,
@@ -280,11 +296,12 @@ function createSchema(db) {
     );
     CREATE TABLE type_approval_records (
       id INTEGER PRIMARY KEY,
+      document_type TEXT NOT NULL CHECK (document_type IN ('OTTS','EOTTS')),
       approval_form_accounting_number TEXT,
       application_form_accounting_numbers TEXT,
       supplementary_sheet_accounting_numbers TEXT,
       source_record_key TEXT NOT NULL UNIQUE,
-      approval_registration_number TEXT NOT NULL UNIQUE,
+      approval_registration_number TEXT NOT NULL,
       make TEXT NOT NULL CHECK (make IN ('Volkswagen','Audi','Škoda','SEAT','CUPRA')),
       commercial_name TEXT NOT NULL,
       vehicle_type TEXT NOT NULL,
@@ -320,7 +337,8 @@ function createSchema(db) {
       publication_status TEXT NOT NULL CHECK (publication_status = 'blocked_pending_technical_review'),
       exact_engine_fitment_claim INTEGER NOT NULL CHECK (exact_engine_fitment_claim = 0),
       exact_transmission_fitment_claim INTEGER NOT NULL CHECK (exact_transmission_fitment_claim = 0),
-      exact_ecu_fitment_claim INTEGER NOT NULL CHECK (exact_ecu_fitment_claim = 0)
+      exact_ecu_fitment_claim INTEGER NOT NULL CHECK (exact_ecu_fitment_claim = 0),
+      UNIQUE(document_type, approval_registration_number)
     );
     CREATE TABLE raw_source_records (
       source_record_key TEXT PRIMARY KEY REFERENCES type_approval_records(source_record_key) ON DELETE CASCADE,
@@ -357,10 +375,10 @@ function buildDatabase({ inputBytes, manifestBytes, input, manifest, records, ri
     const rights = manifest.rights;
     db.exec('BEGIN IMMEDIATE');
     try {
-      db.prepare(`INSERT INTO source_snapshot VALUES (1,${Array(27).fill('?').join(',')})`).run(
+      db.prepare(`INSERT INTO source_snapshot VALUES (1,${Array(28).fill('?').join(',')})`).run(
         SOURCE_ID, cleanText(manifest.publisher, 'publisher', 240, true), validUrl(manifest.source_url, 'source_url', true),
         cleanText(manifest.source_revision, 'source_revision', 120, true), manifest.retrieved_at,
-        sha256(inputBytes), sha256(manifestBytes), JSON.stringify(manifest.market_scope), EXPECTED_PRECISION,
+        sha256(inputBytes), sha256(manifestBytes), JSON.stringify(manifest.market_scope), JSON.stringify(input.document_types), EXPECTED_PRECISION,
         rightsResult.basis, rights.license_identifier || null, rights.license_url || null,
         rightsResult.licenseTextSha256, rights.permission_document_url || null, rightsResult.permissionDocumentSha256,
         1, 1, 1, 1, rights.pdf_redistribution_allowed === true ? 1 : 0,
@@ -369,7 +387,7 @@ function buildDatabase({ inputBytes, manifestBytes, input, manifest, records, ri
       );
       const insertRecord = db.prepare(`INSERT INTO type_approval_records (
         approval_form_accounting_number, application_form_accounting_numbers, supplementary_sheet_accounting_numbers,
-        source_record_key, approval_registration_number, make, commercial_name, vehicle_type,
+        source_record_key, document_type, approval_registration_number, make, commercial_name, vehicle_type,
         valid_from, valid_to, base_vehicle_or_chassis, modifications, vehicle_category,
         environmental_class, certification_body_name, certification_body_address, certification_body_phone,
         certification_body_email, certification_body_accreditation_certificate_number, annex_1_pdf_url, electronically_issued_flag, suspension_date,
@@ -379,14 +397,14 @@ function buildDatabase({ inputBytes, manifestBytes, input, manifest, records, ri
         canonical_source_record_sha256, market_scope_json, applicability_precision, source_field_namespace,
         source_field_numbers_json, review_status, publication_status, exact_engine_fitment_claim,
         exact_transmission_fitment_claim, exact_ecu_fitment_claim
-      ) VALUES (${Array(41).fill('?').join(',')})`);
+      ) VALUES (${Array(42).fill('?').join(',')})`);
       const insertRaw = db.prepare('INSERT INTO raw_source_records VALUES (?,?,?)');
       const insertField = db.prepare('INSERT INTO record_field_provenance (source_record_key,field_name,field_number,field_namespace,field_value,source_url,source_revision,canonical_source_record_sha256) VALUES (?,?,?,?,?,?,?,?)');
       for (const item of records) {
         const row = item.normalized;
         insertRecord.run(
           row.approval_form_accounting_number, row.application_form_accounting_numbers, row.supplementary_sheet_accounting_numbers,
-          row.source_record_key, row.approval_registration_number, row.make, row.commercial_name, row.vehicle_type,
+          row.source_record_key, row.document_type, row.approval_registration_number, row.make, row.commercial_name, row.vehicle_type,
           row.valid_from, row.valid_to, row.base_vehicle_or_chassis, row.modifications, row.vehicle_category,
           row.environmental_class, row.certification_body_name, row.certification_body_address, row.certification_body_phone,
           row.certification_body_email, row.certification_body_accreditation_certificate_number, row.annex_1_pdf_url, row.electronically_issued_flag == null ? null : (row.electronically_issued_flag ? 1 : 0),
@@ -432,6 +450,7 @@ function buildDatabase({ inputBytes, manifestBytes, input, manifest, records, ri
         retrieved_at: snapshot.retrieved_at,
         source_revision: manifest.source_revision,
         market_scope: JSON.parse(snapshot.market_scope_json),
+        document_types: JSON.parse(snapshot.document_types_json),
         source_snapshot_sha256: snapshot.source_snapshot_sha256,
         source_manifest_sha256: snapshot.source_manifest_sha256,
         license_text_sha256: snapshot.license_text_sha256,
