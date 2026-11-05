@@ -20,6 +20,8 @@ on:
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
+      - "tests/test_sync_vag_source_register_source_rights.py"
+      - "scripts/sync_vag_source_register.py"
       - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
       - "tests/test_wikidata_generation_source_rights.py"
@@ -63,6 +65,8 @@ on:
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
+      - "tests/test_sync_vag_source_register_source_rights.py"
+      - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_openvag_source_rights.py"
@@ -830,6 +834,23 @@ jobs:
           $end = [Math]::Min($lines.Count, 126)
           for ($i = $start; $i -le $end; $i++) { Write-Output ("{0}: {1}" -f $i, $lines[$i - 1]) }
 
+      - name: Sync current source-rights register into desktop payload
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m py_compile scripts/sync_vag_source_register.py
+          if ($LASTEXITCODE -ne 0) { throw "Source-register sync script compilation failed" }
+          python -m unittest discover -s tests -p "test_sync_vag_source_register_source_rights.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "Source-register sync contract tests failed" }
+          $syncOutput = python scripts/sync_vag_source_register.py --source "data/source-manifests/vag-factory-source-register.json" --desktop-root "desktop-source"
+          if ($LASTEXITCODE -ne 0) { throw "Could not synchronize central source-rights register into desktop payload" }
+          $syncOutput | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-source-register-sync.log"
+          $sync = ($syncOutput -join "`n") | ConvertFrom-Json
+          if ($sync.status -ne "synced_verified" -or $sync.source_count -lt 1 -or $sync.sha256 -notmatch "^[a-f0-9]{64}$") { throw "Desktop source-rights register sync verification failed" }
+          "vag_source_register_sha256=$($sync.sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "vag_source_register_source_count=$($sync.source_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "vag_source_register_updated_at=$($sync.updated_at)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
@@ -965,6 +986,11 @@ jobs:
           $generationMemberCount = if ($generationReport) { $generationReport.counts.member_entities } else { $null }
           $generationLinkCount = if ($generationReport) { $generationReport.counts.model_member_links } else { $null }
           $generationBindingCount = if ($generationReport) { $generationReport.counts.source_bindings } else { $null }
+          $sourceRegisterPath = "desktop-source/data/source-manifests/vag-factory-source-register.json"
+          $sourceRegisterJson = if (Test-Path $sourceRegisterPath) { Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json } else { $null }
+          $sourceRegisterHash = if (Test-Path $sourceRegisterPath) { (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $sourceRegisterCount = if ($sourceRegisterJson) { @($sourceRegisterJson.sources).Count } else { $null }
+          $sourceRegisterUpdatedAt = if ($sourceRegisterJson) { $sourceRegisterJson.updated_at } else { $null }
 
           foreach ($file in @(
             (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe"),
@@ -974,7 +1000,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run70-wikidata-generation-candidates'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run70-wikidata-generation-candidates'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Stage Windows 2022 lifecycle verification payload
         if: always()
@@ -1046,6 +1072,7 @@ jobs:
             lifecycle-fetchmetadata-strict-fix.log
             build-metadata.json
             source-verification.txt
+            vag-source-register-sync.log
           if-no-files-found: warn
           retention-days: 14
 
@@ -1084,6 +1111,11 @@ jobs:
             if ($null -eq $expected -or $expected.sha256 -ne $actual) { throw "Windows installer artifact hash mismatch: $name" }
           }
           if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 9 -or $metadata.wikidata_generation_model_member_links -ne 10 -or $metadata.wikidata_generation_source_bindings -ne 14) { throw "Build metadata does not describe the pinned generation candidate pack." }
+          $sourceRegisterPath = Join-Path $desktopRoot "data/source-manifests/vag-factory-source-register.json"
+          if (-not (Test-Path -LiteralPath $sourceRegisterPath -PathType Leaf)) { throw "Bundled source-rights register is missing from Windows artifact." }
+          $sourceRegisterActualHash = (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $sourceRegister = Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json
+          if ($metadata.vag_source_register_sha256 -ne $sourceRegisterActualHash -or $metadata.vag_source_register_source_count -ne @($sourceRegister.sources).Count -or $metadata.vag_source_register_updated_at -ne $sourceRegister.updated_at) { throw "Bundled source-rights register does not match build metadata." }
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
