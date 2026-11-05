@@ -1073,6 +1073,8 @@ jobs:
             build-metadata.json
             source-verification.txt
             vag-source-register-sync.log
+            scripts/sync_vag_source_register.py
+            tests/test_sync_vag_source_register_source_rights.py
           if-no-files-found: warn
           retention-days: 14
 
