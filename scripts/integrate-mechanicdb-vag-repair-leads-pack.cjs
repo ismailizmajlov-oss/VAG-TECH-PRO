@@ -132,12 +132,16 @@ function verifyArtifact(input, sourceManifestPath) {
       sourceManifest.data_license !== "ODbL-1.0" || sourceManifest.rights_status !== "approved_by_published_license" ||
       sourceManifest.share_alike_required !== true || sourceManifest.attribution_required !== true ||
       sourceManifest.display_allowed !== true || sourceManifest.cache_allowed !== true ||
-      sourceManifest.redistribution_allowed !== true || sourceManifest.commercial_use_status !== "allowed_under_odbl") fail("Project source manifest rights/revision mismatch");
+      sourceManifest.redistribution_allowed !== true || sourceManifest.commercial_use_status !== "allowed_under_odbl_free_sample_terms; no paid/full database content") fail("Project source manifest rights/revision mismatch");
   const sourcePolicy = sourceManifest.product_policy || {};
   if (sourcePolicy.display_status !== "candidate_reference_visible_separate_namespace" ||
       sourcePolicy.repair_procedure_status !== "community_authored_not_factory_not_verified" ||
       sourcePolicy.vehicle_fitment_claim !== false || sourcePolicy.ecu_fitment_claim !== false ||
       sourcePolicy.pr_code_claim !== false || sourcePolicy.production_import !== false ||
+      sourcePolicy.generic_dtc_rows !== 0 || sourcePolicy.community_repair_leads_visible !== true ||
+      sourcePolicy.community_repair_leads_verified !== false || sourcePolicy.community_repair_lead_count !== 6 ||
+      sourcePolicy.community_part_name_candidate_count !== 6 || sourcePolicy.market_scope !== "UNKNOWN" ||
+      sourcePolicy.applicability_precision !== "manufacturer_make_only_candidate" ||
       sourcePolicy.oem_part_numbers_included !== false || sourcePolicy.cost_or_labor_estimates_included !== false ||
       sourcePolicy.external_part_search_urls_included !== false || sourcePolicy.diagnostic_execution_allowed !== false) {
     fail("Project source manifest product-policy boundary changed");
