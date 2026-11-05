@@ -169,14 +169,39 @@
         "manufacturer_dtc_applicability"
       ],
       "rights": {
-        "data_license_status": "ODbL-1.0",
+        "data_license_status": "ODbL-1.0_declared_for_downstream_database_only; upstream_Autoevolution_content_rights_not_cleared",
         "attribution_required": true,
         "attribution": "gor3a/vehicle-makes-models and autoevolution.com",
         "share_alike_required": true,
-        "public_redistribution_requires_ODbL_offer": true
+        "public_redistribution_requires_ODbL_offer": true,
+        "upstream_rights_review": {
+          "upstream_publisher": "SoftNews Net SRL (identified in Autoevolution site footer)",
+          "terms_url": "https://www.autoevolution.com/static/terms.html",
+          "reviewed_at": "2026-11-04",
+          "reviewed_sections": [
+            "4 Intellectual property protection",
+            "5 Non-commercial use",
+            "8 Prohibited activities"
+          ],
+          "findings": [
+            "The terms state that Autoevolution content and data related to the website belong to SoftNews NET and collaborators and that unauthorized use requires express written permission.",
+            "The services are stated to be for personal use; commercial use requires Autoevolution approval.",
+            "The terms prohibit unauthorized commercial activity."
+          ],
+          "written_permission_for_vag_tech_pro": "not_obtained",
+          "product_uses_cleared": {
+            "display": false,
+            "offline_cache": false,
+            "bulk_reuse": false,
+            "redistribution": false,
+            "commercial_use": false
+          },
+          "decision": "downstream ODbL declaration is not treated as proof of authority to license upstream Autoevolution material; quarantine pending written upstream permission"
+        },
+        "downstream_license_scope": "the downstream repository's own database rights and share-alike obligations only; not proof of authority over upstream Autoevolution content"
       },
-      "project_decision": "research_staging_only; market UNKNOWN; never infer engine or gearbox codes from labels; ODbL obligations must be preserved",
-      "evidence_status": "five_brand_files_inspected_2026-11-03; pinned_revision"
+      "project_decision": "quarantine_only_no_product_import_cache_display_or_redistribution_until_written_upstream_permission; ODbL obligations remain relevant to downstream database but do not cure upstream rights uncertainty",
+      "evidence_status": "pinned_downstream_revision_and_Autoevolution_primary_terms_reviewed_2026-11-04"
     },
     {
       "source_id": "hpt-su-otts-aggregator",
