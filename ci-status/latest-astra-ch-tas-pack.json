@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-05T19:30:56.6810366Z",
+  "recorded_at_utc": "2026-11-05T19:43:57Z",
   "workflow": "Acquire and validate official ASTRA CH TAS VAG research pack",
   "run_id": 42091150760,
   "run_number": 20,
   "run_attempt": 1,
-  "run_status_at_record": "in_progress",
-  "run_conclusion_at_record": null,
+  "run_status_at_record": "completed",
+  "run_conclusion_at_record": "success",
   "build_job_result": "success",
   "head_sha": "3d432ec2e52ed29d705ea3f458c1bc2acef62ea7",
   "head_branch": "main",
@@ -65,5 +65,23 @@
   "probe_artifact_present": true,
   "pack_ready": true,
   "release_ready": false,
-  "release_readiness_note": "Separate CH-only homologation research pack; never RU/EAEU fitment, VAG gearbox-code confirmation or repair applicability."
+  "release_readiness_note": "Separate CH-only homologation research pack; never RU/EAEU fitment, VAG gearbox-code confirmation or repair applicability.",
+  "pack_validation": {
+    "artifact_sha256": "14357302d6a548dace0df1a8170709fd1b23092947bd28d71851be4470b78c85",
+    "source_snapshot_sha256": "3e7e8eec0ed54bea68bd7d2fbe612a5af1c34bb69a53484ad49319348a076510",
+    "database_sha256": "f3ac6a38e6fd0b3332fc4f94167376c8cbd74b8e65f406acd2b195a42c3b9b7b",
+    "database_integrity_check": "ok",
+    "foreign_key_check": "ok",
+    "market_scope": [
+      "CH"
+    ],
+    "approval_rows": 45215,
+    "emissions_gearbox_rows": 53414,
+    "linked_scope_rows": 33909,
+    "exact_scope_links": 5420,
+    "wildcard_scope_links": 28489,
+    "unlinked_scope_rows": 19505,
+    "production_import": false,
+    "ru_eaeu_applicability": false
+  }
 }
