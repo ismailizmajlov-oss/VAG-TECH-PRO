@@ -85,7 +85,7 @@ function fixture(dir, overrides = {}) {
     },
     ...overrides.record
   };
-  const input = { schema_version: 1, package_type: 'rosstandart_fgis_annex2_export', document_types: overrides.documentTypes || ['OTTS'], records: [record] };
+  const input = { schema_version: 2, package_type: 'rosstandart_fgis_annex2_export', document_types: overrides.documentTypes || ['OTTS'], records: [record] };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
   fs.writeFileSync(inputPath, JSON.stringify(input, null, 2));
   return { licensePath, permissionPath, manifestPath, inputPath, outputPath, licenseBytes, permissionBytes, manifest, input };
@@ -105,6 +105,7 @@ test('imports a rights-cleared Annex 2 export into a review-only SQLite staging 
     const db = new DatabaseSync(f.outputPath, { readOnly: true });
     try {
       assert.equal(db.prepare('PRAGMA integrity_check').get().integrity_check, 'ok');
+      assert.equal(db.prepare('PRAGMA user_version').get().user_version, 2);
       assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);
       assert.equal(db.prepare('SELECT COUNT(*) AS n FROM type_approval_records').get().n, 1);
       assert.equal(db.prepare('SELECT COUNT(*) AS n FROM raw_source_records').get().n, 1);
@@ -134,6 +135,8 @@ test('imports a rights-cleared Annex 2 export into a review-only SQLite staging 
       assert.equal(snapshot.pdf_redistribution_allowed, 0);
     } finally { db.close(); }
     const sidecar = JSON.parse(fs.readFileSync(`${f.outputPath}.manifest.json`, 'utf8'));
+    assert.equal(sidecar.schema_version, 2);
+    assert.equal(sidecar.database_user_version, 2);
     assert.equal(sidecar.record_count, 1);
     assert.equal(sidecar.integrity_check, 'ok');
     assert.equal(sidecar.rights_basis, 'open_license');
