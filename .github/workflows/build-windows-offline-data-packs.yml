@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - automation/windows-desktop-build-run57
+      - automation/rdw-type-approval-integration-run75
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
       - .github/workflows/acquire-obdex-cc0.yml
