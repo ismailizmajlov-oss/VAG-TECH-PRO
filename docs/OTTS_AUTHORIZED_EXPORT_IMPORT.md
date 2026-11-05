@@ -31,6 +31,7 @@ For written permission, replace `--license-text` with `--permission-document`.
 The manifest must explicitly include:
 
 - `source_id="rosstandart-fgis-kts"`, a source revision, HTTPS source URL, retrieval timestamp, and both `RU` and `EAEU_TR_TS_018_2011` market scopes;
+- the manifest and every record source URL must use `rst.gov.ru`, `gost.ru` or `interstandart.ru` (or a subdomain); lookalike hosts, URL credentials and non-default ports are rejected. License/permission evidence URLs are separate HTTPS references.
 - `rights.review_status="approved_by_owner"`, reviewer, review date, approval reference, and either a license identifier/URL/hash or permission-document URL/hash;
 - `commercial_use_allowed=true`, `display_allowed=true`, `offline_cache_allowed=true`, and `bulk_export_allowed=true`;
 - an explicit `pdf_redistribution_allowed` boolean. This metadata-only importer never includes PDF binaries, even when PDF rights are true.
