@@ -96,6 +96,12 @@ jobs:
           $run = Invoke-RestMethod -Method Get -Uri $base -Headers $headers
           $jobsResponse = Invoke-RestMethod -Method Get -Uri "$base/jobs?per_page=100" -Headers $headers
           $artifactsResponse = Invoke-RestMethod -Method Get -Uri "$base/artifacts?per_page=100" -Headers $headers
+          $sourceManifestText = git show "$($env:UPSTREAM_SHA):data/source-manifests/astra-ch-tas-open-data.json"
+          if ($LASTEXITCODE -ne 0) { throw "Could not read the source manifest from the exact build commit." }
+          $sourceManifestPath = Join-Path $env:RUNNER_TEMP "astra-source-manifest.json"
+          $sourceManifestText | Set-Content -LiteralPath $sourceManifestPath -Encoding UTF8
+          $sourceManifest = Get-Content -LiteralPath $sourceManifestPath -Raw | ConvertFrom-Json
+          $sourceManifestHash = (Get-FileHash -LiteralPath $sourceManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
           $jobRows = @($jobsResponse.jobs | ForEach-Object {
             [ordered]@{
               id = $_.id
@@ -135,13 +141,14 @@ jobs:
             html_url = $env:UPSTREAM_URL
             jobs = $jobRows
             artifacts = $artifactRows
-            source_id = "astra-fedro-tas-type-approvals-open-data-ch"
-            source_revision = "2026-10-29"
-            rights_status = "approved_by_published_ogd_terms"
-            attribution_required = $true
-            market_scope = @("CH")
-            production_import = $false
-            ru_eaeu_applicability = $false
+            source_id = $sourceManifest.source_id
+            source_revision = $sourceManifest.snapshot.source_data_date
+            source_manifest_sha256 = $sourceManifestHash
+            rights_status = $sourceManifest.rights.rights_status
+            attribution_required = $sourceManifest.rights.attribution_required
+            market_scope = @($sourceManifest.market_scope)
+            production_import = $sourceManifest.import_policy.production_import
+            ru_eaeu_applicability = $sourceManifest.import_policy.ru_eaeu_applicability
             pack_artifact_present = ($null -ne $packArtifact)
             probe_artifact_present = ($null -ne $probeArtifact)
             pack_ready = ($env:UPSTREAM_CONCLUSION -eq "success" -and $null -ne $packArtifact -and -not $packArtifact.expired)
@@ -151,6 +158,16 @@ jobs:
           $directory = Join-Path $env:GITHUB_WORKSPACE "ci-status"
           New-Item -ItemType Directory -Path $directory -Force | Out-Null
           $statusPath = Join-Path $directory "latest-astra-ch-tas-pack.json"
+          if (Test-Path -LiteralPath $statusPath) {
+            $previous = Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
+            $isOlder = ([int]$previous.run_number -gt [int]$env:UPSTREAM_RUN_NUMBER) -or
+              (([int]$previous.run_number -eq [int]$env:UPSTREAM_RUN_NUMBER) -and
+               ([int]$previous.run_attempt -ge [int]$env:UPSTREAM_ATTEMPT))
+            if ($isOlder) {
+              Write-Host "Skipping stale ASTRA status record; a newer run is already recorded."
+              exit 0
+            }
+          }
           $record | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $statusPath -Encoding UTF8
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
