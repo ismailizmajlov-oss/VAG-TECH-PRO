@@ -100,7 +100,7 @@ jobs:
           $sourceManifestApi = Invoke-RestMethod -Method Get -Uri $sourceManifestUri -Headers $headers
           if ($sourceManifestApi.encoding -ne "base64") { throw "Unexpected source-manifest API encoding." }
           $sourceManifestPath = Join-Path $env:RUNNER_TEMP "astra-source-manifest.json"
-          $sourceManifestBytes = [Convert]::FromBase64String(($sourceManifestApi.content -replace "\\s", ""))
+          $sourceManifestBytes = [Convert]::FromBase64String(($sourceManifestApi.content -replace "\s", ""))
           [System.IO.File]::WriteAllBytes($sourceManifestPath, $sourceManifestBytes)
           $sourceManifest = Get-Content -LiteralPath $sourceManifestPath -Raw | ConvertFrom-Json
           $sourceManifestHash = (Get-FileHash -LiteralPath $sourceManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
