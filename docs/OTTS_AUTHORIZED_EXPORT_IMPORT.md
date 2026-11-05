@@ -8,7 +8,7 @@ The FGIS source remains `permission_required` in the source register. Public-sit
 
 ## Inputs
 
-- `--input export.json`: JSON with `schema_version: 1`, `package_type: "rosstandart_fgis_annex2_export"`, and `records`.
+- `--input export.json`: JSON with `schema_version: 2`, `package_type: "rosstandart_fgis_annex2_export"`, `document_types`, and `records`.
 - The package must declare `document_types` and every record must carry an explicit `document_type`. Only `OTTS` and `EOTTS` are accepted; `OTSH`/`EOTSH`, `SBKTS`/`ESBKTS` and cancellation notices are rejected. `document_type` is source-envelope metadata, not an Annex 2 field number.
 - `--manifest source-manifest.json`: source ID/revision, publisher, source URL, retrieval timestamp, RU/EAEU market scope, and an owner-reviewed rights statement.
 - `--license-text LICENSE.txt`: required for `rights.basis="open_license"`.
