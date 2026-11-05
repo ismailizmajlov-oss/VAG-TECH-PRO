@@ -1918,6 +1918,13 @@
           "unique_pair_candidates": 97905,
           "ambiguous_pair_keys": 1832
         }
+      },
+      "live_metadata_gate": {
+        "expected_provenance": "official",
+        "expected_owner_name_contains": "RDW",
+        "expected_asset_type": "dataset",
+        "expected_publication_stage": "published",
+        "fail_closed_on_missing_or_conflicting_metadata": true
       }
     },
     {
