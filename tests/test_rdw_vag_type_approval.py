@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from rdw_vag_type_approval_common import (
     build_database, normalize_vehicle_rows, normalize_engine_rows,
-    normalize_transmission_rows, validate_lock, verify_pack
+    normalize_transmission_rows, validate_lock, validate_resource_metadata, verify_pack
 )
 
 DATASET_IDS = ["m9d7-ebf2","4by9-ammk","7rjk-eycs","byxc-wwua","x5v3-sewk"]
@@ -36,6 +36,12 @@ def lock_file(path: Path) -> None:
         "rights_status":"approved_by_published_license",
         "rights":{"commercial_use_allowed":True,"display_allowed":True,"offline_cache_allowed":True,"bulk_reuse_allowed":True,"redistribution_allowed":True,"share_alike_required":False},
         "applicability_policy":{"ru_eaeu_applicability":False},
+        "live_metadata_gate":{
+            "expected_provenance":"official",
+            "expected_owner_name_contains":"RDW",
+            "expected_asset_type":"dataset",
+            "expected_publication_stage":"published",
+        },
         "datasets":[{"id":x,"required":True} for x in DATASET_IDS],
     }
     path.write_text(json.dumps(data),encoding="utf-8")
@@ -81,8 +87,25 @@ def build_fixture_pack(root: Path, payloads=None):
     lock = root / "lock.json"
     lock_file(lock)
     payloads = payloads or fixtures()
-    metadata_raws = {d:json.dumps({"id":d,"name":d,"rowsUpdatedAt":"2026-11-05T00:00:00Z"},sort_keys=True).encode() for d in DATASET_IDS}
-    metadata = {d:{"rowsUpdatedAt":"2026-11-05T00:00:00Z","metadata_sha256":hashlib.sha256(metadata_raws[d]).hexdigest()} for d in DATASET_IDS}
+    metadata_raws = {
+        d:json.dumps({
+            "id":d,"name":d,"rowsUpdatedAt":"2026-11-05T00:00:00Z",
+            "provenance":"official","assetType":"dataset","publicationStage":"published",
+            "owner":{"displayName":"Team Open Data RDW"},
+        },sort_keys=True).encode()
+        for d in DATASET_IDS
+    }
+    metadata = {
+        d:{
+            "rowsUpdatedAt":"2026-11-05T00:00:00Z",
+            "publisher_provenance":"official",
+            "owner_name":"Team Open Data RDW",
+            "asset_type":"dataset",
+            "publication_stage":"published",
+            "metadata_sha256":hashlib.sha256(metadata_raws[d]).hexdigest(),
+        }
+        for d in DATASET_IDS
+    }
     snapshots = []
     queries = {}
     for i,dataset_id in enumerate(DATASET_IDS):
@@ -159,6 +182,31 @@ class RdwVagTypeApprovalTests(unittest.TestCase):
         row={"merk":"VOLKSWAGEN","handelsbenaming":"GOLF","typegoedkeuringsnummer":"A","variant":"V","uitvoering":"E","europese_voertuigcategorie":"M1","kenteken":"AB-12-CD"}
         with self.assertRaises(ValueError):
             normalize_vehicle_rows([row],"rdw-test")
+
+    def test_live_metadata_requires_official_published_rdW_owned_resources(self):
+        gate={
+            "expected_provenance":"official",
+            "expected_owner_name_contains":"RDW",
+            "expected_asset_type":"dataset",
+            "expected_publication_stage":"published",
+        }
+        good={
+            "id":"m9d7-ebf2","provenance":"official","assetType":"dataset",
+            "publicationStage":"published","owner":{"displayName":"Team Open Data RDW"},
+        }
+        self.assertEqual(validate_resource_metadata("m9d7-ebf2",good,gate),{
+            "publisher_provenance":"official","owner_name":"Team Open Data RDW",
+            "asset_type":"dataset","publication_stage":"published",
+        })
+        for bad in (
+            {**good,"provenance":"community"},
+            {**good,"owner":{"displayName":"Community contributor"}},
+            {**good,"assetType":"view"},
+            {**good,"publicationStage":"draft"},
+            {k:v for k,v in good.items() if k!="provenance"},
+        ):
+            with self.assertRaises(ValueError):
+                validate_resource_metadata("m9d7-ebf2",bad,gate)
 
     def test_lock_fails_closed_without_cc0_or_reuse_rights(self):
         with tempfile.TemporaryDirectory() as tmp:
