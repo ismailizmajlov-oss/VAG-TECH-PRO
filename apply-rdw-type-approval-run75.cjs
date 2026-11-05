@@ -398,7 +398,7 @@ function main() {
   }
   writeText(uiFile, ui);
 
-  const verifier = String.raw\x60"use strict";
+  const verifier = String.raw`"use strict";
 const fs = require("node:fs");
 const path = require("node:path");
 const { createRdwTypeApprovalDb } = require("../lib/rdw-type-approval-db.cjs");
@@ -458,7 +458,7 @@ function main() {
   process.stdout.write(JSON.stringify(report, null, 2) + "\n");
 }
 try { main(); } catch (error) { process.stderr.write((error.stack || error.message) + "\n"); process.exitCode = 1; }
-\x60;
+`;
   const verifierPath = path.join(desktop, "scripts", "verify-rdw-type-approval.cjs");
   writeText(verifierPath, verifier);
 
@@ -473,7 +473,7 @@ try { main(); } catch (error) { process.stderr.write((error.stack || error.messa
   }
   writeJson(packagePath, pkg);
 
-  const dbTest = String.raw\x60"use strict";
+  const dbTest = String.raw`"use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
@@ -512,10 +512,10 @@ test("RDW search preserves source namespaces and never claims exact fitment", ()
     assert.equal(row.applicabilityPrecision, "type_approval_variant_execution_candidate");
   }
 });
-\x60;
+`;
   writeText(path.join(desktop, "tests", "rdw-type-approval-db.test.cjs"), dbTest);
 
-  const uiTest = String.raw\x60"use strict";
+  const uiTest = String.raw`"use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -536,7 +536,7 @@ test("RDW appears only in a separate EU/NL candidate research tab", () => {
   assert.match(route, /searchRdwTypeApprovalCandidates/);
   assert.doesNotMatch(component, /RDW.*confirmed VAG engine\/gearbox/i);
 });
-\x60;
+`;
   writeText(path.join(desktop, "tests", "rdw-type-approval-ui-contract.test.cjs"), uiTest);
 
   const uiTestFile = path.join(desktop, "tests", "local-research-ui-contract.test.cjs");
