@@ -84,12 +84,24 @@
       ],
       "access": {
         "legal_access_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
-        "current_portal_observation": "The portal root checked on 2026-11-04 redirects to the EAEU open-data portal; a current OTTS-specific search endpoint was not independently resolved.",
-        "machine_readable_api": "not_verified_for_OTTS",
+        "current_portal_observation": "On 2026-11-05 the portal root and public EAEU open-data catalogue were reviewed. The catalogue advertises 117 resources overall and 7 under technical regulation; generic OData/REST access is described for published open-data resources, but no OTTS-specific resource or machine-readable endpoint was located in the reviewed catalogue/search. This is a bounded observation, not proof that no official query route exists.",
+        "machine_readable_api": "Generic OData/REST interfaces are advertised for published EAEU open-data resources; an OTTS-specific resource, endpoint, schema and export method remain unverified.",
         "individual_query_access": "provided_by_decision_88_via_union_information_portal",
         "bulk_export": "not_established",
         "offline_cache": "not_established",
-        "automated_extraction": "not_established"
+        "automated_extraction": "not_established",
+        "eaeu_open_data_catalog_observation": {
+          "url": "https://opendata.eaeunion.org/opendata/ru/resourses",
+          "observed_at": "2026-11-05",
+          "catalogue_resource_count": 117,
+          "technical_regulation_resource_count": 7,
+          "generic_api_formats": [
+            "OData",
+            "REST"
+          ],
+          "otts_specific_resource_identified": false,
+          "limitation": "Catalogue search did not identify an OTTS resource; this does not establish that no restricted or separately exposed official route exists."
+        }
       },
       "rights": {
         "data_license_status": "not_established",
@@ -103,10 +115,11 @@
       "limitations": [
         "Decision No. 88 describes information exchange and portal access but does not itself grant a VAG TECH PRO license to bulk copy, cache, redistribute or create a derivative database.",
         "The EAEU open-data portal advertises OData/REST reuse for published resources, but inclusion of the OTTS register in that open-data catalog has not been established.",
-        "An OTTS establishes type/variant homologation only to the extent explicitly stated in the document; it is not an individual VIN build sheet and does not establish ECU, DTC, wiring or repair applicability."
+        "An OTTS establishes type/variant homologation only to the extent explicitly stated in the document; it is not an individual VIN build sheet and does not establish ECU, DTC, wiring or repair applicability.",
+        "A general OData/REST interface for published open-data resources is not a license or evidence that the OTTS register is included; the reviewed catalogue listed 117 resources overall and 7 in technical regulation, with no OTTS-specific resource identified."
       ],
       "project_decision": "manual document-level lookup only after the current official query route is resolved; no scraping, bulk export, offline caching or redistribution until EEC/registry operator confirms the endpoint and reuse terms in writing",
-      "evidence_status": "EEC Collegium Decision No. 88, official Interstandart FGIS page, and current portal redirect reviewed 2026-11-04"
+      "evidence_status": "EEC Collegium Decision No. 88, EAEU open-data catalogue and official FBU Interstandart FGIS registry page reviewed 2026-11-05; no OTTS-specific public API or reuse license established"
     },
     {
       "source_id": "gor3a-vehicle-makes-models-odbl",
