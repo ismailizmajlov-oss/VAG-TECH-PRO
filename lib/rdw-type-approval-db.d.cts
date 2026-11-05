@@ -22,6 +22,8 @@ export interface RdwTypeApprovalSummary {
   databaseSha256?: string;
   sourceSnapshotSha256?: string;
   metadataBundleSha256?: string;
+  sourceManifestSha256?: string;
+  sourceRegisterSha256?: string | null;
   exactVehicleFitment?: false;
   ruEaeuApplicability?: false;
   vagFactoryEngineCodeVerified?: false;
