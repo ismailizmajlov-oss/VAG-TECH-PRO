@@ -19,6 +19,14 @@ The primary signed order copy was not retrieved. The official-site search route 
 
 This is a bounded search result, not proof that the official route does not exist.
 
+## Public Annex 2 technical-field boundary
+
+The 28 public Annex 2 search fields are registry/document identity and status metadata: approval/form identifiers, validity dates, certification-body details, make, commercial name, vehicle type, base vehicle/chassis, modifications, category, environmental class, a reference to the Annex 1 PDF, electronic-issuance status, suspension/resumption and early-termination dates/reasons, and publication date.
+
+They do **not** include an engine type/code, gearbox type/code, engine/gearbox pair, ECU identifier, DTC, test plan, repair procedure, wiring diagram, pinout, torque value, adaptation or service interval. The Annex 1 internal FGIS attribute namespace is separate and is not interchangeable with Annex 2. Field 19 is a PDF reference, not the PDF itself and not a redistribution grant.
+
+This field-level conclusion is based on the two reviewed secondary republications of Orders 2038/2335; the primary signed order and exact official search endpoint remain unresolved. Even if an owner later obtains reuse permission for Annex 2 metadata, that metadata alone cannot populate the production engine/gearbox or repair-data tables.
+
 ## Rights and ingestion boundary
 
 The order's requirement to publish and enable individual search of Annex 2 fields is not a bulk-data licence. It does not, by itself, authorize VAG TECH PRO to perform automated extraction, bulk export, persistent SQLite caching, commercial third-party display, offline distribution or redistribution of records or PDFs.
