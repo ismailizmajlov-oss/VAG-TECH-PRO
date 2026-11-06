@@ -163,6 +163,8 @@ def main() -> None:
         "minimatch@^10.0.0",
         "'@electron/universal'",
         "'11.0.1'",
+        "'electron-to-chromium'",
+        "'1.5.478'",
         "minimatch-verification.log",
         "Vulnerable minimatch versions remain in the dependency lock",
         "npm audit --audit-level=moderate",
