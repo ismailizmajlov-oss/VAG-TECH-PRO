@@ -223,7 +223,21 @@ jobs:
           git add "ci-status/latest-windows-run.json"
           git commit -m "ci: record Windows validation run $env:UPSTREAM_RUN_NUMBER"
           if ($LASTEXITCODE -ne 0) { throw "Could not commit the Windows validation status record." }
-          git pull --rebase origin main
-          if ($LASTEXITCODE -ne 0) { throw "Could not rebase the Windows validation status record onto main." }
-          git push origin HEAD:main
-          if ($LASTEXITCODE -ne 0) { throw "Could not publish the Windows validation status record." }
+          $published = $false
+          for ($attempt = 1; $attempt -le 5; $attempt++) {
+            git fetch origin main
+            if ($LASTEXITCODE -ne 0) { throw "Could not fetch main while publishing the Windows validation status record." }
+            git rebase origin/main
+            if ($LASTEXITCODE -ne 0) {
+              git rebase --abort
+              throw "Could not rebase the Windows validation status record onto the latest main."
+            }
+            git push origin HEAD:main
+            if ($LASTEXITCODE -eq 0) {
+              $published = $true
+              break
+            }
+            Write-Output "Status publication attempt $attempt lost a concurrent main update; retrying after fetch/rebase."
+            Start-Sleep -Seconds ([Math]::Min(2 * $attempt, 10))
+          }
+          if (-not $published) { throw "Could not publish the Windows validation status record after five concurrent-update retries." }
