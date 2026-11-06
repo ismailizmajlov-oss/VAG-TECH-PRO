@@ -90,6 +90,7 @@ function patchElectron(file) {
 function patchTests(file) {
   let source = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
   if (source.includes("run78 validates technical payload schemas before opening an import transaction")) return false;
+  source = replaceOnce(source, '  const payload = { torque_nm: 90, angle_deg: 90 };', '  const payload = { component: "Test fastener", torque_value: 90, torque_unit: "Nm", angle_degrees: 90, condition: "Test-only fixture" };', "legacy torque test fixture");
   const anchor = 'test("imports a valid package atomically and is idempotent for the same package hash", (t) => {\n';
   const tests = [
     'test("run78 validates technical payload schemas before opening an import transaction", (t) => {',
