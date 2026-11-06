@@ -1,17 +1,53 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-06T03:07:53.3488965Z",
+  "recorded_at_utc": "2026-11-06T03:09:23.4864989Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run71",
-  "run_id": 42154596148,
-  "run_number": 218,
+  "run_id": 42154593529,
+  "run_number": 217,
   "run_attempt": 1,
   "status": "completed",
-  "conclusion": "cancelled",
-  "head_sha": "79551860828a4ac9e77961522afed646161f509f",
+  "conclusion": "failure",
+  "head_sha": "5cd0323406620ac1c1b6b1e702178a12228f39f3",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42154596148",
-  "jobs": [],
-  "artifacts": [],
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42154593529",
+  "jobs": [
+    {
+      "id": 127685603686,
+      "name": "build-and-lifecycle",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000001508",
+      "started_at": "2026-11-06T03:07:37Z",
+      "completed_at": "2026-11-06T03:09:08Z"
+    },
+    {
+      "id": 127686134878,
+      "name": "Windows Server 2022 installer compatibility lifecycle",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_name": null,
+      "started_at": "2026-11-06T03:09:08Z",
+      "completed_at": "2026-11-06T03:09:08Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13474445028,
+      "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
+      "size_in_bytes": 24536,
+      "expired": false,
+      "created_at": "2026-11-06T03:08:57Z",
+      "expires_at": "2026-11-13T03:08:56Z"
+    },
+    {
+      "id": 13474360378,
+      "name": "vag-tech-pro-windows-x64-run70",
+      "size_in_bytes": 22954029,
+      "expired": false,
+      "created_at": "2026-11-06T03:09:03Z",
+      "expires_at": "2026-11-20T03:08:59Z"
+    }
+  ],
   "native_windows_10_11": {
     "runner_gate_enabled": false,
     "lifecycle_job_result": "skipped",
