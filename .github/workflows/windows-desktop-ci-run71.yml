@@ -36,6 +36,10 @@ on:
       - "docs/research/RDW_EU_VAG_TYPE_APPROVAL_OPEN_DATA_REVIEW_2026-11-06.md"
       - "tests/test_rdw_vag_type_approval_source_rights.py"
       - "scripts/probe_rdw_vag_type_approvals.py"
+      - "scripts/build_rdw_vag_research_pack.py"
+      - "tests/test_rdw_vag_research_pack.py"
+      - ".github/workflows/acquire-rdw-vag-research-pack.yml"
+      - ".github/workflows/rdw-vag-research-pack-windows.yml"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "tests/test_openvag_source_rights.py"
@@ -206,6 +210,8 @@ jobs:
           python tests/test_eaeu_otts_registry_import.py
           python tests/test_vw_flash_simos18_dtc_quarantine.py
           python tests/test_astra_ch_tas_desktop_integration.py
+          python -m py_compile scripts/build_rdw_vag_research_pack.py
+          python -m unittest discover -s tests -p "test_rdw_vag_research_pack.py" -v
 
 
       - name: Reassemble and verify pinned desktop source archive
