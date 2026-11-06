@@ -131,6 +131,12 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0], 6)
                 source_row_fk_targets = {row[2] for row in db.execute("PRAGMA foreign_key_list(source_rows)")}
                 self.assertIn("source_file_artifacts", source_row_fk_targets)
+                db.execute("PRAGMA foreign_keys=ON")
+                with self.assertRaises(sqlite3.IntegrityError):
+                    db.execute(
+                        "INSERT INTO source_rows VALUES (?,?,?,?,'NL')",
+                        ("f" * 64, "unregistered-dataset", None, "{}"),
+                    )
                 provenance = db.execute(
                     "SELECT source_columns_sha256, required_columns_sha256, query_spec_sha256, query_spec_json "
                     "FROM source_file_artifacts WHERE dataset_id=?",
@@ -204,6 +210,17 @@ class RdwVagResearchPackTests(unittest.TestCase):
             manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
             with self.assertRaisesRegex(ValueError, "snapshot/SQLite source rows differ"):
+                rdw.validate_pack(pack)
+
+    def test_scope_coverage_manifest_tampering_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pack = Path(tmp) / "pack"
+            rdw.build_pack(pack, self.source, self.source_bytes, self.datasets, self.metadata)
+            manifest_path = pack / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["scope_coverage"]["scopes_with_engine_and_gearbox_rows"] = 999
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "scope-coverage metrics differ from SQLite"):
                 rdw.validate_pack(pack)
 
     def test_query_spec_digest_tampering_is_rejected(self):
