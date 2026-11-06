@@ -155,7 +155,7 @@ function validatePack(packDir) {
   const attribution = readText(safeJoin(packDir, "ATTRIBUTION.md"));
   if (!/CC0 1\.0 Universal/i.test(license) || !/creativecommons\.org\/publicdomain\/zero\/1\.0/i.test(license)) fail("Wikidata structured-data CC0 notice is missing");
   if (!/Wikidata structured data/i.test(attribution) || !/CC0 1\.0 Universal/i.test(attribution) ||
-      !/not an authoritative Volkswagen Group model register/i.test(attribution)) fail("Wikidata attribution/scope notice is incomplete");
+      !/not an authoritative\\s+Volkswagen Group model register/i.test(attribution)) fail("Wikidata attribution/scope notice is incomplete");
 
   const db = openReadOnly(safeJoin(packDir, "wikidata-vag-taxonomy.sqlite"));
   let counts;
