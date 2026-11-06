@@ -55,10 +55,10 @@ def main() -> None:
     apply_text = (ROOT / "apply-desktop-hardening-run35.cjs").read_text(encoding="utf-8")
     if "sourceRegisterVerifierPath" not in apply_text or "sourceRegisterTestPath" not in apply_text:
         raise SystemExit("Windows build does not generate the source-register afterPack verifier and tests")
-    sync_marker = "      - name: Sync current source-rights register into desktop payload\\n"
+    sync_marker = "      - name: Sync current source-rights register into desktop payload"
     if sync_marker not in text:
         raise SystemExit("Windows build does not synchronize the authoritative source-rights register")
-    sync_step = text.split(sync_marker, 1)[1].split("\\n      - name:", 1)[0]
+    sync_step = text.split(sync_marker, 1)[1].split("      - name:", 1)[0]
     sync_required = (
         'python -m unittest discover -s tests -p "test_sync_vag_source_register_source_rights.py" -v',
         'python scripts/sync_vag_source_register.py --source "data/source-manifests/vag-factory-source-register.json" --desktop-root "desktop-source"',
@@ -82,7 +82,8 @@ def main() -> None:
         'vag_source_register_source_count',
         'desktop-source/data/source-manifests/vag-factory-source-register.json',
         'data/source-manifests',
-        'resources/source-manifests',
+        'resources',
+        'source-manifests',
         'sourceRegisterVerifierPath',
         'source-register-after-pack.test.cjs',
     )
