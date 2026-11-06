@@ -31,7 +31,7 @@ LICENSE_URL = "https://creativecommons.org/publicdomain/zero/1.0/"
 SOURCE_REVISION_PREFIX = "wikidata-snapshot-"
 USER_AGENT = "VAG-TECH-PRO/0.1 (+https://github.com/ismailizmajlov-oss/VAG-TECH-PRO)"
 MANUFACTURER_LABELS = [
-    "Volkswagen", "Volkswagen AG", "Volkswagen Commercial Vehicles",
+    "Volkswagen", "Volkswagen AG", "Volkswagen Group", "Volkswagen Commercial Vehicles",
     "Audi AG", "Škoda Auto", "SEAT", "SEAT S.A.",
     "Porsche AG", "Bentley Motors Limited",
     "Automobili Lamborghini S.p.A.", "Bugatti Rimac",
@@ -41,11 +41,16 @@ SPARQL_QUERY = """PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX schema: <http://schema.org/>
-SELECT DISTINCT ?model ?modelLabelEn ?modelLabelRu ?manufacturer ?manufacturerLabel ?inception ?dissolution ?modified
+SELECT DISTINCT ?model ?modelLabelEn ?modelLabelRu ?manufacturer ?manufacturerLabel
+                ?modelType ?modelTypeLabelEn ?entityClass ?inception ?dissolution ?modified
 WHERE {
   ?model wdt:P176 ?manufacturer ;
-         wdt:P31/wdt:P279* wd:Q3231690 .
-  VALUES ?manufacturerLabel { "Volkswagen"@en "Volkswagen AG"@en "Volkswagen Commercial Vehicles"@en "Audi AG"@en "Škoda Auto"@en "SEAT"@en "SEAT S.A."@en "Porsche AG"@en "Bentley Motors Limited"@en "Automobili Lamborghini S.p.A."@en "Bugatti Rimac"@en }
+         wdt:P31 ?modelType .
+  ?modelType wdt:P279* ?entityClass .
+  VALUES ?entityClass { wd:Q3231690 wd:Q59773381 }
+  ?modelType rdfs:label ?modelTypeLabelEn .
+  FILTER(LANG(?modelTypeLabelEn) = "en")
+  VALUES ?manufacturerLabel { "Volkswagen"@en "Volkswagen AG"@en "Volkswagen Group"@en "Volkswagen Commercial Vehicles"@en "Audi AG"@en "Škoda Auto"@en "SEAT"@en "SEAT S.A."@en "Porsche AG"@en "Bentley Motors Limited"@en "Automobili Lamborghini S.p.A."@en "Bugatti Rimac"@en }
   ?manufacturer rdfs:label ?manufacturerLabel .
   ?model rdfs:label ?modelLabelEn .
   FILTER(LANG(?modelLabelEn) = "en")
@@ -124,6 +129,7 @@ CREATE TABLE vehicle_model_entities (
   model_label_en TEXT NOT NULL,
   model_label_ru TEXT,
   manufacturer_label_en TEXT NOT NULL,
+  entity_types_json TEXT NOT NULL,
   inception_dates_json TEXT NOT NULL,
   dissolution_dates_json TEXT NOT NULL,
   modified_dates_json TEXT NOT NULL,
@@ -245,8 +251,11 @@ def parse_snapshot(snapshot_bytes: bytes) -> list[dict[str, Any]]:
         manufacturer_uri = binding_value(binding, "manufacturer")
         manufacturer_label = binding_value(binding, "manufacturerLabel")
         model_label_en = binding_value(binding, "modelLabelEn")
-        if not model_uri or not manufacturer_uri or not manufacturer_label or not model_label_en:
-            raise ValueError(f"binding {index} lacks required model/manufacturer identity fields")
+        model_type_uri = binding_value(binding, "modelType")
+        model_type_label_en = binding_value(binding, "modelTypeLabelEn")
+        entity_class_uri = binding_value(binding, "entityClass")
+        if not model_uri or not manufacturer_uri or not manufacturer_label or not model_label_en or not model_type_uri or not model_type_label_en or not entity_class_uri:
+            raise ValueError(f"binding {index} lacks required model/manufacturer/entity-type identity fields")
         if manufacturer_label not in MANUFACTURER_LABELS:
             raise ValueError(f"binding {index} manufacturer is outside the curated whitelist")
         row = {
@@ -259,12 +268,17 @@ def parse_snapshot(snapshot_bytes: bytes) -> list[dict[str, Any]]:
             "manufacturer_qid": qid(manufacturer_uri),
             "manufacturer_uri": manufacturer_uri,
             "manufacturer_label_en": manufacturer_label,
+            "model_type_qid": qid(model_type_uri),
+            "model_type_label_en": model_type_label_en.strip(),
+            "entity_class_qid": qid(entity_class_uri),
             "inception": binding_value(binding, "inception"),
             "dissolution": binding_value(binding, "dissolution"),
             "modified": binding_value(binding, "modified"),
         }
-        if not row["model_label_en"]:
-            raise ValueError(f"binding {index} has an empty English model label")
+        if not row["model_label_en"] or not row["model_type_label_en"]:
+            raise ValueError(f"binding {index} has an empty English model or entity-type label")
+        if row["entity_class_qid"] not in ("Q3231690", "Q59773381"):
+            raise ValueError(f"binding {index} entity class is outside the approved car model/series scope")
         parsed.append(row)
     if not parsed:
         raise ValueError("Wikidata query returned no VAG manufacturer model candidates")
@@ -278,6 +292,9 @@ def logical_content_hash(rows: list[dict[str, Any]]) -> str:
             "model_label_en": row["model_label_en"],
             "model_label_ru": row["model_label_ru"],
             "manufacturer_label_en": row["manufacturer_label_en"],
+            "model_type_qid": row["model_type_qid"],
+            "model_type_label_en": row["model_type_label_en"],
+            "entity_class_qid": row["entity_class_qid"],
             "inception": row["inception"],
             "dissolution": row["dissolution"],
             "modified": row["modified"],
@@ -315,26 +332,32 @@ def build_database(db_path: Path, rows: list[dict[str, Any]], source_revision: s
             modified = sorted({r["modified"] for r in group if r["modified"]})
             indexes = [r["binding_index"] for r in group]
             binding_hashes = [r["binding_sha256"] for r in group]
+            entity_types = sorted({(r["model_type_qid"], r["model_type_label_en"], r["entity_class_qid"]) for r in group})
+            entity_types_json = [
+                {"model_type_qid": item[0], "model_type_label_en": item[1], "entity_class_qid": item[2]}
+                for item in entity_types
+            ]
             record = {
                 "model_qid": model_qid, "manufacturer_qid": manufacturer_qid,
                 "model_label_en": first["model_label_en"], "model_label_ru": first["model_label_ru"],
-                "manufacturer_label_en": first["manufacturer_label_en"], "inception": inception,
+                "manufacturer_label_en": first["manufacturer_label_en"], "entity_types": entity_types_json, "inception": inception,
                 "dissolution": dissolution, "modified": modified, "binding_indexes": indexes,
                 "binding_hashes": binding_hashes,
             }
             db.execute(
                 """INSERT INTO vehicle_model_entities (
                   model_qid,manufacturer_qid,model_uri,manufacturer_uri,model_label_en,model_label_ru,
-                  manufacturer_label_en,inception_dates_json,dissolution_dates_json,modified_dates_json,
+                  manufacturer_label_en,entity_types_json,inception_dates_json,dissolution_dates_json,modified_dates_json,
                   source_binding_indexes_json,source_binding_sha256s_json,source_record_sha256,
                   source_revision,source_snapshot_sha256,source_query_sha256,market_scope,
                   applicability_precision,review_status,exact_vehicle_fitment,generation_verified,
                   engine_code_fitment,transmission_code_fitment,ecu_fitment,dtc_fitment,
                   repair_procedure_fitment,source_binding_count
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (
                     model_qid, manufacturer_qid, first["model_uri"], first["manufacturer_uri"],
                     first["model_label_en"], first["model_label_ru"], first["manufacturer_label_en"],
+                    json.dumps(entity_types_json, ensure_ascii=False),
                     json.dumps(inception, ensure_ascii=False), json.dumps(dissolution, ensure_ascii=False),
                     json.dumps(modified, ensure_ascii=False), json.dumps(indexes),
                     json.dumps(binding_hashes), sha256(canonical_json(record)), source_revision,
@@ -367,6 +390,8 @@ def build_database(db_path: Path, rows: list[dict[str, Any]], source_revision: s
             raise RuntimeError("SQLite foreign-key check failed")
         return {
             "model_entities": len(grouped),
+            "car_model_entities": sum(1 for group in grouped.values() if any(r["entity_class_qid"] == "Q3231690" for r in group)),
+            "car_model_series_entities": sum(1 for group in grouped.values() if any(r["entity_class_qid"] == "Q59773381" for r in group)),
             "source_bindings": len(rows),
             "manufacturers": len({row["manufacturer_qid"] for row in rows}),
             "russian_labels": sum(1 for row in grouped.values() if row[0]["model_label_ru"]),
@@ -429,13 +454,15 @@ def build_pack(snapshot_bytes: bytes, output_dir: Path, retrieved_at_utc: str | 
         "logical_content_sha256": logical_sha,
         "database_sha256": pack_files[db_path.name]["sha256"],
         "manufacturer_whitelist": MANUFACTURER_LABELS,
+        "entity_class_whitelist": [{"qid": "Q3231690", "label": "car model"}, {"qid": "Q59773381", "label": "car model series"}],
         "counts": counts,
         "query_limit": 3000,
         "limit_reached": len(rows) >= 3000,
         "completeness_status": "unknown",
         "scope": {
             "namespace": "vag_identity_candidate",
-            "manufacturer_group_basis": "curated_manufacturer_label_whitelist; not an authoritative corporate ownership registry",
+            "manufacturer_group_basis": "curated_manufacturer_label_whitelist including group-level Volkswagen Group; not an authoritative corporate ownership registry",
+            "entity_class_whitelist": ["Q3231690", "Q59773381"],
             "market_scope": "UNKNOWN",
             "completeness_status": "unknown",
             "applicability_precision": "candidate_identity_only",
