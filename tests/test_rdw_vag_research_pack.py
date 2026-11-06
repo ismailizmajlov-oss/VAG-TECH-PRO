@@ -219,7 +219,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
             manifest_path = pack / "manifest.json"
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             manifest["scope_coverage"]["scopes_with_engine_and_gearbox_rows"] = 999
-            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "scope-coverage metrics differ from SQLite"):
                 rdw.validate_pack(pack)
 
