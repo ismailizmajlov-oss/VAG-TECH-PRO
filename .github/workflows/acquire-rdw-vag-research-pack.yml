@@ -1,0 +1,72 @@
+name: Acquire rights-cleared RDW VAG type-approval research pack
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/acquire-rdw-vag-research-pack.yml"
+      - "scripts/build_rdw_vag_research_pack.py"
+      - "tests/test_rdw_vag_research_pack.py"
+      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-rdw-research-pack-\${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-build:
+    name: Acquire filtered CC0 RDW data and build isolated SQLite research pack
+    runs-on: windows-2025
+    timeout-minutes: 90
+    steps:
+      - name: Checkout pinned source and rights manifest
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Compile builder and run offline policy tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python --version
+          python -m py_compile scripts/build_rdw_vag_research_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "RDW builder compilation failed." }
+          python -m unittest discover -s tests -p "test_rdw_vag_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "RDW research-pack policy tests failed." }
+
+      - name: Acquire allowlisted VAG approval-scope rows and build SQLite
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_rdw_vag_research_pack.py --manifest data/source-manifests/rdw-eu-vag-type-approval-open-data.json --output-dir artifacts/rdw-vag-research-pack 2>&1 | Tee-Object -FilePath rdw-pack-build.log
+          if ($LASTEXITCODE -ne 0) { throw "RDW research-pack acquisition/build failed." }
+          python scripts/build_rdw_vag_research_pack.py --verify-only --output-dir artifacts/rdw-vag-research-pack
+          if ($LASTEXITCODE -ne 0) { throw "RDW research-pack independent verification failed." }
+          $manifest = Get-Content -LiteralPath artifacts/rdw-vag-research-pack/manifest.json -Raw | ConvertFrom-Json
+          if ($manifest.market_scope.Count -ne 1 -or $manifest.market_scope[0] -ne "NL" -or
+              $manifest.production_import -ne $false -or $manifest.ru_eaeu_applicability -ne $false -or
+              $manifest.exact_engine_gearbox_pair -ne $false -or $manifest.pair_table_created -ne $false) {
+            throw "RDW pack escaped its NL-only, research-only, no-pair policy."
+          }
+          "## RDW VAG research pack" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Market: NL only; production import: false; RU/EAEU applicability: false; exact engine/gearbox pairing: false." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Counts: $($manifest.counts | ConvertTo-Json -Compress)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "SQLite SHA-256: $($manifest.database.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload verified RDW SQLite, filtered source snapshots and provenance
+        uses: actions/upload-artifact@cf430e030dd5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rdw-vag-nl-eu-type-approval-research-pack
+          path: |
+            artifacts/rdw-vag-research-pack/**
+            rdw-pack-build.log
+          if-no-files-found: error
+          retention-days: 90
