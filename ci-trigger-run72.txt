@@ -1,4 +1,4 @@
 VAG TECH PRO Windows x64 validation trigger.
-Base revision: 9b20ed7171e84c8432ec65fc6c632674b0d37ab4
-Purpose: validate the Kazakhstan national OTTS source evidence and publish a small desktop source-audit artifact containing the extracted app, UI, tests and technical-surface inventory. Repeat the pinned NSIS build, offline package checks, clean install, in-place upgrade, backup/restore and uninstall-preservation lifecycle.
-No product data or application source is added by this marker. No unlicensed source is imported or approved.
+Base revision: 6a16f0b0f06f48a6e583d3e166b34be9e3b85f3a
+Purpose: rerun the Windows x64 desktop build and lifecycle audit after adding scripts/windows-installer-lifecycle.ps1 to the source-audit artifact. Verify the lifecycle failure cause from the extracted script and preserve a small audit artifact.
+No product data is added by this marker. No unlicensed source is imported or approved. No installer is published.
