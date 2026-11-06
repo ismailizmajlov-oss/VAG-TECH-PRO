@@ -22,7 +22,7 @@
     "generic_code_ranges": [
       "P0xxx",
       "P2xxx",
-      "P34xx-P39xx",
+      "P34xx",
       "B0xxx",
       "C0xxx",
       "U0xxx"
@@ -35,7 +35,10 @@
       "U1xxx-U2xxx"
     ],
     "excluded_mixed_or_reserved_ranges": [
-      "U3xxx"
+      "U3xxx",
+      "P35xx-P39xx",
+      "B3xxx",
+      "C3xxx"
     ]
   },
   "expected_counts": {
