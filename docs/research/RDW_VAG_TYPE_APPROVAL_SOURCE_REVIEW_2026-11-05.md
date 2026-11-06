@@ -17,7 +17,7 @@
   - The catalogue entry identifies the type-approval dataset as CC0.
 - CC0 legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
-The source register records CC0-1.0 with commercial use, display, offline caching and redistribution allowed. The ingest must still fetch the live metadata JSON for every Socrata resource and fail closed if a resource advertises a conflicting licence or its parent-dataset relationship cannot be established.
+The source register records CC0-1.0 with commercial use, display, offline caching and redistribution allowed. The provider's open-data leaflet additionally says downstream applications must not publicly identify the provider or use its logo/house style. The product UI therefore omits provider attribution; exact publisher identity, dataset URLs, revisions and hashes remain in the internal provenance register for audit. The ingest must still fetch the live metadata JSON for every Socrata resource and fail closed if a resource advertises a conflicting licence or its parent-dataset relationship cannot be established.
 
 A third-party schema reference was consulted only to cross-check RDW field names and resource IDs: https://github.com/j3lte/rdw-data. It is **not** an imported data source and no third-party code is copied into VAG TECH PRO.
 
