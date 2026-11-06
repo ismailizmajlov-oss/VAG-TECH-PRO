@@ -10,7 +10,7 @@ function replaceOnce(source, before, after, label) {
 }
 
 function patchCore(file) {
-  let source = fs.readFileSync(file, "utf8");
+  let source = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
   if (source.includes("function validateTechnicalPayload(record)")) {
     if (!source.includes("  validateTechnicalPayload(record);")) throw new Error("Run78 validator is present but not enforced");
     return false;
@@ -75,7 +75,7 @@ function patchCore(file) {
 }
 
 function patchElectron(file) {
-  let source = fs.readFileSync(file, "utf8");
+  let source = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
   if (source.includes("const schemaRoot = app.isPackaged")) return false;
   source = replaceOnce(source,
     '  const researchRoot = app.isPackaged\n    ? path.join(process.resourcesPath, "research-data")\n    : path.join(app.getAppPath(), "data", "research");\n',
@@ -88,7 +88,7 @@ function patchElectron(file) {
 }
 
 function patchTests(file) {
-  let source = fs.readFileSync(file, "utf8");
+  let source = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
   if (source.includes("run78 validates technical payload schemas before opening an import transaction")) return false;
   const anchor = 'test("imports a valid package atomically and is idempotent for the same package hash", (t) => {\n';
   const tests = [
