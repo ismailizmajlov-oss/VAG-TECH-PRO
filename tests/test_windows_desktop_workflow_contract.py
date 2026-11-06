@@ -155,6 +155,23 @@ def main() -> None:
     if r"/not an authoritative\s+Volkswagen Group model register/i" not in (ROOT / "apply-wikidata-vag-taxonomy-run68.cjs").read_text(encoding="utf-8"):
         raise SystemExit("Wikidata pack validator is not whitespace-tolerant for the scope notice")
 
+    lock_marker = "      - name: Generate, pin and install the Windows dependency lock"
+    if lock_marker not in text:
+        raise SystemExit("Windows dependency-lock security step is missing")
+    lock_step = text.split(lock_marker, 1)[1].split("\\n      - name:", 1)[0]
+    for required_lock_guard in (
+        "minimatch@>=7.0.0 <11.0.1",
+        "'11.0.1'",
+        "minimatch-verification.log",
+        "Vulnerable minimatch versions remain in the dependency lock",
+        "npm audit --audit-level=moderate",
+        "moderate or higher dependency vulnerabilities",
+    ):
+        if required_lock_guard not in lock_step:
+            raise SystemExit(f"Windows dependency security gate is missing: {required_lock_guard}")
+    if "npm audit --audit-level=high" in lock_step:
+        raise SystemExit("Full dependency audit must fail on moderate vulnerabilities, not only high/critical findings")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
