@@ -296,7 +296,7 @@ def verify_source_revisions(metadata_report: dict[str, dict[str, Any]]) -> None:
             "source_columns_sha256": sha256_bytes(canonical_bytes(columns)),
         }
         for field, value in observed.items():
-            if expected.get(field) != value:
+            if expected_revision.get(field) != value:
                 raise RuntimeError(
                     f"RDW dataset {dataset_id} changed during acquisition ({field}); discard snapshot and rerun"
                 )
