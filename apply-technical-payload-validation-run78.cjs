@@ -60,7 +60,7 @@ function patchCore(file) {
     '  return errors;',
     '}',
     'function validateTechnicalPayload(record) {',
-    '  if (record.record_type === "dtc_generic" || record.record_type === "dtc_vag_specific") { const code = record.payload.dtc ?? record.payload.code; const saeIso = typeof code === "string" && /^[PBCU][0-9A-F]{4}$/.test(code); const genericRange = saeIso && (code[0] === "P" ? (["0","2"].includes(code[1]) || (code[1] === "3" && ["4","5","6","7","8","9"].includes(code[2]))) : code[0] === "U" ? code[1] === "0" : code[1] === "0"); const legacyVag = record.record_type === "dtc_vag_specific" && typeof code === "string" && /^\\d{5}$/.test(code); const valid = record.record_type === "dtc_generic" ? genericRange : (saeIso || legacyVag); if (!valid) throw new Error("DTC payload code does not match its declared generic or VAG-specific namespace for " + record.source_record_key); return true; }',
+    '  if (record.record_type === "dtc_generic" || record.record_type === "dtc_vag_specific") { const code = record.payload.dtc ?? record.payload.code; const saeIso = typeof code === "string" && /^[PBCU][0-9A-F]{4}$/.test(code); const genericRange = saeIso && (code[0] === "P" ? (["0","2"].includes(code[1]) || (code[1] === "3" && code[2] === "4")) : code[0] === "U" ? code[1] === "0" : code[1] === "0"); const legacyVag = record.record_type === "dtc_vag_specific" && typeof code === "string" && /^\\d{5}$/.test(code); const valid = record.record_type === "dtc_generic" ? genericRange : (saeIso || legacyVag); if (!valid) throw new Error("DTC payload code does not match its declared generic or VAG-specific namespace for " + record.source_record_key); return true; }',
     '  const kind = TECHNICAL_PAYLOAD_SCHEMA_KIND[record.record_type]; if (!kind) return true;',
     '  const schema = loadTechnicalPayloadSchema(); const definition = schema.$defs[kind]; if (!definition) throw new Error("Technical payload schema is missing record kind " + kind);',
     '  const errors = validateJsonSchemaNode(record.payload, definition, schema, "$.payload"); if (errors.length) throw new Error("Technical payload schema validation failed for " + record.source_record_key + ": " + errors.slice(0, 8).join("; ")); return true;',
@@ -141,7 +141,7 @@ function patchTests(file) {
     '});',
     '',
     'test("run78 rejects manufacturer-controlled and mixed U3 DTCs from the generic namespace", () => {',
-    '  for (const code of ["P3000","P33FF","B3000","C3000","U3000","U3FFF"]) {',
+    '  for (const code of ["P3000","P33FF","P39FF","P35FF","B3000","C3000","U3000","U3FFF"]) {',
     '    assert.throws(() => core.validateTechnicalPayload({ record_type: "dtc_generic", source_record_key: "generic:" + code, payload: { code } }), /DTC payload code does not match its declared generic or VAG-specific namespace/);',
     '  }',
     '  assert.equal(core.validateTechnicalPayload({ record_type: "dtc_generic", source_record_key: "generic:P3400", payload: { code: "P3400" } }), true);
@@ -189,7 +189,7 @@ function patchResearchVerification(desktopRoot) {
     "obCounts.dtcs === 9359 && obCounts.quarantinedDtcRows === 174",
     "OBDex SQLite count gate");
   verifier = verifier.replace(/^\s*const manufacturerSpecific = obCodes\.filter\(\(code\) => .*;\s*$/m,
-    '    const nonGenericOrMixed = obCodes.filter((code) => /^(P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[123][0-9A-F]{3}|C[123][0-9A-F]{3}|U[123][0-9A-F]{3})$/i.test(code));');
+    '    const nonGenericOrMixed = obCodes.filter((code) => /^(P1[0-9A-F]{3}|P3[0-35-9][0-9A-F]{2}|B[123][0-9A-F]{3}|C[123][0-9A-F]{3}|U[123][0-9A-F]{3})$/i.test(code));');
   verifier = verifier.replace(/^\s*assert\(manufacturerSpecific\.length === 0, .*;\s*$/m,
     '    assert(nonGenericOrMixed.length === 0, "OBDex contains non-generic or mixed/reserved DTCs in generic namespace");\n    assert(obCodes.includes("P3400") && !obCodes.includes("U3000"), "OBDex generic namespace must retain P34xx and exclude U3xxx");');
   if (!verifier.includes("const nonGenericOrMixed =") || !verifier.includes("obCodes.includes(" + '"P3400"')) throw new Error("Run78 OBDex code-family audit patch did not apply");
@@ -203,7 +203,7 @@ function patchResearchVerification(desktopRoot) {
     "OBDex runtime summary count");
   dbTests = replaceOnce(dbTests,
     '  assert.equal(rows[0].code, "P0300");',
-    '  assert.equal(rows[0].code, "P0300");\n  assert.deepEqual(local.searchGenericDtcs("U3000", 5, root), []);\n  assert.equal(local.searchGenericDtcs("P3400", 5, root)[0].code, "P3400");',
+    '  assert.equal(rows[0].code, "P0300");\n  assert.deepEqual(local.searchGenericDtcs("U3000", 5, root), []);\n  assert.deepEqual(local.searchGenericDtcs("P39FF", 5, root), []);\n  assert.equal(local.searchGenericDtcs("P3400", 5, root)[0].code, "P3400");',
     "OBDex runtime generic search boundaries");
   fs.writeFileSync(verifierFile, verifier, "utf8");
   fs.writeFileSync(packTestsFile, packTests, "utf8");
