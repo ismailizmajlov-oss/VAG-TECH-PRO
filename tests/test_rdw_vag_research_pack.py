@@ -4,6 +4,7 @@ import json
 import sqlite3
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from scripts import build_rdw_vag_research_pack as rdw
@@ -86,11 +87,55 @@ class RdwVagResearchPackTests(unittest.TestCase):
             self.metadata[name] = {
                 "rows_updated_at": f"2026-11-06T00:00:0{i}Z",
                 "view_last_modified": None,
-                "source_columns_sha256": "a" * 64,
+                "source_columns_sha256": rdw.sha256_bytes(rdw.canonical_bytes(required_columns)),
                 "required_columns": required_columns,
                 "required_columns_sha256": rdw.sha256_bytes(rdw.canonical_bytes(required_columns)),
                 "query_spec": query_spec,
             }
+
+    def _metadata_payload(self, name: str, changed_revision: bool = False):
+        required = sorted(rdw.DATASETS[name]["required"])
+        return {
+            "rowsUpdatedAt": (
+                "2026-11-07T00:00:00Z" if changed_revision
+                else self.metadata[name]["rows_updated_at"]
+            ),
+            "viewLastModified": self.metadata[name]["view_last_modified"],
+            "columns": [{"fieldName": field} for field in required],
+        }
+
+    def test_source_revisions_and_schema_are_rechecked_after_acquisition(self):
+        names_by_id = {str(config["id"]): name for name, config in rdw.DATASETS.items()}
+        with patch.object(
+            rdw,
+            "fetch_metadata",
+            side_effect=lambda dataset_id: self._metadata_payload(names_by_id[dataset_id]),
+        ):
+            rdw.verify_source_revisions(self.metadata)
+
+    def test_dataset_revision_change_during_acquisition_is_rejected(self):
+        names_by_id = {str(config["id"]): name for name, config in rdw.DATASETS.items()}
+
+        def changed_metadata(dataset_id):
+            name = names_by_id[dataset_id]
+            return self._metadata_payload(name, changed_revision=(name == "registration"))
+
+        with patch.object(rdw, "fetch_metadata", side_effect=changed_metadata):
+            with self.assertRaisesRegex(RuntimeError, "changed during acquisition"):
+                rdw.verify_source_revisions(self.metadata)
+
+    def test_dataset_schema_change_during_acquisition_is_rejected(self):
+        names_by_id = {str(config["id"]): name for name, config in rdw.DATASETS.items()}
+
+        def changed_schema(dataset_id):
+            name = names_by_id[dataset_id]
+            payload = self._metadata_payload(name)
+            payload["columns"] = [{"fieldName": "unexpected_schema_only"}]
+            return payload
+
+        with patch.object(rdw, "fetch_metadata", side_effect=changed_schema):
+            with self.assertRaisesRegex(ValueError, "schema changed during acquisition"):
+                rdw.verify_source_revisions(self.metadata)
 
     def test_pack_builds_hashed_sqlite_with_separate_engine_and_gearbox_candidates(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -143,7 +188,10 @@ class RdwVagResearchPackTests(unittest.TestCase):
                     (rdw.REGISTRATION_ID,),
                 ).fetchone()
                 registration_manifest = next(item for item in manifest["source_files"] if item["dataset_id"] == rdw.REGISTRATION_ID)
-                self.assertEqual(provenance[0], "a" * 64)
+                self.assertEqual(
+                    provenance[0],
+                    rdw.sha256_bytes(rdw.canonical_bytes(sorted(rdw.DATASETS["registration"]["required"]))),
+                )
                 self.assertEqual(provenance[1], registration_manifest["required_columns_sha256"])
                 self.assertEqual(provenance[2], registration_manifest["query_spec_sha256"])
                 self.assertEqual(json.loads(provenance[3]), registration_manifest["query_spec"])
