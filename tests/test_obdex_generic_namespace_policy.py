@@ -34,7 +34,7 @@ class ObdexGenericNamespacePolicyTests(unittest.TestCase):
 
     def test_generic_range_boundaries(self) -> None:
         accepted = ["P0300", "P2000", "P3400", "P39FF", "B0001", "C0001", "U0001"]
-        rejected = ["P1A00", "P3000", "P33FF", "U3000", "U3FFF", "B1000", "C1000", "U1000", "P3A00"]
+        rejected = ["P1A00", "P3000", "P33FF", "B3000", "C3000", "U3000", "U3FFF", "B1000", "C1000", "U1000", "P3A00"]
         for code in accepted:
             with self.subTest(code=code):
                 self.assertTrue(is_generic_sae_iso_code(code))
