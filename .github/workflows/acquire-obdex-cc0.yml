@@ -138,9 +138,9 @@ jobs:
           const mode09 = readJson("mode09.json");
           const meta = readJson("meta.json");
           const license = readBytes("UPSTREAM-LICENSE.txt").toString("utf8");
-          const expectedGenericRanges = ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx"];
+          const expectedGenericRanges = ["P0xxx","P2xxx","P34xx","B0xxx","C0xxx","U0xxx"];
           const expectedExcludedRanges = ["P1xxx","P30xx-P33xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"];
-          const expectedQuarantinedRanges = ["U3xxx"];
+          const expectedQuarantinedRanges = ["U3xxx","P35xx-P39xx","B3xxx","C3xxx"];
           if (
             JSON.stringify(sourceManifest.scope.generic_code_ranges) !== JSON.stringify(expectedGenericRanges) ||
             JSON.stringify(sourceManifest.scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(expectedExcludedRanges) ||
@@ -149,7 +149,7 @@ jobs:
             throw new Error("OBDex source lock code-range policy mismatch");
           }
           const allowedPrefixes = new Set(["P0","P2","B0","C0","U0"]);
-          const p3GenericCode = /^P3[4-9][0-9A-F]{2}$/;
+          const p3GenericCode = /^P34[0-9A-F]{2}$/;
           const isGenericDtc = (code) =>
             /^[PBCU][0-3][0-9A-F]{3}$/.test(code) &&
             (allowedPrefixes.has(code.slice(0,2)) || p3GenericCode.test(code));
@@ -187,7 +187,7 @@ jobs:
               quarantinedDtcRows.push({
                 code,
                 namespace: "manufacturer_controlled_or_iso_sae_reserved",
-                reason: "SAE J2012 classifies U3xxx as manufacturer-controlled and ISO/SAE-reserved; this snapshot does not prove a code-level generic assignment.",
+                reason: "The available SAE J2012 range tables identify U3xxx as mixed manufacturer-controlled / ISO/SAE-reserved; the current J2012DA code-level assignment is not verified here, so no U3xxx row is promoted to generic.",
                 source_record_sha256: rawHash,
                 source_references: safeSourceReferences,
                 raw_record: row
@@ -299,7 +299,7 @@ jobs:
             warnings: [
               "Generic SAE/ISO OBD-II reference data only; not a VAG factory diagnostic corpus.",
               "The 174 U3xxx entries are quarantined because U3xxx is a mixed manufacturer-controlled / ISO/SAE-reserved family, not a blanket generic namespace.",
-              "P30xx-P33xx are manufacturer-controlled; P34xx-P39xx are retained only in the SAE/ISO-controlled or reserved range.",
+              "P30xx-P33xx are manufacturer-controlled; Only the P34xx family present in this snapshot is admitted; P35xx-P39xx, B3xxx and C3xxx remain excluded pending code-level assignment verification.",
               "Do not map generic code descriptions to a VAG ECU, engine, gearbox or model without separate evidence.",
               "Descriptions and causes are unreviewed source content, not verified repair instructions.",
               "No record asserts vehicle fitment or exact diagnostic procedure applicability.",
