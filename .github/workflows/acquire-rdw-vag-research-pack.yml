@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: vag-tech-pro-rdw-research-pack-\${{ github.ref }}
+  group: vag-tech-pro-rdw-research-pack-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
