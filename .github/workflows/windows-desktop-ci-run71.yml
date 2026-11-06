@@ -36,7 +36,9 @@ on:
       - "tests/test_openvag_source_rights.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
       - "docs/research/WAL33D_DTC_DATABASE_SOURCE_REVIEW_2026-11-06.md"
+      - "docs/research/DECODE_TR_VAG_ENGINE_DRIVETRAIN_RIGHTS_REVIEW_2026-11-06.md"
       - "tests/test_wal33d_dtc_candidate_rights.py"
+      - "tests/test_decode_tr_source_rights.py"
       - "data/source-manifests/russian-eaeu-otts-sources.json"
       - "scripts/import-authorized-fgis-otts-export.cjs"
       - "tests/authorized-fgis-otts-export.test.cjs"
@@ -98,7 +100,9 @@ on:
       - "tests/test_openvag_source_rights.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
       - "docs/research/WAL33D_DTC_DATABASE_SOURCE_REVIEW_2026-11-06.md"
+      - "docs/research/DECODE_TR_VAG_ENGINE_DRIVETRAIN_RIGHTS_REVIEW_2026-11-06.md"
       - "tests/test_wal33d_dtc_candidate_rights.py"
+      - "tests/test_decode_tr_source_rights.py"
       - "data/source-manifests/russian-eaeu-otts-sources.json"
       - "data/sql/**"
       - "data/schemas/**"
@@ -181,6 +185,7 @@ jobs:
           python tests/test_otts_bot_source_rights.py
           python tests/test_openvag_source_rights.py
           python tests/test_wal33d_dtc_candidate_rights.py
+          python tests/test_decode_tr_source_rights.py
           node --test tests/authorized-fgis-otts-export.test.cjs
           python -m py_compile scripts/import_eaeu_otts_registry_export.py
           python tests/test_russian_eaeu_otts_manifest.py
