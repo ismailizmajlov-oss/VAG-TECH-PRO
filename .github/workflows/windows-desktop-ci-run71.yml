@@ -819,8 +819,8 @@ jobs:
           $patchHash = (Get-FileHash apply-vehiclesdb-schema-fix-run63.cjs -Algorithm SHA256).Hash.ToLowerInvariant()
           "vehiclesdb_schema_fix_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           node --check desktop-source/lib/local-research-db.cjs
-          node --test desktop-source/tests/local-research-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/research-hash-targeted-test.log"
-          if ($LASTEXITCODE -ne 0) { throw "Targeted research pack integrity test failed" }
+          # The OBDex count assertion is updated by the later run78 patcher before npm test.
+          # Run the full local-research-db.test.cjs suite after all desktop source patches are applied.
 
       - name: Capture desktop VehiclesDB schema diagnostics
         if: always()
