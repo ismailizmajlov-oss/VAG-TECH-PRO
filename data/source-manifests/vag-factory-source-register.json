@@ -174,7 +174,7 @@
           "ECUModelCode"
         ],
         "model_year_field": "VehicleV2Details.VehicleManufacturingYear",
-        "model_year_limitation": "Store only if explicitly present; do not infer model year from OTTS issue/start date.",
+        "model_year_limitation": "Decision No. 88 populates VehicleManufacturingYear for SBKTS; because the importer skips SBKTS, model_year remains NULL for OTTS/OTSH. Never infer year from approval dates.",
         "code_semantics": "VehicleComponentModelCode is manufacturer-assigned; it is not automatically a VAG three-letter engine or gearbox code.",
         "pairing_semantics": "Same-variant nesting can support an unverified candidate only; never cross-join multiple engines and gearboxes.",
         "public_query_exposure_note": "These are fields in the Decision No. 88 registry schema. Their exposure in the current public query UI/export has not been verified.",
@@ -183,9 +183,14 @@
           "FullNameDetails",
           "CommunicationChannelId",
           "VehicleIdentificationNumberId",
-          "DocBinaryText"
+          "DocBinaryText",
+          "ConformityAuthorityInformationDetails.BusinessEntityName",
+          "ConformityAuthorityInformationDetails.BusinessEntityBriefName",
+          "VehicleManufacturerDetails.BusinessEntityName",
+          "VehicleManufacturerDetails.BusinessEntityBriefName"
         ],
-        "rights_boundary": "Schema access does not grant bulk extraction, offline caching, commercial use, third-party display or redistribution rights."
+        "rights_boundary": "Schema access does not grant bulk extraction, offline caching, commercial use, third-party display or redistribution rights.",
+        "market_scope_semantics": "EAEU_is_market_scope; UnifiedCountryCode_is_issuing_country"
       },
       "schema_registry_observation": {
         "url": "https://rseds.eaeunion.org/ru/",

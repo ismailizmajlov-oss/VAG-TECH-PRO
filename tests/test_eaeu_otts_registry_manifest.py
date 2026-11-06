@@ -27,6 +27,8 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertIn("ECUModelCode", schema["ecu_fields"])
         self.assertFalse(schema["public_field_exposure_verified"])
         self.assertFalse(schema["official_xsd_retrieved"])
+        self.assertIn("VehicleManufacturerDetails.BusinessEntityName", schema["excluded_fields"])
+        self.assertEqual(schema["market_scope_semantics"], "EAEU_is_market_scope; UnifiedCountryCode_is_issuing_country")
         self.assertFalse(source["data_ingested"])
 
     def test_source_revision_is_pinned_and_ingestion_is_disabled(self):

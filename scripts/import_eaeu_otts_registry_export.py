@@ -218,11 +218,11 @@ def _parse_document(record: ET.Element) -> dict[str, Any]:
     if kind_code == "40":
         return {"_skip": "SBKTS"}
 
-    country_code = (_first_direct_text(record, "UnifiedCountryCode") or "").upper()
+    issuing_country_code = (_first_direct_text(record, "UnifiedCountryCode") or "").upper()
     document_id = _first_direct_text(record, "DocId")
     start_date = _first_direct_text(record, "DocStartDate")
-    if not re.fullmatch(r"[A-Z]{2}", country_code):
-        raise ValueError("EAEU OTTS/OTSH record is missing a valid two-letter country code")
+    if not re.fullmatch(r"[A-Z]{2}", issuing_country_code):
+        raise ValueError("EAEU OTTS/OTSH record is missing a valid two-letter issuing-country code")
     if not document_id:
         raise ValueError("EAEU OTTS/OTSH record is missing DocId")
     if not start_date or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", start_date):
@@ -235,11 +235,7 @@ def _parse_document(record: ET.Element) -> dict[str, Any]:
     if not variants:
         raise ValueError(f"EAEU document {document_id} contains no VehicleVariantDetails")
 
-    authority_element = _first_direct(record, "ConformityAuthorityInformationDetails")
-    manufacturer_elements = _direct_children(record, "VehicleManufacturerDetails")
-    manufacturer_element = manufacturer_elements[0] if manufacturer_elements else None
     status_element = _first_direct(record, "ConformityDocStatusDetails")
-    vehicle_element = _first_direct(record, "VehicleV2Details")
 
     vehicle_type = {
         "make_name": _first_descendant_text(type_element, "VehicleMakeName") if type_element is not None else None,
@@ -251,8 +247,8 @@ def _parse_document(record: ET.Element) -> dict[str, Any]:
     status_code = _first_descendant_text(status_element, "DocStatusCode") if status_element is not None else None
 
     document = {
-        "country_code": country_code,
-        "market_scope": ["EAEU", country_code],
+        "issuing_country_code": issuing_country_code,
+        "market_scope": ["EAEU"],
         "document_id": document_id,
         "document_kind_code": kind_code,
         "document_type": DOCUMENT_TYPES[kind_code],
@@ -262,16 +258,8 @@ def _parse_document(record: ET.Element) -> dict[str, Any]:
         "document_validity_date": _first_direct_text(record, "DocValidityDate"),
         "status_code": status_code,
         "status_label": STATUS_LABELS.get(status_code or "", "unknown_or_not_provided") if status_element is not None else "not_provided",
-        "authority_name": (
-            _first_descendant_text(authority_element, "BusinessEntityName")
-            or _first_descendant_text(authority_element, "BusinessEntityBriefName")
-        ) if authority_element is not None else None,
-        "manufacturer_name": (
-            _first_descendant_text(manufacturer_element, "BusinessEntityName")
-            or _first_descendant_text(manufacturer_element, "BusinessEntityBriefName")
-        ) if manufacturer_element is not None else None,
         "vehicle_type": vehicle_type,
-        "model_year": _first_descendant_text(vehicle_element, "VehicleManufacturingYear") if vehicle_element is not None else None,
+        "model_year": None,
         "variants": variants,
         "applicability_precision": (
             "approval_variant_candidate"
@@ -410,7 +398,7 @@ def _create_database_schema(connection: sqlite3.Connection) -> None:
         CREATE TABLE approval_document (
             id INTEGER PRIMARY KEY,
             import_run_id INTEGER NOT NULL REFERENCES import_run(id),
-            country_code TEXT NOT NULL,
+            issuing_country_code TEXT NOT NULL,
             market_scope_json TEXT NOT NULL,
             document_id TEXT NOT NULL,
             document_kind_code TEXT NOT NULL,
@@ -420,8 +408,6 @@ def _create_database_schema(connection: sqlite3.Connection) -> None:
             document_validity_date TEXT,
             status_code TEXT,
             status_label TEXT NOT NULL,
-            authority_name TEXT,
-            manufacturer_name TEXT,
             vehicle_make_name TEXT,
             vehicle_make_code TEXT,
             commercial_name TEXT,
@@ -431,7 +417,7 @@ def _create_database_schema(connection: sqlite3.Connection) -> None:
             normalized_record_sha256 TEXT NOT NULL,
             applicability_precision TEXT NOT NULL,
             verification_status TEXT NOT NULL CHECK (verification_status = 'candidate_unverified'),
-            UNIQUE(country_code, document_id, document_kind_code, normalized_record_sha256)
+            UNIQUE(issuing_country_code, document_id, document_kind_code, normalized_record_sha256)
         );
         CREATE TABLE vehicle_variant (
             id INTEGER PRIMARY KEY,
@@ -583,15 +569,15 @@ def write_staging_database(
                 vehicle_type = document["vehicle_type"]
                 cursor = connection.execute(
                     """INSERT INTO approval_document (
-                        import_run_id, country_code, market_scope_json, document_id,
+                        import_run_id, issuing_country_code, market_scope_json, document_id,
                         document_kind_code, document_type, document_creation_date,
                         document_start_date, document_validity_date, status_code, status_label,
-                        authority_name, manufacturer_name, vehicle_make_name, vehicle_make_code,
-                        commercial_name, vehicle_type_id, technical_category_code, model_year,
-                        normalized_record_sha256, applicability_precision, verification_status
-                    ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'candidate_unverified')""",
+                        vehicle_make_name, vehicle_make_code, commercial_name, vehicle_type_id,
+                        technical_category_code, model_year, normalized_record_sha256,
+                        applicability_precision, verification_status
+                    ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'candidate_unverified')""",
                     (
-                        document["country_code"],
+                        document["issuing_country_code"],
                         json.dumps(document["market_scope"], ensure_ascii=False),
                         document["document_id"],
                         document["document_kind_code"],
@@ -601,8 +587,6 @@ def write_staging_database(
                         document["document_validity_date"],
                         document["status_code"],
                         document["status_label"],
-                        document["authority_name"],
-                        document["manufacturer_name"],
                         vehicle_type["make_name"],
                         vehicle_type["make_code"],
                         vehicle_type["commercial_name"],

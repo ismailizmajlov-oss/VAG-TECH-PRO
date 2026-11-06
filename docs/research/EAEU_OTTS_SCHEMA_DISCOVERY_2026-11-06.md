@@ -39,13 +39,13 @@ The new scripts/import_eaeu_otts_registry_export.py parser is a fail-closed path
 2. It does not scrape the portal, call undocumented endpoints or download documents.
 3. Persistent SQLite staging is blocked unless the source register contains explicit owner-reviewed permission for commercial use, bulk reuse, offline caching, display and redistribution, plus a matching permission-evidence file SHA-256.
 4. It never writes into the production vehicle catalogue. The output is a separate staging SQLite with distribution_eligible=0.
-5. It skips SBKTS code 40 and does not store applicant names, personal names, contact details, VINs or embedded binary documents.
+5. It skips SBKTS code 40 and does not store applicant, conformity-authority or vehicle-manufacturer entity names (which can contain a natural person's name), contact details, VINs or embedded binary documents.
 6. Engine and transmission component codes retain their EAEU field namespace. They are not relabelled as VAG engine/gearbox codes without independent evidence.
 7. A powertrain pair is emitted only as an unverified candidate when exactly one coded engine and one coded gearbox (unit kind 05) occur under the same approval variant. Multiple engines or gearboxes are never cross-joined.
-8. Model year is stored only if the source explicitly supplies VehicleManufacturingYear; the OTTS document date is never used as a model year.
+8. The schema rule populates VehicleManufacturingYear for SBKTS; this importer skips SBKTS, so model_year remains NULL for OTTS/OTSH. Approval dates are never used as model years.
 9. All imported values carry source ID/revision, market scope, retrieval timestamp, input SHA-256, normalized-record SHA-256, schema version and verification status.
 
-The importer has only synthetic test fixtures. No real EAEU vehicle records have been downloaded, cached or imported.
+The importer stores the issuing country separately from the EAEU market scope. It omits business-entity names from the manufacturer and conformity-authority sections because the schema permits a natural person to appear in those fields. The importer has only synthetic test fixtures. No real EAEU vehicle records have been downloaded, cached or imported.
 
 ## Next evidence required
 

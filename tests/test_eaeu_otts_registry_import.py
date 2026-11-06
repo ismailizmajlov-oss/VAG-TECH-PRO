@@ -159,6 +159,10 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         document = parsed["documents"][0]
         self.assertNotIn("Applicant Secret Synthetic", json.dumps(document, ensure_ascii=False))
         self.assertNotIn("VIN-SYNTHETIC-DO-NOT-STORE", json.dumps(document, ensure_ascii=False))
+        self.assertNotIn("Test Certification Authority", json.dumps(document, ensure_ascii=False))
+        self.assertNotIn("Test Vehicle Manufacturer", json.dumps(document, ensure_ascii=False))
+        self.assertEqual(document["issuing_country_code"], "RU")
+        self.assertEqual(document["market_scope"], ["EAEU"])
         self.assertIsNone(document["model_year"])
 
     def test_wrong_root_or_namespace_is_rejected(self):
@@ -248,10 +252,15 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
                 for table in ("approval_document", "vehicle_variant", "engine_candidate", "transmission_candidate", "ecu_candidate")
                 for row in db.execute(f"PRAGMA table_info({table})")
             }
-            self.assertFalse(any("vin" in name.lower() or "applicant" in name.lower() for name in columns))
+            self.assertFalse(any(any(token in name.lower() for token in ("vin", "applicant", "authority_name", "manufacturer_name")) for name in columns))
+            issuing_country, market_scope = db.execute("SELECT issuing_country_code, market_scope_json FROM approval_document").fetchone()
+            self.assertEqual(issuing_country, "RU")
+            self.assertEqual(json.loads(market_scope), ["EAEU"])
             stored_values = " ".join(str(row) for row in db.execute("SELECT * FROM approval_document"))
             self.assertNotIn("VIN-SYNTHETIC", stored_values)
             self.assertNotIn("Applicant Secret", stored_values)
+            self.assertNotIn("Test Certification Authority", stored_values)
+            self.assertNotIn("Test Vehicle Manufacturer", stored_values)
         finally:
             db.close()
 

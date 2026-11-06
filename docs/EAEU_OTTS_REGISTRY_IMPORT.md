@@ -40,8 +40,8 @@ The tool checks the permission file's SHA-256 against the source register, refus
 - Engine and transmission candidates remain scoped to their source approval variant.
 - A pair candidate is created only when one coded engine and one coded gearbox appear under the same variant. It is still candidate_unverified; the importer never confirms fitment.
 - If multiple engine or gearbox candidates occur under a variant, the importer does not create a cross-product.
-- Model year is populated only from an explicit VehicleManufacturingYear field. Approval issue/start dates are not model years.
-- Applicant, personal-name, contact, VIN and embedded binary-document fields are not stored.
+- The Decision No. 88 rule populates VehicleManufacturingYear for SBKTS; because SBKTS is skipped, model_year remains NULL for OTTS/OTSH. Approval issue/start dates are not model years.
+- Applicant, conformity-authority and vehicle-manufacturer entity names (which can contain a natural person's name), contact, VIN and embedded binary-document fields are not stored.
 - The output is a staging database only and is never merged into production automatically.
 
 See docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md for the schema evidence and remaining legal/technical blockers.
