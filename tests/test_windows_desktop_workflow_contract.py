@@ -70,6 +70,12 @@ def main() -> None:
     missing_lifecycle_patch = [item for item in lifecycle_patch_markers if item not in apply_text]
     if missing_lifecycle_patch:
         raise SystemExit(f"Windows lifecycle return-pipeline regression patch is incomplete: {missing_lifecycle_patch}")
+    if "python tests/test_decode_tr_source_rights.py" not in text:
+        raise SystemExit("Windows source-rights gate does not execute the decode.tr quarantine test")
+    if text.count('tests/test_decode_tr_source_rights.py') < 3:
+        raise SystemExit("decode.tr rights test must be covered by both push/PR path filters and the validation step")
+    if text.count('docs/research/DECODE_TR_VAG_ENGINE_DRIVETRAIN_RIGHTS_REVIEW_2026-11-06.md') < 2:
+        raise SystemExit("decode.tr rights review must trigger both push and pull-request validation")
     sync_marker = "      - name: Sync current source-rights register into desktop payload"
     if sync_marker not in text:
         raise SystemExit("Windows build does not synchronize the authoritative source-rights register")
