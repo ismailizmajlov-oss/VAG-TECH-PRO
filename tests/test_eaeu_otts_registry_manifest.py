@@ -125,20 +125,27 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertEqual(regional["license"]["offline_cache"], "not_confirmed")
         self.assertEqual(regional["observed_public_query"]["legacy_registry_visible_record_count"], 273)
 
-    def test_kyrgyz_single_window_is_captcha_gated_and_rights_blocked(self):
+    def test_kyrgyz_single_window_public_pilot_is_visible_but_rights_blocked(self):
         central = self.factory_sources["kyrgyzstan-single-window-otts-registry"]
         regional = self.russian_sources["kyrgyzstan-single-window-otts-registry"]
         self.assertEqual(central["market_scope"], ["KG", "EAEU_TR_TS_018_2011"])
         self.assertEqual(central["rights"]["permission_status"], "not_obtained")
-        self.assertEqual(central["rights"]["public_query_visibility"], "captcha_gated")
+        self.assertIn("public_registry_described_as_open_without_login", central["rights"]["public_query_visibility"])
         self.assertFalse(central["product_import_allowed"])
         self.assertFalse(central["data_ingested"])
         self.assertFalse(central["applicability"]["exact_engine_code_fitment"])
         self.assertFalse(central["applicability"]["exact_gearbox_code_fitment"])
-        self.assertTrue(any("requires robot verification" in item for item in central["limitations"]))
+        self.assertFalse(central["applicability"]["engine_gearbox_pairing"])
+        self.assertTrue(central["observed_claims"]["public_query_without_login"])
+        self.assertFalse(central["observed_claims"]["record_view_fields_independently_inspected"])
+        self.assertEqual(central["observed_claims"]["record_view_captcha_status"], "not_verified_on_new_pilot_route")
+        self.assertTrue(central["observed_claims"]["legacy_record_view_requires_captcha"])
+        self.assertTrue(any("No documented API" in item for item in central["limitations"]))
         self.assertEqual(regional["status"], "permission_required")
         self.assertFalse(regional["data_ingested"])
-        self.assertTrue(regional["observed_public_query"]["captcha_required_before_record_view"])
+        self.assertTrue(regional["observed_public_query"]["public_query_without_login"])
+        self.assertEqual(regional["observed_public_query"]["new_route_captcha_status"], "not_verified")
+        self.assertTrue(regional["observed_public_query"]["legacy_route_captcha_required"])
         self.assertIsNone(regional["source_snapshot_sha256"])
 
     def test_rusavtolab_aggregator_rights_are_not_inferred_from_public_download_claim(self):

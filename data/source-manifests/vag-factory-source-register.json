@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06T13:32:17.034Z",
+  "updated_at": "2026-11-06T15:45:28.720Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -3100,24 +3100,40 @@
     {
       "source_id": "kyrgyzstan-single-window-otts-registry",
       "publisher": "Kyrgyz Single Window / State Enterprise «Single Window» Center, Kyrgyz Republic",
-      "url": "https://sbkts.trade.kg/otts",
-      "related_portal_url": "https://cert.trade.kg/",
+      "url": "https://trade.kg/registry?tab=OTTS.otts",
+      "related_portal_url": "https://trade.kg/",
       "source_kind": "kyrgyz_national_vehicle_type_approval_registry_public_query",
-      "source_revision": "public_ui_observed_2026-11-06; no dataset release or API revision identified",
+      "source_revision": "public_registry_pilot_observed_2026-11-06; no dataset release or API revision identified",
       "market_scope": [
         "KG",
         "EAEU_TR_TS_018_2011"
       ],
       "observed_claims": {
-        "registry_title": "Государственный реестр · одобрений типа ТС (ОТТС)",
+        "registry_title": "Публичный реестр выданных документов; раздел ОТТС/ОТШ",
+        "public_registry_status": "pilot",
+        "official_registry_landing_url": "https://trade.kg/registry?tab=OTTS.otts",
+        "public_registry_url": "https://smart.trade.kg/registry?lng=ru",
+        "public_query_without_login": true,
+        "public_search_fields_claimed": [
+          "document_number",
+          "VIN"
+        ],
+        "otss_otsh_portal_search_fields_claimed": [
+          "document_number",
+          "make",
+          "model"
+        ],
+        "personal_data_display": "not_shown_per_public_registry_project_description",
+        "record_view_fields_independently_inspected": false,
+        "record_view_captcha_status": "not_verified_on_new_pilot_route",
+        "legacy_record_view_requires_captcha": true,
         "portal_summary_otts_count": 1,
-        "count_treatment": "unverified_landing_page_summary_not_a_current_or_complete_corpus_count",
-        "record_view_requires_captcha": true
+        "count_treatment": "unverified_landing_page_summary_not_a_current_or_complete_corpus_count"
       },
       "rights": {
         "dataset_license": "not_found",
         "permission_status": "not_obtained",
-        "public_query_visibility": "captcha_gated",
+        "public_query_visibility": "official_pilot_public_registry_described_as_open_without_login; record payload not independently inspected",
         "bulk_export_allowed": "not_established",
         "automated_extraction_allowed": "not_authorized",
         "offline_cache_allowed": "not_established",
@@ -3135,31 +3151,66 @@
         "ecu_dtc_repair_applicability": false,
         "russian_market_scope": false
       },
-      "verification_status": "public_query_observed_captcha_and_rights_unverified",
+      "verification_status": "official_public_registry_pilot_observed_rights_unverified",
       "product_import_allowed": false,
       "data_ingested": false,
-      "project_decision": "discovery_only_no_automation_no_import_until_documented_api_and_written_reuse_rights_are_confirmed",
+      "project_decision": "discovery_only_public_query_visibility_confirmed_by_operator_description; no automation, cache, display, redistribution or product import until documented API and written reuse rights are confirmed",
       "limitations": [
-        "The public registry UI requires robot verification before records can be viewed; no CAPTCHA bypass was attempted.",
-        "No documented API, bulk export or dataset release was identified.",
-        "No dataset-specific open licence or written permission for automated extraction, offline caching, third-party display or redistribution was identified.",
-        "The one-record OTTS count is a portal summary only, not a complete or current corpus count.",
-        "No VAG engine/gearbox code, ECU, DTC or repair applicability was established."
+        "The operator describes the public registry as a pilot and says issued documents can be checked without login by number or VIN; the actual new registry record payload was not independently inspected.",
+        "The official home page lists OTTS/OTSH search by approval number, make and model; this does not establish which fields are exposed in a record payload.",
+        "The legacy sbkts.trade.kg/otts route required robot verification in the earlier observation; no CAPTCHA bypass was attempted. CAPTCHA status on the new smart.trade.kg pilot route remains unverified.",
+        "The vehicle-approval workflow for certification bodies and experts includes engine and other vehicle characteristics in application forms; those workflow fields are not evidence that the public registry exposes engine or gearbox fields.",
+        "No documented API, dataset release, bulk export, automated extraction authorization or dataset-specific open licence was identified.",
+        "The website privacy policy describes visitor analytics and search handling; it is not a licence for bulk reuse, offline caching, third-party display or redistribution of registry records.",
+        "The one-record OTTS count shown in a portal summary is not treated as a complete or current corpus count.",
+        "No VAG-specific engine code, gearbox code, engine/gearbox pairing, ECU, DTC or repair applicability was established."
       ],
       "evidence_reviewed": [
         {
-          "url": "https://cert.trade.kg/",
+          "url": "https://trade.kg/",
           "reviewed_at": "2026-11-06",
-          "evidence": "Kyrgyz Single Window landing portal; indexed portal summary lists one OTTS record, which is not treated as a corpus count."
+          "evidence": "Official State Enterprise portal identifies the operator as a state enterprise under the State Customs Service at the Cabinet of Ministers of the Kyrgyz Republic; home page says public registries are open without registration and lists OTTS/OTSH search by number, make and model."
+        },
+        {
+          "url": "https://trade.kg/registry?tab=OTTS.otts",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Official registry landing route links to the smart.trade.kg public registry; no record payload was downloaded or inspected."
+        },
+        {
+          "url": "https://smart.trade.kg/registry?lng=ru",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Target public registry URL linked by the official portal; browser extraction returned no readable record content, so fields and CAPTCHA behavior on this route remain unverified."
+        },
+        {
+          "url": "https://trade.kg/projects/public-registry",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Official project page labels the public registry a pilot; issued documents may be checked by number or VIN without login, and the page states personal data are not shown."
+        },
+        {
+          "url": "https://trade.kg/projects/vehicles",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Official vehicle-system page describes OTTS/OTSH/SBKTS workflow for certification bodies and experts; application forms include engine and other characteristics, but public record exposure of these fields is not established."
+        },
+        {
+          "url": "https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Official notice dated 2026-08-24 identifies the state enterprise as developer of the vehicle type-approval system and describes issuance workflow."
+        },
+        {
+          "url": "https://trade.kg/privacy",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Privacy policy describes website analytics and handling of searches; it does not provide a dataset reuse licence or bulk/offline redistribution terms."
         },
         {
           "url": "https://sbkts.trade.kg/otts",
           "reviewed_at": "2026-11-06",
-          "evidence": "Public state OTTS registry UI supports VIN/number search and explicitly requires robot verification before records can be viewed."
+          "evidence": "Previously observed legacy OTTS route; robot verification was required before record view. No CAPTCHA bypass was attempted."
         }
       ],
       "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion"
+      "hash_status": "not_downloaded_no_ingestion",
+      "public_registry_url": "https://smart.trade.kg/registry?lng=ru",
+      "vehicle_approval_system_url": "https://car.trade.kg/"
     },
     {
       "source_id": "rusavtolab-otts-public-index",
