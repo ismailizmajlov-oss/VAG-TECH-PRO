@@ -132,12 +132,13 @@ def fetch_page(url: str) -> dict[str, object]:
                     candidate = _candidate_link(response.geturl(), link)
                     if candidate:
                         candidates.append(candidate)
-                elif host in {"data.gov.ru", "www.data.gov.ru", "pravo.ppt.ru"} and (
-                    "услов" in link.get("text", "").lower()
-                    or "license" in link.get("rel", "").lower()
+                elif (
+                    "license" in link.get("rel", "").lower()
                     or "terms" in link.get("text", "").lower()
+                    or "услов" in link.get("text", "").lower()
+                    or host in {"data.gov.ru", "www.data.gov.ru", "pravo.ppt.ru"} and "terms" in absolute.lower()
                 ):
-                    terms.append({"url": absolute, "text": link.get("text", "")[:300]})
+                    terms.append({"url": absolute, "text": link.get("text", "")[:300], "host": host})
             result["candidate_file_links"] = sorted({x["url"]: x for x in candidates}.values(), key=lambda x: x["url"])
             result["terms_links"] = sorted({x["url"]: x for x in terms}.values(), key=lambda x: x["url"])
             result["retrieved"] = True
