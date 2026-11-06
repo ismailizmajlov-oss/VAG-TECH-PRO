@@ -1369,7 +1369,9 @@ jobs:
           $rdwDatabasePath = Join-Path $rdwPackDir "rdw-vag-type-approval.sqlite"
           $rdwLockPath = Join-Path $manifestDir "rdw-vag-type-approval.lock.json"
           $rdwPackRegisterPath = Join-Path $rdwPackDir "source-register.json"
-          foreach ($path in @($rdwManifestPath,$rdwDatabasePath,$rdwLockPath,$rdwPackRegisterPath)) {
+          $rdwLicensePath = Join-Path $rdwPackDir "LICENSE-CC0-1.0.txt"
+          $rdwAttributionPath = Join-Path $rdwPackDir "ATTRIBUTION.md"
+          foreach ($path in @($rdwManifestPath,$rdwDatabasePath,$rdwLockPath,$rdwPackRegisterPath,$rdwLicensePath,$rdwAttributionPath)) {
             if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "RDW candidate pack provenance file is missing: $path" }
           }
           $rdwManifest = Get-Content -LiteralPath $rdwManifestPath -Raw | ConvertFrom-Json
@@ -1378,10 +1380,13 @@ jobs:
           $rdwPackRegisterHash = (Get-FileHash -LiteralPath $rdwPackRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($rdwManifest.pack_id -ne "rdw-vag-type-approval-cc0" -or $rdwManifest.data_license -ne "CC0-1.0" -or $rdwManifest.verification_status -ne "verified_source_candidate_pack_only") { throw "RDW pack identity/license/candidate status failed." }
           if ($rdwManifest.exact_vehicle_fitment -ne $false -or $rdwManifest.ru_eaeu_applicability -ne $false -or $rdwManifest.vag_factory_engine_code_verified -ne $false -or $rdwManifest.vag_factory_gearbox_code_verified -ne $false -or $rdwManifest.diagnostic_execution_allowed -ne $false) { throw "RDW pack crossed its candidate-only applicability boundary." }
+          if ($rdwManifest.no_license_plate_retained -ne $true -or $rdwManifest.no_personal_or_holder_data_retained -ne $true) { throw "RDW pack privacy minimisation evidence failed." }
           if (@($rdwManifest.market_scope | Where-Object { $_ -match "RU|EAEU" }).Count -gt 0 -or @($rdwManifest.market_scope | Where-Object { $_ -eq "EU_TYPE_APPROVAL" }).Count -eq 0) { throw "RDW market scope is not restricted to EU/NL." }
           if ($rdwDatabaseHash -ne $metadata.rdw_database_sha256 -or $rdwManifest.database_sha256 -ne $rdwDatabaseHash) { throw "RDW SQLite hash differs from build metadata/manifest." }
           if ($rdwLockHash -ne $metadata.rdw_source_lock_sha256 -or $rdwManifest.source_manifest_sha256 -ne $rdwLockHash) { throw "RDW source-lock hash differs from build metadata/manifest." }
           if ($rdwPackRegisterHash -ne $metadata.rdw_source_register_sha256 -or $rdwManifest.source_register_sha256 -ne $rdwPackRegisterHash) { throw "RDW pack source-register hash differs from build metadata/manifest." }
+          if ($rdwManifest.source_snapshot_sha256 -ne $metadata.rdw_source_snapshot_sha256 -or $rdwManifest.metadata_bundle_sha256 -ne $metadata.rdw_metadata_bundle_sha256) { throw "RDW snapshot/metadata bundle hashes differ from build metadata." }
+          if ((Get-FileHash -LiteralPath $rdwLicensePath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $rdwManifest.license_sha256 -or (Get-FileHash -LiteralPath $rdwAttributionPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $rdwManifest.attribution_sha256) { throw "RDW license/attribution file hashes differ from manifest." }
           if ($rdwManifest.counts.vehicle_variants -ne $metadata.rdw_vehicle_variants -or $rdwManifest.counts.engine_candidates -ne $metadata.rdw_engine_candidates -or $rdwManifest.counts.transmission_candidates -ne $metadata.rdw_transmission_candidates -or $rdwManifest.counts.unique_source_row_pair_candidates -ne $metadata.rdw_unique_source_row_pair_candidates -or $rdwManifest.counts.ambiguous_or_incomplete_pair_keys -ne $metadata.rdw_ambiguous_or_incomplete_pair_keys) { throw "RDW candidate counts differ from build metadata." }
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
