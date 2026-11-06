@@ -227,8 +227,8 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 db.execute("PRAGMA foreign_keys=ON")
                 with self.assertRaises(sqlite3.IntegrityError):
                     db.execute(
-                        "INSERT INTO source_rows VALUES (?,?,?,?,'NL')",
-                        ("f" * 64, "unregistered-dataset", None, "{}"),
+                        "INSERT INTO source_rows VALUES (?,?,?,'NL')",
+                        ("f" * 64, "unregistered-dataset", None),
                     )
                 provenance = db.execute(
                     "SELECT source_columns_sha256, required_columns_sha256, query_spec_sha256, query_spec_json "
