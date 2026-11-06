@@ -134,5 +134,6 @@ Until the data and native-platform blockers are cleared, the application must no
 - [VAG open engine candidate review](docs/research/VAG_OPEN_ENGINE_CANDIDATES_2026-11-03.md)
 - [Wikidata VAG taxonomy review](docs/research/WIKIDATA_VAG_TAXONOMY_REVIEW_2026-11-04.md)
 - [Open Vehicle Schema source review](docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md)
+- [EAEU open-data portal OTTS discovery review](docs/research/EAEU_OPEN_DATA_PORTAL_OTTS_DISCOVERY_REVIEW_2026-11-07.md)
 - [Local catalog import v2 contract](docs/LOCAL_CATALOG_IMPORT_V2.md)
 - [Owner-controlled source rights approval](docs/OWNER_SOURCE_RIGHTS_APPROVAL.md)
