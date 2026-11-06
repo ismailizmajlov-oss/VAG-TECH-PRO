@@ -74,14 +74,23 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 "typeaanduidingfabrikant": "R4",
             }],
         }
-        self.metadata = {
-            name: {
+        self.metadata = {}
+        for i, name in enumerate(rdw.DATASETS, start=1):
+            required_columns = sorted(rdw.DATASETS[name]["required"])
+            query_spec = {
+                "dataset_id": rdw.DATASETS[name]["id"],
+                "select": rdw.DATASETS[name]["select"],
+                "fixture_scope": "unit-test-only",
+                "market_scope": ["NL"],
+            }
+            self.metadata[name] = {
                 "rows_updated_at": f"2026-11-06T00:00:0{i}Z",
                 "view_last_modified": None,
-                "columns_sha256": "a" * 64,
+                "source_columns_sha256": "a" * 64,
+                "required_columns": required_columns,
+                "required_columns_sha256": rdw.sha256_bytes(rdw.canonical_bytes(required_columns)),
+                "query_spec": query_spec,
             }
-            for i, name in enumerate(rdw.DATASETS, start=1)
-        }
 
     def test_pack_builds_hashed_sqlite_with_separate_engine_and_gearbox_candidates(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -107,9 +116,34 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT count(*) FROM gearbox_classifications WHERE verification_status='rdw_approval_gearbox_classification_not_vag_code'").fetchone()[0], 1)
                 self.assertEqual(db.execute("SELECT count(*) FROM approval_scope WHERE model_year IS NOT NULL OR generation IS NOT NULL").fetchone()[0], 0)
                 self.assertEqual(db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0], 6)
+                provenance = db.execute(
+                    "SELECT source_columns_sha256, required_columns_sha256, query_spec_sha256, query_spec_json "
+                    "FROM source_file_artifacts WHERE dataset_id=?",
+                    (rdw.REGISTRATION_ID,),
+                ).fetchone()
+                registration_manifest = next(item for item in manifest["source_files"] if item["dataset_id"] == rdw.REGISTRATION_ID)
+                self.assertEqual(provenance[0], "a" * 64)
+                self.assertEqual(provenance[1], registration_manifest["required_columns_sha256"])
+                self.assertEqual(provenance[2], registration_manifest["query_spec_sha256"])
+                self.assertEqual(json.loads(provenance[3]), registration_manifest["query_spec"])
+                self.assertEqual(
+                    rdw.sha256_bytes(rdw.canonical_bytes(registration_manifest["query_spec"])),
+                    registration_manifest["query_spec_sha256"],
+                )
                 self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
             finally:
                 db.close()
+
+    def test_query_spec_digest_tampering_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pack = Path(tmp) / "pack"
+            rdw.build_pack(pack, self.source, self.source_bytes, self.datasets, self.metadata)
+            manifest_path = pack / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["source_files"][0]["query_spec"]["where_template"] = "unreviewed query"
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "query-spec provenance hash mismatch"):
+                rdw.validate_pack(pack)
 
     def test_rights_gate_fails_closed(self):
         bad = json.loads(json.dumps(self.source))
