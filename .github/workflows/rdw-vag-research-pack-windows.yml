@@ -1,13 +1,6 @@
 name: Windows RDW VAG research pack build
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/rdw-vag-research-pack-windows.yml"
-      - "scripts/build_rdw_vag_research_pack.py"
-      - "tests/test_rdw_vag_research_pack.py"
-      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
   workflow_dispatch:
 
 permissions:

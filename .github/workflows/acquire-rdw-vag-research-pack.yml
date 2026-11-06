@@ -7,6 +7,7 @@ on:
       - ".github/workflows/acquire-rdw-vag-research-pack.yml"
       - "scripts/build_rdw_vag_research_pack.py"
       - "tests/test_rdw_vag_research_pack.py"
+      - "tests/test_rdw_vag_type_approval_source_rights.py"
       - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
   workflow_dispatch:
 
