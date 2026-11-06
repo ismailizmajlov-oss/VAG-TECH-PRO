@@ -1,33 +1,33 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-06T17:15:20.6194517Z",
+  "recorded_at_utc": "2026-11-06T17:16:20.5738580Z",
   "workflow": "Acquire rights-cleared RDW VAG type-approval research pack",
-  "run_id": 42259881517,
-  "run_number": 3,
+  "run_id": 42260025317,
+  "run_number": 4,
   "run_attempt": 1,
   "run_status_at_record": "in_progress",
   "run_conclusion_at_record": null,
   "build_job_result": "failure",
-  "head_sha": "b431ca02f722b80f3a731be90b59a54c4b7dd71d",
+  "head_sha": "f36fe085dd6fad09d8d6e52e1cbdfcd6123b7ade",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42259881517",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42260025317",
   "jobs": [
     {
-      "id": 128036711367,
+      "id": 128037203585,
       "name": "Acquire filtered CC0 RDW data and build isolated SQLite research pack",
       "status": "completed",
       "conclusion": "failure",
-      "runner_name": "GitHub Actions 1000001892",
-      "started_at": "2026-11-06T17:15:04Z",
-      "completed_at": "2026-11-06T17:15:08Z"
+      "runner_name": "GitHub Actions 1000001894",
+      "started_at": "2026-11-06T17:15:56Z",
+      "completed_at": "2026-11-06T17:16:10Z"
     },
     {
-      "id": 128036793309,
+      "id": 128037361095,
       "name": "Record RDW pack build evidence",
       "status": "in_progress",
       "conclusion": null,
-      "runner_name": "GitHub Actions 1000001893",
-      "started_at": "2026-11-06T17:15:10Z",
+      "runner_name": "GitHub Actions 1000001895",
+      "started_at": "2026-11-06T17:16:13Z",
       "completed_at": null
     }
   ],
