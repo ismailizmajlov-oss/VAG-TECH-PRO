@@ -141,6 +141,10 @@ class RdwVagResearchPackTests(unittest.TestCase):
             pack_dir = Path(tmp) / "pack"
             report = rdw.build_pack(pack_dir, self.source, self.source_bytes, self.datasets, self.metadata)
             manifest = json.loads((pack_dir / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                manifest["source_row_storage_policy"],
+                "canonical_jsonl_snapshots_external_and_sha256_verified; sqlite_source_rows_store_sha256_only",
+            )
             db = sqlite3.connect(pack_dir / "rdw-vag-research.sqlite")
             try:
                 columns = {row[1] for row in db.execute("PRAGMA table_info(source_rows)")}
