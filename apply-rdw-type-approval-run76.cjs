@@ -107,6 +107,9 @@ function main() {
       source.rights?.commercial_use_allowed !== true || source.rights?.display_allowed !== true ||
       source.rights?.offline_cache_allowed !== true || source.rights?.bulk_reuse_allowed !== true ||
       source.rights?.redistribution_allowed !== true || source.rights?.share_alike_required !== false ||
+      source.rights?.attribution_required !== false || source.rights?.attribution_recommended !== false ||
+      source.rights?.public_attribution_allowed !== false || source.rights?.internal_provenance_retained !== true ||
+      source.rights?.provenance_visibility !== "internal_audit_manifest_only" ||
       source.applicability?.exact_vehicle_fitment !== false || source.technical_scope?.ru_eaeu_applicability !== false) {
     fail("RDW source register does not clear the pack's rights and applicability boundaries");
   }
