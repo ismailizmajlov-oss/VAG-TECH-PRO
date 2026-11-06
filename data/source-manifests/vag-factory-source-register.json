@@ -3868,25 +3868,25 @@
       "product_import_allowed": false,
       "data_ingested": false,
       "source_revision": "RDW rowsUpdatedAt: m9d7-ebf2=2026-11-06T07:11:38Z; 4by9-ammk=2026-11-06T03:15:49Z; 7rjk-eycs=2026-11-06T03:15:55Z; byxc-wwua=2026-11-06T03:15:50Z; kyri-nuah=2026-11-06T03:15:54Z; x5v3-sewk=2026-11-06T03:15:53Z",
-      "source_snapshot_sha256": null,
-      "hash_status": "six_filtered_source_snapshots_and_sqlite_database_hashed_in_separate_research_pack; full_upstream_dataset_dumps_not_downloaded",
-      "project_decision": "Run 11 built a separate CC0 NL-only research pack with 604785 source rows, 96519 exact RDW approval/variant/version/revision scopes, 102662 registration observations, 93836 engine-designation candidates and 93548 gearbox classifications. Engine and gearbox remain separate; no pair table or exact pair claim exists. The pack is not integrated into the desktop installer and is never RU/EAEU production fitment. Product import remains disabled and data_ingested=false.",
+      "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "hash_status": "six_filtered_source_snapshots_and_sqlite_research_pack_hashed; production_import_not_performed",
+      "project_decision": "Run 30 acquired a separate CC0 NL-only research pack with 604785 source rows, 96519 exact RDW approval/variant/version/revision scopes, 102662 registration observations, 93836 engine-designation candidates and 93548 gearbox classifications. Six filtered source snapshots are pinned by aggregate SHA-256 896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706. The source manifest records exact source revisions, per-file hashes and query-spec hashes; the next pack build must reproduce these values or fail closed. Engine and gearbox remain separate; no pair table or exact pair claim exists. Product import remains disabled and data_ingested=false. The pack is research-only and is not integrated into the desktop installer yet.",
       "research_pack_build_evidence": {
-        "workflow_run_number": 11,
-        "workflow_run_id": 42260969213,
-        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42260969213",
-        "source_commit": "7c08e8d2335124e721078f456a7077a0112db2bb",
-        "build_job_completed_at_utc": "2026-11-06T17:45:55Z",
-        "artifact_id": 13526776486,
+        "workflow_run_number": 30,
+        "workflow_run_id": 42290057022,
+        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42290057022",
+        "source_commit": "72fd86197867dd7aa29d9c22ea7e13b61361684a",
+        "build_job_completed_at_utc": "2026-11-06T21:12:17Z",
+        "artifact_id": 13540354719,
         "artifact_name": "rdw-vag-nl-eu-type-approval-research-pack",
-        "artifact_sha256": "86812d6f0ecc81b4894c2cde150f8dc4290ac83f4ec5d457865ce32c0440bf31",
-        "artifact_size_bytes": 155402740,
-        "artifact_expires_at_utc": "2027-02-04T17:22:00Z",
-        "pack_manifest_sha256": "1df346574069a18918eb1ec18a4813eafb372ca6ca0f552226301cdca11bd61c",
+        "artifact_sha256": "c51fd7c78c034215e6dceddd67621dddbc64139ed35cda2dd538156aece23152",
+        "artifact_size_bytes": 129446769,
+        "artifact_expires_at_utc": "2027-02-04T20:38:28Z",
+        "pack_manifest_sha256": "5545fc23e5b2956f66f36338dc2e7e64b5c7eeff12f4e4fc16eb43f533956078",
         "source_manifest_sha256": "8f3c6cc15eca35e751da99b3a5019d9668d43a6065246e9b9a3e1412611b7375",
         "database_file": "rdw-vag-research.sqlite",
-        "database_sha256": "9c4bc992ee56aa0f308813c1ad384968a28d0296c80cb7e07100a21c2a8f8612",
-        "database_size_bytes": 500994048,
+        "database_sha256": "4486c12766514aa7a47b2b9df47642d745b6cf9e8996cf4c92d08136843e4e2f",
+        "database_size_bytes": 364363776,
         "status": "verified_research_only",
         "market_scope": [
           "NL"
@@ -3918,7 +3918,7 @@
           {
             "dataset_id": "m9d7-ebf2",
             "dataset_name": "registration",
-            "source_revision": "2026-11-06T07:11:38Z",
+            "source_revision": "1793949098",
             "row_count": 102662,
             "byte_size": 25911680,
             "sha256": "e18ef809d62fbaceaf0169d09f79b8850afe3906238bb8d62ae05bd3181b0230"
@@ -3926,7 +3926,7 @@
           {
             "dataset_id": "byxc-wwua",
             "dataset_name": "tgk_base",
-            "source_revision": "2026-11-06T03:15:50Z",
+            "source_revision": "1793934950",
             "row_count": 93739,
             "byte_size": 20822844,
             "sha256": "75e93fc2b12e245b814add05207510f2cf0ba6a5deb79dc7267ffb5362eda70d"
@@ -3934,7 +3934,7 @@
           {
             "dataset_id": "4by9-ammk",
             "dataset_name": "tgk_drive",
-            "source_revision": "2026-11-06T03:15:49Z",
+            "source_revision": "1793934949",
             "row_count": 93836,
             "byte_size": 20734442,
             "sha256": "1a9e934560a7a4db95a3894d08a92b8f884656b1593e346a25d93bf3fd77a315"
@@ -3942,7 +3942,7 @@
           {
             "dataset_id": "7rjk-eycs",
             "dataset_name": "tgk_gearbox",
-            "source_revision": "2026-11-06T03:15:55Z",
+            "source_revision": "1793934955",
             "row_count": 93548,
             "byte_size": 17223494,
             "sha256": "a78716743002807a7c1610ce6e79ab3547e7b8a3e1e61ba092eedd1f06a6e55d"
@@ -3950,7 +3950,7 @@
           {
             "dataset_id": "kyri-nuah",
             "dataset_name": "tgk_make",
-            "source_revision": "2026-11-06T03:15:54Z",
+            "source_revision": "1793934954",
             "row_count": 110279,
             "byte_size": 19386628,
             "sha256": "028e106a4b01481977ca1e6c002a29604cc087d7967e49fe591b966f2bb00947"
@@ -3958,15 +3958,12 @@
           {
             "dataset_id": "x5v3-sewk",
             "dataset_name": "tgk_trade_name",
-            "source_revision": "2026-11-06T03:15:53Z",
+            "source_revision": "1793934953",
             "row_count": 110721,
             "byte_size": 23419974,
             "sha256": "360e741e9a12c08f431a5c9744b1322cd194a445669081400f7d9db200c53c40"
           }
-        ],
-        "integrity_check": "ok",
-        "foreign_key_check": "ok",
-        "rights": "CC0 1.0 for the six listed RDW datasets only; no rights to unrelated RDW or third-party material are inferred"
+        ]
       }
     }
   ],
