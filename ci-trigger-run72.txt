@@ -1,4 +1,4 @@
 VAG TECH PRO Windows x64 validation trigger.
-Base revision: 6a16f0b0f06f48a6e583d3e166b34be9e3b85f3a
-Purpose: rerun the Windows x64 desktop build and lifecycle audit after adding scripts/windows-installer-lifecycle.ps1 to the source-audit artifact. Verify the lifecycle failure cause from the extracted script and preserve a small audit artifact.
-No product data is added by this marker. No unlicensed source is imported or approved. No installer is published.
+Base revision: 3c30a82a3da799d2fc5bfd4ea67c597241203f0f
+Purpose: run the consolidated Windows x64 desktop validation after the ELPTS OTTS public-table evidence and rights-boundary regression test were committed. The audit artifact must include scripts/windows-installer-lifecycle.ps1 for diagnosis of the prior BaseUrl lifecycle failure.
+No OTTS records were downloaded, cached or imported. No unlicensed source was approved. No installer is published.
