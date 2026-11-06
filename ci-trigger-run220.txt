@@ -1,0 +1,2 @@
+Windows desktop CI trigger
+Purpose: capture exact package-lock parent ranges requesting minimatch, to resolve npm ci lock consistency without weakening dependency checks.
