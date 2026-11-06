@@ -15,15 +15,15 @@ def is_generic_sae_iso_code(code: str) -> bool:
         return False
     if code.startswith(("P0", "P2", "B0", "C0", "U0")):
         return True
-    return bool(re.fullmatch(r"P3[4-9][0-9A-F]{2}", code))
+    return bool(re.fullmatch(r"P34[0-9A-F]{2}", code))
 
 
 class ObdexGenericNamespacePolicyTests(unittest.TestCase):
     def test_locked_scope_excludes_mixed_u3_family(self) -> None:
         lock = json.loads((ROOT / "data/source-manifests/obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         scope = lock["scope"]
-        self.assertEqual(scope["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx-P39xx", "B0xxx", "C0xxx", "U0xxx"])
-        self.assertEqual(scope["excluded_mixed_or_reserved_ranges"], ["U3xxx"])
+        self.assertEqual(scope["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx"])
+        self.assertEqual(scope["excluded_mixed_or_reserved_ranges"], ["U3xxx", "P35xx-P39xx", "B3xxx", "C3xxx"])
         self.assertEqual(lock["expected_counts"], {
             "generic_dtcs": 9359,
             "pids_total": 132,
@@ -33,8 +33,8 @@ class ObdexGenericNamespacePolicyTests(unittest.TestCase):
         self.assertIn("data/generic/U3xxx_enriched.yaml", lock["source_files"])
 
     def test_generic_range_boundaries(self) -> None:
-        accepted = ["P0300", "P2000", "P3400", "P39FF", "B0001", "C0001", "U0001"]
-        rejected = ["P1A00", "P3000", "P33FF", "B3000", "C3000", "U3000", "U3FFF", "B1000", "C1000", "U1000", "P3A00"]
+        accepted = ["P0300", "P2000", "P3400", "B0001", "C0001", "U0001"]
+        rejected = ["P1A00", "P3000", "P33FF", "P39FF", "P35FF", "B3000", "C3000", "U3000", "U3FFF", "B1000", "C1000", "U1000", "P3A00"]
         for code in accepted:
             with self.subTest(code=code):
                 self.assertTrue(is_generic_sae_iso_code(code))
@@ -50,7 +50,7 @@ class ObdexGenericNamespacePolicyTests(unittest.TestCase):
         self.assertIn('if (/^U3[0-9A-F]{3}$/.test(code))', workflow)
         self.assertIn("dtcs.length !== 9359", workflow)
         self.assertIn("quarantinedDtcRows.length !== 174", workflow)
-        self.assertIn('code[1] === "3" && ["4","5","6","7","8","9"].includes(code[2])', patcher)
+        self.assertIn('code[1] === "3" && code[2] === "4"', patcher)
         self.assertIn("quarantined_dtc_rows !== 174", sync_script)
         self.assertIn("report.generic_dtcs !== 9359", sync_script)
 
