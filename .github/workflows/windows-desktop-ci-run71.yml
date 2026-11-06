@@ -927,7 +927,7 @@ jobs:
           "vag_source_register_source_count=$($sync.source_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "vag_source_register_updated_at=$($sync.updated_at)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
-      - name: Apply local SQLite vehicle catalog schema v2 and immutable evidence review (run72-run73)
+      - name: Apply local SQLite vehicle catalog schema v2 and immutable evidence review (run72-run74)
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
@@ -978,6 +978,30 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run73 share-alike and migration audit patch check failed" }
           git apply --unsafe-paths --directory=desktop-source $patchPath73
           if ($LASTEXITCODE -ne 0) { throw "Run73 share-alike and migration audit patch application failed" }
+
+          $patchPartsDir74 = Join-Path $env:GITHUB_WORKSPACE ".github/patches/desktop-source-run74"
+          $parts74 = @(Get-ChildItem -LiteralPath $patchPartsDir74 -Filter "part-*.b64" -File | Sort-Object Name)
+          if ($parts74.Count -ne 1) { throw "Expected 1 immutable run74 patch chunk, found $($parts74.Count)" }
+          $encoded74 = [IO.File]::ReadAllText($parts74[0].FullName).Trim()
+          if ($encoded74.Length -ne 920) { throw "Run74 patch base64 length mismatch: $($encoded74.Length)" }
+          $encodedHash74 = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($encoded74))).ToLowerInvariant()
+          if ($encodedHash74 -ne "9bb0c5c1677d60666b7c35d8bbc830646cc0e260373e4548ab11fdb56d7781f8") { throw "Run74 patch base64 SHA-256 mismatch" }
+          $compressed74 = [Convert]::FromBase64String($encoded74)
+          $compressedHash74 = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($compressed74)).ToLowerInvariant()
+          if ($compressedHash74 -ne "17a976b6e4cd0d1f58f093a51a27168d05d2c242deb9f326d4dbdace3136bbae") { throw "Run74 Brotli patch SHA-256 mismatch" }
+          $inputStream74 = [IO.MemoryStream]::new($compressed74)
+          $brotli74 = [IO.Compression.BrotliStream]::new($inputStream74, [IO.Compression.CompressionMode]::Decompress)
+          $outputStream74 = [IO.MemoryStream]::new()
+          $brotli74.CopyTo($outputStream74)
+          $patchBytes74 = $outputStream74.ToArray()
+          $patchHash74 = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($patchBytes74)).ToLowerInvariant()
+          if ($patchHash74 -ne "d2f056b3ce8ea1512a39c17cfbe23db8f2b9b660872ba42fc0b43037255d4e0f") { throw "Run74 decoded patch SHA-256 mismatch" }
+          $patchPath74 = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run74.patch"
+          [IO.File]::WriteAllBytes($patchPath74, $patchBytes74)
+          git apply --check --unsafe-paths --directory=desktop-source $patchPath74
+          if ($LASTEXITCODE -ne 0) { throw "Run74 Windows line-ending migration audit patch check failed" }
+          git apply --unsafe-paths --directory=desktop-source $patchPath74
+          if ($LASTEXITCODE -ne 0) { throw "Run74 Windows line-ending migration audit patch application failed" }
 
           Push-Location (Join-Path $env:GITHUB_WORKSPACE "desktop-source")
           try {
@@ -1312,7 +1336,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-astra-ch-research-pack-verification'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-normalize-windows-sql-migration-line-endings+run74-astra-ch-research-pack-verification'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Create desktop source inventory for technical-section audit
         if: always()
