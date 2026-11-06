@@ -24,7 +24,7 @@ class KazakhstanEoknoSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.ru_rows[0]["source_url"], PAGE_URL)
         self.assertEqual(self.central_rows[0]["url"], PAGE_URL)
 
-    def test_sbkts_is_the_only_document_type_confirmed_by_current_evidence(self):
+    def test_document_type_coverage_tracks_official_release_evidence(self):
         ru = self.ru_rows[0]
         central = self.central_rows[0]
         self.assertEqual(ru["observed_public_query"]["document_type_coverage"]["SBKTS"],
