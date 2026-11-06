@@ -102,6 +102,17 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
         self.assertIn("no automated CAPTCHA", source["observed_public_query"]["note"])
 
+    def test_rusavtolab_private_aggregator_is_not_a_bulk_source(self):
+        source = self.sources["rusavtolab-otts-public-index"]
+        self.assertEqual(source["status"], "permission_required")
+        self.assertEqual(source["market_scope"], ["RU", "EAEU"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertTrue(source["observed_public_claims"]["access_claims_conflict"])
+        self.assertEqual(source["access_and_reuse"]["bulk_export"], "not_established")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        self.assertIn("private document-retrieval", source["limitations"][0])
     def test_other_otts_sources_keep_their_separate_rights_gates(self):
         eaeu = self.sources["eaeu-open-data-portal"]
         self.assertEqual(eaeu["status"], "discovery_only")

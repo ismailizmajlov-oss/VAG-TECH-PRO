@@ -1031,6 +1031,62 @@
       "evidence_status": "Official Kyrgyz Single Window portal and public OTTS registry UI reviewed 2026-11-06; CAPTCHA gate and absence of documented reuse terms recorded; no records downloaded.",
       "product_import_allowed": false,
       "project_decision": "discovery_only_no_automation_no_import_until_documented_api_and_written_reuse_rights_are_confirmed"
+    },
+    {
+      "source_id": "rusavtolab-otts-public-index",
+      "publisher": "СпецРег / РусАвтоЛаб (private document retrieval service)",
+      "source_type": "private_aggregated_otts_search_and_document_service",
+      "source_url": "https://otts.rusavtolab.ru/",
+      "related_operator_site": "https://rusavtolab.ru/",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "document_metadata_only",
+      "observed_public_claims": {
+        "observed_at": "2026-11-06",
+        "landing_page_claimed_document_count": 77802,
+        "landing_page_access_claim": "free search and free PDF download",
+        "public_offer_price_rub_per_document": 200,
+        "public_offer_description": "electronic copy of OTTS from open sources",
+        "access_claims_conflict": true,
+        "count_treatment": "publisher_claim_not_verified_corpus_count"
+      },
+      "access_and_reuse": {
+        "public_search": "observed",
+        "document_download": "claimed_free_on_landing_page_but_offer_states_200_rub_per_document",
+        "documented_api": "not_identified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_authorized",
+        "commercial_use": "not_confirmed",
+        "third_party_display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "verification_status": "private_aggregator_public_ui_observed_reuse_rights_unverified",
+      "limitations": [
+        "The service is operated by a private document-retrieval business, not identified as the state registry operator.",
+        "The landing page claims 77,802 documents and free PDF downloads, while the public offer describes a 200 RUB per-document service for copies from open sources; the discrepancy is unresolved.",
+        "No dataset-specific licence or written permission for bulk reuse, automated extraction, offline caching, third-party display or redistribution was identified.",
+        "No per-document upstream provenance export or reproducible bulk snapshot was established.",
+        "No documents were downloaded; no source snapshot or SHA-256 exists.",
+        "A public search result or document copy does not establish exact VAG model/generation/year, engine/gearbox, ECU, DTC or repair applicability."
+      ],
+      "evidence_status": "Landing page, About page and public offer reviewed 2026-11-06; no licence or bulk reuse permission identified; no data downloaded.",
+      "product_import_allowed": false,
+      "project_decision": "discovery_only_no_automation_no_import_until_per_document_provenance_and_written_bulk_reuse_rights_are_confirmed"
     }
   ],
   "updated_at": "2026-11-06"

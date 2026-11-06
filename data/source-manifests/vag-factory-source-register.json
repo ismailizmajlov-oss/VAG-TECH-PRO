@@ -3029,6 +3029,76 @@
       ],
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion"
+    },
+    {
+      "source_id": "rusavtolab-otts-public-index",
+      "publisher": "СпецРег / РусАвтоЛаб (private document retrieval service)",
+      "url": "https://otts.rusavtolab.ru/",
+      "related_operator_site": "https://rusavtolab.ru/",
+      "source_kind": "private_aggregated_otts_search_and_document_service",
+      "source_revision": "public pages observed 2026-11-06; no dataset release or API revision identified",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "observed_claims": {
+        "landing_page_document_count": 77802,
+        "landing_page_download_claim": "free PDF download",
+        "public_offer_price_rub_per_document": 200,
+        "public_offer_service_description": "electronic copy of OTTS from open sources",
+        "access_claims_conflict": true,
+        "count_treatment": "publisher_claim_not_verified_corpus_count"
+      },
+      "rights": {
+        "dataset_license": "not_found",
+        "permission_status": "not_obtained",
+        "public_search_visibility": "observed",
+        "bulk_export_allowed": "not_established",
+        "automated_extraction_allowed": "not_authorized",
+        "offline_cache_allowed": "not_established",
+        "commercial_display_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_evidence": null
+      },
+      "applicability": {
+        "market_scope": "RU/EAEU document index claimed by private service",
+        "applicability_precision": "document_metadata_only",
+        "exact_vag_vehicle_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_repair_applicability": false
+      },
+      "verification_status": "private_aggregator_public_ui_observed_reuse_rights_unverified",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "project_decision": "discovery_only_no_automation_no_import_until_per_document_provenance_and_written_bulk_reuse_rights_are_confirmed",
+      "limitations": [
+        "Private document retrieval service; not identified as the state registry operator.",
+        "Landing page says free PDF downloads, while public offer states 200 RUB per document; discrepancy unresolved.",
+        "No dataset-specific licence or written bulk reuse permission identified.",
+        "No reproducible bulk export or per-document upstream provenance export established.",
+        "No documents downloaded and no snapshot hash exists."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://otts.rusavtolab.ru/",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Landing page claims 77,802 OTTS records and free PDF downloads."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/o-servise/",
+          "reviewed_at": "2026-11-06",
+          "evidence": "About page identifies a private service operated by SpecReg / RusAvtoLab."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/oferta/",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Public offer describes a 200 RUB per-document service and says the electronic copy is taken from open sources."
+        }
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
     }
   ],
   "minimum_fitment_evidence_fields": [

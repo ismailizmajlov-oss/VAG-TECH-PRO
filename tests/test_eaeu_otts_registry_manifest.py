@@ -141,6 +141,18 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertTrue(regional["observed_public_query"]["captcha_required_before_record_view"])
         self.assertIsNone(regional["source_snapshot_sha256"])
 
+    def test_rusavtolab_aggregator_rights_are_not_inferred_from_public_download_claim(self):
+        central = self.factory_sources["rusavtolab-otts-public-index"]
+        regional = self.russian_sources["rusavtolab-otts-public-index"]
+        self.assertEqual(central["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(central["rights"]["bulk_export_allowed"], "not_established")
+        self.assertFalse(central["product_import_allowed"])
+        self.assertFalse(central["data_ingested"])
+        self.assertTrue(central["observed_claims"]["access_claims_conflict"])
+        self.assertEqual(regional["status"], "permission_required")
+        self.assertFalse(regional["data_ingested"])
+        self.assertTrue(regional["observed_public_claims"]["access_claims_conflict"])
+        self.assertIsNone(regional["source_snapshot_sha256"])
     def test_russian_eaeu_manifest_keeps_open_data_catalog_and_otts_schema_separate(self):
         source = self.russian_sources["eaeu-open-data-portal"]
         schema = source["related_vehicle_approval_registry_schema"]
