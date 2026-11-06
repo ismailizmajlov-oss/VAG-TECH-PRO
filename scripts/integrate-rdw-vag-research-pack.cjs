@@ -24,6 +24,11 @@ function safeJoin(root, relative) {
   return target;
 }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, "utf8")); }
+function resolvePackDatabaseFile(packRoot, pack) {
+  const relative = pack?.database?.path;
+  if (typeof relative !== "string" || !relative.trim()) fail("RDW pack database path missing");
+  return safeJoin(packRoot, relative);
+}
 function atomicJson(file, value) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const temp = file + ".tmp-" + process.pid;
@@ -67,7 +72,7 @@ function validatePack(repoRoot, packRoot) {
   const buildReport = readJson(path.join(packRoot, "build-report.json"));
   const licenseFile = path.join(packRoot, "LICENSE.txt");
   const attributionFile = path.join(packRoot, "ATTRIBUTION.md");
-  const databaseFile = path.join(packRoot, pack.database?.file || "rdw-vag-research.sqlite");
+  const databaseFile = resolvePackDatabaseFile(packRoot, pack);
   const sourceHash = shaFile(sourceFile), rootSourceHash = shaFile(safeJoin(repoRoot, SOURCE_MANIFEST));
   const databaseHash = shaFile(databaseFile);
   const rights = source.rights || {}, policy = source.import_policy || {}, applicability = source.applicability_policy || {}, snapshot = source.snapshot || {};
@@ -145,7 +150,7 @@ function validatePack(repoRoot, packRoot) {
   } finally { db.close(); }
 
   return {
-    pack, counts, databaseFile, databaseHash, sourceHash,
+    pack, counts, databaseFile, databaseRelativePath: pack.database.path, databaseHash, sourceHash,
     packManifestHash: shaFile(path.join(packRoot, "manifest.json")),
     attributionHash: shaFile(attributionFile), licenseHash: shaFile(licenseFile),
     buildReportHash: shaFile(path.join(packRoot, "build-report.json")),
@@ -292,7 +297,7 @@ function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNu
     engine_code_claim: false, gearbox_code_claim: false,
     commercial_use_allowed: true, display_allowed: true, cache_allowed: true, bulk_reuse_allowed: true,
     redistribution_allowed: true, attribution_required: false, share_alike_required: false,
-    database: rel(safeJoin(target, validated.pack.database.file)), database_sha256: validated.databaseHash,
+    database: rel(safeJoin(target, validated.databaseRelativePath)), database_sha256: validated.databaseHash,
     pack_manifest_file: rel(safeJoin(target, "manifest.json")), pack_manifest_sha256: validated.packManifestHash,
     source_manifest_file: rel(safeJoin(target, "rdw-eu-vag-type-approval-open-data.json")), source_manifest_sha256: validated.sourceHash,
     attribution_file: rel(safeJoin(target, "ATTRIBUTION.md")), attribution_sha256: validated.attributionHash,
@@ -362,4 +367,4 @@ if (require.main === module) {
   try { main(process.argv.slice(2)); }
   catch (error) { process.stderr.write((error.stack || error.message) + "\n"); process.exitCode = 1; }
 }
-module.exports = { validatePack, locatePackRoot };
+module.exports = { validatePack, locatePackRoot, resolvePackDatabaseFile };
