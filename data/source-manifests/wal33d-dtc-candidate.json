@@ -59,5 +59,67 @@
   "oem_part_numbers_included": false,
   "primary_source_provenance": "not supplied by upstream repository; author/source rights confirmation required",
   "decision": "Keep as a quarantined research artifact only. Do not integrate into diagnostic search, do not show as verified VAG-specific DTC, and do not redistribute in the Windows product until dataset-specific rights and source provenance are confirmed.",
-  "verified_by_workflow": "Acquire DTC research snapshots — run 41713373245"
+  "verified_by_workflow": "Acquire DTC research snapshots — run 41713373245",
+  "reviewed_upstream_evidence": {
+    "reviewed_at_utc": "2026-11-06T06:49:00Z",
+    "pinned_revision": "04c43d72e7db7197658b6f72fe582c5076d9eee8",
+    "reviewed_files": [
+      {
+        "path": "README.md",
+        "git_blob_sha1": "1ab235040508244db114e7cafc6c6afe973425d7",
+        "finding": "Declares repository-level MIT and says data/source-data contains 37 source text files; no per-file source index or separate data licence is documented in the reviewed README."
+      },
+      {
+        "path": "LICENSE",
+        "git_blob_sha1": "9cbfaae3f07b8daa1685b4587e36c604a7a4ded1",
+        "finding": "Root MIT text grants rights in the defined Software; the repository does not separately identify the provenance or rights of each imported third-party DTC description."
+      },
+      {
+        "path": "build_database.py",
+        "git_blob_sha1": "d4d8ff47eff67fa6d450ae99546e5c6dc483b6d4",
+        "finding": "The builder infers manufacturer from the source filename stem and sets is_generic=false for every non-generic filename; this is a classification rule, not independent evidence of OEM authorship or applicability."
+      },
+      {
+        "path": "data/source-data/volkswagen_codes.txt",
+        "git_blob_sha1": "a8afd432644e8cad718e42cdd18cc1931a75bb08",
+        "sha256": "fd6bf267f1db3a1a44279a21b1c69cba19ee96d2b2821e0b238cdf54b3a71579",
+        "finding": "Rows contain a five-character code and description only; no per-row source URL, source revision, market, model, generation, year, ECU, engine or gearbox applicability is present."
+      },
+      {
+        "path": "data/source-data/audi_codes.txt",
+        "git_blob_sha1": "96cac4cd186eae8b7b74d151c5a3dc36c9cb8870",
+        "finding": "The adjacent Audi file uses broad PCM/OBD troubleshooting language; the repository's filename-based manufacturer label does not establish that descriptions are OEM-authored or model-specific."
+      }
+    ],
+    "repository_evidence": {
+      "readme_declared_source_text_file_count": 37,
+      "separate_dataset_license_declared": false,
+      "per_file_primary_source_index_found": false,
+      "per_row_source_attribution_found": false,
+      "builder_manufacturer_assignment": "uppercased filename stem with _codes removed",
+      "generic_file_stems": [
+        "p_codes",
+        "b_codes",
+        "c_codes",
+        "u_codes"
+      ],
+      "all_other_file_stems_marked_manufacturer_specific": true,
+      "row_shape": [
+        "code",
+        "description"
+      ],
+      "row_level_fitment_fields": [],
+      "market_scope": "UNKNOWN",
+      "exact_vag_oem_namespace_established": false
+    },
+    "technical_boundary": {
+      "five_character_P1_code_alone_proves_vag_specific": false,
+      "manufacturer_filename_proves_oem_origin": false,
+      "description_is_repair_procedure": false,
+      "exact_model_generation_year_ecu_fitment": false,
+      "diagnostic_execution_allowed": false
+    },
+    "decision": "Retain the existing quarantined candidate pack for research audit only. Do not import, display as VAG-specific, cache in the Windows product, or redistribute. Reconsider only after the publisher supplies per-file primary-source lineage, per-record attribution and rights covering commercial use, display, offline caching, bulk reuse and redistribution, followed by independent technical review."
+  },
+  "data_ingested": false
 }
