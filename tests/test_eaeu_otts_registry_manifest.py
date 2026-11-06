@@ -70,6 +70,37 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertEqual(source["rights"]["permission_status"], "not_required_schema_metadata_only")
 
+    def test_samworld_gearbox_directory_is_quarantined_without_prior_consent(self):
+        source = self.factory_sources["samworld-vag-gearbox-code-database"]
+        self.assertEqual(source["observed_claims"]["unique_gearbox_code_count"], 3489)
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertFalse(source["rights"]["bulk_automated_extraction_allowed"])
+        self.assertFalse(source["rights"]["offline_cache_allowed"])
+        self.assertFalse(source["rights"]["display_and_redistribution_allowed"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
+
+    def test_enginecode_vag_directory_is_not_reusable_without_a_license_or_permission(self):
+        source = self.factory_sources["enginecode-uk-vag-engine-code-directory"]
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(source["rights"]["dataset_license"], "not_stated_for_database_content")
+        self.assertEqual(source["rights"]["commercial_reuse_allowed"], "not_established")
+        self.assertEqual(source["rights"]["offline_cache_allowed"], "not_established")
+        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
+        self.assertFalse(source["applicability"]["ru_eaeu_scope"])
+
+    def test_vag_wiki_terms_remain_a_no_scrape_no_redistribution_gate(self):
+        source = self.factory_sources["vag-wiki-community-technical-hub"]
+        rights = source["rights"]
+        self.assertTrue(rights["terms_explicitly_prohibit_unauthorized_mass_scraping"])
+        self.assertTrue(rights["terms_explicitly_prohibit_automated_data_extraction_without_prior_authorization"])
+        self.assertTrue(rights["terms_explicitly_prohibit_redistribution_without_prior_authorization"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source["data_ingested"])
+
     def test_russian_eaeu_manifest_keeps_open_data_catalog_and_otts_schema_separate(self):
         source = self.russian_sources["eaeu-open-data-portal"]
         schema = source["related_vehicle_approval_registry_schema"]
