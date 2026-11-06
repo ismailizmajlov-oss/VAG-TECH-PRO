@@ -1,0 +1,121 @@
+{
+  "schema_version": 2,
+  "pack_id": "wikidata-vag-model-taxonomy-cc0-630dbed1af15",
+  "snapshot_id": "630dbed1af15",
+  "built_at_utc": "2026-11-06T01:46:29Z",
+  "publisher": "Wikidata / Wikimedia Foundation",
+  "source_repository": "https://www.wikidata.org/",
+  "source_endpoint": "https://query.wikidata.org/sparql",
+  "source_id": "wikidata-vag-model-taxonomy",
+  "data_license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "rights_status": "approved_by_published_license",
+  "commercial_use_allowed": true,
+  "display_allowed": true,
+  "offline_cache_allowed": true,
+  "bulk_reuse_allowed": true,
+  "redistribution_allowed": true,
+  "attribution_required": false,
+  "attribution_recommended": true,
+  "share_alike_required": false,
+  "attribution_text": "Wikidata structured data, CC0 1.0 Universal.",
+  "source_revision": "wikidata-snapshot-630dbed1af15",
+  "source_snapshot_sha256": "630dbed1af15a81180fdba562824eaad8aa92352f4a8debb8a624ad37172bff4",
+  "source_query_sha256": "3892acac5f6b675ce0255943045e1d90940fc1abb04d998f3557f4659a45fcac",
+  "logical_content_sha256": "9dec686b41138dee3b069a53bf682a2aa76c8717cde8f5f59734b3b098db8bbd",
+  "database_sha256": "bf9939044cb53a187fb1dee178e1784f3efaa60e069d20f829f37d8313270206",
+  "manufacturer_whitelist": [
+    "Volkswagen",
+    "Volkswagen AG",
+    "Volkswagen Group",
+    "Volkswagen Commercial Vehicles",
+    "Audi AG",
+    "Škoda Auto",
+    "SEAT",
+    "SEAT S.A.",
+    "Porsche AG",
+    "Bentley Motors Limited",
+    "Automobili Lamborghini S.p.A.",
+    "Bugatti Rimac"
+  ],
+  "entity_class_whitelist": [
+    {
+      "qid": "Q3231690",
+      "label": "car model"
+    },
+    {
+      "qid": "Q59773381",
+      "label": "car model series"
+    }
+  ],
+  "counts": {
+    "model_entities": 521,
+    "car_model_entities": 490,
+    "car_model_series_entities": 40,
+    "source_bindings": 530,
+    "manufacturers": 6,
+    "russian_labels": 285,
+    "date_statements": 32
+  },
+  "query_limit": 3000,
+  "limit_reached": false,
+  "completeness_status": "unknown",
+  "scope": {
+    "namespace": "vag_identity_candidate",
+    "manufacturer_group_basis": "curated_manufacturer_label_whitelist including group-level Volkswagen Group; not an authoritative corporate ownership registry",
+    "entity_class_whitelist": [
+      "Q3231690",
+      "Q59773381"
+    ],
+    "market_scope": "UNKNOWN",
+    "completeness_status": "unknown",
+    "applicability_precision": "candidate_identity_only",
+    "review_status": "candidate",
+    "generation_entities": 0,
+    "generation_verified": false,
+    "exact_vehicle_fitment": false,
+    "engine_code_fitment": false,
+    "transmission_code_fitment": false,
+    "ecu_fitment": false,
+    "dtc_fitment": false,
+    "repair_procedure_fitment": false,
+    "diagnostic_execution_allowed": false,
+    "production_years_inferred": false
+  },
+  "exclusions": [
+    "No engine or gearbox codes",
+    "No ECU identities",
+    "No DTC definitions or descriptions",
+    "No diagnostic test plans or execution commands",
+    "No repair procedures",
+    "No wiring diagrams or pinouts",
+    "No torque values or adaptations",
+    "No OEM part numbers",
+    "No market scope",
+    "No exact vehicle fitment",
+    "No verified generation mapping",
+    "No article text or images"
+  ],
+  "pack_files": {
+    "snapshot.json": {
+      "sha256": "630dbed1af15a81180fdba562824eaad8aa92352f4a8debb8a624ad37172bff4",
+      "byte_size": 575498
+    },
+    "query.rq": {
+      "sha256": "3892acac5f6b675ce0255943045e1d90940fc1abb04d998f3557f4659a45fcac",
+      "byte_size": 1289
+    },
+    "LICENSE-NOTICE.txt": {
+      "sha256": "a3b69835af6ff3dd2f7fcf20324ada50b5175d4e6724bd881e735bc077e594e1",
+      "byte_size": 452
+    },
+    "ATTRIBUTION.md": {
+      "sha256": "a1e0c79246e6e55956e3921bac7f4922af3c7e477db40e3321d561df5a5cc2bb",
+      "byte_size": 1067
+    },
+    "wikidata-vag-taxonomy.sqlite": {
+      "sha256": "bf9939044cb53a187fb1dee178e1784f3efaa60e069d20f829f37d8313270206",
+      "byte_size": 606208
+    }
+  }
+}
