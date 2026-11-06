@@ -1,0 +1,732 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vag-tech-pro:technical-record-payloads:v1",
+  "title": "VAG TECH PRO technical record payloads",
+  "description": "Versioned payload contract. Source revision, license rights, market scope, applicability evidence, record revision and SHA-256 are stored in SQLite columns, not inside payload_json.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "record_kind": {
+      "enum": [
+        "diagnostic_test_plan",
+        "repair_procedure",
+        "wiring_diagram",
+        "ecu_pinout",
+        "torque_specification",
+        "adaptation",
+        "service_interval",
+        "ecu_profile",
+        "oem_part"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_kind",
+    "payload"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "diagnostic_test_plan"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/diagnostic_test_plan"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "repair_procedure"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/repair_procedure"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "wiring_diagram"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/wiring_diagram"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "ecu_pinout"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/ecu_pinout"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "torque_specification"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/torque_specification"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "adaptation"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/adaptation"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "service_interval"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/service_interval"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "ecu_profile"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/ecu_profile"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "oem_part"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/oem_part"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "step": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_result": {
+          "type": "string"
+        },
+        "measurement": {
+          "type": "string"
+        },
+        "acceptance_criteria": {
+          "type": "string"
+        },
+        "safety_note": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "order",
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    "connection": {
+      "type": "object",
+      "properties": {
+        "from_component": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from_connector": {
+          "type": "string"
+        },
+        "from_pin": {
+          "type": "string"
+        },
+        "to_component": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to_connector": {
+          "type": "string"
+        },
+        "to_pin": {
+          "type": "string"
+        },
+        "wire_color": {
+          "type": "string"
+        },
+        "wire_gauge_mm2": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "signal_type": {
+          "type": "string"
+        },
+        "fuse_reference": {
+          "type": "string"
+        },
+        "ground_reference": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_component",
+        "to_component"
+      ],
+      "additionalProperties": false
+    },
+    "string_list": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "diagnostic_test_plan": {
+      "type": "object",
+      "properties": {
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        },
+        "expected_results": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tool_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "safety_notes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "steps",
+        "safety_notes"
+      ],
+      "additionalProperties": false
+    },
+    "repair_procedure": {
+      "type": "object",
+      "properties": {
+        "procedure_code": {
+          "type": "string"
+        },
+        "system": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "safety_notes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        },
+        "expected_results": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "safety_notes",
+        "steps"
+      ],
+      "additionalProperties": false
+    },
+    "wiring_diagram": {
+      "type": "object",
+      "properties": {
+        "diagram_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "diagram_resource_key": {
+          "type": "string"
+        },
+        "diagram_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "format": {
+          "enum": [
+            "PDF",
+            "SVG",
+            "PNG",
+            "JSON",
+            "DBC",
+            "OTHER"
+          ]
+        },
+        "connectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "type": "string"
+              },
+              "connector_id": {
+                "type": "string"
+              },
+              "location": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "component",
+              "connector_id"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/connection"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "diagram_id",
+        "format"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "diagram_resource_key",
+            "diagram_sha256"
+          ]
+        },
+        {
+          "required": [
+            "connections"
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "ecu_pinout": {
+      "type": "object",
+      "properties": {
+        "ecu_identity_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "connector_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pin_number": {
+          "type": "string",
+          "minLength": 1
+        },
+        "terminal_id": {
+          "type": "string"
+        },
+        "signal_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "wire_color": {
+          "type": "string"
+        },
+        "direction": {
+          "enum": [
+            "input",
+            "output",
+            "bidirectional",
+            "power",
+            "ground",
+            "unknown"
+          ]
+        },
+        "voltage_min": {
+          "type": "number"
+        },
+        "voltage_max": {
+          "type": "number"
+        },
+        "voltage_unit": {
+          "const": "V"
+        },
+        "measurement_condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ecu_identity_id",
+        "connector_id",
+        "pin_number",
+        "signal_name",
+        "measurement_condition"
+      ],
+      "additionalProperties": false
+    },
+    "torque_specification": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fastener": {
+          "type": "string"
+        },
+        "torque_value": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "torque_unit": {
+          "enum": [
+            "Nm",
+            "lb-ft",
+            "lb-in"
+          ]
+        },
+        "angle_degrees": {
+          "type": "number",
+          "minimum": 0
+        },
+        "sequence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "torque_value",
+        "torque_unit",
+        "condition"
+      ],
+      "additionalProperties": false
+    },
+    "adaptation": {
+      "type": "object",
+      "properties": {
+        "ecu_identity_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "function_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "channel": {
+          "type": "string"
+        },
+        "access_requirements": {
+          "type": "string",
+          "description": "Reference only. Never store PINs, passwords, SFD tokens, security keys or credentials."
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        },
+        "expected_result": {
+          "type": "string"
+        },
+        "safety_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "function_name",
+        "steps",
+        "safety_note"
+      ],
+      "additionalProperties": false
+    },
+    "service_interval": {
+      "type": "object",
+      "properties": {
+        "service_item": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interval_km": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "interval_months": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "operating_conditions": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "service_item"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "interval_km"
+          ]
+        },
+        {
+          "required": [
+            "interval_months"
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "ecu_profile": {
+      "type": "object",
+      "properties": {
+        "ecu_identity_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "diagnostic_protocol": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hardware_revision": {
+          "type": "string"
+        },
+        "software_revision": {
+          "type": "string"
+        },
+        "coding_notes": {
+          "type": "string"
+        },
+        "security_access_document_ref": {
+          "type": "string",
+          "description": "Reference only. Never store keys, tokens, PINs or passwords."
+        },
+        "programming_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ecu_identity_id",
+        "diagnostic_protocol"
+      ],
+      "additionalProperties": false
+    },
+    "oem_part": {
+      "type": "object",
+      "properties": {
+        "part_number": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "part_category": {
+          "type": "string"
+        },
+        "supersedes_part_number": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "part_number"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

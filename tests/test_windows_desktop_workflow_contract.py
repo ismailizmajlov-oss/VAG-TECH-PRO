@@ -21,7 +21,7 @@ def main() -> None:
         raise SystemExit("Windows Server 2022 verification step is missing")
     step = job.split(step_marker, 1)[1].split("\n      - name:", 1)[0]
 
-    artifact_root = '$artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run70-artifact/windows-lifecycle-staging"'
+    artifact_root = '$artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run71-artifact/windows-lifecycle-staging"'
     desktop_root = '$desktopRoot = Join-Path $artifactRoot "desktop-source"'
     source_register = '$sourceRegisterPath = Join-Path $desktopRoot "data/source-manifests/vag-factory-source-register.json"'
 
@@ -184,6 +184,30 @@ def main() -> None:
         raise SystemExit("Minimatch lock verifier contains an over-escaped regular expression")
     if "npm audit --audit-level=high" in lock_step:
         raise SystemExit("Full dependency audit must fail on moderate vulnerabilities, not only high/critical findings")
+
+    package_manifest = json.loads((ROOT / "desktop-package-run35.json").read_text(encoding="utf-8"))
+    extra_resources = package_manifest.get("build", {}).get("extraResources", [])
+    for source_dir, target_dir in (("data/sql", "sql-schema"), ("data/schemas", "schemas")):
+        if not any(item.get("from") == source_dir and item.get("to") == target_dir for item in extra_resources):
+            raise SystemExit(f"Desktop package is missing extraResource {source_dir} -> {target_dir}")
+
+    sync_script = (ROOT / "scripts/sync_vag_source_register.py").read_text(encoding="utf-8")
+    for marker in ("source-manifest-index.json", "manifest_index_sha256", "os.replace"):
+        if marker not in sync_script:
+            raise SystemExit(f"Source manifest bundle sync is missing marker: {marker}")
+
+    for marker in (
+        "data/sql/**", "data/schemas/**", "tests/test_technical_library_schema.py",
+        "tests/test_source_manifest_bundle.py", "source-manifest-index.json",
+        "russian-eaeu-otts-sources.json", "vehicle-catalog.sql", "oem-dtc-index.sql",
+        "dtc-catalog-links.sql", "technical-library.sql", "technical-record-payloads.schema.json",
+        "source_manifest_index_sha256", "russian_eaeu_otts_manifest_sha256",
+        "vehicle_catalog_sql_sha256", "oem_dtc_index_sql_sha256", "dtc_catalog_links_sql_sha256",
+        "Verify packaged source manifests and technical library schemas",
+        "vag-tech-pro-windows-x64-run71",
+    ):
+        if marker not in workflow:
+            raise SystemExit(f"Windows workflow is missing technical-library packaging contract: {marker}")
 
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 

@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_evidence (
   source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64),
   claim_type TEXT NOT NULL CHECK (
     claim_type IN ('make','model','generation','variant','engine_code',
-                   'transmission_code','engine_fitment','transmission_fitment',
+                   'transmission_code','engine_fitment','transmission_fitment','vin_range',
                    'engine_transmission_pair','market_scope','ecu_fitment','dtc_applicability','repair_document_applicability','other')
   ),
   review_status TEXT NOT NULL DEFAULT 'candidate' CHECK (

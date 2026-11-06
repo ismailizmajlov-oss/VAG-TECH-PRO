@@ -77,6 +77,20 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "data/sql",
+        "to": "sql-schema",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "data/schemas",
+        "to": "schemas",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "afterPack": "scripts/verify-source-register-after-pack.cjs",

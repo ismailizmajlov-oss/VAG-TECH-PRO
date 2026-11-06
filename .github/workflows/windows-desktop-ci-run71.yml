@@ -46,7 +46,11 @@ on:
       - "tests/test_otts_bot_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
-      - "data/sql/generic-repair-guidance.sql"
+      - "data/sql/**"
+      - "data/schemas/**"
+      - "tests/test_technical_library_schema.py"
+      - "tests/test_source_manifest_bundle.py"
+      - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
       - "tests/test_mechanicdb_generic_guidance_pack.py"
       - "tests/test_mechanicdb_generic_guidance_source_rights.py"
@@ -82,6 +86,11 @@ on:
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_openvag_source_rights.py"
       - "data/source-manifests/russian-eaeu-otts-sources.json"
+      - "data/sql/**"
+      - "data/schemas/**"
+      - "tests/test_technical_library_schema.py"
+      - "tests/test_source_manifest_bundle.py"
+      - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "scripts/import-authorized-fgis-otts-export.cjs"
       - "tests/authorized-fgis-otts-export.test.cjs"
       - "scripts/import_eaeu_otts_registry_export.py"
@@ -97,7 +106,11 @@ on:
       - "tests/test_otts_bot_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
-      - "data/sql/generic-repair-guidance.sql"
+      - "data/sql/**"
+      - "data/schemas/**"
+      - "tests/test_technical_library_schema.py"
+      - "tests/test_source_manifest_bundle.py"
+      - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
       - "tests/test_mechanicdb_generic_guidance_pack.py"
       - "tests/test_mechanicdb_generic_guidance_source_rights.py"
@@ -146,6 +159,8 @@ jobs:
           $ErrorActionPreference = "Stop"
           python --version
           python tests/test_windows_desktop_workflow_contract.py
+          python tests/test_source_manifest_bundle.py -v
+          python tests/test_technical_library_schema.py -v
           python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
@@ -175,6 +190,14 @@ jobs:
           Expand-Archive -LiteralPath $zipPath -DestinationPath "desktop-source" -Force
           if (-not (Test-Path "desktop-source/package.json")) { throw "Desktop package.json was not extracted." }
           Copy-Item -LiteralPath "desktop-package-run35.json" -Destination "desktop-source/package.json" -Force
+          $desktopDataRoot = Join-Path (Get-Location) "desktop-source/data"
+          foreach ($folder in @("sql", "schemas")) {
+            $sourceFolder = Join-Path (Get-Location) ("data/" + $folder)
+            $targetFolder = Join-Path $desktopDataRoot $folder
+            if (-not (Test-Path -LiteralPath $sourceFolder -PathType Container)) { throw "Required desktop data folder is missing: $sourceFolder" }
+            New-Item -ItemType Directory -Path $targetFolder -Force | Out-Null
+            Copy-Item -Path (Join-Path $sourceFolder "*") -Destination $targetFolder -Recurse -Force
+          }
 
           $patches = @(
             @{ File = "run36-01-manifest.patch.gz.b64"; GzipSha = "af9b133cbcb557f69935e6b615d1cef094d87cc83cad1ad0bedb4a81b983f1dd"; PatchSha = "195003ca7ad428b14c877b3c2f4586fc4320c50ae9c9353a87508efd2b0c907e" },
@@ -880,6 +903,16 @@ jobs:
           $syncOutput | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-source-register-sync.log"
           $sync = ($syncOutput -join "`n") | ConvertFrom-Json
           if ($sync.status -ne "synced_verified" -or $sync.source_count -lt 1 -or $sync.sha256 -notmatch "^[a-f0-9]{64}$") { throw "Desktop source-rights register sync verification failed" }
+          if ($sync.manifest_count -lt 2 -or $sync.manifest_index_sha256 -notmatch "^[a-f0-9]{64}$") { throw "Desktop source-manifest bundle index verification failed" }
+          $russianManifestEntry = $sync.manifest_files | Where-Object { $_.name -eq "russian-eaeu-otts-sources.json" } | Select-Object -First 1
+          if ($null -eq $russianManifestEntry -or $russianManifestEntry.sha256 -notmatch "^[a-f0-9]{64}$") { throw "Russian/EEU OTTS source manifest was not copied into desktop staging" }
+          $russianManifestPath = "desktop-source/data/source-manifests/russian-eaeu-otts-sources.json"
+          $russianManifest = Get-Content -LiteralPath $russianManifestPath -Raw | ConvertFrom-Json
+          if (@($russianManifest.sources | Where-Object { $_.data_ingested -eq $true }).Count -gt 0) { throw "Unlicensed Russian/EEU OTTS source is marked as ingested" }
+          "source_manifest_index_sha256=$($sync.manifest_index_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "source_manifest_count=$($sync.manifest_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "russian_eaeu_otts_manifest_sha256=$($russianManifestEntry.sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "russian_eaeu_otts_source_count=$($russianManifestEntry.source_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "vag_source_register_sha256=$($sync.sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "vag_source_register_source_count=$($sync.source_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "vag_source_register_updated_at=$($sync.updated_at)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
@@ -978,6 +1011,64 @@ jobs:
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.4-x64.exe") -Force
 
+      - name: Verify packaged source manifests and technical library schemas
+        working-directory: desktop-source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $resources = Join-Path (Get-Location) "release/win-unpacked/resources"
+          $manifestDir = Join-Path $resources "source-manifests"
+          $indexPath = Join-Path $manifestDir "source-manifest-index.json"
+          if (-not (Test-Path -LiteralPath $indexPath -PathType Leaf)) { throw "Packaged source-manifest index is missing." }
+          $index = Get-Content -LiteralPath $indexPath -Raw | ConvertFrom-Json
+          if ($index.schema_version -ne 1 -or @($index.files).Count -lt 2) { throw "Packaged source-manifest index schema/count is invalid." }
+          foreach ($item in $index.files) {
+            if ($item.name -match '[/\\]' -or $item.name -in @(".", "..")) { throw "Unsafe source-manifest filename in index: $($item.name)" }
+            $path = Join-Path $manifestDir $item.name
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Packaged source manifest is missing: $($item.name)" }
+            $actualHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+            $actualBytes = (Get-Item -LiteralPath $path).Length
+            if ($actualHash -ne $item.sha256 -or $actualBytes -ne $item.bytes) { throw "Packaged source manifest hash/size mismatch: $($item.name)" }
+          }
+          $russianPath = Join-Path $manifestDir "russian-eaeu-otts-sources.json"
+          $russian = Get-Content -LiteralPath $russianPath -Raw | ConvertFrom-Json
+          if (@($russian.sources | Where-Object { $_.data_ingested -eq $true }).Count -gt 0) { throw "Packaged Russian/EEU OTTS manifest contains an unlicensed ingested source." }
+
+          $sqlFiles = @(
+            @{ name="vehicle-catalog.sql"; source=(Join-Path (Get-Location) "data/sql/vehicle-catalog.sql"); packaged=(Join-Path $resources "sql-schema/vehicle-catalog.sql"); key="vehicle_catalog_sql_sha256" }
+            @{ name="oem-dtc-index.sql"; source=(Join-Path (Get-Location) "data/sql/oem-dtc-index.sql"); packaged=(Join-Path $resources "sql-schema/oem-dtc-index.sql"); key="oem_dtc_index_sql_sha256" }
+            @{ name="dtc-catalog-links.sql"; source=(Join-Path (Get-Location) "data/sql/dtc-catalog-links.sql"); packaged=(Join-Path $resources "sql-schema/dtc-catalog-links.sql"); key="dtc_catalog_links_sql_sha256" }
+            @{ name="technical-library.sql"; source=(Join-Path (Get-Location) "data/sql/technical-library.sql"); packaged=(Join-Path $resources "sql-schema/technical-library.sql"); key="technical_library_sql_sha256" }
+          )
+          $sqlVerificationLines = @()
+          foreach ($file in $sqlFiles) {
+            foreach ($path in @($file.source,$file.packaged)) {
+              if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "SQL schema resource is missing: $path" }
+            }
+            $sourceHash = (Get-FileHash -LiteralPath $file.source -Algorithm SHA256).Hash.ToLowerInvariant()
+            $packagedHash = (Get-FileHash -LiteralPath $file.packaged -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($sourceHash -ne $packagedHash) { throw "Packaged SQL schema differs from source: $($file.name)" }
+            $sqlVerificationLines += "$($file.key)=$packagedHash"
+          }
+          $schemaSource = Join-Path (Get-Location) "data/schemas/technical-record-payloads.schema.json"
+          $schemaPackaged = Join-Path $resources "schemas/technical-record-payloads.schema.json"
+          foreach ($path in @($schemaSource,$schemaPackaged)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Technical payload schema resource is missing: $path" }
+          }
+          $schemaSourceHash = (Get-FileHash -LiteralPath $schemaSource -Algorithm SHA256).Hash.ToLowerInvariant()
+          $schemaPackagedHash = (Get-FileHash -LiteralPath $schemaPackaged -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($schemaSourceHash -ne $schemaPackagedHash) { throw "Packaged technical payload schema differs from the source file." }
+          $indexHash = (Get-FileHash -LiteralPath $indexPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $russianHash = (Get-FileHash -LiteralPath $russianPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          @(
+            "source_manifest_index_sha256=$indexHash"
+            "source_manifest_count=$(@($index.files).Count)"
+            "russian_eaeu_otts_manifest_sha256=$russianHash"
+            "russian_eaeu_otts_source_count=$(@($russian.sources).Count)"
+            $sqlVerificationLines
+            "technical_payload_schema_sha256=$schemaPackagedHash"
+          ) | Out-File -FilePath "$env:GITHUB_WORKSPACE/package-resource-verification.txt" -Encoding utf8
+
       - name: Run clean install, offline, backup/restore, upgrade and uninstall lifecycle
         shell: pwsh
         run: |
@@ -1024,6 +1115,24 @@ jobs:
           $sourceRegisterHash = if (Test-Path $sourceRegisterPath) { (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $sourceRegisterCount = if ($sourceRegisterJson) { @($sourceRegisterJson.sources).Count } else { $null }
           $sourceRegisterUpdatedAt = if ($sourceRegisterJson) { $sourceRegisterJson.updated_at } else { $null }
+          $manifestIndexPath = "desktop-source/data/source-manifests/source-manifest-index.json"
+          $manifestIndexJson = if (Test-Path $manifestIndexPath) { Get-Content -LiteralPath $manifestIndexPath -Raw | ConvertFrom-Json } else { $null }
+          $manifestIndexHash = if (Test-Path $manifestIndexPath) { (Get-FileHash -LiteralPath $manifestIndexPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $manifestCount = if ($manifestIndexJson) { @($manifestIndexJson.files).Count } else { $null }
+          $russianManifestPath = "desktop-source/data/source-manifests/russian-eaeu-otts-sources.json"
+          $russianManifestJson = if (Test-Path $russianManifestPath) { Get-Content -LiteralPath $russianManifestPath -Raw | ConvertFrom-Json } else { $null }
+          $russianManifestHash = if (Test-Path $russianManifestPath) { (Get-FileHash -LiteralPath $russianManifestPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $russianManifestCount = if ($russianManifestJson) { @($russianManifestJson.sources).Count } else { $null }
+          $technicalLibrarySqlPath = "desktop-source/data/sql/technical-library.sql"
+          $technicalLibrarySqlHash = if (Test-Path $technicalLibrarySqlPath) { (Get-FileHash -LiteralPath $technicalLibrarySqlPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $vehicleCatalogSqlPath = "desktop-source/data/sql/vehicle-catalog.sql"
+          $vehicleCatalogSqlHash = if (Test-Path $vehicleCatalogSqlPath) { (Get-FileHash -LiteralPath $vehicleCatalogSqlPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $oemDtcIndexSqlPath = "desktop-source/data/sql/oem-dtc-index.sql"
+          $oemDtcIndexSqlHash = if (Test-Path $oemDtcIndexSqlPath) { (Get-FileHash -LiteralPath $oemDtcIndexSqlPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $dtcCatalogLinksSqlPath = "desktop-source/data/sql/dtc-catalog-links.sql"
+          $dtcCatalogLinksSqlHash = if (Test-Path $dtcCatalogLinksSqlPath) { (Get-FileHash -LiteralPath $dtcCatalogLinksSqlPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $technicalPayloadSchemaPath = "desktop-source/data/schemas/technical-record-payloads.schema.json"
+          $technicalPayloadSchemaHash = if (Test-Path $technicalPayloadSchemaPath) { (Get-FileHash -LiteralPath $technicalPayloadSchemaPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
 
           foreach ($file in @(
             (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe"),
@@ -1033,7 +1142,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Stage Windows 2022 lifecycle verification payload
         if: always()
@@ -1047,13 +1156,13 @@ jobs:
             $source = Join-Path $env:RUNNER_TEMP $name
             if (Test-Path $source) { Copy-Item -LiteralPath $source -Destination (Join-Path $stage $name) -Force }
           }
-          foreach ($name in @("build-metadata.json", "source-verification.txt")) {
+          foreach ($name in @("build-metadata.json", "source-verification.txt", "package-resource-verification.txt")) {
             if (Test-Path $name) { Copy-Item -LiteralPath $name -Destination (Join-Path $stage $name) -Force }
           }
           $desktopStage = Join-Path $stage "desktop-source"
           New-Item -ItemType Directory -Path $desktopStage -Force | Out-Null
           Copy-Item -LiteralPath "desktop-source/package.json" -Destination $desktopStage -Force
-          foreach ($folder in @("scripts", "lib", "data/research", "data/source-manifests")) {
+          foreach ($folder in @("scripts", "lib", "data/research", "data/source-manifests", "data/sql", "data/schemas")) {
             $sourceFolder = Join-Path "desktop-source" $folder
             $targetFolder = Join-Path $desktopStage $folder
             New-Item -ItemType Directory -Path $targetFolder -Force | Out-Null
@@ -1063,7 +1172,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: vag-tech-pro-windows-x64-run70
+          name: vag-tech-pro-windows-x64-run71
           path: |
             desktop-source/package-lock.json
             desktop-source/npm-lock.log
@@ -1084,6 +1193,16 @@ jobs:
             desktop-source/data/research/mechanicdb-generic-repair-guidance-odbl/*
             desktop-source/data/source-manifests/mechanicdb-generic-repair-guidance.json
             desktop-source/data/source-manifests/vag-factory-source-register.json
+            desktop-source/data/source-manifests/source-manifest-index.json
+            desktop-source/data/source-manifests/russian-eaeu-otts-sources.json
+            desktop-source/data/sql/vehicle-catalog.sql
+            desktop-source/data/sql/oem-dtc-index.sql
+            desktop-source/data/sql/dtc-catalog-links.sql
+            desktop-source/data/sql/technical-library.sql
+            desktop-source/data/schemas/technical-record-payloads.schema.json
+            package-resource-verification.txt
+            tests/test_source_manifest_bundle.py
+            tests/test_technical_library_schema.py
             desktop-source/lib/generic-repair-guidance-db.cjs
             desktop-source/tests/generic-repair-guidance-db.test.cjs
             desktop-source/tests/generic-repair-guidance-ui-contract.test.cjs
@@ -1120,8 +1239,8 @@ jobs:
       - name: Download installers and offline lifecycle contract
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: vag-tech-pro-windows-x64-run70
-          path: ${{ runner.temp }}/vag-tech-pro-run70-artifact
+          name: vag-tech-pro-windows-x64-run71
+          path: ${{ runner.temp }}/vag-tech-pro-run71-artifact
           run-id: ${{ github.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -1134,7 +1253,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run70-artifact/windows-lifecycle-staging"
+          $artifactRoot = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run71-artifact/windows-lifecycle-staging"
           $metadata = Get-Content -LiteralPath (Join-Path $artifactRoot "build-metadata.json") -Raw | ConvertFrom-Json
           $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.3-x64.exe"
           $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
@@ -1152,9 +1271,39 @@ jobs:
           $sourceRegisterActualHash = (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant()
           $sourceRegister = Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json
           if ($metadata.vag_source_register_sha256 -ne $sourceRegisterActualHash -or $metadata.vag_source_register_source_count -ne @($sourceRegister.sources).Count -or $metadata.vag_source_register_updated_at -ne $sourceRegister.updated_at) { throw "Bundled source-rights register does not match build metadata." }
+          $manifestDir = Join-Path $desktopRoot "data/source-manifests"
+          $manifestIndexPath = Join-Path $manifestDir "source-manifest-index.json"
+          if (-not (Test-Path -LiteralPath $manifestIndexPath -PathType Leaf)) { throw "Source-manifest index is missing from Windows lifecycle payload." }
+          $manifestIndexHash = (Get-FileHash -LiteralPath $manifestIndexPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $manifestIndex = Get-Content -LiteralPath $manifestIndexPath -Raw | ConvertFrom-Json
+          if ($metadata.source_manifest_index_sha256 -ne $manifestIndexHash -or $metadata.source_manifest_count -ne @($manifestIndex.files).Count) { throw "Source-manifest index does not match build metadata." }
+          foreach ($item in $manifestIndex.files) {
+            if ($item.name -match '[/\\]' -or $item.name -in @(".", "..")) { throw "Unsafe source manifest filename: $($item.name)" }
+            $manifestPath = Join-Path $manifestDir $item.name
+            if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) { throw "Indexed source manifest is missing: $($item.name)" }
+            if ((Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $item.sha256 -or (Get-Item -LiteralPath $manifestPath).Length -ne $item.bytes) { throw "Indexed source manifest hash/size mismatch: $($item.name)" }
+          }
+          $russianPath = Join-Path $manifestDir "russian-eaeu-otts-sources.json"
+          $russianHash = (Get-FileHash -LiteralPath $russianPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $russianManifest = Get-Content -LiteralPath $russianPath -Raw | ConvertFrom-Json
+          if ($metadata.russian_eaeu_otts_manifest_sha256 -ne $russianHash -or $metadata.russian_eaeu_otts_source_count -ne @($russianManifest.sources).Count) { throw "Russian/EEU OTTS manifest does not match build metadata." }
+          if (@($russianManifest.sources | Where-Object { $_.data_ingested -eq $true }).Count -gt 0) { throw "Russian/EEU manifest contains a source marked ingested without cleared rights." }
+          $sqlFiles = @(
+            @{ path=(Join-Path $desktopRoot "data/sql/vehicle-catalog.sql"); hash=$metadata.vehicle_catalog_sql_sha256 }
+            @{ path=(Join-Path $desktopRoot "data/sql/oem-dtc-index.sql"); hash=$metadata.oem_dtc_index_sql_sha256 }
+            @{ path=(Join-Path $desktopRoot "data/sql/dtc-catalog-links.sql"); hash=$metadata.dtc_catalog_links_sql_sha256 }
+            @{ path=(Join-Path $desktopRoot "data/sql/technical-library.sql"); hash=$metadata.technical_library_sql_sha256 }
+          )
+          foreach ($file in $sqlFiles) {
+            if (-not (Test-Path -LiteralPath $file.path -PathType Leaf)) { throw "SQL schema file is missing from Windows lifecycle payload: $($file.path)" }
+            if ((Get-FileHash -LiteralPath $file.path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $file.hash) { throw "SQL schema hash differs from build metadata: $($file.path)" }
+          }
+          $technicalSchemaPath = Join-Path $desktopRoot "data/schemas/technical-record-payloads.schema.json"
+          if (-not (Test-Path -LiteralPath $technicalSchemaPath -PathType Leaf)) { throw "Technical payload schema is missing from Windows lifecycle payload." }
+          if ((Get-FileHash -LiteralPath $technicalSchemaPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $metadata.technical_payload_schema_sha256) { throw "Technical payload schema hash differs from build metadata." }
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
-          foreach ($required in @("data/research/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
+          foreach ($required in @("data/research/manifest.json", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
             if (-not (Test-Path (Join-Path $desktopRoot $required))) { throw "Offline lifecycle evidence file is missing: $required" }
           }
           Set-Location $desktopRoot
@@ -1165,10 +1314,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: vag-tech-pro-windows-2022-lifecycle-run70
+          name: vag-tech-pro-windows-2022-lifecycle-run71
           path: |
-            ${{ runner.temp }}/vag-tech-pro-run70-artifact/windows-lifecycle-staging/build-metadata.json
-            ${{ runner.temp }}/vag-tech-pro-run70-artifact/windows-lifecycle-staging/source-verification.txt
+            ${{ runner.temp }}/vag-tech-pro-run71-artifact/windows-lifecycle-staging/build-metadata.json
+            ${{ runner.temp }}/vag-tech-pro-run71-artifact/windows-lifecycle-staging/source-verification.txt
             windows-2022-lifecycle.log
           if-no-files-found: warn
           retention-days: 30
