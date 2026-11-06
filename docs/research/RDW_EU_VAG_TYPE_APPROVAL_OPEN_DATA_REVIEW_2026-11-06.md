@@ -32,7 +32,7 @@ The official RDW Socrata JSON endpoints were inspected on 2026-11-06:
 - kyri-nuah: includes RDW make-code rows keyed to the approval variant/version.
 - x5v3-sewk: includes manufacturer trade name and type designation, keyed by approval variant/version.
 
-The live schema probe will re-check the field names and current source revisions in Windows CI before any pack is built. No full source snapshot has yet been downloaded; therefore no full-source SHA-256 or record count is claimed.
+The live schema probe will re-check the field names and current source revisions in Windows CI before any pack is built. No unfiltered full upstream dataset dump has been downloaded. A later run built six VAG-scoped filtered JSONL snapshots; their per-file hashes and row counts are recorded in the separate research-pack evidence below. Those filtered snapshots are not represented as complete RDW dataset dumps.
 
 ## Applicability policy
 
@@ -47,9 +47,9 @@ The live schema probe will re-check the field names and current source revisions
 
 ## Probe and future pack policy
 
-The first CI job is a schema and exact-scope probe only. It queries a small set of Volkswagen passenger-car rows with an explicit non-identifying field allowlist, then checks the matching official TGK tables using the exact approval/variant/version/revision key. It does not download the complete registration dataset and does not persist any plate or VIN.
+The first CI job remains a schema and exact-scope probe: it queries a small set of Volkswagen passenger-car rows with an explicit non-identifying field allowlist, then checks the matching official TGK tables using the exact approval/variant/version/revision key. A separate Windows CI pack job subsequently downloaded only the allowlisted VAG make observations and exact-scope TGK rows described below. Neither workflow downloads an unfiltered complete registration dataset or requests/persists a plate or VIN.
 
-A future pack may contain only:
+The separate run-11 research pack contains only:
 - the selected make/trade-name and EU approval identifiers;
 - raw approval variant/version/revision keys;
 - RDW engine designation candidates and their approval-scope provenance;
@@ -76,3 +76,21 @@ The Windows CI schema/scope probe passed: [run 1](https://github.com/ismailizmaj
 The official RDW query found one NL Volkswagen Tayron observation linked to EU approval e1*2018/858*00403*07, variant ACDUCAX0, execution FD6FD6DD002PR4VNB50OO, revision 0 (M1; revision start 2026-07-31). In that exact approval scope, RDW returned one engine row with Motorcode DUC, 1,498 cc and four cylinders, and one separate gearbox classification row with Codetypeversnellingsbak A. The manufacturer trade-name table returned TAYRON / R4; the RDW make table returned VOLK and VWVP.
 
 This confirms the official source fields and exact approval-scope linkage, not a factory powertrain pair. DUC remains an engine-designation candidate pending independent OEM corroboration; A remains an RDW approval classification, not a VAG gearbox code. No engine/gearbox pair, production fitment, model year, generation or RU/EAEU applicability is asserted. The probe did not download a full source snapshot, so the full-source SHA-256 remains null and data_ingested remains false.
+
+
+## Filtered research pack audit — run 11, 2026-11-06
+
+The separate Windows pack workflow completed successfully: [run 11](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42260969213), source commit `7c08e8d2335124e721078f456a7077a0112db2bb`.
+
+- Artifact ID: `13526776486`; ZIP SHA-256: `86812d6f0ecc81b4894c2cde150f8dc4290ac83f4ec5d457865ce32c0440bf31`; size: 155,402,740 bytes.
+- Pack manifest SHA-256: `1df346574069a18918eb1ec18a4813eafb372ca6ca0f552226301cdca11bd61c`.
+- SQLite database: 500,994,048 bytes; SHA-256: `9c4bc992ee56aa0f308813c1ad384968a28d0296c80cb7e07100a21c2a8f8612`.
+- Six filtered source snapshots contain 604,785 source rows: 102,662 registration observations, 93,836 engine-designation candidate rows, 93,548 gearbox-classification rows and 314,739 auxiliary rows, across 96,519 exact approval/variant/version/revision scopes.
+- Source snapshot SHA-256 values and dataset revisions are recorded in `data/source-manifests/vag-factory-source-register.json` under `research_pack_build_evidence.source_snapshots`.
+- SQLite `integrity_check` returned `ok`; `foreign_key_check` returned no violations.
+
+An independent read-only audit of the artifact found 93,548 approval scopes with both an engine candidate row and a gearbox classification row, 190 engine-only scopes and no gearbox-only scopes. However, 98 scopes contain more than one engine candidate row. There are 908 distinct engine-designation strings and four gearbox-classification values. These are aggregate coverage diagnostics only: **they are not pair records**, and the 98 multi-engine scopes demonstrate why joining by approval scope alone can be ambiguous. The pack contains no pair table.
+
+The pack remains NL-only and `verified_research_only`. RDW Motorcode values remain candidates, not OEM-confirmed VAG engine codes; gearbox values remain classifications, not VAG gearbox codes. No model year, generation, individual-vehicle fitment, ECU/DTC/repair applicability or RU/EAEU applicability is inferred. Product import is false and the pack is not integrated into the desktop installer.
+
+Run 11 predates the latest RDW query-spec and source-column provenance changes. The current builder also adds a foreign key from each source row to its source-file artifact and verifies row-by-row parity between the canonical JSONL snapshots and SQLite row hashes. Those latest integrity changes require a new successful build; the run-11 artifact is historical evidence and must not be described as validated by the newer checks.
