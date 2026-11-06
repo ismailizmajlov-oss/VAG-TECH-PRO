@@ -133,12 +133,11 @@ def query_all(
 ) -> list[dict[str, Any]]:
     if page_size < 1 or page_size > PAGE_SIZE:
         raise ValueError("RDW page size is outside the safe limit")
-    select_clause = (["distinct"] if distinct else []) + select_fields
     rows: list[dict[str, Any]] = []
     offset = 0
     while True:
         params = {
-            "$select": ",".join(select_clause),
+            "$select": ("distinct " if distinct else "") + ",".join(select_fields),
             "$where": where,
             "$order": order,
             "$limit": str(page_size),
@@ -843,18 +842,52 @@ def validate_database(connection: sqlite3.Connection) -> None:
     """).fetchone()[0]
     if bad_scopes:
         raise RuntimeError(f"RDW approval scopes contain prohibited fitment claims: {bad_scopes}")
-    for table in (
-        "registration_observation", "tgk_drive", "tgk_gearbox", "tgk_base",
-        "tgk_make", "tgk_trade_name",
-    ):
+    table_config = {
+        "registration_observation": ("registered_vehicle_identity", None),
+        "tgk_drive": ("tgk_drive", "codevarianttgk"),
+        "tgk_gearbox": ("tgk_gearbox", "codevarianttgk"),
+        "tgk_base": ("tgk_base", "codevarianttgk"),
+        "tgk_make": ("tgk_make", "codevarianttgk"),
+        "tgk_trade_name": ("tgk_trade_name", "codevariantgk"),
+    }
+    if connection.execute("SELECT count(*) FROM source_registry").fetchone()[0] != 6:
+        raise RuntimeError("RDW source registry must contain all six dataset projections")
+    for table, (dataset_name, variant_field) in table_config.items():
         bad_rows = connection.execute(
             f"SELECT count(*) FROM {table} WHERE length(source_row_sha256)<>64 OR market_scope<>'NL' OR license_id<>'CC0-1.0'"
         ).fetchone()[0]
         if bad_rows:
             raise RuntimeError(f"RDW provenance/market/license validation failed for {table}: {bad_rows}")
-        for (raw_json,) in connection.execute(f"SELECT raw_record_json FROM {table}"):
-            record = json.loads(raw_json)
+        registry_row = connection.execute(
+            "SELECT row_count FROM source_registry WHERE dataset_name=?",
+            (dataset_name,),
+        ).fetchone()
+        actual_count = connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+        if registry_row is None or registry_row["row_count"] != actual_count:
+            raise RuntimeError(f"RDW source registry row count differs from SQLite table {table}")
+        for row in connection.execute(
+            f"SELECT source_row_sha256,scope_id,raw_record_json FROM {table}"
+        ):
+            record = json.loads(row["raw_record_json"])
             assert_safe_record(record)
+            if sha256_json(record) != row["source_row_sha256"]:
+                raise RuntimeError(f"RDW source-row SHA-256 mismatch in {table}")
+            key = registration_scope_key(record) if variant_field is None else tgk_scope_key(record, variant_field)
+            if any(not key[name] for name in ("typegoedkeuringsnummer", "variant", "version", "revision")):
+                raise RuntimeError(f"RDW exact approval-scope key is incomplete in {table}")
+            if scope_id_for(key) != row["scope_id"]:
+                raise RuntimeError(f"RDW exact approval-scope link mismatch in {table}")
+    for row in connection.execute(
+        "SELECT scope_id,type_approval_number,variant,version,revision FROM approval_scope"
+    ):
+        key = {
+            "typegoedkeuringsnummer": row["type_approval_number"],
+            "variant": row["variant"],
+            "version": row["version"],
+            "revision": row["revision"],
+        }
+        if scope_id_for(key) != row["scope_id"]:
+            raise RuntimeError("RDW approval-scope primary key hash mismatch")
     info = connection.execute("SELECT * FROM database_info WHERE id=1").fetchone()
     if not info or info["production_import_allowed"] != 0 or info["engine_gearbox_pair_claims"] != 0:
         raise RuntimeError("RDW database production/pairing safety flags are invalid")
