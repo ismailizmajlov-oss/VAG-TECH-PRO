@@ -1,0 +1,66 @@
+name: Probe official RDW Netherlands / EU VAG type-approval open data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "scripts/probe_rdw_vag_type_approvals.py"
+      - "tests/test_rdw_vag_type_approval_source_rights.py"
+      - "docs/research/RDW_EU_VAG_TYPE_APPROVAL_OPEN_DATA_REVIEW_2026-11-06.md"
+      - ".github/workflows/acquire-rdw-vag-type-approval-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-rdw-vag-probe
+  cancel-in-progress: false
+
+jobs:
+  probe-and-validate:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate RDW CC0 rights and no-fitment policy
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tests -p "test_rdw_vag_type_approval_source_rights.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "RDW source-rights tests failed" }
+      - name: Probe current official RDW schema and exact approval scope
+        shell: pwsh
+        run: |
+          python scripts/probe_rdw_vag_type_approvals.py --output-dir artifacts/rdw-vag-probe
+          if ($LASTEXITCODE -ne 0) { throw "RDW live schema/scope probe failed" }
+      - name: Write probe evidence to job summary
+        shell: pwsh
+        run: |
+          $reportPath = Join-Path $env:GITHUB_WORKSPACE "artifacts/rdw-vag-probe/rdw-vag-type-approval-probe.json"
+          $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+          $hash = (Get-FileHash -LiteralPath $reportPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          @(
+            "## RDW VAG type-approval probe",
+            "",
+            "- Status: $($report.probe_status)",
+            "- Market scope: $($report.market_scope -join ', ')",
+            "- Approval: $($report.approval_scope_key.typegoedkeuringsnummer)",
+            "- Variant/version/revision: $($report.approval_scope_key.variant) / $($report.approval_scope_key.uitvoering) / $($report.approval_scope_key.revision)",
+            "- Engine rows: $(@($report.matched_official_tgk_rows.tgk_drive).Count)",
+            "- Gearbox classification rows: $(@($report.matched_official_tgk_rows.tgk_gearbox).Count)",
+            "- Engine/gearbox pair claim: $($report.field_semantics.engine_gearbox_pair_claim)",
+            "- Probe report SHA-256: $hash",
+            "- Full source snapshot SHA-256: not created by this probe"
+          ) | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+      - name: Upload schema probe and exact-scope evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdw-vag-type-approval-schema-probe
+          path: artifacts/rdw-vag-probe/rdw-vag-type-approval-probe.json
+          if-no-files-found: error
+          retention-days: 90
