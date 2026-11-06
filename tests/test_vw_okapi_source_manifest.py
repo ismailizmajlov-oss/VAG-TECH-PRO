@@ -47,7 +47,9 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
         dda = next(item for item in manifest["products"] if item["source_id"] == "volkswagen-group-diagnostics-data")
         self.assertEqual(dda["market_scope"], ["EEA", "UK", "CH"])
         self.assertTrue(dda["access"]["subscription_required"])
-        self.assertTrue(dda["rights"]["SFD_agreement_required"])\n        self.assertFalse(dda["rights"]["offline_cache_allowed"])\n        self.assertFalse(dda["rights"]["redistribution_allowed"])
+        self.assertTrue(dda["rights"]["SFD_agreement_required"])
+        self.assertFalse(dda["rights"]["offline_cache_allowed"])
+        self.assertFalse(dda["rights"]["redistribution_allowed"])
         self.assertTrue(dda["rights"]["volkswagen_encryption_key_agreement_required"])
         self.assertFalse(dda["product_import_allowed"])
         self.assertFalse(dda["data_ingested"])
@@ -58,7 +60,8 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
         rmi = next(item for item in manifest["products"] if item["source_id"] == "volkswagen-group-rmi-license")
         self.assertFalse(rmi["rights"]["russia_market_allowed"])
         self.assertIn("RUSSIA", rmi["market_scope"][0] + "_" + rmi["market_scope"][1])
-        self.assertFalse(rmi["rights"]["redistribution_allowed"])\n        self.assertFalse(rmi["product_import_allowed"])
+        self.assertFalse(rmi["rights"]["redistribution_allowed"])
+        self.assertFalse(rmi["product_import_allowed"])
         self.assertFalse(rmi["data_ingested"])
 
     def test_erwin_is_not_treated_as_a_data_feed(self):
