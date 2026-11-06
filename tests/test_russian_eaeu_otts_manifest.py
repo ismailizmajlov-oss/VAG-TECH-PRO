@@ -122,6 +122,35 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(source["access"]["bulk_export"], "not_established")
         self.assertEqual(source["access"]["offline_cache"], "not_established")
 
+    def test_elpts_internal_gearbox_entry_notice_does_not_create_public_fields_or_reuse_rights(self):
+        source = self.sources["elpts-national-otts-register"]
+        notice = source["operator_notices"][0]
+        self.assertEqual(notice["notice_id"], "elpts-as-eotts-gearbox-entry-fix-2026-08-21")
+        self.assertEqual(notice["notice_date"], "2026-08-21")
+        self.assertEqual(notice["evidence_class"], "operator_notice_about_internal_data_entry_workflow")
+        self.assertIn("additional reduction gears and hydraulic transmissions", notice["statement"])
+        self.assertIn("the exact internal field name or schema", notice["does_not_establish"])
+        self.assertIn("that the value is a factory gearbox code", notice["does_not_establish"])
+        self.assertIn("offline caching", " ".join(notice["does_not_establish"]))
+        self.assertEqual(notice["product_decision"], "retain_as_access_and_schema_discovery_evidence_only; no import or fitment claim")
+        self.assertEqual(source["status"], "permission_required")
+        self.assertFalse(source["data_ingested"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["license"]["commercial_use"], "not_confirmed")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        public = source["public_page_observations"]["ot_ts_page"]
+        self.assertFalse(public["public_table_exposes_gearbox_code"])
+        self.assertFalse(public["public_table_exposes_engine_gearbox_pair"])
+
+    def test_rosstandart_internal_gearbox_notice_does_not_override_public_annex2_scope(self):
+        source = self.sources["rosstandart-fgis-reestr-kts"]
+        limitation = next(item for item in source["important_limitations"] if "internal AS EOTTS" in item)
+        self.assertIn("exact internal schema", limitation)
+        self.assertIn("does not change the separate public Annex 2", limitation)
+        self.assertIn("no gearbox field", limitation)
+        self.assertFalse(source["data_ingested"])
+        self.assertEqual(source["status"], "permission_required")
+
     def test_rusavtolab_private_aggregator_is_not_a_bulk_source(self):
         source = self.sources["rusavtolab-otts-public-index"]
         self.assertEqual(source["status"], "permission_required")
