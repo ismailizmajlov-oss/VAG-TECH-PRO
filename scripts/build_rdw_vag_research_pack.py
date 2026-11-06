@@ -275,6 +275,29 @@ def scope_id(key: tuple[str, str, str, str]) -> str:
     return sha256_bytes(canonical_bytes(list(key)))
 
 
+def verify_source_revisions(metadata_report: dict[str, dict[str, Any]]) -> None:
+    """Abort if any RDW dataset changed while the six-source snapshot was being acquired."""
+    for name, config in DATASETS.items():
+        dataset_id = str(config["id"])
+        current = fetch_metadata(dataset_id)
+        columns = sorted(metadata_columns(current))
+        missing = sorted(set(config["required"]) - set(columns))
+        if missing:
+            raise ValueError(f"RDW {dataset_id} schema changed during acquisition; missing fields: {missing}")
+        expected = metadata_report[name]
+        observed = {
+            "rows_updated_at": current.get("rowsUpdatedAt"),
+            "view_last_modified": current.get("viewLastModified"),
+            "source_columns_sha256": sha256_bytes(canonical_bytes(columns)),
+        }
+        for field, value in observed.items():
+            if expected.get(field) != value:
+                raise RuntimeError(
+                    f"RDW dataset {dataset_id} changed during acquisition ({field}); discard snapshot and rerun"
+                )
+        time.sleep(0.15)
+
+
 def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str, Any]]], dict[str, dict[str, Any]]]:
     metadata_report: dict[str, dict[str, Any]] = {}
     for name, config in DATASETS.items():
@@ -350,6 +373,7 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
             "dataset_id": str(config["id"]),
             "select": config["select"],
             "where_template": "typegoedkeuringsnummer IN (approval-number batch)",
+            "order": list(config["select"]),
             "approval_numbers_count": len(approval_numbers),
             "approval_numbers_sha256": sha256_bytes(canonical_bytes(approval_numbers)),
             "approval_batch_size": APPROVAL_BATCH_SIZE,
@@ -365,7 +389,11 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
         variant_field = str(config["variant_field"])
         for batch in chunks(approval_numbers, APPROVAL_BATCH_SIZE):
             where = "typegoedkeuringsnummer in (" + ",".join(soql_literal(value) for value in batch) + ")"
-            params = {"$select": ",".join(config["select"]), "$where": where}
+            params = {
+                "$select": ",".join(config["select"]),
+                "$where": where,
+                "$order": ",".join(config["select"]),
+            }
             rows = query_all(str(config["id"]), params)
             for row in rows:
                 key = scope_key(row, variant_field)
@@ -380,6 +408,7 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
             reject_forbidden_fields(row, name)
             unique[sha256_bytes(canonical_bytes(row))] = row
         output[name] = [unique[key] for key in sorted(unique)]
+    verify_source_revisions(metadata_report)
     return output, metadata_report
 
 
