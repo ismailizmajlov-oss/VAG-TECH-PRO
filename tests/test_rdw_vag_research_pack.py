@@ -98,6 +98,17 @@ class RdwVagResearchPackTests(unittest.TestCase):
             self.assertEqual(report["status"], "verified_research_only")
             self.assertFalse(report["ru_eaeu_applicability"])
             self.assertFalse(report["exact_engine_gearbox_pair_claim"])
+            self.assertEqual(report["scope_coverage"], {
+                "scopes_with_engine_and_gearbox_rows": 1,
+                "engine_only_scopes": 0,
+                "gearbox_only_scopes": 0,
+                "scopes_with_multiple_engine_rows": 0,
+                "scopes_with_multiple_gearbox_rows": 0,
+                "unique_engine_designation_values": 1,
+                "unique_gearbox_classification_values": 1,
+                "missing_engine_designation_rows": 0,
+                "missing_gearbox_classification_rows": 0,
+            })
             pack = Path(tmp) / "pack"
             manifest = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["market_scope"], ["NL"])
@@ -105,6 +116,8 @@ class RdwVagResearchPackTests(unittest.TestCase):
             self.assertEqual(manifest["counts"]["approval_scopes"], 1)
             self.assertEqual(manifest["counts"]["engine_candidates"], 1)
             self.assertEqual(manifest["counts"]["gearbox_classifications"], 1)
+            self.assertEqual(manifest["scope_coverage"], report["scope_coverage"])
+            self.assertIn("do not create or confirm", manifest["scope_coverage_semantics"])
             db = sqlite3.connect(pack / "rdw-vag-research.sqlite")
             try:
                 tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
@@ -135,6 +148,25 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
             finally:
                 db.close()
+
+    def test_multiple_engine_rows_in_one_scope_are_reported_not_paired(self):
+        datasets = json.loads(json.dumps(self.datasets))
+        extra_engine_row = dict(datasets["tgk_drive"][0])
+        extra_engine_row["motorcode"] = "SECOND-CANDIDATE"
+        datasets["tgk_drive"].append(extra_engine_row)
+        with tempfile.TemporaryDirectory() as tmp:
+            report = rdw.build_pack(Path(tmp) / "pack", self.source, self.source_bytes, datasets, self.metadata)
+            self.assertEqual(report["scope_coverage"]["scopes_with_engine_and_gearbox_rows"], 1)
+            self.assertEqual(report["scope_coverage"]["scopes_with_multiple_engine_rows"], 1)
+            self.assertFalse(report["exact_engine_gearbox_pair_claim"])
+            manifest = json.loads((Path(tmp) / "pack" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertFalse(manifest["pair_table_created"])
+            self.assertEqual(
+                sqlite3.connect(Path(tmp) / "pack" / "rdw-vag-research.sqlite").execute(
+                    "SELECT count(*) FROM engine_designation_candidates"
+                ).fetchone()[0],
+                2,
+            )
 
     def test_snapshot_rows_must_match_sqlite_source_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
