@@ -1,0 +1,2 @@
+Windows desktop CI trigger
+Purpose: validate the scoped minimatch@^10.0.0 override plus @electron/universal nested override and regenerated dependency lock.
