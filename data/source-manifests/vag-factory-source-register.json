@@ -2980,9 +2980,12 @@
         "bulk_reuse_allowed": true,
         "redistribution_allowed": true,
         "attribution_required": false,
-        "attribution_recommended": true,
+        "attribution_recommended": false,
         "share_alike_required": false,
-        "scope_note": "CC0/open-data scope applies to the public RDW technical datasets. Ingest must fail closed if live resource metadata advertises a conflicting licence. Only selected non-identifying technical fields from the vehicle registry are retained."
+        "scope_note": "CC0/open-data scope applies to the public RDW technical datasets. Ingest must fail closed if live resource metadata advertises a conflicting licence. Only selected non-identifying technical fields from the vehicle registry are retained.",
+        "public_attribution_allowed": false,
+        "internal_provenance_retained": true,
+        "provenance_visibility": "internal_audit_manifest_only"
       },
       "applicability": {
         "precision": "type_approval_variant_execution_candidate",
