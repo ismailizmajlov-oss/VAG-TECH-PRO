@@ -1946,7 +1946,8 @@
         "No DTC rows are approved for display, offline cache, diagnostic advice or distribution."
       ],
       "project_decision": "quarantine_no_import_no_display_no_cache; BSD-2-Clause repository code licence does not establish rights in potentially OEM ODX-derived CSV data; require the author's written provenance statement and data-specific reuse permission covering commercial use, display, offline cache and redistribution before any integration",
-      "evidence_status": "Repository LICENSE, README and data/dtcs.csv inspected 2026-11-06; Git blob identifiers and retrieved-content SHA-256 values pinned; row-level data provenance remains absent."
+      "evidence_status": "Repository LICENSE, README and data/dtcs.csv inspected 2026-11-06; Git blob identifiers and retrieved-content SHA-256 values pinned; row-level data provenance remains absent.",
+      "data_ingested": false
     },
     {
       "source_id": "dspl1236-vag-cp-docs-au57x-odis-mcd-extract",
