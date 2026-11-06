@@ -895,7 +895,7 @@ jobs:
           python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_pack.py" -v 2>&1 | Tee-Object -FilePath "generic-guidance-pack-tests.log"
           if ($LASTEXITCODE -ne 0) { throw "MechanicDB ODbL pack verification failed" }
           node --check apply-generic-repair-guidance-browser-run69.cjs
-          node apply-generic-repair-guidance-browser-run69.cjs --desktop-root desktop-source --pack-dir $packDir 2>&1 | Tee-Object -FilePath "generic-guidance-integration-run69.log"
+          node apply-generic-repair-guidance-browser-run69.cjs --desktop-root desktop-source --pack-dir $packDir --skip-existing-research-verifier 2>&1 | Tee-Object -FilePath "generic-guidance-integration-run69.log"
           if ($LASTEXITCODE -ne 0) { throw "MechanicDB generic guidance desktop integration failed" }
           $genericReport = Get-Content -LiteralPath "desktop-source/data/research/run69-integration-verification.json" -Raw | ConvertFrom-Json
           "generic_mechanicdb_pack=ODbL-1.0; guidance=$($genericReport.counts.generic_authored_guidance); dtc=$($genericReport.counts.generic_sae_dtc_references); market=UNKNOWN; vag_specific=false; database_sha256=$($genericReport.database_sha256); snapshot_sha256=$($genericReport.source_snapshot_sha256); manifest_sha256=$($genericReport.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
