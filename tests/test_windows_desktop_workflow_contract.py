@@ -45,6 +45,10 @@ def main() -> None:
         raise SystemExit("Lifecycle script path is resolved before desktopRoot initialization")
 
     package_manifest = json.loads((ROOT / "desktop-package-run35.json").read_text(encoding="utf-8"))
+    lint_script = package_manifest.get("scripts", {}).get("lint", "")
+    for ignored in ('--ignore-pattern "release/**"', '--ignore-pattern ".next/**"', '--ignore-pattern "out/**"', '--ignore-pattern "coverage/**"'):
+        if ignored not in lint_script:
+            raise SystemExit(f"Desktop lint must exclude generated output: {ignored}")
     build = package_manifest.get("build", {})
     resources = build.get("extraResources", [])
     if not any(item.get("from") == "data/source-manifests" and item.get("to") == "source-manifests" for item in resources if isinstance(item, dict)):
