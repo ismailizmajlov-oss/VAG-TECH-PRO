@@ -40,7 +40,7 @@ def fixture_rows():
         "aantal_cilinders": "4",
     }
     drive = {
-        "typegoedkeuringsnummer": key["typegoedkeurungsnummer"] if "typegoedkeurungsnummer" in key else key["typegoedkeuringsnummer"],
+        "typegoedkeuringsnummer": key["typegoedkeuringsnummer"],
         "codevarianttgk": key["variant"],
         "codeuitvoeringtgk": key["version"],
         "volgnummerrevisieuitvoering": key["revision"],
@@ -50,15 +50,14 @@ def fixture_rows():
         "cilinderinhoud": "1498",
     }
     gearbox = {
-        "typegoedkeurungsnummer": key["typegoedkeurungsnummer"],
+        "typegoedkeuringsnummer": key["typegoedkeuringsnummer"],
         "codevarianttgk": key["variant"],
         "codeuitvoeringtgk": key["version"],
         "volgnummerrevisieuitvoering": key["revision"],
         "codetypeversnellingsbak": "A",
     }
-    gearbox["typegoedkeurungsnummer"] = gearbox.pop("typegoedkeurungsnummer")
     base = {
-        "typegoedkeurungsnummer": key["typegoedkeurungsnummer"],
+        "typegoedkeuringsnummer": key["typegoedkeuringsnummer"],
         "codevarianttgk": key["variant"],
         "codeuitvoeringtgk": key["version"],
         "volgnummerrevisieuitvoering": key["revision"],
@@ -66,14 +65,14 @@ def fixture_rows():
         "voertuigcategorie": "M1",
     }
     make = {
-        "typegoedkeurungsnummer": key["typegoedkeurungsnummer"],
+        "typegoedkeuringsnummer": key["typegoedkeuringsnummer"],
         "codevarianttgk": key["variant"],
         "codeuitvoeringtgk": key["version"],
         "volgnummerrevisieuitvoering": key["revision"],
         "merkcoderdw": "VOLK",
     }
     trade_name = {
-        "typegoedkeurungsnummer": key["typegoedkeurungsnummer"],
+        "typegoedkeuringsnummer": key["typegoedkeuringsnummer"],
         "codevariantgk": key["variant"],
         "codeuitvoeringtgk": key["version"],
         "volgnummerrevisieuitvoering": key["revision"],
@@ -120,14 +119,13 @@ def fixture_rows():
     context = {"approval_scope_keys": [key]}
     return key, projections, file_entries, context
 
-
 class RDWVagTypeApprovalPackTests(unittest.TestCase):
     def test_source_rights_and_exact_six_dataset_contract(self):
         manifest, makes = MODULE.load_rights_inputs()
         contracts = MODULE.metadata_contracts(manifest)
         self.assertEqual(len(contracts), 6)
         self.assertIn("VOLKSWAGEN", makes)
-        self.assertTrue(all(item["license"] == "CC0 1.0" for item in manifest["data_products"].values()))
+        self.assertTrue(all(item["catalog_license"] == "CC0 1.0" for item in manifest["data_products"].values()))
         self.assertFalse(manifest["rights"].get("production_import_allowed", False))
         self.assertFalse(any("vin" in field.lower() or "kenteken" in field.lower() for field in MODULE.REGISTRATION_FIELDS))
 
