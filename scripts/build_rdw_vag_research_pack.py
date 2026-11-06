@@ -407,7 +407,8 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
             CREATE TABLE source_rows (
               source_row_sha256 TEXT PRIMARY KEY, dataset_id TEXT NOT NULL,
               scope_id TEXT, raw_json TEXT NOT NULL, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
-              FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id)
+              FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
+              FOREIGN KEY(dataset_id) REFERENCES source_file_artifacts(dataset_id)
             );
             CREATE TABLE engine_designation_candidates (
               source_row_sha256 TEXT PRIMARY KEY, scope_id TEXT NOT NULL,
@@ -704,26 +705,73 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             raise ValueError("RDW source registry rights/market boundary failed")
         for item in manifest["source_files"]:
             stored = db.execute(
-                "SELECT source_columns_sha256, required_columns_sha256, query_spec_sha256, query_spec_json "
+                "SELECT dataset_name, source_revision, source_snapshot_sha256, byte_size, row_count, "
+                "source_columns_sha256, required_columns_sha256, query_spec_sha256, query_spec_json "
                 "FROM source_file_artifacts WHERE dataset_id=?",
                 (item["dataset_id"],),
             ).fetchone()
             if stored is None:
                 raise ValueError(f"RDW source-file provenance row missing: {item['dataset_id']}")
-            if tuple(stored[:3]) != (
-                item["source_columns_sha256"], item["required_columns_sha256"], item["query_spec_sha256"]
+            if (
+                stored["dataset_name"] != item["dataset_name"]
+                or stored["source_revision"] != item["source_revision"]
+                or stored["source_snapshot_sha256"] != item["sha256"]
+                or stored["byte_size"] != item["byte_size"]
+                or stored["row_count"] != item["row_count"]
+                or tuple(stored[5:8]) != (
+                    item["source_columns_sha256"], item["required_columns_sha256"], item["query_spec_sha256"]
+                )
             ):
                 raise ValueError(f"RDW SQLite source-file provenance differs from manifest: {item['dataset_id']}")
             if json.loads(stored["query_spec_json"]) != item["query_spec"]:
                 raise ValueError(f"RDW SQLite query specification differs from manifest: {item['dataset_id']}")
+
+            snapshot_hashes: list[str] = []
+            snapshot_path = pack_dir / item["path"]
+            with snapshot_path.open("rb") as snapshot_file:
+                for line_number, raw_line in enumerate(snapshot_file, start=1):
+                    raw_line = raw_line.rstrip(b"\\r\\n")
+                    if not raw_line:
+                        continue
+                    snapshot_row = json.loads(raw_line.decode("utf-8"))
+                    canonical = canonical_bytes(snapshot_row)
+                    if canonical != raw_line:
+                        raise ValueError(f"RDW source snapshot row is not canonical JSON: {item['dataset_id']}:{line_number}")
+                    reject_forbidden_fields(snapshot_row, f"snapshot.{item['dataset_id']}:{line_number}")
+                    snapshot_hashes.append(sha256_bytes(canonical))
+
+            database_hashes: list[str] = []
+            for source_row in db.execute(
+                "SELECT source_row_sha256, raw_json FROM source_rows WHERE dataset_id=?",
+                (item["dataset_id"],),
+            ):
+                parsed_row = json.loads(source_row["raw_json"])
+                canonical = canonical_bytes(parsed_row)
+                if canonical.decode("utf-8") != source_row["raw_json"]:
+                    raise ValueError(f"RDW SQLite source row is not canonical JSON: {item['dataset_id']}")
+                row_hash = sha256_bytes(canonical)
+                if row_hash != source_row["source_row_sha256"]:
+                    raise ValueError(f"RDW SQLite source-row SHA-256 mismatch: {item['dataset_id']}")
+                reject_forbidden_fields(parsed_row, f"sqlite.source_rows.{item['dataset_id']}")
+                database_hashes.append(row_hash)
+
+            if (
+                len(snapshot_hashes) != item["row_count"]
+                or len(database_hashes) != item["row_count"]
+                or sorted(snapshot_hashes) != sorted(database_hashes)
+            ):
+                raise ValueError(f"RDW snapshot/SQLite source rows differ: {item['dataset_id']}")
         if db.execute("SELECT count(*) FROM engine_designation_candidates WHERE verification_status<>'rdw_engine_designation_candidate_not_oem_confirmed' OR market_scope<>'NL'").fetchone()[0]:
             raise ValueError("RDW engine candidate promotion detected")
         if db.execute("SELECT count(*) FROM gearbox_classifications WHERE verification_status<>'rdw_approval_gearbox_classification_not_vag_code' OR market_scope<>'NL'").fetchone()[0]:
             raise ValueError("RDW gearbox classification promotion detected")
         if db.execute("SELECT count(*) FROM approval_scope WHERE model_year IS NOT NULL OR generation IS NOT NULL OR exact_vehicle_fitment<>0 OR ru_eaeu_applicability<>0").fetchone()[0]:
             raise ValueError("RDW approval scope was promoted to vehicle fitment")
-        for row in db.execute("SELECT raw_json FROM source_rows"):
-            reject_forbidden_fields(json.loads(row["raw_json"]), "sqlite.source_rows")
+        if db.execute(
+            "SELECT count(*) FROM source_rows sr LEFT JOIN source_file_artifacts sfa ON sfa.dataset_id=sr.dataset_id "
+            "WHERE sfa.dataset_id IS NULL"
+        ).fetchone()[0]:
+            raise ValueError("RDW SQLite source row references an unknown source file")
     finally:
         db.close()
     return {"status": "verified_research_only", "database_sha256": manifest["database"]["sha256"], "counts": expected}
