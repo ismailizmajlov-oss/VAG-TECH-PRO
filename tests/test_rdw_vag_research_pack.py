@@ -161,12 +161,14 @@ class RdwVagResearchPackTests(unittest.TestCase):
             self.assertFalse(report["exact_engine_gearbox_pair_claim"])
             manifest = json.loads((Path(tmp) / "pack" / "manifest.json").read_text(encoding="utf-8"))
             self.assertFalse(manifest["pair_table_created"])
-            self.assertEqual(
-                sqlite3.connect(Path(tmp) / "pack" / "rdw-vag-research.sqlite").execute(
-                    "SELECT count(*) FROM engine_designation_candidates"
-                ).fetchone()[0],
-                2,
-            )
+            db = sqlite3.connect(Path(tmp) / "pack" / "rdw-vag-research.sqlite")
+            try:
+                self.assertEqual(
+                    db.execute("SELECT count(*) FROM engine_designation_candidates").fetchone()[0],
+                    2,
+                )
+            finally:
+                db.close()
 
     def test_snapshot_rows_must_match_sqlite_source_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -188,11 +190,15 @@ class RdwVagResearchPackTests(unittest.TestCase):
             item["byte_size"] = len(snapshot_bytes)
 
             database_path = pack / manifest["database"]["path"]
-            with sqlite3.connect(database_path) as db:
+            db = sqlite3.connect(database_path)
+            try:
                 db.execute(
                     "UPDATE source_file_artifacts SET source_snapshot_sha256=?, byte_size=? WHERE dataset_id=?",
                     (item["sha256"], item["byte_size"], item["dataset_id"]),
                 )
+                db.commit()
+            finally:
+                db.close()
             manifest["database"]["sha256"] = rdw.sha256_file(database_path)
             manifest["database"]["byte_size"] = database_path.stat().st_size
             manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
