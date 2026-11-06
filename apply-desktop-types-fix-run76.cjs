@@ -25,31 +25,33 @@ function patchFile(root, relativePath, replacements) {
   return { path: relativePath, changed, sha256: crypto.createHash("sha256").update(source).digest("hex") };
 }
 
-const contractTest = String.raw\`"use strict";
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
-const root = path.resolve(__dirname, "..");
-
-test("run76 generated desktop types cover source revision state and ASTRA rows without duplicate fields", () => {
-  const admin = fs.readFileSync(path.join(root, "components/local-data-admin.tsx"), "utf8");
-  const ui = fs.readFileSync(path.join(root, "components/local-research-catalog.tsx"), "utf8");
-  const api = fs.readFileSync(path.join(root, "app/api/local-research/route.ts"), "utf8");
-  const start = ui.indexOf("type ResearchRow = {");
-  const end = ui.indexOf("\\n};", start);
-  assert.ok(start >= 0 && end > start, "ResearchRow type must be present");
-  const rowType = ui.slice(start, end);
-  const count = (text, expression) => (text.match(expression) || []).length;
-  assert.match(admin, /const \\[revisionDraft, setRevisionDraft\\] = useState\\(/);
-  assert.match(admin, /const \\[revisionFile, setRevisionFile\\] = useState<File \\| null>\\(null\\)/);
-  assert.match(rowType, /fuelType\\?: string \\| null/);
-  assert.match(rowType, /commercialName\\?: string \\| null/);
-  assert.equal(count(rowType, /fuelType\\?:/g), 1);
-  assert.equal(count(rowType, /sourceRecordSha256\\?:/g), 1);
-  assert.match(api, /let rows: unknown\\[\\]/);
-});
-\`;
+const contractTest = [
+  '"use strict";',
+  'const test = require("node:test");',
+  'const assert = require("node:assert/strict");',
+  'const fs = require("node:fs");',
+  'const path = require("node:path");',
+  'const root = path.resolve(__dirname, "..");',
+  '',
+  'test("run76 generated desktop types cover source revision state and ASTRA rows without duplicate fields", () => {',
+  '  const admin = fs.readFileSync(path.join(root, "components/local-data-admin.tsx"), "utf8");',
+  '  const ui = fs.readFileSync(path.join(root, "components/local-research-catalog.tsx"), "utf8");',
+  '  const api = fs.readFileSync(path.join(root, "app/api/local-research/route.ts"), "utf8");',
+  '  const start = ui.indexOf("type ResearchRow = {");',
+  '  const end = ui.indexOf("\\n};", start);',
+  '  assert.ok(start >= 0 && end > start, "ResearchRow type must be present");',
+  '  const rowType = ui.slice(start, end);',
+  '  const count = (text, token) => text.split(token).length - 1;',
+  '  assert.ok(admin.includes("const [revisionDraft, setRevisionDraft] = useState("));',
+  '  assert.ok(admin.includes("const [revisionFile, setRevisionFile] = useState<File | null>(null)"));',
+  '  assert.ok(rowType.includes("fuelType?: string | null;"));',
+  '  assert.ok(rowType.includes("commercialName?: string | null;"));',
+  '  assert.equal(count(rowType, "fuelType?:"), 1);',
+  '  assert.equal(count(rowType, "sourceRecordSha256?:"), 1);',
+  '  assert.ok(api.includes("let rows: unknown[];"));',
+  '});',
+  ''
+].join("\n");
 
 const desktopRootArg = process.argv.find((value) => value.startsWith("--desktop-root="));
 const desktopRoot = path.resolve(desktopRootArg ? desktopRootArg.slice("--desktop-root=".length) : "desktop-source");
