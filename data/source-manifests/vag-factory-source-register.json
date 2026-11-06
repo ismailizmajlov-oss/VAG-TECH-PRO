@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06T07:32:00Z",
+  "updated_at": "2026-11-06T08:03:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -3427,6 +3427,77 @@
           "evidence": "Portal transition and company account requirements reviewed."
         }
       ]
+    },
+    {
+      "source_id": "decode-tr-vag-engine-transmission-catalog",
+      "publisher": "decode.tr / Fatih Bayrak",
+      "url": "https://decode.tr/motor-kodu-cozucu",
+      "project_information_url": "https://decode.tr/hakkinda",
+      "source_kind": "independent_vag_engine_drivetrain_code_reference_catalog",
+      "source_revision": "public_pages_observed_2026-11-06; some engine_and_drivetrain_records_disclosed_as_2015_etka_extracts; no_dataset_release_revision",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "observed_claims": {
+        "engine_code_count": 1544,
+        "model_period_record_count": 7392,
+        "audi_gearbox_code_count": 2383,
+        "gearbox_application_count": 3867,
+        "gearbox_catalog_page_count": 63,
+        "count_treatment": "publisher_or_search_index_claims_not_independently_reconciled_to_a_downloadable_snapshot",
+        "source_age_note": "The publisher states that some engine and drivetrain records derive from 2015 ETKA extracts; a blank end date is not evidence of current production."
+      },
+      "rights": {
+        "dataset_license": "not_found",
+        "permission_status": "not_obtained",
+        "public_query_visibility": "observed",
+        "automated_extraction_allowed": "not_authorized",
+        "bulk_export_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "commercial_display_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "third_party_documents": "remain_subject_to_their_rightsholders",
+        "permission_evidence": null,
+        "publisher_rights_statement": "The publisher states that a source link is not an open licence or republication permission and that third-party documents remain subject to their owners' rights."
+      },
+      "applicability": {
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "source_listed_model_period_candidate",
+        "exact_vag_vehicle_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_repair_applicability": false,
+        "russian_market_scope": false,
+        "eaeu_market_scope": false
+      },
+      "verification_status": "publisher_discloses_no_open_license_for_all_third_party_records",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "project_decision": "quarantine_no_download_no_automation_no_cache_no_display_no_redistribution_until_rightsholder_permission_and_dataset_provenance_are_confirmed",
+      "limitations": [
+        "The publisher explicitly says that some engine and drivetrain records derive from 2015 ETKA extracts and that third-party documents remain subject to their owners' rights.",
+        "No open dataset licence or written permission for bulk export, offline caching, display or redistribution was identified.",
+        "The page is an independent research tool and disclaims official affiliation with Volkswagen Group and the listed data providers.",
+        "The displayed engine/model/period rows are candidate references, not exact vehicle variants or proof of a specific engine/transmission pair.",
+        "The page warns that its initial transmission dictionary is not a database of all VAG transmissions and distinguishes transmissions from differentials.",
+        "No Russian or EAEU market scope, ECU applicability, DTC, test plan or repair applicability was established.",
+        "No files were downloaded; no source snapshot or SHA-256 is claimed."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://decode.tr/motor-kodu-cozucu",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Public engine/drivetrain lookup page; publisher-reported catalogue coverage and explicit limitations."
+        },
+        {
+          "url": "https://decode.tr/hakkinda",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Publisher identifies the service as independent, discloses 2015 ETKA extracts, says a source link is not an open licence or republication permission, and preserves third-party rights."
+        }
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
     }
   ],
   "minimum_fitment_evidence_fields": [
