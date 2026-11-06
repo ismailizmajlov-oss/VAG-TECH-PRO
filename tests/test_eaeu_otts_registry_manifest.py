@@ -40,6 +40,9 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
     def test_public_access_basis_is_decision_225_not_decision_88(self):
         source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
         self.assertIn("Decision No. 225", source["access"]["legal_access_basis"])
+        self.assertEqual(source["legal_basis_url"], "https://www.alta.ru/tamdoc/14kr0225/")
+        self.assertEqual(source["schema_basis_url"], "https://www.alta.ru/tamdoc/16kr0088/")
+        self.assertEqual(source["access"]["public_access_basis"]["reference_url"], source["legal_basis_url"])
         self.assertIn("Decision No. 225", source["access"]["public_access_basis"]["legal_act"])
         self.assertIn("Decision No. 88", source["registry_schema"]["normative_basis"])
         self.assertEqual(source["access"]["public_access_basis"]["publication_deadline_working_days"], 5)
