@@ -107,6 +107,68 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+SCOPE_COVERAGE_SEMANTICS = (
+    "Counts of separate engine and gearbox rows sharing an exact approval scope are diagnostic only; "
+    "they do not create or confirm an engine/gearbox pair."
+)
+
+
+def compute_scope_coverage(db: sqlite3.Connection) -> dict[str, int]:
+    queries = {
+        "scopes_with_engine_and_gearbox_rows": """
+            SELECT COUNT(*) FROM (
+                SELECT e.scope_id
+                FROM engine_designation_candidates e
+                JOIN gearbox_classifications g ON g.scope_id=e.scope_id
+                GROUP BY e.scope_id
+            )
+        """,
+        "engine_only_scopes": """
+            SELECT COUNT(DISTINCT e.scope_id)
+            FROM engine_designation_candidates e
+            LEFT JOIN gearbox_classifications g ON g.scope_id=e.scope_id
+            WHERE g.scope_id IS NULL
+        """,
+        "gearbox_only_scopes": """
+            SELECT COUNT(DISTINCT g.scope_id)
+            FROM gearbox_classifications g
+            LEFT JOIN engine_designation_candidates e ON e.scope_id=g.scope_id
+            WHERE e.scope_id IS NULL
+        """,
+        "scopes_with_multiple_engine_rows": """
+            SELECT COUNT(*) FROM (
+                SELECT scope_id FROM engine_designation_candidates
+                GROUP BY scope_id HAVING COUNT(*) > 1
+            )
+        """,
+        "scopes_with_multiple_gearbox_rows": """
+            SELECT COUNT(*) FROM (
+                SELECT scope_id FROM gearbox_classifications
+                GROUP BY scope_id HAVING COUNT(*) > 1
+            )
+        """,
+        "unique_engine_designation_values": """
+            SELECT COUNT(DISTINCT engine_designation)
+            FROM engine_designation_candidates
+            WHERE engine_designation IS NOT NULL AND TRIM(engine_designation)<>''
+        """,
+        "unique_gearbox_classification_values": """
+            SELECT COUNT(DISTINCT gearbox_type_classification)
+            FROM gearbox_classifications
+            WHERE gearbox_type_classification IS NOT NULL AND TRIM(gearbox_type_classification)<>''
+        """,
+        "missing_engine_designation_rows": """
+            SELECT COUNT(*) FROM engine_designation_candidates
+            WHERE engine_designation IS NULL OR TRIM(engine_designation)=''
+        """,
+        "missing_gearbox_classification_rows": """
+            SELECT COUNT(*) FROM gearbox_classifications
+            WHERE gearbox_type_classification IS NULL OR TRIM(gearbox_type_classification)=''
+        """,
+    }
+    return {name: int(db.execute(sql).fetchone()[0]) for name, sql in queries.items()}
+
+
 def read_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(value, dict):
@@ -577,6 +639,11 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
 
     database = output_dir / "rdw-vag-research.sqlite"
     counts = build_sqlite(database, datasets, metadata, source_manifest_sha, source_files)
+    coverage_db = sqlite3.connect(database)
+    try:
+        scope_coverage = compute_scope_coverage(coverage_db)
+    finally:
+        coverage_db.close()
     db_sha = sha256_file(database)
     manifest = {
         "schema_version": 1,
@@ -600,6 +667,8 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         "source_files": source_files,
         "database": {"path": database.name, "sha256": db_sha, "byte_size": database.stat().st_size},
         "counts": counts,
+        "scope_coverage": scope_coverage,
+        "scope_coverage_semantics": SCOPE_COVERAGE_SEMANTICS,
         "market_scope": ["NL"],
         "approval_jurisdiction": "EU type-approval identifiers observed in Netherlands RDW datasets",
         "applicability_precision": "exact_RDW_approval_variant_version_revision_scope_or_approval_number_only",
@@ -640,6 +709,8 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         "schema_version": 1, "status": "verified_research_only", "source_id": SOURCE_ID,
         "database_sha256": db_sha, "database_integrity_check": "ok",
         "source_manifest_sha256": source_manifest_sha, "counts": counts,
+        "scope_coverage": scope_coverage,
+        "scope_coverage_semantics": SCOPE_COVERAGE_SEMANTICS,
         "market_scope": ["NL"], "ru_eaeu_applicability": False,
         "exact_engine_gearbox_pair_claim": False, "production_import": False,
     }
@@ -701,6 +772,11 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
         }
         if expected != manifest["counts"]:
             raise ValueError(f"RDW SQLite row counts differ from manifest: {expected}")
+        if manifest.get("scope_coverage_semantics") != SCOPE_COVERAGE_SEMANTICS:
+            raise ValueError("RDW scope-coverage semantics are missing or changed")
+        expected_scope_coverage = compute_scope_coverage(db)
+        if expected_scope_coverage != manifest.get("scope_coverage"):
+            raise ValueError(f"RDW scope-coverage metrics differ from SQLite: {expected_scope_coverage}")
         if db.execute("SELECT count(*) FROM source_registry WHERE rights_status<>'approved_by_published_CC0_license' OR market_scope<>'NL' OR production_import<>0 OR ru_eaeu_applicability<>0").fetchone()[0] != 0:
             raise ValueError("RDW source registry rights/market boundary failed")
         for item in manifest["source_files"]:
@@ -774,7 +850,12 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             raise ValueError("RDW SQLite source row references an unknown source file")
     finally:
         db.close()
-    return {"status": "verified_research_only", "database_sha256": manifest["database"]["sha256"], "counts": expected}
+    return {
+        "status": "verified_research_only",
+        "database_sha256": manifest["database"]["sha256"],
+        "counts": expected,
+        "scope_coverage": expected_scope_coverage,
+    }
 
 
 def acquire(output_dir: Path, manifest_path: Path) -> dict[str, Any]:
