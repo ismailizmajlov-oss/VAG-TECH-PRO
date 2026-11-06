@@ -15,7 +15,7 @@ function patchCore(file) {
     if (!source.includes("  validateTechnicalPayload(record);")) throw new Error("Run78 validator is present but not enforced");
     return false;
   }
-  const anchor = 'const APPLICABILITY_PRECISIONS = new Set(["exact_brand","exact_model","exact_generation","exact_engine","exact_transmission","exact_pairing","exact_ecu","exact_configuration","generic_standard","manufacturer_make_candidate","vehicle_model_candidate","generation_candidate","document_metadata_only","unknown"]);\\n';
+  const anchor = 'const APPLICABILITY_PRECISIONS = new Set(["exact_brand","exact_model","exact_generation","exact_engine","exact_transmission","exact_pairing","exact_ecu","exact_configuration","generic_standard","manufacturer_make_candidate","vehicle_model_candidate","generation_candidate","document_metadata_only","unknown"]);\n';
   const helper = [
     'const TECHNICAL_PAYLOAD_SCHEMA_KIND = Object.freeze({ diagnostic_test_plan: "diagnostic_test_plan", repair_procedure: "repair_procedure", wiring_diagram: "wiring_diagram", pinout: "ecu_pinout", torque_specification: "torque_specification", adaptation: "adaptation", service_interval: "service_interval", ecu_reference: "ecu_profile", oem_part: "oem_part", oem_supersession: "oem_supersession" });',
     'let cachedTechnicalPayloadSchema = null;',
@@ -52,7 +52,7 @@ function patchCore(file) {
     '  if (types.length && !types.some(type => schemaTypeMatches(value, type))) return [at + ": expected " + types.join(" or ")];',
     '  if (Object.prototype.hasOwnProperty.call(spec, "const") && JSON.stringify(value) !== JSON.stringify(spec.const)) errors.push(at + ": value does not match const");',
     '  if (Array.isArray(spec.enum) && !spec.enum.some(item => JSON.stringify(item) === JSON.stringify(value))) errors.push(at + ": value is not in the allowed enum");',
-    '  if (typeof value === "string") { if (Number.isInteger(spec.minLength) && value.length < spec.minLength) errors.push(at + ": string is shorter than " + spec.minLength); if (spec.pattern && !(new RegExp(spec.pattern)).test(value)) errors.push(at + ": string does not match the required pattern"); if (spec.format === "date" && !/^\\\\d{4}-\\\\d{2}-\\\\d{2}$/.test(value)) errors.push(at + ": expected ISO date YYYY-MM-DD"); }',
+    '  if (typeof value === "string") { if (Number.isInteger(spec.minLength) && value.length < spec.minLength) errors.push(at + ": string is shorter than " + spec.minLength); if (spec.pattern && !(new RegExp(spec.pattern)).test(value)) errors.push(at + ": string does not match the required pattern"); if (spec.format === "date" && !/^\\\d{4}-\\\d{2}-\\\d{2}$/.test(value)) errors.push(at + ": expected ISO date YYYY-MM-DD"); }',
     '  if (typeof value === "number" && Number.isFinite(value)) { if (typeof spec.minimum === "number" && value < spec.minimum) errors.push(at + ": number is below minimum " + spec.minimum); if (typeof spec.exclusiveMinimum === "number" && value <= spec.exclusiveMinimum) errors.push(at + ": number must be greater than " + spec.exclusiveMinimum); }',
     '  if (Array.isArray(value)) { if (Number.isInteger(spec.minItems) && value.length < spec.minItems) errors.push(at + ": array has fewer than " + spec.minItems + " items"); if (spec.uniqueItems && new Set(value.map(item => JSON.stringify(item))).size !== value.length) errors.push(at + ": array items must be unique"); if (spec.items) value.forEach((item, index) => errors.push(...validateJsonSchemaNode(item, spec.items, root, at + "[" + index + "]"))); }',
     '  if (value !== null && typeof value === "object" && !Array.isArray(value)) { for (const key of spec.required || []) if (!Object.prototype.hasOwnProperty.call(value, key)) errors.push(at + "." + key + ": required property is missing"); const properties = spec.properties || {}; for (const [key, child] of Object.entries(properties)) if (Object.prototype.hasOwnProperty.call(value, key)) errors.push(...validateJsonSchemaNode(value[key], child, root, at + "." + key)); if (spec.additionalProperties === false) for (const key of Object.keys(value)) if (!Object.prototype.hasOwnProperty.call(properties, key)) errors.push(at + "." + key + ": additional property is not allowed"); }',
@@ -65,10 +65,10 @@ function patchCore(file) {
     '  const schema = loadTechnicalPayloadSchema(); const definition = schema.$defs[kind]; if (!definition) throw new Error("Technical payload schema is missing record kind " + kind);',
     '  const errors = validateJsonSchemaNode(record.payload, definition, schema, "$.payload"); if (errors.length) throw new Error("Technical payload schema validation failed for " + record.source_record_key + ": " + errors.slice(0, 8).join("; ")); return true;',
     '}'
-  ].join("\\n") + "\\n";
+  ].join("\n") + "\n";
   source = replaceOnce(source, anchor, anchor + helper, "applicability precision constants");
-  const validationAnchor = '  if (record.record_type === "dtc_vag_specific") {\\n    if (record.namespace !== "vag_oem_specific" || !record.configuration_id || !record.ecu_id || !["exact_configuration","exact_ecu"].includes(record.applicability_precision)) {\\n      throw new Error("VAG-specific DTC records require an exact configuration and ECU applicability link");\\n    }\\n  }\\n';
-  source = replaceOnce(source, validationAnchor, validationAnchor + "  validateTechnicalPayload(record);\\n", "technical record import validation hook");
+  const validationAnchor = '  if (record.record_type === "dtc_vag_specific") {\n    if (record.namespace !== "vag_oem_specific" || !record.configuration_id || !record.ecu_id || !["exact_configuration","exact_ecu"].includes(record.applicability_precision)) {\n      throw new Error("VAG-specific DTC records require an exact configuration and ECU applicability link");\n    }\n  }\n';
+  source = replaceOnce(source, validationAnchor, validationAnchor + "  validateTechnicalPayload(record);\n", "technical record import validation hook");
   source = replaceOnce(source, "requiresSeparatePack,initializeDatabase", "requiresSeparatePack,validateTechnicalPayload,initializeDatabase", "validator export");
   fs.writeFileSync(file, source, "utf8");
   return true;
@@ -78,10 +78,10 @@ function patchElectron(file) {
   let source = fs.readFileSync(file, "utf8");
   if (source.includes("const schemaRoot = app.isPackaged")) return false;
   source = replaceOnce(source,
-    '  const researchRoot = app.isPackaged\\n    ? path.join(process.resourcesPath, "research-data")\\n    : path.join(app.getAppPath(), "data", "research");\\n',
-    '  const researchRoot = app.isPackaged\\n    ? path.join(process.resourcesPath, "research-data")\\n    : path.join(app.getAppPath(), "data", "research");\\n  const schemaRoot = app.isPackaged\\n    ? path.join(process.resourcesPath, "schemas")\\n    : path.join(app.getAppPath(), "data", "schemas");\\n',
+    '  const researchRoot = app.isPackaged\n    ? path.join(process.resourcesPath, "research-data")\n    : path.join(app.getAppPath(), "data", "research");\n',
+    '  const researchRoot = app.isPackaged\n    ? path.join(process.resourcesPath, "research-data")\n    : path.join(app.getAppPath(), "data", "research");\n  const schemaRoot = app.isPackaged\n    ? path.join(process.resourcesPath, "schemas")\n    : path.join(app.getAppPath(), "data", "schemas");\n',
     "schema resource root");
-  source = replaceOnce(source, "  process.env.VAG_TECH_PRO_RESEARCH_DIR = researchRoot;\\n", "  process.env.VAG_TECH_PRO_RESEARCH_DIR = researchRoot;\\n  process.env.VAG_TECH_PRO_SCHEMA_DIR = schemaRoot;\\n", "schema environment");
+  source = replaceOnce(source, "  process.env.VAG_TECH_PRO_RESEARCH_DIR = researchRoot;\n", "  process.env.VAG_TECH_PRO_RESEARCH_DIR = researchRoot;\n  process.env.VAG_TECH_PRO_SCHEMA_DIR = schemaRoot;\n", "schema environment");
   source = replaceOnce(source, "VAG_TECH_PRO_RESEARCH_DIR: researchRoot },", "VAG_TECH_PRO_RESEARCH_DIR: researchRoot, VAG_TECH_PRO_SCHEMA_DIR: schemaRoot },", "schema environment passed to local server");
   fs.writeFileSync(file, source, "utf8");
   return true;
@@ -90,7 +90,7 @@ function patchElectron(file) {
 function patchTests(file) {
   let source = fs.readFileSync(file, "utf8");
   if (source.includes("run78 validates technical payload schemas before opening an import transaction")) return false;
-  const anchor = 'test("imports a valid package atomically and is idempotent for the same package hash", (t) => {\\n';
+  const anchor = 'test("imports a valid package atomically and is idempotent for the same package hash", (t) => {\n';
   const tests = [
     'test("run78 validates technical payload schemas before opening an import transaction", (t) => {',
     '  const { dbPath } = fixture(t); core.registerSource(dbPath, source());',
@@ -119,7 +119,7 @@ function patchTests(file) {
     '  const db = new DatabaseSync(dbPath); assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 0); assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 0); db.close();',
     '});',
     ''
-  ].join("\\n");
+  ].join("\n");
   source = replaceOnce(source, anchor, tests + anchor, "run78 import regression tests");
   fs.writeFileSync(file, source, "utf8");
   return true;
@@ -146,7 +146,7 @@ function main() {
   fs.copyFileSync(files.rootSchema, files.desktopSchema);
   const changed = { core: patchCore(files.core), electron: patchElectron(files.electron), tests: patchTests(files.tests) };
   const hash = crypto.createHash("sha256").update(fs.readFileSync(files.desktopSchema)).digest("hex");
-  process.stdout.write(JSON.stringify({ status: "patched", changed, technicalSchemaSha256: hash }) + "\\n");
+  process.stdout.write(JSON.stringify({ status: "patched", changed, technicalSchemaSha256: hash }) + "\n");
 }
 
-try { main(); } catch (error) { process.stderr.write(String(error.stack || error.message) + "\\n"); process.exitCode = 1; }
+try { main(); } catch (error) { process.stderr.write(String(error.stack || error.message) + "\n"); process.exitCode = 1; }
