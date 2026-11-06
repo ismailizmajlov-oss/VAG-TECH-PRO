@@ -331,8 +331,26 @@
         "acquisition_workflow_gate": "VAG_GOR3A_AUTODEVOLUTION_REUSE_APPROVED"
       },
       "project_decision": "quarantine_no_download_no_import_no_cache_no_display_no_bundling_no_redistribution_until_written_permission_from_upstream_rights_holder; downstream ODbL declaration is not proof of rights in Autoevolution-derived material; never infer factory engine or gearbox codes",
-      "evidence_status": "five_brand_files_inspected_2026-11-03; AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04; upstream permission not obtained",
-      "data_ingested": false
+      "evidence_status": "five brand files inspected 2026-11-03; AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04; README and LICENSE-DATA reviewed 2026-11-06; upstream permission not obtained; no download or import",
+      "data_ingested": false,
+      "observed_global_counts": {
+        "makes": 164,
+        "models": 2621,
+        "generations": 7169,
+        "engine_variants": 30390,
+        "evidence_url": "https://github.com/gor3a/vehicle-makes-models",
+        "evidence_note": "Publisher README aggregate claims; not independently reconciled in this review."
+      },
+      "upstream_license_evidence": {
+        "repository_data_license": "ODbL-1.0",
+        "repository_license_url": "https://github.com/gor3a/vehicle-makes-models/blob/main/LICENSE-DATA",
+        "canonical_license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+        "declared_upstream_source": "autoevolution.com",
+        "upstream_source_license": "not_identified_in_this_review",
+        "upstream_permission": "not_obtained",
+        "review_date": "2026-11-06",
+        "review_note": "The aggregator's LICENSE-DATA declares ODbL and attributes Autoevolution as upstream for make/model/generation/engine facts. The reviewed repository materials do not establish that Autoevolution granted rights for the downstream database redistribution. The ODbL declaration is not treated as independent proof of upstream rights."
+      }
     },
     {
       "source_id": "hpt-su-otts-aggregator",
