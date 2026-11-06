@@ -18,7 +18,10 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
         for field in ("commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed"):
             self.assertTrue(rights[field],field)
         self.assertFalse(rights["attribution_required"])
-        self.assertTrue(rights["attribution_recommended"])
+        self.assertFalse(rights["attribution_recommended"])
+        self.assertFalse(rights["public_attribution_allowed"])
+        self.assertTrue(rights["internal_provenance_retained"])
+        self.assertEqual(rights["provenance_visibility"], "internal_audit_manifest_only")
         self.assertFalse(rights["share_alike_required"])
 
     def test_market_and_applicability_are_candidate_only_and_not_eaeu(self):
@@ -63,6 +66,10 @@ class RdwVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.lock["data_license"],"CC0-1.0")
         self.assertEqual(self.lock["rights_status"],"approved_by_published_license")
         self.assertTrue(self.lock["rights"]["bulk_reuse_allowed"])
+        self.assertFalse(self.lock["rights"]["attribution_required"])
+        self.assertFalse(self.lock["rights"]["attribution_recommended"])
+        self.assertFalse(self.lock["rights"]["public_attribution_allowed"])
+        self.assertTrue(self.lock["rights"]["internal_provenance_retained"])
         self.assertFalse(self.lock["rights"]["share_alike_required"])
         policy=self.lock["applicability_policy"]
         self.assertFalse(policy["exact_vehicle_fitment"])
