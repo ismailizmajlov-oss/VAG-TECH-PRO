@@ -1087,7 +1087,6 @@ jobs:
             "components/local-research-catalog.tsx",
             "scripts/windows-installer-lifecycle.ps1",
             "tests/astra-ch-tas-ui-contract.test.cjs",
-            "tests/run76-types-fix.test.cjs",
             "data/schemas/vehicle-catalog-package.schema.json",
             "data/sql/local-core-v1.sql",
             "data/sql/local-core-v2.sql",
