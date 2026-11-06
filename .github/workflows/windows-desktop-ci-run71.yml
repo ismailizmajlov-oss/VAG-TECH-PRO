@@ -1199,22 +1199,6 @@ jobs:
           }
           "lifecycle_session_output=single_session_object; BaseUrl_preserved; run77_contract=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
-      - name: Align RDW UI contract with explicit non-OEM wording (run78)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Stop"
-          node --check scripts/apply-rdw-ui-contract-fix-run78.cjs
-          node scripts/apply-rdw-ui-contract-fix-run78.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-ui-contract-fix-run78.log"
-          if ($LASTEXITCODE -ne 0) { throw "Run78 RDW UI contract patch failed" }
-          node --test desktop-source/tests/rdw-vag-research-ui-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-ui-contract-run78-tests.log"
-          if ($LASTEXITCODE -ne 0) { throw "Run78 RDW UI contract test failed" }
-          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
-          $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") "tests/rdw-vag-research-ui-contract.test.cjs"
-          $destinationFile = Join-Path $auditRoot "tests/rdw-vag-research-ui-contract.test.cjs"
-          New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
-          Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
-          "rdw_ui_contract=run78; explicit_non_oem_wording=asserted" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
-
       - name: Resolve latest successful RDW NL/EU research pack run
         id: rdw-pack
         shell: pwsh
@@ -1291,6 +1275,22 @@ jobs:
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
           "rdw_source_run=${{ steps.rdw-pack.outputs.run_number }}/${{ steps.rdw-pack.outputs.run_id }}; artifact_sha256=${{ steps.rdw-pack.outputs.artifact_sha256 }}; scope=NL; production_import=false; exact_engine_gearbox_pair=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Align RDW UI contract with explicit non-OEM wording (run78)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check scripts/apply-rdw-ui-contract-fix-run78.cjs
+          node scripts/apply-rdw-ui-contract-fix-run78.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-ui-contract-fix-run78.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run78 RDW UI contract patch failed" }
+          node --test desktop-source/tests/rdw-vag-research-ui-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-ui-contract-run78-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run78 RDW UI contract test failed" }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") "tests/rdw-vag-research-ui-contract.test.cjs"
+          $destinationFile = Join-Path $auditRoot "tests/rdw-vag-research-ui-contract.test.cjs"
+          New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+          Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          "rdw_ui_contract=run78; explicit_non_oem_wording=asserted" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
