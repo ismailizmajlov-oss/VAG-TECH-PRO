@@ -191,6 +191,7 @@ jobs:
           python tests/test_windows_desktop_workflow_contract.py
           python tests/test_source_manifest_bundle.py -v
           python tests/test_technical_library_schema.py -v
+          python tests/test_obdex_generic_namespace_policy.py -v
           python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
@@ -1193,14 +1194,14 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "Run78 local-core payload validation tests failed" }
           } finally { Pop-Location }
           $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
-          foreach ($relative in @("lib/local-core-db.cjs", "electron/main.cjs", "tests/local-core-db.test.cjs", "data/schemas/technical-record-payloads.schema.json")) {
+          foreach ($relative in @("lib/local-core-db.cjs", "electron/main.cjs", "tests/local-core-db.test.cjs", "data/schemas/technical-record-payloads.schema.json", "scripts/verify-local-research-packs.cjs", "tests/local-research-packs.test.cjs", "tests/local-research-db.test.cjs")) {
             $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
             $destinationFile = Join-Path $auditRoot $relative
             New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
           $patchHash = (Get-FileHash apply-technical-payload-validation-run78.cjs -Algorithm SHA256).Hash.ToLowerInvariant()
-          "technical_payload_validation_patch_sha256=$patchHash; payload_schema_runtime_enforced=true; generic_dtc_namespace_separated=true; legacy_vag_dtc_numeric=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "technical_payload_validation_patch_sha256=$patchHash; payload_schema_runtime_enforced=true; generic_dtc_namespace_separated=true; legacy_vag_dtc_numeric=true; obdex_generic_dtcs=9359; quarantined_u3xxx=174" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
