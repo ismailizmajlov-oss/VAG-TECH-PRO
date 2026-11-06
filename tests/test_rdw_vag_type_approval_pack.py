@@ -194,6 +194,7 @@ class RDWVagTypeApprovalPackTests(unittest.TestCase):
             database = Path(directory) / "rdw.sqlite"
             MODULE.create_database(database, projections, file_entries, context, "c" * 64)
             connection = sqlite3.connect(database)
+            connection.row_factory = sqlite3.Row
             try:
                 connection.execute(
                     "UPDATE tgk_drive SET raw_record_json=?",
