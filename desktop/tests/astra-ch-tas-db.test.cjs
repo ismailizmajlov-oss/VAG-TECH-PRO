@@ -39,6 +39,7 @@ test("ASTRA search keeps approval engine designation, stamped marking and Swiss 
   assert.equal(row.repairApplicability, false);
   assert.equal(row.diagnosticExecutionAllowed, false);
   assert.match(row.warning, /не код КПП VAG/);
+  assert.ok(new URL(row.sourceUrl).hostname === "astra.admin.ch" || new URL(row.sourceUrl).hostname.endsWith(".astra.admin.ch"));
 });
 
 test("ASTRA search supports engine and gearbox-class lookup without widening market", () => {
