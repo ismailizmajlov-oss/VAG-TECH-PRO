@@ -119,7 +119,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
         self.assertIn("const p3GenericCode = /^P34[0-9A-F]{2}$/;", workflow)
-        self.assertIn('const expectedQuarantinedRanges = ["U3xxx"];', workflow)
+        self.assertIn('const expectedQuarantinedRanges = ["U3xxx","P35xx-P39xx","B3xxx","C3xxx"];', workflow)
         self.assertIn("quarantinedDtcRows.length !== 174", workflow)
         self.assertIn("sourceManifest.scope.generic_code_ranges", workflow)
         self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
