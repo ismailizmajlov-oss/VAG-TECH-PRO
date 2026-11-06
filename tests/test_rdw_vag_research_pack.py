@@ -130,7 +130,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
     def test_forbidden_registration_and_personal_fields_are_rejected_recursively(self):
         with self.assertRaisesRegex(ValueError, "kenteken"):
             rdw.reject_forbidden_fields({"safe": [{"kenteken": "XX-123-X"}]})
-        with self.assertRaisesRegex(ValueError, "vin"):
+        with self.assertRaisesRegex(ValueError, "(?i)vin"):
             rdw.reject_forbidden_fields({"Vehicle": {"VIN": "not-stored"}})
 
     def test_exact_scope_requires_approval_variant_version_and_revision(self):
