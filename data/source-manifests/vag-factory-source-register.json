@@ -3079,6 +3079,18 @@
           "direct_fetch_status": "timeout",
           "search_indexed_text": "Записи 1-1 из 0; Нет записей",
           "count_treatment": "not_used_as_current_corpus_count"
+        },
+        "current_service_transition": {
+          "url": "https://eokno.gov.kz/",
+          "reviewed_at": "2026-11-07",
+          "current_issuance_portal_url": "https://techreg.gov.kz/index/",
+          "evidence": "Current EOKNO homepage notice routes conformity-document issuance to the KTRM Technical Regulation system; general EOKNO functions moved to KEDEN."
+        },
+        "official_approval_workflow": {
+          "url": "https://www.gov.kz/org/mti-ktrm/press/news/details/679816?lang=ru",
+          "published_at": "2023-12-28",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Official KTRM release confirms OTTS/OTSH details are transferred online to the EOKNO register after registration."
         }
       },
       "rights": {
@@ -3103,7 +3115,7 @@
         "ecu_dtc_repair_applicability": false,
         "russian_market_scope": false
       },
-      "verification_status": "public_query_observed_rights_and_operator_scope_unverified",
+      "verification_status": "official_2023_2024_approval_workflow_confirmed_current_issuance_portal_reference_observed_rights_unresolved",
       "product_import_allowed": false,
       "data_ingested": false,
       "project_decision": "discovery_only. Do not automate, bulk extract, cache, bundle, display or redistribute records until the system operator and applicable data rights are confirmed in writing. Do not infer VAG fitment from the register's general document metadata.",
@@ -3114,7 +3126,8 @@
         "The exact system operator and the legal relationship between the portal and the named government bodies were not independently confirmed.",
         "The list metadata does not provide exact VAG engine codes, gearbox codes, ECU identifiers, DTCs or repair applicability.",
         "Detailed record pages may contain VIN-related fields and applicant/contact details; privacy and data-minimisation review is required before any future processing.",
-        "No VAG-specific record was independently identified in the returned search sample."
+        "No VAG-specific record was independently identified in the returned search sample.",
+        "Current EOKNO homepage routes conformity-document issuance to techreg.gov.kz; the relationship between that issuance interface and the techreg.kezekte.kz registry list is not established."
       ],
       "evidence_reviewed": [
         {
@@ -3136,6 +3149,17 @@
           "url": "https://techreg.kezekte.kz/kz/cert/info",
           "reviewed_at": "2026-11-06",
           "evidence": "Project-information search result identifies an electronic certification service, a National Accreditation Center contact route and Kazakhstan technical-regulation legal basis; ownership was not independently confirmed."
+        },
+        {
+          "url": "https://www.gov.kz/org/mti-ktrm/press/news/details/679816?lang=ru",
+          "reviewed_at": "2026-11-07",
+          "published_at": "2023-12-28",
+          "evidence": "Official KTRM release confirms OTTS/OTSH issuance and transfer of registration details into the EOKNO register."
+        },
+        {
+          "url": "https://eokno.gov.kz/",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Current EOKNO homepage notice routes conformity-document issuance to techreg.gov.kz; no reuse rights inferred."
         }
       ],
       "source_snapshot_sha256": null,
@@ -3149,7 +3173,8 @@
         "current_portal_observed": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
         "evidence": "Official gov.kz registry directory entry identifies the Committee and links the national technical-regulation registry. This confirms the official registry reference, not a data-reuse license.",
         "rights_effect": "no_bulk_export_offline_cache_display_or_redistribution_permission_inferred"
-      }
+      },
+      "current_issuance_portal_url": "https://techreg.gov.kz/index/"
     },
     {
       "source_id": "kyrgyzstan-single-window-otts-registry",
@@ -3999,11 +4024,17 @@
           "EAEU/KZ scope filter"
         ],
         "document_type_coverage": {
-          "SBKTS": "confirmed_by_official_Kazakhstan_State_Revenue_Committee_2023_press_release",
-          "OTTS": "not_verified",
-          "OTSH": "not_verified"
+          "SBKTS": "confirmed_by_official_Kazakhstan_State_Revenue_Committee_2023_release",
+          "OTTS": "confirmed_as_online_register_records_by_official_KTRM_2023_12_28_release",
+          "OTSH": "confirmed_as_online_register_records_by_official_KTRM_2023_12_28_release"
         },
-        "scope_note": "A broad public register heading is not proof that OTTS/OTSH records are present. The official release specifically documents SBKTS publication."
+        "scope_note": "Official KTRM release dated 2023-12-28 states that registered OTTS/OTSH details are transferred online to the EOKNO conformity-document register and can be verified by QR or register search. The official KGD release dated 2023-05-12 confirms SBKTS publication. These are workflow facts, not proof of current completeness or reuse rights.",
+        "current_service_notice": {
+          "url": "https://eokno.gov.kz/",
+          "reviewed_at": "2026-11-07",
+          "current_issuance_portal_url": "https://techreg.gov.kz/index/",
+          "evidence": "Current EOKNO homepage notice routes conformity-document issuance to the KTRM Technical Regulation system; general EOKNO functions moved to KEDEN."
+        }
       },
       "rights": {
         "dataset_license": "not_found",
@@ -4027,17 +4058,21 @@
         "exact_gearbox_code_fitment": false,
         "engine_gearbox_pairing": false,
         "ecu_dtc_repair_applicability": false,
-        "russian_market_scope": false
+        "russian_market_scope": false,
+        "sbkts_publication_verified": true,
+        "otts_record_flow_verified": true,
+        "otsh_record_flow_verified": true
       },
-      "verification_status": "public_register_observed_sbktS_workflow_only_otts_scope_and_reuse_rights_unverified",
+      "verification_status": "official_2023_2024_otts_otsh_sbktS_register_workflow_confirmed_current_issuance_transition_observed_reuse_rights_unresolved",
       "product_import_allowed": false,
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion",
-      "project_decision": "discovery_only. Related Kazakhstan conformity-document register; SBKTS workflow is confirmed, OTTS/OTSH coverage is not. Do not automate, bulk extract, cache, bundle, display or redistribute records until coverage and written reuse rights are established.",
+      "project_decision": "discovery_only. Official 2023/2024 releases confirm OTTS/OTSH/SBKTS register workflows, and the current homepage points new conformity-document issuance to TechReg. No rights for bulk extraction, offline caching, display or redistribution are confirmed; do not import until written permission is obtained.",
       "limitations": [
-        "The official 2023 release confirms SBKTS publication only; OTTS and OTSH coverage remains unverified.",
-        "No dataset-specific open licence, documented API or written permission for bulk reuse, offline caching, display or redistribution was identified.",
+        "Official 2023/2024 releases confirm OTTS/OTSH/SBKTS register workflows, but do not provide a dataset licence or permission for bulk reuse, offline caching, display or redistribution.",
+        "The current EOKNO homepage routes conformity-document issuance to techreg.gov.kz; the current relationship between that system and the public register endpoint is not fully documented.",
+        "No documented API, reproducible current snapshot, complete record count or current dataset revision was identified.",
         "No records or downloadable source snapshot were retrieved; no SHA-256 is claimed.",
         "No VAG engine/gearbox codes, exact pairing, ECU, DTC or repair applicability were established.",
         "Do not process VIN, applicant, address, owner or other personal fields without a separately authorized and minimized data scope."
@@ -4053,6 +4088,17 @@
           "reviewed_at": "2026-11-07",
           "published_at": "2023-05-12",
           "evidence": "Official State Revenue Committee release documents the SBKTS module and online publication of SBKTS records, not OTTS coverage."
+        },
+        {
+          "url": "https://www.gov.kz/org/mti-ktrm/press/news/details/679816?lang=ru",
+          "reviewed_at": "2026-11-07",
+          "published_at": "2023-12-28",
+          "evidence": "Official KTRM release confirms that OTTS/OTSH details enter the EOKNO register online after registration and can be checked by QR or register search."
+        },
+        {
+          "url": "https://eokno.gov.kz/",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Current homepage notice routes conformity-document issuance to the KTRM Technical Regulation system at techreg.gov.kz; no reuse rights inferred."
         }
       ]
     }

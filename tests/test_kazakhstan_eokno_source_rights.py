@@ -29,11 +29,16 @@ class KazakhstanEoknoSourceRightsTests(unittest.TestCase):
         central = self.central_rows[0]
         self.assertEqual(ru["observed_public_query"]["document_type_coverage"]["SBKTS"],
                          "confirmed_by_official_Kazakhstan_State_Revenue_Committee_2023_press_release")
-        self.assertEqual(ru["observed_public_query"]["document_type_coverage"]["OTTS"], "not_verified")
-        self.assertEqual(ru["observed_public_query"]["document_type_coverage"]["OTSH"], "not_verified")
-        self.assertEqual(central["observed_claims"]["document_type_coverage"]["OTTS"], "not_verified")
-        self.assertFalse(central["applicability"]["otts_coverage_verified"])
+        self.assertEqual(ru["observed_public_query"]["document_type_coverage"]["OTTS"], "confirmed_as_online_register_records_by_official_KTRM_2023_12_28_release")
+        self.assertEqual(ru["observed_public_query"]["document_type_coverage"]["OTSH"], "confirmed_as_online_register_records_by_official_KTRM_2023_12_28_release")
+        self.assertEqual(central["observed_claims"]["document_type_coverage"]["OTTS"], "confirmed_as_online_register_records_by_official_KTRM_2023_12_28_release")
+        self.assertTrue(central["applicability"]["otts_record_flow_verified"])
+        self.assertTrue(central["applicability"]["otsh_record_flow_verified"])
+        self.assertEqual(ru["observed_public_query"]["current_service_notice"]["current_issuance_portal_url"], "https://techreg.gov.kz/index/")
+        self.assertIn("techreg.gov.kz/index/", central["observed_claims"]["current_service_notice"]["current_issuance_portal_url"])
+        self.assertEqual(ru["access_and_reuse"]["offline_cache"], "not_confirmed")
         self.assertIn(KGD_URL, [item["url"] for item in ru["evidence_reviewed"]])
+        self.assertIn("https://www.gov.kz/org/mti-ktrm/press/news/details/679816?lang=ru", [item["url"] for item in ru["evidence_reviewed"]])
 
     def test_rights_gate_blocks_automation_cache_display_and_product_import(self):
         ru = self.ru_rows[0]
