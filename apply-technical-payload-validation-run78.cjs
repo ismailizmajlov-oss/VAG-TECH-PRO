@@ -129,7 +129,7 @@ function patchTests(file) {
     '  assert.throws(() => core.validateTechnicalPayload({ record_type: "wiring_diagram", source_record_key: "schema:invalid-wiring", payload: { diagram_id: "EL-002", format: "SVG" } }), /none of the allowed schema alternatives matched/);',
     '});',
     '',
-    'test("run78 accepts legacy numeric VAG DTCs without relaxing the generic namespace", (t) => {';
+    'test("run78 accepts legacy numeric VAG DTCs without relaxing the generic namespace", (t) => {',
     '  assert.equal(core.validateTechnicalPayload({ record_type: "dtc_vag_specific", source_record_key: "vag:17978", payload: { code: "17978" } }), true);',
     '  assert.throws(() => core.validateTechnicalPayload({ record_type: "dtc_generic", source_record_key: "generic:17978", payload: { code: "17978" } }), /DTC payload code does not match its declared generic or VAG-specific namespace/);',
     '});',
