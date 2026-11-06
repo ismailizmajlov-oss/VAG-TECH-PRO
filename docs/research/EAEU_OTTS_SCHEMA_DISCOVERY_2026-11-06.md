@@ -19,6 +19,8 @@ The schema description identifies fields that could be valuable for VAG vehicle 
 The registry document-kind codes are 30 = OTTS, 35 = OTSH and 40 = SBKTS. The proposed importer accepts OTTS/OTSH records and deliberately skips SBKTS records because the SBKTS structure can contain an individual VIN and personal/applicant details.
 
 ## Critical boundary: schema is not a data-reuse grant
+The EEC's 2022 procurement technical specification for open-data portal modernization defines “open data” as machine-readable public information that may be reused and republished for lawful purposes without copyright, patent or other control mechanisms (https://eec.eaeunion.org/upload/iblock/aad/K_1026.pdf). This is a portal-level definition in a procurement specification, not a dataset-specific license or a written grant for the OTTS register. It does not change the rights decision below: no OTTS-specific resource, bulk-export permission, offline-cache permission, third-party display right or redistribution right has been established.
+
 
 Decision No. 225 of 2014-12-02 is the public-access and publication basis: the unified register consists of national parts; those parts must be accessible from official websites of authorized bodies and the EEC; the specified registry fields must be published within five working days; and requests from interested persons are handled by authorized bodies. Decision No. 88 of 2016-07-26 defines the R.TR.TS.07.001 technical information-exchange schema, not the public-access basis. Neither decision grants VAG TECH PRO bulk extraction, offline caching, commercial display or redistribution rights.
 

@@ -212,5 +212,12 @@ def main() -> None:
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
+    if "name: Create desktop source inventory for technical-section audit" not in text:
+        raise SystemExit("Desktop source technical-surface inventory step is missing")
+    if "desktop-source-technical-surface.txt" not in text or "desktop-source-inventory.txt" not in text:
+        raise SystemExit("Desktop source inventory evidence is not uploaded")
+    if 'foreach ($folder in @("scripts", "lib", "app", "components", "electron", "tests"' not in text:
+        raise SystemExit("Windows lifecycle artifact does not preserve the desktop app, UI and test sources")
+
 if __name__ == "__main__":
     main()

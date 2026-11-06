@@ -598,6 +598,30 @@
         "interested_person_requests_handled_by": "authorized_bodies",
         "central_open_data_catalogue_is_the_vehicle_register": false,
         "review_date": "2026-11-06"
+      },
+      "open_data_policy_evidence": {
+        "evidence_url": "https://eec.eaeunion.org/upload/iblock/aad/K_1026.pdf",
+        "portal_api_url": "https://opendata.eaeunion.org/opendata/ru/api/restapi",
+        "document_type": "EEC 2022 procurement notice and technical specification for open-data portal modernization",
+        "document_date": "2022-06-07",
+        "reviewed_at": "2026-11-06",
+        "evidence_summary": "The technical specification defines open data as publicly available machine-readable data that may be reused and republished for lawful purposes without copyright, patent or other control mechanisms; the portal separately advertises OData/REST access and reuse with minimal restrictions.",
+        "legal_effect": "portal_level_open_data_policy_definition_only_not_a_dataset_specific_license",
+        "limitations": [
+          "The document is a procurement technical specification, not a dataset-specific license or written permission for the VAG TECH PRO product.",
+          "No OTTS-specific resource or dataset-specific license was identified in the 117-resource catalogue; 7 resources were classified under technical regulation.",
+          "No bulk OTTS export, offline caching, third-party display or redistribution right is inferred from the portal-level open-data definition.",
+          "No source data were downloaded, cached or imported; source snapshot SHA-256 remains null."
+        ],
+        "decision": "discovery_only_rights_not_cleared_no_import",
+        "related_non_otts_resource": {
+          "title": "Unified Register of Conformity Assessment Bodies",
+          "url": "https://tech.eaeunion.org/tech/ru/registers/36",
+          "record_count_observed": 3236,
+          "last_update_observed": "2024-09-01",
+          "relevance": "Auxiliary accreditation-body cross-check only; this is not an OTTS/OTSH or vehicle type-approval dataset.",
+          "ingestion_decision": "not_imported_dataset_specific_reuse_terms_not_confirmed"
+        }
       }
     },
     {

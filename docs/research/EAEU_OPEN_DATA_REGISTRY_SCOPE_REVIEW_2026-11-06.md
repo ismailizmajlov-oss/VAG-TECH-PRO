@@ -17,6 +17,8 @@ The resource page identifies the dataset as the EAEU Unified Register of Conform
 The page's filter and sample records include TR TS 018/2011 scopes, which can help a human reviewer check whether a certification body or testing laboratory's declared scope includes vehicle-related conformity assessment.
 
 ## Rights and ingestion boundary
+A 2022 EEC procurement technical specification for modernization of the open-data portal also defines the portal's “open data” concept as publicly available machine-readable data that may be reused and republished for lawful purposes without copyright, patent or other control mechanisms: https://eec.eaeunion.org/upload/iblock/aad/K_1026.pdf. This is **portal-level policy evidence**, not a dataset-specific license, a grant of permission for this OTTS project, or proof that the OTTS register is one of the published open-data resources. It does not resolve the resource-specific attribution, offline-cache, third-party display, bulk-reuse or redistribution terms.
+
 
 The EAEU open-data portal's general REST API page states that portal data are available for reuse with minimal organizational and other restrictions. However, this review did not establish a dataset-specific license identifier, exact attribution terms, offline-caching permission, redistribution conditions, or a versioned downloadable snapshot hash for this particular resource.
 
