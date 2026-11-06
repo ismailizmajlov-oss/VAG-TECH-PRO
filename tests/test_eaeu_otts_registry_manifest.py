@@ -33,7 +33,10 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
 
     def test_source_revision_is_pinned_and_ingestion_is_disabled(self):
         source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
-        self.assertEqual(source["source_revision"], "Decision 88 / R.TR.TS.07.001 v1.0.0")
+        revision = source["source_revision"]
+        self.assertIn("EEC Decision No. 225 public-access basis", revision)
+        self.assertIn("EEC Decision No. 232 current consolidated OTTS/OTSH form", revision)
+        self.assertIn("Decision No. 88 / R.TR.TS.07.001 v1.0.0", revision)
         self.assertFalse(source["data_ingested"])
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
 
