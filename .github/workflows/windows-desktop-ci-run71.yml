@@ -18,6 +18,7 @@ on:
       - "desktop/**"
       - "scripts/integrate-astra-ch-tas-run72.cjs"
       - "scripts/integrate-rdw-vag-research-pack.cjs"
+      - "tests/rdw-pack-integration-contract.test.cjs"
       - "scripts/apply-rdw-vag-research-verification-run31.cjs"
       - "scripts/build_rdw_vag_research_pack.py"
       - "tests/test_rdw_vag_research_pack.py"
@@ -101,6 +102,7 @@ on:
       - "desktop/**"
       - "scripts/integrate-astra-ch-tas-run72.cjs"
       - "scripts/integrate-rdw-vag-research-pack.cjs"
+      - "tests/rdw-pack-integration-contract.test.cjs"
       - "scripts/apply-rdw-vag-research-verification-run31.cjs"
       - "scripts/build_rdw_vag_research_pack.py"
       - "tests/test_rdw_vag_research_pack.py"
@@ -222,6 +224,7 @@ jobs:
           python tests/test_astra_ch_tas_desktop_integration.py
           python -m py_compile scripts/build_rdw_vag_research_pack.py
           python -m unittest discover -s tests -p "test_rdw_vag_research_pack.py" -v
+          node --test tests/rdw-pack-integration-contract.test.cjs
 
 
       - name: Reassemble and verify pinned desktop source archive
