@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-05T19:43:57Z",
+  "recorded_at_utc": "2026-11-06T00:10:00Z",
   "workflow": "Acquire and validate official ASTRA CH TAS VAG research pack",
   "run_id": 42091150760,
   "run_number": 20,
@@ -24,11 +24,11 @@
     {
       "id": 127481121049,
       "name": "Record pack build, rights, scope and artifact evidence",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "runner_name": "GitHub Actions 1000001324",
       "started_at": "2026-11-05T19:30:45Z",
-      "completed_at": null
+      "completed_at": "2026-11-05T19:31:03Z"
     }
   ],
   "artifacts": [
