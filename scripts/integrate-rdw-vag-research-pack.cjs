@@ -245,13 +245,14 @@ function patchPackage(desktopRoot) {
   const pkg = readJson(file);
   if (!pkg.scripts) fail("Desktop package scripts missing");
   if (!JSON.stringify(pkg.build?.extraResources || []).includes("data/research")) fail("Desktop package does not include offline research-data resources");
-  const testKey = typeof pkg.scripts["test:research"] === "string" ? "test:research" : (typeof pkg.scripts.test === "string" ? "test" : null);
-  if (!testKey) fail("Desktop package has no test script for RDW contract tests");
-  const testCommand = pkg.scripts[testKey];
-  const hasGlob = /tests\/\*\*?\/?.*\.test\.cjs|tests\/\*\.test\.cjs/.test(testCommand);
-  if (!hasGlob) {
-    for (const testFile of ["tests/rdw-vag-research-db.test.cjs", "tests/rdw-vag-research-ui-contract.test.cjs"]) {
-      if (!pkg.scripts[testKey].includes(testFile)) pkg.scripts[testKey] += " " + testFile;
+  const testFiles = ["tests/rdw-vag-research-db.test.cjs", "tests/rdw-vag-research-ui-contract.test.cjs"];
+  const testKeys = ["test", "test:research"].filter((key) => typeof pkg.scripts[key] === "string");
+  if (testKeys.length === 0) fail("Desktop package has no test script for RDW contract tests");
+  for (const key of testKeys) {
+    const command = pkg.scripts[key];
+    const hasGlob = /tests\/\*\*?\/?.*\.test\.cjs|tests\/\*\.test\.cjs|node --test(\s|$)/.test(command);
+    if (!hasGlob) {
+      for (const testFile of testFiles) if (!pkg.scripts[key].includes(testFile)) pkg.scripts[key] += " " + testFile;
     }
   }
   pkg.scripts["verify:rdw-research"] = "node scripts/verify-rdw-vag-research-pack.cjs";
