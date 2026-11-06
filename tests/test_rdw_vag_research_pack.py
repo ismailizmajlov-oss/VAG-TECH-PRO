@@ -150,7 +150,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 if line.strip()
             ]
             snapshot_rows[0]["tampered_after_download"] = True
-            snapshot_bytes = b"".join(rdw.canonical_bytes(row) + b"\\n" for row in snapshot_rows)
+            snapshot_bytes = b"".join(rdw.canonical_bytes(row) + b"\n" for row in snapshot_rows)
             snapshot_path.write_bytes(snapshot_bytes)
             item["sha256"] = rdw.sha256_bytes(snapshot_bytes)
             item["byte_size"] = len(snapshot_bytes)
@@ -163,7 +163,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 )
             manifest["database"]["sha256"] = rdw.sha256_file(database_path)
             manifest["database"]["byte_size"] = database_path.stat().st_size
-            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
             with self.assertRaisesRegex(ValueError, "snapshot/SQLite source rows differ"):
                 rdw.validate_pack(pack)
