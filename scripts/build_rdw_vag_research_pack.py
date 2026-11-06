@@ -343,174 +343,179 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
     if database_path.exists():
         raise FileExistsError(f"Refusing to overwrite SQLite database: {database_path}")
     db = sqlite3.connect(database_path)
-    db.execute("PRAGMA foreign_keys=ON")
-    db.execute("PRAGMA journal_mode=DELETE")
-    db.executescript("""
-        CREATE TABLE source_registry (
-          source_id TEXT PRIMARY KEY, publisher TEXT NOT NULL, license_id TEXT NOT NULL,
-          rights_status TEXT NOT NULL, market_scope TEXT NOT NULL,
-          production_import INTEGER NOT NULL CHECK(production_import=0),
-          ru_eaeu_applicability INTEGER NOT NULL CHECK(ru_eaeu_applicability=0),
-          source_manifest_sha256 TEXT NOT NULL, verification_status TEXT NOT NULL
-        );
-        CREATE TABLE source_file_artifacts (
-          dataset_id TEXT PRIMARY KEY, dataset_name TEXT NOT NULL, source_revision TEXT NOT NULL,
-          source_snapshot_sha256 TEXT NOT NULL, byte_size INTEGER NOT NULL, row_count INTEGER NOT NULL,
-          query_scope TEXT NOT NULL, required_columns_sha256 TEXT NOT NULL
-        );
-        CREATE TABLE approval_scope (
-          scope_id TEXT PRIMARY KEY, type_approval_number TEXT NOT NULL, variant TEXT,
-          version TEXT, revision TEXT, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
-          applicability_precision TEXT NOT NULL, verification_status TEXT NOT NULL,
-          model_year TEXT CHECK(model_year IS NULL), generation TEXT CHECK(generation IS NULL),
-          exact_vehicle_fitment INTEGER NOT NULL CHECK(exact_vehicle_fitment=0),
-          ru_eaeu_applicability INTEGER NOT NULL CHECK(ru_eaeu_applicability=0)
-        );
-        CREATE TABLE registration_observations (
-          observation_id TEXT PRIMARY KEY, scope_id TEXT, make TEXT NOT NULL, trade_name TEXT,
-          vehicle_category TEXT, registration_count INTEGER NOT NULL,
-          source_row_sha256 TEXT NOT NULL, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
-          applicability_precision TEXT NOT NULL, verification_status TEXT NOT NULL,
-          FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
-          FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
-        );
-        CREATE TABLE source_rows (
-          source_row_sha256 TEXT PRIMARY KEY, dataset_id TEXT NOT NULL,
-          scope_id TEXT, raw_json TEXT NOT NULL, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
-          FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id)
-        );
-        CREATE TABLE engine_designation_candidates (
-          source_row_sha256 TEXT PRIMARY KEY, scope_id TEXT NOT NULL,
-          engine_designation TEXT, engine_type_approval_number TEXT,
-          displacement_cc TEXT, cylinders TEXT, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
-          applicability_precision TEXT NOT NULL,
-          verification_status TEXT NOT NULL CHECK(verification_status='rdw_engine_designation_candidate_not_oem_confirmed'),
-          FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
-          FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
-        );
-        CREATE TABLE gearbox_classifications (
-          source_row_sha256 TEXT PRIMARY KEY, scope_id TEXT NOT NULL,
-          gearbox_type_classification TEXT, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
-          applicability_precision TEXT NOT NULL,
-          verification_status TEXT NOT NULL CHECK(verification_status='rdw_approval_gearbox_classification_not_vag_code'),
-          FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
-          FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
-        );
-        CREATE TABLE approval_auxiliary_rows (
-          source_row_sha256 TEXT PRIMARY KEY, dataset_id TEXT NOT NULL, scope_id TEXT NOT NULL,
-          FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
-          FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
-        );
-        CREATE INDEX idx_registration_make_trade ON registration_observations(make, trade_name);
-        CREATE INDEX idx_approval_number ON approval_scope(type_approval_number);
-        CREATE INDEX idx_engine_designation ON engine_designation_candidates(engine_designation);
-        CREATE INDEX idx_gearbox_classification ON gearbox_classifications(gearbox_type_classification);
-    """)
-    db.execute("BEGIN IMMEDIATE")
-    db.execute(
-        "INSERT INTO source_registry VALUES (?,?,?,?,?,?,?,?,?)",
-        (SOURCE_ID, "RDW (Dienst Wegverkeer), Netherlands", "CC0-1.0",
-         "approved_by_published_CC0_license", "NL", 0, 0, source_manifest_sha,
-         "rights_cleared_research_only_not_oem_fitment"),
-    )
-
-    exact_keys: dict[tuple[str, str, str, str], str] = {}
-    counts = {"source_files": len(source_files), "approval_scopes": 0, "registration_observations": 0,
-              "engine_candidates": 0, "gearbox_classifications": 0, "auxiliary_rows": 0, "source_rows": 0}
-    for item in source_files:
+    try:
+        db.execute("PRAGMA foreign_keys=ON")
+        db.execute("PRAGMA journal_mode=DELETE")
+        db.executescript("""
+            CREATE TABLE source_registry (
+              source_id TEXT PRIMARY KEY, publisher TEXT NOT NULL, license_id TEXT NOT NULL,
+              rights_status TEXT NOT NULL, market_scope TEXT NOT NULL,
+              production_import INTEGER NOT NULL CHECK(production_import=0),
+              ru_eaeu_applicability INTEGER NOT NULL CHECK(ru_eaeu_applicability=0),
+              source_manifest_sha256 TEXT NOT NULL, verification_status TEXT NOT NULL
+            );
+            CREATE TABLE source_file_artifacts (
+              dataset_id TEXT PRIMARY KEY, dataset_name TEXT NOT NULL, source_revision TEXT NOT NULL,
+              source_snapshot_sha256 TEXT NOT NULL, byte_size INTEGER NOT NULL, row_count INTEGER NOT NULL,
+              query_scope TEXT NOT NULL, required_columns_sha256 TEXT NOT NULL
+            );
+            CREATE TABLE approval_scope (
+              scope_id TEXT PRIMARY KEY, type_approval_number TEXT NOT NULL, variant TEXT,
+              version TEXT, revision TEXT, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
+              applicability_precision TEXT NOT NULL, verification_status TEXT NOT NULL,
+              model_year TEXT CHECK(model_year IS NULL), generation TEXT CHECK(generation IS NULL),
+              exact_vehicle_fitment INTEGER NOT NULL CHECK(exact_vehicle_fitment=0),
+              ru_eaeu_applicability INTEGER NOT NULL CHECK(ru_eaeu_applicability=0)
+            );
+            CREATE TABLE registration_observations (
+              observation_id TEXT PRIMARY KEY, scope_id TEXT, make TEXT NOT NULL, trade_name TEXT,
+              vehicle_category TEXT, registration_count INTEGER NOT NULL,
+              source_row_sha256 TEXT NOT NULL, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
+              applicability_precision TEXT NOT NULL, verification_status TEXT NOT NULL,
+              FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
+              FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
+            );
+            CREATE TABLE source_rows (
+              source_row_sha256 TEXT PRIMARY KEY, dataset_id TEXT NOT NULL,
+              scope_id TEXT, raw_json TEXT NOT NULL, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
+              FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id)
+            );
+            CREATE TABLE engine_designation_candidates (
+              source_row_sha256 TEXT PRIMARY KEY, scope_id TEXT NOT NULL,
+              engine_designation TEXT, engine_type_approval_number TEXT,
+              displacement_cc TEXT, cylinders TEXT, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
+              applicability_precision TEXT NOT NULL,
+              verification_status TEXT NOT NULL CHECK(verification_status='rdw_engine_designation_candidate_not_oem_confirmed'),
+              FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
+              FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
+            );
+            CREATE TABLE gearbox_classifications (
+              source_row_sha256 TEXT PRIMARY KEY, scope_id TEXT NOT NULL,
+              gearbox_type_classification TEXT, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
+              applicability_precision TEXT NOT NULL,
+              verification_status TEXT NOT NULL CHECK(verification_status='rdw_approval_gearbox_classification_not_vag_code'),
+              FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
+              FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
+            );
+            CREATE TABLE approval_auxiliary_rows (
+              source_row_sha256 TEXT PRIMARY KEY, dataset_id TEXT NOT NULL, scope_id TEXT NOT NULL,
+              FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
+              FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
+            );
+            CREATE INDEX idx_registration_make_trade ON registration_observations(make, trade_name);
+            CREATE INDEX idx_approval_number ON approval_scope(type_approval_number);
+            CREATE INDEX idx_engine_designation ON engine_designation_candidates(engine_designation);
+            CREATE INDEX idx_gearbox_classification ON gearbox_classifications(gearbox_type_classification);
+        """)
+        db.execute("BEGIN IMMEDIATE")
         db.execute(
-            "INSERT INTO source_file_artifacts VALUES (?,?,?,?,?,?,?,?)",
-            (item["dataset_id"], item["dataset_name"], item["source_revision"], item["sha256"],
-             item["byte_size"], item["row_count"], item["query_scope"], item["required_columns_sha256"]),
+            "INSERT INTO source_registry VALUES (?,?,?,?,?,?,?,?,?)",
+            (SOURCE_ID, "RDW (Dienst Wegverkeer), Netherlands", "CC0-1.0",
+             "approved_by_published_CC0_license", "NL", 0, 0, source_manifest_sha,
+             "rights_cleared_research_only_not_oem_fitment"),
         )
-    for row in datasets["registration"]:
-        raw_key = (
-            str(row.get("typegoedkeuringsnummer") or ""),
-            str(row.get("variant") or ""),
-            str(row.get("uitvoering") or ""),
-            str(row.get("volgnummer_wijziging_eu_typegoedkeuring") or ""),
-        )
-        exact = all(raw_key)
-        sid = scope_id(raw_key) if exact else None
-        row_hash = sha256_bytes(canonical_bytes(row))
-        if sid:
-            exact_keys[raw_key] = sid
+
+        exact_keys: dict[tuple[str, str, str, str], str] = {}
+        counts = {"source_files": len(source_files), "approval_scopes": 0, "registration_observations": 0,
+                  "engine_candidates": 0, "gearbox_classifications": 0, "auxiliary_rows": 0, "source_rows": 0}
+        for item in source_files:
             db.execute(
-                "INSERT OR IGNORE INTO approval_scope VALUES (?,?,?,?,?,'NL',?,'rdw_approval_scope_observed',NULL,NULL,0,0)",
-                (sid, *raw_key, "exact_RDW_approval_variant_version_revision_scope"),
+                "INSERT INTO source_file_artifacts VALUES (?,?,?,?,?,?,?,?)",
+                (item["dataset_id"], item["dataset_name"], item["source_revision"], item["sha256"],
+                 item["byte_size"], item["row_count"], item["query_scope"], item["required_columns_sha256"]),
             )
-        observation_id = sha256_bytes(canonical_bytes([row_hash, row.get("merk"), row.get("handelsbenaming")]))
-        db.execute(
-            "INSERT OR IGNORE INTO source_rows VALUES (?,?,?,?,'NL')",
-            (row_hash, REGISTRATION_ID, sid, canonical_bytes(row).decode("utf-8")),
-        )
-        db.execute(
-            "INSERT OR IGNORE INTO registration_observations VALUES (?,?,?,?,?,?,?,?,?,?)",
-            (observation_id, sid, str(row.get("merk") or ""), row.get("handelsbenaming"),
-             row.get("voertuigsoort"), int(row.get("registration_count") or 0), row_hash, "NL",
-             "exact_RDW_approval_variant_version_revision_scope" if sid else "approval_number_only",
-             "rdw_registration_observation_not_vehicle_fitment"),
-        )
-        counts["registration_observations"] += 1
-        counts["source_rows"] += 1
-
-    for name, rows in datasets.items():
-        config = DATASETS[name]
-        dataset_id = str(config["id"])
-        for row in rows:
+        for row in datasets["registration"]:
+            raw_key = (
+                str(row.get("typegoedkeuringsnummer") or ""),
+                str(row.get("variant") or ""),
+                str(row.get("uitvoering") or ""),
+                str(row.get("volgnummer_wijziging_eu_typegoedkeuring") or ""),
+            )
+            exact = all(raw_key)
+            sid = scope_id(raw_key) if exact else None
             row_hash = sha256_bytes(canonical_bytes(row))
-            if name == "registration":
-                continue
-            variant_field = str(config["variant_field"])
-            key = scope_key(row, variant_field)
-            sid = exact_keys.get(key) if key else None
-            if not sid:
-                raise ValueError(f"RDW {name} row has no exact matching registration approval scope")
+            if sid:
+                exact_keys[raw_key] = sid
+                db.execute(
+                    "INSERT OR IGNORE INTO approval_scope VALUES (?,?,?,?,?,'NL',?,'rdw_approval_scope_observed',NULL,NULL,0,0)",
+                    (sid, *raw_key, "exact_RDW_approval_variant_version_revision_scope"),
+                )
+            observation_id = sha256_bytes(canonical_bytes([row_hash, row.get("merk"), row.get("handelsbenaming")]))
             db.execute(
                 "INSERT OR IGNORE INTO source_rows VALUES (?,?,?,?,'NL')",
-                (row_hash, dataset_id, sid, canonical_bytes(row).decode("utf-8")),
+                (row_hash, REGISTRATION_ID, sid, canonical_bytes(row).decode("utf-8")),
             )
-            if name == "tgk_drive":
-                db.execute(
-                    "INSERT OR IGNORE INTO engine_designation_candidates VALUES (?,?,?,?,?,?, 'NL', ?, 'rdw_engine_designation_candidate_not_oem_confirmed')",
-                    (row_hash, sid, row.get("motorcode"), row.get("typegoedkeuringsnummermotor"),
-                     row.get("cilinderinhoud"), row.get("aantalcilinders"),
-                     "exact_RDW_approval_variant_version_revision_scope"),
-                )
-                counts["engine_candidates"] += 1
-            elif name == "tgk_gearbox":
-                db.execute(
-                    "INSERT OR IGNORE INTO gearbox_classifications VALUES (?,?,?,'NL',?,'rdw_approval_gearbox_classification_not_vag_code')",
-                    (row_hash, sid, row.get("codetypeversnellingsbak"),
-                     "exact_RDW_approval_variant_version_revision_scope"),
-                )
-                counts["gearbox_classifications"] += 1
-            else:
-                db.execute(
-                    "INSERT OR IGNORE INTO approval_auxiliary_rows VALUES (?,?,?)",
-                    (row_hash, dataset_id, sid),
-                )
-                counts["auxiliary_rows"] += 1
+            db.execute(
+                "INSERT OR IGNORE INTO registration_observations VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (observation_id, sid, str(row.get("merk") or ""), row.get("handelsbenaming"),
+                 row.get("voertuigsoort"), int(row.get("registration_count") or 0), row_hash, "NL",
+                 "exact_RDW_approval_variant_version_revision_scope" if sid else "approval_number_only",
+                 "rdw_registration_observation_not_vehicle_fitment"),
+            )
+            counts["registration_observations"] += 1
             counts["source_rows"] += 1
 
-    db.commit()
-    db.execute("PRAGMA optimize")
-    counts = {
-        "source_files": int(db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0]),
-        "approval_scopes": int(db.execute("SELECT count(*) FROM approval_scope").fetchone()[0]),
-        "registration_observations": int(db.execute("SELECT count(*) FROM registration_observations").fetchone()[0]),
-        "engine_candidates": int(db.execute("SELECT count(*) FROM engine_designation_candidates").fetchone()[0]),
-        "gearbox_classifications": int(db.execute("SELECT count(*) FROM gearbox_classifications").fetchone()[0]),
-        "auxiliary_rows": int(db.execute("SELECT count(*) FROM approval_auxiliary_rows").fetchone()[0]),
-        "source_rows": int(db.execute("SELECT count(*) FROM source_rows").fetchone()[0]),
-    }
-    integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
-    if integrity != "ok" or db.execute("PRAGMA foreign_key_check").fetchall():
+        for name, rows in datasets.items():
+            config = DATASETS[name]
+            dataset_id = str(config["id"])
+            for row in rows:
+                row_hash = sha256_bytes(canonical_bytes(row))
+                if name == "registration":
+                    continue
+                variant_field = str(config["variant_field"])
+                key = scope_key(row, variant_field)
+                sid = exact_keys.get(key) if key else None
+                if not sid:
+                    raise ValueError(f"RDW {name} row has no exact matching registration approval scope")
+                db.execute(
+                    "INSERT OR IGNORE INTO source_rows VALUES (?,?,?,?,'NL')",
+                    (row_hash, dataset_id, sid, canonical_bytes(row).decode("utf-8")),
+                )
+                if name == "tgk_drive":
+                    db.execute(
+                        "INSERT OR IGNORE INTO engine_designation_candidates VALUES (?,?,?,?,?,?, 'NL', ?, 'rdw_engine_designation_candidate_not_oem_confirmed')",
+                        (row_hash, sid, row.get("motorcode"), row.get("typegoedkeuringsnummermotor"),
+                         row.get("cilinderinhoud"), row.get("aantalcilinders"),
+                         "exact_RDW_approval_variant_version_revision_scope"),
+                    )
+                    counts["engine_candidates"] += 1
+                elif name == "tgk_gearbox":
+                    db.execute(
+                        "INSERT OR IGNORE INTO gearbox_classifications VALUES (?,?,?,'NL',?,'rdw_approval_gearbox_classification_not_vag_code')",
+                        (row_hash, sid, row.get("codetypeversnellingsbak"),
+                         "exact_RDW_approval_variant_version_revision_scope"),
+                    )
+                    counts["gearbox_classifications"] += 1
+                else:
+                    db.execute(
+                        "INSERT OR IGNORE INTO approval_auxiliary_rows VALUES (?,?,?)",
+                        (row_hash, dataset_id, sid),
+                    )
+                    counts["auxiliary_rows"] += 1
+                counts["source_rows"] += 1
+
+        db.commit()
+        db.execute("PRAGMA optimize")
+        counts = {
+            "source_files": int(db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0]),
+            "approval_scopes": int(db.execute("SELECT count(*) FROM approval_scope").fetchone()[0]),
+            "registration_observations": int(db.execute("SELECT count(*) FROM registration_observations").fetchone()[0]),
+            "engine_candidates": int(db.execute("SELECT count(*) FROM engine_designation_candidates").fetchone()[0]),
+            "gearbox_classifications": int(db.execute("SELECT count(*) FROM gearbox_classifications").fetchone()[0]),
+            "auxiliary_rows": int(db.execute("SELECT count(*) FROM approval_auxiliary_rows").fetchone()[0]),
+            "source_rows": int(db.execute("SELECT count(*) FROM source_rows").fetchone()[0]),
+        }
+        integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
+        if integrity != "ok" or db.execute("PRAGMA foreign_key_check").fetchall():
+            db.close()
+            raise ValueError("RDW SQLite integrity or foreign-key check failed")
+        counts["approval_scopes"] = int(db.execute("SELECT count(*) FROM approval_scope").fetchone()[0])
+        return counts
+    except Exception:
+        db.rollback()
+        raise
+    finally:
         db.close()
-        raise ValueError("RDW SQLite integrity or foreign-key check failed")
-    counts["approval_scopes"] = int(db.execute("SELECT count(*) FROM approval_scope").fetchone()[0])
-    db.close()
-    return counts
 
 
 def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifest_bytes: bytes,
@@ -652,7 +657,7 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
         }
         if expected != manifest["counts"]:
             raise ValueError(f"RDW SQLite row counts differ from manifest: {expected}")
-        if db.execute("SELECT count(*) FROM source_registry WHERE rights_status<>'approved_by_published_CC0_license' OR market_scope<>'NL' OR production_import<>0 OR ru_eaeu_applicability<>0").fetchone()[0] != 1:
+        if db.execute("SELECT count(*) FROM source_registry WHERE rights_status<>'approved_by_published_CC0_license' OR market_scope<>'NL' OR production_import<>0 OR ru_eaeu_applicability<>0").fetchone()[0] != 0:
             raise ValueError("RDW source registry rights/market boundary failed")
         if db.execute("SELECT count(*) FROM engine_designation_candidates WHERE verification_status<>'rdw_engine_designation_candidate_not_oem_confirmed' OR market_scope<>'NL'").fetchone()[0]:
             raise ValueError("RDW engine candidate promotion detected")
