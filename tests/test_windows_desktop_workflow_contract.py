@@ -249,7 +249,7 @@ def main() -> None:
     rdw_step_marker = "      - name: Resolve latest successful RDW NL/EU research pack run"
     if rdw_step_marker not in text:
         raise SystemExit("Windows workflow is missing the current RDW pack resolver")
-    rdw_step = text.split(rdw_step_marker, 1)[1].split("\\n      - name:", 1)[0]
+    rdw_step = text.split(rdw_step_marker, 1)[1].split("\n      - name:", 1)[0]
     if 'for ($attempt = 0; $attempt -lt 120 -and $run.status -ne "completed"; $attempt++)' not in rdw_step or "Start-Sleep -Seconds 20" not in rdw_step:
         raise SystemExit("RDW pack resolver must allow a 40-minute completion window for the measured acquisition duration")
     if "timeout-minutes: 90" not in text:
