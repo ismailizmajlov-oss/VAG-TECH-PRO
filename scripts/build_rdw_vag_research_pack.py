@@ -286,8 +286,8 @@ def verify_source_revisions(metadata_report: dict[str, dict[str, Any]]) -> None:
             raise ValueError(f"RDW {dataset_id} schema changed during acquisition; missing fields: {missing}")
         expected = metadata_report[name]
         observed = {
-            "rows_updated_at": current.get("rowsUpdatedAt"),
-            "view_last_modified": current.get("viewLastModified"),
+            "rows_updated_at": str(current["rowsUpdatedAt"]) if current.get("rowsUpdatedAt") is not None else None,
+            "view_last_modified": str(current["viewLastModified"]) if current.get("viewLastModified") is not None else None,
             "source_columns_sha256": sha256_bytes(canonical_bytes(columns)),
         }
         for field, value in observed.items():
@@ -313,8 +313,8 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
         required_columns = sorted(config["required"])
         metadata_report[name] = {
             "dataset_id": dataset_id,
-            "rows_updated_at": metadata.get("rowsUpdatedAt"),
-            "view_last_modified": metadata.get("viewLastModified"),
+            "rows_updated_at": str(metadata["rowsUpdatedAt"]) if metadata.get("rowsUpdatedAt") is not None else None,
+            "view_last_modified": str(metadata["viewLastModified"]) if metadata.get("viewLastModified") is not None else None,
             "source_columns_sha256": sha256_bytes(canonical_bytes(sorted(columns))),
             "required_columns": required_columns,
             "required_columns_sha256": sha256_bytes(canonical_bytes(required_columns)),
@@ -657,7 +657,7 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         source_files.append({
             "dataset_name": name, "dataset_id": dataset_id, "path": f"source-snapshot/{file_name}",
             "sha256": digest, "byte_size": byte_size, "row_count": len(rows),
-            "source_revision": metadata[name]["rows_updated_at"] or metadata[name]["view_last_modified"],
+            "source_revision": str(metadata[name]["rows_updated_at"] or metadata[name]["view_last_modified"]),
             "source_columns_sha256": metadata[name]["source_columns_sha256"],
             "required_columns": metadata[name]["required_columns"],
             "required_columns_sha256": metadata[name]["required_columns_sha256"],
