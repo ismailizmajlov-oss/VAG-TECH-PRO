@@ -503,6 +503,14 @@
         "public_field_exposure_verified": false,
         "exact_vag_engine_or_gearbox_code_verified": false,
         "exact_engine_gearbox_pair_verified": false
+      },
+      "import_pipeline_status": {
+        "status": "schema_parser_implemented_synthetic_tests_only",
+        "real_vehicle_records_ingested": false,
+        "persistent_cache_allowed": false,
+        "requires_written_rights_evidence": true,
+        "production_promotion_enabled": false,
+        "exact_fitment_status": "candidate_only_until_independent_vehicle_specific_review"
       }
     },
     {
