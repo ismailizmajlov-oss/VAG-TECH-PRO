@@ -502,7 +502,7 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
             );
             CREATE TABLE source_rows (
               source_row_sha256 TEXT PRIMARY KEY, dataset_id TEXT NOT NULL,
-              scope_id TEXT, raw_json TEXT NOT NULL, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
+              scope_id TEXT, market_scope TEXT NOT NULL CHECK(market_scope='NL'),
               FOREIGN KEY(scope_id) REFERENCES approval_scope(scope_id),
               FOREIGN KEY(dataset_id) REFERENCES source_file_artifacts(dataset_id)
             );
@@ -570,8 +570,8 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
                 )
             observation_id = sha256_bytes(canonical_bytes([row_hash, row.get("merk"), row.get("handelsbenaming")]))
             db.execute(
-                "INSERT OR IGNORE INTO source_rows VALUES (?,?,?,?,'NL')",
-                (row_hash, REGISTRATION_ID, sid, canonical_bytes(row).decode("utf-8")),
+                "INSERT OR IGNORE INTO source_rows VALUES (?,?,?,'NL')",
+                (row_hash, REGISTRATION_ID, sid),
             )
             db.execute(
                 "INSERT OR IGNORE INTO registration_observations VALUES (?,?,?,?,?,?,?,?,?,?)",
@@ -596,8 +596,8 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
                 if not sid:
                     raise ValueError(f"RDW {name} row has no exact matching registration approval scope")
                 db.execute(
-                    "INSERT OR IGNORE INTO source_rows VALUES (?,?,?,?,'NL')",
-                    (row_hash, dataset_id, sid, canonical_bytes(row).decode("utf-8")),
+                    "INSERT OR IGNORE INTO source_rows VALUES (?,?,?,'NL')",
+                    (row_hash, dataset_id, sid),
                 )
                 if name == "tgk_drive":
                     db.execute(
@@ -864,20 +864,13 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
                     reject_forbidden_fields(snapshot_row, f"snapshot.{item['dataset_id']}:{line_number}")
                     snapshot_hashes.append(sha256_bytes(canonical))
 
-            database_hashes: list[str] = []
-            for source_row in db.execute(
-                "SELECT source_row_sha256, raw_json FROM source_rows WHERE dataset_id=?",
-                (item["dataset_id"],),
-            ):
-                parsed_row = json.loads(source_row["raw_json"])
-                canonical = canonical_bytes(parsed_row)
-                if canonical.decode("utf-8") != source_row["raw_json"]:
-                    raise ValueError(f"RDW SQLite source row is not canonical JSON: {item['dataset_id']}")
-                row_hash = sha256_bytes(canonical)
-                if row_hash != source_row["source_row_sha256"]:
-                    raise ValueError(f"RDW SQLite source-row SHA-256 mismatch: {item['dataset_id']}")
-                reject_forbidden_fields(parsed_row, f"sqlite.source_rows.{item['dataset_id']}")
-                database_hashes.append(row_hash)
+            database_hashes = [
+                source_row["source_row_sha256"]
+                for source_row in db.execute(
+                    "SELECT source_row_sha256 FROM source_rows WHERE dataset_id=?",
+                    (item["dataset_id"],),
+                )
+            ]
 
             if (
                 len(snapshot_hashes) != item["row_count"]
