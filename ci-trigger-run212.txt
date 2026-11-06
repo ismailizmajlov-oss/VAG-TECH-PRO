@@ -1,0 +1,3 @@
+Windows desktop CI trigger
+Purpose: validate the newly pinned package-lock SHA-256 after the patched minimatch 11.0.1 dependency graph was verified in run 209.
+No source datasets or production records were changed.
