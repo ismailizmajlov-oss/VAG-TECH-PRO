@@ -92,6 +92,15 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
         self.assertFalse(source["applicability"]["ru_eaeu_scope"])
 
+    def test_gor3a_odbl_aggregator_does_not_clear_upstream_rights(self):
+        source = self.factory_sources["gor3a-vehicle-makes-models-odbl"]
+        self.assertEqual(source["rights"]["data_license_status"], "ODbL-1.0")
+        self.assertEqual(source["rights"]["upstream_rights_status"], "not_established")
+        self.assertEqual(source["rights"]["upstream_permission_status"], "not_obtained")
+        self.assertEqual(source["upstream_license_evidence"]["upstream_source_license"], "not_identified_in_this_review")
+        self.assertFalse(source["data_ingested"])
+        self.assertIn("no_download_no_import", source["project_decision"])
+
     def test_vag_wiki_terms_remain_a_no_scrape_no_redistribution_gate(self):
         source = self.factory_sources["vag-wiki-community-technical-hub"]
         rights = source["rights"]
