@@ -47,8 +47,9 @@ class AstraChTasDesktopIntegrationTests(unittest.TestCase):
         self.assertIn("actions/download-artifact@v4", workflow)
         self.assertIn("scripts/integrate-astra-ch-tas-run72.cjs", workflow)
         self.assertIn("node scripts/verify-astra-ch-tas-pack.cjs", workflow)
-        self.assertIn("astra-summary", workflow)
-        self.assertIn("dataset=astra&q=1XZ904", (ROOT / "scripts/integrate-astra-ch-tas-run72.cjs").read_text(encoding="utf-8"))
+        integration = (ROOT / "scripts/integrate-astra-ch-tas-run72.cjs").read_text(encoding="utf-8")
+        self.assertIn("astra-summary", integration)
+        self.assertIn("dataset=astra&q=1XZ904", integration)
 
     def test_integration_script_patches_ui_api_and_lifecycle(self):
         script = (ROOT / "scripts/integrate-astra-ch-tas-run72.cjs").read_text(encoding="utf-8")
