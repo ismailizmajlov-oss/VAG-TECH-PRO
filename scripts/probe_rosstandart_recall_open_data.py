@@ -68,7 +68,7 @@ def _candidate_link(base_url: str, link: dict[str, str]) -> dict[str, str] | Non
     text = link.get("text", "").strip()
     href = absolute.lower()
     signal = (
-        re.search(r"\\.(csv|zip|7z|rar|xml|json|xlsx?|ods)(?:$|[?#])", href) is not None
+        re.search(r"\.(csv|zip|7z|rar|xml|json|xlsx?|ods)(?:$|[?#])", href) is not None
         or any(token in text.lower() for token in ("скачать", "download", "архив", "выгруз", "csv", "xml", "json"))
         or "opendata" in href and "archive" in href
     )
