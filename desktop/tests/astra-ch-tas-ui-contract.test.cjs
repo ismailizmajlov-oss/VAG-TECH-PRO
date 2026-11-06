@@ -17,6 +17,6 @@ test("ASTRA CH research tab is separate and visibly rejects RU/EAEU and factory-
   assert.match(api, /astraResearch\.getAstraSummary/);
   assert.match(api, /astraResearch\.searchAstraApprovals/);
   assert.match(lifecycle, /dataset=astra-summary/);
-  assert.match(lifecycle, /dataset=astra&q=1XZ904/);
+  assert.match(lifecycle, /dataset=astra\?q=1XZ904/);
   assert.match(lifecycle, /ASTRA offline CH approval search passed/);
 });
