@@ -1144,6 +1144,24 @@ jobs:
           }
           "desktop_types_fix=run76; source_revision_state=restored; ASTRA_research_row_types=deduplicated; contract_test=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Fix PowerShell lifecycle session output contamination (run77)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-windows-lifecycle-output-fix-run77.cjs
+          node apply-windows-lifecycle-output-fix-run77.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-output-fix-run77.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run77 lifecycle output fix failed" }
+          node --test desktop-source/tests/windows-lifecycle-script-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/lifecycle-output-contract-run77.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run77 lifecycle contract tests failed" }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          foreach ($relative in @("scripts/windows-installer-lifecycle.ps1", "tests/windows-lifecycle-script-contract.test.cjs")) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          "lifecycle_session_output=single_session_object; BaseUrl_preserved; run77_contract=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
