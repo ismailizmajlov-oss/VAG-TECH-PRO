@@ -68,7 +68,7 @@
       "source_id": "eaeu-otts-unified-register-public-portal",
       "publisher": "Eurasian Economic Commission",
       "url": "https://portal.eaeunion.org/",
-      "legal_basis_url": "https://www.alta.ru/tamdoc/16kr0088/",
+      "legal_basis_url": "https://www.alta.ru/tamdoc/14kr0225/",
       "source_kind": "official_public_query_route_for_eaeu_vehicle_type_approval_register",
       "market_scope": [
         "EAEU"
@@ -127,7 +127,8 @@
             "https://www.interstandart.ru/page/fgis_01",
             "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf"
           ],
-          "review_date": "2026-11-06"
+          "review_date": "2026-11-06",
+          "reference_url": "https://www.alta.ru/tamdoc/14kr0225/"
         },
         "historical_machine_readable_export_limitation": {
           "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
@@ -248,7 +249,8 @@
         "target_xsd_retrieved": false
       },
       "data_ingested": false,
-      "source_revision": "Decision 88 / R.TR.TS.07.001 v1.0.0"
+      "source_revision": "Decision 88 / R.TR.TS.07.001 v1.0.0",
+      "schema_basis_url": "https://www.alta.ru/tamdoc/16kr0088/"
     },
     {
       "source_id": "gor3a-vehicle-makes-models-odbl",
