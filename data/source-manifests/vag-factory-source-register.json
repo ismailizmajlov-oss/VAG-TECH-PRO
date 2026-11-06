@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06T05:15:44Z",
+  "updated_at": "2026-11-06T07:32:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1989,21 +1989,47 @@
         "The elpts.ru page identifies a national part of the unified OTTS/OTSH/SBKTS register, but no dataset-specific open licence or terms granting bulk extraction, offline SQLite caching, third-party display or redistribution were found.",
         "Do not treat an SBKTS record as an OTTS record; document type and issuing authority must remain explicit.",
         "An OTTS is type-approval evidence only to the extent stated in the document; it does not establish individual VIN build data, ECU/DTC, wiring, repair applicability or an exact engine/gearbox pairing unless the primary document explicitly ties those values together.",
-        "A distinct OTTS page was observed on 2026-11-06; its rendered total label is a UI observation under visible date filters, not a verified full-corpus count or permission to extract records."
+        "A distinct OTTS page was observed on 2026-11-06; its rendered total label is a UI observation under visible date filters, not a verified full-corpus count or permission to extract records.",
+        "The 2026-11-06 public OTTS page snapshot exposed only document identity/status and applicant/manufacturer/certification metadata in its visible table; it did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. Underlying approval attachments were not downloaded or inspected."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "official ELPTS public OTTS/OTSH/SBKTS pages rechecked 2026-11-06; public query visibility observed but no dataset-specific reuse rights or bulk API established; see docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-06.md",
+      "evidence_status": "official ELPTS OTTS page rechecked 2026-11-06; visible metadata columns and active date-filter state recorded; no dataset-specific reuse rights, bulk API or powertrain fields in the visible table established; no records downloaded",
       "public_page_observations": {
         "observed_at": "2026-11-06",
         "ot_ts": {
           "url": "https://docs.elpts.ru/ncher/otts",
           "page_title": "ОТТС",
+          "observed_at": "2026-11-06",
           "visible_total_label": "Всего оформлено: 14822",
           "visible_date_filters": [
-            "04.11.2026",
-            "05.11.2026"
+            "05.11.2026",
+            "06.11.2026"
           ],
-          "count_interpretation": "UI observation only; not a verified complete-corpus count"
+          "search_result_label": "Найдено: []",
+          "filtered_result_count": 0,
+          "visible_columns": [
+            "Регистрационный номер одобрения",
+            "Марка транспортного средства",
+            "Тип транспортного средства",
+            "Статус",
+            "Дата начала срока действия",
+            "Дата окончания срока действия",
+            "Наименование заявителя",
+            "Наименование изготовителя",
+            "Наименование органа по сертификации",
+            "Экологический класс",
+            "Учетный номер бланка титульного листа",
+            "Учетные номера бланков приложений",
+            "Учетные номера бланков дополнительных листов",
+            "Печатная форма ОТТС (ОТШ)"
+          ],
+          "public_table_exposes_engine_code": false,
+          "public_table_exposes_gearbox_code": false,
+          "public_table_exposes_engine_gearbox_pair": false,
+          "public_table_exposes_ecu": false,
+          "count_interpretation": "The visible total is a UI label, not a verified complete-corpus count. The active date filter returned zero rows in the indexed page snapshot; this does not imply the register is empty.",
+          "technical_scope": "document_identity_and_registry_status_metadata_only",
+          "rights_effect": "none; public visibility does not establish bulk export, automated extraction, offline cache, commercial display or redistribution rights"
         },
         "ot_sh": {
           "url": "https://docs.elpts.ru/ncher/otsh",
