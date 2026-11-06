@@ -2817,6 +2817,101 @@
           "evidence": "Editorial policy lines 110-127 describe claim-specific evidence requirements and clarify that a cited source does not grant reproduction rights."
         }
       ]
+    },
+    {
+      "source_id": "kazakhstan-techreg-otts-public-registry",
+      "publisher": "TechReg / KEZEKTE.KZ; public pages identify the Committee of Technical Regulation and Metrology of the Ministry of Trade and Integration of the Republic of Kazakhstan and the National Accreditation Center",
+      "url": "https://techreg.kezekte.kz/ru/cert/ot-registry/old/list",
+      "current_registry_url": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+      "project_information_url": "https://techreg.kezekte.kz/kz/cert/info",
+      "source_kind": "kazakhstan_national_vehicle_type_approval_registry_public_query",
+      "source_revision": "public_query_observed_2026-11-06; no dataset release or API revision identified",
+      "market_scope": [
+        "KZ",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "observed_claims": {
+        "legacy_registry_visible_record_count": 273,
+        "current_registry_visible_record_count_from_stale_search_snapshot": 0,
+        "legacy_registry_page_fields": [
+          "registration number",
+          "issue date",
+          "registry-entry date",
+          "form number",
+          "validity dates",
+          "make",
+          "commercial name",
+          "certification body",
+          "applicant and address"
+        ],
+        "detailed_record_fields_observed": [
+          "approval number",
+          "validity dates",
+          "number of pages",
+          "manufacturer representative",
+          "assembly plant",
+          "vehicle equipment",
+          "VIN section"
+        ],
+        "note": "The 273 count is the visible total on the legacy list page reviewed 2026-11-06. The 0 count for the new list comes from a search-index snapshot last crawled about three weeks earlier and is not treated as a current count."
+      },
+      "rights": {
+        "dataset_license": "not_found",
+        "permission_status": "not_obtained",
+        "public_query_visibility": "observed",
+        "bulk_export_allowed": "not_established",
+        "automated_extraction_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "commercial_display_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "operator_and_rightsholder_identity": "not_independently_confirmed",
+        "permission_evidence": null
+      },
+      "applicability": {
+        "market_scope": "Kazakhstan national register; EAEU TR TS 018/2011 context",
+        "applicability_precision": "type_approval_document_metadata_only",
+        "exact_vag_vehicle_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_repair_applicability": false,
+        "russian_market_scope": false
+      },
+      "verification_status": "public_query_observed_rights_and_operator_scope_unverified",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "project_decision": "discovery_only. Do not automate, bulk extract, cache, bundle, display or redistribute records until the system operator and applicable data rights are confirmed in writing. Do not infer VAG fitment from the register's general document metadata.",
+      "limitations": [
+        "The legacy list exposes 273 records, mostly older records; the reviewed page did not establish complete or current coverage.",
+        "The new list returned a zero-record search-index snapshot with a crawl date about three weeks before this review; it is not a current corpus count.",
+        "No dataset-specific open licence, API contract or permission for offline caching, bulk export, third-party display or redistribution was identified.",
+        "The exact system operator and the legal relationship between the portal and the named government bodies were not independently confirmed.",
+        "The list metadata does not provide exact VAG engine codes, gearbox codes, ECU identifiers, DTCs or repair applicability.",
+        "Detailed record pages may contain VIN-related fields and applicant/contact details; privacy and data-minimisation review is required before any future processing.",
+        "No VAG-specific record was independently identified in the returned search sample."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://techreg.kezekte.kz/ru/cert/ot-registry/old/list",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Search-indexed legacy list shows 273 records and document metadata fields."
+        },
+        {
+          "url": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Search-indexed new list snapshot shows zero records; source crawl is not current and count is not treated as authoritative."
+        },
+        {
+          "url": "https://techreg.kezekte.kz/ru/cert/old/view/269",
+          "reviewed_at": "2026-11-06",
+          "evidence": "A legacy detail page shows document dates, certification body, manufacturer/assembly details, equipment and a VIN section; no VAG fitment was established."
+        },
+        {
+          "url": "https://techreg.kezekte.kz/kz/cert/info",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Project-information search result identifies an electronic certification service, a National Accreditation Center contact route and Kazakhstan technical-regulation legal basis; ownership was not independently confirmed."
+        }
+      ]
     }
   ],
   "minimum_fitment_evidence_fields": [
