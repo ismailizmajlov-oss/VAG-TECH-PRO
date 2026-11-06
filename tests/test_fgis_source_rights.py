@@ -34,6 +34,14 @@ class FgisSourceRightsTests(unittest.TestCase):
         self.assertEqual(evidence["software_runtime"]["platform"], "IBM/HCL Domino")
         self.assertFalse(evidence["software_runtime"]["project_license_obtained"])
 
+    def test_dynamic_faq_eligibility_wording_discrepancy_is_preserved(self):
+        faq = self.source["access"]["official_access_evidence"]["current_faq_review"]
+        self.assertEqual(faq["reviewed_at"], "2026-11-06")
+        self.assertIn("GOST 33670", " ".join(faq["confirmed_facts"]))
+        self.assertIn("internally inconsistent", faq["confirmed_facts"][1])
+        self.assertIn("requires written confirmation", faq["faq_revision_note"])
+        self.assertIn("GOST 33670 alone", " ".join(faq["not_established"]))
+
     def test_order_2038_public_search_is_distinct_from_bulk_reuse(self):
         publication = self.source["access"]["public_site_publication_contract"]
         self.assertTrue(publication["official_site_search_required"])
