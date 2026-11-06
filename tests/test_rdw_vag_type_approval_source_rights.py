@@ -20,7 +20,7 @@ class RdwEuVagTypeApprovalSourceRightsTests(unittest.TestCase):
         cls.manifest = json.loads((ROOT / "data/source-manifests/rdw-eu-vag-type-approval-open-data.json").read_text(encoding="utf-8"))
         cls.source = next(s for s in cls.register["sources"] if s["source_id"] == SOURCE_ID)
 
-    def test_live_probe_is_recorded_without_promoting_candidates(self):
+    def test_live_probe_and_filtered_pack_are_recorded_without_promoting_candidates(self):
         probe = self.manifest["probe"]
         sample = probe["sample_approval_scope"]
         self.assertEqual(probe["status"], "schema_and_exact_scope_verified")
@@ -33,7 +33,10 @@ class RdwEuVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertIsNone(self.source["source_snapshot_sha256"])
         self.assertFalse(self.source["product_import_allowed"])
         self.assertFalse(self.source["data_ingested"])
-        self.assertEqual(self.source["verification_status"], "rights_cleared_live_schema_and_exact_scope_probe_passed_research_only")
+        self.assertEqual(self.source["verification_status"], "rights_cleared_filtered_research_pack_built_research_only_not_oem_fitment")
+        self.assertIn("Run 11 built a separate CC0 NL-only research pack", self.source["project_decision"])
+        self.assertFalse(self.source["applicability"]["production_fitment"])
+        self.assertFalse(self.source["applicability"]["ru_eaeu_applicability"])
 
     def test_published_cc0_rights_cover_offline_reuse_and_redistribution(self):
         rights = self.source["rights"]
