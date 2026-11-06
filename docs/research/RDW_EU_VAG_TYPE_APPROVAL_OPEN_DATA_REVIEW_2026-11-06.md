@@ -94,3 +94,27 @@ An independent read-only audit of the artifact found 93,548 approval scopes with
 The pack remains NL-only and `verified_research_only`. RDW Motorcode values remain candidates, not OEM-confirmed VAG engine codes; gearbox values remain classifications, not VAG gearbox codes. No model year, generation, individual-vehicle fitment, ECU/DTC/repair applicability or RU/EAEU applicability is inferred. Product import is false and the pack is not integrated into the desktop installer.
 
 Run 11 predates the latest RDW query-spec and source-column provenance changes. The current builder also adds a foreign key from each source row to its source-file artifact, verifies row-by-row parity between canonical JSONL snapshots and SQLite row hashes, and emits aggregate scope-overlap/ambiguity metrics without creating pair records. These latest integrity changes require a new successful build; the run-11 artifact is historical evidence and must not be described as validated by the newer checks.
+
+
+## Filtered research pack audit — run 34, 2026-11-06
+
+The separate Windows RDW pack workflow completed successfully: [run 34](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42304030420), source commit `9e6af32a74807a8f85c8846f29f549d2b0160431`.
+
+- Artifact ID: `13548640460`; ZIP SHA-256: `157fb4ad67153c05bff64e2d4fed71d48c50d181f992a927414cb158b0ebe41b`; size: 148,741,631 bytes.
+- Pack manifest SHA-256: `e0feecf32b85b9fd5152134189676b530eac7dbab6614c274759817e3e99d095`.
+- Pinned RDW source manifest SHA-256: `c4b45564b97407febeee8f8ce64de2a5a6acb8dbf2f75f4877f40911bc9104a8`.
+- SQLite database: 404,602,880 bytes; SHA-256: `7bf620549d046a3324b7e6d31b8cfb40f88e1d326e260fd88691060f4111f418`.
+- Six filtered JSONL snapshots: aggregate SHA-256 `896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706`; 604,785 source rows; 96,519 exact approval/variant/version/revision scopes; 102,662 registration observations; 93,836 engine-designation candidates; 93,548 gearbox classifications; 314,739 auxiliary rows.
+- The artifact manifest SHA-256 is `e0feecf32b85b9fd5152134189676b530eac7dbab6614c274759817e3e99d095`; the license text SHA-256 is `50433783ab62c96cc94ee2d8893350307edcaa3b532bd94a04c8b085ee10cdaa`; courtesy attribution SHA-256 is `2504d2ff8d9b8096e79fd8dbd9db76e4f56aa237a820b92a541dd061fd897361`.
+
+An independent read-only audit of the downloaded run-34 artifact verified the artifact ZIP hash, pack-manifest hash, source-manifest hash, SQLite database hash/size, all six source-file hashes/byte sizes/JSONL row counts, per-dataset source-row parity, source-file provenance metadata, SQLite `integrity_check=ok`, and zero foreign-key violations. The eight expected tables were present. No table name contains `pair`; all approval scopes are NL-only, with zero model-year values, zero generation values, zero exact-vehicle-fitment flags and zero RU/EAEU applicability flags. The selected JSONL fields contain no VIN, registration plate, holder, owner, address or personal-data columns.
+
+The run-34 builder reports 93,548 scopes with both an engine-designation row and a gearbox-classification row, 190 engine-only scopes, 98 scopes with multiple engine rows, 908 distinct engine-designation strings and four gearbox-classification values. These are separate-scope coverage diagnostics only; they do not create or confirm engine/gearbox pairs. RDW `motorcode` remains an engine-designation candidate, not an OEM-confirmed VAG engine code; `codetypeversnellingsbak` remains a classification, not a VAG gearbox code.
+
+### Desktop integration attempt and correction
+
+Windows desktop validation [run 400](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42307911427) downloaded the run-34 artifact but failed before NSIS packaging. The integration script expected `manifest.database.file`, while the actual, hash-pinned run-34 manifest uses `manifest.database.path`. The failure occurred at the database path resolution boundary; it did not import RDW records into the production technical catalog and did not produce a new installer/lifecycle result.
+
+The integration code now reads the manifest's `database.path`, rejects missing or root-escaping paths, and returns the pinned relative path for the desktop manifest. A regression test covers the current `path` field, missing/legacy `file` fields and path traversal. Changes are in commits `93d9506ca74139cf561a04a6ebb2563fcedf4ccb`, `4b156b5e42f4d03812a8f0515d38d1a4e8a3159d` and `ddac5d9d01425bb24690ccecf7765991db7ed70c`. **A fresh successful Windows desktop run is still required** before the pack can be described as integrated or included in a verified installer.
+
+The run-34 pack remains NL-only and `verified_research_only`. It is not RU/EAEU OTTS, does not establish production fitment, and does not provide ECU, DTC, test-plan, repair, wiring, pinout, torque, adaptation or service-schedule data. Production import remains false.
