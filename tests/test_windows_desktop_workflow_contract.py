@@ -7,10 +7,24 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml"
+NATIVE_WORKFLOW = ROOT / ".github" / "workflows" / "windows-10-11-native-lifecycle.yml"
 
 
 def main() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
+    native_text = NATIVE_WORKFLOW.read_text(encoding="utf-8")
+    status_retry_contract = (
+        "$published = $false",
+        "for ($attempt = 1; $attempt -le 5; $attempt++)",
+        "git fetch origin main",
+        "git rebase origin/main",
+        "git push origin HEAD:main",
+        "Status publication attempt $attempt lost a concurrent main update",
+        "Could not publish the Windows validation status record after five concurrent-update retries.",
+    )
+    missing_status_retry = [marker for marker in status_retry_contract if marker not in native_text]
+    if missing_status_retry or "git pull --rebase origin main" in native_text:
+        raise SystemExit(f"Native Windows status recorder must retry concurrent main updates safely: {missing_status_retry}")
     marker = "  windows-2022-lifecycle:\n"
     if marker not in text:
         raise SystemExit("Windows Server 2022 lifecycle job is missing")
