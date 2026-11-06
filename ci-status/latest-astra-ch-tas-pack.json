@@ -1,54 +1,54 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-05T19:43:57Z",
+  "recorded_at_utc": "2026-11-06T06:16:16.4452113Z",
   "workflow": "Acquire and validate official ASTRA CH TAS VAG research pack",
-  "run_id": 42091150760,
-  "run_number": 20,
+  "run_id": 42172112689,
+  "run_number": 21,
   "run_attempt": 1,
-  "run_status_at_record": "completed",
-  "run_conclusion_at_record": "success",
+  "run_status_at_record": "in_progress",
+  "run_conclusion_at_record": null,
   "build_job_result": "success",
-  "head_sha": "3d432ec2e52ed29d705ea3f458c1bc2acef62ea7",
+  "head_sha": "45b86a0b869c42f135a6c89ab59e877204bb0b65",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42091150760",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42172112689",
   "jobs": [
     {
-      "id": 127473391851,
+      "id": 127742108397,
       "name": "probe-and-build",
       "status": "completed",
       "conclusion": "success",
-      "runner_name": "GitHub Actions 1000001312",
-      "started_at": "2026-11-05T19:16:51Z",
-      "completed_at": "2026-11-05T19:30:42Z"
+      "runner_name": "GitHub Actions 1000001596",
+      "started_at": "2026-11-06T06:04:07Z",
+      "completed_at": "2026-11-06T06:16:06Z"
     },
     {
-      "id": 127481121049,
+      "id": 127746066389,
       "name": "Record pack build, rights, scope and artifact evidence",
       "status": "in_progress",
       "conclusion": null,
-      "runner_name": "GitHub Actions 1000001324",
-      "started_at": "2026-11-05T19:30:45Z",
+      "runner_name": "GitHub Actions 1000001601",
+      "started_at": "2026-11-06T06:16:08Z",
       "completed_at": null
     }
   ],
   "artifacts": [
     {
-      "id": 13447116349,
-      "name": "astra-ch-tas-vag-schema-probe",
-      "size_in_bytes": 32967,
-      "digest": "sha256:5beddf70656a5edb294d4fd0b17632ad3e92532cabf42d32413e432d5d508eee",
+      "id": 13482038286,
+      "name": "astra-ch-tas-vag-open-data-pack",
+      "size_in_bytes": 10166333,
+      "digest": "sha256:8179a3915eab73f1747f88420911b7a1015f147cbf79ab24047c5bb5b3a13f9d",
       "expired": false,
-      "created_at": "2026-11-05T19:30:38Z",
-      "expires_at": "2026-12-05T19:30:37Z"
+      "created_at": "2026-11-06T06:16:02Z",
+      "expires_at": "2027-02-04T06:04:06Z"
     },
     {
-      "id": 13446731961,
-      "name": "astra-ch-tas-vag-open-data-pack",
-      "size_in_bytes": 10161939,
-      "digest": "sha256:14357302d6a548dace0df1a8170709fd1b23092947bd28d71851be4470b78c85",
+      "id": 13481749260,
+      "name": "astra-ch-tas-vag-schema-probe",
+      "size_in_bytes": 32967,
+      "digest": "sha256:41d424b51ac971e9ce4f7c3865e823ed325ea7fe606627ad9411d21f2cf81283",
       "expired": false,
-      "created_at": "2026-11-05T19:30:36Z",
-      "expires_at": "2027-02-03T19:09:20Z"
+      "created_at": "2026-11-06T06:16:03Z",
+      "expires_at": "2026-12-06T06:16:02Z"
     }
   ],
   "source_id": "astra-fedro-tas-type-approvals-open-data-ch",
@@ -65,23 +65,5 @@
   "probe_artifact_present": true,
   "pack_ready": true,
   "release_ready": false,
-  "release_readiness_note": "Separate CH-only homologation research pack; never RU/EAEU fitment, VAG gearbox-code confirmation or repair applicability.",
-  "pack_validation": {
-    "artifact_sha256": "14357302d6a548dace0df1a8170709fd1b23092947bd28d71851be4470b78c85",
-    "source_snapshot_sha256": "3e7e8eec0ed54bea68bd7d2fbe612a5af1c34bb69a53484ad49319348a076510",
-    "database_sha256": "f3ac6a38e6fd0b3332fc4f94167376c8cbd74b8e65f406acd2b195a42c3b9b7b",
-    "database_integrity_check": "ok",
-    "foreign_key_check": "ok",
-    "market_scope": [
-      "CH"
-    ],
-    "approval_rows": 45215,
-    "emissions_gearbox_rows": 53414,
-    "linked_scope_rows": 33909,
-    "exact_scope_links": 5420,
-    "wildcard_scope_links": 28489,
-    "unlinked_scope_rows": 19505,
-    "production_import": false,
-    "ru_eaeu_applicability": false
-  }
+  "release_readiness_note": "Separate CH-only homologation research pack; never RU/EAEU fitment, VAG gearbox-code confirmation or repair applicability."
 }
