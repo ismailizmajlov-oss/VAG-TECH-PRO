@@ -60,6 +60,16 @@ def main() -> None:
     apply_text = (ROOT / "apply-desktop-hardening-run35.cjs").read_text(encoding="utf-8")
     if "sourceRegisterVerifierPath" not in apply_text or "sourceRegisterTestPath" not in apply_text:
         raise SystemExit("Windows build does not generate the source-register afterPack verifier and tests")
+    lifecycle_patch_markers = (
+        "windows-installer-lifecycle.ps1",
+        "Start-DesktopAndWait must not leak diagnostic text",
+        "System.Collections.IDictionary",
+        "windows-lifecycle-script-contract.test.cjs",
+        "incidental pipeline output",
+    )
+    missing_lifecycle_patch = [item for item in lifecycle_patch_markers if item not in apply_text]
+    if missing_lifecycle_patch:
+        raise SystemExit(f"Windows lifecycle return-pipeline regression patch is incomplete: {missing_lifecycle_patch}")
     sync_marker = "      - name: Sync current source-rights register into desktop payload"
     if sync_marker not in text:
         raise SystemExit("Windows build does not synchronize the authoritative source-rights register")
