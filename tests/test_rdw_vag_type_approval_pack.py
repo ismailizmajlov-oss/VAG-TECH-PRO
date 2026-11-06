@@ -225,6 +225,23 @@ class RDWVagTypeApprovalPackTests(unittest.TestCase):
             finally:
                 connection.close()
 
+    def test_safe_projection_rejects_forbidden_identity_fields_even_if_not_allowlisted(self):
+        with self.assertRaisesRegex(ValueError, "forbidden identity/personal-data field"):
+            MODULE.safe_projection(
+                {"merk": "VOLKSWAGEN", "kenteken": "XX-000-X"},
+                ["merk"],
+            )
+
+    def test_query_page_size_is_bounded(self):
+        with self.assertRaisesRegex(ValueError, "safe limit"):
+            MODULE.query_all(
+                "m9d7-ebf2",
+                select_fields=["merk"],
+                where="typegoedkeuringsnummer IS NOT NULL",
+                order="merk",
+                page_size=10001,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
