@@ -21,6 +21,16 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
         self.assertEqual(source["ingestion"]["production_fitment_rows_added"], 0)
         self.assertFalse(source["ingestion"]["publishable"])
 
+    def test_company_only_access_and_non_sublicensable_offline_distribution_gate(self):
+        source = self.source
+        self.assertEqual(source["reviewed_at"], "2026-11-06")
+        self.assertTrue(source["access"]["requires_company_access_request"])
+        self.assertTrue(source["access"]["requires_volkswagen_approval"])
+        self.assertTrue(source["access"]["approval_is_discretionary"])
+        self.assertEqual(source["contract"]["offline_distribution_of_cached_database"], "not_confirmed_requires_written_clarification")
+        self.assertFalse(source["cache_contract"]["redistributable_offline_pack_rights_confirmed"])
+        self.assertEqual(source["data_scope"]["market_scope"], "unknown_until_authenticated_country_list_is_observed")
+        self.assertEqual(len(source["evidence_reviewed"]), 4)
     def test_no_credentials_or_external_account_are_created(self):
         access = self.source["access"]
         self.assertTrue(access["requires_company_access_request"])

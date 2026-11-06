@@ -3,13 +3,15 @@
   "source_id": "volkswagen-okapi-product-catalog",
   "publisher": "Volkswagen AG",
   "source_type": "official_oem_product_configuration_api",
-  "reviewed_at": "2026-11-03",
+  "reviewed_at": "2026-11-06",
   "source_urls": {
     "api_base": "https://api.productdata.volkswagenag.com/v3",
     "developer_portal": "https://okapi-ddp.productdata.volkswagenag.com/dev-portal/",
     "terms": "https://productdata.volkswagenag.com/condition-of-use.html",
     "caching_guide": "https://productdata.volkswagenag.com/data-update.html",
-    "tutorial": "https://productdata.volkswagenag.com/tutorial.html"
+    "tutorial": "https://productdata.volkswagenag.com/tutorial.html",
+    "quick_start": "https://productdata.volkswagenag.com/quick-start.html",
+    "sign_up": "https://productdata.volkswagenag.com/sign-up.html"
   },
   "access": {
     "requires_company_access_request": true,
@@ -21,7 +23,7 @@
     "owner_action_required": true
   },
   "contract": {
-    "terms_revision": "published_terms_copyright_2019_reviewed_2026-11-03",
+    "terms_revision": "published_terms_copyright_2019_reviewed_2026-11-06",
     "data_owner": "Volkswagen AG",
     "grant": "non_exclusive_non_transferable_revocable_non_sublicensable",
     "registered_application_required": true,
@@ -83,5 +85,27 @@
     "Do not infer engine codes, gearbox codes, ECU, PR-code, repair procedure, or OEM parts applicability from a model/type label.",
     "Do not treat a buildable new-car configuration as proof of an existing vehicle's factory configuration.",
     "Do not claim RU or EAEU coverage until the authenticated country list explicitly confirms it."
+  ],
+  "evidence_reviewed": [
+    {
+      "url": "https://productdata.volkswagenag.com/condition-of-use.html",
+      "reviewed_at": "2026-11-06",
+      "evidence": "Sections I-III require company access request, Volkswagen approval at its discretion, and confidential client credentials; Section IV keeps ownership with Volkswagen, grants non-transferable/non-sublicensable rights for registered applications, but permits disclosure of Product Data to third parties subject to the terms; Section V says currently free but fees may be introduced."
+    },
+    {
+      "url": "https://productdata.volkswagenag.com/quick-start.html",
+      "reviewed_at": "2026-11-06",
+      "evidence": "Getting started says access is for companies only; credentials are issued after an access request and confirmation, then OAuth tokens are required."
+    },
+    {
+      "url": "https://productdata.volkswagenag.com/data-update.html",
+      "reviewed_at": "2026-11-06",
+      "evidence": "Official guide documents ETag/If-None-Match and X-Catalog-Content-Lastupdate headers for refreshing a cache in the registered application; it does not grant redistribution of a bundled offline database."
+    },
+    {
+      "url": "https://productdata.volkswagenag.com/tutorial.html",
+      "reviewed_at": "2026-11-06",
+      "evidence": "Country-specific endpoints expose brands, models, types and options; type/order responses may contain market-specific technical data, but public docs do not establish factory engine/gearbox codes or repair fitment."
+    }
   ]
 }
