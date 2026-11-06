@@ -2208,28 +2208,59 @@
         "monthly_updates": true
       },
       "field_status": {
-        "make_type_variant_version": "schema_probe_pending",
-        "engine_code": "schema_probe_pending",
-        "gearbox_code_and_variant_linkage": "schema_probe_pending",
-        "approval_number": "schema_probe_pending",
+        "make_type_variant_version": "confirmed_official_index_and_schema_v2",
+        "engine_type_designation": "official_source_field; not asserted to be a factory VAG engine code",
+        "stamped_engine_marking": "official_source_field; not asserted to be a factory VAG engine code",
+        "gearbox_code_and_variant_linkage": "Swiss gearbox classification; only explicit approval-scope exact/wildcard links retained",
+        "approval_number": "confirmed_official_source_field",
         "model_year": "not_assumed",
         "ecu_dtc_repair_content": "not_provided_by_this_source"
       },
       "applicability_policy": {
         "market_scope": "CH only",
         "approval_level": "type approval only",
-        "variant_version": "use only values explicitly present in the approval record",
-        "engine_gearbox_pair": "do not create a Cartesian product; preserve only explicit per-record or per-row linkage after schema verification",
-        "model_generation_year": "do not infer from approval number or first-registration date",
+        "variant_version": "exact raw variant/version composite retained; wildcard '*' remains non-exact",
+        "engine_gearbox_pair": "preserve only explicit per-record/per-row approval-scope links; no Cartesian product; Swiss gearbox class and engine type are not factory VAG codes",
+        "model_generation_year": "do not infer from approval number or approval date",
         "vin_fitment": false,
         "individual_vehicle_fitment": false,
         "repair_procedure_applicability": false,
         "diagnostic_execution_allowed": false,
         "production_fitment_status": "not_approved",
-        "research_pack_status": "schema_probe_pending"
+        "research_pack_status": "integrated_verified_separate_ch_research_only"
       },
       "project_decision": "approved for a separately namespaced CH homologation research pack after schema validation; never treat CH approvals as RU/EAEU approval or exact individual-vehicle fitment",
-      "evidence_status": "official ASTRA/FEDRO OGD newsletter, official ASTRA vehicle-data page, official open-data reuse FAQ and EMBAG Art.10 reviewed 2026-11-06"
+      "evidence_status": "official FEDRO/ASTRA OGD notice, official vehicle-data page and EMBAG Art.10 reviewed 2026-11-06; source snapshot 2026-10-29 independently built and SQLite/foreign-key/row-scope checks passed; pack is CH-only research and not RU/EAEU or repair fitment",
+      "data_ingested": true,
+      "ingestion_scope": "separate_read_only_CH_homologation_research_pack",
+      "ingestion": {
+        "pack_id": "astra-ch-tas-vag-open-data",
+        "market_scope": [
+          "CH"
+        ],
+        "source_revision": "2026-10-29",
+        "source_snapshot_sha256": "3e7e8eec0ed54bea68bd7d2fbe612a5af1c34bb69a53484ad49319348a076510",
+        "source_manifest_sha256": "ed24973210858fa63e48783df2efd4464b5943e7e57d62ec53660ac0ba7893d0",
+        "database_sha256": "e17ab55599263e5456b878922fe2fd99a3e90fd73f021c4642d09a3904287987",
+        "artifact_sha256": "14357302d6a548dace0df1a8170709fd1b23092947bd28d71851be4470b78c85",
+        "workflow_run_id": 42091150760,
+        "artifact_id": 13446731961,
+        "approval_rows": 45215,
+        "emissions_gearbox_rows": 53414,
+        "linked_scope_rows": 33909,
+        "exact_scope_links": 5420,
+        "wildcard_scope_links": 28489,
+        "unlinked_scope_rows": 19505,
+        "production_import": false,
+        "ru_eaeu_applicability": false,
+        "exact_vehicle_fitment": false,
+        "model_year_inferred": false,
+        "generation_inferred": false,
+        "engine_code_fitment": false,
+        "gearbox_code_fitment": false,
+        "ecu_dtc_repair_fitment": false
+      },
+      "last_verified_at_utc": "2026-11-06T00:00:00Z"
     },
     {
       "source_id": "automotive-9-vw-dtc-candidate",
