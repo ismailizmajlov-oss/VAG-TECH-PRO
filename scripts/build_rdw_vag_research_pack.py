@@ -25,6 +25,8 @@ REGISTRATION_ID = "m9d7-ebf2"
 MAKES = ["AUDI", "BENTLEY", "BUGATTI", "CUPRA", "LAMBORGHINI", "PORSCHE", "SEAT", "SKODA", "VOLKSWAGEN"]
 FORBIDDEN_TOKENS = ("kenteken", "vin", "houder", "tenaamstelling", "owner", "address", "postcode")
 PAGE_SIZE = 50000
+MAX_TOTAL_ROWS_PER_DATASET = 500000
+MAX_APPROVAL_NUMBERS = 50000
 APPROVAL_BATCH_SIZE = 20
 
 REGISTRATION_GROUP_FIELDS = [
@@ -188,6 +190,8 @@ def query_all(dataset_id: str, params: dict[str, str], page_size: int = PAGE_SIZ
                 raise ValueError(f"Non-object row in RDW dataset {dataset_id}")
             reject_forbidden_fields(row, dataset_id)
         result.extend(page)
+        if len(result) > MAX_TOTAL_ROWS_PER_DATASET:
+            raise ValueError(f"RDW {dataset_id} exceeded the {MAX_TOTAL_ROWS_PER_DATASET} row safety cap")
         if len(page) < page_size:
             break
         offset += len(page)
@@ -261,6 +265,8 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
     approval_numbers = sorted({key[0] for key in keys})
     if not approval_numbers:
         raise ValueError("RDW VAG registration observations contained no complete approval scope keys")
+    if len(approval_numbers) > MAX_APPROVAL_NUMBERS:
+        raise ValueError(f"RDW VAG approval-number scope exceeded safety cap: {len(approval_numbers)}")
 
     output: dict[str, list[dict[str, Any]]] = {"registration": registration_rows}
     for name, config in DATASETS.items():
