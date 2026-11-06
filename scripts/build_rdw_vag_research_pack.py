@@ -703,6 +703,7 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         "counts": counts,
         "scope_coverage": scope_coverage,
         "scope_coverage_semantics": SCOPE_COVERAGE_SEMANTICS,
+        "source_row_storage_policy": "canonical_jsonl_snapshots_external_and_sha256_verified; sqlite_source_rows_store_sha256_only",
         "market_scope": ["NL"],
         "approval_jurisdiction": "EU type-approval identifiers observed in Netherlands RDW datasets",
         "applicability_precision": "exact_RDW_approval_variant_version_revision_scope_or_approval_number_only",
@@ -808,6 +809,8 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             raise ValueError(f"RDW SQLite row counts differ from manifest: {expected}")
         if manifest.get("scope_coverage_semantics") != SCOPE_COVERAGE_SEMANTICS:
             raise ValueError("RDW scope-coverage semantics are missing or changed")
+        if manifest.get("source_row_storage_policy") != "canonical_jsonl_snapshots_external_and_sha256_verified; sqlite_source_rows_store_sha256_only":
+            raise ValueError("RDW source-row storage policy is missing or changed")
         expected_scope_coverage = compute_scope_coverage(db)
         if expected_scope_coverage != manifest.get("scope_coverage"):
             raise ValueError(f"RDW scope-coverage metrics differ from SQLite: {expected_scope_coverage}")
