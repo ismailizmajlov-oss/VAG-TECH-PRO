@@ -24,6 +24,19 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(source["license"]["bulk_export"], "not_confirmed")
         self.assertEqual(source["license"]["pdf_redistribution"], "not_confirmed")
 
+    def test_fgis_software_access_is_not_a_data_reuse_license(self):
+        source = self.sources["rosstandart-fgis-reestr-kts"]
+        access = source["access_details"]
+        self.assertTrue(access["software_request"]["formal_application_required"])
+        self.assertIn("TR TS 018/2011", access["software_request"]["accreditation_scope_as_listed_in_main_faq"])
+        self.assertIn("GOST 33670", access["software_request"]["accreditation_scope_in_consolidated_page_text"])
+        self.assertIn("unresolved", access["software_request"]["eligibility_wording_discrepancy"])
+        self.assertEqual(access["software_runtime"]["platform"], "IBM/HCL Domino")
+        self.assertFalse(access["software_runtime"]["project_license_obtained"])
+        self.assertIn("does not grant", access["rights_boundary"])
+        self.assertFalse(source["data_ingested"])
+        self.assertEqual(source["status"], "permission_required")
+
     def test_public_annex2_and_internal_annex1_field_numbers_are_separate(self):
         source = self.sources["rosstandart-fgis-reestr-kts"]
         contract = source["publication_contract"]
