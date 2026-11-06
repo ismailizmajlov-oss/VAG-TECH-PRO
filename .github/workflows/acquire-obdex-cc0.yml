@@ -138,15 +138,17 @@ jobs:
           const mode09 = readJson("mode09.json");
           const meta = readJson("meta.json");
           const license = readBytes("UPSTREAM-LICENSE.txt").toString("utf8");
-          const expectedGenericRanges = ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx","U3xxx"];
+          const expectedGenericRanges = ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx"];
           const expectedExcludedRanges = ["P1xxx","P30xx-P33xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"];
+          const expectedQuarantinedRanges = ["U3xxx"];
           if (
             JSON.stringify(sourceManifest.scope.generic_code_ranges) !== JSON.stringify(expectedGenericRanges) ||
-            JSON.stringify(sourceManifest.scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(expectedExcludedRanges)
+            JSON.stringify(sourceManifest.scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(expectedExcludedRanges) ||
+            JSON.stringify(sourceManifest.scope.excluded_mixed_or_reserved_ranges) !== JSON.stringify(expectedQuarantinedRanges)
           ) {
             throw new Error("OBDex source lock code-range policy mismatch");
           }
-          const allowedPrefixes = new Set(["P0","P2","B0","C0","U0","U3"]);
+          const allowedPrefixes = new Set(["P0","P2","B0","C0","U0"]);
           const p3GenericCode = /^P3[4-9][0-9A-F]{2}$/;
           const isGenericDtc = (code) =>
             /^[PBCU][0-3][0-9A-F]{3}$/.test(code) &&
@@ -175,19 +177,32 @@ jobs:
             return [];
           };
           const dtcSeen = new Set();
-          const dtcs = generic.map((row) => {
+          const quarantinedDtcRows = [];
+          const dtcs = [];
+          for (const row of generic) {
             const safeSourceReferences = quarantineSourceReferences(row);
             const code = String(row?.code ?? "").trim().toUpperCase();
+            const rawHash = sha256(Buffer.from(JSON.stringify(row)));
+            if (/^U3[0-9A-F]{3}$/.test(code)) {
+              quarantinedDtcRows.push({
+                code,
+                namespace: "manufacturer_controlled_or_iso_sae_reserved",
+                reason: "SAE J2012 classifies U3xxx as manufacturer-controlled and ISO/SAE-reserved; this snapshot does not prove a code-level generic assignment.",
+                source_record_sha256: rawHash,
+                source_references: safeSourceReferences,
+                raw_record: row
+              });
+              continue;
+            }
             if (!isGenericDtc(code)) {
-              throw new Error("Non-generic or manufacturer-controlled DTC in OBDex projection: " + code);
+              throw new Error("Non-generic or manufacturer-controlled DTC in OBDex generic projection: " + code);
             }
             if (dtcSeen.has(code)) throw new Error("Duplicate OBDex DTC: " + code);
             dtcSeen.add(code);
             if (!row.title || typeof row.title.en !== "string" || row.title.en.trim().length < 3) {
               throw new Error(code + ": missing English title");
             }
-            const rawHash = sha256(Buffer.from(JSON.stringify(row)));
-            return {
+            dtcs.push({
               code,
               namespace: "generic_sae_iso_obd2",
               category: row.category ?? null,
@@ -205,9 +220,11 @@ jobs:
               vehicle_fitment_claim: false,
               source_record_sha256: rawHash,
               raw_record: row
-            };
-          });
-          if (dtcs.length !== 9533) throw new Error("Expected 9,533 generic DTCs, received " + dtcs.length);
+            });
+          }
+          if (generic.length !== 9533 || dtcs.length !== 9359 || quarantinedDtcRows.length !== 174) {
+            throw new Error("OBDex namespace partition mismatch: upstream=" + generic.length + ", generic=" + dtcs.length + ", quarantined=" + quarantinedDtcRows.length);
+          }
 
           function normalizePids(rows, mode) {
             const seen = new Set();
@@ -268,6 +285,7 @@ jobs:
               dtc_namespace: "generic_sae_iso_obd2",
               pid_modes: [1,9],
               manufacturer_specific_codes_included: false,
+              quarantined_mixed_or_reserved_families: ["U3xxx"],
               exact_vag_fitment: false,
               repair_procedures_or_pinouts_included: false
             },
@@ -275,11 +293,13 @@ jobs:
               generic_dtcs: dtcs.length,
               mode01_pids: mode01.length,
               mode09_pids: mode09.length,
-              rejected_dtc_rows: 0,
+              rejected_dtc_rows: quarantinedDtcRows.length,
               rejected_pid_rows: 0
             },
             warnings: [
               "Generic SAE/ISO OBD-II reference data only; not a VAG factory diagnostic corpus.",
+              "The 174 U3xxx entries are quarantined because U3xxx is a mixed manufacturer-controlled / ISO/SAE-reserved family, not a blanket generic namespace.",
+              "P30xx-P33xx are manufacturer-controlled; P34xx-P39xx are retained only in the SAE/ISO-controlled or reserved range.",
               "Do not map generic code descriptions to a VAG ECU, engine, gearbox or model without separate evidence.",
               "Descriptions and causes are unreviewed source content, not verified repair instructions.",
               "No record asserts vehicle fitment or exact diagnostic procedure applicability.",
@@ -287,7 +307,7 @@ jobs:
             ],
             generic_dtcs: dtcs,
             pids,
-            rejected: { dtcs: [], pids: [] }
+            rejected: { dtcs: quarantinedDtcRows, pids: [] }
           };
           const packageBytes = Buffer.from(JSON.stringify(packageData,null,2) + "\n");
           fs.writeFileSync(path.join(root,"obdex-generic-review.json"),packageBytes);
@@ -356,9 +376,11 @@ jobs:
             const foreignKeys=db.prepare("PRAGMA foreign_key_check").all();
             const dtcCount=db.prepare("SELECT COUNT(*) n FROM generic_dtc_research").get().n;
             const pidCount=db.prepare("SELECT COUNT(*) n FROM generic_pid_research").get().n;
-            if(integrity!=="ok"||foreignKeys.length!==0||dtcCount!==9533||pidCount!==132) {
+            if(integrity!=="ok"||foreignKeys.length!==0||dtcCount!==9359||pidCount!==132) {
               throw new Error("SQLite post-import validation failed");
             }
+            const genericNamespaceViolations = db.prepare("SELECT COUNT(*) n FROM generic_dtc_research WHERE code LIKE 'U3%' OR code GLOB 'P3[0-3]???'").get().n;
+            if (genericNamespaceViolations !== 0) throw new Error("Manufacturer-controlled or mixed DTC family leaked into the generic SQLite namespace");
             const report={
               status:"validated_research_only",
               database:path.basename(dbPath),
@@ -369,6 +391,9 @@ jobs:
               integrity_check:integrity,
               foreign_key_violations:foreignKeys.length,
               generic_dtcs:dtcCount,
+              upstream_dtc_rows:generic.length,
+              quarantined_dtc_rows:quarantinedDtcRows.length,
+              quarantined_u3xxx_rows:quarantinedDtcRows.length,
               pids:pidCount,
               vag_specific_dtc_rows:0,
               fitment_claims:0,
