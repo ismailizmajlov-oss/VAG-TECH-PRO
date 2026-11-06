@@ -2615,6 +2615,190 @@
         "Schema metadata does not grant reuse rights to underlying vehicle approval records."
       ],
       "evidence_status": "Official EAEU structure-registry landing page observed in search index on 2026-11-06; direct fetch timed out; no XSD package downloaded"
+    },
+    {
+      "source_id": "samworld-vag-gearbox-code-database",
+      "publisher": "Sam's VW World (privately operated independent website)",
+      "url": "https://samworld.de/wissen/gkb/",
+      "terms_url": "https://samworld.de/nutzbed.php",
+      "source_kind": "independent_vag_gearbox_code_reference_directory",
+      "source_revision": "terms_stand_2026-09-23; public directory observed 2026-11-06",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "observed_claims": {
+        "directory_title": "VAG Getriebekennbuchstaben",
+        "brand_record_count": 4534,
+        "unique_gearbox_code_count": 3489,
+        "codes_used_by_multiple_brands": 565,
+        "records_with_gear_data": 701,
+        "make_record_counts": {
+          "VW": 2539,
+          "Audi": 798,
+          "SEAT": 548,
+          "Skoda": 649
+        },
+        "note": "Counts and scope are website-published claims observed on the directory page; no records were downloaded or copied."
+      },
+      "rights": {
+        "dataset_license": "not_found",
+        "permission_status": "not_obtained",
+        "prior_consent_required_for_copying_publication_editing_or_commercial_use": true,
+        "bulk_automated_extraction_allowed": false,
+        "offline_cache_allowed": false,
+        "display_and_redistribution_allowed": false,
+        "commercial_reuse_allowed": false,
+        "terms_revision_date": "2026-09-23",
+        "evidence_url": "https://samworld.de/nutzbed.php",
+        "evidence_sections": [
+          "2. Inhalte & technische Angaben",
+          "5. Urheberrecht und Verwendung von Inhalten"
+        ],
+        "evidence_summary": "The terms state that the site's own texts, photographs, graphics, compilations and other content may not be reproduced, published, edited or used commercially beyond statutory permissions without prior consent; third-party rights remain with their owners."
+      },
+      "applicability": {
+        "manufacturer_scope": [
+          "Volkswagen",
+          "Audi",
+          "SEAT",
+          "Skoda"
+        ],
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "directory_code_reference_claim_only",
+        "exact_vehicle_fitment": false,
+        "model_generation_year_fitment": "not independently verified",
+        "engine_gearbox_pairing": false,
+        "ru_eaeu_scope": false
+      },
+      "verification_status": "quarantined_no_reuse_permission_or_record_level_provenance",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "project_decision": "manual discovery only. Do not scrape, bulk extract, cache, copy, bundle, display or redistribute records unless prior written permission explicitly covers the intended use and record-level provenance is established.",
+      "limitations": [
+        "The published counts are aggregate website claims, not independently reconciled records.",
+        "No open data licence or permission for VAG TECH PRO use was identified.",
+        "The terms require prior consent for copying, publication, editing and commercial use beyond statutory permissions.",
+        "No per-record primary source, source revision, SHA-256 or independent technical review was established.",
+        "No Russian/EAEU market scope or exact vehicle applicability was established.",
+        "Do not use the directory to confirm engine/gearbox pairing or service fitment."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://samworld.de/wissen/gkb/",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Directory lines 7-22 state the VAG gearbox-code scope and aggregate counts."
+        },
+        {
+          "url": "https://samworld.de/nutzbed.php",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Terms lines 15-18 and 27-30 describe technical-data limitations and require prior consent for reproduction, publication, editing and commercial use."
+        }
+      ]
+    },
+    {
+      "source_id": "enginecode-uk-vag-engine-code-directory",
+      "publisher": "Engine Finders UK Ltd / EngineCode.uk",
+      "url": "https://www.enginecode.uk/audi",
+      "related_urls": [
+        "https://www.enginecode.uk/volkswagen",
+        "https://enginecode.uk/seat",
+        "https://www.enginecode.uk/skoda"
+      ],
+      "terms_url": "https://www.enginecode.uk/terms-and-conditions",
+      "editorial_policy_url": "https://www.enginecode.uk/editorial-policy",
+      "source_kind": "commercial_secondary_vag_engine_code_reference",
+      "source_revision": "terms_and_editorial_policy_last_updated_2026-10-21; pages reviewed 2026-11-06",
+      "market_scope": [
+        "UK",
+        "EU"
+      ],
+      "observed_claims": {
+        "manufacturer_scope": [
+          "Audi",
+          "Volkswagen",
+          "SEAT",
+          "Skoda"
+        ],
+        "published_scope_claims": {
+          "audi": "1965-2026",
+          "volkswagen": "1937-2026"
+        },
+        "data_claims": [
+          "engine codes",
+          "technical specifications",
+          "compatible vehicle applications",
+          "emissions data"
+        ],
+        "stated_source_families": [
+          "Audi AG / Volkswagen Group technical documentation",
+          "EU regulatory records",
+          "VCA type approval records"
+        ],
+        "note": "These are publisher claims. Individual records were not retrieved or independently reconciled to the stated primary sources."
+      },
+      "rights": {
+        "dataset_license": "not_stated_for_database_content",
+        "permission_status": "not_obtained",
+        "copyright_or_database_rights_may_apply": true,
+        "commercial_reuse_allowed": "not_established",
+        "bulk_extraction_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "display_and_redistribution_allowed": "not_established",
+        "permission_contact": "copyrights@enginecode.uk",
+        "terms_url": "https://www.enginecode.uk/terms-and-conditions",
+        "terms_reviewed_at": "2026-11-06",
+        "terms_evidence": "sections 131-135 state that text, images, database material and other content may be protected by copyright, database rights or other rights; where no licence or permission is stated, unrestricted republication or commercial reuse must not be assumed.",
+        "editorial_policy_url": "https://www.enginecode.uk/editorial-policy",
+        "editorial_policy_evidence": "sections 110-127 require claim-specific evidence and state that using a source does not itself grant permission to reproduce images or text."
+      },
+      "applicability": {
+        "manufacturer_scope": [
+          "Audi",
+          "Volkswagen",
+          "SEAT",
+          "Skoda"
+        ],
+        "market_scope": "UK/EU publisher scope; no Russian/EAEU coverage established",
+        "applicability_precision": "secondary_engine_code_reference_claim_only",
+        "exact_vehicle_fitment": false,
+        "model_generation_year_fitment": "not independently verified per record",
+        "engine_gearbox_pairing": false,
+        "ru_eaeu_scope": false
+      },
+      "verification_status": "quarantined_no_reuse_license_and_no_record_level_primary_provenance",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "project_decision": "candidate discovery only. Do not copy, bulk extract, cache, bundle, display or redistribute database records unless written permission or a specific applicable licence is obtained and the individual record's primary evidence is reviewed.",
+      "limitations": [
+        "No database-specific open licence was found in the reviewed terms.",
+        "The terms explicitly state that database material may be protected and unrestricted republication/commercial reuse must not be assumed without a stated licence or permission.",
+        "The publisher's editorial policy distinguishes secondary material from direct manufacturer confirmation and acknowledges that not every historic record has completed a fresh technical audit.",
+        "Per-record source citations, source revisions and raw-document hashes were not established in this review.",
+        "The site is UK/Europe-focused; no Russian/EAEU market applicability was established.",
+        "Do not infer exact engine/vehicle fitment or engine/gearbox pairings from aggregate directory claims."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://www.enginecode.uk/audi",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Audi engine directory lines 102-117 describe published scope and claimed source families."
+        },
+        {
+          "url": "https://www.enginecode.uk/volkswagen",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Volkswagen engine directory lines 102-118 describe published scope and claimed source families."
+        },
+        {
+          "url": "https://www.enginecode.uk/terms-and-conditions",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Terms lines 131-135 state copyright/database-rights caveats and prohibit assuming unrestricted republication or commercial reuse without a stated licence or permission."
+        },
+        {
+          "url": "https://www.enginecode.uk/editorial-policy",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Editorial policy lines 110-127 describe claim-specific evidence requirements and clarify that a cited source does not grant reproduction rights."
+        }
+      ]
     }
   ],
   "minimum_fitment_evidence_fields": [
