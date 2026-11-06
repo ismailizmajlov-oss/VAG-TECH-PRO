@@ -21,7 +21,9 @@ class RosstandartRecallProbeTests(unittest.TestCase):
             {"href": "https://mirror.example/recalls.csv", "text": "Скачать CSV", "rel": "", "type": "text/csv"},
         )
         self.assertEqual(same_host["url"], "https://easy.gost.ru/files/recalls.csv")
-        self.assertIsNone(external)
+        self.assertTrue(same_host["same_official_host"])
+        self.assertEqual(external["url"], "https://mirror.example/recalls.csv")
+        self.assertFalse(external["same_official_host"])
 
     def test_html_parser_collects_license_and_download_links_without_fetching_them(self):
         parser = MODULE.LinkParser()
