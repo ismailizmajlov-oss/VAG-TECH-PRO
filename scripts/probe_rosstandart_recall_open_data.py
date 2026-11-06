@@ -63,18 +63,25 @@ class LinkParser(HTMLParser):
 def _candidate_link(base_url: str, link: dict[str, str]) -> dict[str, str] | None:
     absolute = urljoin(base_url, link["href"])
     parsed = urlparse(absolute)
-    if parsed.scheme not in {"http", "https"} or parsed.hostname != OFFICIAL_HOST:
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
         return None
     text = link.get("text", "").strip()
     href = absolute.lower()
     signal = (
         re.search(r"\\.(csv|zip|7z|rar|xml|json|xlsx?|ods)(?:$|[?#])", href) is not None
-        or any(token in text.lower() for token in ("скачать", "download", "архив", "выгруз"))
+        or any(token in text.lower() for token in ("скачать", "download", "архив", "выгруз", "csv", "xml", "json"))
         or "opendata" in href and "archive" in href
     )
     if not signal:
         return None
-    return {"url": absolute, "text": text[:300], "rel": link.get("rel", ""), "type": link.get("type", "")}
+    return {
+        "url": absolute,
+        "host": parsed.hostname,
+        "same_official_host": parsed.hostname == OFFICIAL_HOST,
+        "text": text[:300],
+        "rel": link.get("rel", ""),
+        "type": link.get("type", ""),
+    }
 
 
 def fetch_page(url: str) -> dict[str, object]:
