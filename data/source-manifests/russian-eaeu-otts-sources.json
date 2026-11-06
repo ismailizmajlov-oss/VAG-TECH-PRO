@@ -81,7 +81,8 @@
         "Do not use SBKTS personal data or package certificate PDFs without separate rights and privacy review.",
         "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
         "The 28 public Annex 2 search fields contain approval identifiers/status and vehicle identity descriptors (make, commercial name, type, base vehicle/chassis, modifications, category and environmental class), but no engine or gearbox technical designation/code, ECU, DTC, repair or wiring fields. The Annex 1 PDF reference is not a grant to cache or redistribute the PDF. Never infer an engine/gearbox pair from Annex 2 metadata.",
-        "The Annex 2 public-site search obligation reviewed in Order 2038 applies to electronically issued records; a metadata export using this public-search namespace must retain field 20 and must not silently treat a missing/false electronic-issuance flag as a publicly searchable record."
+        "The Annex 2 public-site search obligation reviewed in Order 2038 applies to electronically issued records; a metadata export using this public-search namespace must retain field 20 and must not silently treat a missing/false electronic-issuance flag as a publicly searchable record.",
+        "Interstandart's registry-software FAQ describes a formal application for accredited certification bodies or testing laboratories and requires licensed IBM/HCL Domino. The main FAQ lists TR TS 018/2011, while consolidated page text also lists GOST 33670; eligibility wording is inconsistent and requires written clarification. This software-access procedure is not a data-reuse license."
       ],
       "ot_ts_attribute_map": [
         {
@@ -386,7 +387,52 @@
         "review_date": "2026-11-06",
         "reference_url": "https://www.alta.ru/tamdoc/14kr0225/"
       },
-      "public_search_endpoint_status": "publication_obligation_established; exact public search endpoint not resolved"
+      "public_search_endpoint_status": "publication_obligation_established; exact public search endpoint not resolved",
+      "access_details": {
+        "source_url": "https://interstandart.ru/quest",
+        "reviewed_at": "2026-11-06",
+        "evidence_sections": [
+          "FGIS «Реестры КТС» FAQ, questions 1–2 (page lines 110–125)",
+          "IBM Domino licensing FAQ, question 2 (page lines 126–136)",
+          "Consolidated FAQ text on the same page (page lines 247–250; dynamic page text)"
+        ],
+        "software_request": {
+          "formal_application_required": true,
+          "eligible_organization_types": [
+            "accredited certification body",
+            "accredited testing laboratory"
+          ],
+          "accreditation_scope_as_listed_in_main_faq": [
+            "TR TS 018/2011"
+          ],
+          "accreditation_scope_in_consolidated_page_text": [
+            "TR TS 018/2011",
+            "GOST 33670"
+          ],
+          "eligibility_wording_discrepancy": "The main FGIS FAQ section (lines 110–116) lists TR TS 018/2011; consolidated page text (lines 247–250) adds GOST 33670. Whether GOST 33670 alone qualifies is unresolved and requires written confirmation.",
+          "stated_processing_time_business_days": [
+            2,
+            3
+          ],
+          "delivery_modes": [
+            "office pickup",
+            "courier",
+            "organization-addressed FTP/download link"
+          ],
+          "acceptance_act_provided": true
+        },
+        "software_runtime": {
+          "platform": "IBM/HCL Domino",
+          "licensed_runtime_required": true,
+          "third_party_domino_license_accepted": true,
+          "interstandart_license_lead_time_days": [
+            14,
+            60
+          ],
+          "project_license_obtained": false
+        },
+        "rights_boundary": "Receiving the registry software or being eligible to use it does not grant VAG TECH PRO a license to bulk export, persistently cache, display, redistribute or create a derivative database from registry records."
+      }
     },
     {
       "source_id": "eaeu-open-data-portal",
