@@ -124,6 +124,8 @@ function main() {
     counts: manifest.counts
   };
   source.evidence_status = "Live RDW metadata, filtered VAG snapshots, source-row joins, privacy exclusions and SQLite integrity reverified for this Windows desktop build; EU/NL candidate evidence only.";
+  register.updated_at = manifest.fetched_at_utc;
+  writeJson(registerRepo, register);
   fs.writeFileSync(path.join(pack, "source-lock.json"), lockBytes);
   writeJson(path.join(pack, "source-register.json"), {
     schema_version: 1,
@@ -149,6 +151,10 @@ function main() {
 
   copyFile(lockRepo, path.join(desktop, "data", "source-manifests", "rdw-vag-type-approval.lock.json"));
   copyFile(registerRepo, path.join(desktop, "data", "source-manifests", "vag-factory-source-register.json"));
+  run("python", [path.join(repo, "scripts", "sync_vag_source_register.py"), "--source", registerRepo, "--desktop-root", desktop], repo, process.env);
+  const sourceIndex = readJson(path.join(desktop, "data", "source-manifests", "source-manifest-index.json"));
+  const rdwLockEntry = (sourceIndex.files || []).find((item) => item.name === "rdw-vag-type-approval.lock.json");
+  if (!rdwLockEntry || rdwLockEntry.sha256 !== sha256File(lockRepo)) fail("RDW source lock is missing from the packaged source-manifest index");
   copyFile(path.join(repo, "docs", "research", "RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md"),
     path.join(desktop, "docs", "research", "RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md"));
   copyFile(path.join(repo, "lib", "rdw-type-approval-db.cjs"), path.join(desktop, "lib", "rdw-type-approval-db.cjs"));
