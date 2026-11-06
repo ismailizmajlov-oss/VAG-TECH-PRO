@@ -29,6 +29,12 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(schema["official_xsd_retrieved"])
         self.assertFalse(source["data_ingested"])
 
+    def test_source_revision_is_pinned_and_ingestion_is_disabled(self):
+        source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
+        self.assertEqual(source["source_revision"], "Decision 88 / R.TR.TS.07.001 v1.0.0")
+        self.assertFalse(source["data_ingested"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+
     def test_eaeu_vehicle_data_rights_remain_blocked(self):
         source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
         rights = source["rights"]
