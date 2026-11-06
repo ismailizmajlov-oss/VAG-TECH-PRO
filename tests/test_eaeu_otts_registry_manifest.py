@@ -125,6 +125,22 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertEqual(regional["license"]["offline_cache"], "not_confirmed")
         self.assertEqual(regional["observed_public_query"]["legacy_registry_visible_record_count"], 273)
 
+    def test_kyrgyz_single_window_is_captcha_gated_and_rights_blocked(self):
+        central = self.factory_sources["kyrgyzstan-single-window-otts-registry"]
+        regional = self.russian_sources["kyrgyzstan-single-window-otts-registry"]
+        self.assertEqual(central["market_scope"], ["KG", "EAEU_TR_TS_018_2011"])
+        self.assertEqual(central["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(central["rights"]["public_query_visibility"], "captcha_gated")
+        self.assertFalse(central["product_import_allowed"])
+        self.assertFalse(central["data_ingested"])
+        self.assertFalse(central["applicability"]["exact_engine_code_fitment"])
+        self.assertFalse(central["applicability"]["exact_gearbox_code_fitment"])
+        self.assertTrue(any("requires robot verification" in item for item in central["limitations"]))
+        self.assertEqual(regional["status"], "permission_required")
+        self.assertFalse(regional["data_ingested"])
+        self.assertTrue(regional["observed_public_query"]["captcha_required_before_record_view"])
+        self.assertIsNone(regional["source_snapshot_sha256"])
+
     def test_russian_eaeu_manifest_keeps_open_data_catalog_and_otts_schema_separate(self):
         source = self.russian_sources["eaeu-open-data-portal"]
         schema = source["related_vehicle_approval_registry_schema"]

@@ -90,6 +90,18 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(verification["official_public_search_endpoint_resolved"])
         self.assertIsNone(legal["primary_signed_pdf_sha256"])
 
+    def test_kyrgyz_single_window_registry_is_captcha_gated_and_not_ingested(self):
+        source = self.sources["kyrgyzstan-single-window-otts-registry"]
+        self.assertEqual(source["status"], "permission_required")
+        self.assertEqual(source["market_scope"], ["KG", "EAEU_TR_TS_018_2011"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertTrue(source["observed_public_query"]["captcha_required_before_record_view"])
+        self.assertEqual(source["access_and_reuse"]["documented_api"], "not_identified")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        self.assertIn("no automated CAPTCHA", source["observed_public_query"]["note"])
+
     def test_other_otts_sources_keep_their_separate_rights_gates(self):
         eaeu = self.sources["eaeu-open-data-portal"]
         self.assertEqual(eaeu["status"], "discovery_only")

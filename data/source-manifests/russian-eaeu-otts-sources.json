@@ -978,6 +978,59 @@
         "evidence": "Official gov.kz registry directory entry identifies the Committee and links the national technical-regulation registry. This confirms the official registry reference, not a data-reuse license.",
         "rights_effect": "no_bulk_export_offline_cache_display_or_redistribution_permission_inferred"
       }
+    },
+    {
+      "source_id": "kyrgyzstan-single-window-otts-registry",
+      "publisher": "Kyrgyz Single Window / State Enterprise «Single Window» Center, Kyrgyz Republic",
+      "source_type": "kyrgyz_national_vehicle_type_approval_registry_public_query",
+      "source_url": "https://sbkts.trade.kg/otts",
+      "related_portal_url": "https://cert.trade.kg/",
+      "market_scope": [
+        "KG",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "type_approval_document_metadata_only",
+      "observed_public_query": {
+        "observed_at": "2026-11-06",
+        "registry_title": "Государственный реестр · одобрений типа ТС (ОТТС)",
+        "portal_summary_otts_count": 1,
+        "portal_summary_count_treatment": "unverified_landing_page_summary_not_a_current_or_complete_corpus_count",
+        "captcha_required_before_record_view": true,
+        "note": "The public registry UI offers VIN/number search but requires robot verification before records can be viewed. No CAPTCHA was bypassed."
+      },
+      "access_and_reuse": {
+        "public_query": "observed_but_captcha_gated",
+        "documented_api": "not_identified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_authorized",
+        "commercial_use": "not_confirmed",
+        "third_party_display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "verification_status": "public_query_observed_captcha_and_rights_unverified",
+      "limitations": [
+        "The public registry UI requires robot verification before records can be viewed; no automated CAPTCHA solving or bypass was attempted.",
+        "No documented API, bulk export or dataset release was identified in this review.",
+        "No dataset-specific open licence or written permission for automated extraction, offline caching, third-party display or redistribution was identified.",
+        "The portal landing-page summary lists one OTTS record, but this is not treated as a complete or current corpus count.",
+        "No VAG-specific engine code, gearbox code, engine/gearbox pairing, ECU, DTC or repair applicability was established."
+      ],
+      "evidence_status": "Official Kyrgyz Single Window portal and public OTTS registry UI reviewed 2026-11-06; CAPTCHA gate and absence of documented reuse terms recorded; no records downloaded.",
+      "product_import_allowed": false,
+      "project_decision": "discovery_only_no_automation_no_import_until_documented_api_and_written_reuse_rights_are_confirmed"
     }
   ],
   "updated_at": "2026-11-06"
