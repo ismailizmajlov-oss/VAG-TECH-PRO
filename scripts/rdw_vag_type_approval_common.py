@@ -202,7 +202,11 @@ def validate_lock(lock: dict[str, Any]) -> None:
     if any(rights.get(k) is not True for k in ("commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed")):
         raise ValueError("RDW reuse scope is incomplete")
     if rights.get("share_alike_required") is not False:
-        raise ValueError("RDW CC0 pack must not acquire a share-alike restriction")
+        raise ValueError("CC0 pack must not acquire a share-alike restriction")
+    if rights.get("attribution_required") is not False or rights.get("attribution_recommended") is not False:
+        raise ValueError("Public attribution must remain disabled under the provider's open-data notice")
+    if rights.get("public_attribution_allowed") is not False or rights.get("internal_provenance_retained") is not True:
+        raise ValueError("Public attribution/internal provenance boundary failed")
     if lock.get("applicability_policy", {}).get("ru_eaeu_applicability") is not False:
         raise ValueError("RDW pack must not claim RU/EAEU applicability")
     required = {"m9d7-ebf2","4by9-ammk","7rjk-eycs","byxc-wwua","x5v3-sewk"}
@@ -383,8 +387,9 @@ def build_database(output_dir: Path, lock_path: Path, payloads: dict[str, list[d
         "or made available under CC0-1.0. See https://creativecommons.org/publicdomain/zero/1.0/ .\n"
     )
     attribution_text = (
-        "Source: RDW Open Data (https://opendata.rdw.nl/). CC0-1.0; attribution is not required. "
-        "Source identification is retained for provenance.\n"
+        "CC0-1.0. Public attribution is intentionally omitted under the provider's open-data notice. "
+        "Publisher identity, dataset URLs, revisions and hashes remain in the internal provenance manifest "
+        "for audit and are not rendered in the product interface.\n"
     )
     (output_dir / "LICENSE-CC0-1.0.txt").write_text(license_text, encoding="utf-8")
     (output_dir / "ATTRIBUTION.md").write_text(attribution_text, encoding="utf-8")
@@ -583,8 +588,11 @@ def verify_pack(output_dir: Path, lock_path: Path) -> dict[str, Any]:
         raise ValueError("RDW SQLite SHA-256 mismatch")
     if sha256_file(output_dir / "LICENSE-CC0-1.0.txt") != manifest.get("license_sha256"):
         raise ValueError("RDW license SHA-256 mismatch")
+    notice = (output_dir / "ATTRIBUTION.md").read_text(encoding="utf-8")
+    if "rdw" in notice.lower() or "opendata.rdw.nl" in notice.lower():
+        raise ValueError("Public attribution notice must not identify the data provider")
     if sha256_file(output_dir / "ATTRIBUTION.md") != manifest.get("attribution_sha256"):
-        raise ValueError("RDW attribution SHA-256 mismatch")
+        raise ValueError("Public attribution notice SHA-256 mismatch")
     if sha256_file(Path(lock_path)) != manifest.get("source_manifest_sha256"):
         raise ValueError("RDW lock SHA-256 mismatch")
     snapshot_dir = output_dir / "snapshots"
