@@ -84,7 +84,7 @@
       ],
       "access": {
         "legal_access_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
-        "current_portal_observation": "On 2026-11-05 the portal root and public EAEU open-data catalogue were reviewed. The catalogue advertises 117 resources overall and 7 under technical regulation; generic OData/REST access is described for published open-data resources, but no OTTS-specific resource or machine-readable endpoint was located in the reviewed catalogue/search. This is a bounded observation, not proof that no official query route exists.",
+        "current_portal_observation": "On 2026-11-06 the portal root still redirected to the EAEU open-data portal. Its reviewed catalogue exposed no OTTS-specific resource or machine-readable endpoint. The underlying Decision No. 88 schema is now documented separately; public field exposure remains unverified.",
         "machine_readable_api": "Generic OData/REST interfaces are advertised for published EAEU open-data resources; an OTTS-specific resource, endpoint, schema and export method remain unverified.",
         "individual_query_access": "provided_by_decision_88_via_union_information_portal",
         "bulk_export": "not_established",
@@ -194,7 +194,9 @@
         "xml_validation_menu_observed": true,
         "direct_fetch_status": "timeout_2026-11-06",
         "target_xsd_retrieved": false
-      }
+      },
+      "data_ingested": false,
+      "source_revision": "Decision 88 / R.TR.TS.07.001 v1.0.0"
     },
     {
       "source_id": "gor3a-vehicle-makes-models-odbl",
