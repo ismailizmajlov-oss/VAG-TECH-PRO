@@ -1,0 +1,3 @@
+Windows desktop CI trigger
+Purpose: revalidate the minimatch lock verifier after PowerShell-safe quoting and the nested @electron/universal override.
+No source dataset or production data was changed by this trigger.
