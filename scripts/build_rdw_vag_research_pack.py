@@ -598,9 +598,18 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
               FOREIGN KEY(source_row_sha256) REFERENCES source_rows(source_row_sha256)
             );
             CREATE INDEX idx_registration_make_trade ON registration_observations(make, trade_name);
+            CREATE INDEX idx_registration_make ON registration_observations(make);
+            CREATE INDEX idx_registration_trade_name ON registration_observations(trade_name);
+            CREATE INDEX idx_registration_scope ON registration_observations(scope_id);
             CREATE INDEX idx_approval_number ON approval_scope(type_approval_number);
+            CREATE INDEX idx_approval_variant ON approval_scope(variant);
+            CREATE INDEX idx_approval_version ON approval_scope(version);
+            CREATE INDEX idx_approval_revision ON approval_scope(revision);
+            CREATE UNIQUE INDEX idx_approval_exact_scope_key ON approval_scope(type_approval_number, variant, version, revision);
             CREATE INDEX idx_engine_designation ON engine_designation_candidates(engine_designation);
+            CREATE INDEX idx_engine_scope ON engine_designation_candidates(scope_id);
             CREATE INDEX idx_gearbox_classification ON gearbox_classifications(gearbox_type_classification);
+            CREATE INDEX idx_gearbox_scope ON gearbox_classifications(scope_id);
         """)
         db.execute("BEGIN IMMEDIATE")
         db.execute(
@@ -774,6 +783,12 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_revisions": source_revisions,
         "source_snapshot_sha256": source_snapshot_sha,
+        "search_indexes": [
+            "idx_registration_make_trade", "idx_registration_make", "idx_registration_trade_name",
+            "idx_registration_scope", "idx_approval_number", "idx_approval_variant", "idx_approval_version",
+            "idx_approval_revision", "idx_approval_exact_scope_key", "idx_engine_designation",
+            "idx_engine_scope", "idx_gearbox_classification", "idx_gearbox_scope",
+        ],
         "source_files": source_files,
         "database": {"path": database.name, "sha256": db_sha, "byte_size": database.stat().st_size},
         "counts": counts,
@@ -822,6 +837,12 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         "source_manifest_sha256": source_manifest_sha,
         "source_snapshot_sha256": source_snapshot_sha,
         "source_revisions": source_revisions,
+        "search_indexes": [
+            "idx_registration_make_trade", "idx_registration_make", "idx_registration_trade_name",
+            "idx_registration_scope", "idx_approval_number", "idx_approval_variant", "idx_approval_version",
+            "idx_approval_revision", "idx_approval_exact_scope_key", "idx_engine_designation",
+            "idx_engine_scope", "idx_gearbox_classification", "idx_gearbox_scope",
+        ],
         "counts": counts,
         "scope_coverage": scope_coverage,
         "scope_coverage_semantics": SCOPE_COVERAGE_SEMANTICS,
@@ -873,6 +894,15 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
     try:
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok" or db.execute("PRAGMA foreign_key_check").fetchall():
             raise ValueError("RDW SQLite integrity/foreign-key check failed")
+        required_indexes = {
+            "idx_registration_make_trade", "idx_registration_make", "idx_registration_trade_name",
+            "idx_registration_scope", "idx_approval_number", "idx_approval_variant", "idx_approval_version",
+            "idx_approval_revision", "idx_approval_exact_scope_key", "idx_engine_designation",
+            "idx_engine_scope", "idx_gearbox_classification", "idx_gearbox_scope",
+        }
+        actual_indexes = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='index'")}
+        if not required_indexes.issubset(actual_indexes):
+            raise ValueError("RDW SQLite search index set is incomplete")
         tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         if "engine_gearbox_pairs" in tables or any("pair" in table.lower() for table in tables):
             raise ValueError("RDW pack must not contain an engine/gearbox pair table")
