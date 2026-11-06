@@ -1327,7 +1327,7 @@ jobs:
             $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
             if ($null -eq $expected -or $expected.sha256 -ne $actual) { throw "Windows installer artifact hash mismatch: $name" }
           }
-          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 109 -or $metadata.wikidata_generation_model_member_links -ne 125 -or $metadata.wikidata_generation_source_bindings -ne 187) { throw "Build metadata does not describe the pinned generation candidate pack." }
+          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 109 -or $metadata.wikidata_generation_model_member_links -ne 125 -or $metadata.wikidata_generation_source_bindings -ne 187 -or $metadata.rdw_ru_eaeu_applicability -ne $false -or $metadata.rdw_exact_vehicle_fitment -ne $false -or $metadata.rdw_vehicle_variants -lt 1 -or $metadata.rdw_engine_candidates -lt 1 -or $metadata.rdw_transmission_candidates -lt 1) { throw "Build metadata does not describe the pinned candidate-only generation and RDW packs." }
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $sourceRegisterPath = Join-Path $desktopRoot "data/source-manifests/vag-factory-source-register.json"
           if (-not (Test-Path -LiteralPath $sourceRegisterPath -PathType Leaf)) { throw "Bundled source-rights register is missing from Windows artifact." }
@@ -1364,9 +1364,28 @@ jobs:
           $technicalSchemaPath = Join-Path $desktopRoot "data/schemas/technical-record-payloads.schema.json"
           if (-not (Test-Path -LiteralPath $technicalSchemaPath -PathType Leaf)) { throw "Technical payload schema is missing from Windows lifecycle payload." }
           if ((Get-FileHash -LiteralPath $technicalSchemaPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $metadata.technical_payload_schema_sha256) { throw "Technical payload schema hash differs from build metadata." }
+          $rdwPackDir = Join-Path $desktopRoot "data/research/rdw-vag-type-approval-cc0"
+          $rdwManifestPath = Join-Path $rdwPackDir "manifest.json"
+          $rdwDatabasePath = Join-Path $rdwPackDir "rdw-vag-type-approval.sqlite"
+          $rdwLockPath = Join-Path $manifestDir "rdw-vag-type-approval.lock.json"
+          $rdwPackRegisterPath = Join-Path $rdwPackDir "source-register.json"
+          foreach ($path in @($rdwManifestPath,$rdwDatabasePath,$rdwLockPath,$rdwPackRegisterPath)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "RDW candidate pack provenance file is missing: $path" }
+          }
+          $rdwManifest = Get-Content -LiteralPath $rdwManifestPath -Raw | ConvertFrom-Json
+          $rdwDatabaseHash = (Get-FileHash -LiteralPath $rdwDatabasePath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $rdwLockHash = (Get-FileHash -LiteralPath $rdwLockPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $rdwPackRegisterHash = (Get-FileHash -LiteralPath $rdwPackRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($rdwManifest.pack_id -ne "rdw-vag-type-approval-cc0" -or $rdwManifest.data_license -ne "CC0-1.0" -or $rdwManifest.verification_status -ne "verified_source_candidate_pack_only") { throw "RDW pack identity/license/candidate status failed." }
+          if ($rdwManifest.exact_vehicle_fitment -ne $false -or $rdwManifest.ru_eaeu_applicability -ne $false -or $rdwManifest.vag_factory_engine_code_verified -ne $false -or $rdwManifest.vag_factory_gearbox_code_verified -ne $false -or $rdwManifest.diagnostic_execution_allowed -ne $false) { throw "RDW pack crossed its candidate-only applicability boundary." }
+          if (@($rdwManifest.market_scope | Where-Object { $_ -match "RU|EAEU" }).Count -gt 0 -or @($rdwManifest.market_scope | Where-Object { $_ -eq "EU_TYPE_APPROVAL" }).Count -eq 0) { throw "RDW market scope is not restricted to EU/NL." }
+          if ($rdwDatabaseHash -ne $metadata.rdw_database_sha256 -or $rdwManifest.database_sha256 -ne $rdwDatabaseHash) { throw "RDW SQLite hash differs from build metadata/manifest." }
+          if ($rdwLockHash -ne $metadata.rdw_source_lock_sha256 -or $rdwManifest.source_manifest_sha256 -ne $rdwLockHash) { throw "RDW source-lock hash differs from build metadata/manifest." }
+          if ($rdwPackRegisterHash -ne $metadata.rdw_source_register_sha256 -or $rdwManifest.source_register_sha256 -ne $rdwPackRegisterHash) { throw "RDW pack source-register hash differs from build metadata/manifest." }
+          if ($rdwManifest.counts.vehicle_variants -ne $metadata.rdw_vehicle_variants -or $rdwManifest.counts.engine_candidates -ne $metadata.rdw_engine_candidates -or $rdwManifest.counts.transmission_candidates -ne $metadata.rdw_transmission_candidates -or $rdwManifest.counts.unique_source_row_pair_candidates -ne $metadata.rdw_unique_source_row_pair_candidates -or $rdwManifest.counts.ambiguous_or_incomplete_pair_keys -ne $metadata.rdw_ambiguous_or_incomplete_pair_keys) { throw "RDW candidate counts differ from build metadata." }
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
-          foreach ($required in @("data/research/manifest.json", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
+          foreach ($required in @("data/research/manifest.json", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "data/research/rdw-vag-type-approval-cc0/manifest.json", "data/research/rdw-vag-type-approval-cc0/rdw-vag-type-approval.sqlite", "data/source-manifests/rdw-vag-type-approval.lock.json", "lib/rdw-type-approval-db.cjs", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
             if (-not (Test-Path (Join-Path $desktopRoot $required))) { throw "Offline lifecycle evidence file is missing: $required" }
           }
           Set-Location $desktopRoot
