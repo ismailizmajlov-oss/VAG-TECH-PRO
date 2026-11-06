@@ -315,7 +315,7 @@ def build_database(db_path: Path, rows: list[dict[str, Any]], source_revision: s
         db.execute("PRAGMA synchronous=FULL")
         db.execute("PRAGMA foreign_keys=ON")
         db.executescript(SCHEMA_SQL)
-        db.execute("PRAGMA user_version=1")
+        db.execute("PRAGMA user_version=2")
         db.execute(
             """INSERT INTO source_registry VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
@@ -428,7 +428,7 @@ def build_pack(snapshot_bytes: bytes, output_dir: Path, retrieved_at_utc: str | 
         for path in (snapshot_path, query_path, license_path, attribution_path, db_path)
     }
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "pack_id": f"wikidata-vag-model-taxonomy-cc0-{snapshot_id}",
         "snapshot_id": snapshot_id,
         "built_at_utc": retrieved_at_utc or utc_now(),
@@ -525,7 +525,7 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
             raise ValueError("SQLite integrity_check failed")
         if db.execute("PRAGMA foreign_key_check").fetchall():
             raise ValueError("SQLite foreign-key check failed")
-        if db.execute("PRAGMA user_version").fetchone()[0] != 1:
+        if db.execute("PRAGMA user_version").fetchone()[0] != 2:
             raise ValueError("unexpected SQLite schema version")
         entity_type_rows = [json.loads(row[0]) for row in db.execute("SELECT entity_types_json FROM vehicle_model_entities")]
         for items in entity_type_rows:
