@@ -128,12 +128,16 @@ console.log("Desktop hardening patch applied and verified.");
 const lifecyclePath = path.join(root, "scripts", "windows-installer-lifecycle.ps1");
 const lifecycleTestPath = path.join(root, "tests", "windows-lifecycle-script-contract.test.cjs");
 let lifecycle = readLf(lifecyclePath);
-lifecycle = replaceExactly(
-  lifecycle,
-  '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
-  '  Write-Verbose "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
-  "Start-DesktopAndWait must not leak diagnostic text into its return pipeline"
-);
+const astraStatusOutput = '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
+const astraVerboseOutput = '  Write-Verbose "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
+if (lifecycle.includes(astraStatusOutput)) {
+  lifecycle = lifecycle.replace(astraStatusOutput, astraVerboseOutput);
+} else if (!lifecycle.includes(astraVerboseOutput)) {
+  const helper = lifecycle.split("function Start-DesktopAndWait {")[1]?.split("function Stop-Desktop($session) {")[0];
+  if (!helper || helper.includes("Write-Output")) {
+    throw new Error("Start-DesktopAndWait has unreviewed success-pipeline output; refusing to guess at a replacement.");
+  }
+}
 lifecycle = replaceExactly(
   lifecycle,
   "$session = Start-DesktopAndWait\n$origin = $session.BaseUrl",
