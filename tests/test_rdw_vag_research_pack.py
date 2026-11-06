@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
 import tempfile
@@ -107,9 +108,34 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT count(*) FROM gearbox_classifications WHERE verification_status='rdw_approval_gearbox_classification_not_vag_code'").fetchone()[0], 1)
                 self.assertEqual(db.execute("SELECT count(*) FROM approval_scope WHERE model_year IS NOT NULL OR generation IS NOT NULL").fetchone()[0], 0)
                 self.assertEqual(db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0], 6)
+                for source_file in manifest["source_files"]:
+                    snapshot_path = pack / source_file["path"]
+                    digest = hashlib.sha256(snapshot_path.read_bytes()).hexdigest()
+                    self.assertEqual(digest, source_file["sha256"])
+                    stored = db.execute(
+                        "SELECT source_snapshot_sha256, row_count FROM source_file_artifacts WHERE dataset_id=?",
+                        (source_file["dataset_id"],),
+                    ).fetchone()
+                    self.assertEqual(stored[0], digest)
+                    self.assertEqual(stored[1], source_file["row_count"])
                 self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
             finally:
                 db.close()
+
+    def test_manifest_pins_vag_make_allowlist_and_cc0_dataset_ids(self):
+        self.assertEqual(sorted(self.source["vehicle_scope"]["makes"]), sorted(rdw.MAKES))
+        for name, config in rdw.DATASETS.items():
+            key = {
+                "registration": "registered_vehicle_identity",
+                "tgk_drive": "tgk_drive",
+                "tgk_gearbox": "tgk_gearbox",
+                "tgk_base": "tgk_base",
+                "tgk_make": "tgk_make",
+                "tgk_trade_name": "tgk_trade_name",
+            }[name]
+            product = self.source["data_products"][key]
+            self.assertEqual(product["dataset_id"], config["id"])
+            self.assertEqual(product["catalog_license"], "CC0 1.0")
 
     def test_rights_gate_fails_closed(self):
         bad = json.loads(json.dumps(self.source))
