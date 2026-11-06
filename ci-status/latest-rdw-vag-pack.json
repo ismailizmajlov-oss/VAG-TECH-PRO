@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-06T17:15:20.6194517Z",
+  "workflow": "Acquire rights-cleared RDW VAG type-approval research pack",
+  "run_id": 42259881517,
+  "run_number": 3,
+  "run_attempt": 1,
+  "run_status_at_record": "in_progress",
+  "run_conclusion_at_record": null,
+  "build_job_result": "failure",
+  "head_sha": "b431ca02f722b80f3a731be90b59a54c4b7dd71d",
+  "head_branch": "main",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42259881517",
+  "jobs": [
+    {
+      "id": 128036711367,
+      "name": "Acquire filtered CC0 RDW data and build isolated SQLite research pack",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000001892",
+      "started_at": "2026-11-06T17:15:04Z",
+      "completed_at": "2026-11-06T17:15:08Z"
+    },
+    {
+      "id": 128036793309,
+      "name": "Record RDW pack build evidence",
+      "status": "in_progress",
+      "conclusion": null,
+      "runner_name": "GitHub Actions 1000001893",
+      "started_at": "2026-11-06T17:15:10Z",
+      "completed_at": null
+    }
+  ],
+  "artifacts": [],
+  "source_id": "rdw-eu-vag-type-approval-open-data-nl",
+  "source_manifest_sha256": "70fda2456e8eddb26f807e8dcea244c5f0f71ad6de95d0b39397903c5efa1bff",
+  "license": "CC0 1.0 for each listed dataset, as published in the Dutch national data catalogue",
+  "rights_status": "approved_by_published_CC0_license",
+  "market_scope": [
+    "NL"
+  ],
+  "production_import": false,
+  "ru_eaeu_applicability": false,
+  "pack_artifact_present": false,
+  "pack_ready": false,
+  "release_ready": false,
+  "release_readiness_note": "NL-only CC0 type-approval research pack; not RU/EAEU fitment, OEM engine/gearbox codes, exact powertrain pairing or repair authorization."
+}
