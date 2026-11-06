@@ -92,6 +92,20 @@ Run 300 used Windows-hosted CI and a separate Windows Server 2022 lifecycle runn
 
 A previous dependency audit in run 240 reported zero vulnerabilities for production-only and full dependency trees; run 300 did not repeat that audit. Deprecated transitive-package and GitHub Actions Node.js compatibility warnings remain maintenance items.
 
+
+## Current source work after run 300 — 2026-11-06
+
+The current main branch contains 47 central source-register entries and 11 entries in the dedicated Russian/EAEU register. The source-manifest bundle now contains 15 manifests. The latest completed Windows build remains run 300; run 301 is building the 47-source revision and run 302 is queued for the subsequent probe-evidence revision. Neither later run is counted as a successful installer/lifecycle validation until its full result is complete.
+
+A new official RDW source group is registered for a separate read-only NL/EU type-approval research pack. The Dutch national data catalogue lists the selected RDW vehicle identity and TGK datasets under CC0 1.0: [RDW base vehicle data](https://data.overheid.nl/dataset/basisregistratie-voertuigen---rdw), [TGK drive](https://data.overheid.nl/dataset/81ac19f5-d0e5-4411-847e-f8698d4a42f2), [TGK gearbox](https://data.overheid.nl/dataset/8a5be559-87b6-4224-9bbc-45dae886c427), [TGK base](https://data.overheid.nl/dataset/38afb954-4d3b-4363-9875-4a16117ab86b), [TGK make](https://data.overheid.nl/dataset/68f02697-4c7a-4a5c-ae1d-b253aa3ecc89), and [TGK manufacturer trade name](https://data.overheid.nl/dataset/1f00bd5c-63e9-4262-9603-311712339a30). The source is NL registration evidence with EU type-approval identifiers; it is not RU/EAEU evidence.
+
+The live Windows schema/scope probe passed twice: [probe run 1](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42225909008) and [probe run 2](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42226340948). The current probe report SHA-256 is `b1d2ae64c32b7d58c80237fa103d847c49766be921c6fd2c0441919d1b8173d8`; its artifact ZIP SHA-256 is `37a9043413ac2367f574c053597db06d98b081ba748e4bb534d046375ff33569`. It verified an exact RDW approval scope for a Dutch-registered Volkswagen Tayron: approval `e1*2018/858*00403*07`, variant `ACDUCAX0`, version `FD6FD6DD002PR4VNB50OO`, revision `0`. The RDW Motorcode value `DUC` remains an engine-designation candidate; the separate gearbox classification `A` is not a VAG gearbox code. Although one engine row and one gearbox-classification row were found under the same approval scope, **no engine/gearbox pair is claimed**. No model year, generation, individual-vehicle fitment or RU/EAEU applicability is inferred.
+
+The probe did not download a full source snapshot. The RDW source remains `data_ingested=false`, `product_import_allowed=false`, and `source_snapshot_sha256=null`; it is not yet included as an offline data pack or exposed as a product fitment result. The explicit registration-field allowlist excludes licence plates, VIN and holder/ownership data. Full import requires the next separate research-pack build with per-file and per-row hashes and the same no-pairing policy.
+
+The Rosstandart recall-data metadata probe completed as a workflow but retrieved zero of two official pages because both requests timed out; it found no downloadable data file and produced no source snapshot. The source remains blocked and un-ingested. See [probe run 7](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42225908849).
+
+
 ## Release blockers
 
 1. Written source-owner permission or an explicit dataset license covering commercial use, display, offline caching, bulk reuse and redistribution for Russian/EAEU OTTS data.
