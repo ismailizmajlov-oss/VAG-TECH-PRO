@@ -120,7 +120,7 @@ function patchTests(file) {
     '  const { dbPath } = fixture(t); core.registerSource(dbPath, source());',
     '  const payload = { code: "p0300", title: "Malformed lower-case code", namespace: "SAE/ISO" };',
     '  const record = { ...genericDtc({ payload, record_sha256: core.sha256(payload), source_record_key: "obd:invalid" }), natural_key: "generic:invalid" };',
-    '  assert.throws(() => core.importPackage(dbPath, packageOf([record])), /DTC payload code must be an uppercase SAE/);',
+    '  assert.throws(() => core.importPackage(dbPath, packageOf([record])), /DTC payload code does not match its declared generic or VAG-specific namespace/);',
     '  const db = new DatabaseSync(dbPath); assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 0); assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 0); db.close();',
     '});',
     ''
