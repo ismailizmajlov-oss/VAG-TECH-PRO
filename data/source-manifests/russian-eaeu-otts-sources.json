@@ -818,6 +818,79 @@
       "status": "schema_reference_only",
       "data_ingested": false,
       "evidence_status": "Official EAEU schema-registry landing page observed in search index 2026-11-06; XSD not retrieved"
+    },
+    {
+      "source_id": "kazakhstan-techreg-otts-public-registry",
+      "publisher": "TechReg / KEZEKTE.KZ; system pages identify the Committee of Technical Regulation and Metrology of the Ministry of Trade and Integration of the Republic of Kazakhstan and National Accreditation Center contact details",
+      "source_type": "kazakhstan_national_vehicle_type_approval_registry_public_query",
+      "source_url": "https://techreg.kezekte.kz/ru/cert/ot-registry/old/list",
+      "current_registry_url": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+      "project_information_url": "https://techreg.kezekte.kz/kz/cert/info",
+      "market_scope": [
+        "KZ",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "type_approval_document_metadata_only",
+      "observed_public_query": {
+        "observed_at": "2026-11-06",
+        "legacy_registry_visible_record_count": 273,
+        "new_registry_visible_record_count_from_stale_search_snapshot": 0,
+        "new_registry_snapshot_crawl_age": "about_three_weeks_before_review",
+        "note": "The legacy list page shows 273 records. The new list's zero count comes from a stale search-index snapshot and is not treated as a current corpus count."
+      },
+      "access_and_reuse": {
+        "public_query": "observed",
+        "documented_api": "not_identified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "commercial_use": "not_confirmed",
+        "third_party_display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "redistribution": "not_confirmed",
+        "operator_identity": "not_independently_confirmed"
+      },
+      "technical_scope": {
+        "registry_fields": [
+          "approval registration number",
+          "issue and registry dates",
+          "validity dates",
+          "make",
+          "commercial name",
+          "certification body",
+          "applicant and address"
+        ],
+        "detailed_record_fields": [
+          "manufacturer representative",
+          "assembly plant",
+          "vehicle equipment",
+          "VIN section"
+        ],
+        "exact_vag_engine_code": "not_established",
+        "exact_vag_gearbox_code": "not_established",
+        "engine_gearbox_pairing": "not_established",
+        "ecu_dtc_or_repair_applicability": "not_established",
+        "exact_vag_record_identified": false
+      },
+      "limitations": [
+        "No dataset-specific open licence or reuse permission was identified.",
+        "No complete current dataset count or reproducible API/export was established.",
+        "No exact VAG engine/gearbox code, ECU or repair applicability is exposed by the reviewed list fields.",
+        "Detailed record pages may contain VIN-related and applicant/contact fields; privacy review is required before any processing.",
+        "Do not treat a public search page as permission to cache or redistribute its records."
+      ],
+      "evidence_status": "Public query pages and project-information page reviewed 2026-11-06; no licence, bulk API or product reuse permission identified; no records downloaded."
     }
   ],
   "updated_at": "2026-11-06"
