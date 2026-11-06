@@ -192,10 +192,11 @@
         "The schema registry landing page advertises batch export and XML validation, but the official XSD package was not retrieved or hash-pinned.",
         "Decision No. 225 of 2014-12-02, not Decision No. 88, is the public-access and national-publication basis for the unified vehicle-approval register. It does not establish bulk reuse, offline caching, commercial display or redistribution rights.",
         "Decision No. 225 paragraph 9 lists detailed SBKTS vehicle technical characteristics including engine and gearbox make/type, but also individual VIN and applicant information. This importer skips SBKTS and does not retain personal or vehicle-identifying fields.",
-        "Decision No. 225 paragraph 8 lists public OTTS/OTSH register fields and references approval attachments; exposure of the underlying engine/transmission component codes in the current Russian public search endpoint remains unverified."
+        "Decision No. 225 paragraph 8 lists public OTTS/OTSH register fields and references approval attachments; exposure of the underlying engine/transmission component codes in the current Russian public search endpoint remains unverified.",
+        "The current consolidated EEC Decision No. 232 OTTS/OTSH Annex 1 form lists engine make/type, ECU marking, transmission type, gearbox make/type, gear count and ratios at attachment level. This is a normative blank-form schema, not proof that the current public summary query exposes these fields or that filled documents may be bulk cached, displayed or redistributed."
       ],
       "project_decision": "schema_only_importer_prepared; no data caching or product import until the current official query route, field exposure and written reuse rights are established",
-      "evidence_status": "Decision No. 225 public-access rules and Decision No. 88 XML schema reviewed 2026-11-06; national-part route identified through Interstandart; exact public query endpoint, XSD package and reuse rights remain unresolved",
+      "evidence_status": "Decision No. 225 public-access rules, Decision No. 88 exchange schema and current consolidated Decision No. 232 OTTS/OTSH Annex 1 form fields reviewed 2026-11-07; engine/gearbox fields are attachment-level form fields; current public summary exposure, filled attachment access and reuse rights remain unresolved.",
       "registry_schema": {
         "schema_id": "R.TR.TS.07.001",
         "schema_version": "1.0.0",
@@ -273,8 +274,44 @@
         "target_xsd_retrieved": false
       },
       "data_ingested": false,
-      "source_revision": "Decision 88 / R.TR.TS.07.001 v1.0.0",
-      "schema_basis_url": "https://www.alta.ru/tamdoc/16kr0088/"
+      "source_revision": "EEC Decision No. 225 public-access basis; EEC Decision No. 232 current consolidated OTTS/OTSH form (amended by Decision No. 52 of 2026-05-12; relevant form changes effective 2026-10-08); Decision No. 88 / R.TR.TS.07.001 v1.0.0",
+      "schema_basis_url": "https://www.alta.ru/tamdoc/16kr0088/",
+      "normative_attachment_schema": {
+        "legal_act": "EEC Collegium Decision No. 232 of 2014-12-09, current consolidated text amended by Decision No. 52 of 2026-05-12",
+        "current_revision_date": "2026-05-12",
+        "relevant_form_effective_from": "2026-10-08",
+        "official_publication_index_url": "https://docs.eaeunion.org/documents/463/",
+        "amending_decision_url": "https://www.alta.ru/tamdoc/26kr0052/",
+        "consolidated_form_reference_url": "https://www.kontur-extern.ru/info/normativ/document/1/507167-reshenie-kollegii-evraziyskoy-ekonomicheskoy-komissii-ot-09-12-2014-n-232",
+        "attachment_scope": "Appendix No. 1 (General characteristics of the vehicle) to the OTTS form and the corresponding Appendix No. 1 to the OTSH form",
+        "observed_form_fields_ru": [
+          "Двигатель внутреннего сгорания (марка, тип)",
+          "Количество и расположение цилиндров",
+          "Рабочий объем цилиндров, см3",
+          "Максимальная мощность, кВт",
+          "Максимальный крутящий момент, Н-м",
+          "Топливо",
+          "Блок управления (маркировка)",
+          "Трансмиссия",
+          "Сцепление (марка, тип)",
+          "Коробка передач (марка, тип)",
+          "Число передач и передаточные числа",
+          "Раздаточная коробка (тип)",
+          "Число передач и передаточные числа раздаточной коробки",
+          "Главная передача (тип)",
+          "Передаточное число главной передачи",
+          "Передаточное число промежуточной передачи"
+        ],
+        "form_revision_interpretation": "The current consolidated form contains these engine/transmission fields. Decision No. 52's relevant 2026-10-08 changes specifically update hybrid-powertrain description text; this review does not claim that the engine/gearbox fields were newly introduced by that amendment.",
+        "raw_value_semantics": "The form requests manufacturer make/type or marking. A raw engine or gearbox make/type value is not automatically a VAG three-letter engine code, VAG gearbox code, ECU hardware/software identity or exact production fitment.",
+        "extraction_rule": "Retain each raw field with approval number, document kind, annex/page, exact modification/variant scope, source revision and source hash. Do not cross-join values across separate variants or annex scopes.",
+        "pairing_rule": "At most create an unverified same-annex/same-variant candidate when engine and gearbox fields are explicitly tied to the same scope. Promote an exact VAG engine/gearbox pair only after independent manufacturer-code mapping and technical review.",
+        "public_query_exposure": "not_established; the 2026-11-06 ELPTS visible summary table did not expose engine code, gearbox code or a powertrain pair. Its printed-form column is only a possible document route; no filled attachment was retrieved in this review.",
+        "reuse_rights_effect": "none; this is a normative blank-form schema reference. It does not grant bulk extraction, offline caching, product display, commercial reuse or redistribution rights for filled OTTS/OTSH documents.",
+        "data_imported": false,
+        "source_snapshot_sha256": null,
+        "review_date": "2026-11-07"
+      }
     },
     {
       "source_id": "gor3a-vehicle-makes-models-odbl",
@@ -1991,10 +2028,11 @@
         "An OTTS is type-approval evidence only to the extent stated in the document; it does not establish individual VIN build data, ECU/DTC, wiring, repair applicability or an exact engine/gearbox pairing unless the primary document explicitly ties those values together.",
         "A distinct OTTS page was observed on 2026-11-06; its rendered total label is a UI observation under visible date filters, not a verified full-corpus count or permission to extract records.",
         "The 2026-11-06 public OTTS page snapshot exposed only document identity/status and applicant/manufacturer/certification metadata in its visible table; it did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. Underlying approval attachments were not downloaded or inspected.",
-        "An ELPTS operator notice dated 2026-08-21 confirms that an internal AS EOTTS data-entry issue involving additional-reduction and hydraulic transmissions was fixed. It does not identify a public gearbox field, internal schema, factory gearbox code, reuse rights or exact fitment."
+        "An ELPTS operator notice dated 2026-08-21 confirms that an internal AS EOTTS data-entry issue involving additional-reduction and hydraulic transmissions was fixed. It does not identify a public gearbox field, internal schema, factory gearbox code, reuse rights or exact fitment.",
+        "The current consolidated EEC Decision No. 232 Annex 1 form defines engine and gearbox make/type fields in OTTS/OTSH attachments, but the 2026-11-06 visible ELPTS summary table did not expose them. The printed-form column is not evidence that a filled attachment was retrieved or that its contents may be cached or redistributed."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "official ELPTS OTTS page rechecked 2026-11-06; visible metadata columns and active date-filter state recorded; no dataset-specific reuse rights, bulk API or powertrain fields in the visible table established; no records downloaded",
+      "evidence_status": "official ELPTS OTTS page rechecked 2026-11-06; visible metadata columns and active date-filter state recorded; no dataset-specific reuse rights, bulk API or powertrain fields in the visible table established; no records downloaded; EEC Decision No. 232 current consolidated Annex 1 engine/transmission form fields reviewed 2026-11-07; no filled attachment retrieved and no rights change.",
       "public_page_observations": {
         "observed_at": "2026-11-06",
         "ot_ts": {
