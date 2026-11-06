@@ -41,8 +41,17 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
     def test_new_public_search_routes_remain_discovery_only(self):
         source = self.source
         observations = source["public_page_observations"]
-        self.assertEqual(observations["observed_at"], "2026-11-06")
+        self.assertEqual(observations["observed_at"], "2026-11-07")
         self.assertEqual(observations["ot_ts"]["url"], "https://docs.elpts.ru/ncher/otts")
+        self.assertEqual(observations["ot_ts"]["manufacturer_filter_options_observed"], ["AUDI AG", "Volkswagen AG"])
+        self.assertTrue(observations["ot_ts"]["manufacturer_filter_values_are_options_only"])
+        self.assertFalse(observations["ot_ts"]["vag_records_observed"])
+        self.assertFalse(observations["ot_ts"]["vag_record_count_verified"])
+        self.assertFalse(observations["ot_ts"]["bulk_api_discovered"])
+        self.assertFalse(observations["ot_ts"]["pdf_downloaded"])
+        self.assertTrue(observations["sbkts"]["vag_metadata_row_observed"])
+        self.assertIn("not OTTS", observations["sbkts"]["search_snapshot"])
+        self.assertEqual(observations["sbkts"]["rights_effect"], "none; this observation is not OTTS fitment evidence and grants no reuse rights")
         self.assertEqual(observations["ot_sh"]["url"], "https://docs.elpts.ru/ncher/otsh")
         self.assertIn("not a verified complete-corpus count", observations["ot_ts"]["count_interpretation"])
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
