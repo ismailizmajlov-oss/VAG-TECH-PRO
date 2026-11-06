@@ -43,7 +43,7 @@ class AstraChTasDesktopIntegrationTests(unittest.TestCase):
 
     def test_desktop_workflow_resolves_downloads_integrates_and_verifies_the_pack(self):
         workflow = (ROOT / ".github/workflows/windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
-        self.assertIn("Resolve latest successful ASTRA CH TAS pack", workflow)
+        self.assertIn("Resolve latest ASTRA CH TAS pack run", workflow)
         self.assertIn("actions/download-artifact@v4", workflow)
         self.assertIn("scripts/integrate-astra-ch-tas-run72.cjs", workflow)
         self.assertIn("node scripts/verify-astra-ch-tas-pack.cjs", workflow)
