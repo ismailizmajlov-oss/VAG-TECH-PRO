@@ -130,8 +130,11 @@ function validateQuery(value) {
 }
 function likePattern(query) { return "%" + query.replace(/[\\%_]/g, "\\$&") + "%"; }
 function safeHttpsUrl(value) {
-  try { const url = new URL(String(value || "")); return url.protocol === "https:" ? url.toString() : null; }
-  catch { return null; }
+  try {
+    const url = new URL(String(value || ""));
+    const host = url.hostname.toLowerCase();
+    return url.protocol === "https:" && (host === "astra.admin.ch" || host.endsWith(".astra.admin.ch")) ? url.toString() : null;
+  } catch { return null; }
 }
 function searchAstraApprovals(query, limit = 25, explicitRoot) {
   const q = validateQuery(query);
