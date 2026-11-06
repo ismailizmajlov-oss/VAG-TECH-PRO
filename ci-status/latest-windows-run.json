@@ -1,69 +1,17 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-06T06:05:39.8882663Z",
+  "recorded_at_utc": "2026-11-06T06:17:03.3458134Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run71",
-  "run_id": 42171282846,
-  "run_number": 249,
+  "run_id": 42173365289,
+  "run_number": 257,
   "run_attempt": 1,
   "status": "completed",
-  "conclusion": "success",
-  "head_sha": "49ab4b80cc45e1b19045396c32509f8e4ac7ba9d",
+  "conclusion": "cancelled",
+  "head_sha": "263eab45acf5de519b25c60b1a507b2d5472d329",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42171282846",
-  "jobs": [
-    {
-      "id": 127739440222,
-      "name": "build-and-lifecycle",
-      "status": "completed",
-      "conclusion": "success",
-      "runner_name": "GitHub Actions 1000001593",
-      "started_at": "2026-11-06T05:55:41Z",
-      "completed_at": "2026-11-06T06:03:24Z"
-    },
-    {
-      "id": 127741875797,
-      "name": "Windows Server 2022 installer compatibility lifecycle",
-      "status": "completed",
-      "conclusion": "success",
-      "runner_name": "GitHub Actions 1000001594",
-      "started_at": "2026-11-06T06:03:26Z",
-      "completed_at": "2026-11-06T06:05:23Z"
-    }
-  ],
-  "artifacts": [
-    {
-      "id": 13481492217,
-      "name": "vag-tech-pro-windows-2022-lifecycle-run71",
-      "size_in_bytes": 4534,
-      "expired": false,
-      "created_at": "2026-11-06T06:05:21Z",
-      "expires_at": "2026-12-06T06:05:20Z"
-    },
-    {
-      "id": 13481347176,
-      "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 533270746,
-      "expired": false,
-      "created_at": "2026-11-06T06:03:19Z",
-      "expires_at": "2026-11-20T06:03:07Z"
-    },
-    {
-      "id": 13480867776,
-      "name": "vag-tech-pro-desktop-source-audit-42171282846",
-      "size_in_bytes": 472270,
-      "expired": false,
-      "created_at": "2026-11-06T06:03:06Z",
-      "expires_at": "2026-12-06T06:03:05Z"
-    },
-    {
-      "id": 13480764593,
-      "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
-      "size_in_bytes": 24888,
-      "expired": false,
-      "created_at": "2026-11-06T05:57:02Z",
-      "expires_at": "2026-11-13T05:57:00Z"
-    }
-  ],
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42173365289",
+  "jobs": [],
+  "artifacts": [],
   "native_windows_10_11": {
     "runner_gate_enabled": false,
     "lifecycle_job_result": "skipped",
