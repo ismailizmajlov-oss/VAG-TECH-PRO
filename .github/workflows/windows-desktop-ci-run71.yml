@@ -1128,7 +1128,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run76 desktop type-fix patch syntax check failed" }
           node apply-desktop-types-fix-run76.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-types-fix-run76.log"
           if ($LASTEXITCODE -ne 0) { throw "Run76 desktop TypeScript contract repair failed" }
-          "desktop_types_fix=run76; source_revision_state=restored; ASTRA_research_row_types=deduplicated" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          node --test desktop-source/tests/run76-types-fix.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-types-fix-run76-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run76 generated desktop type contract test failed" }
+          $testAuditDir = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source/tests"
+          New-Item -ItemType Directory -Force -Path $testAuditDir | Out-Null
+          Copy-Item -LiteralPath "desktop-source/tests/run76-types-fix.test.cjs" -Destination $testAuditDir -Force
+          "desktop_types_fix=run76; source_revision_state=restored; ASTRA_research_row_types=deduplicated; contract_test=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
