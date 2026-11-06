@@ -116,6 +116,8 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("SELECT count(*) FROM gearbox_classifications WHERE verification_status='rdw_approval_gearbox_classification_not_vag_code'").fetchone()[0], 1)
                 self.assertEqual(db.execute("SELECT count(*) FROM approval_scope WHERE model_year IS NOT NULL OR generation IS NOT NULL").fetchone()[0], 0)
                 self.assertEqual(db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0], 6)
+                source_row_fk_targets = {row[2] for row in db.execute("PRAGMA foreign_key_list(source_rows)")}
+                self.assertIn("source_file_artifacts", source_row_fk_targets)
                 provenance = db.execute(
                     "SELECT source_columns_sha256, required_columns_sha256, query_spec_sha256, query_spec_json "
                     "FROM source_file_artifacts WHERE dataset_id=?",
@@ -133,6 +135,38 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
             finally:
                 db.close()
+
+    def test_snapshot_rows_must_match_sqlite_source_rows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pack = Path(tmp) / "pack"
+            rdw.build_pack(pack, self.source, self.source_bytes, self.datasets, self.metadata)
+            manifest_path = pack / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            item = manifest["source_files"][0]
+            snapshot_path = pack / item["path"]
+            snapshot_rows = [
+                json.loads(line)
+                for line in snapshot_path.read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            snapshot_rows[0]["tampered_after_download"] = True
+            snapshot_bytes = b"".join(rdw.canonical_bytes(row) + b"\\n" for row in snapshot_rows)
+            snapshot_path.write_bytes(snapshot_bytes)
+            item["sha256"] = rdw.sha256_bytes(snapshot_bytes)
+            item["byte_size"] = len(snapshot_bytes)
+
+            database_path = pack / manifest["database"]["path"]
+            with sqlite3.connect(database_path) as db:
+                db.execute(
+                    "UPDATE source_file_artifacts SET source_snapshot_sha256=?, byte_size=? WHERE dataset_id=?",
+                    (item["sha256"], item["byte_size"], item["dataset_id"]),
+                )
+            manifest["database"]["sha256"] = rdw.sha256_file(database_path)
+            manifest["database"]["byte_size"] = database_path.stat().st_size
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "snapshot/SQLite source rows differ"):
+                rdw.validate_pack(pack)
 
     def test_query_spec_digest_tampering_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
