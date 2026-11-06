@@ -190,5 +190,61 @@
   "project_decision": "Rights-cleared for a separate NL/EU type-approval research pack after the live schema probe. No production fitment, no RU/EAEU applicability, no model-year inference, no VAG engine/gearbox-code assertion and no engine/gearbox pairing.",
   "data_ingested": false,
   "source_snapshot_sha256": null,
-  "hash_status": "no_full_source_snapshot_downloaded_probe_only"
+  "hash_status": "no_full_source_snapshot_downloaded_probe_only",
+  "probe": {
+    "status": "schema_and_exact_scope_verified",
+    "probed_at_utc": "2026-11-06T13:29:55.479249Z",
+    "run_id": 42225909008,
+    "run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42225909008",
+    "artifact_id": 13504898995,
+    "artifact_name": "rdw-vag-type-approval-schema-probe",
+    "artifact_zip_sha256": "7a34c9a0bd09b9c708d54ac029b21143ac6f3f9baff71d9a7f96428c671bed72",
+    "report_sha256": "ddab63bb946a3dc0b9d255de24b9b52b5dd49fdb479bab1fc57b11e396aa08be",
+    "source_manifest_sha256_at_probe": "16c9871b32fa8305427ffbc145ef3dc90f06770cd266528c78ce6db8a80c78f5",
+    "metadata_rows_updated_at_utc": {
+      "m9d7-ebf2": "2026-11-06T07:11:38Z",
+      "4by9-ammk": "2026-11-06T03:15:49Z",
+      "7rjk-eycs": "2026-11-06T03:15:55Z",
+      "byxc-wwua": "2026-11-06T03:15:50Z",
+      "kyri-nuah": "2026-11-06T03:15:54Z",
+      "x5v3-sewk": "2026-11-06T03:15:53Z"
+    },
+    "sample_approval_scope": {
+      "make": "VOLKSWAGEN",
+      "dutch_trade_name": "TAYRON",
+      "type_approval_number": "e1*2018/858*00403*07",
+      "variant": "ACDUCAX0",
+      "version": "FD6FD6DD002PR4VNB50OO",
+      "revision": "0",
+      "vehicle_category": "M1",
+      "revision_start_date": "2026-07-31",
+      "engine_designation_candidate": "DUC",
+      "displacement_cc": 1498,
+      "cylinders": 4,
+      "gearbox_type_classification": "A",
+      "manufacturer_trade_name": "TAYRON",
+      "manufacturer_type_designation": "R4",
+      "rdw_make_codes": [
+        "VOLK",
+        "VWVP"
+      ],
+      "engine_rows": 1,
+      "gearbox_classification_rows": 1,
+      "exact_engine_gearbox_pair_claim": false,
+      "applicability_precision": "exact_RDW_approval_variant_version_revision_scope",
+      "market_scope": "NL",
+      "source_row_sha256": {
+        "registration": "4369b391638cb2b6da382dfe78c69ed52b52e02292335876352d66f145b9ed12",
+        "base": "ca8caceea7c5e87fa20dab06b6d6c93a4ee303aee45fb5892854a3f54e1f0f2f",
+        "engine": "394bf45e64a106c3da1832bff45dcd517a9976fbec43a46e1951974cc27ed6bd",
+        "gearbox": "8e799476a3a4228b33a0b1bfcc4d7fdf3a29f15fbb897978057ed2d94f507961",
+        "make": [
+          "45bdd24431d7bc8ed813fcb531dec27a8474279ab0d6fcb62013f97c7895917b",
+          "cb3702c0b73a420d2bd69749ebb444846f0f3d2ba92d32b0ea530a6e3cee36a6"
+        ],
+        "trade_name": "02c9fb96320df89c996f50aa446fe523690f479d201d2be784731372a92f77b2"
+      }
+    },
+    "note": "This is a filtered live probe, not a full source snapshot. No full-source SHA-256 exists yet. Motorcode DUC is not confirmed as a VAG factory engine code; gearbox classification A is not a VAG gearbox code; the two rows are not paired."
+  }
 }

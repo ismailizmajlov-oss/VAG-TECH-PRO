@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06T13:14:46Z",
+  "updated_at": "2026-11-06T13:32:17.034Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -3826,13 +3826,13 @@
         "repair_procedure_applicability": false,
         "diagnostic_execution_allowed": false
       },
-      "verification_status": "published_CC0_rights_reviewed_schema_probe_pending",
+      "verification_status": "rights_cleared_live_schema_and_exact_scope_probe_passed_research_only",
       "product_import_allowed": false,
       "data_ingested": false,
-      "source_revision": "live_RDW_Socrata_view_revisions_to_be_pinned_by_probe",
+      "source_revision": "RDW rowsUpdatedAt: m9d7-ebf2=2026-11-06T07:11:38Z; 4by9-ammk=2026-11-06T03:15:49Z; 7rjk-eycs=2026-11-06T03:15:55Z; byxc-wwua=2026-11-06T03:15:50Z; kyri-nuah=2026-11-06T03:15:54Z; x5v3-sewk=2026-11-06T03:15:53Z",
       "source_snapshot_sha256": null,
       "hash_status": "no_full_source_snapshot_downloaded_probe_only",
-      "project_decision": "rights-cleared for a separate read-only NL/EU type-approval research pack after schema probe; never import into RU/EAEU production fitment; do not infer VAG engine code, gearbox code, engine/gearbox pair, model year, generation or individual-vehicle fitment"
+      "project_decision": "Live schema and exact approval-scope probe passed for one NL-registered Volkswagen Tayron: RDW Motorcode DUC remains an engine-designation candidate; Codetypeversnellingsbak A remains an approval classification; no engine/gearbox pair is claimed. Full source snapshot and separate research pack are not yet built. Never import into RU/EAEU production fitment."
     }
   ],
   "minimum_fitment_evidence_fields": [

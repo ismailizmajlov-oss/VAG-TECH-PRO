@@ -20,6 +20,21 @@ class RdwEuVagTypeApprovalSourceRightsTests(unittest.TestCase):
         cls.manifest = json.loads((ROOT / "data/source-manifests/rdw-eu-vag-type-approval-open-data.json").read_text(encoding="utf-8"))
         cls.source = next(s for s in cls.register["sources"] if s["source_id"] == SOURCE_ID)
 
+    def test_live_probe_is_recorded_without_promoting_candidates(self):
+        probe = self.manifest["probe"]
+        sample = probe["sample_approval_scope"]
+        self.assertEqual(probe["status"], "schema_and_exact_scope_verified")
+        self.assertEqual(sample["make"], "VOLKSWAGEN")
+        self.assertEqual(sample["dutch_trade_name"], "TAYRON")
+        self.assertEqual(sample["engine_designation_candidate"], "DUC")
+        self.assertEqual(sample["gearbox_type_classification"], "A")
+        self.assertFalse(sample["exact_engine_gearbox_pair_claim"])
+        self.assertIsNone(self.manifest["snapshot"]["source_snapshot_sha256"])
+        self.assertIsNone(self.source["source_snapshot_sha256"])
+        self.assertFalse(self.source["product_import_allowed"])
+        self.assertFalse(self.source["data_ingested"])
+        self.assertEqual(self.source["verification_status"], "rights_cleared_live_schema_and_exact_scope_probe_passed_research_only")
+
     def test_published_cc0_rights_cover_offline_reuse_and_redistribution(self):
         rights = self.source["rights"]
         self.assertEqual(rights["rights_status"], "approved_by_published_CC0_license")

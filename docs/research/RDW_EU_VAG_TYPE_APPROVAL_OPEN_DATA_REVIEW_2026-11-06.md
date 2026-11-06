@@ -68,3 +68,11 @@ The future pack must remain a separate read-only research namespace with product
 - RDW TGK make API: https://opendata.rdw.nl/resource/kyri-nuah.json
 - RDW TGK manufacturer trade-name API: https://opendata.rdw.nl/resource/x5v3-sewk.json
 - RDW official open-data information: https://www.rdw.nl/over-rdw/dienstverlening/open-data
+
+## Live probe result — 2026-11-06
+
+The Windows CI schema/scope probe passed: [run 1](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42225909008). The 90-day evidence artifact is artifact ID 13504898995. Its ZIP SHA-256 is 7a34c9a0bd09b9c708d54ac029b21143ac6f3f9baff71d9a7f96428c671bed72; the report SHA-256 is ddab63bb946a3dc0b9d255de24b9b52b5dd49fdb479bab1fc57b11e396aa08be. The exact source-manifest SHA-256 used by the probe was 16c9871b32fa8305427ffbc145ef3dc90f06770cd266528c78ce6db8a80c78f5.
+
+The official RDW query found one NL Volkswagen Tayron observation linked to EU approval e1*2018/858*00403*07, variant ACDUCAX0, execution FD6FD6DD002PR4VNB50OO, revision 0 (M1; revision start 2026-07-31). In that exact approval scope, RDW returned one engine row with Motorcode DUC, 1,498 cc and four cylinders, and one separate gearbox classification row with Codetypeversnellingsbak A. The manufacturer trade-name table returned TAYRON / R4; the RDW make table returned VOLK and VWVP.
+
+This confirms the official source fields and exact approval-scope linkage, not a factory powertrain pair. DUC remains an engine-designation candidate pending independent OEM corroboration; A remains an RDW approval classification, not a VAG gearbox code. No engine/gearbox pair, production fitment, model year, generation or RU/EAEU applicability is asserted. The probe did not download a full source snapshot, so the full-source SHA-256 remains null and data_ingested remains false.
