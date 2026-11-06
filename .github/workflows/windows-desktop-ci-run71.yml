@@ -32,6 +32,12 @@ on:
       - "data/source-manifests/russian-eaeu-otts-sources.json"
       - "scripts/import-authorized-fgis-otts-export.cjs"
       - "tests/authorized-fgis-otts-export.test.cjs"
+      - "scripts/import_eaeu_otts_registry_export.py"
+      - "tests/test_eaeu_otts_registry_import.py"
+      - "tests/test_eaeu_otts_registry_manifest.py"
+      - "tests/test_russian_eaeu_otts_manifest.py"
+      - "docs/EAEU_OTTS_REGISTRY_IMPORT.md"
+      - "docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md"
       - "docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
@@ -75,6 +81,12 @@ on:
       - "data/source-manifests/russian-eaeu-otts-sources.json"
       - "scripts/import-authorized-fgis-otts-export.cjs"
       - "tests/authorized-fgis-otts-export.test.cjs"
+      - "scripts/import_eaeu_otts_registry_export.py"
+      - "tests/test_eaeu_otts_registry_import.py"
+      - "tests/test_eaeu_otts_registry_manifest.py"
+      - "tests/test_russian_eaeu_otts_manifest.py"
+      - "docs/EAEU_OTTS_REGISTRY_IMPORT.md"
+      - "docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md"
       - "docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
@@ -135,6 +147,10 @@ jobs:
           python tests/test_otts_bot_source_rights.py
           python tests/test_openvag_source_rights.py
           node --test tests/authorized-fgis-otts-export.test.cjs
+          python -m py_compile scripts/import_eaeu_otts_registry_export.py
+          python tests/test_russian_eaeu_otts_manifest.py
+          python tests/test_eaeu_otts_registry_manifest.py
+          python tests/test_eaeu_otts_registry_import.py
 
 
       - name: Reassemble and verify pinned desktop source archive

@@ -404,11 +404,18 @@
         "reuse_boundary": "The decision describes public access and intergovernmental data exchange; it does not grant VAG TECH PRO bulk extraction, offline caching, third-party display or redistribution rights."
       },
       "current_portal_observation": {
-        "checked_at": "2026-11-04",
+        "checked_at": "2026-11-06",
         "root_url": "https://portal.eaeunion.org/",
         "observed_redirect": "https://opendata.eaeunion.org/opendata/",
         "ot_ts_specific_endpoint_resolved": false,
-        "note": "The open-data portal catalog exposes OData/REST resources, but a dedicated OTTS resource or dataset-specific reuse grant was not identified."
+        "note": "The open-data portal catalog exposes OData/REST resources, but a dedicated OTTS resource or dataset-specific reuse grant was not identified.",
+        "schema_registry": {
+          "url": "https://rseds.eaeunion.org/ru/",
+          "batch_export_menu_observed": true,
+          "xml_validation_menu_observed": true,
+          "direct_fetch_status": "timeout_2026-11-06",
+          "target_xsd_retrieved": false
+        }
       },
       "access_and_reuse": {
         "individual_public_query": "legal_basis_identified_under_decision_88; current OTTS-specific endpoint not resolved",
@@ -417,7 +424,85 @@
         "commercial_use": "not_confirmed_for_an_otts_dataset",
         "third_party_display": "not_confirmed",
         "offline_cache": "not_confirmed",
-        "redistribution": "not_confirmed"
+        "redistribution": "not_confirmed",
+        "registry_schema_field_exposure": "not_verified_in_current_public_query_or_catalogue"
+      },
+      "related_vehicle_approval_registry_schema": {
+        "schema_id": "R.TR.TS.07.001",
+        "schema_version": "1.0.0",
+        "namespace": "urn:EEC:R:TR:TS:07:ConformityVehicleDocsRegistryDetails:v1.0.0",
+        "root_element": "ConformityVehicleDocsRegistryDetails",
+        "xsd_filename": "EEC_R_TR_TS_07_ConformityVehicleDocsRegistryDetails_v1.0.0.xsd",
+        "normative_basis": "EEC Collegium Decision No. 88 of 2016-07-26",
+        "schema_registry_url": "https://rseds.eaeunion.org/ru/",
+        "official_xsd_retrieved": false,
+        "public_field_exposure_verified": false,
+        "document_kind_codes": {
+          "30": "OTTS",
+          "35": "OTSH",
+          "40": "SBKTS"
+        },
+        "vehicle_type_fields": [
+          "VehicleMakeName",
+          "VehicleMakeCode",
+          "VehicleCommercialName",
+          "VehicleTypeId",
+          "VehicleTechCategoryCode"
+        ],
+        "variant_fields": [
+          "VehicleTypeVariantId",
+          "VehicleEcoClassCode",
+          "VehicleChassisDesignCode"
+        ],
+        "engine_fields": [
+          "EngineDetails.VehicleComponentMakeName",
+          "EngineDetails.VehicleComponentModelCode",
+          "EngineDetails.VehicleComponentText",
+          "EngineDetails.EngineCylinderQuantity",
+          "EngineDetails.EngineCapacityMeasure",
+          "EngineDetails.EngineMaxPowerDetails",
+          "EngineDetails.EngineMaxTorqueDetails"
+        ],
+        "transmission_fields": [
+          "TransmissionUnitDetails.VehicleUnitKindCode",
+          "TransmissionUnitDetails.VehicleComponentMakeName",
+          "TransmissionUnitDetails.VehicleComponentModelCode",
+          "TransmissionUnitDetails.VehicleComponentText",
+          "TransmissionUnitDetails.TransmissionUnitGearQuantity"
+        ],
+        "gearbox_unit_kind_code": "05",
+        "ecu_fields": [
+          "ECUModelCode"
+        ],
+        "model_year_field": "VehicleV2Details.VehicleManufacturingYear",
+        "model_year_limitation": "Store only if explicitly present; do not infer model year from OTTS issue/start date.",
+        "code_semantics": "VehicleComponentModelCode is manufacturer-assigned; it is not automatically a VAG three-letter engine or gearbox code.",
+        "pairing_semantics": "Same-variant nesting can support an unverified candidate only; never cross-join multiple engines and gearboxes.",
+        "public_query_exposure_note": "These are fields in the Decision No. 88 registry schema. Their exposure in the current public query UI/export has not been verified.",
+        "excluded_fields": [
+          "ApplicantDetails",
+          "FullNameDetails",
+          "CommunicationChannelId",
+          "VehicleIdentificationNumberId",
+          "DocBinaryText"
+        ],
+        "rights_boundary": "Schema access does not grant bulk extraction, offline caching, commercial use, third-party display or redistribution rights."
+      },
+      "technical_data_scope": {
+        "schema_id": "R.TR.TS.07.001",
+        "schema_version": "1.0.0",
+        "schema_fields_defined": [
+          "manufacturer_assigned_engine_component_model_code",
+          "transmission_unit_component_model_code",
+          "gearbox_unit_kind_code_05",
+          "ecu_model_code",
+          "engine_capacity",
+          "engine_power",
+          "engine_torque"
+        ],
+        "public_field_exposure_verified": false,
+        "exact_vag_engine_or_gearbox_code_verified": false,
+        "exact_engine_gearbox_pair_verified": false
       }
     },
     {
@@ -659,6 +744,32 @@
           "note": "Visible OTTS/OTSH/ZOETS filters do not change the page's title or prove document-type completeness"
         }
       }
+    },
+    {
+      "source_id": "eaeu-rseds-schema-registry",
+      "publisher": "Евразийская экономическая комиссия",
+      "source_type": "official_eaeu_electronic_document_structure_registry",
+      "source_url": "https://rseds.eaeunion.org/ru/",
+      "market_scope": [
+        "EAEU"
+      ],
+      "scope": "schema_reference_only_no_vehicle_records",
+      "access": {
+        "landing_page_observed": true,
+        "batch_export_menu_observed": true,
+        "xml_validation_menu_observed": true,
+        "direct_fetch_status": "timeout_2026-11-06",
+        "target_xsd_retrieved": false
+      },
+      "license": {
+        "identifier": null,
+        "scope": "normative_schema_metadata_only",
+        "vehicle_data_reuse": "not_applicable"
+      },
+      "status": "schema_reference_only",
+      "data_ingested": false,
+      "evidence_status": "Official EAEU schema-registry landing page observed in search index 2026-11-06; XSD not retrieved"
     }
-  ]
+  ],
+  "updated_at": "2026-11-06"
 }
