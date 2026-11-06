@@ -140,6 +140,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             pack_dir = Path(tmp) / "pack"
             report = rdw.build_pack(pack_dir, self.source, self.source_bytes, self.datasets, self.metadata)
+            manifest = json.loads((pack_dir / "manifest.json").read_text(encoding="utf-8"))
             db = sqlite3.connect(pack_dir / "rdw-vag-research.sqlite")
             try:
                 columns = {row[1] for row in db.execute("PRAGMA table_info(source_rows)")}
@@ -148,7 +149,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
                     db.execute("SELECT count(*) FROM source_rows").fetchone()[0],
                     report["counts"]["source_rows"],
                 )
-                for item in report["source_files"]:
+                for item in manifest["source_files"]:
                     self.assertEqual(
                         db.execute("SELECT count(*) FROM source_rows WHERE dataset_id=?", (item["dataset_id"],)).fetchone()[0],
                         item["row_count"],
