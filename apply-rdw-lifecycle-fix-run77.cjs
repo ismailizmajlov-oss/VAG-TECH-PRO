@@ -83,4 +83,4 @@ if (!contractTests.includes(testMarker)) {
   fs.writeFileSync(contractTestPath, contractTests, "utf8");
 }
 
-console.log("RDW lifecycle gate applied: the 0.2.4 clean install is not required to contain the 0.2.5 RDW pack; the upgraded install is.");
+console.log("RDW lifecycle gate applied: the older clean install skips the new RDW pack check; the upgraded install must pass it.");
