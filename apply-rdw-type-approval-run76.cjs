@@ -191,10 +191,10 @@ function main() {
   writeJson(rootManifestPath, rootManifest);
 
   const researchReadme = path.join(research, "README.md");
-  const rdwReadme = "\n## RDW EU type-approval candidate pack (CC0-1.0)\n\n" +
+  const rdwReadme = "\n## EU/NL type-approval candidate pack (CC0-1.0)\n\n" +
     "- Separate read-only SQLite: " + PACK_ID + "/rdw-vag-type-approval.sqlite.\n" +
-    "- Official RDW filtered VAG M1 data; market scope is EU type approval plus Netherlands registration observations only.\n" +
-    "- Engine values remain in namespace RDW.motorcode; transmission values remain in namespace RDW.codetypeversnellingsbak.\n" +
+    "- Filtered non-sensitive VAG M1 type-approval data; market scope is EU type approval plus Netherlands registration observations only.\n" +
+    "- Engine and transmission values remain in their source namespaces; they are not promoted to VAG factory codes.\n" +
     "- A unique source-row pair is a candidate association, not a confirmed VAG engine/gearbox mapping or VIN fitment.\n" +
     "- No RU/EAEU OTTS, model-year/generation confirmation, ECU, DTC, repair, wiring, pinout, torque or adaptation data.\n" +
     "- CC0-1.0; live per-resource metadata, filtered query, raw snapshots, SQLite and source-lock hashes are verified at each build.\n";
@@ -205,7 +205,7 @@ function main() {
   const packsDoc = path.join(desktop, "docs", "RESEARCH_DATA_PACKS.md");
   if (!fs.existsSync(packsDoc)) writeText(packsDoc, "# Research data packs\n");
   let packsText = readText(packsDoc);
-  if (!packsText.includes(PACK_ID)) writeText(packsDoc, packsText + "\n## RDW EU type-approval candidate pack\n\n" + rdwReadme);
+  if (!packsText.includes(PACK_ID)) writeText(packsDoc, packsText + "\n## EU/NL type-approval candidate pack\n\n" + rdwReadme);
 
   const coreFile = path.join(desktop, "lib", "local-research-db.cjs");
   let core = readText(coreFile);
@@ -328,7 +328,7 @@ function main() {
   const tabsStart = ui.indexOf("const tabs:");
   const tabsEnd = ui.indexOf("\n];", tabsStart);
   if (tabsStart < 0 || tabsEnd < 0) fail("Research UI tabs array missing");
-  if (!ui.includes('id: "rdw"')) ui = ui.slice(0, tabsEnd) + '\n  { id: "rdw", label: "Типовое одобрение ЕС", hint: "CC0 · RDW · не RU/ЕАЭС" },' + ui.slice(tabsEnd);
+  if (!ui.includes('id: "rdw"')) ui = ui.slice(0, tabsEnd) + '\n  { id: "rdw", label: "Типовое одобрение ЕС", hint: "CC0 · EU/NL · не RU/ЕАЭС" },' + ui.slice(tabsEnd);
 
   if (!ui.includes("dataset=rdw-summary")) {
     const fetchAnchor = '    fetch("/api/local-research?dataset=generic-guidance-summary", { signal: current.signal, cache: "no-store" })';
@@ -339,11 +339,11 @@ function main() {
       '    fetch("/api/local-research?dataset=rdw-summary", { signal: current.signal, cache: "no-store" })',
       '      .then(async (response) => {',
       '        const payload = await response.json();',
-      '        if (!response.ok || payload.status !== "ready_candidate_only") throw new Error(payload.error || "RDW candidate pack failed integrity verification.");',
+      '        if (!response.ok || payload.status !== "ready_candidate_only") throw new Error(payload.error || "EU type-approval candidate pack failed integrity verification.");',
       '        setRdwSummary(payload);',
       '      })',
       '      .catch((reason) => {',
-      '        if (reason?.name !== "AbortError") setError(reason?.message || "RDW candidate pack is unavailable.");',
+      '        if (reason?.name !== "AbortError") setError(reason?.message || "EU type-approval candidate pack is unavailable.");',
       '      });',
       ''
     ].join("\n");
@@ -352,14 +352,14 @@ function main() {
 
   const statsMarker = '\n    </div>\n\n    <div className="research-boundary">';
   if (!ui.includes("rdwSummary?.counts?.vehicle_variants")) {
-    const stats = '\n      <article className="research-stat"><small>RDW · варианты одобрения</small><strong>{formatNumber(rdwSummary?.counts?.vehicle_variants)}</strong><span>{formatNumber(rdwSummary?.counts?.engine_candidates)} engine · {formatNumber(rdwSummary?.counts?.transmission_candidates)} transmission candidates</span></article>' +
-      '\n      <article className="research-stat"><small>RDW · связи строк</small><strong>{formatNumber(rdwSummary?.counts?.unique_source_row_pair_candidates)}</strong><span>{formatNumber(rdwSummary?.counts?.ambiguous_or_incomplete_pair_keys)} ambiguous/incomplete · candidate only</span></article>';
+    const stats = '\n      <article className="research-stat"><small>EU/NL · варианты одобрения</small><strong>{formatNumber(rdwSummary?.counts?.vehicle_variants)}</strong><span>{formatNumber(rdwSummary?.counts?.engine_candidates)} engine · {formatNumber(rdwSummary?.counts?.transmission_candidates)} transmission candidates</span></article>' +
+      '\n      <article className="research-stat"><small>EU/NL · связи строк</small><strong>{formatNumber(rdwSummary?.counts?.unique_source_row_pair_candidates)}</strong><span>{formatNumber(rdwSummary?.counts?.ambiguous_or_incomplete_pair_keys)} ambiguous/incomplete · candidate only</span></article>';
     ui = replaceText(ui, statsMarker, stats + statsMarker, "RDW statistics cards");
   }
 
   const boundaryMarker = '\n    </div>\n\n    <div className="research-tabs"';
-  if (!ui.includes("RDW не является российским/ЕАЭС ОТТС")) {
-    const note = '\n      {rdwSummary && <p>RDW не является российским/ЕАЭС ОТТС. Это только EU type-approval и наблюдения регистрации в Нидерландах; RDW.motorcode и RDW.codetypeversnellingsbak не являются заводскими кодами VAG. Связь строк источника не подтверждает VIN, поколение, модельный год, ECU или точную применимость и не является инструкцией по диагностике/ремонту.</p>}' + boundaryMarker;
+  if (!ui.includes("Эти данные не являются российским/ЕАЭС ОТТС")) {
+    const note = '\n      {rdwSummary && <p>Эти данные не являются российским/ЕАЭС ОТТС. Это только EU type-approval и наблюдения регистрации в Нидерландах; коды двигателя и трансмиссии сохранены в исходных пространствах и не являются подтверждёнными заводскими кодами VAG. Связь строк источника не подтверждает VIN, поколение, модельный год, ECU или точную применимость и не является инструкцией по диагностике/ремонту.</p>}' + boundaryMarker;
     ui = replaceText(ui, boundaryMarker, note, "RDW scope boundary");
   }
 
@@ -374,19 +374,19 @@ function main() {
 
   const rdwCard = [
     '      {dataset === "rdw" && rows.map((row) => <article className="research-result" key={(row.typeApprovalNumber || "") + "-" + (row.variantCode || "") + "-" + (row.executionCode || "") + "-" + (row.revisionNumber || "")}>',
-    '        <div className="research-result-top"><div><small>RDW · EU TYPE APPROVAL / NL REGISTRATION · CANDIDATE</small><h3>{row.make} {row.model}</h3></div><span className="research-candidate">КАНДИДАТ · НЕ VIN FITMENT</span></div>',
+    '        <div className="research-result-top"><div><small>EU TYPE APPROVAL / NL REGISTRATION · CANDIDATE</small><h3>{row.make} {row.model}</h3></div><span className="research-candidate">КАНДИДАТ · НЕ VIN FITMENT</span></div>',
     '        <div className="research-data-grid">',
     '          <div><small>Номер типового одобрения</small><b>{row.typeApprovalNumber || "—"}</b></div>',
     '          <div><small>Variant / execution</small><b>{row.variantCode || "—"} / {row.executionCode || "—"}</b></div>',
-    '          <div><small>Двигатель · namespace</small><b>{row.rdwMotorcode || "—"} · {row.engineCodeNamespace || "RDW.motorcode"}</b></div>',
-    '          <div><small>Трансмиссия · namespace</small><b>{row.rdwTransmissionTypeCode || "—"} · {row.transmissionCodeNamespace || "RDW.codetypeversnellingsbak"}</b></div>',
+    '          <div><small>Код двигателя из источника</small><b>{row.rdwMotorcode || "—"}</b></div>',
+    '          <div><small>Тип трансмиссии из источника</small><b>{row.rdwTransmissionTypeCode || "—"}</b></div>',
     '          <div><small>Число передач из источника</small><b>{row.gearCountMin || "—"}–{row.gearCountMax || "—"}</b></div>',
     '          <div><small>Связь строк источника</small><b>{row.pairingStatus === "unique_source_rows_candidate" ? "Уникальная пара-кандидат" : "Неоднозначно / нет полной пары"}</b></div>',
     '          <div><small>Первая / последняя регистрация NL</small><b>{row.firstRegistrationSeen || "—"} / {row.lastRegistrationSeen || "—"}</b></div>',
     '          <div><small>Ревизия одобрения</small><b>{row.revisionNumber || "—"} · {row.revisionStartDate || "—"} — {row.revisionEndDate || "—"}</b></div>',
     '        </div>',
-    '        <div className="research-warning-line">EU/NL source candidate only. Не российское/ЕАЭС ОТТС; RDW-коды не являются заводскими кодами VAG; не подтверждает VIN, поколение, модельный год, ECU или точную применимость. Не использовать как DTC-объяснение, test-plan, OEM-процедуру или основание для ремонта.</div>',
-    '        <details className="research-details"><summary>Применимость и ограничения</summary><p>Статус {row.verificationStatus || "candidate"} · рынок {row.marketScope || "EU/NL"} · точность {row.applicabilityPrecision || "type_approval_variant_execution_candidate"} · source {row.sourceId || "rdw-vag-type-approval-cc0"} · ревизия {row.sourceRevision || "—"} · pairing confirmed: {String(row.pairingConfirmed === true)} · exact fitment: {String(row.exactVehicleFitment === true)} · RU/EAEU: {String(row.ruEaeuApplicability === true)} · VAG factory engine/gearbox code: {String(row.vagFactoryEngineCodeVerified === true)}/{String(row.vagFactoryGearboxCodeVerified === true)}</p></details>',
+    '        <div className="research-warning-line">EU/NL source candidate only. Не российское/ЕАЭС ОТТС; исходные коды не являются заводскими кодами VAG; не подтверждает VIN, поколение, модельный год, ECU или точную применимость. Не использовать как DTC-объяснение, test-plan, OEM-процедуру или основание для ремонта.</div>',
+    '        <details className="research-details"><summary>Применимость и ограничения</summary><p>Статус {row.verificationStatus || "candidate"} · рынок {row.marketScope || "EU/NL"} · точность {row.applicabilityPrecision || "type_approval_variant_execution_candidate"} · ревизия {row.sourceRevision || "—"} · pairing confirmed: {String(row.pairingConfirmed === true)} · exact fitment: {String(row.exactVehicleFitment === true)} · RU/EAEU: {String(row.ruEaeuApplicability === true)} · VAG factory engine/gearbox code: {String(row.vagFactoryEngineCodeVerified === true)}/{String(row.vagFactoryGearboxCodeVerified === true)}</p></details>',
     '      </article>)}'
   ].join("\n");
   const resultsMarker = '\n    </div>}\n\n    {!rows.length';
@@ -395,11 +395,11 @@ function main() {
   const creditsEnd = '\n    </div>\n  </section>;';
   if (!ui.includes("rdwSummary.sourceSnapshotSha256")) {
     const credits = [
-      '      {rdwSummary && <><p><a href={rdwSummary.sourceUrl} target="_blank" rel="noopener noreferrer">RDW Open Data</a> — отдельный CC0-1.0 набор для EU type-approval и Netherlands registration observations. Он не содержит российские/ЕАЭС ОТТС и не подтверждает заводские коды VAG или точную применимость.</p>',
-      '        <details className="research-details"><summary>Лицензия и provenance RDW</summary>',
+      '      {rdwSummary && <><p>Отдельный CC0-1.0 набор для EU type-approval и Netherlands registration observations. Идентификатор издателя, точные URL и ревизии сохранены в машинном реестре provenance для внутреннего аудита; публичная атрибуция в интерфейсе не выводится. Набор не содержит российские/ЕАЭС ОТТС и не подтверждает заводские коды VAG или точную применимость.</p>',
+      '        <details className="research-details"><summary>Лицензия и provenance набора</summary>',
       '          <p>Лицензия {rdwSummary.dataLicense} · <a href={rdwSummary.licenseUrl} target="_blank" rel="noopener noreferrer">текст CC0-1.0</a> · ревизия {rdwSummary.sourceRevision} · рынок {(rdwSummary.marketScope || []).join(" · ")}</p>',
       '          <p>SHA SQLite {rdwSummary.databaseSha256} · SHA raw snapshot {rdwSummary.sourceSnapshotSha256} · SHA metadata bundle {rdwSummary.metadataBundleSha256} · SHA source lock {rdwSummary.sourceManifestSha256} · SHA source register {rdwSummary.sourceRegisterSha256 || "—"}</p>',
-      '          <p>В базе {formatNumber(rdwSummary.counts?.vehicle_variants)} type-approval variants, {formatNumber(rdwSummary.counts?.engine_candidates)} RDW engine candidates, {formatNumber(rdwSummary.counts?.transmission_candidates)} RDW transmission candidates и {formatNumber(rdwSummary.counts?.unique_source_row_pair_candidates)} unique source-row pair candidates. Это не подтверждённые VAG engine/gearbox mappings.</p>',
+      '          <p>В базе {formatNumber(rdwSummary.counts?.vehicle_variants)} type-approval variants, {formatNumber(rdwSummary.counts?.engine_candidates)} engine candidates, {formatNumber(rdwSummary.counts?.transmission_candidates)} transmission candidates и {formatNumber(rdwSummary.counts?.unique_source_row_pair_candidates)} unique source-row pair candidates. Это не подтверждённые VAG engine/gearbox mappings.</p>',
       '          <p>{(rdwSummary.limitations || []).join(" ")}</p></details></>}'
     ].join("\n");
     ui = replaceText(ui, creditsEnd, "\n" + credits + creditsEnd, "RDW provenance footer");
@@ -539,19 +539,19 @@ const fs = require("node:fs");
 const path = require("node:path");
 const root = path.join(__dirname, "..");
 
-test("RDW appears only in a separate EU/NL candidate research tab", () => {
+test("EU/NL candidates stay separate and provider attribution is not rendered", () => {
   const component = fs.readFileSync(path.join(root, "components", "local-research-catalog.tsx"), "utf8");
   const route = fs.readFileSync(path.join(root, "app", "api", "local-research", "route.ts"), "utf8");
   assert.match(component, /id: "rdw", label: "Типовое одобрение ЕС"/);
-  assert.match(component, /RDW\.motorcode/);
-  assert.match(component, /RDW\.codetypeversnellingsbak/);
-  assert.match(component, /не является российским\/ЕАЭС ОТТС/);
+  assert.match(component, /Код двигателя из источника/);
+  assert.match(component, /Тип трансмиссии из источника/);
+  assert.match(component, /не являются подтверждёнными заводскими кодами VAG/);
   assert.match(component, /КАНДИДАТ · НЕ VIN FITMENT/);
   assert.match(component, /pairingConfirmed/);
+  assert.doesNotMatch(component, /RDW|opendata\.rdw\.nl/);
   assert.match(route, /dataset === "rdw-summary"/);
   assert.match(route, /dataset === "rdw"/);
   assert.match(route, /searchRdwTypeApprovalCandidates/);
-  assert.doesNotMatch(component, /RDW.*confirmed VAG engine\/gearbox/i);
 });
 `;
   writeText(path.join(desktop, "tests", "rdw-type-approval-ui-contract.test.cjs"), uiTest);
@@ -562,9 +562,10 @@ test("RDW appears only in a separate EU/NL candidate research tab", () => {
     uiContract += '\n\ntest("RDW type approval remains a separate EU/NL candidate-only source", () => {\n' +
       '  const component = fs.readFileSync(path.join(__dirname, "../components/local-research-catalog.tsx"), "utf8");\n' +
       '  assert.match(component, /id: "rdw", label: "Типовое одобрение ЕС"/);\n' +
-      '  assert.match(component, /RDW\\.motorcode/);\n' +
-      '  assert.match(component, /RDW\\.codetypeversnellingsbak/);\n' +
-      '  assert.match(component, /не является российским\\/ЕАЭС ОТТС/);\n' +
+      '  assert.match(component, /Код двигателя из источника/);\n' +
+      '  assert.match(component, /Тип трансмиссии из источника/);\n' +
+      '  assert.match(component, /не являются подтверждёнными заводскими кодами VAG/);\n' +
+      '  assert.doesNotMatch(component, /RDW|opendata\\.rdw\\.nl/);\n' +
       '});\n';
     writeText(uiTestFile, uiContract);
   }
