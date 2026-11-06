@@ -14,6 +14,9 @@ test("ASTRA CH research tab is separate and visibly rejects RU/EAEU and factory-
   assert.match(ui, /engineType сохраняется как обозначение в одобрении и не подтверждает заводской код двигателя VAG/);
   assert.match(ui, /не код КПП VAG/);
   assert.match(ui, /только Швейцария|только CH/i);
-  assert.match(api, /astraResearch\.getAstraSummary/);
-  assert.match(api, /astraResearch\.searchAstraApprovals/);
+  assert.match(api, /astraResearch\\.getAstraSummary/);
+  assert.match(api, /astraResearch\\.searchAstraApprovals/);
+  assert.match(lifecycle, /dataset=astra-summary/);
+  assert.match(lifecycle, /dataset=astra&q=1XZ904/);
+  assert.match(lifecycle, /ASTRA offline CH approval search passed/);
 });
