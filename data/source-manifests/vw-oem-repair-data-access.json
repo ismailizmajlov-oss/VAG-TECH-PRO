@@ -67,7 +67,13 @@
         "SFD_agreement_required": true,
         "volkswagen_encryption_key_agreement_required": true,
         "subscription_required": true,
-        "paid_terms_accepted": false
+        "paid_terms_accepted": false,
+        "commercial_use_allowed": false,
+        "display_allowed": false,
+        "offline_cache_allowed": false,
+        "redistribution_allowed": false,
+        "bulk_reuse_allowed": false,
+        "terms_scope": "Authorized customers may use OEM DTC/ODX in their own products subject to contract; further use and remarketing are not permitted."
       },
       "applicability": {
         "precision": "OEM_DTC_and_reference_values_per_ECU_and_platform_after_authorized_package_access",
@@ -168,12 +174,18 @@
           "CH",
           "UK"
         ],
-        "redistribution_allowed": "permitted_for_authorized_eligible_customers_under_contract_and_EU_2018_858",
+        "redistribution_allowed": false,
         "commercial_use": "permitted_for_authorized_eligible_customers_under_contract",
         "offline_distribution_of_database": "not_confirmed_requires_contractual_scope",
         "russia_market_allowed": false,
         "paid_erwin_account_required_per_brand": true,
-        "paid_terms_accepted": false
+        "paid_terms_accepted": false,
+        "commercial_use_allowed": false,
+        "display_allowed": false,
+        "offline_cache_allowed": false,
+        "bulk_reuse_allowed": false,
+        "contractual_redistribution_permitted_for_authorized_eligible_customers": true,
+        "terms_scope": "Contractual redistribution is available only to authorized eligible customers under the RMI licence and EU 2018/858; Russia is explicitly excluded."
       },
       "applicability": {
         "precision": "OEM_platform_based_RMI_by_VIN_or_model_after_authorized_access",
@@ -254,7 +266,12 @@
         "offline_cache_allowed": false,
         "third_party_redistribution_allowed": false,
         "automated_extraction_allowed": false,
-        "paid_terms_accepted": false
+        "paid_terms_accepted": false,
+        "commercial_use_allowed": false,
+        "display_allowed": false,
+        "redistribution_allowed": false,
+        "bulk_reuse_allowed": false,
+        "terms_scope": "Direct licensed workshop access only; no data-feed, offline-cache or third-party redistribution right identified."
       },
       "applicability": {
         "precision": "brand_market_and_OEM_frontend_context; VIN/model matching inside OEM systems",
