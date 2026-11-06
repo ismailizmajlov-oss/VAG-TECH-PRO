@@ -19,7 +19,7 @@ on:
       - "data/source-manifests/vag-factory-source-register.json"
       - "scripts/probe_rdw_vag_type_approvals.py"
       - "scripts/build_rdw_vag_type_approval_pack.py"
-      - "scripts/verify_rdw_vag_type-approval-pack.py"
+      - "scripts/verify_rdw_vag_type_approval_pack.py"
       - "tests/test_rdw_vag_type_approval_pack.py"
       - ".github/workflows/build-rdw-vag-type-approval-pack.yml"
   workflow_dispatch:
