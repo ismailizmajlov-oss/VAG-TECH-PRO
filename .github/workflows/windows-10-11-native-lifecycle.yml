@@ -39,7 +39,7 @@ jobs:
       - name: Download installers and lifecycle contract from the successful Windows build
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: vag-tech-pro-windows-x64-run70
+          name: vag-tech-pro-windows-x64-run71
           path: ${{ runner.temp }}/vag-tech-pro-win10-11
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -64,6 +64,7 @@ jobs:
           $metadataPath = Join-Path $artifactRoot "build-metadata.json"
           $metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
           if ($metadata.desktop_version -ne "0.2.4") { throw "Unexpected desktop version in build metadata: $($metadata.desktop_version)" }
+          if ($metadata.rdw_ru_eaeu_applicability -ne $false -or $metadata.rdw_exact_vehicle_fitment -ne $false -or $metadata.rdw_vehicle_variants -lt 1 -or $metadata.rdw_engine_candidates -lt 1 -or $metadata.rdw_transmission_candidates -lt 1) { throw "RDW pack metadata is missing or violates candidate-only scope." }
           $installer = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.3-x64.exe"
           $upgradeInstaller = Join-Path $artifactRoot "VAG-TECH-PRO-Setup-0.2.4-x64.exe"
           foreach ($file in @($installer, $upgradeInstaller)) {
@@ -75,10 +76,24 @@ jobs:
           }
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
-          foreach ($required in @("data/research/manifest.json", "lib/local-core-db.cjs", "scripts/verify-local-core.cjs")) {
+          foreach ($required in @("data/research/manifest.json", "data/research/rdw-vag-type-approval-cc0/manifest.json", "data/research/rdw-vag-type-approval-cc0/rdw-vag-type-approval.sqlite", "data/research/rdw-vag-type-approval-cc0/LICENSE-CC0-1.0.txt", "data/research/rdw-vag-type-approval-cc0/ATTRIBUTION.md", "data/source-manifests/rdw-vag-type-approval.lock.json", "lib/rdw-type-approval-db.cjs", "lib/local-core-db.cjs", "scripts/verify-local-core.cjs")) {
             if (-not (Test-Path -LiteralPath (Join-Path $desktopRoot $required))) { throw "Offline lifecycle contract file is missing: $required" }
           }
           if (-not (Test-Path -LiteralPath $lifecycle)) { throw "Windows lifecycle script is missing." }
+          $rdwPackDir = Join-Path $desktopRoot "data/research/rdw-vag-type-approval-cc0"
+          $rdwManifest = Get-Content -LiteralPath (Join-Path $rdwPackDir "manifest.json") -Raw | ConvertFrom-Json
+          $rdwDbPath = Join-Path $rdwPackDir "rdw-vag-type-approval.sqlite"
+          $rdwLockPath = Join-Path $desktopRoot "data/source-manifests/rdw-vag-type-approval.lock.json"
+          if ($rdwManifest.data_license -ne "CC0-1.0" -or $rdwManifest.verification_status -ne "verified_source_candidate_pack_only" -or $rdwManifest.exact_vehicle_fitment -ne $false -or $rdwManifest.ru_eaeu_applicability -ne $false -or $rdwManifest.vag_factory_engine_code_verified -ne $false -or $rdwManifest.vag_factory_gearbox_code_verified -ne $false -or $rdwManifest.diagnostic_execution_allowed -ne $false) { throw "RDW source/license/applicability boundary failed on native Windows." }
+          if ((Get-FileHash -LiteralPath $rdwDbPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $metadata.rdw_database_sha256 -or $rdwManifest.database_sha256 -ne $metadata.rdw_database_sha256) { throw "RDW SQLite SHA-256 mismatch on native Windows." }
+          if ((Get-FileHash -LiteralPath $rdwLockPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $metadata.rdw_source_lock_sha256 -or $rdwManifest.source_manifest_sha256 -ne $metadata.rdw_source_lock_sha256) { throw "RDW source-lock SHA-256 mismatch on native Windows." }
+          if ($rdwManifest.source_snapshot_sha256 -ne $metadata.rdw_source_snapshot_sha256 -or $rdwManifest.metadata_bundle_sha256 -ne $metadata.rdw_metadata_bundle_sha256) { throw "RDW snapshot/metadata bundle hash mismatch on native Windows." }
+          if ((Get-FileHash -LiteralPath (Join-Path $rdwPackDir "LICENSE-CC0-1.0.txt") -Algorithm SHA256).Hash.ToLowerInvariant() -ne $rdwManifest.license_sha256 -or (Get-FileHash -LiteralPath (Join-Path $rdwPackDir "ATTRIBUTION.md") -Algorithm SHA256).Hash.ToLowerInvariant() -ne $rdwManifest.attribution_sha256) { throw "RDW license/attribution hash mismatch on native Windows." }
+          if ($rdwManifest.no_license_plate_retained -ne $true -or $rdwManifest.no_personal_or_holder_data_retained -ne $true) { throw "RDW privacy minimisation evidence failed on native Windows." }
+          $sourceIndexPath = Join-Path $desktopRoot "data/source-manifests/source-manifest-index.json"
+          $sourceIndex = Get-Content -LiteralPath $sourceIndexPath -Raw | ConvertFrom-Json
+          $rdwIndexEntry = $sourceIndex.files | Where-Object { $_.name -eq "rdw-vag-type-approval.lock.json" } | Select-Object -First 1
+          if ($null -eq $rdwIndexEntry -or $rdwIndexEntry.sha256 -ne $metadata.rdw_source_lock_sha256) { throw "RDW source lock is not covered by the native Windows manifest index." }
 
           # Windows PowerShell 5.1 needs UseBasicParsing to avoid an IE dependency.
           $scriptText = Get-Content -LiteralPath $lifecycle -Raw

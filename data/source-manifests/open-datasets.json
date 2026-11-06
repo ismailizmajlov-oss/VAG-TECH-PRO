@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "status": "superseded_by_vag_factory_source_register",
+  "sources": [],
+  "note": "Legacy compatibility placeholder only. The authoritative source inventory is data/source-manifests/vag-factory-source-register.json; no independent dataset records are declared here."
+}

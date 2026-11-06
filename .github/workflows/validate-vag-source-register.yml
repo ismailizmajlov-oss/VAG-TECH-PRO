@@ -48,6 +48,13 @@ on:
       - "tests/test_vw_gis_diagnostics_data_source_rights.py"
       - "docs/research/VW_GIS_DIAGNOSTICS_DATA_RIGHTS_REVIEW_2026-11-06.md"
       - "tests/test_vw_gis_diagnostics_data_source_rights.py"
+      - "data/source-manifests/rdw-vag-type-approval.lock.json"
+      - "docs/research/RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md"
+      - "scripts/build_rdw_vag_type_approval.py"
+      - "scripts/rdw_vag_type_approval_common.py"
+      - "scripts/verify_rdw_vag_type_approval.py"
+      - "tests/test_rdw_vag_type_approval.py"
+      - "tests/test_rdw_vag_type_approval_source_rights.py"
       - ".github/workflows/validate-vag-source-register.yml"
   pull_request:
     branches: [main]
@@ -86,6 +93,13 @@ on:
       - "tests/test_vw_gis_diagnostics_data_source_rights.py"
       - "docs/research/WAL33D_DTC_SOURCE_REVIEW_2026-11-04.md"
       - "tests/test_wal33d_source_rights.py"
+      - "data/source-manifests/rdw-vag-type-approval.lock.json"
+      - "docs/research/RDW_VAG_TYPE_APPROVAL_SOURCE_REVIEW_2026-11-05.md"
+      - "scripts/build_rdw_vag_type_approval.py"
+      - "scripts/rdw_vag_type_approval_common.py"
+      - "scripts/verify_rdw_vag_type_approval.py"
+      - "tests/test_rdw_vag_type_approval.py"
+      - "tests/test_rdw_vag_type_approval_source_rights.py"
 
 permissions:
   contents: read

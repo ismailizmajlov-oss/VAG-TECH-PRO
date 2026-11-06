@@ -987,6 +987,37 @@ jobs:
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") -Force
 
+      - name: Acquire and integrate RDW CC0 EU/NL candidate pack for Windows 0.2.4
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m unittest discover -s tests -p "test_rdw_vag_type_approval*.py" -v 2>&1 | Tee-Object -FilePath "rdw-source-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "RDW source rights and builder tests failed" }
+          $packDir = Join-Path $env:RUNNER_TEMP "rdw-vag-type-approval-run76"
+          if (Test-Path $packDir) { Remove-Item -LiteralPath $packDir -Recurse -Force }
+          python scripts/build_rdw_vag_type_approval.py --output-dir $packDir 2>&1 | Tee-Object -FilePath "rdw-pack-build.log"
+          if ($LASTEXITCODE -ne 0) { throw "RDW live source acquisition/build failed" }
+          python scripts/verify_rdw_vag_type_approval.py --pack-dir $packDir 2>&1 | Tee-Object -FilePath "rdw-pack-verification.log"
+          if ($LASTEXITCODE -ne 0) { throw "RDW source metadata, privacy, provenance or SQLite verification failed" }
+          node --check apply-rdw-type-approval-run76.cjs
+          if ($LASTEXITCODE -ne 0) { throw "RDW desktop integration script syntax check failed" }
+          node apply-rdw-type-approval-run76.cjs --desktop-root desktop-source --pack-dir $packDir 2>&1 | Tee-Object -FilePath "rdw-desktop-integration-run76.log"
+          if ($LASTEXITCODE -ne 0) { throw "RDW offline desktop integration failed" }
+          node apply-rdw-lifecycle-fix-run77.cjs --desktop-root desktop-source
+          if ($LASTEXITCODE -ne 0) { throw "RDW lifecycle version gate patch failed" }
+          $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path (Get-Location) "desktop-source/data/research"
+          Push-Location desktop-source
+          npm test 2>&1 | Tee-Object -FilePath "rdw-desktop-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Desktop tests after RDW integration failed" }
+          npm run lint 2>&1 | Tee-Object -FilePath "rdw-desktop-lint.log"
+          if ($LASTEXITCODE -ne 0) { throw "Desktop lint after RDW integration failed" }
+          npm run typecheck 2>&1 | Tee-Object -FilePath "rdw-desktop-typecheck.log"
+          if ($LASTEXITCODE -ne 0) { throw "Desktop TypeScript check after RDW integration failed" }
+          npm run verify:local-research 2>&1 | Tee-Object -FilePath "rdw-desktop-research-verification.log"
+          if ($LASTEXITCODE -ne 0) { throw "Desktop local research pack verification after RDW integration failed" }
+          Pop-Location
+          Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
+
       - name: Build upgrade Windows x64 NSIS installer
         working-directory: desktop-source
         shell: pwsh
@@ -1008,6 +1039,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata generation candidate verification failed" }
           node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged upgrade generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade generic MechanicDB offline resource verification failed" }
+
+          node scripts/verify-rdw-type-approval.cjs 2>&1 | Tee-Object -FilePath verify-rdw-packaged-offline.log
+          if ($LASTEXITCODE -ne 0) { throw "Packaged RDW offline resource verification failed" }
 
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.4-x64.exe") -Force
@@ -1111,6 +1145,19 @@ jobs:
           $generationMemberCount = if ($generationReport) { $generationReport.counts.member_entities } else { $null }
           $generationLinkCount = if ($generationReport) { $generationReport.counts.model_member_links } else { $null }
           $generationBindingCount = if ($generationReport) { $generationReport.counts.source_bindings } else { $null }
+          $rdwReportPath = "desktop-source/data/research/rdw-vag-type-approval-cc0/desktop-integration-verification.json"
+          $rdwReport = if (Test-Path $rdwReportPath) { Get-Content -LiteralPath $rdwReportPath -Raw | ConvertFrom-Json } else { $null }
+          $rdwDbHash = if ($rdwReport) { $rdwReport.database_sha256 } else { $null }
+          $rdwSnapshotHash = if ($rdwReport) { $rdwReport.source_snapshot_sha256 } else { $null }
+          $rdwMetadataHash = if ($rdwReport) { $rdwReport.metadata_bundle_sha256 } else { $null }
+          $rdwLockHash = if ($rdwReport) { $rdwReport.source_manifest_sha256 } else { $null }
+          $rdwRegisterHash = if ($rdwReport) { $rdwReport.source_register_sha256 } else { $null }
+          $rdwSourceRevision = if ($rdwReport) { $rdwReport.source_revision } else { $null }
+          $rdwVehicleVariants = if ($rdwReport) { $rdwReport.counts.vehicle_variants } else { $null }
+          $rdwEngineCandidates = if ($rdwReport) { $rdwReport.counts.engine_candidates } else { $null }
+          $rdwTransmissionCandidates = if ($rdwReport) { $rdwReport.counts.transmission_candidates } else { $null }
+          $rdwUniquePairs = if ($rdwReport) { $rdwReport.counts.unique_source_row_pair_candidates } else { $null }
+          $rdwAmbiguousPairs = if ($rdwReport) { $rdwReport.counts.ambiguous_or_incomplete_pair_keys } else { $null }
           $sourceRegisterPath = "desktop-source/data/source-manifests/vag-factory-source-register.json"
           $sourceRegisterJson = if (Test-Path $sourceRegisterPath) { Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json } else { $null }
           $sourceRegisterHash = if (Test-Path $sourceRegisterPath) { (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
@@ -1143,7 +1190,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; rdw_database_sha256 = $rdwDbHash; rdw_source_snapshot_sha256 = $rdwSnapshotHash; rdw_metadata_bundle_sha256 = $rdwMetadataHash; rdw_source_lock_sha256 = $rdwLockHash; rdw_source_register_sha256 = $rdwRegisterHash; rdw_source_revision = $rdwSourceRevision; rdw_vehicle_variants = $rdwVehicleVariants; rdw_engine_candidates = $rdwEngineCandidates; rdw_transmission_candidates = $rdwTransmissionCandidates; rdw_unique_source_row_pair_candidates = $rdwUniquePairs; rdw_ambiguous_or_incomplete_pair_keys = $rdwAmbiguousPairs; rdw_ru_eaeu_applicability = $false; rdw_exact_vehicle_fitment = $false; desktop_version = '0.2.4'; patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run76-rdw-cc0-candidate-only'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Stage Windows 2022 lifecycle verification payload
         if: always()
@@ -1209,6 +1256,21 @@ jobs:
             desktop-source/tests/generic-repair-guidance-ui-contract.test.cjs
             desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/integration-verification.json
             desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/desktop-integration-verification.json
+            rdw-source-tests.log
+            rdw-pack-build.log
+            rdw-pack-verification.log
+            rdw-desktop-integration-run76.log
+            rdw-desktop-tests.log
+            rdw-desktop-lint.log
+            rdw-desktop-typecheck.log
+            rdw-desktop-research-verification.log
+            verify-rdw-packaged-offline.log
+            desktop-source/data/research/rdw-vag-type-approval-cc0/*
+            desktop-source/data/source-manifests/rdw-vag-type-approval.lock.json
+            desktop-source/lib/rdw-type-approval-db.cjs
+            desktop-source/lib/rdw-type-approval-db.d.cts
+            desktop-source/tests/rdw-type-approval-db.test.cjs
+            desktop-source/tests/rdw-type-approval-ui-contract.test.cjs
             desktop-source/vehicle-config-match-guard-verification.json
             desktop-source/lint.log
             desktop-source/typecheck.log
@@ -1265,7 +1327,7 @@ jobs:
             $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
             if ($null -eq $expected -or $expected.sha256 -ne $actual) { throw "Windows installer artifact hash mismatch: $name" }
           }
-          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 109 -or $metadata.wikidata_generation_model_member_links -ne 125 -or $metadata.wikidata_generation_source_bindings -ne 187) { throw "Build metadata does not describe the pinned generation candidate pack." }
+          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 109 -or $metadata.wikidata_generation_model_member_links -ne 125 -or $metadata.wikidata_generation_source_bindings -ne 187 -or $metadata.rdw_ru_eaeu_applicability -ne $false -or $metadata.rdw_exact_vehicle_fitment -ne $false -or $metadata.rdw_vehicle_variants -lt 1 -or $metadata.rdw_engine_candidates -lt 1 -or $metadata.rdw_transmission_candidates -lt 1) { throw "Build metadata does not describe the pinned candidate-only generation and RDW packs." }
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $sourceRegisterPath = Join-Path $desktopRoot "data/source-manifests/vag-factory-source-register.json"
           if (-not (Test-Path -LiteralPath $sourceRegisterPath -PathType Leaf)) { throw "Bundled source-rights register is missing from Windows artifact." }
@@ -1302,9 +1364,33 @@ jobs:
           $technicalSchemaPath = Join-Path $desktopRoot "data/schemas/technical-record-payloads.schema.json"
           if (-not (Test-Path -LiteralPath $technicalSchemaPath -PathType Leaf)) { throw "Technical payload schema is missing from Windows lifecycle payload." }
           if ((Get-FileHash -LiteralPath $technicalSchemaPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $metadata.technical_payload_schema_sha256) { throw "Technical payload schema hash differs from build metadata." }
+          $rdwPackDir = Join-Path $desktopRoot "data/research/rdw-vag-type-approval-cc0"
+          $rdwManifestPath = Join-Path $rdwPackDir "manifest.json"
+          $rdwDatabasePath = Join-Path $rdwPackDir "rdw-vag-type-approval.sqlite"
+          $rdwLockPath = Join-Path $manifestDir "rdw-vag-type-approval.lock.json"
+          $rdwPackRegisterPath = Join-Path $rdwPackDir "source-register.json"
+          $rdwLicensePath = Join-Path $rdwPackDir "LICENSE-CC0-1.0.txt"
+          $rdwAttributionPath = Join-Path $rdwPackDir "ATTRIBUTION.md"
+          foreach ($path in @($rdwManifestPath,$rdwDatabasePath,$rdwLockPath,$rdwPackRegisterPath,$rdwLicensePath,$rdwAttributionPath)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "RDW candidate pack provenance file is missing: $path" }
+          }
+          $rdwManifest = Get-Content -LiteralPath $rdwManifestPath -Raw | ConvertFrom-Json
+          $rdwDatabaseHash = (Get-FileHash -LiteralPath $rdwDatabasePath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $rdwLockHash = (Get-FileHash -LiteralPath $rdwLockPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $rdwPackRegisterHash = (Get-FileHash -LiteralPath $rdwPackRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($rdwManifest.pack_id -ne "rdw-vag-type-approval-cc0" -or $rdwManifest.data_license -ne "CC0-1.0" -or $rdwManifest.verification_status -ne "verified_source_candidate_pack_only") { throw "RDW pack identity/license/candidate status failed." }
+          if ($rdwManifest.exact_vehicle_fitment -ne $false -or $rdwManifest.ru_eaeu_applicability -ne $false -or $rdwManifest.vag_factory_engine_code_verified -ne $false -or $rdwManifest.vag_factory_gearbox_code_verified -ne $false -or $rdwManifest.diagnostic_execution_allowed -ne $false) { throw "RDW pack crossed its candidate-only applicability boundary." }
+          if ($rdwManifest.no_license_plate_retained -ne $true -or $rdwManifest.no_personal_or_holder_data_retained -ne $true) { throw "RDW pack privacy minimisation evidence failed." }
+          if (@($rdwManifest.market_scope | Where-Object { $_ -match "RU|EAEU" }).Count -gt 0 -or @($rdwManifest.market_scope | Where-Object { $_ -eq "EU_TYPE_APPROVAL" }).Count -eq 0) { throw "RDW market scope is not restricted to EU/NL." }
+          if ($rdwDatabaseHash -ne $metadata.rdw_database_sha256 -or $rdwManifest.database_sha256 -ne $rdwDatabaseHash) { throw "RDW SQLite hash differs from build metadata/manifest." }
+          if ($rdwLockHash -ne $metadata.rdw_source_lock_sha256 -or $rdwManifest.source_manifest_sha256 -ne $rdwLockHash) { throw "RDW source-lock hash differs from build metadata/manifest." }
+          if ($rdwPackRegisterHash -ne $metadata.rdw_source_register_sha256 -or $rdwManifest.source_register_sha256 -ne $rdwPackRegisterHash) { throw "RDW pack source-register hash differs from build metadata/manifest." }
+          if ($rdwManifest.source_snapshot_sha256 -ne $metadata.rdw_source_snapshot_sha256 -or $rdwManifest.metadata_bundle_sha256 -ne $metadata.rdw_metadata_bundle_sha256) { throw "RDW snapshot/metadata bundle hashes differ from build metadata." }
+          if ((Get-FileHash -LiteralPath $rdwLicensePath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $rdwManifest.license_sha256 -or (Get-FileHash -LiteralPath $rdwAttributionPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $rdwManifest.attribution_sha256) { throw "RDW license/attribution file hashes differ from manifest." }
+          if ($rdwManifest.counts.vehicle_variants -ne $metadata.rdw_vehicle_variants -or $rdwManifest.counts.engine_candidates -ne $metadata.rdw_engine_candidates -or $rdwManifest.counts.transmission_candidates -ne $metadata.rdw_transmission_candidates -or $rdwManifest.counts.unique_source_row_pair_candidates -ne $metadata.rdw_unique_source_row_pair_candidates -or $rdwManifest.counts.ambiguous_or_incomplete_pair_keys -ne $metadata.rdw_ambiguous_or_incomplete_pair_keys) { throw "RDW candidate counts differ from build metadata." }
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
-          foreach ($required in @("data/research/manifest.json", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
+          foreach ($required in @("data/research/manifest.json", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "data/research/rdw-vag-type-approval-cc0/manifest.json", "data/research/rdw-vag-type-approval-cc0/rdw-vag-type-approval.sqlite", "data/source-manifests/rdw-vag-type-approval.lock.json", "lib/rdw-type-approval-db.cjs", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
             if (-not (Test-Path (Join-Path $desktopRoot $required))) { throw "Offline lifecycle evidence file is missing: $required" }
           }
           Set-Location $desktopRoot
