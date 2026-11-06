@@ -76,7 +76,7 @@
         "OTTS field 50 is engine make/type, not a confirmed VAG factory engine code.",
         "OTTS fields 14-18 identify make, commercial name, type, base vehicle/chassis and modifications; they do not establish exact engine/gearbox fitment by themselves.",
         "OTTS field 40 contains VINs covered by the approval; field 79 describes VIN structure.",
-        "The OTTS attribute list does not provide a dedicated gearbox-code field.",
+        "The reviewed Annex 1 mapping does not establish a dedicated factory gearbox-code field. An ELPTS operator notice dated 2026-08-21 says the internal AS EOTTS form's gearbox-entry issue for additional reduction and hydraulic transmissions was fixed; the exact internal schema, field semantics and any factory-code meaning remain unverified. This does not change the separate public Annex 2 field list, which exposes no gearbox field.",
         "SBKTS Appendix 1 field 68 is gearbox make/type, but SBKTS is an individual-vehicle safety certificate, not an OTTS type-approval record.",
         "Do not use SBKTS personal data or package certificate PDFs without separate rights and privacy review.",
         "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
@@ -843,7 +843,8 @@
         "No account, subscription, API key, payment, automated request, bulk download, PDF download or import was used.",
         "Require written permission or a resource-specific open licence covering commercial use, bulk extraction, offline cache, display and redistribution before product integration.",
         "A separate public OTTS search page was observed on 2026-11-06 at https://docs.elpts.ru/ncher/otts; the rendered total label is retained only as a UI observation, not a verified corpus count. See docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-06.md.",
-        "The 2026-11-06 page snapshot showed 14 visible document-identity/status columns and no engine, gearbox, powertrain-pair or ECU columns; the date-filtered result label was empty. This is UI metadata only, not a complete-corpus count or technical fitment evidence."
+        "The 2026-11-06 page snapshot showed 14 visible document-identity/status columns and no engine, gearbox, powertrain-pair or ECU columns; the date-filtered result label was empty. This is UI metadata only, not a complete-corpus count or technical fitment evidence.",
+        "The operator notice about internal gearbox data entry is recorded separately from the public OTTS search table. It is not a licence, public API specification, gearbox-code dictionary or proof of exact vehicle applicability."
       ],
       "public_page_observations": {
         "observed_at": "2026-11-06",
@@ -893,7 +894,26 @@
           "page_title": "ЭСБКТС",
           "note": "Visible OTTS/OTSH/ZOETS filters do not change the page's title or prove document-type completeness"
         }
-      }
+      },
+      "operator_notices": [
+        {
+          "notice_id": "elpts-as-eotts-gearbox-entry-fix-2026-08-21",
+          "publisher": "АО «Электронный паспорт»",
+          "notice_date": "2026-08-21",
+          "url": "https://elpts.ru/uvazhaemye-polzovateli-as-eotts/",
+          "observed_at": "2026-11-06",
+          "statement": "The operator reported that an issue preventing correct entry of gearbox information for transmissions with additional reduction gears and hydraulic transmissions in the updated AS EOTTS platform had been fixed.",
+          "evidence_class": "operator_notice_about_internal_data_entry_workflow",
+          "does_not_establish": [
+            "a public Annex 2 gearbox field",
+            "the exact internal field name or schema",
+            "that the value is a factory gearbox code",
+            "bulk export or API access",
+            "commercial reuse, offline caching, third-party display or redistribution rights"
+          ],
+          "product_decision": "retain_as_access_and_schema_discovery_evidence_only; no import or fitment claim"
+        }
+      ]
     },
     {
       "source_id": "eaeu-rseds-schema-registry",
