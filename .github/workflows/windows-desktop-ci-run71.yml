@@ -987,6 +987,59 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "Local catalog v2, rights-isolation and evidence review tests failed" }
           } finally { Pop-Location }
 
+      - name: Resolve latest ASTRA CH TAS pack run
+        id: astra-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/acquire-astra-ch-tas-vag-probe.yml/runs?branch=main&per_page=100"
+          $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
+          $run = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1
+          if (-not $run) { throw "No ASTRA CH TAS pack workflow run exists." }
+          for ($attempt = 0; $attempt -lt 30 -and $run.status -ne "completed"; $attempt++) {
+            Start-Sleep -Seconds 20
+            $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
+            $run = $response.workflow_runs | Where-Object { $_.id -eq $run.id } | Select-Object -First 1
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "Latest ASTRA CH TAS pack run did not complete successfully; refusing stale artifact fallback." }
+          $artifactsUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts"
+          $artifacts = Invoke-RestMethod -Uri $artifactsUri -Headers $headers -Method Get
+          $artifact = $artifacts.artifacts | Where-Object { $_.name -eq "astra-ch-tas-vag-open-data-pack" -and -not $_.expired } | Select-Object -First 1
+          if (-not $artifact) { throw "Latest ASTRA run has no unexpired verified SQLite pack artifact." }
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($digest -notmatch "^[a-f0-9]{64}$") { throw "Latest ASTRA artifact has no valid SHA-256 digest." }
+          "run_id=$($run.id)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "ASTRA pack source run: #$($run.run_number) / $($run.id)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "ASTRA artifact SHA-256: $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download verified ASTRA CH TAS SQLite pack
+        uses: actions/download-artifact@v4
+        with:
+          name: astra-ch-tas-vag-open-data-pack
+          path: ${{ runner.temp }}/vag-tech-pro-astra-pack
+          run-id: ${{ steps.astra-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+
+      - name: Integrate ASTRA CH pack into offline desktop research catalog
+        shell: pwsh
+        run: |
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-astra-pack"
+          node --check scripts/integrate-astra-ch-tas-run72.cjs
+          node scripts/integrate-astra-ch-tas-run72.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id "${{ steps.astra-pack.outputs.run_id }}" --artifact-sha256 "${{ steps.astra-pack.outputs.artifact_sha256 }}"
+          if ($LASTEXITCODE -ne 0) { throw "ASTRA CH desktop integration failed." }
+          $report = Get-Content -LiteralPath "desktop-source/data/research/astra-ch-tas-vag-open-data/desktop-integration-report.json" -Raw | ConvertFrom-Json
+          if ($report.status -ne "integrated_verified_research_only" -or $report.market_scope[0] -ne "CH" -or $report.ru_eaeu_applicability -ne $false -or $report.production_import -ne $false) { throw "ASTRA desktop integration report failed its market/fitment boundary." }
+          "ASTRA CH pack integrated: $($report.database_sha256)" | Add-Content -LiteralPath "desktop-source/source-verification.txt"
+
+      - name: Mirror patched desktop source and ASTRA integration into audit staging
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
           $sourceAuditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
           $auditFiles = @(
             "app/api/local-core/route.ts",
@@ -1001,7 +1054,9 @@ jobs:
             "scripts/verify-local-core.cjs",
             "tests/local-core-db.test.cjs",
             "tests/local-core-api.test.cjs",
-            "tests/local-data-admin-ui-contract.test.cjs"
+            "tests/local-data-admin-ui-contract.test.cjs",
+            "data/research/astra-ch-tas-vag-open-data/desktop-integration-report.json",
+            "data/research/astra-ch-tas-vag-open-data/manifest.json"
           )
           foreach ($relative in $auditFiles) {
             $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
@@ -1009,6 +1064,8 @@ jobs:
               $destinationFile = Join-Path $sourceAuditRoot $relative
               New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
               Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+            } elseif ($relative -like "data/research/astra-ch-tas-vag-open-data/*") {
+              throw "Expected ASTRA audit evidence is missing: $relative"
             } else { throw "Expected source audit file is missing after patch: $relative" }
           }
 
