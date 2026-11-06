@@ -1192,6 +1192,15 @@ jobs:
             node --test tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-tests-run78.log"
             if ($LASTEXITCODE -ne 0) { throw "Run78 local-core payload validation tests failed" }
           } finally { Pop-Location }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          foreach ($relative in @("lib/local-core-db.cjs", "electron/main.cjs", "tests/local-core-db.test.cjs", "data/schemas/technical-record-payloads.schema.json")) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          $patchHash = (Get-FileHash apply-technical-payload-validation-run78.cjs -Algorithm SHA256).Hash.ToLowerInvariant()
+          "technical_payload_validation_patch_sha256=$patchHash; payload_schema_runtime_enforced=true; generic_dtc_namespace_separated=true; legacy_vag_dtc_numeric=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
