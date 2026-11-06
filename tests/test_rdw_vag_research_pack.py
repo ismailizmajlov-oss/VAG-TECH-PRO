@@ -141,7 +141,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
             manifest_path = pack / "manifest.json"
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             manifest["source_files"][0]["query_spec"]["where_template"] = "unreviewed query"
-            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "query-spec provenance hash mismatch"):
                 rdw.validate_pack(pack)
 
