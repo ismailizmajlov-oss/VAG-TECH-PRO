@@ -13,27 +13,35 @@ if (!fs.existsSync(scriptPath) || !fs.existsSync(testPath)) {
 let lifecycle = fs.readFileSync(scriptPath, 'utf8');
 const oldStatus = '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
 const newStatus = '  Write-Host "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
+let statusOutputChanged = false;
 if (lifecycle.includes(oldStatus)) {
   lifecycle = lifecycle.replace(oldStatus, newStatus);
-} else if (!lifecycle.includes(newStatus)) {
-  throw new Error('Lifecycle status-output statement did not match the reviewed source revision.');
+  statusOutputChanged = true;
 }
-fs.writeFileSync(scriptPath, lifecycle, 'utf8');
+const helper = lifecycle.split("function Start-DesktopAndWait {")[1]?.split("function Stop-Desktop($session) {")[0];
+if (!helper || helper.includes("Write-Output") || !helper.includes("return @{ Process = $process; BaseUrl = $baseUrl }")) {
+  throw new Error("Start-DesktopAndWait must return one session object and emit no incidental success-pipeline output.");
+}
+if (!lifecycle.includes("$session -isnot [System.Collections.IDictionary]") || lifecycle.includes("$origin = $session.BaseUrl")) {
+  throw new Error("Windows lifecycle session-object validation was not applied.");
+}
+if (statusOutputChanged) fs.writeFileSync(scriptPath, lifecycle, 'utf8');
 
 let tests = fs.readFileSync(testPath, 'utf8');
-const testName = 'Windows lifecycle readiness helper emits one session object without pipeline noise';
+const testName = 'Start-DesktopAndWait returns one session object without incidental pipeline output';
 if (!tests.includes(testName)) {
-  tests += `\n\ntest(${JSON.stringify(testName)}, () => {\n  const match = script.match(/function Start-DesktopAndWait\\s*\\{([\\s\\S]*?)\\n\\}/);\n  assert.ok(match, "Start-DesktopAndWait function must exist");\n  assert.doesNotMatch(match[1], /\\bWrite-Output\\b/, "status messages must not enter the function success pipeline");\n  assert.match(match[1], /Write-Host "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims\\."/);\n  assert.match(match[1], /return \\@\\{ Process = \\$process; BaseUrl = \\$baseUrl \\}/);\n});\n`;
+  tests += `\n\ntest(${JSON.stringify(testName)}, () => {\n  const helper = script.split("function Start-DesktopAndWait {")[1]?.split("function Stop-Desktop($session) {")[0];\n  assert.ok(helper, "Start-DesktopAndWait helper must exist");\n  assert.doesNotMatch(helper, /\\bWrite-Output\\b/);\n  assert.match(helper, /return \\@\\{ Process = \\$process; BaseUrl = \\$baseUrl \\}/);\n  assert.match(script, /\\$session -isnot \\[System\\.Collections\\.IDictionary\\]/);\n  assert.match(script, /\\$session\\[.BaseUrl.\\]/);\n});\n`;
+  fs.writeFileSync(testPath, tests, 'utf8');
 }
-fs.writeFileSync(testPath, tests, 'utf8');
-
 const updatedLifecycle = fs.readFileSync(scriptPath, 'utf8');
+const updatedHelper = updatedLifecycle.split("function Start-DesktopAndWait {")[1]?.split("function Stop-Desktop($session) {")[0];
 const updatedTests = fs.readFileSync(testPath, 'utf8');
-if (updatedLifecycle.includes(oldStatus) || !updatedLifecycle.includes(newStatus) || !updatedTests.includes(testName)) {
-  throw new Error('Run77 lifecycle output patch postcondition failed.');
+if (!updatedHelper || updatedHelper.includes("Write-Output") || !updatedHelper.includes("return @{ Process = $process; BaseUrl = $baseUrl }") || !updatedTests.includes(testName)) {
+  throw new Error('Run77 lifecycle output contract postcondition failed.');
 }
 process.stdout.write(JSON.stringify({
-  status: 'patched',
-  fix: 'Start-DesktopAndWait status message moved from success pipeline to host stream',
+  status: 'verified',
+  fix: 'Start-DesktopAndWait success pipeline contains only the session object',
+  astraStatusOutputChanged: statusOutputChanged,
   files: ['scripts/windows-installer-lifecycle.ps1', 'tests/windows-lifecycle-script-contract.test.cjs']
 }, null, 2) + '\n');
