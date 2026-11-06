@@ -136,14 +136,14 @@ lifecycle = replaceExactly(
 );
 lifecycle = replaceExactly(
   lifecycle,
-  "$session = Start-DesktopAndWait\\n$origin = $session.BaseUrl",
+  "$session = Start-DesktopAndWait\n$origin = $session.BaseUrl",
   [
     "$session = Start-DesktopAndWait",
     "if ($session -isnot [System.Collections.IDictionary] -or $null -eq $session['Process'] -or [string]::IsNullOrWhiteSpace([string]$session['BaseUrl'])) {",
     '  throw "Start-DesktopAndWait returned unexpected pipeline output instead of one session object."',
     "}",
     "$origin = [string]$session['BaseUrl']"
-  ].join("\\n"),
+  ].join("\n"),
   "Validate the lifecycle helper return contract before reading BaseUrl"
 );
 const startHelper = lifecycle.split("function Start-DesktopAndWait {")[1]?.split("function Stop-Desktop($session) {")[0];
@@ -166,7 +166,7 @@ const lifecycleOutputTest = [
   '  assert.match(script, /\\$session\\[.BaseUrl.\\]/);',
   '});',
   ''
-].join("\\n");
+].join("\n");
 if (!lifecycleTests.includes('test("Start-DesktopAndWait returns one session object without incidental pipeline output"')) {
   const anchor = 'test("Windows lifecycle test proves offline launch and local SQLite initialization", () => {';
   if (lifecycleTests.split(anchor).length - 1 !== 1) throw new Error("Could not locate lifecycle script contract test insertion point.");
