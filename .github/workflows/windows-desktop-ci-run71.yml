@@ -33,7 +33,9 @@ on:
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "tests/test_openvag_source_rights.py"
+      - "tests/test_open_vehicle_schema_source_review.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
       - "docs/research/WAL33D_DTC_DATABASE_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/DECODE_TR_VAG_ENGINE_DRIVETRAIN_RIGHTS_REVIEW_2026-11-06.md"
@@ -97,7 +99,9 @@ on:
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "tests/test_openvag_source_rights.py"
+      - "tests/test_open_vehicle_schema_source_review.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
       - "docs/research/WAL33D_DTC_DATABASE_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/DECODE_TR_VAG_ENGINE_DRIVETRAIN_RIGHTS_REVIEW_2026-11-06.md"
@@ -184,6 +188,7 @@ jobs:
           python tests/test_offline_data_pack_rights.py
           python tests/test_otts_bot_source_rights.py
           python tests/test_openvag_source_rights.py
+          python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
           python tests/test_decode_tr_source_rights.py
           node --test tests/authorized-fgis-otts-export.test.cjs
