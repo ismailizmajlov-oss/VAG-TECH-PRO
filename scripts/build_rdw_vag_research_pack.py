@@ -107,6 +107,75 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def snapshot_manifest_entries(source_files: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    fields = (
+        "dataset_id", "dataset_name", "source_revision", "sha256", "byte_size",
+        "row_count", "source_columns_sha256", "required_columns_sha256", "query_spec_sha256",
+    )
+    entries = [{field: item[field] for field in fields} for item in source_files]
+    return sorted(entries, key=lambda item: item["dataset_id"])
+
+
+def prepare_snapshot_manifest(
+    source_manifest: dict[str, Any], source_files: list[dict[str, Any]]
+) -> tuple[dict[str, Any], str, dict[str, str]]:
+    entries = snapshot_manifest_entries(source_files)
+    revisions = {
+        item["dataset_name"]: item["source_revision"]
+        for item in sorted(source_files, key=lambda value: value["dataset_name"])
+    }
+    snapshot_sha = sha256_bytes(canonical_bytes(entries))
+    snapshot = source_manifest.get("snapshot") or {}
+    expected_status = "filtered_research_snapshot_acquired"
+
+    if snapshot.get("status") == expected_status:
+        if (
+            snapshot.get("source_snapshot_sha256") != snapshot_sha
+            or snapshot.get("source_revision") != revisions
+            or snapshot.get("source_files") != entries
+            or source_manifest.get("source_snapshot_sha256") != snapshot_sha
+        ):
+            raise RuntimeError(
+                "RDW source snapshot changed after the reviewed manifest was pinned; "
+                "review the new revisions and hashes before updating the source manifest"
+            )
+    elif snapshot.get("status") in (None, "not_downloaded_probe_only", "schema_probe_only"):
+        source_manifest["snapshot"] = {
+            "status": expected_status,
+            "source_revision": revisions,
+            "source_snapshot_sha256": snapshot_sha,
+            "source_files": entries,
+            "note": (
+                "Six allowlisted filtered CC0 RDW snapshots were acquired and hashed. "
+                "This is a separate NL-only research snapshot; data_ingested remains false "
+                "because no production vehicle-fitment import is authorized or claimed."
+            ),
+        }
+        source_manifest["source_snapshot_sha256"] = snapshot_sha
+        source_manifest["hash_status"] = (
+            "six_filtered_source_snapshots_and_sqlite_research_pack_hashed; "
+            "production_import_not_performed"
+        )
+    else:
+        raise ValueError("RDW source manifest has an unsupported snapshot state")
+
+    expected_research_pack = {
+        "status": "verified_research_only",
+        "pack_id": "rdw-vag-nl-eu-type-approval-research",
+        "source_snapshot_sha256": snapshot_sha,
+        "market_scope": ["NL"],
+        "production_import": False,
+        "ru_eaeu_applicability": False,
+        "exact_engine_gearbox_pair": False,
+    }
+    existing_research_pack = source_manifest.get("research_pack")
+    if existing_research_pack is not None and existing_research_pack != expected_research_pack:
+        raise ValueError("RDW research-pack metadata differs from the pinned source snapshot")
+    source_manifest["research_pack"] = expected_research_pack
+    source_manifest["data_ingested"] = False
+    return source_manifest, snapshot_sha, revisions
+
+
 SCOPE_COVERAGE_SEMANTICS = (
     "Counts of separate engine and gearbox rows sharing an exact approval scope are diagnostic only; "
     "they do not create or confirm an engine/gearbox pair."
@@ -650,10 +719,7 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
     if output_dir.exists() and any(output_dir.iterdir()):
         raise FileExistsError(f"Refusing to overwrite non-empty pack directory: {output_dir}")
     output_dir.mkdir(parents=True, exist_ok=True)
-    source_manifest_sha = sha256_bytes(source_manifest_bytes)
     copied_manifest = output_dir / "rdw-eu-vag-type-approval-open-data.json"
-    copied_manifest.write_bytes(source_manifest_bytes)
-
     source_files = []
     for name, rows in sorted(datasets.items()):
         dataset_id = str(DATASETS[name]["id"])
@@ -670,6 +736,15 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
             "query_spec_sha256": sha256_bytes(canonical_bytes(metadata[name]["query_spec"])),
             "query_scope": "Per-dataset query specification is retained and hashed in query_spec/query_spec_sha256.",
         })
+
+    pack_source_manifest, source_snapshot_sha, source_revisions = prepare_snapshot_manifest(
+        json.loads(json.dumps(source_manifest)), source_files
+    )
+    pack_source_manifest_bytes = (
+        json.dumps(pack_source_manifest, ensure_ascii=False, indent=2) + "\n"
+    ).encode("utf-8")
+    source_manifest_sha = sha256_bytes(pack_source_manifest_bytes)
+    copied_manifest.write_bytes(pack_source_manifest_bytes)
 
     database = output_dir / "rdw-vag-research.sqlite"
     counts = build_sqlite(database, datasets, metadata, source_manifest_sha, source_files)
@@ -697,7 +772,8 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         "source_manifest_file": copied_manifest.name,
         "source_manifest_sha256": source_manifest_sha,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source_revisions": {item["dataset_name"]: item["source_revision"] for item in source_files},
+        "source_revisions": source_revisions,
+        "source_snapshot_sha256": source_snapshot_sha,
         "source_files": source_files,
         "database": {"path": database.name, "sha256": db_sha, "byte_size": database.stat().st_size},
         "counts": counts,
@@ -743,7 +819,10 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
     report = {
         "schema_version": 1, "status": "verified_research_only", "source_id": SOURCE_ID,
         "database_sha256": db_sha, "database_integrity_check": "ok",
-        "source_manifest_sha256": source_manifest_sha, "counts": counts,
+        "source_manifest_sha256": source_manifest_sha,
+        "source_snapshot_sha256": source_snapshot_sha,
+        "source_revisions": source_revisions,
+        "counts": counts,
         "scope_coverage": scope_coverage,
         "scope_coverage_semantics": SCOPE_COVERAGE_SEMANTICS,
         "market_scope": ["NL"], "ru_eaeu_applicability": False,
@@ -786,7 +865,8 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             value = item.get(hash_field)
             if not isinstance(value, str) or len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
                 raise ValueError(f"RDW provenance digest is malformed: {item['dataset_id']} / {hash_field}")
-    if sha256_file(pack_dir / manifest["source_manifest_file"]) != manifest["source_manifest_sha256"]:
+    source_manifest_path = pack_dir / manifest["source_manifest_file"]
+    if sha256_file(source_manifest_path) != manifest["source_manifest_sha256"]:
         raise ValueError("RDW source manifest hash mismatch")
     db = sqlite3.connect(f"file:{database.resolve().as_posix()}?mode=ro", uri=True)
     db.row_factory = sqlite3.Row
@@ -894,9 +974,37 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             raise ValueError("RDW SQLite source row references an unknown source file")
     finally:
         db.close()
+
+    source_manifest = read_json(source_manifest_path)
+    snapshot = source_manifest.get("snapshot", {})
+    expected_snapshot_entries = snapshot_manifest_entries(manifest["source_files"])
+    if (
+        snapshot.get("status") != "filtered_research_snapshot_acquired"
+        or snapshot.get("source_snapshot_sha256") != manifest.get("source_snapshot_sha256")
+        or source_manifest.get("source_snapshot_sha256") != manifest.get("source_snapshot_sha256")
+        or snapshot.get("source_revision") != manifest.get("source_revisions")
+        or snapshot.get("source_files") != expected_snapshot_entries
+        or source_manifest.get("data_ingested") is not False
+        or source_manifest.get("import_policy", {}).get("production_import") is not False
+        or source_manifest.get("import_policy", {}).get("ru_eaeu_applicability") is not False
+    ):
+        raise ValueError("RDW embedded source manifest snapshot/prod-import boundary mismatch")
+    expected_research_pack = {
+        "status": "verified_research_only",
+        "pack_id": "rdw-vag-nl-eu-type-approval-research",
+        "source_snapshot_sha256": manifest["source_snapshot_sha256"],
+        "market_scope": ["NL"],
+        "production_import": False,
+        "ru_eaeu_applicability": False,
+        "exact_engine_gearbox_pair": False,
+    }
+    if source_manifest.get("research_pack") != expected_research_pack:
+        raise ValueError("RDW embedded source manifest research-pack status mismatch")
+
     return {
         "status": "verified_research_only",
         "database_sha256": manifest["database"]["sha256"],
+        "source_snapshot_sha256": manifest["source_snapshot_sha256"],
         "counts": expected,
         "scope_coverage": expected_scope_coverage,
     }

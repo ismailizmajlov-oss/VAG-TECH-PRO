@@ -15,8 +15,18 @@ MANIFEST_PATH = ROOT / "data/source-manifests/rdw-eu-vag-type-approval-open-data
 
 class RdwVagResearchPackTests(unittest.TestCase):
     def setUp(self):
-        self.source_bytes = MANIFEST_PATH.read_bytes()
-        self.source = json.loads(self.source_bytes.decode("utf-8-sig"))
+        self.source = json.loads(MANIFEST_PATH.read_text(encoding="utf-8-sig"))
+        # Unit fixtures are intentionally independent from the pinned live RDW snapshot.
+        self.source["snapshot"] = {
+            "status": "not_downloaded_probe_only",
+            "source_revision": None,
+            "source_snapshot_sha256": None,
+            "note": "Unit-test fixture; no live snapshot is claimed.",
+        }
+        self.source["source_snapshot_sha256"] = None
+        self.source["hash_status"] = "unit_test_fixture_no_live_snapshot"
+        self.source.pop("research_pack", None)
+        self.source_bytes = (json.dumps(self.source, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
         self.key = (
             "e1*2018/858*00403*07",
             "ACDUCAX0",
@@ -185,6 +195,17 @@ class RdwVagResearchPackTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "schema changed during acquisition"):
                 rdw.verify_source_revisions(self.metadata)
 
+    def test_pinned_snapshot_manifest_rejects_changed_source_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first"
+            rdw.build_pack(first, self.source, self.source_bytes, self.datasets, self.metadata)
+            pinned = json.loads((first / "rdw-eu-vag-type-approval-open-data.json").read_text(encoding="utf-8"))
+            pinned["snapshot"]["source_snapshot_sha256"] = "0" * 64
+            pinned["source_snapshot_sha256"] = "0" * 64
+            pinned_bytes = (json.dumps(pinned, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+            with self.assertRaisesRegex(RuntimeError, "source snapshot changed"):
+                rdw.build_pack(Path(tmp) / "second", pinned, pinned_bytes, self.datasets, self.metadata)
+
     def test_pack_builds_hashed_sqlite_with_separate_engine_and_gearbox_candidates(self):
         with tempfile.TemporaryDirectory() as tmp:
             report = rdw.build_pack(Path(tmp) / "pack", self.source, self.source_bytes, self.datasets, self.metadata)
@@ -205,6 +226,16 @@ class RdwVagResearchPackTests(unittest.TestCase):
             pack = Path(tmp) / "pack"
             manifest = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["market_scope"], ["NL"])
+            self.assertEqual(manifest["source_snapshot_sha256"], report["source_snapshot_sha256"])
+            self.assertEqual(manifest["source_revisions"], report["source_revisions"])
+            embedded_source = json.loads((pack / "rdw-eu-vag-type-approval-open-data.json").read_text(encoding="utf-8"))
+            self.assertEqual(embedded_source["snapshot"]["status"], "filtered_research_snapshot_acquired")
+            self.assertEqual(embedded_source["snapshot"]["source_snapshot_sha256"], manifest["source_snapshot_sha256"])
+            self.assertEqual(embedded_source["source_snapshot_sha256"], manifest["source_snapshot_sha256"])
+            self.assertEqual(len(embedded_source["snapshot"]["source_files"]), 6)
+            self.assertFalse(embedded_source["data_ingested"])
+            self.assertFalse(embedded_source["research_pack"]["production_import"])
+            self.assertFalse(embedded_source["research_pack"]["ru_eaeu_applicability"])
             self.assertEqual(manifest["counts"]["source_files"], 6)
             self.assertEqual(manifest["counts"]["approval_scopes"], 1)
             self.assertEqual(manifest["counts"]["engine_candidates"], 1)

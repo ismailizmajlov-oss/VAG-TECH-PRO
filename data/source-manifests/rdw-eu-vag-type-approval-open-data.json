@@ -9,10 +9,85 @@
   ],
   "approval_jurisdiction": "EU type-approval identifiers and variants as recorded in the RDW Netherlands datasets",
   "snapshot": {
-    "status": "not_downloaded_probe_only",
-    "source_revision": null,
-    "source_snapshot_sha256": null,
-    "note": "No full source file or full snapshot has been downloaded. A small filtered schema probe is not a source snapshot and must not be used as one."
+    "status": "filtered_research_snapshot_acquired",
+    "source_revision": {
+      "registration": "1793949098",
+      "tgk_base": "1793934950",
+      "tgk_drive": "1793934949",
+      "tgk_gearbox": "1793934955",
+      "tgk_make": "1793934954",
+      "tgk_trade_name": "1793934953"
+    },
+    "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+    "source_files": [
+      {
+        "dataset_id": "4by9-ammk",
+        "dataset_name": "tgk_drive",
+        "source_revision": "1793934949",
+        "sha256": "1a9e934560a7a4db95a3894d08a92b8f884656b1593e346a25d93bf3fd77a315",
+        "byte_size": 20734442,
+        "row_count": 93836,
+        "source_columns_sha256": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
+        "required_columns_sha256": "96bb78edcb08cd601be5c4a2c14e7bda14c52117fb6706e6fa11f0fa12134563",
+        "query_spec_sha256": "2bf1d7cf485c40c0c02be160276bca62afedc25fc3c645842586b0edbd2f92e0"
+      },
+      {
+        "dataset_id": "7rjk-eycs",
+        "dataset_name": "tgk_gearbox",
+        "source_revision": "1793934955",
+        "sha256": "a78716743002807a7c1610ce6e79ab3547e7b8a3e1e61ba092eedd1f06a6e55d",
+        "byte_size": 17223494,
+        "row_count": 93548,
+        "source_columns_sha256": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
+        "required_columns_sha256": "36bf29ac302066fd7f20d7d7b3e839068a8f34bfeb315972108e5887ecf8a92c",
+        "query_spec_sha256": "9eabcd2eb9a376b22331366d6251582151c0c3a77023426f2b40b9dca1b00624"
+      },
+      {
+        "dataset_id": "byxc-wwua",
+        "dataset_name": "tgk_base",
+        "source_revision": "1793934950",
+        "sha256": "75e93fc2b12e245b814add05207510f2cf0ba6a5deb79dc7267ffb5362eda70d",
+        "byte_size": 20822844,
+        "row_count": 93739,
+        "source_columns_sha256": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
+        "required_columns_sha256": "e53f8ed89f0c8fc8e2b18ad995a6cb360ccc8a0802400bf7155a4b487a22c680",
+        "query_spec_sha256": "4785d32db9321480b46b4821bf8c7b05182971fa13d164728f710e93851c0d46"
+      },
+      {
+        "dataset_id": "kyri-nuah",
+        "dataset_name": "tgk_make",
+        "source_revision": "1793934954",
+        "sha256": "028e106a4b01481977ca1e6c002a29604cc087d7967e49fe591b966f2bb00947",
+        "byte_size": 19386628,
+        "row_count": 110279,
+        "source_columns_sha256": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
+        "required_columns_sha256": "81d6a4712a57463f7daf48cf65ece3d69f80a1a5cc73ea3baea749a404e75e45",
+        "query_spec_sha256": "693d558ded8b79582de400e9a57121d2416dc9c67f5306637744dbd193d0ed4d"
+      },
+      {
+        "dataset_id": "m9d7-ebf2",
+        "dataset_name": "registration",
+        "source_revision": "1793949098",
+        "sha256": "e18ef809d62fbaceaf0169d09f79b8850afe3906238bb8d62ae05bd3181b0230",
+        "byte_size": 25911680,
+        "row_count": 102662,
+        "source_columns_sha256": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
+        "required_columns_sha256": "b676f300d3c96d41312184e6ce92ed1218bde890f964f6801fe32043e8f5280b",
+        "query_spec_sha256": "c904deadfbbab3dc97d4826b25b9a6d453c88055792e903abd47db821ecd3705"
+      },
+      {
+        "dataset_id": "x5v3-sewk",
+        "dataset_name": "tgk_trade_name",
+        "source_revision": "1793934953",
+        "sha256": "360e741e9a12c08f431a5c9744b1322cd194a445669081400f7d9db200c53c40",
+        "byte_size": 23419974,
+        "row_count": 110721,
+        "source_columns_sha256": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134",
+        "required_columns_sha256": "7b25a58f3fa95ec5e139e20443026eecce60f75f1d8343b04baf7cba1b26657d",
+        "query_spec_sha256": "5a15eaaaecd78614e78b46c8aaf354202f5e2c113431579917cbfc7ec9d34064"
+      }
+    ],
+    "note": "Six allowlisted filtered CC0 RDW snapshots were acquired and hashed. This is a separate NL-only research snapshot; data_ingested remains false because no production vehicle-fitment import is authorized or claimed."
   },
   "data_products": {
     "registered_vehicle_identity": {
@@ -189,8 +264,8 @@
   },
   "project_decision": "Rights-cleared for a separate NL/EU type-approval research pack after the live schema probe. No production fitment, no RU/EAEU applicability, no model-year inference, no VAG engine/gearbox-code assertion and no engine/gearbox pairing.",
   "data_ingested": false,
-  "source_snapshot_sha256": null,
-  "hash_status": "no_full_source_snapshot_downloaded_probe_only",
+  "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+  "hash_status": "six_filtered_source_snapshots_and_sqlite_research_pack_hashed; production_import_not_performed",
   "probe": {
     "status": "schema_and_exact_scope_verified",
     "probed_at_utc": "2026-11-06T13:29:55.479249Z",
@@ -262,5 +337,16 @@
     "make_scope": "Exact make labels from the Dutch registered-vehicle dataset; query allowlist only.",
     "model_scope": "Dutch trade-name observations linked to EU type-approval number, variant, version and revision.",
     "note": "Not a VIN build sheet and not proof of individual-vehicle factory build."
+  },
+  "research_pack": {
+    "status": "verified_research_only",
+    "pack_id": "rdw-vag-nl-eu-type-approval-research",
+    "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+    "market_scope": [
+      "NL"
+    ],
+    "production_import": false,
+    "ru_eaeu_applicability": false,
+    "exact_engine_gearbox_pair": false
   }
 }
