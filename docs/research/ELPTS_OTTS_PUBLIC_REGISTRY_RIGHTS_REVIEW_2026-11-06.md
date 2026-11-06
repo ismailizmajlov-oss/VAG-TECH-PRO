@@ -47,3 +47,11 @@ A publicly reachable search page is not a data-reuse licence. Do not enumerate h
 The source remains `permission_required`; `data_ingested=false`; `source_snapshot_sha256=null`. No account, subscription, API key, payment, automated request, bulk download or import was used.
 
 To unlock ingestion, obtain written permission from AO “Electronic Passport” or the relevant register operator explicitly covering commercial use, bulk extraction, persistent SQLite caching, offline third-party display, updates/retention and redistribution in VAG TECH PRO. If permission is limited to internal use, do not bundle the data in the Windows installer.
+
+## 2026-11-06 visible-table field audit
+
+The indexed public page snapshot at [the official OTTS route](https://docs.elpts.ru/ncher/otts) showed the active date filters **05.11.2026–06.11.2026**, a visible total label **«Всего оформлено: 14822»**, and the filtered result label **«Найдено: []»**. The empty filtered result is not evidence that the register is empty. The total label remains an unverified UI observation, not a validated corpus count.
+
+The visible table columns were: registration number, vehicle make, vehicle type, status, validity start/end dates, applicant, manufacturer, certification body, ecological class, title-sheet form number, application-sheet form numbers, additional-sheet form numbers and printable OTTS/OTSH form. The observed table did **not** expose engine code, gearbox code, an engine/gearbox pairing, ECU identifier or repair-data fields. The underlying approval attachment was not downloaded or inspected.
+
+This narrows the public-page evidence to document identity/status metadata. It does not change the rights gate: no dataset-specific licence, bulk-export permission, automated extraction right, persistent SQLite cache right, offline display right or redistribution right has been established. No record was downloaded, cached or imported.
