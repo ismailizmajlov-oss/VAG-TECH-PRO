@@ -180,6 +180,7 @@ jobs:
           python tests/test_offline_data_pack_rights.py
           python tests/test_otts_bot_source_rights.py
           python tests/test_openvag_source_rights.py
+          python tests/test_wal33d_dtc_candidate_rights.py
           node --test tests/authorized-fgis-otts-export.test.cjs
           python -m py_compile scripts/import_eaeu_otts_registry_export.py
           python tests/test_russian_eaeu_otts_manifest.py
@@ -1079,9 +1080,14 @@ jobs:
           $sourceAuditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
           $auditFiles = @(
             "app/api/local-core/route.ts",
+            "app/api/local-research/route.ts",
             "app/globals.css",
             "components/local-data-admin.tsx",
             "components/local-offline-workspace.tsx",
+            "components/local-research-catalog.tsx",
+            "scripts/windows-installer-lifecycle.ps1",
+            "tests/astra-ch-tas-ui-contract.test.cjs",
+            "tests/run76-types-fix.test.cjs",
             "data/schemas/vehicle-catalog-package.schema.json",
             "data/sql/local-core-v1.sql",
             "data/sql/local-core-v2.sql",
@@ -1114,6 +1120,16 @@ jobs:
           node apply-research-pack-astra-verification-run74.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/astra-research-pack-verifier-run74.log"
           if ($LASTEXITCODE -ne 0) { throw "Run74 ASTRA CH research-pack verification patch failed" }
           "research_manifest_entries=10; ASTRA_CH=verified_research_only; production_import=false; RU_EAEU_applicability=false; exact_fitment=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Repair generated desktop TypeScript contracts (run76)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-types-fix-run76.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run76 desktop type-fix patch syntax check failed" }
+          node apply-desktop-types-fix-run76.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-types-fix-run76.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run76 desktop TypeScript contract repair failed" }
+          "desktop_types_fix=run76; source_revision_state=restored; ASTRA_research_row_types=deduplicated" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
