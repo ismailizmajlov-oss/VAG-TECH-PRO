@@ -1,0 +1,35 @@
+name: Validate Windows desktop workflow syntax
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/validate-desktop-workflow-syntax-run1.yml"
+      - "scripts/validate_workflow_yaml.py"
+  pull_request:
+    paths:
+      - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/validate-desktop-workflow-syntax-run1.yml"
+      - "scripts/validate_workflow_yaml.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-2025
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned YAML parser
+        shell: pwsh
+        run: python -m pip install --disable-pip-version-check PyYAML==6.0.3
+      - name: Parse Windows desktop workflow
+        shell: pwsh
+        run: python scripts/validate_workflow_yaml.py .github/workflows/windows-desktop-ci-run71.yml
