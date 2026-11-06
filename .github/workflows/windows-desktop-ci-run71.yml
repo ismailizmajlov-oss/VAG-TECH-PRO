@@ -1175,6 +1175,24 @@ jobs:
           }
           "lifecycle_session_output=single_session_object; BaseUrl_preserved; run77_contract=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Enforce technical payload JSON schemas before SQLite import (run78)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-technical-payload-validation-run78.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run78 payload validator patcher syntax check failed" }
+          node apply-technical-payload-validation-run78.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-run78.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run78 technical payload validation patch failed" }
+          Push-Location desktop-source
+          try {
+            node --check lib/local-core-db.cjs
+            if ($LASTEXITCODE -ne 0) { throw "Run78 local-core syntax check failed" }
+            node --check electron/main.cjs
+            if ($LASTEXITCODE -ne 0) { throw "Run78 Electron schema-path syntax check failed" }
+            node --test tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-tests-run78.log"
+            if ($LASTEXITCODE -ne 0) { throw "Run78 local-core payload validation tests failed" }
+          } finally { Pop-Location }
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
