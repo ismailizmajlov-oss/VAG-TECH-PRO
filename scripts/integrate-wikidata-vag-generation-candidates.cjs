@@ -501,7 +501,7 @@ function patchDesktopSource(desktop) {
   }
   let packTest = readText(packTestPath);
   if (!packTest.includes("wikidata_vag_generation_candidates")) {
-    const anchor = '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 521, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });';
+    const anchor = '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 521, carModelEntities: 490, carModelSeriesEntities: 40, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });';
     const addition = anchor + '\n  assert.deepEqual(result.wikidata_vag_generation_candidates, { memberEntities: 109, modelMemberLinks: 125, sourceBindings: 187, modelsWithMembers: 32, manufacturers: 6, russianLabels: 83, dateStatements: 155 });';
     packTest = exact(packTest, anchor, addition, "generation candidate pack test assertion");
     writeText(packTestPath, packTest);

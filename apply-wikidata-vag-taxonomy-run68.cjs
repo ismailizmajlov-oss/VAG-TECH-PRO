@@ -545,7 +545,7 @@ function patchDesktopSource(desktopRoot) {
     '          executionAllowed: false,',
     '          attributionRequired: false,',
     '          attributionRecommended: true,',
-    '          counts: { models: wikidataCounts.models, sourceBindings: wikidataCounts.sourceBindings, manufacturers: wikidataCounts.manufacturers, russianLabels: wikidataCounts.russianLabels, dateStatements: wikidataCounts.dateStatements },',
+    '          counts: { models: wikidataCounts.models, carModelEntities: wikidataCounts.carModelEntities, carModelSeriesEntities: wikidataCounts.carModelSeriesEntities, sourceBindings: wikidataCounts.sourceBindings, manufacturers: wikidataCounts.manufacturers, russianLabels: wikidataCounts.russianLabels, dateStatements: wikidataCounts.dateStatements },',
     '          upstreamRevision: wikidataPackManifest.source_revision,',
     '          snapshotGeneratedAt: wikidataPackManifest.built_at_utc,',
     '          sourceManifestSha256: wikidataManifest.source_manifest_sha256,',
@@ -684,7 +684,7 @@ function patchDesktopSource(desktopRoot) {
   if (!ui.includes("Модели Wikidata")) {
     const anchor = '      <article className="research-stat"><small>Модели VehiclesDB</small><strong>{formatNumber(vehiclesDb?.counts?.models)}</strong><span>{formatNumber(vehiclesDb?.counts?.marketEvidence)} зарубежных свидетельств · RU отсутствует</span></article>\n';
     if (ui.split(anchor).length - 1 !== 1) fail("Wikidata UI statistics insertion anchor is missing");
-    ui = ui.replace(anchor, anchor + '      <article className="research-stat"><small>Модели Wikidata</small><strong>{formatNumber(wikidata?.counts?.models)}</strong><span>{formatNumber(wikidata?.counts?.russianLabels)} русских названий · CC0 · рынок UNKNOWN</span></article>\n');
+    ui = ui.replace(anchor, anchor + '      <article className="research-stat"><small>Модели Wikidata</small><strong>{formatNumber(wikidata?.counts?.models)}</strong><span>{formatNumber(wikidata?.counts?.carModelEntities)} моделей · {formatNumber(wikidata?.counts?.carModelSeriesEntities)} серий · {formatNumber(wikidata?.counts?.russianLabels)} русских названий · CC0 · рынок UNKNOWN</span></article>\n');
   }
   if (!ui.includes("Русскоязычная метка не доказывает российский рынок")) {
     const anchor = '      {mechanicDb && <p>';
@@ -741,7 +741,7 @@ function patchDesktopSource(desktopRoot) {
     'test("Wikidata model labels are CC0 identity candidates and never establish Russian-market or exact fitment", () => {\n' +
     '  const summary = local.getResearchSummary(root);\n' +
     '  const wikidata = summary.packs.find((x) => x.id === "wikidata-vag-model-taxonomy-cc0");\n' +
-    '  assert.deepEqual(wikidata.counts, { models: 521, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });\n' +
+    '  assert.deepEqual(wikidata.counts, { models: 521, carModelEntities: 490, carModelSeriesEntities: 40, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });\n' +
     '  assert.equal(wikidata.license, "CC0-1.0");\n' +
     '  assert.equal(wikidata.marketScope, "UNKNOWN");\n' +
     '  assert.equal(wikidata.applicabilityPrecision, "candidate_identity_only");\n' +
@@ -767,7 +767,7 @@ function patchDesktopSource(desktopRoot) {
   replaceExactly(packTestFile,
     '  assert.equal(result.mechanicdb_vag_dtc_candidates.unsafeRows, 0);',
     '  assert.equal(result.mechanicdb_vag_dtc_candidates.unsafeRows, 0);\n' +
-    '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 521, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });',
+    '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 521, carModelEntities: 490, carModelSeriesEntities: 40, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });',
     "Wikidata pack verification test");
 
   replaceExactly(uiTestFile,

@@ -107,8 +107,11 @@ def main() -> None:
         raise SystemExit("Wikidata model source manifest does not match its immutable SQLite snapshot")
     if model_artifact["workflow_run_id"] != 42145993840 or model_artifact["artifact_id"] != 13469673252 or model_artifact["artifact_sha256"] != "f9ef2e5178e1dcdd92c0969a229c2e33a5608f14c9cf2f67ffc6f4baa21114e8":
         raise SystemExit("Wikidata model artifact provenance is not the current verified run")
-    if model_pack["counts"]["model_entities"] != 521 or model_pack["counts"]["russian_labels"] != 285 or model_pack["counts"]["source_bindings"] != 530:
+    if model_pack["counts"]["model_entities"] != 521 or model_pack["counts"]["car_model_entities"] != 490 or model_pack["counts"]["car_model_series_entities"] != 40 or model_pack["counts"]["russian_labels"] != 285 or model_pack["counts"]["source_bindings"] != 530:
         raise SystemExit("Wikidata model snapshot counts drifted without a reviewed desktop integration update")
+    taxonomy_script = (ROOT / "apply-wikidata-vag-taxonomy-run68.cjs").read_text(encoding="utf-8")
+    if "counts: { models: wikidataCounts.models, carModelEntities: wikidataCounts.carModelEntities, carModelSeriesEntities: wikidataCounts.carModelSeriesEntities" not in taxonomy_script or "carModelEntities: 490, carModelSeriesEntities: 40" not in taxonomy_script:
+        raise SystemExit("Desktop Wikidata summary does not expose both car-model and model-series class counts")
 
     generation_manifests = []
     for manifest_path in (ROOT / "data/research/wikidata-vag-generations").glob("*/manifest.json"):
