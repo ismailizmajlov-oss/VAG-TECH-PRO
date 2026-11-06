@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06",
+  "updated_at": "2026-11-06T05:15:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1632,7 +1632,7 @@
       "catalog_documentation_url": "https://productdata.volkswagenag.com/product-catalog.html",
       "cache_documentation_url": "https://productdata.volkswagenag.com/data-update.html",
       "source_kind": "official_vw_product_configuration_catalog_api",
-      "source_revision": "public_terms_and_documentation_review_2026-11-05",
+      "source_revision": "published_terms_copyright_2019_reviewed_2026-11-06",
       "market_scope": [
         "UNKNOWN"
       ],
@@ -1684,16 +1684,13 @@
       ],
       "ru_eaeu_support_confirmed": false,
       "access": {
-        "authentication_required": true,
+        "company_only": true,
+        "access_request_required": true,
+        "Volkswagen_approval_discretionary": true,
         "client_id_and_secret_required": true,
-        "company_access_request_required": true,
-        "volkswagen_approval_required": true,
-        "approval_may_be_rejected": true,
-        "credentials_obtained": false,
-        "api_requests_made": false,
-        "external_account_created": false,
-        "contract_accepted": false,
-        "paid_terms_accepted": false
+        "credentials_created": false,
+        "account_created": false,
+        "owner_action_required": true
       },
       "product_scope": {
         "models": true,
@@ -1713,49 +1710,87 @@
         "type_and_option_codes_are_not_proven_engine_or_gearbox_codes": true
       },
       "rights": {
+        "dataset_license_status": "contractual_terms_no_public_open_license",
+        "permission_status": "not_requested",
         "data_owner": "Volkswagen AG",
-        "license_type": "contractual_access_terms_not_open_data_license",
-        "display_allowed_after_approval": true,
-        "display_scope": "registered_application_only_for_the_contractual_purpose",
-        "third_party_disclosure_allowed_after_approval": true,
-        "cache_mechanism_documented": true,
+        "registered_application_required": true,
+        "commercial_use_allowed": false,
+        "display_allowed": false,
+        "third_party_disclosure_allowed": "permitted_subject_to_terms_after_approval",
         "offline_cache_allowed": false,
-        "offline_cache_permission_status": "cache_mechanism_documented_but_offline_database_bundle_and_retention_after_termination_not_expressly_confirmed",
-        "redistribution_of_offline_database_allowed": false,
-        "redistribution_permission_status": "not_expressly_confirmed",
-        "contract_rights_duration": "for_duration_of_contractual_relationship",
-        "api_right_non_exclusive": true,
-        "api_right_non_transferable": true,
-        "api_right_revocable": true,
-        "api_right_non_sublicensable": true,
-        "current_price_status": "currently_free_but_vw_reserves_right_to_charge",
-        "credentials_confidential": true
+        "cache_refresh_mechanism_documented": true,
+        "offline_distribution_of_cached_database": "not_confirmed_requires_written_clarification",
+        "redistribution_allowed": false,
+        "sublicensing_allowed": false,
+        "api_authentication_required": true,
+        "access_company_only": true,
+        "approval_discretionary": true,
+        "current_price": "currently_free_subject_to_change",
+        "paid_terms_accepted": false,
+        "permission_evidence": null
       },
       "applicability": {
-        "precision": "official_market_specific_product_configuration_if_authorized",
-        "review_status": "permission_required",
-        "exact_vehicle_fitment": false,
-        "engine_code_fitment": false,
-        "transmission_code_fitment": false,
-        "ecu_fitment": false,
-        "dtc_fitment": false,
-        "market_scope": "UNKNOWN"
+        "precision": "market_specific_model_type_option_configuration_candidates_after_authenticated_access",
+        "market_scope": "UNKNOWN_until_authenticated_country_list",
+        "exact_factory_engine_code": false,
+        "exact_factory_gearbox_code": false,
+        "exact_engine_gearbox_pairing": false,
+        "ECU_mapping": false,
+        "DTC_mapping": false,
+        "repair_procedure_fitment": false
       },
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "project_decision": "do_not_create_account_or_request_credentials_without_owner_action; do_not_ingest_or_bundle_offline_data_until_vw_approves_access_and_confirms_offline_cache_distribution_and_retention_rights_in_writing; RU_EAEU_market_coverage_not_confirmed; type descriptions are not factory engine or gearbox codes",
+      "project_decision": "owner_company_access_request_and_written_offline_distribution_clarification_required_before_ingestion_or_bundling",
       "limitations": [
-        "Access requires a company request with company name, address, contact and purpose; Volkswagen may reject at its discretion.",
-        "The terms are contractual and do not constitute an open data licence.",
-        "The terms allow registered applications to display/evaluate product data and allow disclosure to third parties, but do not expressly confirm redistribution of a bundled offline SQLite database.",
-        "Caching is documented using ETag and content-last-update headers; retention and redistribution after contract termination are not expressly confirmed.",
-        "Rights are non-exclusive, non-transferable, revocable and non-sublicensable for the duration of the contract.",
-        "Volkswagen currently offers OKAPI free of charge but reserves the right to introduce fees.",
-        "The public market list reviewed does not list Russia, Kazakhstan or Belarus; the list is explicitly non-exhaustive and authenticated /countries data was not queried.",
-        "Type descriptions may contain engine and gearbox descriptions, but no exact factory engine-code or gearbox-code fields were established from the public documentation.",
-        "OKAPI is product/configuration data, not a repair manual, DTC source, wiring diagram or pinout source."
+        "Access is for companies only and requires Volkswagen approval, client credentials and OAuth tokens; no account or credentials were created.",
+        "The terms grant non-transferable and non-sublicensable rights for a registered application; third-party disclosure is permitted subject to the terms after approval.",
+        "The caching guide documents cache refresh mechanics for a registered application; it does not confirm the right to distribute a pre-populated offline SQLite database with VAG TECH PRO.",
+        "The authenticated country list has not been observed; Russian and EAEU market coverage remain unconfirmed.",
+        "The public API schema does not establish factory engine codes, gearbox codes, ECU, DTC, repair procedures or exact repair fitment.",
+        "OKAPI data is customer information and non-binding; a buildable configuration is not proof of an existing vehicle's factory configuration."
       ],
-      "evidence_status": "official_terms_catalog_and_cache_documentation_reviewed_2026-11-05; no credentials, account, API call or data snapshot"
+      "evidence_status": "official_terms_catalog_and_cache_documentation_reviewed_2026-11-05; no credentials, account, API call or data snapshot",
+      "source_manifest_path": "data/source-manifests/vw-okapi-product-catalog.json",
+      "data_scope": {
+        "endpoints": [
+          "countries",
+          "brands_by_country",
+          "models_by_brand_and_country",
+          "vehicle_types_by_model_and_country",
+          "options_by_vehicle_type_and_country",
+          "configuration_buildability",
+          "WLTP_information",
+          "configuration_order_information"
+        ],
+        "market_scope": "unknown_until_authenticated_country_list_is_observed",
+        "technical_data": "market_specific_customer_information_may_include_dimensions_weights_performance_and_sales_related_properties"
+      },
+      "verification_status": "official_oem_api_terms_reviewed_access_not_requested",
+      "product_import_allowed": false,
+      "hash_status": "not_downloaded_no_credentials",
+      "evidence_reviewed": [
+        {
+          "url": "https://productdata.volkswagenag.com/condition-of-use.html",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Sections I-III require company access request, Volkswagen approval at its discretion, and confidential client credentials; Section IV keeps ownership with Volkswagen, grants non-transferable/non-sublicensable rights for registered applications, but permits disclosure of Product Data to third parties subject to the terms; Section V says currently free but fees may be introduced."
+        },
+        {
+          "url": "https://productdata.volkswagenag.com/quick-start.html",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Getting started says access is for companies only; credentials are issued after an access request and confirmation, then OAuth tokens are required."
+        },
+        {
+          "url": "https://productdata.volkswagenag.com/data-update.html",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Official guide documents ETag/If-None-Match and X-Catalog-Content-Lastupdate headers for refreshing a cache in the registered application; it does not grant redistribution of a bundled offline database."
+        },
+        {
+          "url": "https://productdata.volkswagenag.com/tutorial.html",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Country-specific endpoints expose brands, models, types and options; type/order responses may contain market-specific technical data, but public docs do not establish factory engine/gearbox codes or repair fitment."
+        }
+      ]
     },
     {
       "source_id": "vehiclesdb-vag-identity-cc-by-4.0",
@@ -3099,101 +3134,6 @@
       ],
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion"
-    },
-    {
-      "source_id": "volkswagen-okapi-product-catalog",
-      "publisher": "Volkswagen AG",
-      "url": "https://productdata.volkswagenag.com/",
-      "source_kind": "official_oem_product_configuration_api",
-      "source_revision": "published_terms_copyright_2019_reviewed_2026-11-06",
-      "source_manifest_path": "data/source-manifests/vw-okapi-product-catalog.json",
-      "market_scope": [
-        "UNKNOWN"
-      ],
-      "data_scope": {
-        "endpoints": [
-          "countries",
-          "brands_by_country",
-          "models_by_brand_and_country",
-          "vehicle_types_by_model_and_country",
-          "options_by_vehicle_type_and_country",
-          "configuration_buildability",
-          "WLTP_information",
-          "configuration_order_information"
-        ],
-        "market_scope": "unknown_until_authenticated_country_list_is_observed",
-        "technical_data": "market_specific_customer_information_may_include_dimensions_weights_performance_and_sales_related_properties"
-      },
-      "access": {
-        "company_only": true,
-        "access_request_required": true,
-        "Volkswagen_approval_discretionary": true,
-        "client_id_and_secret_required": true,
-        "credentials_created": false,
-        "account_created": false,
-        "owner_action_required": true
-      },
-      "rights": {
-        "data_license_status": "contractual_terms_no_public_open_license",
-        "data_owner": "Volkswagen AG",
-        "permission_status": "access_not_requested",
-        "registered_application_required": true,
-        "display_in_registered_application": "permitted_subject_to_terms_after_approval",
-        "disclosure_to_third_parties": "permitted_subject_to_terms_after_approval",
-        "commercial_use": "conditional_on_approved_company_access_and_registered_application",
-        "offline_cache": "documented_for_registered_application",
-        "offline_distribution_of_cached_database": "not_confirmed_requires_written_clarification",
-        "redistribution_allowed": "not_confirmed_for_bundled_offline_database",
-        "sublicensing_allowed": false,
-        "current_price": "currently_free_subject_to_change",
-        "paid_terms_accepted": false
-      },
-      "applicability": {
-        "precision": "market_specific_model_type_option_configuration_candidates_after_authenticated_access",
-        "market_scope": "UNKNOWN_until_authenticated_country_list",
-        "exact_factory_engine_code": false,
-        "exact_factory_gearbox_code": false,
-        "exact_engine_gearbox_pairing": false,
-        "ECU_mapping": false,
-        "DTC_mapping": false,
-        "repair_procedure_fitment": false
-      },
-      "verification_status": "official_oem_api_terms_reviewed_access_not_requested",
-      "product_import_allowed": false,
-      "data_ingested": false,
-      "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_credentials",
-      "project_decision": "owner_company_access_request_and_written_offline_distribution_clarification_required_before_ingestion_or_bundling",
-      "limitations": [
-        "Access is for companies only and requires Volkswagen approval, client credentials and OAuth tokens; no account or credentials were created.",
-        "The terms allow registered applications to display/evaluate Product Data and allow disclosure to third parties subject to the terms, but the licence is non-transferable and non-sublicensable.",
-        "The caching guide documents cache refresh mechanics for the registered application; it does not confirm the right to distribute a pre-populated offline SQLite database with VAG TECH PRO.",
-        "The authenticated country list has not been observed; Russian and EAEU market coverage remain unconfirmed.",
-        "The public API schema does not establish factory engine codes, gearbox codes, ECU, DTC, repair procedures or exact repair fitment.",
-        "OKAPI data is customer information and non-binding; a buildable configuration is not proof of an existing vehicle's factory configuration."
-      ],
-      "evidence_reviewed": [
-        {
-          "url": "https://productdata.volkswagenag.com/condition-of-use.html",
-          "reviewed_at": "2026-11-06",
-          "evidence": "Sections I-III, IV and V reviewed; company-only access, discretionary approval, confidentiality, registered-app use, third-party disclosure subject to terms, and possible future fees."
-        },
-        {
-          "url": "https://productdata.volkswagenag.com/quick-start.html",
-          "reviewed_at": "2026-11-06",
-          "evidence": "Company-only sign-up and credential request process."
-        },
-        {
-          "url": "https://productdata.volkswagenag.com/data-update.html",
-          "reviewed_at": "2026-11-06",
-          "evidence": "ETag and catalogue last-update headers document cache refresh, not offline database redistribution."
-        },
-        {
-          "url": "https://productdata.volkswagenag.com/tutorial.html",
-          "reviewed_at": "2026-11-06",
-          "evidence": "Country-specific model/type/options endpoints and market-specific technical data."
-        }
-      ]
     }
   ],
   "minimum_fitment_evidence_fields": [

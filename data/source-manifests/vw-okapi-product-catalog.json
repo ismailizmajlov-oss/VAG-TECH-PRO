@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "source_id": "volkswagen-okapi-product-catalog",
+  "source_id": "volkswagen-okapi-product-data-api",
   "publisher": "Volkswagen AG",
   "source_type": "official_oem_product_configuration_api",
   "reviewed_at": "2026-11-06",

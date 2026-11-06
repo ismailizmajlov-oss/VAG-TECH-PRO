@@ -31,6 +31,17 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
         self.assertFalse(source["cache_contract"]["redistributable_offline_pack_rights_confirmed"])
         self.assertEqual(source["data_scope"]["market_scope"], "unknown_until_authenticated_country_list_is_observed")
         self.assertEqual(len(source["evidence_reviewed"]), 4)
+    def test_canonical_okapi_source_is_registered_with_offline_distribution_blocked(self):
+        register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        entries = [item for item in register["sources"] if item["source_id"] == "volkswagen-okapi-product-data-api"]
+        self.assertEqual(len(entries), 1)
+        source = entries[0]
+        self.assertEqual(source["source_manifest_path"], "data/source-manifests/vw-okapi-product-catalog.json")
+        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["rights"]["offline_cache_allowed"])
+        self.assertEqual(source["rights"]["offline_distribution_of_cached_database"], "not_confirmed_requires_written_clarification")
+        self.assertEqual(source["market_scope"], ["UNKNOWN"])
     def test_no_credentials_or_external_account_are_created(self):
         access = self.source["access"]
         self.assertTrue(access["requires_company_access_request"])
