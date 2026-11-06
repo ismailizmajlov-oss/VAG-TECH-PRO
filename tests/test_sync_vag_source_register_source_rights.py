@@ -67,6 +67,25 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
                 sync(source, desktop)
             self.assertEqual(destination.read_text(encoding="utf-8"), "previous-good-register")
 
+    def test_repository_source_register_has_explicit_boolean_ingest_state(self):
+        manifest_path = ROOT / "data" / "source-manifests" / "vag-factory-source-register.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertGreater(len(manifest["sources"]), 0)
+        for source in manifest["sources"]:
+            self.assertIs(type(source.get("data_ingested")), bool, source.get("source_id"))
+
+    def test_missing_ingest_state_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "source-register.json"
+            desktop = root / "desktop"
+            desktop.mkdir()
+            write_manifest(source, sources=[
+                {"source_id": "missing-ingest-state", "rights": {"permission_status": "not_cleared"}}
+            ])
+            with self.assertRaisesRegex(ValueError, "boolean data_ingested"):
+                sync(source, desktop)
+
     def test_restricted_source_cannot_be_marked_ingested(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

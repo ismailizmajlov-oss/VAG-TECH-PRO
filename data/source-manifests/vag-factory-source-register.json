@@ -61,7 +61,8 @@
         "permission_status": "not_obtained"
       },
       "project_decision": "priority_candidate_for_anonymized_sample_report_and_written_API_license_review",
-      "evidence_status": "provider_page_reviewed_2026-11-03"
+      "evidence_status": "provider_page_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "eaeu-otts-unified-register-public-portal",
@@ -328,7 +329,8 @@
         "acquisition_workflow_gate": "VAG_GOR3A_AUTODEVOLUTION_REUSE_APPROVED"
       },
       "project_decision": "quarantine_no_download_no_import_no_cache_no_display_no_bundling_no_redistribution_until_written_permission_from_upstream_rights_holder; downstream ODbL declaration is not proof of rights in Autoevolution-derived material; never infer factory engine or gearbox codes",
-      "evidence_status": "five_brand_files_inspected_2026-11-03; AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04; upstream permission not obtained"
+      "evidence_status": "five_brand_files_inspected_2026-11-03; AUTOEVOLUTION_UPSTREAM_RIGHTS_REVIEW_2026-11-04; upstream permission not obtained",
+      "data_ingested": false
     },
     {
       "source_id": "hpt-su-otts-aggregator",
@@ -434,7 +436,8 @@
           "8.6"
         ],
         "pricing_page": "https://hpt.su/pricing/"
-      }
+      },
+      "data_ingested": false
     },
     {
       "source_id": "mechanicdb-public-generic-repair-guidance",
@@ -488,7 +491,8 @@
         "technical and safety review not independently completed"
       ],
       "project_decision": "allow_separate_generic_educational_reference_pack_only_under_ODbL; do not merge with manufacturer-specific VAG data or present as exact repair advice",
-      "evidence_status": "pinned_public_sample_license_sources_and_data_dictionary_reviewed_2026-11-04"
+      "evidence_status": "pinned_public_sample_license_sources_and_data_dictionary_reviewed_2026-11-04",
+      "data_ingested": false
     },
     {
       "source_id": "obdex-generic-cc0",
@@ -552,7 +556,8 @@
         "Repair estimates, costs and generic repair text are not promoted as OEM repair advice."
       ],
       "project_decision": "allow_separate_generic_CC0_reference_pack_only; keep separate from VAG-specific data and exact vehicle fitment",
-      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-05; per-source-file_and_per-row_SHA256; SQLite_integrity_verified"
+      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-05; per-source-file_and_per-row_SHA256; SQLite_integrity_verified",
+      "data_ingested": false
     },
     {
       "source_id": "nhtsa-tsbs-public-index",
@@ -610,7 +615,8 @@
           "data_gov_last_updated": "2026-09-03"
         },
         "rights_note": "Public download/access does not establish bulk reuse, offline caching, display or redistribution rights."
-      }
+      },
+      "data_ingested": false
     },
     {
       "source_id": "nhtsa-vpic",
@@ -637,7 +643,8 @@
         "reuse_terms": "review_api_terms_and_rate_limits_before_product_integration"
       },
       "project_decision": "optional_us_vin_decoder_only; not a source for RU engine_gearbox_ECU facts",
-      "evidence_status": "official_nhtsa_vpic_about_and_api_reviewed_2026-11-03"
+      "evidence_status": "official_nhtsa_vpic_about_and_api_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "plan-parts-vag-api",
@@ -679,7 +686,8 @@
         "permission_status": "not_obtained"
       },
       "project_decision": "technical_candidate_only; require sample API payload and written local-cache/offline redistribution terms",
-      "evidence_status": "provider_page_reviewed_2026-11-03"
+      "evidence_status": "provider_page_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "riz4d-openvag-dtc-quarantine",
@@ -708,7 +716,8 @@
         "permission_status": "not_cleared"
       },
       "project_decision": "quarantine_only; do not import definitions, repair solutions or mappings into production until data provenance and database rights are independently established",
-      "evidence_status": "README_LICENSE_AND_DB_SCHEMA_REVIEWED_2026-11-03"
+      "evidence_status": "README_LICENSE_AND_DB_SCHEMA_REVIEWED_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "ross-tech-official-factory-source-directory",
@@ -727,7 +736,8 @@
         "reuse_of_linked_oem_materials": "not_granted"
       },
       "project_decision": "use_only_to_discover_primary_oem_portals; never as proof of repair procedure",
-      "evidence_status": "secondary_directory_reviewed_2026-11-03"
+      "evidence_status": "secondary_directory_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "rosstandart-fgis-registers-kts",
@@ -871,7 +881,8 @@
         "bulk_reuse_offline_cache_display_redistribution": "not_established",
         "review_date": "2026-11-06",
         "reference_url": "https://www.alta.ru/tamdoc/14kr0225/"
-      }
+      },
+      "data_ingested": false
     },
     {
       "source_id": "vagtec-vag-catalogs-ru",
@@ -910,7 +921,8 @@
         "permission_required": true
       },
       "project_decision": "request_api_and_reuse_terms; no scraping or import",
-      "evidence_status": "provider_page_reviewed_2026-11-03"
+      "evidence_status": "provider_page_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "volkswagen-erwin-official",
@@ -947,7 +959,8 @@
         "permission_for_vag_tech_pro": "not_obtained"
       },
       "project_decision": "blocked_for_bulk_download_storage_or_redistribution_until_written_oem_authorization_and_country_terms_review",
-      "evidence_status": "official_info_tour_and_terms_reviewed_2026-11-03"
+      "evidence_status": "official_info_tour_and_terms_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "vw-maximum-commercial-repair-info-ru",
@@ -995,7 +1008,8 @@
         "bulk_acquisition": false
       },
       "project_decision": "request_only_for_specific_commercial_vehicle_cases;_confirm_request_channel_authority_and_do_not_publish_without_written_reuse_permission",
-      "evidence_status": "source_page_reviewed_2026-11-03"
+      "evidence_status": "source_page_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "vwts-independent-technical-archive",
@@ -1031,7 +1045,8 @@
         "permission_required": true
       },
       "project_decision": "use_for_document_discovery_only; no bulk copying or production import without per-document rights and exact applicability",
-      "evidence_status": "archive_index_reviewed_2026-11-03"
+      "evidence_status": "archive_index_reviewed_2026-11-03",
+      "data_ingested": false
     },
     {
       "source_id": "wal33d-dtc-database",
@@ -1127,7 +1142,8 @@
         "volkswagen_file_total_codes": 528,
         "p_file_duplicate_rows": 2,
         "implication": "Manufacturer labels in these files are not proof that every code is manufacturer-specific; the Audi file is almost entirely duplicated in the generic P-code source."
-      }
+      },
+      "data_ingested": false
     },
     {
       "source_id": "wikidata-vag-generation-candidates",
@@ -1224,7 +1240,8 @@
         "Parent model QIDs come from the pinned CC0 Wikidata model-identity candidate pack.",
         "Completeness is unknown; absence from Wikidata is not evidence that a generation did not exist."
       ],
-      "limit_reached_means": "snapshot may be truncated; no completeness claim"
+      "limit_reached_means": "snapshot may be truncated; no completeness claim",
+      "data_ingested": false
     },
     {
       "source_id": "wikidata-vag-model-taxonomy",
@@ -1314,7 +1331,8 @@
         "No engine/gearbox codes, ECU, DTC, procedures, wiring, pinouts, torque values, adaptations, OEM parts or VIN fitment.",
         "Completeness is unknown; absence from Wikidata is not evidence that a model did not exist."
       ],
-      "limit_reached_means": "snapshot may be truncated; no completeness claim"
+      "limit_reached_means": "snapshot may be truncated; no completeness claim",
+      "data_ingested": false
     },
     {
       "source_id": "autodiag2-vag-community-v6",
@@ -1375,7 +1393,8 @@
       "diagnostic_execution_allowed": false,
       "repair_advice_approved": false,
       "engine_codes_verified": 0,
-      "transmission_records": 0
+      "transmission_records": 0,
+      "data_ingested": false
     },
     {
       "source_id": "mechanicdb-vag-dtc-candidates-odbl",
@@ -1447,7 +1466,8 @@
       "ecu_fitment": false,
       "pr_code_fitment": false,
       "diagnostic_execution_allowed": false,
-      "repair_advice_approved": false
+      "repair_advice_approved": false,
+      "data_ingested": false
     },
     {
       "source_id": "obdb-vag-signalsets-cc-by-sa",
@@ -1551,7 +1571,8 @@
         "No DTC definitions, approved diagnostic test plans, repair procedures, wiring diagrams, factory pinouts, torque values or exact engine/gearbox pairs.",
         "The adapted research database must remain separately licensed CC BY-SA 4.0 with attribution; do not merge into a differently licensed proprietary database."
       ],
-      "evidence_status": "pinned_source_commits_and_each_repository_LICENSE_file_reviewed_2026-11-05; prior pack audit records 24 file hashes, record hashes and SQLite integrity"
+      "evidence_status": "pinned_source_commits_and_each_repository_LICENSE_file_reviewed_2026-11-05; prior pack audit records 24 file hashes, record hashes and SQLite integrity",
+      "data_ingested": false
     },
     {
       "source_id": "volkswagen-okapi-product-data-api",
@@ -1785,7 +1806,8 @@
           "byte_size": 1319,
           "sha256": "48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78"
         }
-      }
+      },
+      "data_ingested": false
     },
     {
       "source_id": "elpts-national-otts-register-public-query",
@@ -1859,7 +1881,8 @@
           "page_title": "ЭСБКТС",
           "note": "Visible OTTS/OTSH/ZOETS filters do not establish completeness for those document classes"
         }
-      }
+      },
+      "data_ingested": false
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
@@ -2021,7 +2044,8 @@
         "Platform-family references do not establish exact model year, ECU part number, HW/SW revision, engine/gearbox, market or repair applicability."
       ],
       "project_decision": "restricted_no_import_no_display_no_cache; treat as closed OEM ODIS MCD-derived material until VW AG permission or independently verifiable source rights are provided; uploader CC0 declaration does not establish rights in underlying OEM diagnostic database",
-      "evidence_status": "repository_LICENSE_README_and_AU57X_MCD_findings_reviewed_2026-11-05"
+      "evidence_status": "repository_LICENSE_README_and_AU57X_MCD_findings_reviewed_2026-11-05",
+      "data_ingested": false
     },
     {
       "source_id": "vag-wiki-community-technical-hub",
@@ -2096,7 +2120,8 @@
           "reviewed_at": "2026-11-05",
           "evidence": "Legal Revision 2026.01; sections 1, 2, 3 and 3.5 prohibit unauthorized mass-scraping, automated extraction and redistribution; describe mixed independent sources and accuracy disclaimer."
         }
-      ]
+      ],
+      "data_ingested": false
     },
     {
       "source_id": "otts-bot",
@@ -2306,7 +2331,8 @@
         "Generic OBD endpoints do not establish VAG-specific DTC definitions or exact ECU applicability."
       ],
       "project_decision": "quarantine_no_import_no_offline_pack; API docs claim commercial use with attribution and client-side caching, but published Terms prohibit copying substantial parts for commercial reuse; no explicit dataset licence or bulk/offline redistribution grant; torque records lack row-level primary provenance, revision and exact VAG fitment; require written permission and row-level source evidence before reconsideration",
-      "evidence_status": "API docs, published Terms, About page and torque page reviewed 2026-11-06; no API calls, records downloaded or data imported"
+      "evidence_status": "API docs, published Terms, About page and torque page reviewed 2026-11-06; no API calls, records downloaded or data imported",
+      "data_ingested": false
     },
     {
       "source_id": "astra-fedro-tas-type-approvals-open-data-ch",
@@ -2386,7 +2412,8 @@
         "research_pack_status": "schema_probe_pending"
       },
       "project_decision": "approved for a separately namespaced CH homologation research pack after schema validation; never treat CH approvals as RU/EAEU approval or exact individual-vehicle fitment",
-      "evidence_status": "official ASTRA/FEDRO OGD newsletter, official ASTRA vehicle-data page, official open-data reuse FAQ and EMBAG Art.10 reviewed 2026-11-06"
+      "evidence_status": "official ASTRA/FEDRO OGD newsletter, official ASTRA vehicle-data page, official open-data reuse FAQ and EMBAG Art.10 reviewed 2026-11-06",
+      "data_ingested": false
     },
     {
       "source_id": "automotive-9-vw-dtc-candidate",

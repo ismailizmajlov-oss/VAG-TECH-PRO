@@ -47,6 +47,9 @@ def _read_and_validate(source_path: Path) -> tuple[bytes, dict[str, Any]]:
             raise ValueError(f"Duplicate source_id: {source_id}")
         seen.add(source_id)
 
+        if not isinstance(source.get("data_ingested"), bool):
+            raise ValueError(f"Source entry must declare a boolean data_ingested: {source_id}")
+
         rights = source.get("rights") if isinstance(source.get("rights"), dict) else {}
         permission_status = str(rights.get("permission_status", "")).lower()
         verification_status = str(source.get("verification_status", "")).lower()
