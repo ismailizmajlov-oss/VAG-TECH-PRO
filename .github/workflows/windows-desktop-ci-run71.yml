@@ -17,6 +17,11 @@ on:
       - "desktop-package-lock.sha256"
       - "desktop/**"
       - "scripts/integrate-astra-ch-tas-run72.cjs"
+      - "scripts/integrate-rdw-vag-research-pack.cjs"
+      - "scripts/apply-rdw-vag-research-verification-run31.cjs"
+      - "scripts/build_rdw_vag_research_pack.py"
+      - "tests/test_rdw_vag_research_pack.py"
+      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
       - "tests/test_astra_ch_tas_desktop_integration.py"
       - "docs/research/ASTRA_CH_TAS_DESKTOP_INTEGRATION_2026-11-06.md"
       - "docs/VEHICLE_CONFIGURATION_MATCH_POLICY.md"
@@ -95,6 +100,11 @@ on:
       - "desktop-package-lock.sha256"
       - "desktop/**"
       - "scripts/integrate-astra-ch-tas-run72.cjs"
+      - "scripts/integrate-rdw-vag-research-pack.cjs"
+      - "scripts/apply-rdw-vag-research-verification-run31.cjs"
+      - "scripts/build_rdw_vag_research_pack.py"
+      - "tests/test_rdw_vag_research_pack.py"
+      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
       - "tests/test_astra_ch_tas_desktop_integration.py"
       - "docs/research/ASTRA_CH_TAS_DESKTOP_INTEGRATION_2026-11-06.md"
       - "docs/VEHICLE_CONFIGURATION_MATCH_POLICY.md"
@@ -1181,6 +1191,83 @@ jobs:
           }
           "lifecycle_session_output=single_session_object; BaseUrl_preserved; run77_contract=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Resolve latest successful RDW NL/EU research pack run
+        id: rdw-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/acquire-rdw-vag-research-pack.yml/runs?branch=main&per_page=100"
+          $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
+          $run = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1
+          if (-not $run) { throw "No RDW NL/EU research-pack workflow run exists." }
+          for ($attempt = 0; $attempt -lt 60 -and $run.status -ne "completed"; $attempt++) {
+            Start-Sleep -Seconds 20
+            $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
+            $run = $response.workflow_runs | Where-Object { $_.id -eq $run.id } | Select-Object -First 1
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "Latest RDW pack run did not complete successfully; refusing stale artifact fallback." }
+          $artifactsUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts"
+          $artifacts = Invoke-RestMethod -Uri $artifactsUri -Headers $headers -Method Get
+          $artifact = $artifacts.artifacts | Where-Object { $_.name -eq "rdw-vag-nl-eu-type-approval-research-pack" -and -not $_.expired } | Select-Object -First 1
+          if (-not $artifact) { throw "Latest RDW run has no unexpired verified research pack artifact." }
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($digest -notmatch "^[a-f0-9]{64}$") { throw "Latest RDW artifact has no valid SHA-256 digest." }
+          "run_id=$($run.id)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "RDW pack source run: #$($run.run_number) / $($run.id)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "RDW artifact SHA-256: $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download verified RDW NL/EU research pack
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: rdw-vag-nl-eu-type-approval-research-pack
+          path: ${{ runner.temp }}/vag-tech-pro-rdw-pack
+          run-id: ${{ steps.rdw-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Integrate RDW NL/EU pack into offline desktop research catalog
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-rdw-pack"
+          node --check scripts/integrate-rdw-vag-research-pack.cjs
+          node scripts/integrate-rdw-vag-research-pack.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id ${{ steps.rdw-pack.outputs.run_id }} --source-run-number ${{ steps.rdw-pack.outputs.run_number }} --artifact-sha256 ${{ steps.rdw-pack.outputs.artifact_sha256 }} 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-desktop-integration.log"
+          if ($LASTEXITCODE -ne 0) { throw "RDW NL/EU research pack integration failed" }
+          node --check scripts/apply-rdw-vag-research-verification-run31.cjs
+          node scripts/apply-rdw-vag-research-verification-run31.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-verifier-patch-run31.log"
+          if ($LASTEXITCODE -ne 0) { throw "RDW research-pack verifier patch failed" }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $metadataFiles = @(
+            "data/research/manifest.json",
+            "data/research/rdw-vag-nl-eu-type-approval-research/manifest.json",
+            "data/research/rdw-vag-nl-eu-type-approval-research/rdw-eu-vag-type-approval-open-data.json",
+            "data/research/rdw-vag-nl-eu-type-approval-research/build-report.json",
+            "data/research/rdw-vag-nl-eu-type-approval-research/LICENSE.txt",
+            "data/research/rdw-vag-nl-eu-type-approval-research/ATTRIBUTION.md",
+            "data/research/rdw-vag-nl-eu-type-approval-research/desktop-integration-report.json",
+            "lib/rdw-vag-research-db.cjs",
+            "tests/rdw-vag-research-db.test.cjs",
+            "tests/rdw-vag-research-ui-contract.test.cjs",
+            "scripts/verify-rdw-vag-research-pack.cjs",
+            "scripts/verify-local-research-packs.cjs",
+            "tests/local-research-packs.test.cjs",
+            "components/local-research-catalog.tsx",
+            "app/api/local-research/route.ts",
+            "scripts/windows-installer-lifecycle.ps1",
+            "package.json"
+          )
+          foreach ($relative in $metadataFiles) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          "rdw_source_run=${{ steps.rdw-pack.outputs.run_number }}/${{ steps.rdw-pack.outputs.run_id }}; artifact_sha256=${{ steps.rdw-pack.outputs.artifact_sha256 }}; scope=NL; production_import=false; exact_engine_gearbox_pair=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
@@ -1192,6 +1279,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Local core SQLite verification failed" }
           npm run verify:local-research 2>&1 | Tee-Object -FilePath verify-local-research.log
           if ($LASTEXITCODE -ne 0) { throw "Research pack verification failed" }
+          npm run verify:rdw-research 2>&1 | Tee-Object -FilePath verify-rdw-research.log
+          if ($LASTEXITCODE -ne 0) { throw "RDW NL/EU offline research verification failed" }
 
       - name: Capture generated research UI source around parser diagnostics
         if: always()
