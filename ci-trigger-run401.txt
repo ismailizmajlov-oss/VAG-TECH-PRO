@@ -1,0 +1,5 @@
+Trigger the Windows x64 desktop validation workflow on the current main head after the RDW manifest database.path integration fix.
+Expected source: RDW research pack run 34 / 42304030420.
+Fix commit: 93d9506ca74139cf561a04a6ebb2563fcedf4ccb.
+Regression test: tests/rdw-pack-integration-contract.test.cjs.
+Do not publish installers; CI artifacts remain private validation outputs.
