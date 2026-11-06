@@ -158,7 +158,7 @@ def main() -> None:
     lock_marker = "      - name: Generate, pin and install the Windows dependency lock"
     if lock_marker not in text:
         raise SystemExit("Windows dependency-lock security step is missing")
-    lock_step = text.split(lock_marker, 1)[1].split("\\n      - name:", 1)[0]
+    lock_step = text.split(lock_marker, 1)[1].split("\n      - name:", 1)[0]
     for required_lock_guard in (
         "minimatch@>=7.0.0 <11.0.1",
         "'11.0.1'",
