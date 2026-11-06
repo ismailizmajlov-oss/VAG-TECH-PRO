@@ -234,7 +234,6 @@ function integrate(repoRoot, desktopRoot, packDir, sourceRunId, artifactSha) {
   };
   const index = rootManifest.packs.findIndex((item) => item.id === entry.id);
   if (index >= 0) rootManifest.packs[index] = entry; else rootManifest.packs.push(entry);
-  rootManifest.astra_ch_tas_pack = { id: entry.id, market_scope: "CH", production_import: false, ru_eaeu_applicability: false, database_sha256: entry.database_sha256 };
   atomicJson(rootManifestPath, rootManifest);
   const support = [
     ["desktop/astra-ch-tas-db.cjs", "lib/astra-ch-tas-db.cjs"],
