@@ -1,37 +1,47 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-06T17:18:44.0567900Z",
+  "recorded_at_utc": "2026-11-06T17:46:07.1794819Z",
   "workflow": "Acquire rights-cleared RDW VAG type-approval research pack",
-  "run_id": 42260383994,
-  "run_number": 8,
+  "run_id": 42260969213,
+  "run_number": 11,
   "run_attempt": 1,
   "run_status_at_record": "in_progress",
   "run_conclusion_at_record": null,
-  "build_job_result": "failure",
-  "head_sha": "266fc71ba285fcd4b8af2962aa46d984bea69eb7",
+  "build_job_result": "success",
+  "head_sha": "7c08e8d2335124e721078f456a7077a0112db2bb",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42260383994",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42260969213",
   "jobs": [
     {
-      "id": 128038473965,
+      "id": 128040478310,
       "name": "Acquire filtered CC0 RDW data and build isolated SQLite research pack",
       "status": "completed",
-      "conclusion": "failure",
-      "runner_name": "GitHub Actions 1000001903",
-      "started_at": "2026-11-06T17:18:18Z",
-      "completed_at": "2026-11-06T17:18:31Z"
+      "conclusion": "success",
+      "runner_name": "GitHub Actions 1000001906",
+      "started_at": "2026-11-06T17:22:02Z",
+      "completed_at": "2026-11-06T17:45:55Z"
     },
     {
-      "id": 128038610272,
+      "id": 128053128344,
       "name": "Record RDW pack build evidence",
       "status": "in_progress",
       "conclusion": null,
-      "runner_name": "GitHub Actions 1000001904",
-      "started_at": "2026-11-06T17:18:34Z",
+      "runner_name": "GitHub Actions 1000001922",
+      "started_at": "2026-11-06T17:45:57Z",
       "completed_at": null
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "id": 13526776486,
+      "name": "rdw-vag-nl-eu-type-approval-research-pack",
+      "size_in_bytes": 155402740,
+      "digest": "sha256:86812d6f0ecc81b4894c2cde150f8dc4290ac83f4ec5d457865ce32c0440bf31",
+      "expired": false,
+      "created_at": "2026-11-06T17:45:51Z",
+      "expires_at": "2027-02-04T17:22:00Z"
+    }
+  ],
   "source_id": "rdw-eu-vag-type-approval-open-data-nl",
   "source_manifest_sha256": "8f3c6cc15eca35e751da99b3a5019d9668d43a6065246e9b9a3e1412611b7375",
   "license": "CC0 1.0 for each listed dataset, as published in the Dutch national data catalogue",
@@ -41,8 +51,8 @@
   ],
   "production_import": false,
   "ru_eaeu_applicability": false,
-  "pack_artifact_present": false,
-  "pack_ready": false,
+  "pack_artifact_present": true,
+  "pack_ready": true,
   "release_ready": false,
   "release_readiness_note": "NL-only CC0 type-approval research pack; not RU/EAEU fitment, OEM engine/gearbox codes, exact powertrain pairing or repair authorization."
 }
