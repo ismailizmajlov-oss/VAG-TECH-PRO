@@ -136,6 +136,26 @@ class RdwVagResearchPackTests(unittest.TestCase):
             manifest = json.loads((Path(tmp) / "pack" / "manifest.json").read_text(encoding="utf-8"))
             self.assertTrue(all(isinstance(value, str) for value in manifest["source_revisions"].values()))
 
+    def test_sqlite_keeps_row_hashes_without_duplicating_raw_snapshot_json(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pack_dir = Path(tmp) / "pack"
+            report = rdw.build_pack(pack_dir, self.source, self.source_bytes, self.datasets, self.metadata)
+            db = sqlite3.connect(pack_dir / "rdw-vag-research.sqlite")
+            try:
+                columns = {row[1] for row in db.execute("PRAGMA table_info(source_rows)")}
+                self.assertNotIn("raw_json", columns)
+                self.assertEqual(
+                    db.execute("SELECT count(*) FROM source_rows").fetchone()[0],
+                    report["counts"]["source_rows"],
+                )
+                for item in report["source_files"]:
+                    self.assertEqual(
+                        db.execute("SELECT count(*) FROM source_rows WHERE dataset_id=?", (item["dataset_id"],)).fetchone()[0],
+                        item["row_count"],
+                    )
+            finally:
+                db.close()
+
     def test_dataset_revision_change_during_acquisition_is_rejected(self):
         names_by_id = {str(config["id"]): name for name, config in rdw.DATASETS.items()}
 
