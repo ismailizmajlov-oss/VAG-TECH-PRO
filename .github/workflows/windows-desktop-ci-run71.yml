@@ -1444,6 +1444,7 @@ jobs:
             windows-lifecycle-staging/desktop-source/docs/LOCAL_VEHICLE_CATALOG_IMPORT.md
             windows-lifecycle-staging/desktop-source/data/schemas/**
             windows-lifecycle-staging/desktop-source/scripts/verify-local-core.cjs
+            windows-lifecycle-staging/desktop-source/scripts/windows-installer-lifecycle.ps1
           if-no-files-found: warn
           retention-days: 30
 
