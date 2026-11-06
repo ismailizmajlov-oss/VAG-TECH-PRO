@@ -1990,7 +1990,8 @@
         "Do not treat an SBKTS record as an OTTS record; document type and issuing authority must remain explicit.",
         "An OTTS is type-approval evidence only to the extent stated in the document; it does not establish individual VIN build data, ECU/DTC, wiring, repair applicability or an exact engine/gearbox pairing unless the primary document explicitly ties those values together.",
         "A distinct OTTS page was observed on 2026-11-06; its rendered total label is a UI observation under visible date filters, not a verified full-corpus count or permission to extract records.",
-        "The 2026-11-06 public OTTS page snapshot exposed only document identity/status and applicant/manufacturer/certification metadata in its visible table; it did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. Underlying approval attachments were not downloaded or inspected."
+        "The 2026-11-06 public OTTS page snapshot exposed only document identity/status and applicant/manufacturer/certification metadata in its visible table; it did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. Underlying approval attachments were not downloaded or inspected.",
+        "An ELPTS operator notice dated 2026-08-21 confirms that an internal AS EOTTS data-entry issue involving additional-reduction and hydraulic transmissions was fixed. It does not identify a public gearbox field, internal schema, factory gearbox code, reuse rights or exact fitment."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
       "evidence_status": "official ELPTS OTTS page rechecked 2026-11-06; visible metadata columns and active date-filter state recorded; no dataset-specific reuse rights, bulk API or powertrain fields in the visible table established; no records downloaded",
@@ -2043,7 +2044,26 @@
           "note": "Visible OTTS/OTSH/ZOETS filters do not establish completeness for those document classes"
         }
       },
-      "data_ingested": false
+      "data_ingested": false,
+      "operator_notices": [
+        {
+          "notice_id": "elpts-as-eotts-gearbox-entry-fix-2026-08-21",
+          "publisher": "АО «Электронный паспорт»",
+          "notice_date": "2026-08-21",
+          "url": "https://elpts.ru/uvazhaemye-polzovateli-as-eotts/",
+          "observed_at": "2026-11-06",
+          "statement": "The operator reported that an issue preventing correct entry of gearbox information for transmissions with additional reduction gears and hydraulic transmissions in the updated AS EOTTS platform had been fixed.",
+          "evidence_class": "operator_notice_about_internal_data_entry_workflow",
+          "does_not_establish": [
+            "a public Annex 2 gearbox field",
+            "the exact internal field name or schema",
+            "that the value is a factory gearbox code",
+            "bulk export or API access",
+            "commercial reuse, offline caching, third-party display or redistribution rights"
+          ],
+          "product_decision": "retain_as_access_and_schema_discovery_evidence_only; no import or fitment claim"
+        }
+      ]
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
