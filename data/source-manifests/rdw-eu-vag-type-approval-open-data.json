@@ -87,7 +87,8 @@
         "query_spec_sha256": "5a15eaaaecd78614e78b46c8aaf354202f5e2c113431579917cbfc7ec9d34064"
       }
     ],
-    "note": "Six allowlisted filtered CC0 RDW snapshots were acquired and hashed. This is a separate NL-only research snapshot; data_ingested remains false because no production vehicle-fitment import is authorized or claimed."
+    "note": "Six allowlisted filtered CC0 RDW snapshots were acquired at the recorded UTC time and hashed. This is a separate NL-only research snapshot; data_ingested remains false because no production vehicle-fitment import is authorized or claimed.",
+    "acquired_at_utc": "2026-11-06T21:11:14.142884+00:00"
   },
   "data_products": {
     "registered_vehicle_identity": {
