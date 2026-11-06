@@ -75,10 +75,11 @@ Source: Wikidata structured data — https://www.wikidata.org/
 Query endpoint: https://query.wikidata.org/sparql
 License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
 
-This pack stores structured model/manufacturer identity statements only. It is
-a candidate taxonomy, not an authoritative Volkswagen Group model register.
-The manufacturer-label whitelist is a project-maintained acquisition filter,
-not proof of corporate ownership or vehicle fitment.
+This pack stores structured car-model and car-model-series/manufacturer
+identity statements only. It is a candidate taxonomy, not an authoritative
+Volkswagen Group model register. The entity-class and manufacturer-label
+whitelists are project-maintained acquisition filters, not proof of corporate
+ownership or vehicle fitment.
 
 No engine or gearbox codes, ECU identities, DTC definitions, diagnostic
 procedures, repair instructions, wiring diagrams, pinouts, torque values,
@@ -478,6 +479,11 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
             raise ValueError(f"candidate-only scope boundary changed: {field}")
     if scope.get("market_scope") != "UNKNOWN" or scope.get("applicability_precision") != "candidate_identity_only" or scope.get("generation_entities") != 0 or scope.get("completeness_status") != "unknown" or manifest.get("completeness_status") != "unknown" or manifest.get("query_limit") != 3000:
         raise ValueError("candidate-only scope metadata changed")
+    if manifest.get("entity_class_whitelist") != [
+        {"qid": "Q3231690", "label": "car model"},
+        {"qid": "Q59773381", "label": "car model series"},
+    ]:
+        raise ValueError("candidate entity-class whitelist changed")
     for name, info in manifest["pack_files"].items():
         path = output_dir / name
         if not path.is_file():
@@ -494,8 +500,17 @@ def verify_pack(output_dir: Path) -> dict[str, Any]:
             raise ValueError("SQLite foreign-key check failed")
         if db.execute("PRAGMA user_version").fetchone()[0] != 1:
             raise ValueError("unexpected SQLite schema version")
+        entity_type_rows = [json.loads(row[0]) for row in db.execute("SELECT entity_types_json FROM vehicle_model_entities")]
+        for items in entity_type_rows:
+            if not items:
+                raise ValueError("identity row has no source entity type")
+            for item in items:
+                if item.get("entity_class_qid") not in ("Q3231690", "Q59773381") or not re.fullmatch(r"Q[0-9]+", item.get("model_type_qid", "")) or not item.get("model_type_label_en"):
+                    raise ValueError("identity row contains an invalid entity-type binding")
         counts = {
             "model_entities": db.execute("SELECT count(*) FROM vehicle_model_entities").fetchone()[0],
+            "car_model_entities": sum(1 for items in entity_type_rows if any(item["entity_class_qid"] == "Q3231690" for item in items)),
+            "car_model_series_entities": sum(1 for items in entity_type_rows if any(item["entity_class_qid"] == "Q59773381" for item in items)),
             "source_bindings": db.execute("SELECT count(*) FROM source_bindings").fetchone()[0],
             "manufacturers": db.execute("SELECT count(DISTINCT manufacturer_qid) FROM vehicle_model_entities").fetchone()[0],
             "russian_labels": db.execute("SELECT count(*) FROM vehicle_model_entities WHERE model_label_ru IS NOT NULL AND model_label_ru!=''").fetchone()[0],
