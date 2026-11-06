@@ -1,0 +1,295 @@
+{
+  "manifest_version": 1,
+  "reviewed_at": "2026-11-06",
+  "publisher": "Volkswagen Group Info Services AG",
+  "purpose": "Official OEM source access and rights boundary for VAG-specific diagnostics and repair/maintenance data",
+  "products": [
+    {
+      "source_id": "volkswagen-group-diagnostics-data",
+      "product_name": "Diagnostics Data",
+      "publisher": "Volkswagen Group Info Services AG / Volkswagen Group R&D departments",
+      "source_url": "https://www.drivesomethinggreater.com/solutions/all-solutions/Diagnostics-Data",
+      "documentation_urls": [
+        "https://drivesomethinggreater.com/developer-hub/api-specifications/diagnostics--europe--api-documentation1",
+        "https://drivesomethinggreater.com/developer-hub/api-specifications/diagnostics--worldwide--api-documentation1",
+        "https://drivesomethinggreater.com/developer-hub/api-specifications/diagnostics-data-api-downloads"
+      ],
+      "source_kind": "official_oem_diagnostics_dtc_odx_static_package",
+      "source_revision": "official_product_and_api_docs_reviewed_2026-11-06; twice_yearly_may_november_release_cycle",
+      "market_scope": [
+        "EEA",
+        "UK",
+        "CH"
+      ],
+      "package_scope": {
+        "europe_platforms": 70,
+        "worldwide_platforms": 75,
+        "worldwide_market_coverage": "additional platforms outside EU; exact list requires authenticated package"
+      },
+      "data_content": [
+        "OEM DTC codes",
+        "plain-text DTC descriptions",
+        "reference values",
+        "one ODX file per ECU",
+        "platform-consolidated coverage across 8 VAG Group brands"
+      ],
+      "brands": [
+        "Volkswagen Passenger Cars",
+        "Volkswagen Commercial Vehicles",
+        "Škoda",
+        "SEAT",
+        "CUPRA",
+        "Audi",
+        "Lamborghini",
+        "Bentley"
+      ],
+      "access": {
+        "subscription_required": true,
+        "data_hub_onboarding_required": true,
+        "api_key_required": true,
+        "delivery": "static ZIP download; API download endpoint; no push/pull",
+        "automation_api": "current access via static download; further automation details provided during onboarding",
+        "credentials_created": false,
+        "account_created": false,
+        "owner_action_required": true
+      },
+      "rights": {
+        "data_license_status": "contractual_subscription_no_public_open_license",
+        "permission_status": "not_requested",
+        "eligible_customer_hq": [
+          "EEA",
+          "CH",
+          "UK"
+        ],
+        "commercial_use": "authorized_customer_own_products_tools_and_applications_subject_to_terms",
+        "redistribution_or_remarketing": "further_use_and_remarketing_not_permitted",
+        "offline_distribution_of_database": "not_confirmed_requires_written_clarification",
+        "SFD_agreement_required": true,
+        "volkswagen_encryption_key_agreement_required": true,
+        "subscription_required": true,
+        "paid_terms_accepted": false
+      },
+      "applicability": {
+        "precision": "OEM_DTC_and_reference_values_per_ECU_and_platform_after_authorized_package_access",
+        "exact_model_year_market_coverage": "requires package contents and platform mapping",
+        "ru_eaeu_market_scope": false,
+        "repair_procedure_fitment": false
+      },
+      "verification_status": "official_oem_product_docs_reviewed_access_not_requested",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_credentials",
+      "project_decision": "no_import_until_eligible_company_access_subscription_SFD_and_encryption_key_agreements_are_approved_and_offline_distribution_rights_are_clarified",
+      "limitations": [
+        "Only companies headquartered in the EEA, Switzerland or UK are eligible; Russian market and Russian-headquartered companies are not listed as eligible.",
+        "The product requires a subscription, Data Hub onboarding, an SFD agreement and a second Volkswagen AG agreement for encryption keys.",
+        "Data is delivered as ODX files per ECU in static ZIP packages; current product documentation says API automation is not yet available as a push/pull feed.",
+        "Use in authorized customers' own products/tools is subject to terms; further use and remarketing are not permitted.",
+        "No right to redistribute a pre-populated offline SQLite database was independently established.",
+        "No account, API key, subscription, agreement or data download was created."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://www.drivesomethinggreater.com/solutions/all-solutions/Diagnostics-Data",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Eight VAG Group brands, DTC descriptions/reference values, 70 EU platforms or 75 worldwide platforms, EEA/UK/CH markets, twice-yearly updates, eligible-company and agreement requirements, ODX delivery and further-use restrictions."
+        },
+        {
+          "url": "https://drivesomethinggreater.com/developer-hub/api-specifications/diagnostics--europe--api-documentation1",
+          "reviewed_at": "2026-11-06",
+          "evidence": "EU package requires Data Hub onboarding, subscription and marketplace API key; GET latest/download endpoints."
+        },
+        {
+          "url": "https://drivesomethinggreater.com/developer-hub/api-specifications/diagnostics--worldwide--api-documentation1",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Worldwide static diagnostics package requires onboarding and subscription; GET latest/download endpoints."
+        },
+        {
+          "url": "https://drivesomethinggreater.com/developer-hub/api-specifications/diagnostics-data-api-downloads",
+          "reviewed_at": "2026-11-06",
+          "evidence": "ZIP download gated by API key."
+        }
+      ]
+    },
+    {
+      "source_id": "volkswagen-group-rmi-license",
+      "product_name": "Repair & Maintenance Information licence",
+      "publisher": "Volkswagen Group Info Services AG",
+      "source_url": "https://drivesomethinggreater.com/solutions/all-solutions/Repair-Maintenance-Information",
+      "documentation_urls": [
+        "https://drivesomethinggreater.com/solutions/repair-maintenance",
+        "https://www.drivesomethinggreater.com/erwininfo"
+      ],
+      "source_kind": "official_oem_rmi_third_party_product_license",
+      "source_revision": "official_RMI_and_erWin_pages_reviewed_2026-11-06",
+      "market_scope": [
+        "EU_DEFAULT",
+        "WORLDWIDE_EXCEPT_NORTH_AMERICA_CHINA_RUSSIA_SYRIA"
+      ],
+      "brands": [
+        "Volkswagen Passenger Cars",
+        "Volkswagen Commercial Vehicles",
+        "Škoda",
+        "SEAT",
+        "CUPRA",
+        "Audi"
+      ],
+      "data_content": [
+        "repair guides",
+        "wiring diagrams",
+        "component locations",
+        "chassis repair",
+        "maintenance manuals and tables",
+        "working positions",
+        "emissions tests",
+        "labour operations and time estimates",
+        "vehicle identification via additional licensed products"
+      ],
+      "access": {
+        "central_RMI_license_required": true,
+        "erWin_account_required_per_brand": true,
+        "erWin_account_paid": true,
+        "data_format": [
+          "XML",
+          "PDF"
+        ],
+        "direct_api_available": false,
+        "vin_or_model_queries": true,
+        "credentials_created": false,
+        "account_created": false,
+        "owner_action_required": true
+      },
+      "rights": {
+        "data_license_status": "contractual_RMI_license_no_public_open_license",
+        "permission_status": "not_requested",
+        "eligible_customer_hq": [
+          "EEA",
+          "CH",
+          "UK"
+        ],
+        "redistribution_allowed": "permitted_for_authorized_eligible_customers_under_contract_and_EU_2018_858",
+        "commercial_use": "permitted_for_authorized_eligible_customers_under_contract",
+        "offline_distribution_of_database": "not_confirmed_requires_contractual_scope",
+        "russia_market_allowed": false,
+        "paid_erwin_account_required_per_brand": true,
+        "paid_terms_accepted": false
+      },
+      "applicability": {
+        "precision": "OEM_platform_based_RMI_by_VIN_or_model_after_authorized_access",
+        "exact_engine_gearbox_mapping": "available_only_if_in_source_brand_RMI_and_market",
+        "ru_eaeu_market_scope": false,
+        "repair_procedure_fitment": "requires licensed RMI source records and platform/VIN/model applicability"
+      },
+      "verification_status": "official_oem_rmi_license_terms_reviewed_access_not_requested",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_credentials",
+      "project_decision": "not_eligible_for_russian_market_distribution; do_not_import_without_eligible_company_and_signed_RMI_contract",
+      "limitations": [
+        "The licence page explicitly excludes Russia from the markets for which the worldwide licence can be requested.",
+        "The FAQ limits eligible company headquarters to the EEA, Switzerland or UK.",
+        "A central RMI licence is required for third-party product integration, plus a separate paid erWin account for each brand to obtain the XML/PDF data.",
+        "No direct API is available; data is obtained through erWin.",
+        "Redistribution is contractually permitted only for authorized eligible customers under the RMI licence and EU Regulation 2018/858; this does not apply to an unlicensed Russian-market app.",
+        "No account, licence, erWin subscription or data download was created."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://drivesomethinggreater.com/solutions/all-solutions/Repair-Maintenance-Information",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Third-party RMI licence covers repair guides, circuit diagrams, component locations, maintenance, chassis repair and work steps; default EU scope; worldwide request excludes Russia; XML/PDF via erWin, no API; authorized redistribution subject to contract."
+        },
+        {
+          "url": "https://www.drivesomethinggreater.com/erwininfo",
+          "reviewed_at": "2026-11-06",
+          "evidence": "New erWin is paid time-based B2B access for independent workshops; company account and market/brand licences; connected OEM frontends, not a data feed."
+        }
+      ]
+    },
+    {
+      "source_id": "volkswagen-erwin-portal",
+      "product_name": "erWin central workshop portal",
+      "publisher": "Volkswagen Group Info Services AG",
+      "source_url": "https://www.drivesomethinggreater.com/erwininfo",
+      "source_kind": "official_oem_workshop_rmi_and_diagnostics_access_portal",
+      "source_revision": "official_erWin_portal_page_reviewed_2026-11-06",
+      "market_scope": [
+        "MARKETS_WITH_RMI_REGULATORY_ROLLOUT; exact_country_rollout_not_established"
+      ],
+      "brands": [
+        "Volkswagen Passenger Cars",
+        "Volkswagen Commercial Vehicles",
+        "Škoda",
+        "SEAT",
+        "CUPRA",
+        "Audi",
+        "Bentley",
+        "Lamborghini_diagnostics_only"
+      ],
+      "data_content": [
+        "OEM repair and maintenance frontends",
+        "repair guides",
+        "circuit diagrams",
+        "component locations",
+        "maintenance tables",
+        "diagnostic applications where licensed"
+      ],
+      "access": {
+        "business_account_required": true,
+        "time_based_brand_licenses": true,
+        "paid_access": true,
+        "one_business_id_company_management": true,
+        "api_data_feed": false,
+        "access_to_oem_frontends": true,
+        "credentials_created": false,
+        "account_created": false,
+        "owner_action_required": true
+      },
+      "rights": {
+        "data_license_status": "end_user_workshop_access_contractual",
+        "permission_status": "not_requested",
+        "use_scope": "licensed professional workshop access within selected brand and market",
+        "offline_cache_allowed": false,
+        "third_party_redistribution_allowed": false,
+        "automated_extraction_allowed": false,
+        "paid_terms_accepted": false
+      },
+      "applicability": {
+        "precision": "brand_market_and_OEM_frontend_context; VIN/model matching inside OEM systems",
+        "ru_eaeu_market_scope": "not_established",
+        "exact_engine_gearbox_mapping": "available only within authorized OEM frontend if supported"
+      },
+      "verification_status": "official_oem_portal_terms_reviewed_access_not_requested",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_credentials",
+      "project_decision": "direct_workshop_portal_only_not_a_redistributable_offline_database_source",
+      "limitations": [
+        "The portal is paid, time-based B2B access for professional workshops.",
+        "It directs users into OEM-operated frontends and does not provide a data feed/API for third-party offline SQLite ingestion.",
+        "No automated extraction, offline caching or third-party redistribution right was identified for this direct-access product.",
+        "Exact market rollout varies by country and is not established for Russia/EAEU.",
+        "No company account, licence or data download was created."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://www.drivesomethinggreater.com/erwininfo",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Central portal for eight brands; paid time-based brand/market licences; business account; direct access to connected OEM systems; no data feed API."
+        },
+        {
+          "url": "https://www.drivesomethinggreater.com/erwininfo/transition",
+          "reviewed_at": "2026-11-06",
+          "evidence": "Portal transition and company account requirements reviewed."
+        }
+      ]
+    }
+  ],
+  "global_decision": "No product data downloaded or imported. All three sources require contractual access; RMI explicitly excludes Russia. Do not create accounts, accept paid terms, sign agreements or ingest data without owner approval and confirmed distribution scope.",
+  "data_ingested": false,
+  "source_snapshot_sha256": null,
+  "hash_status": "not_downloaded_no_access"
+}

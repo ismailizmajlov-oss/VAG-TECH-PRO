@@ -42,6 +42,33 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
         self.assertFalse(source["rights"]["offline_cache_allowed"])
         self.assertEqual(source["rights"]["offline_distribution_of_cached_database"], "not_confirmed_requires_written_clarification")
         self.assertEqual(source["market_scope"], ["UNKNOWN"])
+    def test_oem_diagnostics_data_requires_eligible_company_and_contract(self):
+        manifest = json.loads((ROOT / "data" / "source-manifests" / "vw-oem-repair-data-access.json").read_text(encoding="utf-8"))
+        dda = next(item for item in manifest["products"] if item["source_id"] == "volkswagen-group-diagnostics-data")
+        self.assertEqual(dda["market_scope"], ["EEA", "UK", "CH"])
+        self.assertTrue(dda["access"]["subscription_required"])
+        self.assertTrue(dda["access"]["SFD_agreement_required"] if "SFD_agreement_required" in dda["access"] else dda["rights"]["SFD_agreement_required"])
+        self.assertTrue(dda["rights"]["volkswagen_encryption_key_agreement_required"])
+        self.assertFalse(dda["product_import_allowed"])
+        self.assertFalse(dda["data_ingested"])
+        self.assertIsNone(dda["source_snapshot_sha256"])
+
+    def test_rmi_license_explicitly_excludes_russia(self):
+        manifest = json.loads((ROOT / "data" / "source-manifests" / "vw-oem-repair-data-access.json").read_text(encoding="utf-8"))
+        rmi = next(item for item in manifest["products"] if item["source_id"] == "volkswagen-group-rmi-license")
+        self.assertFalse(rmi["rights"]["russia_market_allowed"])
+        self.assertIn("RUSSIA", rmi["market_scope"][0] + "_" + rmi["market_scope"][1])
+        self.assertFalse(rmi["product_import_allowed"])
+        self.assertFalse(rmi["data_ingested"])
+
+    def test_erwin_is_not_treated_as_a_data_feed(self):
+        manifest = json.loads((ROOT / "data" / "source-manifests" / "vw-oem-repair-data-access.json").read_text(encoding="utf-8"))
+        erwin = next(item for item in manifest["products"] if item["source_id"] == "volkswagen-erwin-portal")
+        self.assertFalse(erwin["access"]["api_data_feed"])
+        self.assertFalse(erwin["rights"]["offline_cache_allowed"])
+        self.assertFalse(erwin["rights"]["third_party_redistribution_allowed"])
+        self.assertFalse(erwin["product_import_allowed"])
+
     def test_no_credentials_or_external_account_are_created(self):
         access = self.source["access"]
         self.assertTrue(access["requires_company_access_request"])
