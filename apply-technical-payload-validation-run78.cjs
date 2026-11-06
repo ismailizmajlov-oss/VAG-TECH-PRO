@@ -141,7 +141,7 @@ function patchTests(file) {
     '});',
     '',
     'test("run78 rejects manufacturer-controlled and mixed U3 DTCs from the generic namespace", () => {',
-    '  for (const code of ["P3000","P33FF","U3000","U3FFF"]) {',
+    '  for (const code of ["P3000","P33FF","B3000","C3000","U3000","U3FFF"]) {',
     '    assert.throws(() => core.validateTechnicalPayload({ record_type: "dtc_generic", source_record_key: "generic:" + code, payload: { code } }), /DTC payload code does not match its declared generic or VAG-specific namespace/);',
     '  }',
     '  assert.equal(core.validateTechnicalPayload({ record_type: "dtc_generic", source_record_key: "generic:P3400", payload: { code: "P3400" } }), true);
@@ -189,7 +189,7 @@ function patchResearchVerification(desktopRoot) {
     "obCounts.dtcs === 9359 && obCounts.quarantinedDtcRows === 174",
     "OBDex SQLite count gate");
   verifier = verifier.replace(/^\s*const manufacturerSpecific = obCodes\.filter\(\(code\) => .*;\s*$/m,
-    '    const nonGenericOrMixed = obCodes.filter((code) => /^(P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[123][0-9A-F]{3})$/i.test(code));');
+    '    const nonGenericOrMixed = obCodes.filter((code) => /^(P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[123][0-9A-F]{3}|C[123][0-9A-F]{3}|U[123][0-9A-F]{3})$/i.test(code));');
   verifier = verifier.replace(/^\s*assert\(manufacturerSpecific\.length === 0, .*;\s*$/m,
     '    assert(nonGenericOrMixed.length === 0, "OBDex contains non-generic or mixed/reserved DTCs in generic namespace");\n    assert(obCodes.includes("P3400") && !obCodes.includes("U3000"), "OBDex generic namespace must retain P34xx and exclude U3xxx");');
   if (!verifier.includes("const nonGenericOrMixed =") || !verifier.includes("obCodes.includes(" + '"P3400"')) throw new Error("Run78 OBDex code-family audit patch did not apply");
