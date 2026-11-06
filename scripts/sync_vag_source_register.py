@@ -81,6 +81,7 @@ def sync(source_path: str | Path, desktop_root: str | Path) -> dict[str, Any]:
         raise ValueError("Source-manifest directory must be a regular, non-symlink directory")
     canonical_name = "vag-factory-source-register.json"
     file_map: dict[str, tuple[bytes, dict[str, Any]]] = {canonical_name: (raw, manifest)}
+    skipped_empty_files: list[str] = []
     for entry in sorted(source_dir.iterdir(), key=lambda item: item.name.casefold()):
         if entry.is_symlink():
             raise ValueError(f"Source-manifest directory contains a symlink: {entry.name}")
@@ -98,6 +99,9 @@ def sync(source_path: str | Path, desktop_root: str | Path) -> dict[str, Any]:
             entry_stat = entry.lstat()
             if not stat.S_ISREG(entry_stat.st_mode):
                 raise ValueError(f"Source manifest is not a regular file: {entry.name}")
+            if entry_stat.st_size == 0:
+                skipped_empty_files.append(entry.name)
+                continue
             entry_raw = entry.read_bytes()
             entry_json = json.loads(entry_raw.decode("utf-8-sig"))
         except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -113,7 +117,7 @@ def sync(source_path: str | Path, desktop_root: str | Path) -> dict[str, Any]:
         manifest_files.append(item)
     russian_entry = next((item for item in manifest_files if item["name"] == "russian-eaeu-otts-sources.json"), None)
     index = {"schema_version":1,"updated_at":manifest["updated_at"],"source_register_name":canonical_name,
-             "source_register_sha256":expected_hash,"manifest_count":len(manifest_files),"files":manifest_files}
+             "source_register_sha256":expected_hash,"manifest_count":len(manifest_files),"files":manifest_files,"skipped_files":[{"name":name,"reason":"empty_file"} for name in sorted(skipped_empty_files)]}
     index_raw = (json.dumps(index,ensure_ascii=False,sort_keys=True,indent=2)+"\n").encode("utf-8")
     index_hash = _sha256(index_raw)
     data_dir = root / "data"
@@ -176,7 +180,7 @@ def sync(source_path: str | Path, desktop_root: str | Path) -> dict[str, Any]:
     return {"status":"synced_verified","source":str(source),"destination":str(destination),"sha256":expected_hash,
             "source_count":len(manifest["sources"]),"updated_at":manifest["updated_at"],
             "data_ingested_count":sum(1 for item in manifest["sources"] if item.get("data_ingested") is True),
-            "manifest_count":len(manifest_files),"manifest_files":manifest_files,"manifest_index_sha256":actual_index_hash,
+            "manifest_count":len(manifest_files),"manifest_files":manifest_files,"skipped_empty_files":sorted(skipped_empty_files),"manifest_index_sha256":actual_index_hash,
             "russian_eaeu_otts_manifest_sha256":russian_entry["sha256"] if russian_entry else None,
             "russian_eaeu_otts_source_count":russian_entry.get("source_count") if russian_entry else None}
 

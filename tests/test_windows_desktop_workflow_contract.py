@@ -201,7 +201,7 @@ def main() -> None:
         "tests/test_source_manifest_bundle.py", "source-manifest-index.json",
         "russian-eaeu-otts-sources.json", "vehicle-catalog.sql", "oem-dtc-index.sql",
         "dtc-catalog-links.sql", "technical-library.sql", "technical-record-payloads.schema.json",
-        "source_manifest_index_sha256", "russian_eaeu_otts_manifest_sha256",
+        "source_manifest_index_sha256", "source_manifest_skipped_empty_files", "russian_eaeu_otts_manifest_sha256",
         "vehicle_catalog_sql_sha256", "oem_dtc_index_sql_sha256", "dtc_catalog_links_sql_sha256",
         "Verify packaged source manifests and technical library schemas",
         "vag-tech-pro-windows-x64-run71",

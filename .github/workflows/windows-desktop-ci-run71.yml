@@ -911,6 +911,7 @@ jobs:
           if (@($russianManifest.sources | Where-Object { $_.data_ingested -eq $true }).Count -gt 0) { throw "Unlicensed Russian/EEU OTTS source is marked as ingested" }
           "source_manifest_index_sha256=$($sync.manifest_index_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "source_manifest_count=$($sync.manifest_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "source_manifest_skipped_empty_files=$(@($sync.skipped_empty_files) -join ',')" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "russian_eaeu_otts_manifest_sha256=$($russianManifestEntry.sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "russian_eaeu_otts_source_count=$($russianManifestEntry.source_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "vag_source_register_sha256=$($sync.sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
