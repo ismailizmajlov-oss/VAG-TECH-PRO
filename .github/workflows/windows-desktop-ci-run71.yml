@@ -179,7 +179,7 @@ concurrency:
 jobs:
   build-and-lifecycle:
     runs-on: windows-2025
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       CI: "true"
     steps:
@@ -1203,12 +1203,12 @@ jobs:
           $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
           $run = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1
           if (-not $run) { throw "No RDW NL/EU research-pack workflow run exists." }
-          for ($attempt = 0; $attempt -lt 60 -and $run.status -ne "completed"; $attempt++) {
+          for ($attempt = 0; $attempt -lt 120 -and $run.status -ne "completed"; $attempt++) {
             Start-Sleep -Seconds 20
             $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
             $run = $response.workflow_runs | Where-Object { $_.id -eq $run.id } | Select-Object -First 1
           }
-          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "Latest RDW pack run did not complete successfully; refusing stale artifact fallback." }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "Latest RDW pack run did not complete successfully within the 40-minute wait window; refusing stale artifact fallback." }
           $artifactsUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts"
           $artifacts = Invoke-RestMethod -Uri $artifactsUri -Headers $headers -Method Get
           $artifact = $artifacts.artifacts | Where-Object { $_.name -eq "rdw-vag-nl-eu-type-approval-research-pack" -and -not $_.expired } | Select-Object -First 1
