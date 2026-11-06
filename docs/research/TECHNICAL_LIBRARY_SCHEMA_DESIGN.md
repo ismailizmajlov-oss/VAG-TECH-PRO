@@ -25,3 +25,8 @@ The SQL schema is packaged under `resources/sql-schema/technical-library.sql`; t
 ## Safety and privacy
 
 Manual vehicle selection remains supported; VIN entry is not required. `exact_vin` is only a source-evidence precision class for a published VIN range and must not contain a customer's actual VIN. ECU security access fields are references to documentation only: never store passwords, PINs, SFD tokens, secret keys or credentials. Candidate records remain hidden from published views.
+
+
+## Desktop import enforcement (run78)
+
+The offline desktop importer now validates every imported technical payload against the versioned JSON Schema before opening the SQLite write transaction. The packaged schema is resolved from the Electron resources directory (or the source tree in development); a missing schema blocks technical imports. Record-type mappings are explicit: `pinout` → `ecu_pinout`, `ecu_reference` → `ecu_profile`, and `oem_supersession` → its own schema definition. Generic and VAG-specific DTC payloads are separately checked for an uppercase five-character SAE/ISO code; the existing namespace and exact ECU/configuration gates remain in force. Invalid payloads therefore fail before any import batch or technical row is written.
