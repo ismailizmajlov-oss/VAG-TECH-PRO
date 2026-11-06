@@ -110,6 +110,21 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["product_import_allowed"])
         self.assertFalse(source["data_ingested"])
 
+    def test_kazakhstan_techreg_registry_is_public_query_only_and_not_ingested(self):
+        central = self.factory_sources["kazakhstan-techreg-otts-public-registry"]
+        regional = self.russian_sources["kazakhstan-techreg-otts-public-registry"]
+        self.assertEqual(central["market_scope"], ["KZ", "EAEU_TR_TS_018_2011"])
+        self.assertEqual(central["rights"]["permission_status"], "not_obtained")
+        self.assertFalse(central["product_import_allowed"])
+        self.assertFalse(central["data_ingested"])
+        self.assertFalse(central["applicability"]["exact_engine_code_fitment"])
+        self.assertFalse(central["applicability"]["exact_gearbox_code_fitment"])
+        self.assertFalse(central["applicability"]["engine_gearbox_pairing"])
+        self.assertEqual(regional["status"], "permission_required")
+        self.assertFalse(regional["data_ingested"])
+        self.assertEqual(regional["license"]["offline_cache"], "not_confirmed")
+        self.assertEqual(regional["observed_public_query"]["legacy_registry_visible_record_count"], 273)
+
     def test_russian_eaeu_manifest_keeps_open_data_catalog_and_otts_schema_separate(self):
         source = self.russian_sources["eaeu-open-data-portal"]
         schema = source["related_vehicle_approval_registry_schema"]
