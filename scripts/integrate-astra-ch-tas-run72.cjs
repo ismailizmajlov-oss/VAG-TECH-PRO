@@ -177,6 +177,21 @@ function patchUi(desktopRoot) {
     "ASTRA attribution");
   fs.writeFileSync(file, text, "utf8");
 }
+function patchLifecycle(desktopRoot) {
+  const file = path.join(desktopRoot, "scripts/windows-installer-lifecycle.ps1");
+  let text = fs.readFileSync(file, "utf8");
+  const anchor = '  if (@($genericRows.rows).Count -lt 1 -or $genericRows.rows[0].vagSpecific -ne $false -or $genericRows.rows[0].diagnosticExecutionAllowed -ne $false -or $genericRows.rows[0].exactVehicleFitment -ne $false) { throw "Generic guidance is missing or was promoted to VAG fitment/executable diagnostics." }';
+  const check = [
+    '  $astraSummary = Invoke-RestMethod -Uri "$baseUrl/api/local-research?dataset=astra-summary" -TimeoutSec 30',
+    '  if ($astraSummary.summary.marketScope -ne "CH" -or $astraSummary.summary.rightsStatus -ne "approved_by_published_ogd_terms" -or $astraSummary.summary.productionImport -ne $false -or $astraSummary.summary.ruEaeuApplicability -ne $false -or $astraSummary.summary.counts.approvals -le 0) { throw "ASTRA CH summary or rights/market boundary failed in offline desktop." }',
+    '  $astraRows = Invoke-RestMethod -Uri "$baseUrl/api/local-research?dataset=astra&q=1XZ904&limit=10" -TimeoutSec 30',
+    '  $astraSample = @($astraRows.rows | Where-Object { $_.approvalNumber -eq "1XZ904" -and $_.make -eq "CUPRA" -and $_.engineTypeDesignation -eq "DNPA" -and $_.gearboxClass -eq "m7a" -and $_.relationPrecision -eq "approval_variant_wildcard" }) | Select-Object -First 1',
+    '  if (-not $astraSample -or $astraSample.marketScope -ne "CH" -or $astraSample.engineCode -ne $null -or $astraSample.gearboxCode -ne $null -or $astraSample.factoryVagEngineCodeClaim -ne $false -or $astraSample.factoryVagGearboxCodeClaim -ne $false -or $astraSample.productionFitmentClaim -ne $false -or $astraSample.repairApplicability -ne $false -or $astraSample.diagnosticExecutionAllowed -ne $false) { throw "ASTRA offline search crossed its CH approval-only boundary." }',
+    '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."'
+  ].join("\n");
+  text = replaceOnce(text, anchor, anchor + "\n" + check, "ASTRA offline lifecycle check");
+  fs.writeFileSync(file, text, "utf8");
+}
 function integrate(repoRoot, desktopRoot, packDir, sourceRunId, artifactSha) {
   const bundled = path.join(packDir, "astra-ch-tas-open-data.json");
   const sourceManifestPath = fs.existsSync(bundled) ? bundled : safeJoin(repoRoot, "data/source-manifests/astra-ch-tas-open-data.json");
@@ -237,8 +252,10 @@ function integrate(repoRoot, desktopRoot, packDir, sourceRunId, artifactSha) {
   }
   patchApi(desktopRoot);
   patchUi(desktopRoot);
+  patchLifecycle(desktopRoot);
   const packagePath = safeJoin(desktopRoot, "package.json"), pkg = readJson(packagePath);
   if (!pkg.scripts || typeof pkg.scripts["test:research"] !== "string" || typeof pkg.scripts["verify:local-research"] !== "string") fail("Desktop research scripts are missing");
+  if (!JSON.stringify(pkg.build?.extraResources || []).includes("data/research")) fail("Desktop package does not include the offline research-data resource directory");
   for (const file of ["tests/astra-ch-tas-db.test.cjs", "tests/astra-ch-tas-ui-contract.test.cjs"]) if (!pkg.scripts["test:research"].includes(file)) pkg.scripts["test:research"] += " " + file;
   const verify = "node scripts/verify-astra-ch-tas-pack.cjs";
   if (!pkg.scripts["verify:local-research"].includes(verify)) pkg.scripts["verify:local-research"] += " && " + verify;
