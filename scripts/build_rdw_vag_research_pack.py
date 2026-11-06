@@ -225,12 +225,14 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
         revision = metadata.get("rowsUpdatedAt") or metadata.get("viewLastModified")
         if not revision:
             raise ValueError(f"RDW {dataset_id} has no source revision timestamp")
+        required_columns = sorted(config["required"])
         metadata_report[name] = {
             "dataset_id": dataset_id,
             "rows_updated_at": metadata.get("rowsUpdatedAt"),
             "view_last_modified": metadata.get("viewLastModified"),
-            "columns_sha256": sha256_bytes(canonical_bytes(sorted(columns))),
-            "required_columns": sorted(config["required"]),
+            "source_columns_sha256": sha256_bytes(canonical_bytes(sorted(columns))),
+            "required_columns": required_columns,
+            "required_columns_sha256": sha256_bytes(canonical_bytes(required_columns)),
         }
         time.sleep(0.15)
 
@@ -244,6 +246,16 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
         "$where": registration_where,
         "$group": ",".join(REGISTRATION_GROUP_FIELDS),
         "$order": ",".join(REGISTRATION_GROUP_FIELDS),
+    }
+    metadata_report["registration"]["query_spec"] = {
+        "dataset_id": REGISTRATION_ID,
+        "select": REGISTRATION_SELECT,
+        "where": registration_where,
+        "group": REGISTRATION_GROUP_FIELDS,
+        "order": REGISTRATION_GROUP_FIELDS,
+        "make_allowlist": MAKES,
+        "market_scope": ["NL"],
+        "privacy_filter": "No registration plate, VIN, holder, owner, address or personal fields requested.",
     }
     registration_rows = query_all(REGISTRATION_ID, registration_params)
     if not registration_rows:
@@ -272,6 +284,21 @@ def query_source_rows(manifest: dict[str, Any]) -> tuple[dict[str, list[dict[str
     for name, config in DATASETS.items():
         if name == "registration":
             continue
+        metadata_report[name]["query_spec"] = {
+            "dataset_id": str(config["id"]),
+            "select": config["select"],
+            "where_template": "typegoedkeuringsnummer IN (approval-number batch)",
+            "approval_numbers_count": len(approval_numbers),
+            "approval_numbers_sha256": sha256_bytes(canonical_bytes(approval_numbers)),
+            "approval_batch_size": APPROVAL_BATCH_SIZE,
+            "exact_scope_filter": [
+                "typegoedkeuringsnummer",
+                str(config["variant_field"]),
+                "codeuitvoeringtgk",
+                "volgnummerrevisieuitvoering",
+            ],
+            "market_scope": ["NL"],
+        }
         collected: list[dict[str, Any]] = []
         variant_field = str(config["variant_field"])
         for batch in chunks(approval_numbers, APPROVAL_BATCH_SIZE):
@@ -357,7 +384,9 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
             CREATE TABLE source_file_artifacts (
               dataset_id TEXT PRIMARY KEY, dataset_name TEXT NOT NULL, source_revision TEXT NOT NULL,
               source_snapshot_sha256 TEXT NOT NULL, byte_size INTEGER NOT NULL, row_count INTEGER NOT NULL,
-              query_scope TEXT NOT NULL, required_columns_sha256 TEXT NOT NULL
+              query_scope TEXT NOT NULL, source_columns_sha256 TEXT NOT NULL,
+              required_columns_sha256 TEXT NOT NULL, query_spec_sha256 TEXT NOT NULL,
+              query_spec_json TEXT NOT NULL
             );
             CREATE TABLE approval_scope (
               scope_id TEXT PRIMARY KEY, type_approval_number TEXT NOT NULL, variant TEXT,
@@ -420,9 +449,11 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
                   "engine_candidates": 0, "gearbox_classifications": 0, "auxiliary_rows": 0, "source_rows": 0}
         for item in source_files:
             db.execute(
-                "INSERT INTO source_file_artifacts VALUES (?,?,?,?,?,?,?,?)",
+                "INSERT INTO source_file_artifacts VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                 (item["dataset_id"], item["dataset_name"], item["source_revision"], item["sha256"],
-                 item["byte_size"], item["row_count"], item["query_scope"], item["required_columns_sha256"]),
+                 item["byte_size"], item["row_count"], item["query_scope"], item["source_columns_sha256"],
+                 item["required_columns_sha256"], item["query_spec_sha256"],
+                 canonical_bytes(item["query_spec"]).decode("utf-8")),
             )
         for row in datasets["registration"]:
             raw_key = (
@@ -535,8 +566,12 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
             "dataset_name": name, "dataset_id": dataset_id, "path": f"source-snapshot/{file_name}",
             "sha256": digest, "byte_size": byte_size, "row_count": len(rows),
             "source_revision": metadata[name]["rows_updated_at"] or metadata[name]["view_last_modified"],
-            "required_columns_sha256": metadata[name]["columns_sha256"],
-            "query_scope": "VAG make allowlist; non-identifying field allowlist; exact approval-scope filter",
+            "source_columns_sha256": metadata[name]["source_columns_sha256"],
+            "required_columns": metadata[name]["required_columns"],
+            "required_columns_sha256": metadata[name]["required_columns_sha256"],
+            "query_spec": metadata[name]["query_spec"],
+            "query_spec_sha256": sha256_bytes(canonical_bytes(metadata[name]["query_spec"])),
+            "query_scope": "Per-dataset query specification is retained and hashed in query_spec/query_spec_sha256.",
         })
 
     database = output_dir / "rdw-vag-research.sqlite"
@@ -634,6 +669,16 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
         path = pack_dir / item["path"]
         if not path.is_file() or path.stat().st_size != item["byte_size"] or sha256_file(path) != item["sha256"]:
             raise ValueError(f"RDW source snapshot hash mismatch: {item['dataset_id']}")
+        required_columns = item.get("required_columns")
+        if not isinstance(required_columns, list) or sha256_bytes(canonical_bytes(required_columns)) != item.get("required_columns_sha256"):
+            raise ValueError(f"RDW required-column provenance hash mismatch: {item['dataset_id']}")
+        query_spec = item.get("query_spec")
+        if not isinstance(query_spec, dict) or sha256_bytes(canonical_bytes(query_spec)) != item.get("query_spec_sha256"):
+            raise ValueError(f"RDW query-spec provenance hash mismatch: {item['dataset_id']}")
+        for hash_field in ("source_columns_sha256", "required_columns_sha256", "query_spec_sha256"):
+            value = item.get(hash_field)
+            if not isinstance(value, str) or len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
+                raise ValueError(f"RDW provenance digest is malformed: {item['dataset_id']} / {hash_field}")
     if sha256_file(pack_dir / manifest["source_manifest_file"]) != manifest["source_manifest_sha256"]:
         raise ValueError("RDW source manifest hash mismatch")
     db = sqlite3.connect(f"file:{database.resolve().as_posix()}?mode=ro", uri=True)
@@ -657,6 +702,20 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             raise ValueError(f"RDW SQLite row counts differ from manifest: {expected}")
         if db.execute("SELECT count(*) FROM source_registry WHERE rights_status<>'approved_by_published_CC0_license' OR market_scope<>'NL' OR production_import<>0 OR ru_eaeu_applicability<>0").fetchone()[0] != 0:
             raise ValueError("RDW source registry rights/market boundary failed")
+        for item in manifest["source_files"]:
+            stored = db.execute(
+                "SELECT source_columns_sha256, required_columns_sha256, query_spec_sha256, query_spec_json "
+                "FROM source_file_artifacts WHERE dataset_id=?",
+                (item["dataset_id"],),
+            ).fetchone()
+            if stored is None:
+                raise ValueError(f"RDW source-file provenance row missing: {item['dataset_id']}")
+            if tuple(stored[:3]) != (
+                item["source_columns_sha256"], item["required_columns_sha256"], item["query_spec_sha256"]
+            ):
+                raise ValueError(f"RDW SQLite source-file provenance differs from manifest: {item['dataset_id']}")
+            if json.loads(stored["query_spec_json"]) != item["query_spec"]:
+                raise ValueError(f"RDW SQLite query specification differs from manifest: {item['dataset_id']}")
         if db.execute("SELECT count(*) FROM engine_designation_candidates WHERE verification_status<>'rdw_engine_designation_candidate_not_oem_confirmed' OR market_scope<>'NL'").fetchone()[0]:
             raise ValueError("RDW engine candidate promotion detected")
         if db.execute("SELECT count(*) FROM gearbox_classifications WHERE verification_status<>'rdw_approval_gearbox_classification_not_vag_code' OR market_scope<>'NL'").fetchone()[0]:
