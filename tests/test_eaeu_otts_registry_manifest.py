@@ -37,6 +37,16 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
 
+    def test_public_access_basis_is_decision_225_not_decision_88(self):
+        source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
+        self.assertIn("Decision No. 225", source["access"]["legal_access_basis"])
+        self.assertIn("Decision No. 225", source["access"]["public_access_basis"]["legal_act"])
+        self.assertIn("Decision No. 88", source["registry_schema"]["normative_basis"])
+        self.assertEqual(source["access"]["public_access_basis"]["publication_deadline_working_days"], 5)
+        self.assertEqual(source["access"]["bulk_export"], "not_established")
+        russian = self.russian_sources["eaeu-open-data-portal"]
+        self.assertIn("Decision No. 225", russian["access_and_reuse"]["individual_public_query"])
+
     def test_eaeu_vehicle_data_rights_remain_blocked(self):
         source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
         rights = source["rights"]

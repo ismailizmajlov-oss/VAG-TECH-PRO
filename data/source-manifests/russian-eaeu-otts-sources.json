@@ -368,7 +368,25 @@
         },
         "official_site_search_scope": "electronically_issued_records_only"
       },
-      "ot_ts_attribute_map_scope": "annex_1_internal_database_fields"
+      "ot_ts_attribute_map_scope": "annex_1_internal_database_fields",
+      "eaeu_public_access_basis": {
+        "legal_act": "EEC Collegium Decision No. 225 of 2014-12-02",
+        "provisions": [
+          "2",
+          "3",
+          "5",
+          "8",
+          "9",
+          "11",
+          "13"
+        ],
+        "official_national_part_publication_required": true,
+        "interested_person_requests_handled_by": "authorized_bodies",
+        "bulk_reuse_offline_cache_display_redistribution": "not_established",
+        "review_date": "2026-11-06",
+        "reference_url": "https://www.alta.ru/tamdoc/14kr0225/"
+      },
+      "public_search_endpoint_status": "publication_obligation_established; exact public search endpoint not resolved"
     },
     {
       "source_id": "eaeu-open-data-portal",
@@ -418,7 +436,7 @@
         }
       },
       "access_and_reuse": {
-        "individual_public_query": "legal_basis_identified_under_decision_88; current OTTS-specific endpoint not resolved",
+        "individual_public_query": "Decision No. 225 establishes public access to national parts from official websites and requests to authorized bodies; the central open-data catalogue is not itself the OTTS register and the exact national query endpoint must be resolved.",
         "ot_ts_odata_or_rest_api": "not_verified",
         "bulk_export": "not_established",
         "commercial_use": "not_confirmed_for_an_otts_dataset",
@@ -433,7 +451,7 @@
         "namespace": "urn:EEC:R:TR:TS:07:ConformityVehicleDocsRegistryDetails:v1.0.0",
         "root_element": "ConformityVehicleDocsRegistryDetails",
         "xsd_filename": "EEC_R_TR_TS_07_ConformityVehicleDocsRegistryDetails_v1.0.0.xsd",
-        "normative_basis": "EEC Collegium Decision No. 88 of 2016-07-26",
+        "normative_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines the R.TR.TS.07.001 technical information-exchange schema only; it is not the public-access legal basis.",
         "schema_registry_url": "https://rseds.eaeunion.org/ru/",
         "official_xsd_retrieved": false,
         "public_field_exposure_verified": false,
@@ -491,7 +509,9 @@
           "VehicleManufacturerDetails.BusinessEntityBriefName"
         ],
         "rights_boundary": "Schema access does not grant bulk extraction, offline caching, commercial use, third-party display or redistribution rights.",
-        "market_scope_semantics": "EAEU_is_market_scope; UnifiedCountryCode_is_issuing_country"
+        "market_scope_semantics": "EAEU_is_market_scope; UnifiedCountryCode_is_issuing_country",
+        "public_access_basis": "EEC Collegium Decision No. 225 of 2014-12-02, paragraphs 2-5 and 11-13",
+        "bulk_reuse_rights": "not_established_by_decision_225_or_decision_88"
       },
       "technical_data_scope": {
         "schema_id": "R.TR.TS.07.001",
@@ -516,6 +536,22 @@
         "requires_written_rights_evidence": true,
         "production_promotion_enabled": false,
         "exact_fitment_status": "candidate_only_until_independent_vehicle_specific_review"
+      },
+      "public_access_basis": {
+        "legal_act": "EEC Collegium Decision No. 225 of 2014-12-02",
+        "provisions": [
+          "2",
+          "3",
+          "5",
+          "8",
+          "9",
+          "11",
+          "13"
+        ],
+        "official_national_parts_required": true,
+        "interested_person_requests_handled_by": "authorized_bodies",
+        "central_open_data_catalogue_is_the_vehicle_register": false,
+        "review_date": "2026-11-06"
       }
     },
     {

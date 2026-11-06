@@ -83,10 +83,10 @@
         "type_or_variant_homologation"
       ],
       "access": {
-        "legal_access_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
-        "current_portal_observation": "On 2026-11-06 the portal root still redirected to the EAEU open-data portal. Its reviewed catalogue exposed no OTTS-specific resource or machine-readable endpoint. The underlying Decision No. 88 schema is now documented separately; public field exposure remains unverified.",
+        "legal_access_basis": "EEC Collegium Decision No. 225 of 2014-12-02, paragraphs 2-5 and 11-13: the unified register consists of national parts, national parts must be accessible from official websites of authorized bodies and the EEC, specified registry fields must be published within five working days, and interested-person requests are handled by authorized bodies. Decision No. 88 of 2016-07-26 defines the technical information-exchange schema R.TR.TS.07.001; it is not the public-access legal basis.",
+        "current_portal_observation": "On 2026-11-06 the central portal root redirected to the EAEU open-data catalogue. This does not mean the unified vehicle-approval register is absent: Decision No. 225 requires national parts to be accessible through official websites. Russia's national part is identified as the FGIS Reestr KTS maintained by Interstandart; the exact public search endpoint and any machine-readable export remain unresolved.",
         "machine_readable_api": "Generic OData/REST interfaces are advertised for published EAEU open-data resources; an OTTS-specific resource, endpoint, schema and export method remain unverified.",
-        "individual_query_access": "provided_by_decision_88_via_union_information_portal",
+        "individual_query_access": "national_parts_on_official_websites_and_requests_to_authorized_bodies_under_decision_225",
         "bulk_export": "not_established",
         "offline_cache": "not_established",
         "automated_extraction": "not_established",
@@ -101,11 +101,52 @@
           ],
           "otts_specific_resource_identified": false,
           "limitation": "Catalogue search did not identify an OTTS resource; this does not establish that no restricted or separately exposed official route exists."
-        }
+        },
+        "public_access_basis": {
+          "legal_act": "EEC Collegium Decision No. 225 of 2014-12-02",
+          "provisions": [
+            "2",
+            "3",
+            "5",
+            "8",
+            "9",
+            "11",
+            "13"
+          ],
+          "official_web_publication_required": true,
+          "publication_deadline_working_days": 5,
+          "interested_person_requests_handled_by": "authorized_bodies_of_member_states",
+          "bulk_export": "not_established",
+          "offline_cache": "not_established",
+          "commercial_reuse": "not_established",
+          "display_and_redistribution": "not_established",
+          "references": [
+            "https://www.alta.ru/tamdoc/14kr0225/",
+            "https://dcvi.tks.ru/document/90866",
+            "https://www.interstandart.ru/page/fgis_01",
+            "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf"
+          ],
+          "review_date": "2026-11-06"
+        },
+        "historical_machine_readable_export_limitation": {
+          "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "observation": "The EEC report describes the earlier XML submission pilot as not providing machine-readable export from the unified register.",
+          "implication": "Do not infer an unrestricted current bulk-export API from the existence of the XML exchange schema."
+        },
+        "national_parts": [
+          {
+            "country_code": "RU",
+            "authority": "Rosstandart / delegated operator FBU KVF Interstandart",
+            "source_id": "rosstandart-fgis-registers-kts",
+            "public_information_url": "https://www.interstandart.ru/page/fgis_01",
+            "public_record_search_endpoint": "not_resolved",
+            "reuse_rights": "bulk_reuse_offline_cache_display_redistribution_not_established"
+          }
+        ]
       },
       "rights": {
         "data_license_status": "not_established",
-        "public_query_access": "legal_basis_identified_but_current_OTTS_endpoint_not_verified",
+        "public_query_access": "national_parts_publication_and_interested_person_requests_are_established_under_decision_225; specific endpoint availability is not yet verified",
         "bulk_reuse_allowed": "not_established",
         "offline_cache_allowed": "not_established",
         "display_and_redistribution_allowed": "not_established",
@@ -122,17 +163,20 @@
         "A general OData/REST interface for published open-data resources is not a license or evidence that the OTTS register is included; the reviewed catalogue listed 117 resources overall and 7 in technical regulation, with no OTTS-specific resource identified.",
         "Decision No. 88 defines an underlying R.TR.TS.07.001 v1.0.0 schema containing manufacturer-assigned engine component model codes, transmission-unit component model codes (unit kind 05 is a gearbox) and ECUModelCode; the current public query/export has not been verified to expose these fields.",
         "The EAEU schema field names do not prove that a component model code is a VAG three-letter engine/gearbox code or that an engine/gearbox pair is an exact production fitment.",
-        "The schema registry landing page advertises batch export and XML validation, but the official XSD package was not retrieved or hash-pinned."
+        "The schema registry landing page advertises batch export and XML validation, but the official XSD package was not retrieved or hash-pinned.",
+        "Decision No. 225 of 2014-12-02, not Decision No. 88, is the public-access and national-publication basis for the unified vehicle-approval register. It does not establish bulk reuse, offline caching, commercial display or redistribution rights.",
+        "Decision No. 225 paragraph 9 lists detailed SBKTS vehicle technical characteristics including engine and gearbox make/type, but also individual VIN and applicant information. This importer skips SBKTS and does not retain personal or vehicle-identifying fields.",
+        "Decision No. 225 paragraph 8 lists public OTTS/OTSH register fields and references approval attachments; exposure of the underlying engine/transmission component codes in the current Russian public search endpoint remains unverified."
       ],
       "project_decision": "schema_only_importer_prepared; no data caching or product import until the current official query route, field exposure and written reuse rights are established",
-      "evidence_status": "Decision 88 registry schema reviewed 2026-11-06; public query endpoint and field exposure unresolved; no data or XSD imported",
+      "evidence_status": "Decision No. 225 public-access rules and Decision No. 88 XML schema reviewed 2026-11-06; national-part route identified through Interstandart; exact public query endpoint, XSD package and reuse rights remain unresolved",
       "registry_schema": {
         "schema_id": "R.TR.TS.07.001",
         "schema_version": "1.0.0",
         "namespace": "urn:EEC:R:TR:TS:07:ConformityVehicleDocsRegistryDetails:v1.0.0",
         "root_element": "ConformityVehicleDocsRegistryDetails",
         "xsd_filename": "EEC_R_TR_TS_07_ConformityVehicleDocsRegistryDetails_v1.0.0.xsd",
-        "normative_basis": "EEC Collegium Decision No. 88 of 2016-07-26",
+        "normative_basis": "EEC Collegium Decision No. 88 of 2016-07-26 defines the R.TR.TS.07.001 technical information-exchange schema only; it is not the public-access legal basis.",
         "schema_registry_url": "https://rseds.eaeunion.org/ru/",
         "official_xsd_retrieved": false,
         "public_field_exposure_verified": false,
@@ -190,7 +234,9 @@
           "VehicleManufacturerDetails.BusinessEntityBriefName"
         ],
         "rights_boundary": "Schema access does not grant bulk extraction, offline caching, commercial use, third-party display or redistribution rights.",
-        "market_scope_semantics": "EAEU_is_market_scope; UnifiedCountryCode_is_issuing_country"
+        "market_scope_semantics": "EAEU_is_market_scope; UnifiedCountryCode_is_issuing_country",
+        "public_access_basis": "EEC Collegium Decision No. 225 of 2014-12-02, paragraphs 2-5 and 11-13",
+        "bulk_reuse_rights": "not_established_by_decision_225_or_decision_88"
       },
       "schema_registry_observation": {
         "url": "https://rseds.eaeunion.org/ru/",
@@ -808,6 +854,23 @@
           "primary_official_copy_retrieved": false,
           "interpretation": "The order establishes a public-site publication/search obligation for the specified electronic-record fields. It does not establish an OTTS bulk API, a dataset licence, or permission for commercial reuse, offline caching, third-party display or redistribution."
         }
+      },
+      "eaeu_public_access_basis": {
+        "legal_act": "EEC Collegium Decision No. 225 of 2014-12-02",
+        "provisions": [
+          "2",
+          "3",
+          "5",
+          "8",
+          "9",
+          "11",
+          "13"
+        ],
+        "official_national_part_publication_required": true,
+        "interested_person_requests_handled_by": "authorized_bodies",
+        "bulk_reuse_offline_cache_display_redistribution": "not_established",
+        "review_date": "2026-11-06",
+        "reference_url": "https://www.alta.ru/tamdoc/14kr0225/"
       }
     },
     {

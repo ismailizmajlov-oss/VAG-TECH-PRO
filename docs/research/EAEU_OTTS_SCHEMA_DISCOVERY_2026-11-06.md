@@ -20,16 +20,20 @@ The registry document-kind codes are 30 = OTTS, 35 = OTSH and 40 = SBKTS. The pr
 
 ## Critical boundary: schema is not a data-reuse grant
 
-Decision No. 88 defines access for an interested person through the Union information portal and the structure used in the EAEU registry process. It does not grant VAG TECH PRO bulk extraction, offline caching, third-party display, commercial reuse or redistribution rights.
+Decision No. 225 of 2014-12-02 is the public-access and publication basis: the unified register consists of national parts; those parts must be accessible from official websites of authorized bodies and the EEC; the specified registry fields must be published within five working days; and requests from interested persons are handled by authorized bodies. Decision No. 88 of 2016-07-26 defines the R.TR.TS.07.001 technical information-exchange schema, not the public-access basis. Neither decision grants VAG TECH PRO bulk extraction, offline caching, commercial display or redistribution rights.
 
 The public portal observation remains bounded:
 
-- https://portal.eaeunion.org/ redirected to the EAEU open-data portal during the 2026-11-06 review.
+- https://portal.eaeunion.org/ redirected to the EAEU open-data portal during the 2026-11-06 review. This is not the only access route: Decision No. 225 requires national parts to be available from official websites of authorized bodies.
 - The reviewed open-data catalogue showed 117 resources overall and 7 under technical regulation; no dedicated OTTS dataset or OTTS-specific OData/REST endpoint was identified.
-- The technical-regulation portal https://tech.eaeunion.org/tech/ru/registers/ lists certificates/declarations and conformity-assessment bodies; it is a different registry and must not be treated as the OTTS register.
+- Russia's national part is identified as FGIS Reestr KTS, maintained by FBU KVF Interstandart: https://www.interstandart.ru/page/fgis_01. The exact public search endpoint is not yet resolved. The technical-regulation portal https://tech.eaeunion.org/tech/ru/registers/ lists certificates/declarations and conformity-assessment bodies; it is a different registry and must not be treated as the OTTS register.
 - The EAEU electronic-document structure registry https://rseds.eaeunion.org/ru/ advertises batch export and XML validation in its indexed landing-page content. Direct retrieval timed out in this review; the actual XSD package was not downloaded or hash-pinned.
 
 Accordingly, public_field_exposure_verified=false remains in the source register. The schema fields above are confirmed as fields in the Decision No. 88 data model, not confirmed as fields returned by the currently visible public query UI.
+
+Decision No. 225 paragraph 8 lists OTTS/OTSH register fields such as make, commercial name, type, modification, category and ecological class, and refers to information in approval attachments. Paragraph 9 lists detailed SBKTS characteristics including engine make/type, displacement, compression, power, transmission and gearbox make/type, but also VIN and applicant information. The importer deliberately skips SBKTS and does not store VIN or applicant/entity names.
+
+The EEC's 2023 report on the temporary registry pilot also records that the earlier XML-submission mechanism did not provide machine-readable export from the unified register. This is historical evidence, not proof that no newer endpoint exists: https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf.
 
 ## Import and applicability rules
 
@@ -49,7 +53,7 @@ The importer stores the issuing country separately from the EAEU market scope. I
 
 ## Next evidence required
 
-- Resolve the current official individual-query route for the OTTS register and obtain a representative record through that normal public workflow.
+- Resolve the current official Russian national-part search route for FGIS Reestr KTS and obtain a representative OTTS/OTSH record through the normal public workflow.
 - Determine whether the public response exposes the engine, transmission and ECU fields defined in the schema.
 - Obtain written permission or a dataset-specific open licence covering the exact VAG TECH PRO use case, including offline caching, commercial use, display and redistribution.
 - Retrieve the official XSD package from the EAEU structure registry and pin its SHA-256 before treating the parser as schema-validated.
@@ -57,8 +61,10 @@ The importer stores the issuing country separately from the EAEU market scope. I
 
 ## References
 
-- EEC Collegium Decision No. 88, 2016-07-26 (published text copy): https://www.alta.ru/tamdoc/16kr0088/
+- EEC Collegium Decision No. 225, 2014-12-02 (registry access/publication rules): https://www.alta.ru/tamdoc/14kr0225/
+- EEC Collegium Decision No. 88, 2016-07-26 (technical exchange schema): https://www.alta.ru/tamdoc/16kr0088/
 - Official EAEU electronic-document structure registry: https://rseds.eaeunion.org/ru/
 - EAEU open-data catalogue: https://opendata.eaeunion.org/opendata/ru/resourses
 - EAEU technical-regulation registers: https://tech.eaeunion.org/tech/ru/registers/
 - EAEU portal root: https://portal.eaeunion.org/
+- EEC 2023 report on the registry pilot and machine-readable export limitation: https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf

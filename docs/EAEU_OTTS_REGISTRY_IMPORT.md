@@ -4,7 +4,7 @@ The EAEU registry schema in Decision No. 88 defines **R.TR.TS.07.001 v1.0.0**. T
 
 ## Current source status
 
-The source **eaeu-otts-unified-register-public-portal** remains blocked for bulk reuse and product distribution. The public-query legal basis under Decision No. 88 is not a bulk-reuse licence. The current portal root redirects to the EAEU open-data catalogue; no OTTS-specific public API or dataset was resolved in the 2026-11-06 review. No real EAEU record is currently imported or cached.
+The source **eaeu-otts-unified-register-public-portal** remains blocked for bulk reuse and product distribution. Decision No. 225 of 2014-12-02 establishes public access to national register parts from official websites and requests to authorized bodies; Decision No. 88 of 2016-07-26 defines the technical exchange schema. Neither decision grants bulk reuse, offline caching, commercial display or redistribution rights. The central portal root redirects to the EAEU open-data catalogue, but Decision No. 225 requires national parts to be accessible from official websites. Russia's national part is identified as FGIS Reestr KTS maintained by Interstandart (https://www.interstandart.ru/page/fgis_01); its exact public search endpoint and any bulk export remain unresolved. No real EAEU record is currently imported or cached.
 
 ## Validate-only mode
 
@@ -44,4 +44,4 @@ The tool checks the permission file's SHA-256 against the source register, refus
 - Applicant, conformity-authority and vehicle-manufacturer entity names (which can contain a natural person's name), contact, VIN and embedded binary-document fields are not stored.
 - The output is a staging database only and is never merged into production automatically.
 
-See docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md for the schema evidence and remaining legal/technical blockers.
+Decision No. 225 paragraph 9 lists engine and gearbox characteristics in SBKTS, but also VIN and applicant data; SBKTS is skipped. See docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md for the public-access basis, schema evidence and remaining legal/technical blockers.
