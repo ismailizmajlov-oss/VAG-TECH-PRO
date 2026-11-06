@@ -169,6 +169,10 @@ def main() -> None:
     ):
         if required_lock_guard not in lock_step:
             raise SystemExit(f"Windows dependency security gate is missing: {required_lock_guard}")
+    if 'k==="node_modules/minimatch"||k.endsWith("/node_modules/minimatch")' not in lock_step:
+        raise SystemExit("Minimatch lock verifier must use literal package paths without an escaped regex")
+    if "filter(([k])=>/(^|" + "\\\\/" + ")node_modules" in lock_step:
+        raise SystemExit("Minimatch lock verifier contains an over-escaped regular expression")
     if "npm audit --audit-level=high" in lock_step:
         raise SystemExit("Full dependency audit must fail on moderate vulnerabilities, not only high/critical findings")
 
