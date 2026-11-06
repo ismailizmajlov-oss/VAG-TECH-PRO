@@ -7,6 +7,8 @@ on:
       - "automation/**"
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
+      - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
+      - tests/test_kazakhstan_eokno_source_rights.py
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
       - data/source-manifests/vw-okapi-product-catalog.json
@@ -24,6 +26,8 @@ on:
   pull_request:
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
+      - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
+      - tests/test_kazakhstan_eokno_source_rights.py
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
       - data/source-manifests/vw-okapi-product-catalog.json
@@ -66,6 +70,8 @@ jobs:
           python -m json.tool data/source-manifests/vw-okapi-product-catalog.json > $null
       - name: Run fail-closed source contract tests
         run: python -m unittest discover -s tests -p "test_*_manifest.py" -v
+      - name: Validate Kazakhstan EOKNO rights and document-type boundary
+        run: python -m unittest discover -s tests -p "test_kazakhstan_eokno_source_rights.py" -v
       - name: Syntax-check the authorized FGIS importer
         run: node --check scripts/import-authorized-fgis-otts-export.cjs
       - name: Run transactional SQLite importer tests on Windows

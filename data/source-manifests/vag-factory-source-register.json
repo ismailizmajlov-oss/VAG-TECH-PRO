@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06T13:32:17.034Z",
+  "updated_at": "2026-11-06T22:40:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -3981,6 +3981,80 @@
           }
         ]
       }
+    },
+    {
+      "source_id": "kazakhstan-eokno-trts018-conformity-register",
+      "publisher": "Kazakhstan EOKNO public portal; State Revenue Committee press release confirms the SBKTS publication module",
+      "url": "https://eokno.gov.kz/public-register/register-ktrm2.xhtml",
+      "source_kind": "kazakhstan_national_tr_ts_018_2011_conformity_document_public_register",
+      "source_revision": "public_register_ui_observed_2026-11-07; no dataset release or API revision identified",
+      "market_scope": [
+        "KZ",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "observed_claims": {
+        "registry_title": "Реестр документов, подтверждающих соответствие требованиям ТР ТС 018/2011",
+        "visible_search_fields": [
+          "registration number",
+          "EAEU/KZ scope filter"
+        ],
+        "document_type_coverage": {
+          "SBKTS": "confirmed_by_official_Kazakhstan_State_Revenue_Committee_2023_press_release",
+          "OTTS": "not_verified",
+          "OTSH": "not_verified"
+        },
+        "scope_note": "A broad public register heading is not proof that OTTS/OTSH records are present. The official release specifically documents SBKTS publication."
+      },
+      "rights": {
+        "dataset_license": "not_found",
+        "permission_status": "not_obtained",
+        "public_query_visibility": "observed",
+        "bulk_export_allowed": "not_established",
+        "automated_extraction_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "commercial_display_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_evidence": null
+      },
+      "applicability": {
+        "market_scope": "Kazakhstan public conformity-document register; TR TS 018/2011 context",
+        "applicability_precision": "public_register_document_type_listing_only",
+        "sbkts_coverage_verified": true,
+        "otts_coverage_verified": false,
+        "otsh_coverage_verified": false,
+        "exact_vag_vehicle_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_repair_applicability": false,
+        "russian_market_scope": false
+      },
+      "verification_status": "public_register_observed_sbktS_workflow_only_otts_scope_and_reuse_rights_unverified",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "project_decision": "discovery_only. Related Kazakhstan conformity-document register; SBKTS workflow is confirmed, OTTS/OTSH coverage is not. Do not automate, bulk extract, cache, bundle, display or redistribute records until coverage and written reuse rights are established.",
+      "limitations": [
+        "The official 2023 release confirms SBKTS publication only; OTTS and OTSH coverage remains unverified.",
+        "No dataset-specific open licence, documented API or written permission for bulk reuse, offline caching, display or redistribution was identified.",
+        "No records or downloadable source snapshot were retrieved; no SHA-256 is claimed.",
+        "No VAG engine/gearbox codes, exact pairing, ECU, DTC or repair applicability were established.",
+        "Do not process VIN, applicant, address, owner or other personal fields without a separately authorized and minimized data scope."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://eokno.gov.kz/public-register/register-ktrm2.xhtml",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Public register title and search interface observed; title alone does not establish OTTS coverage or reuse rights."
+        },
+        {
+          "url": "https://kgd.gov.kz/ru/news/press-reliz-po-avtomatizacii-v-edinoe-okno-po-eksportno-importnym-operaciyam-polucheniya",
+          "reviewed_at": "2026-11-07",
+          "published_at": "2023-05-12",
+          "evidence": "Official State Revenue Committee release documents the SBKTS module and online publication of SBKTS records, not OTTS coverage."
+        }
+      ]
     }
   ],
   "minimum_fitment_evidence_fields": [
