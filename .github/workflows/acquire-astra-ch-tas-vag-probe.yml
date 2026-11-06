@@ -40,6 +40,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "ASTRA CH pack policy tests failed" }
           python scripts/build_astra_ch_tas_pack.py --input-dir artifacts/astra-ch-tas-probe/downloaded --output-dir artifacts/astra-ch-tas-pack
           if ($LASTEXITCODE -ne 0) { throw "ASTRA CH pack build failed" }
+          $packDir = Join-Path $env:GITHUB_WORKSPACE "artifacts/astra-ch-tas-pack"
+          $sourceManifestPath = Join-Path $env:GITHUB_WORKSPACE "data/source-manifests/astra-ch-tas-open-data.json"
+          $packManifestPath = Join-Path $packDir "manifest.json"
+          $sourceManifestHash = (Get-FileHash -LiteralPath $sourceManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $packManifest = Get-Content -LiteralPath $packManifestPath -Raw | ConvertFrom-Json
+          if ($packManifest.source_manifest_sha256 -ne $sourceManifestHash) { throw "ASTRA pack was not built against the checked-in source manifest." }
+          Copy-Item -LiteralPath $sourceManifestPath -Destination (Join-Path $packDir "astra-ch-tas-open-data.json") -Force
+          $copiedHash = (Get-FileHash -LiteralPath (Join-Path $packDir "astra-ch-tas-open-data.json") -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($copiedHash -ne $sourceManifestHash) { throw "Bundled ASTRA source manifest SHA-256 mismatch." }
+          "Bundled source manifest SHA-256: $copiedHash" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
       - name: Upload verified CH-only SQLite pack and provenance
         uses: actions/upload-artifact@v4
         with:
