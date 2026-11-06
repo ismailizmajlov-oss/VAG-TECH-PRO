@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "pack_id": "wikidata-vag-generation-candidates-cc0-69cf847b7ef6",
+  "snapshot_id": "69cf847b7ef6",
+  "built_at_utc": "2026-11-06T01:54:07Z",
+  "publisher": "Wikidata / Wikimedia Foundation",
+  "source_repository": "https://www.wikidata.org/",
+  "source_endpoint": "https://query.wikidata.org/sparql",
+  "source_id": "wikidata-vag-generation-candidates",
+  "data_license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "rights_status": "approved_by_published_license",
+  "commercial_use_allowed": true,
+  "display_allowed": true,
+  "offline_cache_allowed": true,
+  "bulk_reuse_allowed": true,
+  "redistribution_allowed": true,
+  "attribution_required": false,
+  "attribution_recommended": true,
+  "share_alike_required": false,
+  "attribution_text": "Wikidata structured data, CC0 1.0 Universal.",
+  "source_revision": "wikidata-generation-candidates-69cf847b7ef6",
+  "source_snapshot_sha256": "69cf847b7ef6accfe325c83ccc936dc8d78a025ea21f0e290094e2226717fcc8",
+  "source_query_sha256": "f79ce0f3a5f89c0bacbf4bec65cabac8361fa820b26fc451fe351414ff057706",
+  "logical_content_sha256": "19f42c4b39522a978f24600d4e9c858e5e1848f428e4dcaa0e3d0ae038d81544",
+  "database_sha256": "3f3032a7bc5f4a9a4241b6bb2dd8f342c02484f8077f04fa2251388b824011e9",
+  "parent_model_pack": {
+    "car_model_entities": 490,
+    "car_model_series_entities": 40,
+    "database_sha256": "bf9939044cb53a187fb1dee178e1784f3efaa60e069d20f829f37d8313270206",
+    "model_entities": 521,
+    "pack_id": "wikidata-vag-model-taxonomy-cc0-630dbed1af15",
+    "snapshot_id": "630dbed1af15",
+    "source_revision": "wikidata-snapshot-630dbed1af15",
+    "source_snapshot_sha256": "630dbed1af15a81180fdba562824eaad8aa92352f4a8debb8a624ad37172bff4"
+  },
+  "counts": {
+    "member_entities": 109,
+    "model_member_links": 125,
+    "source_bindings": 187,
+    "models_with_members": 32,
+    "manufacturers": 6,
+    "russian_labels": 83,
+    "date_statements": 155
+  },
+  "query_limit": 5000,
+  "query_batch_size": 50,
+  "query_batches": 11,
+  "limit_reached": false,
+  "completeness_status": "unknown",
+  "scope": {
+    "namespace": "vag_model_series_member_candidate",
+    "market_scope": "UNKNOWN",
+    "completeness_status": "unknown",
+    "applicability_precision": "series_member_candidate",
+    "review_status": "candidate",
+    "generation_entities": 109,
+    "generation_verified": false,
+    "exact_vehicle_fitment": false,
+    "engine_code_fitment": false,
+    "transmission_code_fitment": false,
+    "ecu_fitment": false,
+    "dtc_fitment": false,
+    "repair_procedure_fitment": false,
+    "diagnostic_execution_allowed": false,
+    "production_years_inferred": false,
+    "relationship_properties": [
+      "P179",
+      "P527"
+    ]
+  },
+  "exclusions": [
+    "Series-member links are candidates, not verified vehicle generations.",
+    "No production-year ranges are inferred from Wikidata date properties.",
+    "No Russian/EAEU market scope or exact vehicle fitment.",
+    "No engine or gearbox codes, ECU identities, DTC definitions, or diagnostic test plans.",
+    "No repair procedures, wiring diagrams, pinouts, torque values, adaptations, or OEM parts.",
+    "No article text, images, logos, or third-party linked resources."
+  ],
+  "pack_files": {
+    "generation-snapshot.json": {
+      "sha256": "69cf847b7ef6accfe325c83ccc936dc8d78a025ea21f0e290094e2226717fcc8",
+      "byte_size": 295758
+    },
+    "generation-query.rq": {
+      "sha256": "f79ce0f3a5f89c0bacbf4bec65cabac8361fa820b26fc451fe351414ff057706",
+      "byte_size": 18532
+    },
+    "LICENSE-NOTICE.txt": {
+      "sha256": "414343e70e6920de3daa5a0073f30cdb282de7ca0354bbce250a253ba8ba561c",
+      "byte_size": 402
+    },
+    "ATTRIBUTION.md": {
+      "sha256": "237996fdbbf7e3346cdbbe46567a4b6df4a39227e25991735a009a04476310de",
+      "byte_size": 745
+    },
+    "wikidata-vag-generations.sqlite": {
+      "sha256": "3f3032a7bc5f4a9a4241b6bb2dd8f342c02484f8077f04fa2251388b824011e9",
+      "byte_size": 229376
+    }
+  }
+}

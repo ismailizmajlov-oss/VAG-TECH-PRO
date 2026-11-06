@@ -1,0 +1,373 @@
+# batch 1/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q100326648 wd:Q1027973 wd:Q10366488 wd:Q10392360 wd:Q10392364 wd:Q10392384 wd:Q10396630 wd:Q10403352 wd:Q10403396 wd:Q10403699 wd:Q10403726 wd:Q10403816 wd:Q10403838 wd:Q10403914 wd:Q10403941 wd:Q10404163 wd:Q10404175 wd:Q10404425 wd:Q10404450 wd:Q10422297 wd:Q104759550 wd:Q105044283 wd:Q106518090 wd:Q106580835 wd:Q106620903 wd:Q106793330 wd:Q107185864 wd:Q10750273 wd:Q107938216 wd:Q108105425 wd:Q108430636 wd:Q109315466 wd:Q109649502 wd:Q109814587 wd:Q109814588 wd:Q112056432 wd:Q1123579 wd:Q1128232 wd:Q113294587 wd:Q113677858 wd:Q1138262 wd:Q1138766 wd:Q1140232 wd:Q1143430 wd:Q114878243 wd:Q116044540 wd:Q117390 wd:Q11832265 wd:Q118840 wd:Q118911224 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 2/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q1190050 wd:Q11946507 wd:Q11946509 wd:Q119662 wd:Q120278400 wd:Q12032400 wd:Q12032779 wd:Q12062534 wd:Q12072920 wd:Q12072924 wd:Q12072925 wd:Q122145519 wd:Q122382000 wd:Q12334261 wd:Q124884295 wd:Q124964066 wd:Q125365975 wd:Q126057520 wd:Q126057761 wd:Q1291342 wd:Q130223132 wd:Q130526133 wd:Q130538344 wd:Q131136320 wd:Q131136408 wd:Q131359922 wd:Q131514007 wd:Q132129018 wd:Q1334020 wd:Q13386136 wd:Q13389960 wd:Q1340673 wd:Q13415255 wd:Q1347004 wd:Q1351132 wd:Q136088543 wd:Q1361914 wd:Q13634413 wd:Q136352271 wd:Q136383898 wd:Q137771820 wd:Q137771826 wd:Q137798766 wd:Q137798859 wd:Q138508 wd:Q1386430 wd:Q1393500 wd:Q139470049 wd:Q140067383 wd:Q140247195 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 3/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q140850894 wd:Q1411491 wd:Q1417237 wd:Q1417445 wd:Q1417956 wd:Q1418315 wd:Q1419308 wd:Q1428988 wd:Q14326097 wd:Q1436182 wd:Q14516278 wd:Q1461725 wd:Q1468621 wd:Q14905875 wd:Q1499422 wd:Q1499432 wd:Q1500251 wd:Q1506352 wd:Q151344 wd:Q151441 wd:Q151443 wd:Q1521021 wd:Q1521421 wd:Q152946 wd:Q15305557 wd:Q15305561 wd:Q1537322 wd:Q1537473 wd:Q15407762 wd:Q1543320 wd:Q1545536 wd:Q156798 wd:Q1569892 wd:Q15784342 wd:Q15847025 wd:Q15847026 wd:Q1584867 wd:Q158736 wd:Q15966358 wd:Q15989126 wd:Q16039860 wd:Q16039862 wd:Q1609671 wd:Q161880 wd:Q163053 wd:Q165830 wd:Q165832 wd:Q165836 wd:Q165843 wd:Q16687488 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 4/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q16689282 wd:Q17310393 wd:Q1750183 wd:Q1752148 wd:Q1752617 wd:Q1754781 wd:Q17632770 wd:Q1779716 wd:Q1784892 wd:Q1785526 wd:Q18016390 wd:Q180270 wd:Q18029036 wd:Q18029037 wd:Q18029039 wd:Q1814381 wd:Q1819861 wd:Q18410434 wd:Q18412995 wd:Q1853794 wd:Q1886304 wd:Q1888382 wd:Q193939 wd:Q193961 wd:Q193967 wd:Q19398336 wd:Q194125 wd:Q1968742 wd:Q1972231 wd:Q19758190 wd:Q1999909 wd:Q2007788 wd:Q2007797 wd:Q201894 wd:Q20354830 wd:Q2063072 wd:Q20723422 wd:Q207341 wd:Q20760348 wd:Q208553 wd:Q209214 wd:Q209218 wd:Q209235 wd:Q2093342 wd:Q209927 wd:Q2116818 wd:Q2119316 wd:Q2166300 wd:Q216754 wd:Q2182856 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 5/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q223696 wd:Q2262352 wd:Q2262404 wd:Q2262413 wd:Q22680264 wd:Q22927297 wd:Q23542823 wd:Q23637401 wd:Q23661383 wd:Q2439814 wd:Q247 wd:Q2471037 wd:Q247819 wd:Q2506803 wd:Q2506811 wd:Q2506848 wd:Q2506880 wd:Q2506917 wd:Q25451159 wd:Q257346 wd:Q26256457 wd:Q263434 wd:Q2656132 wd:Q26791717 wd:Q26868421 wd:Q2712614 wd:Q275442 wd:Q275632 wd:Q27765737 wd:Q2780794 wd:Q27903023 wd:Q28064385 wd:Q28225771 wd:Q282455 wd:Q28662977 wd:Q2870734 wd:Q289369 wd:Q29584097 wd:Q30349121 wd:Q30600 wd:Q30753091 wd:Q31087057 wd:Q317018 wd:Q3222834 wd:Q3239206 wd:Q32860581 wd:Q3315959 wd:Q3325038 wd:Q3413619 wd:Q3434700 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 6/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q3454386 wd:Q346196 wd:Q3476815 wd:Q3476816 wd:Q3476819 wd:Q3476820 wd:Q3476821 wd:Q3476824 wd:Q3562805 wd:Q3565043 wd:Q3629476 wd:Q387120 wd:Q389020 wd:Q39075622 wd:Q391822 wd:Q391825 wd:Q391832 wd:Q391837 wd:Q391841 wd:Q391845 wd:Q391847 wd:Q391849 wd:Q391853 wd:Q391885 wd:Q391887 wd:Q391890 wd:Q391896 wd:Q391899 wd:Q391900 wd:Q391902 wd:Q391904 wd:Q391906 wd:Q391912 wd:Q391915 wd:Q391932 wd:Q391936 wd:Q391963 wd:Q391966 wd:Q391971 wd:Q391996 wd:Q391999 wd:Q392016 wd:Q392017 wd:Q392018 wd:Q392024 wd:Q392026 wd:Q392029 wd:Q392036 wd:Q392038 wd:Q392040 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 7/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q392047 wd:Q392054 wd:Q392060 wd:Q392063 wd:Q392067 wd:Q392071 wd:Q392080 wd:Q392083 wd:Q392105 wd:Q4016142 wd:Q42415737 wd:Q43706733 wd:Q459982 wd:Q460634 wd:Q464786 wd:Q4686683 wd:Q47089169 wd:Q47089190 wd:Q473441 wd:Q4887020 wd:Q495846 wd:Q500665 wd:Q500900 wd:Q5112030 wd:Q52054487 wd:Q531690 wd:Q53629542 wd:Q539961 wd:Q5478546 wd:Q55523869 wd:Q55637210 wd:Q56218637 wd:Q56298654 wd:Q56301637 wd:Q56342792 wd:Q56345282 wd:Q56402354 wd:Q56402691 wd:Q56403002 wd:Q56451871 wd:Q56669231 wd:Q568870 wd:Q5693306 wd:Q57004937 wd:Q57340128 wd:Q574473 wd:Q579710 wd:Q59572019 wd:Q599246 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 8/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q60748228 wd:Q60848868 wd:Q60849683 wd:Q60849762 wd:Q6116132 wd:Q6116134 wd:Q6164698 wd:Q61934112 wd:Q61974678 wd:Q62018656 wd:Q62107422 wd:Q622618 wd:Q62362 wd:Q631013 wd:Q63636478 wd:Q63978770 wd:Q6461749 wd:Q649636 wd:Q65042038 wd:Q65129018 wd:Q65246931 wd:Q66723843 wd:Q678949 wd:Q679103 wd:Q697152 wd:Q7221174 wd:Q730160 wd:Q7336972 wd:Q738104 wd:Q7389554 wd:Q7389555 wd:Q7389557 wd:Q7408947 wd:Q741656 wd:Q748949 wd:Q75030046 wd:Q753040 wd:Q758715 wd:Q758716 wd:Q758717 wd:Q758718 wd:Q758719 wd:Q758720 wd:Q758722 wd:Q758725 wd:Q758726 wd:Q758727 wd:Q758728 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 9/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q758729 wd:Q758731 wd:Q758733 wd:Q758735 wd:Q758738 wd:Q758740 wd:Q758741 wd:Q758742 wd:Q758743 wd:Q758746 wd:Q758747 wd:Q758748 wd:Q758749 wd:Q758750 wd:Q758751 wd:Q758752 wd:Q758753 wd:Q758768 wd:Q758769 wd:Q758774 wd:Q758777 wd:Q758778 wd:Q758783 wd:Q758784 wd:Q758785 wd:Q758789 wd:Q758806 wd:Q77251000 wd:Q782671 wd:Q790164 wd:Q7940304 wd:Q7940306 wd:Q7940309 wd:Q7940330 wd:Q7940332 wd:Q7940334 wd:Q7940336 wd:Q8082807 wd:Q817309 wd:Q827056 wd:Q833795 wd:Q835078 wd:Q85744098 wd:Q86614508 wd:Q86668068 wd:Q86727675 wd:Q86849539 wd:Q898118 wd:Q90697606 wd:Q90698573 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 10/11; model_qids=50
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q90698575 wd:Q90698577 wd:Q90698581 wd:Q90698582 wd:Q90698589 wd:Q90698591 wd:Q90698594 wd:Q90698595 wd:Q90698596 wd:Q90698601 wd:Q90698603 wd:Q90698605 wd:Q90698607 wd:Q90698614 wd:Q90698616 wd:Q90698617 wd:Q90698620 wd:Q90698882 wd:Q90698902 wd:Q90699486 wd:Q90699738 wd:Q90699741 wd:Q90699745 wd:Q90699749 wd:Q90699751 wd:Q90699754 wd:Q90700853 wd:Q90701134 wd:Q90701141 wd:Q90701188 wd:Q90701195 wd:Q90701197 wd:Q90701201 wd:Q90701223 wd:Q90701327 wd:Q90882055 wd:Q90882060 wd:Q90882074 wd:Q90882163 wd:Q90883266 wd:Q90883423 wd:Q90883477 wd:Q90883839 wd:Q90884029 wd:Q90884067 wd:Q90884070 wd:Q90884099 wd:Q90919684 wd:Q90920789 wd:Q90926200 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+
+
+# batch 11/11; model_qids=21
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?model ?member ?relation ?memberLabelEn ?memberLabelRu ?memberType
+                ?start ?end ?inception ?dissolution ?ordinal ?memberManufacturer
+WHERE {
+  VALUES ?model { wd:Q9094747 wd:Q911580 wd:Q9161855 wd:Q9161856 wd:Q9161858 wd:Q917166 wd:Q918047 wd:Q918050 wd:Q92625881 wd:Q933636 wd:Q935455 wd:Q9396958 wd:Q9396959 wd:Q9396960 wd:Q9396961 wd:Q9396965 wd:Q9396969 wd:Q9396974 wd:Q9396975 wd:Q95984320 wd:Q97773470 }
+  {
+    ?member wdt:P179 ?model .
+    BIND("P179" AS ?relation)
+  }
+  UNION
+  {
+    ?model wdt:P527 ?member .
+    BIND("P527" AS ?relation)
+  }
+  FILTER(?member != ?model)
+  ?member wdt:P31/wdt:P279* wd:Q3231690 .
+  ?member rdfs:label ?memberLabelEn .
+  FILTER(LANG(?memberLabelEn) = "en")
+  OPTIONAL { ?member rdfs:label ?memberLabelRu . FILTER(LANG(?memberLabelRu) = "ru") }
+  OPTIONAL { ?member wdt:P31 ?memberType . }
+  OPTIONAL { ?member wdt:P580 ?start . }
+  OPTIONAL { ?member wdt:P582 ?end . }
+  OPTIONAL { ?member wdt:P571 ?inception . }
+  OPTIONAL { ?member wdt:P576 ?dissolution . }
+  OPTIONAL { ?member wdt:P1545 ?ordinal . }
+  OPTIONAL { ?member wdt:P176 ?memberManufacturer . }
+}
+ORDER BY ?model ?member ?relation
+LIMIT 5000
+

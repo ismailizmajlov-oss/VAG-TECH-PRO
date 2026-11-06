@@ -1,0 +1,9 @@
+Wikidata structured data notice
+
+The structured Wikidata statements represented in this pinned research pack are
+made available under Creative Commons CC0 1.0 Universal:
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+This notice applies only to structured statements in the pinned query snapshot.
+It does not apply to article text, images, logos, third-party resources, or OEM
+materials.
