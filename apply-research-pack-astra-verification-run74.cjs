@@ -31,8 +31,12 @@ function main() {
 
   const verifierPath = safeTarget(desktopRoot, "scripts/verify-local-research-packs.cjs");
   const testPath = safeTarget(desktopRoot, "tests/local-research-packs.test.cjs");
-  let verifier = fs.readFileSync(verifierPath, "utf8");
-  let test = fs.readFileSync(testPath, "utf8");
+  const verifierOriginal = fs.readFileSync(verifierPath, "utf8");
+  const testOriginal = fs.readFileSync(testPath, "utf8");
+  const verifierNewline = verifierOriginal.includes("\r\n") ? "\r\n" : "\n";
+  const testNewline = testOriginal.includes("\r\n") ? "\r\n" : "\n";
+  let verifier = verifierOriginal.replace(/\r\n/g, "\n");
+  let test = testOriginal.replace(/\r\n/g, "\n");
 
   verifier = replaceExactly(verifier,
     '  assert(manifest.schema_version === 1 && Array.isArray(manifest.packs) && manifest.packs.length === 9, "Expected nine separately licensed research packs (AutoDiag2 is verified separately)");\n  const byId = Object.fromEntries(manifest.packs.map((pack) => [pack.id, pack]));\n',
@@ -59,8 +63,8 @@ function main() {
     '  assert.deepEqual(result.wikidata_vag_generation_candidates, { memberEntities: 109, modelMemberLinks: 125, sourceBindings: 187, modelsWithMembers: 32, manufacturers: 6, russianLabels: 83, dateStatements: 155 });\n  assert.deepEqual(result.astra_ch_tas, {\n    marketScope: "CH",\n    approvals: 45215,\n    emissionsGearboxRows: 53414,\n    linkedScopeRows: 33909,\n    exactScopeLinks: 5420,\n    wildcardScopeLinks: 28489,\n    unlinkedScopeRows: 19505,\n    productionImport: false,\n    ruEaeuApplicability: false,\n    exactVehicleFitment: false,\n    repairApplicability: false,\n    diagnosticExecutionAllowed: false,\n    databaseSha256: "161800c884f6cdcc3b52c8cc87df51a2d853e7cbc640dea18847f40c0576b7f5"\n  });\n  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");\n',
     "ASTRA regression assertions");
 
-  fs.writeFileSync(verifierPath, verifier, "utf8");
-  fs.writeFileSync(testPath, test, "utf8");
+  fs.writeFileSync(verifierPath, verifier.replace(/\n/g, verifierNewline), "utf8");
+  fs.writeFileSync(testPath, test.replace(/\n/g, testNewline), "utf8");
   console.log(JSON.stringify({ status: "patched", patch: "run74-astra-ch-research-pack-verification", manifestPackCount: 10, astraPackId: "astra-fedro-tas-type-approvals-open-data-ch", files: ["scripts/verify-local-research-packs.cjs", "tests/local-research-packs.test.cjs"] }));
 }
 
