@@ -84,6 +84,16 @@ def main() -> None:
     missing_lifecycle_patch = [item for item in lifecycle_patch_markers if item not in apply_text]
     if missing_lifecycle_patch:
         raise SystemExit(f"Windows lifecycle return-pipeline regression patch is incomplete: {missing_lifecycle_patch}")
+    status_output_guard = (
+        "const astraStatusOutput =",
+        "const astraStatusSafe =",
+        "const astraStatusVerbose =",
+        "astraOutputCount === 1 && astraHostCount === 0 && astraVerboseCount === 0",
+        "ASTRA lifecycle status message must occur exactly once",
+    )
+    missing_status_output_guard = [item for item in status_output_guard if item not in apply_text]
+    if missing_status_output_guard:
+        raise SystemExit(f"Windows lifecycle patch must accept an existing safe Write-Host/Write-Verbose line and reject pipeline output: {missing_status_output_guard}")
     if "python tests/test_decode_tr_source_rights.py" not in text:
         raise SystemExit("Windows source-rights gate does not execute the decode.tr quarantine test")
     if text.count('tests/test_decode_tr_source_rights.py') < 3:
