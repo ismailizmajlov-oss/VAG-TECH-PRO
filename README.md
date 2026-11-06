@@ -68,30 +68,29 @@ The current central source register contains 46 entries and the Russian/EAEU reg
 
 The desktop source is stored as a SHA-256-pinned source payload plus deterministic patches and is assembled by [the Windows x64 CI workflow](.github/workflows/windows-desktop-ci-run71.yml). The pipeline builds two NSIS x64 installers, validates packaged offline research resources and source manifests, and runs clean install, external-network-blocked offline launch, backup/restore, in-place upgrade, integrity and uninstall-preservation checks. A separate Windows Server 2022 lifecycle job checks compatibility. The workflow-run recorder writes `ci-status/latest-windows-run.json`; that record is evidence only for the exact commit and run it names.
 
-The latest completed successful Windows x64 validation is [run 299 / 42204474154](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42204474154), completed on 2026-11-06 for source commit `811c329ff808b62a06ffdb5789997a1290b35b4b`. Both the main `build-and-lifecycle` job and the separate Windows Server 2022 compatibility lifecycle job passed. The run assembled the pinned source and research packs, passed source-rights and package-integrity gates, desktop/local-core/research tests, ESLint and TypeScript, built NSIS x64 installers 0.2.3 and 0.2.4, verified packaged source manifests and technical-library schemas, and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation checks.
+The latest completed successful Windows x64 validation is [run 300 / 42213514436](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42213514436), completed on 2026-11-06 for source commit `4cd42954e96d8e6d4d6315c4d31986331feeb1da`. Both the main `build-and-lifecycle` job and the separate Windows Server 2022 compatibility lifecycle job passed. The run assembled the pinned source and research packs, passed source-rights and package-integrity gates, desktop/local-core/research tests, ESLint and TypeScript, built NSIS x64 installers 0.2.3 and 0.2.4, verified the packaged 46-entry source register and technical-library schemas, and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation checks.
 
-The run 299 build metadata records:
-- Installer 0.2.3: 268,678,807 bytes; SHA-256 `87bef2d9c358fa5bd5f1f06114bfaba8d0a69e0752fe9254eff3b3e23ae3cf42`.
-- Installer 0.2.4: 268,678,636 bytes; SHA-256 `a9b5499e9b8f6fe3fcd3df1dbeee0b3663f90316f18a73a968cd340cbf4742d8`.
+The run 300 build metadata records:
+- Installer 0.2.3: 268,680,243 bytes; SHA-256 `586c2d695e90070a6169a64800593e52cf2b3013664db222c94a7bc26bc4c24f`.
+- Installer 0.2.4: 268,680,202 bytes; SHA-256 `65e3946051cf51432c325516d1b1e94f44a20ce3d94eb949cbf616262231a8e9`.
 - Source archive SHA-256: `e041ce167f083192a11f4b86b19e7bbc51fe8a1bb8e732a0d2944229af713216`.
-- Packaged central source register: SHA-256 `ea1a6f1274e83d6ee90c478637c186cf8532b60c299fcbb1ee329646c14c7f4b`, 45 entries.
-- Packaged source-manifest index: SHA-256 `c9c5ad227fcaf7f3c73ba07618c467eaa7eaf152c13e872f69879eebc3316e82`, 14 manifests.
+- Packaged central source register: SHA-256 `cb0141bd9401620fa150ea00cfc29cba9ebbe33ca24c735e70dc29b5e2e0be51`, 46 entries.
+- Packaged source-manifest index: SHA-256 `0547281c8431f7699a7396aaf3204f5d172a8da7d943405d8252d72eb79cb84e`, 14 manifests.
 - Packaged Russian/EAEU OTTS manifest: SHA-256 `e2bdbf05d25d7526409121220d0e132421b6c67f41a24ff1a085eaa2179bd5d9`, 11 sources.
+- Combined offline research-pack bundle: SHA-256 `659d8a98b543a7e965136cee5ad229264bd647e9d6c258cef27c87161dab3d5c`.
 - Vehicle catalog SQL SHA-256: `0406352d5664fc8aa5450aada0ed7acbc2a23f0b8287795808f73485031ff8f3`.
 - OEM DTC index SQL SHA-256: `40eda7222d5d2ff61ee6867a93eea28f2b0830317243d4aaaf66e50ab92ab88e`.
 - DTC/catalog links SQL SHA-256: `8d024b9d717b751b94d996c9170080c697ccaaf145f17481f9059734cf326ba7`.
 - Technical library SQL SHA-256: `8306bf559c3b745975305ea4e264bc1df621621cce70efa710a00c35f979c2f2`.
 - Technical payload schema SHA-256: `e11a4a2fe9cdf7705ed13d1bf773b574e6c57306c10a06885ca8f6568e4b010a`.
 
-Run 299 predates the Open Vehicle Schema source review. The current repository central register now contains 46 entries; run 299 packaged the previous 45-entry revision. The Russian/EAEU register remains at 11 sources. The OVS candidate is recorded as excluded and not ingested; no populated data or source snapshot is claimed. A subsequent Windows CI run must package and verify the 46-entry register before that revision is considered desktop-validated.
-
-The run 299 hashes above identify the exact packaged artifacts and source files for that run. They do not grant reuse rights or establish that registered sources contain populated, approved repair records. The current source registers remain rights/provenance metadata; no permission-required or quarantined source has been promoted into the production technical catalog.
+Run 300 is the first completed Windows x64 build that packages the current 46-entry central source register, including the Open Vehicle Schema review entry. That source remains excluded and not ingested: its four pinned reference arrays are empty, with no populated data or source snapshot claimed. The Russian/EAEU register remains at 11 sources. The packaged manifests and hashes prove the exact files included in this CI build; they do not grant reuse rights or establish that registered sources contain populated, approved repair records. No permission-required or quarantined source has been promoted into the production technical catalog.
 
 The run status is recorded in [`ci-status/latest-windows-run.json`](ci-status/latest-windows-run.json). This is CI evidence, not a public release; `release_ready=false`. The generated EXEs are unsigned because no owner-supplied code-signing certificate is configured. They remain CI artifacts and have not been published as a release.
 
-Run 299 used Windows-hosted CI and a separate Windows Server 2022 lifecycle runner. This is **not a native Windows 10/11 client test**. The actual `Windows 10/11 x64 clean install and data-preservation lifecycle` job remains `skipped`; the owner-controlled runner gate is disabled and no owner-provided isolated Windows 10/11 x64 runner is registered. Required labels are `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`; the owner must also set `VAG_TECH_PRO_WIN10_11_RUNNER_AVAILABLE=true`. No runner or external account is created by the project.
+Run 300 used Windows-hosted CI and a separate Windows Server 2022 lifecycle runner. This is **not a native Windows 10/11 client test**. The latest native workflow [run 171 / 42215158370](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42215158370) completed successfully only because its recorder job succeeded; the actual `Windows 10/11 x64 clean install and data-preservation lifecycle` job was `skipped`. The owner-controlled runner gate remains disabled and no owner-provided isolated Windows 10/11 x64 runner is registered. Required labels are `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`; the owner must also set `VAG_TECH_PRO_WIN10_11_RUNNER_AVAILABLE=true`. No runner or external account is created by the project.
 
-A previous dependency audit in run 240 reported zero vulnerabilities for production-only and full dependency trees; run 299 did not repeat that audit. Deprecated transitive-package and GitHub Actions Node.js compatibility warnings remain maintenance items.
+A previous dependency audit in run 240 reported zero vulnerabilities for production-only and full dependency trees; run 300 did not repeat that audit. Deprecated transitive-package and GitHub Actions Node.js compatibility warnings remain maintenance items.
 
 ## Release blockers
 
