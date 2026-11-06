@@ -8,12 +8,12 @@ const { DatabaseSync } = require("node:sqlite");
 const ROOT = __dirname;
 const PACK_ID = "wikidata-vag-model-taxonomy-cc0";
 const ARTIFACT = {
-  workflowRunId: 41905383209,
-  artifactId: 13360765168,
-  artifactSha256: "a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609",
-  sourceCommit: "786caeedb535b9b9984e70452dafb420cc760b0a",
+  workflowRunId: 42145993840,
+  artifactId: 13469673252,
+  artifactSha256: "f9ef2e5178e1dcdd92c0969a229c2e33a5608f14c9cf2f67ffc6f4baa21114e8",
+  sourceCommit: "8a2c9f4c1c4f0b642efcd68d35f5a947a6d5a21a",
   sourceBranch: "main",
-  snapshotCommit: "813479dce981cd167f19896fc9023d8b5fb3bf56"
+  snapshotCommit: "f824061e1c092723a070f2322f636ece9535f2f9"
 };
 
 function fail(message) { throw new Error("[run68] " + message); }
@@ -103,7 +103,7 @@ function copyRegularFile(sourceRoot, relative, targetRoot) {
 
 function validatePack(packDir) {
   const manifest = readJson(safeJoin(packDir, "manifest.json"));
-  if (manifest.schema_version !== 1 || manifest.pack_id !== "wikidata-vag-model-taxonomy-cc0-" + manifest.snapshot_id) fail("Unexpected Wikidata pack identity/schema");
+  if (manifest.schema_version !== 2 || manifest.pack_id !== "wikidata-vag-model-taxonomy-cc0-" + manifest.snapshot_id) fail("Unexpected Wikidata pack identity/schema");
   if (manifest.publisher !== "Wikidata / Wikimedia Foundation" ||
       manifest.source_id !== "wikidata-vag-model-taxonomy" ||
       manifest.source_repository !== "https://www.wikidata.org/" ||
@@ -133,10 +133,12 @@ function validatePack(packDir) {
       manifest.completeness_status !== "unknown" ||
       manifest.scope.completeness_status !== "unknown" ||
       manifest.completeness_status !== "unknown") fail("Wikidata candidate-only applicability/completeness boundary failed");
-  const expectedCounts = { model_entities: 376, source_bindings: 376, manufacturers: 5, russian_labels: 171, date_statements: 21 };
+  const expectedCounts = { model_entities: 521, car_model_entities: 490, car_model_series_entities: 40, source_bindings: 530, manufacturers: 6, russian_labels: 285, date_statements: 32 };
   for (const [key, expected] of Object.entries(expectedCounts)) {
     if (manifest.counts?.[key] !== expected) fail("Wikidata expected count mismatch for " + key);
   }
+  if (JSON.stringify(manifest.entity_class_whitelist) !== JSON.stringify([{ qid: "Q3231690", label: "car model" }, { qid: "Q59773381", label: "car model series" }]) ||
+      JSON.stringify(manifest.scope?.entity_class_whitelist) !== JSON.stringify(["Q3231690", "Q59773381"])) fail("Wikidata entity-class scope mismatch");
   if (!manifest.pack_files || typeof manifest.pack_files !== "object") fail("Wikidata per-file provenance map is missing");
   const requiredFiles = ["snapshot.json", "query.rq", "LICENSE-NOTICE.txt", "ATTRIBUTION.md", "wikidata-vag-taxonomy.sqlite"];
   for (const relative of requiredFiles) {
@@ -173,8 +175,28 @@ function validatePack(packDir) {
         source.market_scope !== "UNKNOWN" || source.applicability_precision !== "candidate_identity_only" ||
         source.review_status !== "candidate") fail("Wikidata SQLite source registry failed its CC0/provenance gate");
 
+    const entityTypeRows = db.prepare("SELECT entity_types_json FROM vehicle_model_entities").all();
+    let invalidEntityTypes = 0;
+    let carModelEntities = 0;
+    let carModelSeriesEntities = 0;
+    for (const row of entityTypeRows) {
+      let items;
+      try { items = JSON.parse(row.entity_types_json); } catch { items = null; }
+      if (!Array.isArray(items) || items.length === 0 || items.some((item) =>
+        !/^Q[0-9]+$/.test(item.model_type_qid || "") ||
+        !item.model_type_label_en ||
+        !["Q3231690", "Q59773381"].includes(item.entity_class_qid))) {
+        invalidEntityTypes += 1;
+        continue;
+      }
+      if (items.some((item) => item.entity_class_qid === "Q3231690")) carModelEntities += 1;
+      if (items.some((item) => item.entity_class_qid === "Q59773381")) carModelSeriesEntities += 1;
+    }
     counts = {
       models: count(db, "SELECT count(*) AS n FROM vehicle_model_entities"),
+      carModelEntities,
+      carModelSeriesEntities,
+      invalidEntityTypes,
       sourceBindings: count(db, "SELECT count(*) AS n FROM source_bindings"),
       manufacturers: count(db, "SELECT count(DISTINCT manufacturer_qid) AS n FROM vehicle_model_entities"),
       russianLabels: count(db, "SELECT count(*) AS n FROM vehicle_model_entities WHERE model_label_ru IS NOT NULL AND trim(model_label_ru)!=''"),
@@ -184,10 +206,13 @@ function validatePack(packDir) {
       invalidDates: count(db, "SELECT count(*) AS n FROM model_date_statements WHERE property_id NOT IN ('P571','P576')"),
       badEntityBindingCounts: count(db, "SELECT count(*) AS n FROM vehicle_model_entities v WHERE v.source_binding_count != (SELECT count(*) FROM source_bindings b WHERE b.model_qid=v.model_qid AND b.manufacturer_qid=v.manufacturer_qid)"),
     };
-    if (counts.models !== expectedCounts.model_entities || counts.sourceBindings !== expectedCounts.source_bindings ||
-        counts.manufacturers !== expectedCounts.manufacturers || counts.russianLabels !== expectedCounts.russian_labels ||
-        counts.dateStatements !== expectedCounts.date_statements || counts.invalidRows || counts.invalidBindings ||
-        counts.invalidDates || counts.badEntityBindingCounts) fail("Wikidata SQLite row-count/provenance/candidate-only gate failed: " + JSON.stringify(counts));
+    if (counts.models !== expectedCounts.model_entities || counts.carModelEntities !== expectedCounts.car_model_entities ||
+        counts.carModelSeriesEntities !== expectedCounts.car_model_series_entities || counts.invalidEntityTypes ||
+        counts.sourceBindings !== expectedCounts.source_bindings || counts.manufacturers !== expectedCounts.manufacturers ||
+        counts.russianLabels !== expectedCounts.russian_labels || counts.dateStatements !== expectedCounts.date_statements ||
+        counts.invalidRows || counts.invalidBindings || counts.invalidDates || counts.badEntityBindingCounts) {
+      fail("Wikidata SQLite row-count/provenance/candidate-only gate failed: " + JSON.stringify(counts));
+    }
     const orphanBindings = count(db, "SELECT count(*) AS n FROM source_bindings b LEFT JOIN vehicle_model_entities v ON v.model_qid=b.model_qid AND v.manufacturer_qid=b.manufacturer_qid WHERE v.model_qid IS NULL");
     if (orphanBindings) fail("Wikidata SQLite has orphan source bindings");
   } finally {
@@ -234,6 +259,8 @@ function updateResearchManifest(researchDir, verified) {
     source_commit: ARTIFACT.sourceCommit,
     counts: {
       models: verified.counts.models,
+      carModelEntities: verified.counts.carModelEntities,
+      carModelSeriesEntities: verified.counts.carModelSeriesEntities,
       sourceBindings: verified.counts.sourceBindings,
       manufacturers: verified.counts.manufacturers,
       russianLabels: verified.counts.russianLabels,
@@ -282,6 +309,8 @@ function updateResearchManifest(researchDir, verified) {
     logical_content_sha256: verified.manifest.logical_content_sha256,
     counts: {
       models: verified.counts.models,
+      car_model_entities: verified.counts.carModelEntities,
+      car_model_series_entities: verified.counts.carModelSeriesEntities,
       source_bindings: verified.counts.sourceBindings,
       manufacturers: verified.counts.manufacturers,
       russian_labels: verified.counts.russianLabels,
@@ -823,7 +852,7 @@ function main() {
       sha256File(safeJoin(researchDir, rootPack.database)) !== rootPack.database_sha256) fail("Final desktop Wikidata pack manifest/database verification failed");
   const sourceRegistryPath = path.join(ROOT, "data", "source-manifests", "wikidata-vag-model-taxonomy.json");
   const sourceRegistryManifest = {
-    schema_version: 1,
+    schema_version: 2,
     source_id: verified.manifest.source_id,
     publisher: verified.manifest.publisher,
     source_type: "official_structured_data_identity_taxonomy",
@@ -869,6 +898,7 @@ function main() {
     diagnostic_execution_allowed: false,
     counts: rootPack.counts,
     manufacturer_whitelist: verified.manifest.manufacturer_whitelist,
+    entity_class_whitelist: verified.manifest.entity_class_whitelist,
     scope: verified.manifest.scope,
     limitations: verified.manifest.exclusions,
     source_artifact: {
@@ -921,7 +951,7 @@ function main() {
   const summary = local.getResearchSummary(researchDir);
   const packSummary = summary.packs.find((pack) => pack.id === PACK_ID);
   const sample = local.searchWikidataCandidates("Volkswagen", 5, researchDir);
-  if (!packSummary || packSummary.counts.models !== 376 || packSummary.counts.russianLabels !== 171 ||
+  if (!packSummary || packSummary.counts.models !== 521 || packSummary.counts.carModelEntities !== 490 || packSummary.counts.carModelSeriesEntities !== 40 || packSummary.counts.russianLabels !== 285 ||
       !sample.length || sample.some((row) => row.marketScope !== "UNKNOWN" || row.exactFitment !== false || row.engineCode !== null || row.gearboxCode !== null)) fail("Wikidata local search/summary smoke test failed");
   const verification = {
     status: "integrated_verified_candidate_only",
