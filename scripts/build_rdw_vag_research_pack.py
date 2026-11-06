@@ -468,6 +468,15 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
 
     db.commit()
     db.execute("PRAGMA optimize")
+    counts = {
+        "source_files": int(db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0]),
+        "approval_scopes": int(db.execute("SELECT count(*) FROM approval_scope").fetchone()[0]),
+        "registration_observations": int(db.execute("SELECT count(*) FROM registration_observations").fetchone()[0]),
+        "engine_candidates": int(db.execute("SELECT count(*) FROM engine_designation_candidates").fetchone()[0]),
+        "gearbox_classifications": int(db.execute("SELECT count(*) FROM gearbox_classifications").fetchone()[0]),
+        "auxiliary_rows": int(db.execute("SELECT count(*) FROM approval_auxiliary_rows").fetchone()[0]),
+        "source_rows": int(db.execute("SELECT count(*) FROM source_rows").fetchone()[0]),
+    }
     integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
     if integrity != "ok" or db.execute("PRAGMA foreign_key_check").fetchall():
         db.close()
