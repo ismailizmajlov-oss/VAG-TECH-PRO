@@ -194,8 +194,8 @@ function patchResearchVerification(desktopRoot) {
     '  assert(obReport.database_sha256 === ob.database_sha256 && obReport.integrity_check === "ok" && obReport.generic_dtcs === 9359 && obReport.upstream_dtc_rows === 9533 && obReport.quarantined_dtc_rows === 174 && obReport.vag_specific_dtc_rows === 0 && obReport.fitment_claims === 0 && obReport.production_rows === 0, "OBDex SQLite report failed its namespace safety gate");',
     "OBDex report counts");
   verifier = replaceOnce(verifier,
-    '      pids: count(obDb, "SELECT count(*) AS n FROM generic_pid_research WHERE verification_status=\\'source_imported_unreviewed\\' AND vehicle_fitment_claim=0"),',
-    '      pids: count(obDb, "SELECT count(*) AS n FROM generic_pid_research WHERE verification_status=\\'source_imported_unreviewed\\' AND vehicle_fitment_claim=0"),\n      quarantinedDtcRows: obReport.quarantined_dtc_rows,',
+    `      pids: count(obDb, "SELECT count(*) AS n FROM generic_pid_research WHERE verification_status='source_imported_unreviewed' AND vehicle_fitment_claim=0"),`,
+    `      pids: count(obDb, "SELECT count(*) AS n FROM generic_pid_research WHERE verification_status='source_imported_unreviewed' AND vehicle_fitment_claim=0"),\n      quarantinedDtcRows: obReport.quarantined_dtc_rows,`,
     "OBDex quarantine count");
   verifier = replaceOnce(verifier,
     "obCounts.dtcs === 9533",
