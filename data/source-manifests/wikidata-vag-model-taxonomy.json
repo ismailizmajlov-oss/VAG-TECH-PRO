@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_id": "wikidata-vag-model-taxonomy",
   "publisher": "Wikidata / Wikimedia Foundation",
   "source_type": "official_structured_data_identity_taxonomy",
@@ -16,12 +16,12 @@
   "attribution_required": false,
   "attribution_recommended": true,
   "share_alike_required": false,
-  "source_revision": "wikidata-snapshot-7a99f275966b",
-  "source_snapshot_sha256": "7a99f275966bd408d00dd74e52eab241fcf6f83305abdb6a09a4a05ebe94eba4",
-  "source_query_sha256": "f8fbeb478d48887b9bc458f29f5e8369fc1bc3327dace391154ba1cefa5b027a",
-  "logical_content_sha256": "1d85420b1981b4bb07ca03d8236d2862e265b7d9ac4d3ddce10232c1b4b02c18",
-  "database_sha256": "39732875dff952041707a449168917c173c532db91a9950ec006a94ec9240a34",
-  "pack_manifest_sha256": "fe6c5d168b41d02ea6b6a336b3868e2cb9f943dd28051c81f2d1b1d719024665",
+  "source_revision": "wikidata-snapshot-630dbed1af15",
+  "source_snapshot_sha256": "630dbed1af15a81180fdba562824eaad8aa92352f4a8debb8a624ad37172bff4",
+  "source_query_sha256": "3892acac5f6b675ce0255943045e1d90940fc1abb04d998f3557f4659a45fcac",
+  "logical_content_sha256": "9dec686b41138dee3b069a53bf682a2aa76c8717cde8f5f59734b3b098db8bbd",
+  "database_sha256": "bf9939044cb53a187fb1dee178e1784f3efaa60e069d20f829f37d8313270206",
+  "pack_manifest_sha256": "80504169ca52b9e3a49b1212e141af0ac1fce3eb9db49c4ac08adfdf8333356f",
   "desktop_pack_id": "wikidata-vag-model-taxonomy-cc0",
   "desktop_pack_manifest": "desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/manifest.json",
   "desktop_database": "desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/wikidata-vag-taxonomy.sqlite",
@@ -44,15 +44,18 @@
   "repair_procedure_fitment": false,
   "diagnostic_execution_allowed": false,
   "counts": {
-    "models": 376,
-    "sourceBindings": 376,
-    "manufacturers": 5,
-    "russianLabels": 171,
-    "dateStatements": 21
+    "models": 521,
+    "carModelEntities": 490,
+    "carModelSeriesEntities": 40,
+    "sourceBindings": 530,
+    "manufacturers": 6,
+    "russianLabels": 285,
+    "dateStatements": 32
   },
   "manufacturer_whitelist": [
     "Volkswagen",
     "Volkswagen AG",
+    "Volkswagen Group",
     "Volkswagen Commercial Vehicles",
     "Audi AG",
     "Škoda Auto",
@@ -65,7 +68,7 @@
   ],
   "scope": {
     "namespace": "vag_identity_candidate",
-    "manufacturer_group_basis": "curated_manufacturer_label_whitelist; not an authoritative corporate ownership registry",
+    "manufacturer_group_basis": "curated_manufacturer_label_whitelist including group-level Volkswagen Group; not an authoritative corporate ownership registry",
     "market_scope": "UNKNOWN",
     "completeness_status": "unknown",
     "applicability_precision": "candidate_identity_only",
@@ -79,7 +82,11 @@
     "dtc_fitment": false,
     "repair_procedure_fitment": false,
     "diagnostic_execution_allowed": false,
-    "production_years_inferred": false
+    "production_years_inferred": false,
+    "entity_class_whitelist": [
+      "Q3231690",
+      "Q59773381"
+    ]
   },
   "limitations": [
     "No engine or gearbox codes",
@@ -98,10 +105,20 @@
   "source_artifact": {
     "repository": "ismailizmajlov-oss/VAG-TECH-PRO",
     "branch": "main",
-    "commit": "786caeedb535b9b9984e70452dafb420cc760b0a",
-    "snapshot_commit": "813479dce981cd167f19896fc9023d8b5fb3bf56",
-    "workflow_run_id": 41905383209,
-    "artifact_id": 13360765168,
-    "artifact_sha256": "a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609"
-  }
+    "commit": "8a2c9f4c1c4f0b642efcd68d35f5a947a6d5a21a",
+    "snapshot_commit": "f824061e1c092723a070f2322f636ece9535f2f9",
+    "workflow_run_id": 42145993840,
+    "artifact_id": 13469673252,
+    "artifact_sha256": "f9ef2e5178e1dcdd92c0969a229c2e33a5608f14c9cf2f67ffc6f4baa21114e8"
+  },
+  "entity_class_whitelist": [
+    {
+      "qid": "Q3231690",
+      "label": "car model"
+    },
+    {
+      "qid": "Q59773381",
+      "label": "car model series"
+    }
+  ]
 }
