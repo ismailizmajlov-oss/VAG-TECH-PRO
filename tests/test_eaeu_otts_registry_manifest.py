@@ -164,6 +164,18 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertEqual(schema_registry["status"], "schema_reference_only")
         self.assertFalse(schema_registry["data_ingested"])
 
+    def test_eaeu_open_data_manifest_uses_decision_225_for_access_and_88_for_schema(self):
+        source = self.russian_sources["eaeu-open-data-portal"]
+        legal = source["legal_basis"]
+        self.assertIn("№ 225", legal["document"])
+        self.assertEqual(legal["document_url"], "https://www.alta.ru/tamdoc/14kr0225/")
+        self.assertIn("paragraph 13", legal["access_rule"])
+        self.assertIn("№ 88", legal["schema_document"])
+        self.assertEqual(legal["schema_document_url"], "https://www.alta.ru/tamdoc/16kr0088/")
+        self.assertIn("not the public-access legal basis", legal["schema_rule"])
+        self.assertEqual(source["status"], "discovery_only")
+        self.assertFalse(source["data_ingested"])
+
 
 if __name__ == "__main__":
     unittest.main()
