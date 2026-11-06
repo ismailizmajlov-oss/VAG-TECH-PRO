@@ -73,6 +73,25 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertEqual(source["rights"]["permission_status"], "not_required_schema_metadata_only")
 
+    def test_elpts_public_otts_filter_options_do_not_establish_records_or_reuse_rights(self):
+        source = self.factory_sources["elpts-national-otts-register-public-query"]
+        observation = source["public_page_observations"]["ot_ts"]
+        self.assertEqual(observation["observed_at"], "2026-11-07")
+        self.assertEqual(observation["manufacturer_filter_options_observed"], ["AUDI AG", "Volkswagen AG"])
+        self.assertTrue(observation["manufacturer_filter_values_are_options_only"])
+        self.assertFalse(observation["vag_records_observed"])
+        self.assertFalse(observation["vag_record_count_verified"])
+        self.assertFalse(observation["bulk_api_discovered"])
+        self.assertFalse(observation["pdf_downloaded"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertNotEqual(source["rights"].get("offline_cache_allowed"), True)
+        self.assertNotEqual(source["rights"].get("redistribution_allowed"), True)
+        self.assertFalse(source["data_ingested"])
+        sbkts = source["public_page_observations"]["sbkts"]
+        self.assertTrue(sbkts["vag_metadata_row_observed"])
+        self.assertIn("not OTTS", sbkts["search_snapshot"])
+        self.assertEqual(sbkts["rights_effect"], "none; this observation is not OTTS fitment evidence and grants no reuse rights")
+
     def test_samworld_gearbox_directory_is_quarantined_without_prior_consent(self):
         source = self.factory_sources["samworld-vag-gearbox-code-database"]
         self.assertEqual(source["observed_claims"]["unique_gearbox_code_count"], 3489)
