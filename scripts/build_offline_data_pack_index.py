@@ -25,7 +25,7 @@ ARTIFACTS = {
 }
 
 GENERIC_OBD_CODE_RE = re.compile(
-    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P3[4-9][0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$"
+    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$"
 )
 
 # Sources without explicit data-specific display/cache/redistribution rights must
@@ -127,11 +127,11 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex generic-only boundary failed")
     if source_manifest.get("scope", {}).get("manufacturer_specific_codes_included") is not False:
         raise ValueError("OBDex source manifest claims manufacturer-specific DTCs")
-    if source_manifest.get("scope", {}).get("generic_code_ranges") != ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx"]:
+    if source_manifest.get("scope", {}).get("generic_code_ranges") != ["P0xxx","P2xxx","P34xx","B0xxx","C0xxx","U0xxx"]:
         raise ValueError("OBDex generic code ranges are not explicitly constrained")
     if source_manifest.get("scope", {}).get("excluded_manufacturer_controlled_ranges") != ["P1xxx","P30xx-P33xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"]:
         raise ValueError("OBDex manufacturer-controlled ranges are not explicitly excluded")
-    if source_manifest.get("scope", {}).get("excluded_mixed_or_reserved_ranges") != ["U3xxx"]:
+    if source_manifest.get("scope", {}).get("excluded_mixed_or_reserved_ranges") != ["U3xxx", "P35xx-P39xx", "B3xxx", "C3xxx"]:
         raise ValueError("OBDex mixed/reserved U3xxx family is not quarantined")
     if source_manifest.get("expected_counts") != {"generic_dtcs": 9359, "pids_total": 132, "upstream_projection_dtcs": 9533, "quarantined_dtc_rows": 174}:
         raise ValueError("OBDex source manifest expected counts mismatch")
@@ -184,7 +184,8 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         "source_revision": source_manifest.get("commit_sha"),
         "warnings": [
             "Generic SAE/ISO OBD-II only; never map these records to a VAG ECU or exact vehicle without independent evidence.",
-            "174 U3xxx records are quarantined because the family is mixed manufacturer-controlled / ISO/SAE-reserved; it is not admitted wholesale to the generic namespace.",
+            "174 U3xxx records are quarantined because the available J2012 range tables describe a mixed manufacturer-controlled / ISO/SAE-reserved family; current J2012DA code-level assignment is not verified.",
+            "Only P34xx records are admitted from the P3 family; P35xx-P39xx, B3xxx and C3xxx remain excluded until their code-level standardized assignment is verified.",
             "Source descriptions and cause/repair suggestions are unreviewed and are not verified repair procedures.",
             "No vehicle-fitment or exact diagnostic test-plan claim is made.",
         ],
