@@ -732,8 +732,13 @@ jobs:
           $actualLockHash = (Get-FileHash -LiteralPath "package-lock.json" -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actualLockHash -ne $expectedLockHash) { throw "Dependency lock SHA-256 drift: expected $expectedLockHash actual $actualLockHash" }
           "package_lock_sha256=$actualLockHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
-          npm ci --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-ci.log
-          if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
+          if (Test-Path node_modules) { Remove-Item -LiteralPath node_modules -Recurse -Force }
+          npm install --no-save --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-install.log
+          if ($LASTEXITCODE -ne 0) { throw "Clean npm install failed" }
+          $installedLockHash = (Get-FileHash -LiteralPath "package-lock.json" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($installedLockHash -ne $expectedLockHash) { throw "Dependency lock changed during clean installation: expected $expectedLockHash actual $installedLockHash" }
+          node -e "const fs=require('node:fs'),path=require('node:path');const lock=JSON.parse(fs.readFileSync('package-lock.json','utf8'));const rows=Object.entries(lock.packages||{}).filter(([k])=>k==='node_modules/minimatch'||k.endsWith('/node_modules/minimatch'));const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)-(y[i]||0)}return 0};for(const [entry,v] of rows){const pkgPath=path.join(process.cwd(),entry,'package.json');if(!fs.existsSync(pkgPath))throw new Error('Installed minimatch package missing: '+entry);const actual=JSON.parse(fs.readFileSync(pkgPath,'utf8')).version;if(actual!==v.version)throw new Error('Installed minimatch differs from lock: '+entry+' '+actual+' != '+v.version);if(cmp(actual,'7.0.0')>=0&&cmp(actual,'11.0.1')<0)throw new Error('Vulnerable installed minimatch: '+entry+' '+actual)}if(!rows.length)throw new Error('No minimatch lock entries');console.log(JSON.stringify({status:'installed-tree-matches-lock',count:rows.length,versions:rows.map(([entry,v])=>({path:entry,version:v.version}))}));" 2>&1 | Tee-Object -FilePath installed-dependency-verification.log
+          if ($LASTEXITCODE -ne 0) { throw "Installed dependency tree does not match the pinned, patched lock" }
           npm audit --omit=dev --audit-level=moderate 2>&1 | Tee-Object -FilePath npm-audit-production.log
           if ($LASTEXITCODE -ne 0) { throw "Production dependency audit reported moderate or higher vulnerabilities" }
           npm audit --audit-level=moderate 2>&1 | Tee-Object -FilePath npm-audit.log
