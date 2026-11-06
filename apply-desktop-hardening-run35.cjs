@@ -123,3 +123,57 @@ const sourceRegisterTestPath = path.join(root, "tests", "source-register-after-p
 fs.writeFileSync(sourceRegisterTestPath, "\"use strict\";\nconst assert = require(\"node:assert/strict\");\nconst crypto = require(\"node:crypto\");\nconst fs = require(\"node:fs\");\nconst os = require(\"node:os\");\nconst path = require(\"node:path\");\nconst test = require(\"node:test\");\nconst verify = require(\"../scripts/verify-source-register-after-pack.cjs\");\nfunction fixture() {\n  const root = fs.mkdtempSync(path.join(os.tmpdir(), \"vag-source-register-pack-\"));\n  const sourceDir = path.join(root, \"data\", \"source-manifests\");\n  const appOutDir = path.join(root, \"win-unpacked\");\n  const packagedDir = path.join(appOutDir, \"resources\", \"source-manifests\");\n  fs.mkdirSync(sourceDir, { recursive: true });\n  fs.mkdirSync(packagedDir, { recursive: true });\n  const manifest = { updated_at: \"2026-11-06\", sources: [\n    { source_id: \"cc0-example\", data_ingested: true, rights: { permission_status: \"verified\" } },\n    { source_id: \"quarantined-example\", data_ingested: false, verification_status: \"quarantined\", rights: { permission_status: \"not_obtained\" } }\n  ] };\n  const bytes = Buffer.from(JSON.stringify(manifest) + \"\\n\", \"utf8\");\n  const source = path.join(sourceDir, \"vag-factory-source-register.json\");\n  const packaged = path.join(packagedDir, \"vag-factory-source-register.json\");\n  fs.writeFileSync(source, bytes);\n  fs.writeFileSync(packaged, bytes);\n  return { root, appOutDir, source, packaged, bytes };\n}\ntest(\"afterPack accepts the exact source-rights register copied into resources\", async () => {\n  const f = fixture();\n  try {\n    const result = await verify({ appOutDir: f.appOutDir }, f.root);\n    assert.equal(result.status, \"verified_packaged_source_register\");\n    assert.equal(result.source_count, 2);\n    assert.equal(result.sha256, crypto.createHash(\"sha256\").update(f.bytes).digest(\"hex\"));\n  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }\n});\ntest(\"afterPack rejects a missing packaged source-rights register\", async () => {\n  const f = fixture();\n  try {\n    fs.rmSync(f.packaged);\n    await assert.rejects(() => verify({ appOutDir: f.appOutDir }, f.root), /missing/);\n  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }\n});\ntest(\"afterPack rejects a modified packaged source-rights register\", async () => {\n  const f = fixture();\n  try {\n    fs.appendFileSync(f.packaged, \" \");\n    await assert.rejects(() => verify({ appOutDir: f.appOutDir }, f.root), /SHA-256 mismatch/);\n  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }\n});\ntest(\"afterPack rejects quarantined data falsely marked as ingested\", async () => {\n  const f = fixture();\n  try {\n    const bad = { updated_at: \"2026-11-06\", sources: [{ source_id: \"bad\", data_ingested: true, verification_status: \"quarantined\", rights: { permission_status: \"not_obtained\" } }] };\n    const bytes = Buffer.from(JSON.stringify(bad) + \"\\n\", \"utf8\");\n    fs.writeFileSync(f.source, bytes);\n    fs.writeFileSync(f.packaged, bytes);\n    await assert.rejects(() => verify({ appOutDir: f.appOutDir }, f.root), /Restricted source is marked ingested/);\n  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }\n});\ntest(\"afterPack rejects a source without explicit data_ingested state\", async () => {\n  const f = fixture();\n  try {\n    const bad = { updated_at: \"2026-11-06\", sources: [{ source_id: \"missing-status\", verification_status: \"candidate\", rights: { permission_status: \"not_obtained\" } }] };\n    const bytes = Buffer.from(JSON.stringify(bad) + \"\\n\", \"utf8\");\n    fs.writeFileSync(f.source, bytes);\n    fs.writeFileSync(f.packaged, bytes);\n    await assert.rejects(() => verify({ appOutDir: f.appOutDir }, f.root), /data_ingested boolean/);\n  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }\n});\n", { encoding: "utf8" });
 
 console.log("Desktop hardening patch applied and verified.");
+
+
+const lifecyclePath = path.join(root, "scripts", "windows-installer-lifecycle.ps1");
+const lifecycleTestPath = path.join(root, "tests", "windows-lifecycle-script-contract.test.cjs");
+let lifecycle = readLf(lifecyclePath);
+lifecycle = replaceExactly(
+  lifecycle,
+  '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
+  '  Write-Verbose "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
+  "Start-DesktopAndWait must not leak diagnostic text into its return pipeline"
+);
+lifecycle = replaceExactly(
+  lifecycle,
+  "$session = Start-DesktopAndWait\\n$origin = $session.BaseUrl",
+  [
+    "$session = Start-DesktopAndWait",
+    "if ($session -isnot [System.Collections.IDictionary] -or $null -eq $session['Process'] -or [string]::IsNullOrWhiteSpace([string]$session['BaseUrl'])) {",
+    '  throw "Start-DesktopAndWait returned unexpected pipeline output instead of one session object."',
+    "}",
+    "$origin = [string]$session['BaseUrl']"
+  ].join("\\n"),
+  "Validate the lifecycle helper return contract before reading BaseUrl"
+);
+const startHelper = lifecycle.split("function Start-DesktopAndWait {")[1]?.split("function Stop-Desktop($session) {")[0];
+if (!startHelper || startHelper.includes("Write-Output") || !startHelper.includes("return @{ Process = $process; BaseUrl = $baseUrl }")) {
+  throw new Error("Start-DesktopAndWait must emit exactly its session object and no incidental pipeline output.");
+}
+if (!lifecycle.includes("$session -isnot [System.Collections.IDictionary]") || lifecycle.includes("$origin = $session.BaseUrl")) {
+  throw new Error("Windows lifecycle session-object validation was not applied.");
+}
+writeLf(lifecyclePath, lifecycle);
+
+let lifecycleTests = readLf(lifecycleTestPath);
+const lifecycleOutputTest = [
+  'test("Start-DesktopAndWait returns one session object without incidental pipeline output", () => {',
+  '  const helper = script.split("function Start-DesktopAndWait {")[1]?.split("function Stop-Desktop($session) {")[0];',
+  '  assert.ok(helper, "Start-DesktopAndWait helper must exist");',
+  '  assert.doesNotMatch(helper, /\\bWrite-Output\\b/);',
+  '  assert.match(helper, /return \\@\\{ Process = \\$process; BaseUrl = \\$baseUrl \\}/);',
+  '  assert.match(script, /\\$session -isnot \\[System\\.Collections\\.IDictionary\\]/);',
+  '  assert.match(script, /\\$session\\[.BaseUrl.\\]/);',
+  '});',
+  ''
+].join("\\n");
+if (!lifecycleTests.includes('test("Start-DesktopAndWait returns one session object without incidental pipeline output"')) {
+  const anchor = 'test("Windows lifecycle test proves offline launch and local SQLite initialization", () => {';
+  if (lifecycleTests.split(anchor).length - 1 !== 1) throw new Error("Could not locate lifecycle script contract test insertion point.");
+  lifecycleTests = lifecycleTests.replace(anchor, lifecycleOutputTest + anchor);
+}
+if (!lifecycleTests.includes("incidental pipeline output") || !lifecycleTests.includes("System\\.Collections\\.IDictionary")) {
+  throw new Error("Windows lifecycle pipeline regression test was not generated.");
+}
+writeLf(lifecycleTestPath, lifecycleTests);
+console.log("Windows lifecycle session-output regression fix applied.");
