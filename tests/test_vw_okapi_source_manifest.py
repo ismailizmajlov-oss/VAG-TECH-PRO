@@ -14,7 +14,7 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
 
     def test_source_is_registered_but_not_approved_or_imported(self):
         source = self.source
-        self.assertEqual(source["source_id"], "volkswagen-okapi-product-catalog")
+        self.assertEqual(source["source_id"], "volkswagen-okapi-product-data-api")
         self.assertEqual(source["ingestion"]["status"], "permission_required")
         self.assertFalse(source["ingestion"]["data_ingested"])
         self.assertIsNone(source["ingestion"]["source_snapshot_sha256"])
