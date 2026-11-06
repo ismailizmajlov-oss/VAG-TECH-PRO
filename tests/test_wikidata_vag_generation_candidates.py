@@ -93,11 +93,49 @@ class WikidataVagGenerationCandidateTests(unittest.TestCase):
         ):
             self.assertTrue(manifest[flag])
         self.assertEqual(manifest["parent_model_pack"]["source_revision"], "wikidata-snapshot-fixture")
+        self.assertEqual(manifest["parent_model_pack"]["car_model_series_entities"], 1)
+        self.assertEqual(manifest["parent_model_pack"]["car_model_entities"], 0)
         self.assertEqual(manifest["parent_model_pack"]["source_snapshot_sha256"], "a" * 64)
         self.assertEqual(manifest["parent_model_pack"]["database_sha256"], "b" * 64)
         self.assertEqual(len(manifest["source_snapshot_sha256"]), 64)
         self.assertEqual(len(manifest["source_query_sha256"]), 64)
         self.assertEqual(len(manifest["database_sha256"]), 64)
+
+    def test_latest_model_pack_retains_series_entity_types(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pack_dir = root / builder.MODEL_PACK_ROOT / "fixture"
+            pack_dir.mkdir(parents=True)
+            db_path = pack_dir / "wikidata-vag-taxonomy.sqlite"
+            db = sqlite3.connect(db_path)
+            try:
+                db.execute("""CREATE TABLE vehicle_model_entities (
+                    model_qid TEXT, manufacturer_qid TEXT, model_label_en TEXT,
+                    model_label_ru TEXT, manufacturer_label_en TEXT, entity_types_json TEXT
+                )""")
+                db.execute(
+                    "INSERT INTO vehicle_model_entities VALUES (?,?,?,?,?,?)",
+                    ("Q758729","Q23317","Audi A4","Ауди A4","Audi AG",
+                     json.dumps([{"model_type_qid":"Q59773381","model_type_label_en":"car model series","entity_class_qid":"Q59773381"}])),
+                )
+                db.commit()
+            finally:
+                db.close()
+            parent_manifest = {
+                "source_id":"wikidata-vag-model-taxonomy",
+                "data_license":"CC0-1.0",
+                "built_at_utc":"2026-11-06T00:00:00Z",
+                "pack_id":"wikidata-vag-model-taxonomy-cc0-fixture",
+                "snapshot_id":"fixture",
+                "source_revision":"wikidata-snapshot-fixture",
+                "source_snapshot_sha256":"a"*64,
+                "database_sha256":builder.sha256(db_path.read_bytes()),
+                "counts":{"model_entities":1,"car_model_entities":0,"car_model_series_entities":1},
+            }
+            (pack_dir / "manifest.json").write_text(json.dumps(parent_manifest), encoding="utf-8")
+            manifest, _, models = builder.latest_model_pack(root)
+            self.assertEqual(manifest["counts"]["car_model_series_entities"], 1)
+            self.assertEqual(models[0]["entity_types"][0]["entity_class_qid"], "Q59773381")
 
     def test_unknown_parent_model_is_rejected(self):
         payload = json.loads(json.dumps(self.fixture))

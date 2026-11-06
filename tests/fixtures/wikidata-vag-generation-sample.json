@@ -7,7 +7,9 @@
     "source_revision": "wikidata-snapshot-fixture",
     "source_snapshot_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "database_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "model_entities": 1
+    "model_entities": 1,
+    "car_model_entities": 0,
+    "car_model_series_entities": 1
   },
   "parent_models": [
     {
@@ -15,7 +17,14 @@
       "manufacturer_qid": "Q23317",
       "model_label_en": "Audi A4",
       "model_label_ru": "Ауди A4",
-      "manufacturer_label_en": "Audi AG"
+      "manufacturer_label_en": "Audi AG",
+      "entity_types": [
+        {
+          "model_type_qid": "Q59773381",
+          "model_type_label_en": "car model series",
+          "entity_class_qid": "Q59773381"
+        }
+      ]
     }
   ],
   "query": "PREFIX wd: <http://www.wikidata.org/entity/>\nSELECT ?model ?member WHERE { ?member wdt:P179 ?model }",
