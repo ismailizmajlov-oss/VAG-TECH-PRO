@@ -1828,7 +1828,15 @@
           "name",
           "symbol"
         ],
-        "per_row_source_attribution": "not_provided_in_the_addition_commit_or_reviewed_README"
+        "per_row_source_attribution": "not_provided_in_the_addition_commit_or_reviewed_README",
+        "retrieved_content_sha256": "20f843763fafdb60b72296a8f6003512ee75970291b8a31ec59c40d74b4cc312",
+        "license_file_sha256": "d08b7d9656eb0c078ebc71926be5a6c3fecb36f695e4d01105ba9f3b917d6ccc",
+        "readme_sha256": "4c788f80552b482c904fa76d7024d8e4772599fddfbc93c1951354d1ecdd7609",
+        "license_file_blob_sha1": "78fe76374aca450843661a30406a363e7a2ae93b",
+        "readme_blob_sha1": "830a60eef56dd7d22b04250cdb5b87accc1205b4",
+        "hash_method": "SHA-256 of UTF-8 bytes returned by the pinned GitHub file-content response; Git blob SHA-1 values match the upstream tree entries.",
+        "retrieved_content_characters": 60353,
+        "data_license_assessment": "Repository BSD-2-Clause is declared, but the origin and rights of the CSV data are not independently established; no data import is permitted."
       },
       "counts": {
         "dtc_csv_data_rows": 657,
@@ -1862,7 +1870,10 @@
         "offline_cache_allowed": "not_established_for_dataset",
         "bulk_reuse_allowed": "not_established_for_dataset",
         "redistribution_allowed": "not_established_for_dataset",
-        "permission_status": "not_cleared"
+        "permission_status": "not_cleared",
+        "review_status": "quarantined",
+        "permission_required_before_product_import_or_distribution": true,
+        "permission_evidence": null
       },
       "quality_limits": [
         "The repository-level BSD-2-Clause licence is clear for the repository software, but the reviewed README and the commit that adds data/dtcs.csv do not identify the origin, author or separate licence of the CSV data.",
@@ -1872,7 +1883,7 @@
         "No DTC rows are approved for display, offline cache, diagnostic advice or distribution."
       ],
       "project_decision": "quarantine_no_import_no_display_no_cache; BSD-2-Clause repository code licence does not establish rights in potentially OEM ODX-derived CSV data; require the author's written provenance statement and data-specific reuse permission covering commercial use, display, offline cache and redistribution before any integration",
-      "evidence_status": "repository_LICENSE_README_and_dtcs_csv_commit_reviewed_2026-11-05; commit c8376416 adds 657 CSV data rows without row-level source attribution"
+      "evidence_status": "Repository LICENSE, README and data/dtcs.csv inspected 2026-11-06; Git blob identifiers and retrieved-content SHA-256 values pinned; row-level data provenance remains absent."
     },
     {
       "source_id": "dspl1236-vag-cp-docs-au57x-odis-mcd-extract",
