@@ -721,11 +721,13 @@ jobs:
           $ErrorActionPreference = "Stop"
           node --version
           npm --version
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.overrides={...(p.overrides||{}),'caniuse-lite':'1.0.30001822'}; fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.overrides={...(p.overrides||{}),'caniuse-lite':'1.0.30001822','minimatch@>=7.0.0 <11.0.1':'11.0.1'}; fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
           "dependency_override=caniuse-lite@1.0.30001822" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-lock.log
           if ($LASTEXITCODE -ne 0) { throw "package-lock generation failed" }
           if (-not (Test-Path package-lock.json)) { throw "package-lock.json was not generated" }
+          node -e "const fs=require('node:fs');const p=JSON.parse(fs.readFileSync('package-lock.json','utf8'));const rows=Object.entries(p.packages||{}).filter(([k])=>/(^|\\/)node_modules\\/minimatch$/.test(k)).map(([path,v])=>({path,version:v.version}));const cmp=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)-(y[i]||0)}return 0};const bad=rows.filter(x=>cmp(x.version,'7.0.0')>=0&&cmp(x.version,'11.0.1')<0);if(!rows.length||bad.length)throw new Error('Vulnerable minimatch lock entries remain: '+JSON.stringify(bad.length?bad:rows));console.log(JSON.stringify({status:'patched',versions:rows}));" 2>&1 | Tee-Object -FilePath minimatch-verification.log
+          if ($LASTEXITCODE -ne 0) { throw "Vulnerable minimatch versions remain in the dependency lock" }
           $expectedLockHash = (Get-Content -LiteralPath (Join-Path $env:GITHUB_WORKSPACE "desktop-package-lock.sha256") -Raw).Trim().Split(" ")[0].ToLowerInvariant()
           $actualLockHash = (Get-FileHash -LiteralPath "package-lock.json" -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actualLockHash -ne $expectedLockHash) { throw "Dependency lock SHA-256 drift: expected $expectedLockHash actual $actualLockHash" }
@@ -734,8 +736,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
           npm audit --omit=dev --audit-level=moderate 2>&1 | Tee-Object -FilePath npm-audit-production.log
           if ($LASTEXITCODE -ne 0) { throw "Production dependency audit reported moderate or higher vulnerabilities" }
-          npm audit --audit-level=high 2>&1 | Tee-Object -FilePath npm-audit.log
-          if ($LASTEXITCODE -ne 0) { throw "npm audit reported high or critical dependency vulnerabilities" }
+          npm audit --audit-level=moderate 2>&1 | Tee-Object -FilePath npm-audit.log
+          if ($LASTEXITCODE -ne 0) { throw "npm audit reported moderate or higher dependency vulnerabilities" }
 
       - name: Apply fail-closed research pack hash verification fix
         shell: pwsh
