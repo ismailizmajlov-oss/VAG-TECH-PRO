@@ -114,6 +114,14 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(observation["visible_date_filters"], ["05.11.2026", "06.11.2026"])
         self.assertEqual(observation["filtered_result_count"], 0)
         self.assertEqual(len(observation["visible_columns"]), 14)
+        self.assertEqual(observation["observed_at"], "2026-11-07")
+        self.assertEqual(observation["manufacturer_filter_options_observed"], ["AUDI AG", "Volkswagen AG"])
+        self.assertTrue(observation["manufacturer_filter_values_are_options_only"])
+        self.assertFalse(observation["vag_records_observed"])
+        self.assertFalse(observation["vag_record_count_verified"])
+        self.assertFalse(observation["bulk_api_discovered"])
+        self.assertTrue(observation["pdf_column_visible"])
+        self.assertFalse(observation["pdf_downloaded"])
         self.assertFalse(observation["public_table_exposes_engine_code"])
         self.assertFalse(observation["public_table_exposes_gearbox_code"])
         self.assertFalse(observation["public_table_exposes_engine_gearbox_pair"])
@@ -121,6 +129,12 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertIn("UI label", observation["count_interpretation"])
         self.assertEqual(source["access"]["bulk_export"], "not_established")
         self.assertEqual(source["access"]["offline_cache"], "not_established")
+        sbkts = source["public_page_observations"]["sbkts_page"]
+        self.assertTrue(sbkts["vag_metadata_row_observed"])
+        self.assertEqual(sbkts["sample_document_type"], "SBKTS")
+        self.assertFalse(sbkts["pdf_downloaded"])
+        self.assertIn("not an OTTS", sbkts["note"])
+        self.assertEqual(sbkts["rights_effect"], "none; this observation is not OTTS fitment evidence and grants no reuse rights")
 
     def test_elpts_internal_gearbox_entry_notice_does_not_create_public_fields_or_reuse_rights(self):
         source = self.sources["elpts-national-otts-register"]
