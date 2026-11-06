@@ -45,3 +45,12 @@ No new engine-code or gearbox-code records were imported. The sources below are 
 - Sam's VW World directory and terms, reviewed 2026-11-06.
 - EngineCode.uk Audi and Volkswagen directories, terms and editorial policy, reviewed 2026-11-06.
 - VAG-Wiki engine directory and terms, reviewed 2026-11-06.
+
+
+## gor3a vehicle-makes-models — existing ODbL quarantine reaffirmed
+
+- Repository: https://github.com/gor3a/vehicle-makes-models
+- The README reports 164 makes, 2,621 models, 7,169 generations and 30,390 engine variants. The VAG subset previously inspected in the repository register contains Audi, Volkswagen, Škoda, SEAT and CUPRA candidates, but no explicit factory engine codes, gearbox codes, market-specific type approvals, ECU hardware/software identifiers or manufacturer DTC applicability.
+- The repository declares ODbL 1.0 for its data and attributes Autoevolution as the upstream source. The reviewed `LICENSE-DATA` does not itself establish that Autoevolution granted the aggregator rights to redistribute all upstream-derived database material.
+- The ODbL declaration, attribution and share-alike obligations are preserved, but upstream permission remains not obtained.
+- **Decision:** keep the existing quarantine. No download, import, cache, display, bundling or redistribution until the upstream rights scope is independently established.
