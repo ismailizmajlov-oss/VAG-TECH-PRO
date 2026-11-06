@@ -462,10 +462,13 @@
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion",
       "legal_basis": {
-        "document": "Решение Коллегии ЕЭК от 26.07.2016 № 88",
-        "document_url": "https://www.alta.ru/tamdoc/16kr0088/",
-        "access_rule": "The decision defines an interested party as a legal or natural person requesting and receiving information from the unified TR TS 018/2011 register through the Union information portal.",
-        "reuse_boundary": "The decision describes public access and intergovernmental data exchange; it does not grant VAG TECH PRO bulk extraction, offline caching, third-party display or redistribution rights."
+        "document": "Решение Коллегии ЕЭК от 02.12.2014 № 225",
+        "document_url": "https://www.alta.ru/tamdoc/14kr0225/",
+        "access_rule": "Paragraphs 2–5 establish national parts and access from official websites of authorized bodies and the EEC; paragraph 11 requires publication of the specified registry fields on official sites within five working days; paragraph 13 assigns responses to interested-person requests to authorized bodies.",
+        "schema_document": "Решение Коллегии ЕЭК от 26.07.2016 № 88",
+        "schema_document_url": "https://www.alta.ru/tamdoc/16kr0088/",
+        "schema_rule": "Decision No. 88 approves technical documents for intergovernmental information exchange and the R.TR.TS.07.001 schema. It is not the public-access legal basis and does not grant bulk reuse, offline caching, display or redistribution rights.",
+        "reuse_boundary": "Public query and official publication are distinct from bulk reuse, commercial display, offline caching and redistribution. Dataset-specific rights must be established before product import."
       },
       "current_portal_observation": {
         "checked_at": "2026-11-06",
