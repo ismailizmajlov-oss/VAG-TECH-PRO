@@ -2887,7 +2887,14 @@
           "vehicle equipment",
           "VIN section"
         ],
-        "note": "The 273 count is the visible total on the legacy list page reviewed 2026-11-06. The 0 count for the new list comes from a search-index snapshot last crawled about three weeks earlier and is not treated as a current count."
+        "note": "The 273 count is the visible total on the legacy list page reviewed 2026-11-06. The 0 count for the new list comes from a search-index snapshot last crawled about three weeks earlier and is not treated as a current count.",
+        "direct_fetch_observations": {
+          "observed_at": "2026-11-06",
+          "current_registry_page": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+          "direct_fetch_status": "timeout",
+          "search_indexed_text": "Записи 1-1 из 0; Нет записей",
+          "count_treatment": "not_used_as_current_corpus_count"
+        }
       },
       "rights": {
         "dataset_license": "not_found",
@@ -2898,7 +2905,7 @@
         "offline_cache_allowed": "not_established",
         "commercial_display_allowed": "not_established",
         "redistribution_allowed": "not_established",
-        "operator_and_rightsholder_identity": "not_independently_confirmed",
+        "operator_and_rightsholder_identity": "official_government_listing_confirms_registry_authority_reference; current_portal_operator_and_data_rightsholder_not_independently_confirmed",
         "permission_evidence": null
       },
       "applicability": {
@@ -2947,7 +2954,17 @@
         }
       ],
       "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion"
+      "hash_status": "not_downloaded_no_ingestion",
+      "official_listing_evidence": {
+        "url": "https://www.gov.kz/org/mti-ktrm/documents/details/350253?lang=ru",
+        "publisher": "Committee of Technical Regulation and Metrology, Ministry of Trade and Integration of the Republic of Kazakhstan",
+        "published_at": "2022-09-20",
+        "updated_at": "2024-03-20",
+        "linked_legacy_portal": "https://techreg.gov.kz/index/",
+        "current_portal_observed": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+        "evidence": "Official gov.kz registry directory entry identifies the Committee and links the national technical-regulation registry. This confirms the official registry reference, not a data-reuse license.",
+        "rights_effect": "no_bulk_export_offline_cache_display_or_redistribution_permission_inferred"
+      }
     }
   ],
   "minimum_fitment_evidence_fields": [

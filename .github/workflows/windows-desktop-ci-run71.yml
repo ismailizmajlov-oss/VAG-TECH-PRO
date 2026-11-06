@@ -1156,7 +1156,7 @@ jobs:
           $relativeFiles = @($files | ForEach-Object { $_.FullName.Substring($sourceRoot.Length + 1) } | Sort-Object)
           $relativeFiles | Set-Content -LiteralPath (Join-Path $env:GITHUB_WORKSPACE "desktop-source-inventory.txt") -Encoding utf8
           $patterns = @(
-            'searchVerifiedTechnicalRecords','listVerifiedConfigurations','getModuleCoverage',
+            'searchVerifiedTechnicalRecords','listVerifiedConfigurations','getModuleCoverage','review_status','approveSourceByOwner','listSources','listImportBatches','technical_records','source_snapshots','vehicle_configurations','applicability_precision','source_snapshot_sha256',
             'saveUserVehicle','getUserVehicles','addBookmark','getBookmarks','query_history',
             'importPackage','backupDatabase','restoreDatabase',
             'dtc_generic','dtc_vag_specific','diagnostic_test_plan','repair_procedure',
@@ -1197,6 +1197,25 @@ jobs:
             New-Item -ItemType Directory -Path $targetFolder -Force | Out-Null
             if (Test-Path $sourceFolder) { Copy-Item -Path (Join-Path $sourceFolder "*") -Destination $targetFolder -Recurse -Force }
           }
+      - name: Upload desktop source audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vag-tech-pro-desktop-source-audit-${{ github.run_id }}
+          path: |
+            desktop-source-inventory.txt
+            desktop-source-technical-surface.txt
+            windows-lifecycle-staging/desktop-source/app/**
+            windows-lifecycle-staging/desktop-source/components/**
+            windows-lifecycle-staging/desktop-source/electron/**
+            windows-lifecycle-staging/desktop-source/tests/**
+            windows-lifecycle-staging/desktop-source/lib/local-core-db.cjs
+            windows-lifecycle-staging/desktop-source/data/sql/local-core-v1.sql
+            windows-lifecycle-staging/desktop-source/data/schemas/**
+            windows-lifecycle-staging/desktop-source/scripts/verify-local-core.cjs
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Upload Windows installer and verification evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -216,6 +216,8 @@ def main() -> None:
         raise SystemExit("Desktop source technical-surface inventory step is missing")
     if "desktop-source-technical-surface.txt" not in text or "desktop-source-inventory.txt" not in text:
         raise SystemExit("Desktop source inventory evidence is not uploaded")
+    if "Upload desktop source audit evidence" not in text or "vag-tech-pro-desktop-source-audit-" not in text:
+        raise SystemExit("Small desktop source audit artifact is not uploaded independently")
     if 'foreach ($folder in @("scripts", "lib", "app", "components", "electron", "tests"' not in text:
         raise SystemExit("Windows lifecycle artifact does not preserve the desktop app, UI and test sources")
 

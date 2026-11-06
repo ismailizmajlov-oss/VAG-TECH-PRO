@@ -891,7 +891,7 @@
     },
     {
       "source_id": "kazakhstan-techreg-otts-public-registry",
-      "publisher": "TechReg / KEZEKTE.KZ; system pages identify the Committee of Technical Regulation and Metrology of the Ministry of Trade and Integration of the Republic of Kazakhstan and National Accreditation Center contact details",
+      "publisher": "Committee of Technical Regulation and Metrology, Ministry of Trade and Integration of Kazakhstan (official gov.kz registry listing); TechReg/KEZEKTE.KZ current interface",
       "source_type": "kazakhstan_national_vehicle_type_approval_registry_public_query",
       "source_url": "https://techreg.kezekte.kz/ru/cert/ot-registry/old/list",
       "current_registry_url": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
@@ -918,7 +918,14 @@
         "legacy_registry_visible_record_count": 273,
         "new_registry_visible_record_count_from_stale_search_snapshot": 0,
         "new_registry_snapshot_crawl_age": "about_three_weeks_before_review",
-        "note": "The legacy list page shows 273 records. The new list's zero count comes from a stale search-index snapshot and is not treated as a current corpus count."
+        "note": "The legacy list page shows 273 records. The new list's zero count comes from a stale search-index snapshot and is not treated as a current corpus count.",
+        "direct_fetch_observations": {
+          "observed_at": "2026-11-06",
+          "current_registry_page": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+          "direct_fetch_status": "timeout",
+          "search_indexed_text": "Записи 1-1 из 0; Нет записей",
+          "count_treatment": "not_used_as_current_corpus_count"
+        }
       },
       "access_and_reuse": {
         "public_query": "observed",
@@ -929,7 +936,7 @@
         "third_party_display": "not_confirmed",
         "offline_cache": "not_confirmed",
         "redistribution": "not_confirmed",
-        "operator_identity": "not_independently_confirmed"
+        "operator_identity": "official_government_listing_confirms_registry_authority_reference_but_current_portal_operator_and_data_rightsholder_not_independently_confirmed"
       },
       "technical_scope": {
         "registry_fields": [
@@ -960,7 +967,17 @@
         "Detailed record pages may contain VIN-related and applicant/contact fields; privacy review is required before any processing.",
         "Do not treat a public search page as permission to cache or redistribute its records."
       ],
-      "evidence_status": "Public query pages and project-information page reviewed 2026-11-06; no licence, bulk API or product reuse permission identified; no records downloaded."
+      "evidence_status": "Public query pages and project-information page reviewed 2026-11-06; no licence, bulk API or product reuse permission identified; no records downloaded.",
+      "official_listing_evidence": {
+        "url": "https://www.gov.kz/org/mti-ktrm/documents/details/350253?lang=ru",
+        "publisher": "Committee of Technical Regulation and Metrology, Ministry of Trade and Integration of the Republic of Kazakhstan",
+        "published_at": "2022-09-20",
+        "updated_at": "2024-03-20",
+        "linked_legacy_portal": "https://techreg.gov.kz/index/",
+        "current_portal_observed": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+        "evidence": "Official gov.kz registry directory entry identifies the Committee and links the national technical-regulation registry. This confirms the official registry reference, not a data-reuse license.",
+        "rights_effect": "no_bulk_export_offline_cache_display_or_redistribution_permission_inferred"
+      }
     }
   ],
   "updated_at": "2026-11-06"
