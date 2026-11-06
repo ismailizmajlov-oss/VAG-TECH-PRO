@@ -302,6 +302,27 @@ def validate_source_manifest(source: dict[str, Any]) -> None:
         raise ValueError("RDW research-only market/production boundary is missing")
     if source.get("market_scope") != ["NL"]:
         raise ValueError("RDW pack must remain NL-scoped")
+    products = source.get("data_products", {})
+    product_keys = {
+        "registration": "registered_vehicle_identity",
+        "tgk_drive": "tgk_drive",
+        "tgk_gearbox": "tgk_gearbox",
+        "tgk_base": "tgk_base",
+        "tgk_make": "tgk_make",
+        "tgk_trade_name": "tgk_trade_name",
+    }
+    for name, config in DATASETS.items():
+        product = products.get(product_keys[name], {})
+        if product.get("dataset_id") != config["id"] or product.get("catalog_license") != "CC0 1.0":
+            raise ValueError(f"RDW dataset identity/license mismatch: {name}")
+    source_makes = source.get("vehicle_scope", {}).get("makes", [])
+    if sorted(source_makes) != sorted(MAKES):
+        raise ValueError("RDW VAG make allowlist differs from the reviewed source manifest")
+    allowed_registration_fields = set(products["registered_vehicle_identity"].get("use_fields", []))
+    if not set(REGISTRATION_GROUP_FIELDS).issubset(allowed_registration_fields):
+        raise ValueError("RDW registration query exceeds the reviewed non-identifying field allowlist")
+    if any(any(token in field.lower() for token in FORBIDDEN_TOKENS) for field in allowed_registration_fields):
+        raise ValueError("RDW source manifest allowlist contains a forbidden registration/personal-data field")
 
 
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> tuple[str, int]:
