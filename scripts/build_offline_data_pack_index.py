@@ -25,7 +25,7 @@ ARTIFACTS = {
 }
 
 GENERIC_OBD_CODE_RE = re.compile(
-    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P3[4-9][0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$"
+    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$"
 )
 
 # Sources without explicit data-specific display/cache/redistribution rights must
@@ -121,16 +121,20 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex source workflow report is not validated")
     if report.get("source_reference_validation") != "raw_references_preserved_not_fetched_not_linked":
         raise ValueError("OBDex source-reference validation policy is missing")
-    if report.get("generic_dtcs") != 9533 or report.get("pids") != 132:
+    if report.get("generic_dtcs") != 9359 or report.get("upstream_dtc_rows") != 9533 or report.get("quarantined_dtc_rows") != 174 or report.get("pids") != 132:
         raise ValueError("OBDex expected DTC/PID counts changed")
     if report.get("vag_specific_dtc_rows") != 0 or report.get("fitment_claims") != 0 or report.get("production_rows") != 0:
         raise ValueError("OBDex generic-only boundary failed")
     if source_manifest.get("scope", {}).get("manufacturer_specific_codes_included") is not False:
         raise ValueError("OBDex source manifest claims manufacturer-specific DTCs")
-    if source_manifest.get("scope", {}).get("generic_code_ranges") != ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx","U3xxx"]:
+    if source_manifest.get("scope", {}).get("generic_code_ranges") != ["P0xxx","P2xxx","P34xx","B0xxx","C0xxx","U0xxx"]:
         raise ValueError("OBDex generic code ranges are not explicitly constrained")
     if source_manifest.get("scope", {}).get("excluded_manufacturer_controlled_ranges") != ["P1xxx","P30xx-P33xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"]:
         raise ValueError("OBDex manufacturer-controlled ranges are not explicitly excluded")
+    if source_manifest.get("scope", {}).get("excluded_mixed_or_reserved_ranges") != ["U3xxx", "P35xx-P39xx", "B3xxx", "C3xxx"]:
+        raise ValueError("OBDex mixed/reserved U3xxx family is not quarantined")
+    if source_manifest.get("expected_counts") != {"generic_dtcs": 9359, "pids_total": 132, "upstream_projection_dtcs": 9533, "quarantined_dtc_rows": 174}:
+        raise ValueError("OBDex source manifest expected counts mismatch")
     if source_manifest.get("scope", {}).get("exact_vag_fitment") is not False:
         raise ValueError("OBDex source manifest claims exact VAG fitment")
     if source_manifest.get("scope", {}).get("repair_procedures_or_pinouts_included") is not False:
@@ -148,7 +152,7 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex SQLite schema mismatch")
     dtc_count = count(db, "generic_dtc_research")
     pid_count = count(db, "generic_pid_research")
-    if dtc_count != 9533 or pid_count != 132:
+    if dtc_count != 9359 or pid_count != 132:
         raise ValueError("OBDex SQLite row counts mismatch")
     if db.execute("SELECT count(*) FROM generic_dtc_research WHERE namespace<>'generic_sae_iso_obd2' OR vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex contains non-generic or fitment-claim DTC rows")
@@ -176,10 +180,12 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         "product_eligibility": "generic_obd2_reference_only",
         "market_scope": "global_generic_not_market_specific",
         "applicability_precision": "generic_code_only_no_vehicle_fitment",
-        "counts": {"generic_dtcs": dtc_count, "pids": pid_count},
+        "counts": {"generic_dtcs": dtc_count, "quarantined_dtc_rows": report.get("quarantined_dtc_rows"), "pids": pid_count},
         "source_revision": source_manifest.get("commit_sha"),
         "warnings": [
             "Generic SAE/ISO OBD-II only; never map these records to a VAG ECU or exact vehicle without independent evidence.",
+            "174 U3xxx records are quarantined because the available J2012 range tables describe a mixed manufacturer-controlled / ISO/SAE-reserved family; current J2012DA code-level assignment is not verified.",
+            "Only P34xx records are admitted from the P3 family; P35xx-P39xx, B3xxx and C3xxx remain excluded until their code-level standardized assignment is verified.",
             "Source descriptions and cause/repair suggestions are unreviewed and are not verified repair procedures.",
             "No vehicle-fitment or exact diagnostic test-plan claim is made.",
         ],

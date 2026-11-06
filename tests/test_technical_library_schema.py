@@ -129,12 +129,21 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
 
     def test_schema_defines_all_required_technical_sections(self) -> None:
         schema=json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-        expected={"diagnostic_test_plan","repair_procedure","wiring_diagram","ecu_pinout","torque_specification","adaptation","service_interval","ecu_profile","oem_part"}
+        expected={"diagnostic_test_plan","repair_procedure","wiring_diagram","ecu_pinout","torque_specification","adaptation","service_interval","ecu_profile","oem_part","oem_supersession"}
         self.assertEqual(set(schema["$defs"])-{"step","connection","string_list"},expected)
         tables={r[0] for r in self.db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         self.assertTrue({"technical_source_rights","technical_documents","technical_applicability","technical_records"}<=tables)
         views={r[0] for r in self.db.execute("SELECT name FROM sqlite_master WHERE type='view'")}
         self.assertTrue({"v_published_technical_records","v_generic_dtc_test_plans","v_vag_specific_dtc_test_plans"}<=views)
+
+    def test_ecu_profile_and_oem_supersession_payload_contracts_are_explicit(self) -> None:
+        schema=json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+        ecu=schema["$defs"]["ecu_profile"]
+        self.assertIn("anyOf",ecu)
+        self.assertIn("ecu_family",ecu["properties"])
+        supersession=schema["$defs"]["oem_supersession"]
+        self.assertEqual(set(supersession["required"]),{"from_part_number","to_part_number","supersession_type"})
+        self.assertIn("oem_supersession",schema["properties"]["record_kind"]["enum"])
 
     def test_exact_engine_transmission_record_requires_complete_evidence_and_publishes(self) -> None:
         self.seed_published_exact_pair()

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:vag-tech-pro:technical-record-payloads:v1",
   "title": "VAG TECH PRO technical record payloads",
-  "description": "Versioned payload contract. Source revision, license rights, market scope, applicability evidence, record revision and SHA-256 are stored in SQLite columns, not inside payload_json.",
+  "description": "Versioned payload contract enforced by the offline SQLite importer before any transaction. Source revision, license rights, market scope, applicability evidence, record revision and SHA-256 are stored in SQLite columns, not inside payload_json.",
   "type": "object",
   "properties": {
     "schema_version": {
@@ -18,7 +18,8 @@
         "adaptation",
         "service_interval",
         "ecu_profile",
-        "oem_part"
+        "oem_part",
+        "oem_supersession"
       ]
     },
     "payload": {
@@ -198,6 +199,25 @@
         "properties": {
           "payload": {
             "$ref": "#/$defs/oem_part"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_kind": {
+            "const": "oem_supersession"
+          }
+        },
+        "required": [
+          "record_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/oem_supersession"
           }
         }
       }
@@ -671,6 +691,22 @@
           "type": "integer",
           "minimum": 1
         },
+        "manufacturer": {
+          "type": "string"
+        },
+        "ecu_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hardware_number": {
+          "type": "string"
+        },
+        "software_number": {
+          "type": "string"
+        },
+        "ecu_address": {
+          "type": "string"
+        },
         "diagnostic_protocol": {
           "type": "string",
           "minLength": 1
@@ -692,11 +728,34 @@
           "type": "string"
         }
       },
-      "required": [
-        "ecu_identity_id",
-        "diagnostic_protocol"
-      ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "ecu_identity_id"
+          ]
+        },
+        {
+          "required": [
+            "ecu_family"
+          ]
+        },
+        {
+          "required": [
+            "hardware_number"
+          ]
+        },
+        {
+          "required": [
+            "software_number"
+          ]
+        },
+        {
+          "required": [
+            "diagnostic_protocol"
+          ]
+        }
+      ]
     },
     "oem_part": {
       "type": "object",
@@ -724,6 +783,39 @@
       },
       "required": [
         "part_number"
+      ],
+      "additionalProperties": false
+    },
+    "oem_supersession": {
+      "type": "object",
+      "properties": {
+        "from_part_number": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to_part_number": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supersession_type": {
+          "enum": [
+            "replaces",
+            "replaced_by",
+            "equivalent"
+          ]
+        },
+        "effective_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_part_number",
+        "to_part_number",
+        "supersession_type"
       ],
       "additionalProperties": false
     }

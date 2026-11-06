@@ -98,8 +98,17 @@ class OfflineDataPackRightsTests(unittest.TestCase):
 
     def test_obdex_lock_pins_generic_ranges_and_external_reference_quarantine(self):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
-        self.assertEqual(lock["scope"]["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx-P39xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])
+        self.assertEqual(lock["scope"]["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx"])
         self.assertEqual(lock["scope"]["excluded_manufacturer_controlled_ranges"], ["P1xxx", "P30xx-P33xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])
+        self.assertEqual(lock["scope"]["excluded_mixed_or_reserved_ranges"], ["U3xxx", "P35xx-P39xx", "B3xxx", "C3xxx"])
+        self.assertEqual(lock["expected_counts"], {"generic_dtcs": 9359, "pids_total": 132, "upstream_projection_dtcs": 9533, "quarantined_dtc_rows": 174})
+        self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P3400"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P3000"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P39FF"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P35FF"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("U3000"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("B3000"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("C3000"))
         self.assertEqual(lock["source_reference_policy"], {
             "validation": "syntax_only",
             "external_fetch": False,
@@ -109,7 +118,9 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         })
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
-        self.assertIn("const p3GenericCode = /^P3[4-9][0-9A-F]{2}$/;", workflow)
+        self.assertIn("const p3GenericCode = /^P34[0-9A-F]{2}$/;", workflow)
+        self.assertIn('const expectedQuarantinedRanges = ["U3xxx","P35xx-P39xx","B3xxx","C3xxx"];', workflow)
+        self.assertIn("quarantinedDtcRows.length !== 174", workflow)
         self.assertIn("sourceManifest.scope.generic_code_ranges", workflow)
         self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
 
@@ -122,6 +133,9 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertEqual(source["market_scope"], ["UNKNOWN"])
         self.assertFalse(source["applicability"]["vag_specific"])
         self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
+        self.assertEqual(source["data_counts_as_published"]["generic_dtc_rows"], 9359)
+        self.assertEqual(source["data_counts_as_published"]["generic_dtc_rows_quarantined"], 174)
+        self.assertEqual(source["data_counts_as_published"]["upstream_projection_dtc_rows"], 9533)
         self.assertEqual(source["data_counts_as_published"]["vag_specific_dtc_rows"], 0)
         self.assertEqual(source["data_counts_as_published"]["production_rows"], 0)
         self.assertFalse(source["rights"]["source_reference_policy"]["external_fetch"])

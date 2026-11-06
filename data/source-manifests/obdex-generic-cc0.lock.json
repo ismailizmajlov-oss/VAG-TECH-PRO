@@ -22,11 +22,10 @@
     "generic_code_ranges": [
       "P0xxx",
       "P2xxx",
-      "P34xx-P39xx",
+      "P34xx",
       "B0xxx",
       "C0xxx",
-      "U0xxx",
-      "U3xxx"
+      "U0xxx"
     ],
     "excluded_manufacturer_controlled_ranges": [
       "P1xxx",
@@ -34,11 +33,19 @@
       "B1xxx-B2xxx",
       "C1xxx-C2xxx",
       "U1xxx-U2xxx"
+    ],
+    "excluded_mixed_or_reserved_ranges": [
+      "U3xxx",
+      "P35xx-P39xx",
+      "B3xxx",
+      "C3xxx"
     ]
   },
   "expected_counts": {
-    "generic_dtcs": 9533,
-    "pids_total": 132
+    "generic_dtcs": 9359,
+    "pids_total": 132,
+    "upstream_projection_dtcs": 9533,
+    "quarantined_dtc_rows": 174
   },
   "source_files": [
     "LICENSE-DATA",

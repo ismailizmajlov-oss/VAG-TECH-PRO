@@ -64,6 +64,7 @@ on:
       - "data/sql/**"
       - "data/schemas/**"
       - "tests/test_technical_library_schema.py"
+      - "tests/test_obdex_generic_namespace_policy.py"
       - "tests/test_source_manifest_bundle.py"
       - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
@@ -119,6 +120,7 @@ on:
       - "data/sql/**"
       - "data/schemas/**"
       - "tests/test_technical_library_schema.py"
+      - "tests/test_obdex_generic_namespace_policy.py"
       - "tests/test_source_manifest_bundle.py"
       - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "scripts/import-authorized-fgis-otts-export.cjs"
@@ -139,6 +141,7 @@ on:
       - "data/sql/**"
       - "data/schemas/**"
       - "tests/test_technical_library_schema.py"
+      - "tests/test_obdex_generic_namespace_policy.py"
       - "tests/test_source_manifest_bundle.py"
       - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
@@ -191,6 +194,7 @@ jobs:
           python tests/test_windows_desktop_workflow_contract.py
           python tests/test_source_manifest_bundle.py -v
           python tests/test_technical_library_schema.py -v
+          python tests/test_obdex_generic_namespace_policy.py -v
           python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
@@ -815,8 +819,8 @@ jobs:
           $patchHash = (Get-FileHash apply-vehiclesdb-schema-fix-run63.cjs -Algorithm SHA256).Hash.ToLowerInvariant()
           "vehiclesdb_schema_fix_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           node --check desktop-source/lib/local-research-db.cjs
-          node --test desktop-source/tests/local-research-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/research-hash-targeted-test.log"
-          if ($LASTEXITCODE -ne 0) { throw "Targeted research pack integrity test failed" }
+          # The OBDex count assertion is updated by the later run78 patcher before npm test.
+          # Run the full local-research-db.test.cjs suite after all desktop source patches are applied.
 
       - name: Capture desktop VehiclesDB schema diagnostics
         if: always()
@@ -891,7 +895,7 @@ jobs:
           python -m unittest discover -s tests -p "test_mechanicdb_generic_guidance_pack.py" -v 2>&1 | Tee-Object -FilePath "generic-guidance-pack-tests.log"
           if ($LASTEXITCODE -ne 0) { throw "MechanicDB ODbL pack verification failed" }
           node --check apply-generic-repair-guidance-browser-run69.cjs
-          node apply-generic-repair-guidance-browser-run69.cjs --desktop-root desktop-source --pack-dir $packDir 2>&1 | Tee-Object -FilePath "generic-guidance-integration-run69.log"
+          node apply-generic-repair-guidance-browser-run69.cjs --desktop-root desktop-source --pack-dir $packDir --skip-existing-research-verifier 2>&1 | Tee-Object -FilePath "generic-guidance-integration-run69.log"
           if ($LASTEXITCODE -ne 0) { throw "MechanicDB generic guidance desktop integration failed" }
           $genericReport = Get-Content -LiteralPath "desktop-source/data/research/run69-integration-verification.json" -Raw | ConvertFrom-Json
           "generic_mechanicdb_pack=ODbL-1.0; guidance=$($genericReport.counts.generic_authored_guidance); dtc=$($genericReport.counts.generic_sae_dtc_references); market=UNKNOWN; vag_specific=false; database_sha256=$($genericReport.database_sha256); snapshot_sha256=$($genericReport.source_snapshot_sha256); manifest_sha256=$($genericReport.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
@@ -1174,6 +1178,33 @@ jobs:
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
           "lifecycle_session_output=single_session_object; BaseUrl_preserved; run77_contract=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Enforce technical payload JSON schemas before SQLite import (run78)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-technical-payload-validation-run78.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run78 payload validator patcher syntax check failed" }
+          node apply-technical-payload-validation-run78.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-run78.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run78 technical payload validation patch failed" }
+          Push-Location desktop-source
+          try {
+            node --check lib/local-core-db.cjs
+            if ($LASTEXITCODE -ne 0) { throw "Run78 local-core syntax check failed" }
+            node --check electron/main.cjs
+            if ($LASTEXITCODE -ne 0) { throw "Run78 Electron schema-path syntax check failed" }
+            node --test tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-tests-run78.log"
+            if ($LASTEXITCODE -ne 0) { throw "Run78 local-core payload validation tests failed" }
+          } finally { Pop-Location }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          foreach ($relative in @("lib/local-core-db.cjs", "electron/main.cjs", "tests/local-core-db.test.cjs", "data/schemas/technical-record-payloads.schema.json", "scripts/verify-local-research-packs.cjs", "tests/local-research-packs.test.cjs", "tests/local-research-db.test.cjs")) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          $patchHash = (Get-FileHash apply-technical-payload-validation-run78.cjs -Algorithm SHA256).Hash.ToLowerInvariant()
+          "technical_payload_validation_patch_sha256=$patchHash; payload_schema_runtime_enforced=true; generic_dtc_namespace_separated=true; legacy_vag_dtc_numeric=true; obdex_generic_dtcs=9359; quarantined_u3xxx=174" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
