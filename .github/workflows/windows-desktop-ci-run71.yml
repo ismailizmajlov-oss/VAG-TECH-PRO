@@ -443,7 +443,7 @@ jobs:
         with:
           name: wikidata-vag-model-taxonomy-cc0
           path: ${{ runner.temp }}/vag-tech-pro-wikidata
-          run-id: 41905383209
+          run-id: 42145993840
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify pinned Wikidata artifact digest and source revision
@@ -453,16 +453,16 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
-          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/41905383209/artifacts?per_page=100"
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/42145993840/artifacts?per_page=100"
           $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
-          $artifact = $response.artifacts | Where-Object { $_.id -eq 13360765168 -and $_.name -eq "wikidata-vag-model-taxonomy-cc0" -and $_.expired -eq $false } | Select-Object -First 1
+          $artifact = $response.artifacts | Where-Object { $_.id -eq 13469673252 -and $_.name -eq "wikidata-vag-model-taxonomy-cc0" -and $_.expired -eq $false } | Select-Object -First 1
           if ($null -eq $artifact) { throw "Pinned Wikidata artifact is missing or expired." }
-          if ($artifact.digest -ne "sha256:a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609") { throw "Pinned Wikidata artifact digest mismatch: $($artifact.digest)" }
+          if ($artifact.digest -ne "sha256:f9ef2e5178e1dcdd92c0969a229c2e33a5608f14c9cf2f67ffc6f4baa21114e8") { throw "Pinned Wikidata artifact digest mismatch: $($artifact.digest)" }
           $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-wikidata"
           $manifest = Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json
-          if ($manifest.pack_id -ne "wikidata-vag-model-taxonomy-cc0-7a99f275966b" -or $manifest.source_revision -ne "wikidata-snapshot-7a99f275966b") { throw "Wikidata snapshot revision mismatch." }
+          if ($manifest.pack_id -ne "wikidata-vag-model-taxonomy-cc0-630dbed1af15" -or $manifest.source_revision -ne "wikidata-snapshot-630dbed1af15") { throw "Wikidata snapshot revision mismatch." }
           if ($manifest.data_license -ne "CC0-1.0" -or $manifest.rights_status -ne "approved_by_published_license" -or $manifest.scope.market_scope -ne "UNKNOWN" -or $manifest.scope.applicability_precision -ne "candidate_identity_only") { throw "Wikidata rights or candidate-only scope mismatch." }
-          "wikidata_artifact_sha256=a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "wikidata_artifact_sha256=f9ef2e5178e1dcdd92c0969a229c2e33a5608f14c9cf2f67ffc6f4baa21114e8" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "wikidata_source_revision=$($manifest.source_revision)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Assemble and verify offline SQLite research packs
@@ -663,7 +663,7 @@ jobs:
           $evidencePath = "desktop-source/data/research/wikidata-vag-model-taxonomy-cc0/desktop-integration-verification.json"
           if (-not (Test-Path $evidencePath)) { throw "Run68 Wikidata desktop integration evidence is missing" }
           $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
-          if ($evidence.status -ne "integrated_verified_candidate_only" -or $evidence.counts.models -ne 376 -or $evidence.counts.russianLabels -ne 171 -or $evidence.market_scope -ne "UNKNOWN" -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.generation_verified -ne $false) { throw "Run68 Wikidata evidence failed the candidate-only gate" }
+          if ($evidence.status -ne "integrated_verified_candidate_only" -or $evidence.counts.models -ne 521 -or $evidence.counts.russianLabels -ne 285 -or $evidence.market_scope -ne "UNKNOWN" -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.generation_verified -ne $false) { throw "Run68 Wikidata evidence failed the candidate-only gate" }
           "wikidata_pack=CC0-1.0; models=376; russian_labels=171; market=UNKNOWN; generation=unverified; exact_fitment=none; engine_gearbox_ECU_DTC=none; database_sha256=$($evidence.database_sha256); snapshot_sha256=$($evidence.source_snapshot_sha256); query_sha256=$($evidence.source_query_sha256); manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Download pinned CC0 Wikidata VAG generation candidate snapshot
@@ -671,7 +671,7 @@ jobs:
         with:
           name: wikidata-vag-generation-candidates-cc0
           path: ${{ runner.temp }}/vag-tech-pro-wikidata-generations
-          run-id: 41906770429
+          run-id: 42146307991
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify pinned Wikidata generation artifact, parent model pack and CC0 rights
@@ -683,18 +683,18 @@ jobs:
           python -m unittest discover -s tests -p "test_wikidata_generation_source_rights.py" -v
           if ($LASTEXITCODE -ne 0) { throw "Wikidata generation source-rights gate failed" }
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
-          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/41906770429/artifacts?per_page=100"
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/runs/42146307991/artifacts?per_page=100"
           $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
-          $artifact = $response.artifacts | Where-Object { $_.id -eq 13361576024 -and $_.name -eq "wikidata-vag-generation-candidates-cc0" -and $_.expired -eq $false } | Select-Object -First 1
+          $artifact = $response.artifacts | Where-Object { $_.id -eq 13470966164 -and $_.name -eq "wikidata-vag-generation-candidates-cc0" -and $_.expired -eq $false } | Select-Object -First 1
           if ($null -eq $artifact) { throw "Pinned Wikidata generation artifact is missing or expired." }
-          if ($artifact.digest -ne "sha256:0171d7775e9ad8c98ff564be1dd5729c85b031f67cd063521e5a9f4989ca3989") { throw "Pinned generation artifact digest mismatch: $($artifact.digest)" }
+          if ($artifact.digest -ne "sha256:dc10b4b6b8a2f433802cc335e7c50f4f18e2642b9a09d0608b3de6e1b93d82bb") { throw "Pinned generation artifact digest mismatch: $($artifact.digest)" }
           $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-wikidata-generations"
           $manifest = Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json
-          if ($manifest.pack_id -ne "wikidata-vag-generation-candidates-cc0-5c1c7c37593b" -or $manifest.source_id -ne "wikidata-vag-generation-candidates" -or $manifest.source_revision -ne "wikidata-generation-candidates-5c1c7c37593b") { throw "Wikidata generation snapshot identity/revision mismatch." }
+          if ($manifest.pack_id -ne "wikidata-vag-generation-candidates-cc0-69cf847b7ef6" -or $manifest.source_id -ne "wikidata-vag-generation-candidates" -or $manifest.source_revision -ne "wikidata-generation-candidates-69cf847b7ef6") { throw "Wikidata generation snapshot identity/revision mismatch." }
           if ($manifest.data_license -ne "CC0-1.0" -or $manifest.rights_status -ne "approved_by_published_license" -or $manifest.scope.market_scope -ne "UNKNOWN" -or $manifest.scope.applicability_precision -ne "series_member_candidate" -or $manifest.scope.generation_verified -ne $false -or $manifest.scope.exact_vehicle_fitment -ne $false) { throw "Wikidata generation CC0 rights or candidate-only scope mismatch." }
-          if ($manifest.counts.member_entities -ne 9 -or $manifest.counts.model_member_links -ne 10 -or $manifest.counts.source_bindings -ne 14 -or $manifest.counts.models_with_members -ne 6 -or $manifest.counts.manufacturers -ne 3 -or $manifest.counts.russian_labels -ne 5 -or $manifest.counts.date_statements -ne 2) { throw "Wikidata generation candidate counts mismatch." }
-          if ($manifest.parent_model_pack.pack_id -ne "wikidata-vag-model-taxonomy-cc0-7a99f275966b" -or $manifest.parent_model_pack.snapshot_id -ne "7a99f275966b" -or $manifest.parent_model_pack.database_sha256 -ne "39732875dff952041707a449168917c173c532db91a9950ec006a94ec9240a34") { throw "Generation pack is not aligned to the pinned VAG model identity parent." }
-          "wikidata_generation_artifact_sha256=0171d7775e9ad8c98ff564be1dd5729c85b031f67cd063521e5a9f4989ca3989" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          if ($manifest.counts.member_entities -ne 109 -or $manifest.counts.model_member_links -ne 125 -or $manifest.counts.source_bindings -ne 187 -or $manifest.counts.models_with_members -ne 32 -or $manifest.counts.manufacturers -ne 6 -or $manifest.counts.russian_labels -ne 83 -or $manifest.counts.date_statements -ne 155) { throw "Wikidata generation candidate counts mismatch." }
+          if ($manifest.parent_model_pack.pack_id -ne "wikidata-vag-model-taxonomy-cc0-630dbed1af15" -or $manifest.parent_model_pack.snapshot_id -ne "630dbed1af15" -or $manifest.parent_model_pack.database_sha256 -ne "bf9939044cb53a187fb1dee178e1784f3efaa60e069d20f829f37d8313270206") { throw "Generation pack is not aligned to the pinned VAG model identity parent." }
+          "wikidata_generation_artifact_sha256=dc10b4b6b8a2f433802cc335e7c50f4f18e2642b9a09d0608b3de6e1b93d82bb" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "wikidata_generation_source_revision=$($manifest.source_revision)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "wikidata_generation_snapshot_sha256=$($manifest.source_snapshot_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "wikidata_generation_query_sha256=$($manifest.source_query_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
@@ -832,19 +832,19 @@ jobs:
           "generic_mechanicdb_pack=ODbL-1.0; guidance=$($genericReport.counts.generic_authored_guidance); dtc=$($genericReport.counts.generic_sae_dtc_references); market=UNKNOWN; vag_specific=false; database_sha256=$($genericReport.database_sha256); snapshot_sha256=$($genericReport.source_snapshot_sha256); manifest_sha256=$($genericReport.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           Get-Content -LiteralPath "desktop-source/data/research/run69-integration-verification.json" -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
-      - name: Integrate verified CC0 Wikidata VAG generation candidates (run70)
+      - name: Integrate verified CC0 Wikidata VAG generation candidates (run71)
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-wikidata-generations"
           node --check scripts/integrate-wikidata-vag-generation-candidates.cjs
           if ($LASTEXITCODE -ne 0) { throw "Run70 generation candidate integration script syntax check failed" }
-          node scripts/integrate-wikidata-vag-generation-candidates.cjs --pack-dir "$packDir" --research-dir "desktop-source/data/research" 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/wikidata-generation-integration-run70.log"
+          node scripts/integrate-wikidata-vag-generation-candidates.cjs --pack-dir "$packDir" --research-dir "desktop-source/data/research" 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/wikidata-generation-integration-run71.log"
           if ($LASTEXITCODE -ne 0) { throw "Run70 Wikidata generation candidate integration failed" }
           $evidencePath = "desktop-source/data/research/wikidata-vag-generation-candidates-cc0/integration-verification.json"
           if (-not (Test-Path $evidencePath)) { throw "Run70 generation candidate integration evidence is missing" }
           $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
-          if ($evidence.status -ne "integrated_verified_series_member_candidates_only" -or $evidence.counts.member_entities -ne 9 -or $evidence.counts.model_member_links -ne 10 -or $evidence.counts.source_bindings -ne 14 -or $evidence.market_scope -ne "UNKNOWN" -or $evidence.applicability_precision -ne "series_member_candidate" -or $evidence.generation_verified -ne $false -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.diagnostic_execution_allowed -ne $false) { throw "Run70 generation evidence failed candidate-only applicability gate" }
+          if ($evidence.status -ne "integrated_verified_series_member_candidates_only" -or $evidence.counts.member_entities -ne 109 -or $evidence.counts.model_member_links -ne 125 -or $evidence.counts.source_bindings -ne 187 -or $evidence.market_scope -ne "UNKNOWN" -or $evidence.applicability_precision -ne "series_member_candidate" -or $evidence.generation_verified -ne $false -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.diagnostic_execution_allowed -ne $false) { throw "Run71 generation evidence failed candidate-only applicability gate" }
           "wikidata_generation_pack=CC0-1.0; members=9; model_member_links=10; source_bindings=14; market=UNKNOWN; generation=unverified; exact_fitment=none; engine_gearbox_ECU_DTC_repair=none; database_sha256=$($evidence.database_sha256); snapshot_sha256=$($evidence.source_snapshot_sha256); query_sha256=$($evidence.source_query_sha256); manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           Get-Content -LiteralPath $evidencePath -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
@@ -935,9 +935,9 @@ jobs:
             if (-not (Test-Path $runtimeModule)) { throw "Packaged runtime dependency is missing: $module ($runtimeModule)" }
           }
           $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path (Get-Location) "release/win-unpacked/resources/research-data"
-          node -e 'const s=require("./lib/local-research-db.cjs").getResearchSummary(); const p=s.packs.find(x=>x.id==="wikidata-vag-model-taxonomy-cc0"); if(!p || p.counts.models!==376 || p.counts.russianLabels!==171 || p.marketScope!=="UNKNOWN" || p.fitmentClaim!==false) throw new Error("Packaged Wikidata offline resource verification failed"); console.log(JSON.stringify(p));'
+          node -e 'const s=require("./lib/local-research-db.cjs").getResearchSummary(); const p=s.packs.find(x=>x.id==="wikidata-vag-model-taxonomy-cc0"); if(!p || p.counts.models!==521 || p.counts.russianLabels!==285 || p.marketScope!=="UNKNOWN" || p.fitmentClaim!==false) throw new Error("Packaged Wikidata offline resource verification failed"); console.log(JSON.stringify(p));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata offline resource verification failed" }
-          node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==9 || g.counts.modelMemberLinks!==10 || g.counts.sourceBindings!==14 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
+          node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==109 || g.counts.modelMemberLinks!==125 || g.counts.sourceBindings!==187 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata generation candidate verification failed" }
           node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged generic MechanicDB offline resource verification failed" }
@@ -960,9 +960,9 @@ jobs:
             if (-not (Test-Path $runtimeModule)) { throw "Packaged upgrade runtime dependency is missing: $module ($runtimeModule)" }
           }
           $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path (Get-Location) "release/win-unpacked/resources/research-data"
-          node -e 'const s=require("./lib/local-research-db.cjs").getResearchSummary(); const p=s.packs.find(x=>x.id==="wikidata-vag-model-taxonomy-cc0"); if(!p || p.counts.models!==376 || p.counts.russianLabels!==171 || p.marketScope!=="UNKNOWN" || p.fitmentClaim!==false) throw new Error("Packaged upgrade Wikidata offline resource verification failed"); console.log(JSON.stringify(p));'
+          node -e 'const s=require("./lib/local-research-db.cjs").getResearchSummary(); const p=s.packs.find(x=>x.id==="wikidata-vag-model-taxonomy-cc0"); if(!p || p.counts.models!==521 || p.counts.russianLabels!==285 || p.marketScope!=="UNKNOWN" || p.fitmentClaim!==false) throw new Error("Packaged upgrade Wikidata offline resource verification failed"); console.log(JSON.stringify(p));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade Wikidata offline resource verification failed" }
-          node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==9 || g.counts.modelMemberLinks!==10 || g.counts.sourceBindings!==14 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
+          node -e 'const g=require("./lib/local-research-db.cjs").getWikidataGenerationSummary(); if(g.counts.memberEntities!==109 || g.counts.modelMemberLinks!==125 || g.counts.sourceBindings!==187 || g.marketScope!=="UNKNOWN" || g.applicabilityPrecision!=="series_member_candidate" || g.generationVerified!==false || g.exactVehicleFitment!==false || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged Wikidata generation candidate boundary verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged Wikidata generation candidate verification failed" }
           node -e 'const g=require("./lib/generic-repair-guidance-db.cjs").getSummary(); if(g.counts.genericRepairGuidance!==275 || g.counts.genericDtcReferences!==75 || g.vagSpecific!==false || g.marketScope!=="UNKNOWN" || g.diagnosticExecutionAllowed!==false) throw new Error("Packaged upgrade generic MechanicDB offline resource verification failed"); console.log(JSON.stringify(g));'
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade generic MechanicDB offline resource verification failed" }
@@ -1137,7 +1137,7 @@ jobs:
             $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
             if ($null -eq $expected -or $expected.sha256 -ne $actual) { throw "Windows installer artifact hash mismatch: $name" }
           }
-          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 9 -or $metadata.wikidata_generation_model_member_links -ne 10 -or $metadata.wikidata_generation_source_bindings -ne 14) { throw "Build metadata does not describe the pinned generation candidate pack." }
+          if ($metadata.desktop_version -ne "0.2.4" -or $metadata.wikidata_generation_member_entities -ne 109 -or $metadata.wikidata_generation_model_member_links -ne 125 -or $metadata.wikidata_generation_source_bindings -ne 187) { throw "Build metadata does not describe the pinned generation candidate pack." }
           $desktopRoot = Join-Path $artifactRoot "desktop-source"
           $sourceRegisterPath = Join-Path $desktopRoot "data/source-manifests/vag-factory-source-register.json"
           if (-not (Test-Path -LiteralPath $sourceRegisterPath -PathType Leaf)) { throw "Bundled source-rights register is missing from Windows artifact." }

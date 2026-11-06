@@ -8,22 +8,22 @@ const ROOT = path.resolve(__dirname, "..");
 const ID = "wikidata-vag-generation-candidates-cc0";
 const SOURCE_ID = "wikidata-vag-generation-candidates";
 const ARTIFACT = {
-  workflowRunId: 41906770429,
-  artifactId: 13361576024,
-  artifactSha256: "0171d7775e9ad8c98ff564be1dd5729c85b031f67cd063521e5a9f4989ca3989",
-  sourceCommit: "5fc952cfe117152e522740809c2a1d70e1bf01a3",
+  workflowRunId: 42146307991,
+  artifactId: 13470966164,
+  artifactSha256: "dc10b4b6b8a2f433802cc335e7c50f4f18e2642b9a09d0608b3de6e1b93d82bb",
+  sourceCommit: "832ac55f5120d28a38dd36ef4cfe2e1f7c7cff60",
   sourceBranch: "main",
-  snapshotCommit: "576cf983d195c51c8984ad46acdcab6ed1725800"
+  snapshotCommit: "ed11e1d5530307ff61da80b1d8e31d8d026222df"
 };
 const EXPECTED = {
-  snapshotId: "5c1c7c37593b",
-  sourceSnapshotSha256: "5c1c7c37593b5a86c7497153c4b29307f1c26922e21d3fabe08e6929c66d4495",
-  sourceQuerySha256: "bedc320b0181a5682c99b50b9b648bf85e5ba3adb619f39c07a7b31bf44acb5b",
-  databaseSha256: "866807139e33365997c402809f4ce2dba64e9cbadcd685d40db4ac309b2f93a5",
-  counts: { member_entities: 9, model_member_links: 10, source_bindings: 14, models_with_members: 6, manufacturers: 3, russian_labels: 5, date_statements: 2 }
+  snapshotId: "69cf847b7ef6",
+  sourceSnapshotSha256: "69cf847b7ef6accfe325c83ccc936dc8d78a025ea21f0e290094e2226717fcc8",
+  sourceQuerySha256: "f79ce0f3a5f89c0bacbf4bec65cabac8361fa820b26fc451fe351414ff057706",
+  databaseSha256: "3f3032a7bc5f4a9a4241b6bb2dd8f342c02484f8077f04fa2251388b824011e9",
+  counts: { member_entities: 109, model_member_links: 125, source_bindings: 187, models_with_members: 32, manufacturers: 6, russian_labels: 83, date_statements: 155 }
 };
 
-function fail(message) { throw new Error("[run70] " + message); }
+function fail(message) { throw new Error("[run71] " + message); }
 function sha256(bytes) { return crypto.createHash("sha256").update(bytes).digest("hex"); }
 function sha256File(file) { return sha256(fs.readFileSync(file)); }
 function readText(file) {
@@ -124,7 +124,7 @@ function validatePack(packDir, researchDir) {
       manifest.scope?.diagnostic_execution_allowed !== false || manifest.scope?.production_years_inferred !== false ||
       manifest.completeness_status !== "unknown" || manifest.limit_reached !== false ||
       manifest.query_limit !== 5000 ||
-      manifest.query_batch_size !== 50 || manifest.query_batches !== 8) fail("Candidate-only scope or bounded-query gate failed");
+      manifest.query_batch_size !== 50 || manifest.query_batches !== 11) fail("Candidate-only scope or bounded-query gate failed");
   if (JSON.stringify(manifest.counts) !== JSON.stringify(EXPECTED.counts)) fail("Generation pack row counts differ from pinned release");
   if (sourceManifest.source_id !== SOURCE_ID || sourceManifest.license?.id !== "CC0-1.0" ||
       sourceManifest.applicability?.market_scope !== "UNKNOWN" ||
@@ -263,7 +263,7 @@ function updateResearchManifest(researchDir, packDir, verified) {
   if (existing && existing.database_sha256 !== entry.database_sha256) fail("Refusing to overwrite a different immutable generation pack");
   if (existing) Object.assign(existing, entry); else rootManifest.packs.push(entry);
   if (rootManifest.packs.length !== 9) fail("Expected 9 separately licensed research packs; found " + rootManifest.packs.length);
-  rootManifest.integration_revision = "run70";
+  rootManifest.integration_revision = "run71";
   rootManifest.integrated_artifacts = Array.isArray(rootManifest.integrated_artifacts) ? rootManifest.integrated_artifacts : [];
   rootManifest.integrated_artifacts = rootManifest.integrated_artifacts.filter((item) => item.pack_id !== ID);
   rootManifest.integrated_artifacts.push({
@@ -490,7 +490,7 @@ function patchDesktopSource(desktop) {
       '  assert.equal(summary.license, "CC0-1.0"); assert.equal(summary.marketScope, "UNKNOWN");',
       '  assert.equal(summary.applicabilityPrecision, "series_member_candidate"); assert.equal(summary.generationVerified, false);',
       '  assert.equal(summary.exactVehicleFitment, false); assert.equal(summary.diagnosticExecutionAllowed, false);',
-      '  assert.deepEqual(summary.counts, { memberEntities: 9, modelMemberLinks: 10, sourceBindings: 14, modelsWithMembers: 6, manufacturers: 3, russianLabels: 5, dateStatements: 2 });',
+      '  assert.deepEqual(summary.counts, { memberEntities: 109, modelMemberLinks: 125, sourceBindings: 187, modelsWithMembers: 32, manufacturers: 6, russianLabels: 83, dateStatements: 155 });',
       '  const rows = local.searchWikidataGenerationCandidates("Octavia", 10, root); assert.ok(rows.length > 0);',
       '  assert.ok(rows.every((row) => row.marketScope === "UNKNOWN" && row.generationVerified === false && row.exactVehicleFitment === false && row.engineCodeFitment === false && row.transmissionCodeFitment === false && row.ecuFitment === false && row.dtcFitment === false && row.repairProcedureFitment === false && row.diagnosticExecutionAllowed === false && row.productionYearsInferred === false));',
       '  assert.deepEqual(local.searchWikidataGenerationCandidates("%%", 25, root), []);',
@@ -501,8 +501,8 @@ function patchDesktopSource(desktop) {
   }
   let packTest = readText(packTestPath);
   if (!packTest.includes("wikidata_vag_generation_candidates")) {
-    const anchor = '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 376, sourceBindings: 376, manufacturers: 5, russianLabels: 171, dateStatements: 21 });';
-    const addition = anchor + '\n  assert.deepEqual(result.wikidata_vag_generation_candidates, { memberEntities: 9, modelMemberLinks: 10, sourceBindings: 14, modelsWithMembers: 6, manufacturers: 3, russianLabels: 5, dateStatements: 2 });';
+    const anchor = '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 521, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });';
+    const addition = anchor + '\n  assert.deepEqual(result.wikidata_vag_generation_candidates, { memberEntities: 109, modelMemberLinks: 125, sourceBindings: 187, modelsWithMembers: 32, manufacturers: 6, russianLabels: 83, dateStatements: 155 });';
     packTest = exact(packTest, anchor, addition, "generation candidate pack test assertion");
     writeText(packTestPath, packTest);
   }
@@ -539,7 +539,7 @@ function patchDesktopSource(desktop) {
     const summaryAnchor = '  const wikidataSummary = localResearch.getResearchSummary(RESEARCH).packs.find((pack) => pack.id === "wikidata-vag-model-taxonomy-cc0");';
     if (verifier.includes(summaryAnchor)) {
       verifier = verifier.replace(summaryAnchor, summaryAnchor + '\n  const wikidataGenerationSummary = localResearch.getWikidataGenerationSummary(RESEARCH);');
-      verifier = verifier.replace('  assert(wikidataSummary &&', '  assert(wikidataGenerationSummary.counts.memberEntities === 9 && wikidataGenerationSummary.generationVerified === false, "Wikidata generation candidate runtime verification failed");\n  assert(wikidataSummary &&');
+      verifier = verifier.replace('  assert(wikidataSummary &&', '  assert(wikidataGenerationSummary.counts.memberEntities === 109 && wikidataGenerationSummary.generationVerified === false, "Wikidata generation candidate runtime verification failed");\n  assert(wikidataSummary &&');
       verifier = verifier.replace('      wikidata_vag_taxonomy: wikidataSummary.counts,', '      wikidata_vag_taxonomy: wikidataSummary.counts,\n      wikidata_vag_generation_candidates: wikidataGenerationSummary.counts,');
     }
   }
@@ -552,7 +552,7 @@ function patchDesktopSource(desktop) {
     if (index < 0) fail("Lifecycle generic offline research check anchor missing");
     const checks = [
       '  $generationSummary = Invoke-RestMethod -Uri "$baseUrl/api/local-research?dataset=wikidata-generations-summary" -TimeoutSec 20',
-      '  if ($generationSummary.summary.marketScope -ne "UNKNOWN" -or $generationSummary.summary.applicabilityPrecision -ne "series_member_candidate" -or $generationSummary.summary.generationVerified -ne $false -or $generationSummary.summary.counts.memberEntities -ne 9) { throw "Wikidata generation candidate summary failed offline lifecycle verification." }',
+      '  if ($generationSummary.summary.marketScope -ne "UNKNOWN" -or $generationSummary.summary.applicabilityPrecision -ne "series_member_candidate" -or $generationSummary.summary.generationVerified -ne $false -or $generationSummary.summary.counts.memberEntities -ne 109) { throw "Wikidata generation candidate summary failed offline lifecycle verification." }',
       '  $generationRows = Invoke-RestMethod -Uri "$baseUrl/api/local-research?dataset=wikidata-generations&q=Octavia&limit=10" -TimeoutSec 20',
       '  if (@($generationRows.rows).Count -lt 1 -or @($generationRows.rows | Where-Object { $_.marketScope -ne "UNKNOWN" -or $_.generationVerified -ne $false -or $_.diagnosticExecutionAllowed -ne $false }).Count -gt 0) { throw "Wikidata generation candidate search crossed its candidate-only boundary." }',
       ''
@@ -573,7 +573,7 @@ function integrateGenerationPack(desktop, researchDir, packDir) {
   const local = require(path.join(desktop, "lib/local-research-db.cjs"));
   const summary = local.getWikidataGenerationSummary(researchDir);
   const sample = local.searchWikidataGenerationCandidates("Octavia", 10, researchDir);
-  if (summary.counts.memberEntities !== 9 || summary.marketScope !== "UNKNOWN" ||
+  if (summary.counts.memberEntities !== 109 || summary.marketScope !== "UNKNOWN" ||
       summary.generationVerified !== false || !sample.length ||
       sample.some((row) => row.marketScope !== "UNKNOWN" || row.generationVerified !== false || row.diagnosticExecutionAllowed !== false)) {
     fail("Final generation candidate desktop API smoke test failed");

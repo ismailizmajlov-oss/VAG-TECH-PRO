@@ -741,7 +741,7 @@ function patchDesktopSource(desktopRoot) {
     'test("Wikidata model labels are CC0 identity candidates and never establish Russian-market or exact fitment", () => {\n' +
     '  const summary = local.getResearchSummary(root);\n' +
     '  const wikidata = summary.packs.find((x) => x.id === "wikidata-vag-model-taxonomy-cc0");\n' +
-    '  assert.deepEqual(wikidata.counts, { models: 376, sourceBindings: 376, manufacturers: 5, russianLabels: 171, dateStatements: 21 });\n' +
+    '  assert.deepEqual(wikidata.counts, { models: 521, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });\n' +
     '  assert.equal(wikidata.license, "CC0-1.0");\n' +
     '  assert.equal(wikidata.marketScope, "UNKNOWN");\n' +
     '  assert.equal(wikidata.applicabilityPrecision, "candidate_identity_only");\n' +
@@ -767,7 +767,7 @@ function patchDesktopSource(desktopRoot) {
   replaceExactly(packTestFile,
     '  assert.equal(result.mechanicdb_vag_dtc_candidates.unsafeRows, 0);',
     '  assert.equal(result.mechanicdb_vag_dtc_candidates.unsafeRows, 0);\n' +
-    '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 376, sourceBindings: 376, manufacturers: 5, russianLabels: 171, dateStatements: 21 });',
+    '  assert.deepEqual(result.wikidata_vag_taxonomy, { models: 521, sourceBindings: 530, manufacturers: 6, russianLabels: 285, dateStatements: 32 });',
     "Wikidata pack verification test");
 
   replaceExactly(uiTestFile,
@@ -805,7 +805,7 @@ function patchDesktopSource(desktopRoot) {
     verifier = verifier.replace(anchor, anchor +
       '  const localResearch = require(path.join(ROOT, "lib", "local-research-db.cjs"));\n' +
       '  const wikidataSummary = localResearch.getResearchSummary(RESEARCH).packs.find((pack) => pack.id === "wikidata-vag-model-taxonomy-cc0");\n' +
-      '  assert(wikidataSummary && wikidataSummary.counts?.models === 376 && wikidataSummary.counts?.russianLabels === 171 && wikidataSummary.marketScope === "UNKNOWN" && wikidataSummary.fitmentClaim === false, "Wikidata runtime pack verification failed");\n');
+      '  assert(wikidataSummary && wikidataSummary.counts?.models === 521 && wikidataSummary.counts?.russianLabels === 285 && wikidataSummary.marketScope === "UNKNOWN" && wikidataSummary.fitmentClaim === false, "Wikidata runtime pack verification failed");\n');
   }
   if (!verifier.includes("wikidata_vag_taxonomy: wikidataSummary.counts")) {
     const anchor = '      mechanicdb_vag_dtc_candidates: mechanicCounts,\n';
@@ -818,7 +818,7 @@ function patchDesktopSource(desktopRoot) {
   readme = readme.replace(/(?:Five|Six) separately licensed/g, "Seven separately licensed");
   if (!readme.includes("| Wikidata VAG model identity | CC0-1.0 |")) {
     const anchor = '| VehiclesDB | CC BY 4.0 | 260 model names; 1,524 market-presence evidence rows across 14 non-RU countries | No RU evidence, generation/year, engine, gearbox, ECU or exact fitment; visible attribution and upstream notices required |\n';
-    replaceExactly(readmeFile, anchor, anchor + '| Wikidata VAG model identity | CC0-1.0 | 376 model entities; 171 Russian-language labels; 5 manufacturer labels | Market UNKNOWN; candidate identity only; no generation verification, model years, engine/gearbox/ECU codes or exact fitment |\n', "Wikidata README table row");
+    replaceExactly(readmeFile, anchor, anchor + '| Wikidata VAG model identity | CC0-1.0 | 521 candidate entities (490 car-model class; 40 model-series class); 285 Russian-language labels; 6 manufacturers | Market UNKNOWN; candidate identity only; no generation verification, model years, engine/gearbox/ECU codes or exact fitment |\n', "Wikidata README table row");
     readme = readText(readmeFile);
   }
   if (!readme.includes("Wikidata Russian-language labels do not establish Russian/EAEU market applicability")) {
@@ -840,7 +840,7 @@ function patchDesktopSource(desktopRoot) {
     if (!docs.includes("| Wikidata VAG model identity |")) {
     const anchor = "## Critical limits\n";
     if (docs.split(anchor).length - 1 !== 1) fail("Wikidata research docs table anchor is missing");
-    docs = docs.replace(anchor, "| Wikidata VAG model identity | CC0-1.0 | 376 model entities; 171 Russian-language labels; 5 manufacturer labels | Market UNKNOWN; candidate identity only; no generation, model-year, engine, gearbox, ECU or exact fitment |\n\n## Critical limits\n");
+    docs = docs.replace(anchor, "| Wikidata VAG model identity | CC0-1.0 | 521 candidate entities (490 car-model class; 40 model-series class); 285 Russian-language labels; 6 manufacturers | Market UNKNOWN; candidate identity only; no generation, model-year, engine, gearbox, ECU or exact fitment |\n\n## Critical limits\n");
   }
   if (!docs.includes("Wikidata Russian-language labels do not establish Russian/EAEU market applicability")) {
     docs = docs.replace("- VehiclesDB is only a foreign-market identity aid; it cannot establish Russian or EAEU applicability.\n", "- VehiclesDB is only a foreign-market identity aid; it cannot establish Russian or EAEU applicability.\n- Wikidata Russian-language labels do not establish Russian/EAEU market applicability; P571/P576 statements are not converted into production-year ranges.\n");

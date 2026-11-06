@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression checks for the Windows Server 2022 lifecycle workflow script."""
+"""Regression checks for Windows packaging and pinned research-pack alignment."""
 
 import json
 from pathlib import Path
@@ -94,7 +94,57 @@ def main() -> None:
     lifecycle_check = 'if ($metadata.vag_source_register_sha256 -ne $sourceRegisterActualHash'
     if lifecycle_check not in text:
         raise SystemExit("Windows Server 2022 lifecycle does not compare the staged source-register hash with build metadata")
-    print("Windows desktop workflow contract: lifecycle paths and packaged source-rights register are valid.")
+
+    # The desktop workflow must consume the same immutable Wikidata snapshots
+    # that the source manifests and integration scripts describe.
+    model_source = json.loads((ROOT / "data/source-manifests/wikidata-vag-model-taxonomy.json").read_text(encoding="utf-8"))
+    model_snapshot_id = model_source["source_revision"].removeprefix("wikidata-snapshot-")
+    model_pack_path = ROOT / "data/research" / "wikidata-vag-taxonomy" / model_snapshot_id / "manifest.json"
+    model_pack = json.loads(model_pack_path.read_text(encoding="utf-8"))
+    model_artifact = model_source["source_artifact"]
+    if model_source["database_sha256"] != model_pack["database_sha256"] or model_source["source_snapshot_sha256"] != model_pack["source_snapshot_sha256"]:
+        raise SystemExit("Wikidata model source manifest does not match its immutable SQLite snapshot")
+    if model_artifact["workflow_run_id"] != 42145993840 or model_artifact["artifact_id"] != 13469673252 or model_artifact["artifact_sha256"] != "f9ef2e5178e1dcdd92c0969a229c2e33a5608f14c9cf2f67ffc6f4baa21114e8":
+        raise SystemExit("Wikidata model artifact provenance is not the current verified run")
+    if model_pack["counts"]["model_entities"] != 521 or model_pack["counts"]["russian_labels"] != 285 or model_pack["counts"]["source_bindings"] != 530:
+        raise SystemExit("Wikidata model snapshot counts drifted without a reviewed desktop integration update")
+
+    generation_manifests = []
+    for manifest_path in (ROOT / "data/research/wikidata-vag-generations").glob("*/manifest.json"):
+        candidate = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if candidate.get("source_id") == "wikidata-vag-generation-candidates":
+            generation_manifests.append((candidate.get("built_at_utc", ""), manifest_path, candidate))
+    if not generation_manifests:
+        raise SystemExit("No immutable Wikidata generation-candidate snapshot is present")
+    _, generation_path, generation_pack = max(generation_manifests, key=lambda item: item[0])
+    if generation_pack["parent_model_pack"]["database_sha256"] != model_pack["database_sha256"]:
+        raise SystemExit("Latest Wikidata generation snapshot is not aligned to the current model taxonomy parent")
+    generation_script = (ROOT / "scripts/integrate-wikidata-vag-generation-candidates.cjs").read_text(encoding="utf-8")
+    generation_workflow_run = 42146307991
+    generation_artifact_id = 13470966164
+    generation_artifact_sha = "dc10b4b6b8a2f433802cc335e7c50f4f18e2642b9a09d0608b3de6e1b93d82bb"
+    if f"workflowRunId: {generation_workflow_run}" not in generation_script or f"artifactId: {generation_artifact_id}" not in generation_script or generation_artifact_sha not in generation_script:
+        raise SystemExit("Wikidata generation integration provenance is stale")
+    if generation_pack["snapshot_id"] != "69cf847b7ef6" or generation_pack["counts"] != {"member_entities": 109, "model_member_links": 125, "source_bindings": 187, "models_with_members": 32, "manufacturers": 6, "russian_labels": 83, "date_statements": 155}:
+        raise SystemExit("Wikidata generation candidate snapshot counts or revision changed without integration review")
+    if f"snapshotId: \"{generation_pack['snapshot_id']}\"" not in generation_script or f"sourceSnapshotSha256: \"{generation_pack['source_snapshot_sha256']}\"" not in generation_script or f"sourceQuerySha256: \"{generation_pack['source_query_sha256']}\"" not in generation_script or f"databaseSha256: \"{generation_pack['database_sha256']}\"" not in generation_script:
+        raise SystemExit("Wikidata generation integration hashes do not match the immutable snapshot")
+    if f"run-id: {model_artifact['workflow_run_id']}" not in text or f"/runs/{model_artifact['workflow_run_id']}/artifacts" not in text or f"$artifact.id -eq {model_artifact['artifact_id']}" not in text or f"sha256:{model_artifact['artifact_sha256']}" not in text:
+        raise SystemExit("Windows workflow is not downloading the current Wikidata model artifact")
+    if f"run-id: {generation_workflow_run}" not in text or f"/runs/{generation_workflow_run}/artifacts" not in text or f"$artifact.id -eq {generation_artifact_id}" not in text or f"sha256:{generation_artifact_sha}" not in text:
+        raise SystemExit("Windows workflow is not downloading the current Wikidata generation artifact")
+    if generation_pack["parent_model_pack"]["snapshot_id"] != model_pack["snapshot_id"]:
+        raise SystemExit("Wikidata generation pack parent snapshot does not match the installed model taxonomy")
+    if "521 candidate entities (490 car-model class; 40 model-series class); 285 Russian-language labels; 6 manufacturers" not in (ROOT / "apply-wikidata-vag-taxonomy-run68.cjs").read_text(encoding="utf-8"):
+        raise SystemExit("Desktop Wikidata taxonomy documentation has stale coverage counts")
+    if "109 member entities, 125 model/member links, 187 source bindings" not in (ROOT / "README.md").read_text(encoding="utf-8"):
+        raise SystemExit("README does not describe the current generation-candidate snapshot")
+    stale_pins = ("41905383209", "13360765168", "a000a54572e57f9a50239f52ba6ef5d2dcb1088ebd394ce64e7fe051e71e2609", "41906770429", "13361576024", "0171d7775e9ad8c98ff564be1dd5729c85b031f67cd063521e5a9f4989ca3989", "5c1c7c37593b", "7a99f275966b", "39732875dff952041707a449168917c173c532db91a9950ec006a94ec9240a34")
+    for stale in stale_pins:
+        if stale in text or stale in generation_script:
+            raise SystemExit(f"Stale Wikidata CI pin remains: {stale}")
+
+    print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
 if __name__ == "__main__":
