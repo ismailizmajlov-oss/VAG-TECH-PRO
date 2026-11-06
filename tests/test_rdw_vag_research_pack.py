@@ -195,6 +195,23 @@ class RdwVagResearchPackTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "schema changed during acquisition"):
                 rdw.verify_source_revisions(self.metadata)
 
+    def test_sqlite_search_indexes_cover_scope_and_prefix_lookup(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pack = Path(tmp) / "pack"
+            rdw.build_pack(pack, self.source, self.source_bytes, self.datasets, self.metadata)
+            db = sqlite3.connect(pack / "rdw-vag-research.sqlite")
+            try:
+                indexes = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='index'")}
+                expected = {
+                    "idx_registration_make_trade", "idx_registration_make", "idx_registration_trade_name",
+                    "idx_registration_scope", "idx_approval_number", "idx_approval_variant", "idx_approval_version",
+                    "idx_approval_revision", "idx_approval_exact_scope_key", "idx_engine_designation",
+                    "idx_engine_scope", "idx_gearbox_classification", "idx_gearbox_scope",
+                }
+                self.assertTrue(expected.issubset(indexes))
+            finally:
+                db.close()
+
     def test_pinned_snapshot_manifest_rejects_changed_source_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             first = Path(tmp) / "first"
@@ -228,6 +245,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
             self.assertEqual(manifest["market_scope"], ["NL"])
             self.assertEqual(manifest["source_snapshot_sha256"], report["source_snapshot_sha256"])
             self.assertEqual(manifest["source_revisions"], report["source_revisions"])
+            self.assertEqual(len(manifest["search_indexes"]), 13)
             embedded_source = json.loads((pack / "rdw-eu-vag-type-approval-open-data.json").read_text(encoding="utf-8"))
             self.assertEqual(embedded_source["snapshot"]["status"], "filtered_research_snapshot_acquired")
             self.assertEqual(embedded_source["snapshot"]["source_snapshot_sha256"], manifest["source_snapshot_sha256"])
