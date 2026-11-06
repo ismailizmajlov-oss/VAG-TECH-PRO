@@ -602,7 +602,7 @@
         "No exact vehicle, generation, year, engine, gearbox, ECU or RU/EAEU applicability.",
         "External source documents are not included; source URLs are preserved only in raw source records, never fetched or displayed.",
         "Repair estimates, costs and generic repair text are not promoted as OEM repair advice.",
-        "The 174 U3xxx rows in the pinned upstream projection are quarantined because U3xxx is a mixed manufacturer-controlled / ISO/SAE-reserved family; they are not part of the generic SQLite namespace."
+        "The 174 U3xxx rows in the pinned upstream projection are quarantined because the available SAE J2012 range tables describe U3xxx as a mixed manufacturer-controlled / ISO/SAE-reserved family; current J2012DA code-level assignment is not independently verified. P35xx-P39xx, B3xxx and C3xxx are also excluded pending code-level assignment verification."
       ],
       "project_decision": "allow_separate_generic_CC0_reference_pack_only; keep separate from VAG-specific data and exact vehicle fitment",
       "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-05; per-source-file_and_per-row_SHA256; SQLite_integrity_verified; U3xxx_namespace_quarantine_reviewed_2026-11-06",
