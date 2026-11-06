@@ -312,7 +312,7 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> tuple[str, int]:
 
 
 def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]], metadata: dict[str, dict[str, Any]],
-                 source_manifest_sha: str) -> dict[str, int]:
+                 source_manifest_sha: str, source_files: list[dict[str, Any]]) -> dict[str, int]:
     if database_path.exists():
         raise FileExistsError(f"Refusing to overwrite SQLite database: {database_path}")
     db = sqlite3.connect(database_path)
@@ -388,8 +388,14 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
     )
 
     exact_keys: dict[tuple[str, str, str, str], str] = {}
-    counts = {"approval_scopes": 0, "registration_observations": 0, "engine_candidates": 0,
-              "gearbox_classifications": 0, "auxiliary_rows": 0, "source_rows": 0}
+    counts = {"source_files": len(source_files), "approval_scopes": 0, "registration_observations": 0,
+              "engine_candidates": 0, "gearbox_classifications": 0, "auxiliary_rows": 0, "source_rows": 0}
+    for item in source_files:
+        db.execute(
+            "INSERT INTO source_file_artifacts VALUES (?,?,?,?,?,?,?,?)",
+            (item["dataset_id"], item["dataset_name"], item["source_revision"], item["sha256"],
+             item["byte_size"], item["row_count"], item["query_scope"], item["required_columns_sha256"]),
+        )
     for row in datasets["registration"]:
         raw_key = (
             str(row.get("typegoedkeuringsnummer") or ""),
@@ -419,6 +425,7 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
              "rdw_registration_observation_not_vehicle_fitment"),
         )
         counts["registration_observations"] += 1
+        counts["source_rows"] += 1
 
     for name, rows in datasets.items():
         config = DATASETS[name]
@@ -494,7 +501,7 @@ def build_pack(output_dir: Path, source_manifest: dict[str, Any], source_manifes
         })
 
     database = output_dir / "rdw-vag-research.sqlite"
-    counts = build_sqlite(database, datasets, metadata, source_manifest_sha)
+    counts = build_sqlite(database, datasets, metadata, source_manifest_sha, source_files)
     db_sha = sha256_file(database)
     manifest = {
         "schema_version": 1,
@@ -599,6 +606,7 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
         if "engine_gearbox_pairs" in tables or any("pair" in table.lower() for table in tables):
             raise ValueError("RDW pack must not contain an engine/gearbox pair table")
         expected = {
+            "source_files": db.execute("SELECT count(*) FROM source_file_artifacts").fetchone()[0],
             "approval_scopes": db.execute("SELECT count(*) FROM approval_scope").fetchone()[0],
             "registration_observations": db.execute("SELECT count(*) FROM registration_observations").fetchone()[0],
             "engine_candidates": db.execute("SELECT count(*) FROM engine_designation_candidates").fetchone()[0],
