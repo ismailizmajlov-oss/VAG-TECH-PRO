@@ -100,7 +100,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertTrue(source["observed_public_query"]["captcha_required_before_record_view"])
         self.assertEqual(source["access_and_reuse"]["documented_api"], "not_identified")
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
-        self.assertIn("no automated CAPTCHA", source["observed_public_query"]["note"])
+        self.assertIn("No CAPTCHA was bypassed", source["observed_public_query"]["note"])
 
     def test_rusavtolab_private_aggregator_is_not_a_bulk_source(self):
         source = self.sources["rusavtolab-otts-public-index"]
