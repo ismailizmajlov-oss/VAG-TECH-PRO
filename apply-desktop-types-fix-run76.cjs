@@ -17,7 +17,8 @@ function patchFile(root, relativePath, replacements) {
   let source = fs.readFileSync(filePath, "utf8");
   let changed = false;
   for (const [before, after, label] of replacements) {
-    const result = replaceExactlyOnce(source, before, after, relativePath + ": " + label);
+    const resolvedAfter = typeof after === "function" ? after(source) : after;
+    const result = replaceExactlyOnce(source, before, resolvedAfter, relativePath + ": " + label);
     source = result.text;
     changed = changed || result.changed;
   }
@@ -60,7 +61,14 @@ if (!fs.existsSync(desktopRoot)) throw new Error("Desktop source root not found:
 const changes = [];
 changes.push(patchFile(desktopRoot, "components/local-data-admin.tsx", [[
   '  const [approvalFiles, setApprovalFiles] = useState<{ license: File | null; rightsEvidence: File | null; snapshot: File | null }>({ license: null, rightsEvidence: null, snapshot: null });',
-  '  const [approvalFiles, setApprovalFiles] = useState<{ license: File | null; rightsEvidence: File | null; snapshot: File | null }>({ license: null, rightsEvidence: null, snapshot: null });\n  const [revisionDraft, setRevisionDraft] = useState({ source_id: "", new_revision: "", snapshot_reference: "", owner_confirmation: "" });\n  const [revisionFile, setRevisionFile] = useState<File | null>(null);',
+  (source) => {
+    const newline = source.includes("\r\n") ? "\r\n" : "\n";
+    return [
+      '  const [approvalFiles, setApprovalFiles] = useState<{ license: File | null; rightsEvidence: File | null; snapshot: File | null }>({ license: null, rightsEvidence: null, snapshot: null });',
+      '  const [revisionDraft, setRevisionDraft] = useState({ source_id: "", new_revision: "", snapshot_reference: "", owner_confirmation: "" });',
+      '  const [revisionFile, setRevisionFile] = useState<File | null>(null);'
+    ].join(newline);
+  },
   "restore source-revision form state"
 ]]));
 
