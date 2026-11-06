@@ -102,6 +102,26 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
         self.assertIn("No CAPTCHA was bypassed", source["observed_public_query"]["note"])
 
+    def test_elpts_otts_public_table_is_metadata_only_and_not_ingested(self):
+        source = self.sources["elpts-national-otts-register"]
+        self.assertEqual(source["status"], "permission_required")
+        self.assertFalse(source["data_ingested"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["license"]["commercial_use"], "not_confirmed")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        observation = source["public_page_observations"]["ot_ts_page"]
+        self.assertEqual(observation["visible_total_label"], "Всего оформлено: 14822")
+        self.assertEqual(observation["visible_date_filters"], ["05.11.2026", "06.11.2026"])
+        self.assertEqual(observation["filtered_result_count"], 0)
+        self.assertEqual(len(observation["visible_columns"]), 14)
+        self.assertFalse(observation["public_table_exposes_engine_code"])
+        self.assertFalse(observation["public_table_exposes_gearbox_code"])
+        self.assertFalse(observation["public_table_exposes_engine_gearbox_pair"])
+        self.assertFalse(observation["public_table_exposes_ecu"])
+        self.assertIn("UI label", observation["count_interpretation"])
+        self.assertEqual(source["access"]["bulk_export"], "not_established")
+        self.assertEqual(source["access"]["offline_cache"], "not_established")
+
     def test_rusavtolab_private_aggregator_is_not_a_bulk_source(self):
         source = self.sources["rusavtolab-otts-public-index"]
         self.assertEqual(source["status"], "permission_required")
