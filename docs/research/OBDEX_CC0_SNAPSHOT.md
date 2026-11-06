@@ -17,7 +17,7 @@ This is a **generic SAE/ISO OBD-II reference layer**, not a VAG factory diagnost
 - 174 `U3xxx` rows are preserved in the generated review package's quarantine section and excluded from the generic SQLite because SAE J2012 classifies U3xxx as manufacturer-controlled and ISO/SAE-reserved, not as a blanket generic family.
 - Expected upstream PID projection: 132 records across Mode 01 and Mode 09.
 - DTC namespace: `generic_sae_iso_obd2`.
-- `P30xx–P33xx`, `P1xxx`, `B1xxx–B2xxx`, `C1xxx–C2xxx`, `U1xxx–U2xxx`, and the mixed `U3xxx` family are not admitted to the generic namespace. `P34xx–P39xx` remains in the SAE/ISO-controlled or reserved family only; actual record content remains source-imported and unreviewed.
+- `P30xx–P33xx`, `P1xxx`, `B1xxx–B2xxx`, `C1xxx–C2xxx`, `U1xxx–U2xxx`, and the mixed `U3xxx` family are not admitted to the generic namespace. Only `P34xx` is admitted from the P3 family because it is the only P3 subfamily present in this pinned projection; `P35xx–P39xx`, `B3xxx` and `C3xxx` remain excluded as reserved/unverified. The current SAE J2012DA code-level assignment is not independently verified, so range membership alone never proves that a DTC definition is valid or VAG-applicable.
 - No exact VAG model, generation, engine, gearbox, ECU, PR-code or Russian-market fitment is asserted.
 - No repair procedure, wiring diagram, pinout, torque value or adaptation is created from these records.
 - Records are imported as `source_imported_unreviewed`; they remain research/reference data until independently reviewed.
