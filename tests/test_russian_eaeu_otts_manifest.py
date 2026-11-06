@@ -90,17 +90,20 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(verification["official_public_search_endpoint_resolved"])
         self.assertIsNone(legal["primary_signed_pdf_sha256"])
 
-    def test_kyrgyz_single_window_registry_is_captcha_gated_and_not_ingested(self):
+    def test_kyrgyz_single_window_public_pilot_is_permission_required_and_not_ingested(self):
         source = self.sources["kyrgyzstan-single-window-otts-registry"]
         self.assertEqual(source["status"], "permission_required")
         self.assertEqual(source["market_scope"], ["KG", "EAEU_TR_TS_018_2011"])
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["product_import_allowed"])
         self.assertIsNone(source["source_snapshot_sha256"])
-        self.assertTrue(source["observed_public_query"]["captcha_required_before_record_view"])
+        self.assertTrue(source["observed_public_query"]["public_query_without_login"])
+        self.assertFalse(source["observed_public_query"]["record_payload_independently_inspected"])
+        self.assertEqual(source["observed_public_query"]["new_route_captcha_status"], "not_verified")
+        self.assertTrue(source["observed_public_query"]["legacy_route_captcha_required"])
         self.assertEqual(source["access_and_reuse"]["documented_api"], "not_identified")
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
-        self.assertIn("No CAPTCHA was bypassed", source["observed_public_query"]["note"])
+        self.assertIn("no CAPTCHA bypass was attempted", source["observed_public_query"]["note"])
 
     def test_elpts_otts_public_table_is_metadata_only_and_not_ingested(self):
         source = self.sources["elpts-national-otts-register"]
