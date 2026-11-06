@@ -2003,7 +2003,7 @@
         "document_metadata_only"
       ],
       "access": {
-        "public_query_route": "A distinct official OTTS page is visible at docs.elpts.ru/ncher/otts; separate OTSH and SBKTS pages were also observed. The SBKTS page title remains distinct even though it exposes other document-type filters.",
+        "public_query_route": "A distinct official OTTS page is visible at docs.elpts.ru/ncher/otts. Its manufacturer filter lists AUDI AG and Volkswagen AG as selectable options, but the observed active date-filtered result set was empty; no VAG OTTS record count is established. Separate OTSH and SBKTS pages remain distinct.",
         "machine_readable_api": "not_verified",
         "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
         "bulk_export": "not_established",
@@ -2029,16 +2029,18 @@
         "A distinct OTTS page was observed on 2026-11-06; its rendered total label is a UI observation under visible date filters, not a verified full-corpus count or permission to extract records.",
         "The 2026-11-06 public OTTS page snapshot exposed only document identity/status and applicant/manufacturer/certification metadata in its visible table; it did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. Underlying approval attachments were not downloaded or inspected.",
         "An ELPTS operator notice dated 2026-08-21 confirms that an internal AS EOTTS data-entry issue involving additional-reduction and hydraulic transmissions was fixed. It does not identify a public gearbox field, internal schema, factory gearbox code, reuse rights or exact fitment.",
-        "The current consolidated EEC Decision No. 232 Annex 1 form defines engine and gearbox make/type fields in OTTS/OTSH attachments, but the 2026-11-06 visible ELPTS summary table did not expose them. The printed-form column is not evidence that a filled attachment was retrieved or that its contents may be cached or redistributed."
+        "The current consolidated EEC Decision No. 232 Annex 1 form defines engine and gearbox make/type fields in OTTS/OTSH attachments, but the 2026-11-06 visible ELPTS summary table did not expose them. The printed-form column is not evidence that a filled attachment was retrieved or that its contents may be cached or redistributed.",
+        "On 2026-11-07 the OTTS manufacturer filter showed AUDI AG and Volkswagen AG as option labels only; the indexed active date range returned no rows. This does not establish any VAG OTTS record or coverage count.",
+        "The separate SBKTS search snapshot showed a Volkswagen/FAW-Volkswagen metadata row for 04.11.2026–05.11.2026; it remains SBKTS, not OTTS, and is not fitment evidence."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "official ELPTS OTTS page rechecked 2026-11-06; visible metadata columns and active date-filter state recorded; no dataset-specific reuse rights, bulk API or powertrain fields in the visible table established; no records downloaded; EEC Decision No. 232 current consolidated Annex 1 engine/transmission form fields reviewed 2026-11-07; no filled attachment retrieved and no rights change.",
+      "evidence_status": "official ELPTS OTTS page rechecked 2026-11-07; manufacturer filter options AUDI AG and Volkswagen AG observed but no VAG OTTS records returned in active date range; separate SBKTS Volkswagen metadata observation kept distinct; no dataset-specific reuse rights, bulk API or powertrain fields in the visible OTTS table established; no records or PDFs downloaded; EEC Decision No. 232 current consolidated Annex 1 engine/transmission form fields reviewed 2026-11-07; no filled attachment retrieved and no rights change.",
       "public_page_observations": {
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-07",
         "ot_ts": {
           "url": "https://docs.elpts.ru/ncher/otts",
           "page_title": "ОТТС",
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-07",
           "visible_total_label": "Всего оформлено: 14822",
           "visible_date_filters": [
             "05.11.2026",
@@ -2066,9 +2068,19 @@
           "public_table_exposes_gearbox_code": false,
           "public_table_exposes_engine_gearbox_pair": false,
           "public_table_exposes_ecu": false,
-          "count_interpretation": "The visible total is a UI label, not a verified complete-corpus count. The active date filter returned zero rows in the indexed page snapshot; this does not imply the register is empty.",
+          "count_interpretation": "The visible total is a UI label, not a verified complete-corpus count. The active date filter returned zero rows in the indexed page snapshot. Manufacturer filter options AUDI AG and Volkswagen AG are not records and do not establish VAG OTTS coverage.",
           "technical_scope": "document_identity_and_registry_status_metadata_only",
-          "rights_effect": "none; public visibility does not establish bulk export, automated extraction, offline cache, commercial display or redistribution rights"
+          "rights_effect": "none; manufacturer filter options and a public PDF column do not establish bulk export, automated extraction, offline cache, commercial display or redistribution rights",
+          "manufacturer_filter_options_observed": [
+            "AUDI AG",
+            "Volkswagen AG"
+          ],
+          "manufacturer_filter_values_are_options_only": true,
+          "vag_records_observed": false,
+          "vag_record_count_verified": false,
+          "bulk_api_discovered": false,
+          "pdf_column_visible": true,
+          "pdf_downloaded": false
         },
         "ot_sh": {
           "url": "https://docs.elpts.ru/ncher/otsh",
@@ -2079,7 +2091,11 @@
         "sbkts": {
           "url": "https://docs.elpts.ru/ncher/esbkts",
           "page_title": "ЭСБКТС",
-          "note": "Visible OTTS/OTSH/ZOETS filters do not establish completeness for those document classes"
+          "note": "Visible OTTS/OTSH/ZOETS filters do not establish completeness for those document classes",
+          "observed_at": "2026-11-07",
+          "search_snapshot": "Search-indexed results showed 155 SBKTS rows for 04.11.2026–05.11.2026 and included a Volkswagen/FAW-Volkswagen metadata row. This remains SBKTS, not OTTS; no record or PDF was downloaded.",
+          "vag_metadata_row_observed": true,
+          "rights_effect": "none; this observation is not OTTS fitment evidence and grants no reuse rights"
         }
       },
       "data_ingested": false,
