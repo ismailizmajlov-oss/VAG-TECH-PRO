@@ -48,6 +48,7 @@ class ObdexGenericNamespacePolicyTests(unittest.TestCase):
         sync_script = (ROOT / "scripts/sync-desktop-research-manifest.cjs").read_text(encoding="utf-8")
         self.assertIn('const allowedPrefixes = new Set(["P0","P2","B0","C0","U0"]);', workflow)
         self.assertIn('if (/^U3[0-9A-F]{3}$/.test(code))', workflow)
+        self.assertIn("const p3GenericCode = /^P34[0-9A-F]{2}$/;", workflow)
         self.assertIn("dtcs.length !== 9359", workflow)
         self.assertIn("quarantinedDtcRows.length !== 174", workflow)
         self.assertIn('code[1] === "3" && code[2] === "4"', patcher)
