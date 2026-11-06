@@ -3150,14 +3150,16 @@
       "rights": {
         "data_license_status": "contractual_subscription_no_public_open_license",
         "permission_status": "not_requested",
-        "commercial_use": "authorized_customer_own_products_tools_and_applications_subject_to_terms",
+        "commercial_use_allowed": false,
         "display_allowed": false,
         "offline_cache_allowed": false,
         "redistribution_allowed": false,
+        "bulk_reuse_allowed": false,
         "subscription_required": true,
         "company_only": true,
         "account_created": false,
-        "paid_terms_accepted": false
+        "paid_terms_accepted": false,
+        "terms_scope": "Authorized customers may use OEM DTC/ODX in their own products subject to contract; further use and remarketing are not permitted."
       },
       "access": {
         "subscription_required": true,
@@ -3226,14 +3228,16 @@
       "rights": {
         "data_license_status": "contractual_RMI_license_no_public_open_license",
         "permission_status": "not_requested",
-        "commercial_use": "permitted_for_authorized_eligible_customers_under_contract",
+        "commercial_use_allowed": false,
         "display_allowed": false,
         "offline_cache_allowed": false,
-        "redistribution_allowed": "permitted_for_authorized_eligible_customers_under_contract_and_EU_2018_858",
+        "redistribution_allowed": false,
+        "bulk_reuse_allowed": false,
         "subscription_required": true,
         "company_only": true,
         "account_created": false,
-        "paid_terms_accepted": false
+        "paid_terms_accepted": false,
+        "terms_scope": "Contractual redistribution is available only to authorized eligible customers under the RMI licence and EU 2018/858; Russia is explicitly excluded."
       },
       "access": {
         "central_RMI_license_required": true,
@@ -3295,14 +3299,16 @@
       "rights": {
         "data_license_status": "end_user_workshop_access_contractual",
         "permission_status": "not_requested",
-        "commercial_use": "not_confirmed",
+        "commercial_use_allowed": false,
         "display_allowed": false,
         "offline_cache_allowed": false,
         "redistribution_allowed": false,
+        "bulk_reuse_allowed": false,
         "subscription_required": true,
         "company_only": true,
         "account_created": false,
-        "paid_terms_accepted": false
+        "paid_terms_accepted": false,
+        "terms_scope": "Direct licensed workshop access only; no data-feed, offline-cache or third-party redistribution right identified."
       },
       "access": {
         "business_account_required": true,
