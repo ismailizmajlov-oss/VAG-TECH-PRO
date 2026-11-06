@@ -350,7 +350,9 @@
         "upstream_permission": "not_obtained",
         "review_date": "2026-11-06",
         "review_note": "The aggregator's LICENSE-DATA declares ODbL and attributes Autoevolution as upstream for make/model/generation/engine facts. The reviewed repository materials do not establish that Autoevolution granted rights for the downstream database redistribution. The ODbL declaration is not treated as independent proof of upstream rights."
-      }
+      },
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
     },
     {
       "source_id": "hpt-su-otts-aggregator",
@@ -2711,7 +2713,9 @@
           "reviewed_at": "2026-11-06",
           "evidence": "Terms lines 15-18 and 27-30 describe technical-data limitations and require prior consent for reproduction, publication, editing and commercial use."
         }
-      ]
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
     },
     {
       "source_id": "enginecode-uk-vag-engine-code-directory",
@@ -2816,7 +2820,9 @@
           "reviewed_at": "2026-11-06",
           "evidence": "Editorial policy lines 110-127 describe claim-specific evidence requirements and clarify that a cited source does not grant reproduction rights."
         }
-      ]
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
     },
     {
       "source_id": "kazakhstan-techreg-otts-public-registry",
@@ -2911,7 +2917,9 @@
           "reviewed_at": "2026-11-06",
           "evidence": "Project-information search result identifies an electronic certification service, a National Accreditation Center contact route and Kazakhstan technical-regulation legal basis; ownership was not independently confirmed."
         }
-      ]
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion"
     }
   ],
   "minimum_fitment_evidence_fields": [
