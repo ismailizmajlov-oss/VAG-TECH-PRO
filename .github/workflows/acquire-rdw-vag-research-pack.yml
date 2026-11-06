@@ -70,3 +70,107 @@ jobs:
             rdw-pack-build.log
           if-no-files-found: error
           retention-days: 90
+
+  record-pack-build:
+    name: Record RDW pack build evidence
+    needs:
+      - acquire-and-build
+    if: ${{ always() }}
+    runs-on: windows-2025
+    timeout-minutes: 10
+    concurrency:
+      group: vag-tech-pro-rdw-status-record
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      UPSTREAM_RUN_ID: ${{ github.run_id }}
+      UPSTREAM_RUN_NUMBER: ${{ github.run_number }}
+      UPSTREAM_ATTEMPT: ${{ github.run_attempt }}
+      UPSTREAM_BUILD_RESULT: ${{ needs.acquire-and-build.result }}
+      UPSTREAM_SHA: ${{ github.sha }}
+      UPSTREAM_BRANCH: ${{ github.ref_name }}
+      UPSTREAM_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Checkout status branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Query upstream run and persist pack evidence
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+          $base = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$env:UPSTREAM_RUN_ID"
+          $run = Invoke-RestMethod -Method Get -Uri $base -Headers $headers
+          $jobsResponse = Invoke-RestMethod -Method Get -Uri "$base/jobs?per_page=100" -Headers $headers
+          $artifactsResponse = Invoke-RestMethod -Method Get -Uri "$base/artifacts?per_page=100" -Headers $headers
+          $sourceUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/contents/data/source-manifests/rdw-eu-vag-type-approval-open-data.json?ref=$env:UPSTREAM_SHA"
+          $sourceApi = Invoke-RestMethod -Method Get -Uri $sourceUri -Headers $headers
+          if ($sourceApi.encoding -ne "base64") { throw "Unexpected RDW source-manifest API encoding." }
+          $sourcePath = Join-Path $env:RUNNER_TEMP "rdw-source-manifest.json"
+          $sourceBytes = [Convert]::FromBase64String(($sourceApi.content -replace "\s", ""))
+          [System.IO.File]::WriteAllBytes($sourcePath, $sourceBytes)
+          $source = Get-Content -LiteralPath $sourcePath -Raw | ConvertFrom-Json
+          $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $jobRows = @($jobsResponse.jobs | ForEach-Object {
+            [ordered]@{ id = $_.id; name = $_.name; status = $_.status; conclusion = $_.conclusion; runner_name = $_.runner_name; started_at = $_.started_at; completed_at = $_.completed_at }
+          })
+          $artifactRows = @($artifactsResponse.artifacts | ForEach-Object {
+            [ordered]@{ id = $_.id; name = $_.name; size_in_bytes = $_.size_in_bytes; digest = $_.digest; expired = $_.expired; created_at = $_.created_at; expires_at = $_.expires_at }
+          })
+          $packArtifact = $artifactRows | Where-Object { $_.name -eq "rdw-vag-nl-eu-type-approval-research-pack" } | Select-Object -First 1
+          $record = [ordered]@{
+            schema_version = 1
+            recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
+            workflow = "Acquire rights-cleared RDW VAG type-approval research pack"
+            run_id = [long]$env:UPSTREAM_RUN_ID
+            run_number = [int]$env:UPSTREAM_RUN_NUMBER
+            run_attempt = [int]$env:UPSTREAM_ATTEMPT
+            run_status_at_record = $run.status
+            run_conclusion_at_record = $run.conclusion
+            build_job_result = $env:UPSTREAM_BUILD_RESULT
+            head_sha = $env:UPSTREAM_SHA
+            head_branch = $env:UPSTREAM_BRANCH
+            html_url = $env:UPSTREAM_URL
+            jobs = $jobRows
+            artifacts = $artifactRows
+            source_id = $source.source_id
+            source_manifest_sha256 = $sourceHash
+            license = $source.rights.data_license_status
+            rights_status = $source.rights.rights_status
+            market_scope = @($source.market_scope)
+            production_import = $source.import_policy.production_import
+            ru_eaeu_applicability = $source.import_policy.ru_eaeu_applicability
+            pack_artifact_present = ($null -ne $packArtifact)
+            pack_ready = ($env:UPSTREAM_BUILD_RESULT -eq "success" -and $null -ne $packArtifact -and -not $packArtifact.expired)
+            release_ready = $false
+            release_readiness_note = "NL-only CC0 type-approval research pack; not RU/EAEU fitment, OEM engine/gearbox codes, exact powertrain pairing or repair authorization."
+          }
+          $directory = Join-Path $env:GITHUB_WORKSPACE "ci-status"
+          New-Item -ItemType Directory -Path $directory -Force | Out-Null
+          $statusPath = Join-Path $directory "latest-rdw-vag-pack.json"
+          if (Test-Path -LiteralPath $statusPath) {
+            $previous = Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
+            $isOlder = ([int]$previous.run_number -gt [int]$env:UPSTREAM_RUN_NUMBER) -or
+              (([int]$previous.run_number -eq [int]$env:UPSTREAM_RUN_NUMBER) -and ([int]$previous.run_attempt -ge [int]$env:UPSTREAM_ATTEMPT))
+            if ($isOlder) { Write-Host "Skipping stale RDW status record."; exit 0 }
+          }
+          $record | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $statusPath -Encoding UTF8
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "ci-status/latest-rdw-vag-pack.json"
+          git commit -m "ci: record RDW VAG research pack build $env:UPSTREAM_RUN_NUMBER"
+          if ($LASTEXITCODE -ne 0) { throw "Could not commit RDW pack status record." }
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw "Could not rebase RDW pack status record onto main." }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw "Could not publish RDW pack status record." }
