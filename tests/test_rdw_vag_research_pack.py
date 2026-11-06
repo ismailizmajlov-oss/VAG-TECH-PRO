@@ -113,6 +113,29 @@ class RdwVagResearchPackTests(unittest.TestCase):
         ):
             rdw.verify_source_revisions(self.metadata)
 
+    def test_numeric_revision_timestamps_are_normalized_for_sqlite_provenance(self):
+        names_by_id = {str(config["id"]): name for name, config in rdw.DATASETS.items()}
+        numeric_metadata = {}
+        for index, (name, item) in enumerate(self.metadata.items(), start=1):
+            numeric_metadata[name] = dict(item, rows_updated_at=1793949000 + index, view_last_modified=None)
+
+        def numeric_payload(dataset_id):
+            name = names_by_id[dataset_id]
+            required = sorted(rdw.DATASETS[name]["required"])
+            return {
+                "rowsUpdatedAt": numeric_metadata[name]["rows_updated_at"],
+                "viewLastModified": None,
+                "columns": [{"fieldName": field} for field in required],
+            }
+
+        with patch.object(rdw, "fetch_metadata", side_effect=numeric_payload):
+            rdw.verify_source_revisions(numeric_metadata)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            rdw.build_pack(Path(tmp) / "pack", self.source, self.source_bytes, self.datasets, numeric_metadata)
+            manifest = json.loads((Path(tmp) / "pack" / "manifest.json").read_text(encoding="utf-8"))
+            self.assertTrue(all(isinstance(value, str) for value in manifest["source_revisions"].values()))
+
     def test_dataset_revision_change_during_acquisition_is_rejected(self):
         names_by_id = {str(config["id"]): name for name, config in rdw.DATASETS.items()}
 
