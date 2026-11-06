@@ -815,7 +815,9 @@
         "bulk_export": "not_established",
         "automated_extraction": "not_established",
         "offline_cache": "not_established",
-        "PDF_redistribution": "not_established"
+        "PDF_redistribution": "not_established",
+        "public_table_powertrain_fields": "not_exposed_in_observed_table",
+        "public_table_ecu_fields": "not_exposed_in_observed_table"
       },
       "legal_basis": {
         "official_listing": "https://elpts.ru/",
@@ -840,19 +842,45 @@
         "Keep OTTS, OTSH, SBKTS and ZOETS in separate document namespaces.",
         "No account, subscription, API key, payment, automated request, bulk download, PDF download or import was used.",
         "Require written permission or a resource-specific open licence covering commercial use, bulk extraction, offline cache, display and redistribution before product integration.",
-        "A separate public OTTS search page was observed on 2026-11-06 at https://docs.elpts.ru/ncher/otts; the rendered total label is retained only as a UI observation, not a verified corpus count. See docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-06.md."
+        "A separate public OTTS search page was observed on 2026-11-06 at https://docs.elpts.ru/ncher/otts; the rendered total label is retained only as a UI observation, not a verified corpus count. See docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-06.md.",
+        "The 2026-11-06 page snapshot showed 14 visible document-identity/status columns and no engine, gearbox, powertrain-pair or ECU columns; the date-filtered result label was empty. This is UI metadata only, not a complete-corpus count or technical fitment evidence."
       ],
       "public_page_observations": {
         "observed_at": "2026-11-06",
         "ot_ts_page": {
           "url": "https://docs.elpts.ru/ncher/otts",
           "page_title": "ОТТС",
+          "observed_at": "2026-11-06",
           "visible_total_label": "Всего оформлено: 14822",
           "visible_date_filters": [
-            "04.11.2026",
-            "05.11.2026"
+            "05.11.2026",
+            "06.11.2026"
           ],
-          "count_interpretation": "UI observation only; not treated as a verified complete-corpus count because active filter semantics were not independently established"
+          "search_result_label": "Найдено: []",
+          "filtered_result_count": 0,
+          "visible_columns": [
+            "Регистрационный номер одобрения",
+            "Марка транспортного средства",
+            "Тип транспортного средства",
+            "Статус",
+            "Дата начала срока действия",
+            "Дата окончания срока действия",
+            "Наименование заявителя",
+            "Наименование изготовителя",
+            "Наименование органа по сертификации",
+            "Экологический класс",
+            "Учетный номер бланка титульного листа",
+            "Учетные номера бланков приложений",
+            "Учетные номера бланков дополнительных листов",
+            "Печатная форма ОТТС (ОТШ)"
+          ],
+          "public_table_exposes_engine_code": false,
+          "public_table_exposes_gearbox_code": false,
+          "public_table_exposes_engine_gearbox_pair": false,
+          "public_table_exposes_ecu": false,
+          "count_interpretation": "The visible total is a UI label, not a verified complete-corpus count. The active date filter returned zero rows in the indexed page snapshot; this does not imply the register is empty.",
+          "technical_scope": "document_identity_and_registry_status_metadata_only",
+          "rights_effect": "none; public visibility does not establish bulk export, automated extraction, offline cache, commercial display or redistribution rights"
         },
         "ot_sh_page": {
           "url": "https://docs.elpts.ru/ncher/otsh",
