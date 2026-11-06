@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06T09:36:35Z",
+  "updated_at": "2026-11-06T10:34:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -3518,6 +3518,140 @@
       ],
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion"
+    },
+    {
+      "source_id": "rosstandart-recall-campaigns-open-data",
+      "publisher": "Росстандарт",
+      "url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
+      "source_kind": "official_ru_vehicle_recall_campaign_open_data",
+      "market_scope": [
+        "RU"
+      ],
+      "vehicle_scope": {
+        "makes": [
+          "VOLKSWAGEN",
+          "AUDI",
+          "SKODA",
+          "SEAT",
+          "CUPRA",
+          "PORSCHE",
+          "BENTLEY",
+          "LAMBORGHINI",
+          "BUGATTI"
+        ],
+        "scope_note": "Brand filtering is a future extraction rule only; no make/model records have been imported or mapped to the VAG catalog."
+      },
+      "reported_fields": [
+        "VIN",
+        "manufacturer",
+        "make",
+        "commercial_name",
+        "recall_reason",
+        "remedial_work_description",
+        "official_news_link",
+        "repair_completion_date",
+        "repair_completion_place"
+      ],
+      "reported_dataset_characteristics": {
+        "first_publication_reported": "2018-03-14",
+        "update_frequency_reported": "daily",
+        "latest_independent_snapshot_observed": "2026-08-30",
+        "latest_independent_row_count_observed": 7044734,
+        "latest_independent_unique_vin_count_observed": 5387610,
+        "latest_independent_make_count_observed": 79,
+        "evidence_quality": "third_party_description_not_reconciled_to_current_official_file"
+      },
+      "access": {
+        "official_dataset_page": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
+        "official_archive_page": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/archive/",
+        "public_machine_readable_route_reported": true,
+        "current_page_fetch": "timeout_2026-11-06",
+        "current_archive_fetch": "timeout_2026-11-06",
+        "current_file_url": null,
+        "current_schema_downloaded": false,
+        "current_snapshot_downloaded": false,
+        "note": "The public dataset route is identified, but the current official page, file URL, schema and current dataset-specific reuse terms could not be retrieved. Do not infer a current downloadable file or a current revision from third-party mirrors."
+      },
+      "rights": {
+        "data_license_status": "dataset_specific_terms_not_retrieved",
+        "noncommercial_use_evidence": "A 2019 public statement attributed to Rosstandart Deputy Head Alexey Kuleshov described the machine-readable recall register as open data usable for non-commercial services. A 2023 report of a Rosstandart/Polylog webinar describes free reuse by business services; neither is a substitute for verifying the current dataset page and its linked terms.",
+        "typical_open_data_terms": "The Open Government Commission's Typical Open Data Terms (protocol No. 6 dated 2016-09-19) describe reproduction, distribution and adaptation rights, including commercial use, but their application to this dataset requires verification that the current dataset page links to those terms.",
+        "noncommercial_use_allowed": "historical_rosstandart_statement_supports_noncommercial_service_use; current_dataset_terms_not_verified",
+        "commercial_use_allowed": "not_established_for_this_dataset",
+        "display_allowed": "not_established_for_offline_product_display",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "historical_open_data_publication_reported; current_dataset_specific_terms_not_retrieved",
+        "redistribution_allowed": "not_established_for_packaged_offline_database",
+        "attribution_required": true,
+        "permission_status": "current_dataset_page_and_linked_terms_not_verified; no_written_permission_obtained",
+        "permission_required_before_product_import": true
+      },
+      "applicability": {
+        "market_scope": "RU",
+        "precision": "recall_campaign_text_scope_only",
+        "model_year_scope": "may appear inside free-text recall description; structured field semantics not verified",
+        "exact_engine_code": false,
+        "exact_transmission_code": false,
+        "exact_engine_transmission_pair": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "wiring_or_pinout_fitment": false,
+        "torque_or_adaptation_fitment": false,
+        "oem_repair_procedure": false,
+        "recall_remedy_is_not_a_factory_workshop_procedure": true,
+        "vin_level_rows_excluded": true,
+        "repair_completion_and_dealer_location_fields_excluded": true
+      },
+      "project_decision": "priority_ru_recall_source_candidate_only; do_not_download_or_import until the current official page, dataset-linked terms, file schema and snapshot are retrieved and hashed; if rights are confirmed, evaluate campaign-level metadata only, exclude VIN-level rows and repair-completion/dealer fields, and label remedy text as recall-campaign information rather than an OEM repair procedure.",
+      "evidence_status": "official dataset route identified; public/noncommercial reuse statements reported; current official page and archive timed out during review on 2026-11-06; no source file or snapshot retrieved",
+      "evidence": [
+        {
+          "url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
+          "source_type": "official_dataset_landing_page",
+          "status": "identified_not_retrieved",
+          "reviewed_at": "2026-11-06",
+          "note": "Official Rosstandart open-data route; current page fetch timed out."
+        },
+        {
+          "url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/archive/",
+          "source_type": "official_dataset_archive",
+          "status": "identified_not_retrieved",
+          "reviewed_at": "2026-11-06",
+          "note": "Official archive route; current page fetch timed out."
+        },
+        {
+          "url": "https://www.afanasy.biz/news/road_newsn/143585",
+          "source_type": "secondary_report_quoting_rosstandart_deputy_head",
+          "publication_date": "2019-11-12",
+          "status": "reviewed",
+          "note": "Reports the public dataset and quotes Rosstandart Deputy Head Alexey Kuleshov describing non-commercial use by interested parties."
+        },
+        {
+          "url": "https://www.normacs.info/news/73140",
+          "source_type": "secondary_report_of_rosstandart_open_data_webinar",
+          "publication_date": "2023-09-18",
+          "status": "reviewed",
+          "note": "Reports a Rosstandart/Polylog webinar and statements about reuse of open recall data by services; not the dataset-specific license."
+        },
+        {
+          "url": "https://glav-auto.ru/news/kak-proverit-otzyvnuyu-kampaniyu",
+          "source_type": "independent_dataset_schema_and_snapshot_review",
+          "publication_date": "2026-08-30",
+          "status": "reviewed",
+          "note": "Describes reported fields and an independently counted 2026-08-30 snapshot; not the primary file or a rights grant."
+        },
+        {
+          "url": "https://data.gov.ru/information-usage",
+          "source_type": "typical_open_data_terms_reference",
+          "status": "conditional_general_terms_not_linked_to_dataset_page",
+          "note": "General Open Government Commission terms; do not apply to this dataset until the official dataset page's link is verified."
+        }
+      ],
+      "data_ingested": false,
+      "source_revision": "current_official_revision_not_retrieved; third_party_snapshot_observed_2026-08-30",
+      "source_snapshot_sha256": null,
+      "source_snapshot_bytes": null,
+      "hash_status": "not_downloaded_official_page_and_archive_timeout_2026-11-06"
     }
   ],
   "minimum_fitment_evidence_fields": [
