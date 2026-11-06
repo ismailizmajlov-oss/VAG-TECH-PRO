@@ -172,9 +172,20 @@ function getRdwSummary(explicitRoot) {
       source_rows: counts.sourceRows
     };
     if (JSON.stringify(expected) !== JSON.stringify(pack.counts)) throw new Error("RDW SQLite counts do not match pack manifest");
+    const registryCount = db.prepare("SELECT count(*) AS n FROM source_registry").get().n;
     const invalidRegistry = db.prepare(
       "SELECT count(*) AS n FROM source_registry WHERE source_id<>? OR rights_status<>? OR market_scope<>'NL' OR production_import<>0 OR ru_eaeu_applicability<>0"
     ).get(SOURCE_ID, "approved_by_published_CC0_license").n;
+    for (const item of sourceFiles) {
+      const stored = db.prepare(
+        "SELECT source_revision, source_snapshot_sha256, byte_size, row_count, required_columns_sha256 FROM source_file_artifacts WHERE dataset_id=?"
+      ).get(item.dataset_id);
+      if (!stored || stored.source_revision !== item.source_revision || stored.source_snapshot_sha256 !== item.sha256 ||
+          stored.byte_size !== item.byte_size || stored.row_count !== item.row_count ||
+          stored.required_columns_sha256 !== item.required_columns_sha256) {
+        throw new Error("RDW SQLite source-file provenance mismatch: " + item.dataset_id);
+      }
+    }
     const invalidEngine = db.prepare(
       "SELECT count(*) AS n FROM engine_designation_candidates WHERE market_scope<>'NL' OR verification_status<>'rdw_engine_designation_candidate_not_oem_confirmed'"
     ).get().n;
@@ -184,7 +195,7 @@ function getRdwSummary(explicitRoot) {
     const invalidScope = db.prepare(
       "SELECT count(*) AS n FROM approval_scope WHERE market_scope<>'NL' OR model_year IS NOT NULL OR generation IS NOT NULL OR exact_vehicle_fitment<>0 OR ru_eaeu_applicability<>0"
     ).get().n;
-    if (invalidRegistry !== 0 || invalidEngine !== 0 || invalidGearbox !== 0 || invalidScope !== 0) {
+    if (registryCount !== 1 || invalidRegistry !== 0 || invalidEngine !== 0 || invalidGearbox !== 0 || invalidScope !== 0) {
       throw new Error("RDW SQLite rights, market or applicability promotion detected");
     }
     for (const row of db.prepare("SELECT raw_json FROM source_rows").all()) rejectForbidden(JSON.parse(row.raw_json), "sqlite.source_rows");
@@ -249,7 +260,7 @@ function searchRdwApprovals(query, limit = 25, explicitRoot) {
       "ORDER BY r.make, r.trade_name, a.type_approval_number LIMIT ?"
     ).all(pattern, pattern, pattern, pattern, pattern, pattern, boundedLimit);
     const engineRows = db.prepare(
-      "SELECT e.source_row_sha256, e.scope_id, e.engine_designation, e.engine_type_approval_number, e.displacement_cc, e.cylinders, " +
+      "SELECT DISTINCT e.source_row_sha256, e.scope_id, e.engine_designation, e.engine_type_approval_number, e.displacement_cc, e.cylinders, " +
       "a.type_approval_number, a.variant, a.version, a.revision, r.make, r.trade_name, e.market_scope, " +
       "e.applicability_precision, e.verification_status FROM engine_designation_candidates e " +
       "JOIN approval_scope a ON a.scope_id=e.scope_id LEFT JOIN registration_observations r ON r.scope_id=a.scope_id " +
@@ -258,7 +269,7 @@ function searchRdwApprovals(query, limit = 25, explicitRoot) {
       "ORDER BY r.make, r.trade_name, a.type_approval_number LIMIT ?"
     ).all(pattern, pattern, pattern, pattern, pattern, boundedLimit);
     const gearboxRows = db.prepare(
-      "SELECT g.source_row_sha256, g.scope_id, g.gearbox_type_classification, a.type_approval_number, a.variant, a.version, a.revision, " +
+      "SELECT DISTINCT g.source_row_sha256, g.scope_id, g.gearbox_type_classification, a.type_approval_number, a.variant, a.version, a.revision, " +
       "r.make, r.trade_name, g.market_scope, g.applicability_precision, g.verification_status FROM gearbox_classifications g " +
       "JOIN approval_scope a ON a.scope_id=g.scope_id LEFT JOIN registration_observations r ON r.scope_id=a.scope_id " +
       "WHERE g.gearbox_type_classification LIKE ? ESCAPE '\\' OR a.type_approval_number LIKE ? ESCAPE '\\' " +
