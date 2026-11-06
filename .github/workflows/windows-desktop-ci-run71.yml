@@ -721,7 +721,7 @@ jobs:
           $ErrorActionPreference = "Stop"
           node --version
           npm --version
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.overrides={...(p.overrides||{}),'caniuse-lite':'1.0.30001822','minimatch@^10.0.0':'11.0.1','@electron/universal':{...((p.overrides||{})['@electron/universal']||{}),'minimatch':'11.0.1'}}; fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.overrides={...(p.overrides||{}),'caniuse-lite':'1.0.30001822','minimatch@^10.0.0':'11.0.1','electron-to-chromium':'1.5.478','@electron/universal':{...((p.overrides||{})['@electron/universal']||{}),'minimatch':'11.0.1'}}; fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
           "dependency_override=caniuse-lite@1.0.30001822" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund 2>&1 | Tee-Object -FilePath npm-lock.log
           if ($LASTEXITCODE -ne 0) { throw "package-lock generation failed" }
