@@ -817,17 +817,31 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             ).fetchone()
             if stored is None:
                 raise ValueError(f"RDW source-file provenance row missing: {item['dataset_id']}")
-            if (
-                stored["dataset_name"] != item["dataset_name"]
-                or stored["source_revision"] != item["source_revision"]
-                or stored["source_snapshot_sha256"] != item["sha256"]
-                or stored["byte_size"] != item["byte_size"]
-                or stored["row_count"] != item["row_count"]
-                or tuple(stored[5:8]) != (
-                    item["source_columns_sha256"], item["required_columns_sha256"], item["query_spec_sha256"]
+            stored_provenance = {
+                "dataset_name": stored["dataset_name"],
+                "source_revision": stored["source_revision"],
+                "source_snapshot_sha256": stored["source_snapshot_sha256"],
+                "byte_size": stored["byte_size"],
+                "row_count": stored["row_count"],
+                "source_columns_sha256": stored["source_columns_sha256"],
+                "required_columns_sha256": stored["required_columns_sha256"],
+                "query_spec_sha256": stored["query_spec_sha256"],
+            }
+            expected_provenance = {
+                "dataset_name": item["dataset_name"],
+                "source_revision": item["source_revision"],
+                "source_snapshot_sha256": item["sha256"],
+                "byte_size": item["byte_size"],
+                "row_count": item["row_count"],
+                "source_columns_sha256": item["source_columns_sha256"],
+                "required_columns_sha256": item["required_columns_sha256"],
+                "query_spec_sha256": item["query_spec_sha256"],
+            }
+            if stored_provenance != expected_provenance:
+                raise ValueError(
+                    "RDW SQLite source-file provenance differs from manifest: "
+                    f"{item['dataset_id']}; stored={stored_provenance!r}; expected={expected_provenance!r}"
                 )
-            ):
-                raise ValueError(f"RDW SQLite source-file provenance differs from manifest: {item['dataset_id']}")
             if json.loads(stored["query_spec_json"]) != item["query_spec"]:
                 raise ValueError(f"RDW SQLite query specification differs from manifest: {item['dataset_id']}")
 
