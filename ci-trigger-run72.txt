@@ -1,4 +1,4 @@
 VAG TECH PRO Windows x64 validation trigger.
-Base revision: 45a180242c52a9206a5322d6b48c3504c55071d9
-Purpose: rerun pinned Windows NSIS build, offline data-pack verification, clean install, upgrade, backup/restore and uninstall lifecycle after the run71 source integration.
-No product data or application source changed.
+Base revision: 9b20ed7171e84c8432ec65fc6c632674b0d37ab4
+Purpose: validate the updated Russian/EAEU OTTS source evidence and publish a small desktop source-audit artifact containing the extracted app, UI, tests and technical-surface inventory. Repeat the pinned NSIS build, offline package checks, clean install, in-place upgrade, backup/restore and uninstall-preservation lifecycle.
+No product data or application source is added by this marker. No unlicensed source is imported or approved.
