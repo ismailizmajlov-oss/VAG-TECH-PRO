@@ -1,3 +1,5 @@
+"use strict";
+
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -6,8 +8,53 @@ const desktopIndex = args.indexOf("--desktop-root");
 const desktopRoot = path.resolve(desktopIndex >= 0 ? args[desktopIndex + 1] : "desktop-source");
 const lifecyclePath = path.join(desktopRoot, "scripts", "windows-installer-lifecycle.ps1");
 const contractTestPath = path.join(desktopRoot, "tests", "windows-lifecycle-script-contract.test.cjs");
+
+function replaceExactlyOnce(source, before, after, label) {
+  if (source.includes(after)) return source;
+  const count = source.split(before).length - 1;
+  if (count !== 1) throw new Error(label + ": expected exactly one anchor, found " + count);
+  return source.replace(before, after);
+}
+
+if (!fs.existsSync(lifecyclePath)) throw new Error("Windows installer lifecycle script is missing.");
 if (!fs.existsSync(contractTestPath)) throw new Error("Windows lifecycle contract test is missing.");
-let contractTests = fs.readFileSync(contractTestPath, "utf8");
+
+let lifecycle = fs.readFileSync(lifecyclePath, "utf8").replace(/\r\n/g, "\n");
+lifecycle = replaceExactlyOnce(
+  lifecycle,
+  "function Start-DesktopAndWait {",
+  "function Start-DesktopAndWait([bool]$ExpectRdwPack = $false) {",
+  "RDW lifecycle function parameter"
+);
+
+const rdwStartMarker = "  # RDW CC0 data is an independent EU/NL candidate pack;";
+const genericStartMarker = "  # generic_repair_guidance is a separate local SQLite pack";
+const rdwStart = lifecycle.indexOf(rdwStartMarker);
+const genericStart = lifecycle.indexOf(genericStartMarker, rdwStart + 1);
+if (rdwStart < 0 || genericStart < 0 || genericStart <= rdwStart) {
+  throw new Error("RDW lifecycle block boundaries are missing or out of order.");
+}
+const rdwBlock = lifecycle.slice(rdwStart, genericStart);
+if (!rdwBlock.includes("if ($ExpectRdwPack) {")) {
+  const wrapped = "  if ($ExpectRdwPack) {\n" + rdwBlock + "  }\n";
+  lifecycle = lifecycle.slice(0, rdwStart) + wrapped + lifecycle.slice(genericStart);
+}
+
+const upgradeMarker = "# 4. Upgrade over the previous version and verify the SQLite user data survives.";
+const upgradeStart = lifecycle.indexOf(upgradeMarker);
+if (upgradeStart < 0) throw new Error("Windows lifecycle upgrade section is missing.");
+const beforeUpgrade = lifecycle.slice(0, upgradeStart);
+let afterUpgrade = lifecycle.slice(upgradeStart);
+afterUpgrade = replaceExactlyOnce(
+  afterUpgrade,
+  "$session = Start-DesktopAndWait\n",
+  "$session = Start-DesktopAndWait -ExpectRdwPack $true\n",
+  "RDW post-upgrade lifecycle call"
+);
+lifecycle = beforeUpgrade + afterUpgrade;
+fs.writeFileSync(lifecyclePath, lifecycle, "utf8");
+
+let contractTests = fs.readFileSync(contractTestPath, "utf8").replace(/\r\n/g, "\n");
 const testMarker = 'require("node:test").test("RDW candidate pack is checked after upgrade, not during the older clean install"';
 if (!contractTests.includes(testMarker)) {
   const testBlock = [
@@ -35,4 +82,5 @@ if (!contractTests.includes(testMarker)) {
   contractTests += testBlock;
   fs.writeFileSync(contractTestPath, contractTests, "utf8");
 }
-console.log("RDW lifecycle version gate applied.");
+
+console.log("RDW lifecycle gate applied: the 0.2.4 clean install is not required to contain the 0.2.5 RDW pack; the upgraded install is.");
