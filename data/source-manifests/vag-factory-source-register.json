@@ -551,7 +551,9 @@
         "UNKNOWN"
       ],
       "data_counts_as_published": {
-        "generic_dtc_rows": 9533,
+        "generic_dtc_rows": 9359,
+        "generic_dtc_rows_quarantined": 174,
+        "upstream_projection_dtc_rows": 9533,
         "generic_pid_rows": 132,
         "vag_specific_dtc_rows": 0,
         "exact_vehicle_fitment_rows": 0,
@@ -599,10 +601,11 @@
         "No VAG-specific DTC definitions, manufacturer subcodes or ECU-specific fault descriptions.",
         "No exact vehicle, generation, year, engine, gearbox, ECU or RU/EAEU applicability.",
         "External source documents are not included; source URLs are preserved only in raw source records, never fetched or displayed.",
-        "Repair estimates, costs and generic repair text are not promoted as OEM repair advice."
+        "Repair estimates, costs and generic repair text are not promoted as OEM repair advice.",
+        "The 174 U3xxx rows in the pinned upstream projection are quarantined because U3xxx is a mixed manufacturer-controlled / ISO/SAE-reserved family; they are not part of the generic SQLite namespace."
       ],
       "project_decision": "allow_separate_generic_CC0_reference_pack_only; keep separate from VAG-specific data and exact vehicle fitment",
-      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-05; per-source-file_and_per-row_SHA256; SQLite_integrity_verified",
+      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-05; per-source-file_and_per-row_SHA256; SQLite_integrity_verified; U3xxx_namespace_quarantine_reviewed_2026-11-06",
       "data_ingested": false
     },
     {
