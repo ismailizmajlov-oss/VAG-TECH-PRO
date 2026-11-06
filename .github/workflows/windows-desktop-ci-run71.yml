@@ -180,7 +180,7 @@ jobs:
           python tests/test_eaeu_otts_registry_manifest.py
           python tests/test_eaeu_otts_registry_import.py
           python tests/test_vw_flash_simos18_dtc_quarantine.py
-      python tests/test_astra_ch_tas_desktop_integration.py
+          python tests/test_astra_ch_tas_desktop_integration.py
 
 
       - name: Reassemble and verify pinned desktop source archive
