@@ -165,6 +165,10 @@ def main() -> None:
         "'11.0.1'",
         "'electron-to-chromium'",
         "'1.5.478'",
+        "npm install --no-save --no-audit --no-fund",
+        "installed-dependency-verification.log",
+        "installed-tree-matches-lock",
+        "Dependency lock changed during clean installation",
         "minimatch-verification.log",
         "Vulnerable minimatch versions remain in the dependency lock",
         "npm audit --audit-level=moderate",
@@ -172,6 +176,8 @@ def main() -> None:
     ):
         if required_lock_guard not in lock_step:
             raise SystemExit(f"Windows dependency security gate is missing: {required_lock_guard}")
+    if "npm ci --no-audit --no-fund" in lock_step:
+        raise SystemExit("Windows dependency install must use the audited clean-install fallback for npm's scoped-overrides ci bug")
     if "k==='node_modules/minimatch'||k.endsWith('/node_modules/minimatch')" not in lock_step:
         raise SystemExit("Minimatch lock verifier must use literal package paths without an escaped regex")
     if "filter(([k])=>/(^|" + "\\\\/" + ")node_modules" in lock_step:
