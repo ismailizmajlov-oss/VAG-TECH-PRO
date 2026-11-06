@@ -507,9 +507,7 @@ def build_sqlite(database_path: Path, datasets: dict[str, list[dict[str, Any]]],
         }
         integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
         if integrity != "ok" or db.execute("PRAGMA foreign_key_check").fetchall():
-            db.close()
             raise ValueError("RDW SQLite integrity or foreign-key check failed")
-        counts["approval_scopes"] = int(db.execute("SELECT count(*) FROM approval_scope").fetchone()[0])
         return counts
     except Exception:
         db.rollback()
