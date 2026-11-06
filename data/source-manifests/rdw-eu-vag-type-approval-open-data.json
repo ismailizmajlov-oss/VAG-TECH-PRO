@@ -246,5 +246,21 @@
       }
     },
     "note": "This is a filtered live probe, not a full source snapshot. No full-source SHA-256 exists yet. Motorcode DUC is not confirmed as a VAG factory engine code; gearbox classification A is not a VAG gearbox code; the two rows are not paired."
+  },
+  "vehicle_scope": {
+    "makes": [
+      "AUDI",
+      "BENTLEY",
+      "BUGATTI",
+      "CUPRA",
+      "LAMBORGHINI",
+      "PORSCHE",
+      "SEAT",
+      "SKODA",
+      "VOLKSWAGEN"
+    ],
+    "make_scope": "Exact make labels from the Dutch registered-vehicle dataset; query allowlist only.",
+    "model_scope": "Dutch trade-name observations linked to EU type-approval number, variant, version and revision.",
+    "note": "Not a VIN build sheet and not proof of individual-vehicle factory build."
   }
 }
