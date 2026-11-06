@@ -128,12 +128,22 @@ console.log("Desktop hardening patch applied and verified.");
 const lifecyclePath = path.join(root, "scripts", "windows-installer-lifecycle.ps1");
 const lifecycleTestPath = path.join(root, "tests", "windows-lifecycle-script-contract.test.cjs");
 let lifecycle = readLf(lifecyclePath);
-lifecycle = replaceExactly(
-  lifecycle,
-  '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
-  '  Write-Verbose "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
-  "Start-DesktopAndWait must not leak diagnostic text into its return pipeline"
-);
+const astraStatusOutput = '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
+const astraStatusSafe = '  Write-Host "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
+const astraStatusVerbose = '  Write-Verbose "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
+const astraStatusCounts = [astraStatusOutput, astraStatusSafe, astraStatusVerbose]
+  .map((line) => lifecycle.split(line).length - 1);
+const [astraOutputCount, astraHostCount, astraVerboseCount] = astraStatusCounts;
+if (astraOutputCount === 1 && astraHostCount === 0 && astraVerboseCount === 0) {
+  lifecycle = replaceExactly(
+    lifecycle,
+    astraStatusOutput,
+    astraStatusSafe,
+    "Start-DesktopAndWait must not leak diagnostic text into its return pipeline"
+  );
+} else if (astraOutputCount !== 0 || astraHostCount + astraVerboseCount !== 1) {
+  throw new Error("ASTRA lifecycle status message must occur exactly once and use Write-Host or Write-Verbose, never Write-Output.");
+}
 lifecycle = replaceExactly(
   lifecycle,
   "$session = Start-DesktopAndWait\n$origin = $session.BaseUrl",
