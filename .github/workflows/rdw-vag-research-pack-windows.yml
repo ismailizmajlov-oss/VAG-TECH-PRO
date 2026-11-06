@@ -8,6 +8,13 @@ on:
       - "scripts/build_rdw_vag_research_pack.py"
       - "tests/test_rdw_vag_research_pack.py"
       - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/rdw-vag-research-pack-windows.yml"
+      - "scripts/build_rdw_vag_research_pack.py"
+      - "tests/test_rdw_vag_research_pack.py"
+      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
   workflow_dispatch:
 
 permissions:
@@ -77,7 +84,7 @@ jobs:
     name: Record RDW pack build evidence
     needs:
       - acquire-and-build
-    if: ${{ always() }}
+    if: ${{ always() && github.event_name != 'pull_request' }}
     runs-on: windows-2025
     timeout-minutes: 10
     concurrency:
