@@ -129,7 +129,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
 
     def test_schema_defines_all_required_technical_sections(self) -> None:
         schema=json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-        expected={"diagnostic_test_plan","repair_procedure","wiring_diagram","ecu_pinout","torque_specification","adaptation","service_interval","ecu_profile","oem_part"}
+        expected={"diagnostic_test_plan","repair_procedure","wiring_diagram","ecu_pinout","torque_specification","adaptation","service_interval","ecu_profile","oem_part","oem_supersession"}
         self.assertEqual(set(schema["$defs"])-{"step","connection","string_list"},expected)
         tables={r[0] for r in self.db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         self.assertTrue({"technical_source_rights","technical_documents","technical_applicability","technical_records"}<=tables)
