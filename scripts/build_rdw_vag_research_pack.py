@@ -730,7 +730,7 @@ def validate_pack(pack_dir: Path) -> dict[str, Any]:
             snapshot_path = pack_dir / item["path"]
             with snapshot_path.open("rb") as snapshot_file:
                 for line_number, raw_line in enumerate(snapshot_file, start=1):
-                    raw_line = raw_line.rstrip(b"\\r\\n")
+                    raw_line = raw_line.rstrip(b"\r\n")
                     if not raw_line:
                         continue
                     snapshot_row = json.loads(raw_line.decode("utf-8"))
