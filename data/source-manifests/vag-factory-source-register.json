@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-06T05:20:00Z",
+  "updated_at": "2026-11-06T05:25:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1690,7 +1690,16 @@
         "client_id_and_secret_required": true,
         "credentials_created": false,
         "account_created": false,
-        "owner_action_required": true
+        "owner_action_required": true,
+        "authentication_required": true,
+        "company_access_request_required": true,
+        "volkswagen_approval_required": true,
+        "approval_may_be_rejected": true,
+        "credentials_obtained": false,
+        "api_requests_made": false,
+        "external_account_created": false,
+        "contract_accepted": false,
+        "paid_terms_accepted": false
       },
       "product_scope": {
         "models": true,
@@ -1727,7 +1736,18 @@
         "approval_discretionary": true,
         "current_price": "currently_free_subject_to_change",
         "paid_terms_accepted": false,
-        "permission_evidence": null
+        "permission_evidence": null,
+        "license_type": "contractual_access_terms_not_open_data_license",
+        "data_license_status": "contractual_terms_no_public_open_license",
+        "display_allowed_after_approval": true,
+        "third_party_disclosure_allowed_after_approval": true,
+        "cache_mechanism_documented": true,
+        "redistribution_of_offline_database_allowed": false,
+        "bulk_reuse_allowed": false,
+        "api_right_non_transferable": true,
+        "api_right_revocable": true,
+        "api_right_non_sublicensable": true,
+        "current_price_status": "currently_free_but_reserves_right_to_charge"
       },
       "applicability": {
         "precision": "market_specific_model_type_option_configuration_candidates_after_authenticated_access",
@@ -1737,7 +1757,8 @@
         "exact_engine_gearbox_pairing": false,
         "ECU_mapping": false,
         "DTC_mapping": false,
-        "repair_procedure_fitment": false
+        "repair_procedure_fitment": false,
+        "review_status": "permission_required"
       },
       "data_ingested": false,
       "source_snapshot_sha256": null,
