@@ -161,6 +161,7 @@ def main() -> None:
     lock_step = text.split(lock_marker, 1)[1].split("\n      - name:", 1)[0]
     for required_lock_guard in (
         "minimatch@>=7.0.0 <11.0.1",
+        "'@electron/universal'",
         "'11.0.1'",
         "minimatch-verification.log",
         "Vulnerable minimatch versions remain in the dependency lock",
