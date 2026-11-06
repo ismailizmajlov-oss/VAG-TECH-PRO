@@ -149,7 +149,7 @@ def main() -> None:
     attribution_text = (ROOT / "data/research/wikidata-vag-taxonomy" / model_snapshot_id / "ATTRIBUTION.md").read_text(encoding="utf-8")
     if not re.search(r"not an authoritative\s+Volkswagen Group model register", attribution_text, flags=re.IGNORECASE):
         raise SystemExit("Wikidata attribution notice must preserve the candidate-only scope statement across line wrapping")
-    if "/not an authoritative\\\\s+Volkswagen Group model register/i" not in (ROOT / "apply-wikidata-vag-taxonomy-run68.cjs").read_text(encoding="utf-8"):
+    if r"/not an authoritative\s+Volkswagen Group model register/i" not in (ROOT / "apply-wikidata-vag-taxonomy-run68.cjs").read_text(encoding="utf-8"):
         raise SystemExit("Wikidata pack validator is not whitespace-tolerant for the scope notice")
 
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
