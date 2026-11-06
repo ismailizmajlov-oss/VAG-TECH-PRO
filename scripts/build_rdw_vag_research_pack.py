@@ -285,6 +285,11 @@ def verify_source_revisions(metadata_report: dict[str, dict[str, Any]]) -> None:
         if missing:
             raise ValueError(f"RDW {dataset_id} schema changed during acquisition; missing fields: {missing}")
         expected = metadata_report[name]
+        expected_revision = {
+            "rows_updated_at": str(expected["rows_updated_at"]) if expected.get("rows_updated_at") is not None else None,
+            "view_last_modified": str(expected["view_last_modified"]) if expected.get("view_last_modified") is not None else None,
+            "source_columns_sha256": expected.get("source_columns_sha256"),
+        }
         observed = {
             "rows_updated_at": str(current["rowsUpdatedAt"]) if current.get("rowsUpdatedAt") is not None else None,
             "view_last_modified": str(current["viewLastModified"]) if current.get("viewLastModified") is not None else None,
