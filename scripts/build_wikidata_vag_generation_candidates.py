@@ -246,7 +246,7 @@ def latest_model_pack(repo_root: Path) -> tuple[dict[str, Any], Path, list[dict[
             raise ValueError("Parent Wikidata model database integrity check failed")
         rows = db.execute(
             """SELECT model_qid, manufacturer_qid, model_label_en, model_label_ru,
-                      manufacturer_label_en
+                      manufacturer_label_en, entity_types_json
                FROM vehicle_model_entities ORDER BY model_qid"""
         ).fetchall()
     finally:
@@ -258,6 +258,7 @@ def latest_model_pack(repo_root: Path) -> tuple[dict[str, Any], Path, list[dict[
             "model_label_en": row[2],
             "model_label_ru": row[3] or "",
             "manufacturer_label_en": row[4],
+            "entity_types": json.loads(row[5]),
         }
         for row in rows
     ]
@@ -335,6 +336,8 @@ def fetch_live_snapshot(repo_root: Path) -> bytes:
             "source_snapshot_sha256": parent_manifest["source_snapshot_sha256"],
             "database_sha256": parent_manifest["database_sha256"],
             "model_entities": parent_manifest["counts"]["model_entities"],
+            "car_model_entities": parent_manifest["counts"].get("car_model_entities", parent_manifest["counts"]["model_entities"]),
+            "car_model_series_entities": parent_manifest["counts"].get("car_model_series_entities", 0),
         },
         "parent_models": parent_models,
         "query": combined_query,

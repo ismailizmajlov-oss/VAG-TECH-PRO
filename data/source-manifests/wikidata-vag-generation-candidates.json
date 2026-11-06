@@ -33,7 +33,17 @@
     "query_sha256_required": true,
     "snapshot_sha256_required": true,
     "per_binding_sha256_required": true,
-    "completeness_status": "unknown"
+    "completeness_status": "unknown",
+    "parent_entity_classes": [
+      {
+        "qid": "Q3231690",
+        "label": "car model"
+      },
+      {
+        "qid": "Q59773381",
+        "label": "car model series"
+      }
+    ]
   },
   "applicability": {
     "market_scope": "UNKNOWN",
@@ -51,6 +61,7 @@
     "completeness_status": "unknown"
   },
   "exclusions": [
+    "Parent identity snapshot may include car model series entities; series-member links remain candidate relationships and are not verified generations.",
     "P179/P527 links are series-member candidates, not verified vehicle generations.",
     "Member instance types are retained as source evidence but are not used to certify a generation.",
     "P571/P576/P580/P582 dates remain raw property statements; no production-year ranges are inferred.",

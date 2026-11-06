@@ -25,6 +25,7 @@ on:
       - "scripts/sync_vag_source_register.py"
       - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
+      - "data/research/wikidata-vag-generations/**"
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"

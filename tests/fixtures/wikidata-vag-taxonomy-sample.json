@@ -8,7 +8,10 @@
       "manufacturerLabel",
       "inception",
       "dissolution",
-      "modified"
+      "modified",
+      "modelType",
+      "modelTypeLabelEn",
+      "entityClass"
     ]
   },
   "results": {
@@ -44,6 +47,19 @@
         "modified": {
           "type": "literal",
           "value": "2026-10-01T00:00:00Z"
+        },
+        "modelType": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        },
+        "modelTypeLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "car model"
+        },
+        "entityClass": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
         }
       },
       {
@@ -73,6 +89,19 @@
         "inception": {
           "type": "literal",
           "value": "1994-01-01T00:00:00Z"
+        },
+        "modelType": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        },
+        "modelTypeLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "car model"
+        },
+        "entityClass": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
         }
       },
       {
@@ -97,6 +126,99 @@
         "inception": {
           "type": "literal",
           "value": "1996-01-01T00:00:00Z"
+        },
+        "modelType": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        },
+        "modelTypeLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "car model"
+        },
+        "entityClass": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        }
+      },
+      {
+        "model": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q216754"
+        },
+        "modelLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Volkswagen Passat"
+        },
+        "modelLabelRu": {
+          "type": "literal",
+          "xml:lang": "ru",
+          "value": "Volkswagen Passat"
+        },
+        "manufacturer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q156578"
+        },
+        "manufacturerLabel": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Volkswagen Group"
+        },
+        "modelType": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q59773381"
+        },
+        "modelTypeLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "car model series"
+        },
+        "entityClass": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q59773381"
+        }
+      },
+      {
+        "model": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q15305561"
+        },
+        "modelLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Volkswagen Passat B8"
+        },
+        "modelLabelRu": {
+          "type": "literal",
+          "xml:lang": "ru",
+          "value": "Volkswagen Passat B8"
+        },
+        "manufacturer": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q156578"
+        },
+        "manufacturerLabel": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Volkswagen Group"
+        },
+        "modelType": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        },
+        "modelTypeLabelEn": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "car model"
+        },
+        "entityClass": {
+          "type": "uri",
+          "value": "http://www.wikidata.org/entity/Q3231690"
+        },
+        "inception": {
+          "type": "literal",
+          "value": "2014-07-21T00:00:00Z"
         }
       }
     ]

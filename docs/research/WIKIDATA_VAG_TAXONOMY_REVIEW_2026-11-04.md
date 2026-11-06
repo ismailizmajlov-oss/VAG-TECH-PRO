@@ -34,3 +34,21 @@ License: CC0 1.0 Universal for the structured data queried. Commercial use, disp
 ## Promotion policy
 
 The pack remains outside production fitment and technical tables. A candidate can be promoted only after independent source review and primary evidence for exact model/generation/year/market applicability. Engine/gearbox links and all critical repair values require separate, rights-cleared evidence.
+
+
+## 2026-11-06: include model-series entities and the group-level Volkswagen label
+
+The previous query admitted only entities whose direct type path reached `car model` (Q3231690), and its manufacturer-label whitelist omitted the English label `Volkswagen Group`. This excluded series parents such as Volkswagen Passat (Q216754, instance of `car model series`, Q59773381) and generation/model members such as Volkswagen Passat B8 (Q15305561, instance of `car model`). The official Wikidata entity pages show the Passat series relationship and the B8 member relationship; the records are structured data, not article prose.
+
+The acquisition query now includes both Q3231690 and Q59773381 and accepts the group-level manufacturer label `Volkswagen Group`. Each row retains the direct model type, its English label, the matched entity class, binding index, binding hash, source revision, query hash and snapshot hash. The SQLite pack remains identity-only and candidate-only. `car model series` records are not treated as confirmed vehicle generations; P179/P527 links remain separate candidates in the generation pack.
+
+No market scope, Russian/EAEU applicability, production-year range, engine/gearbox fitment, ECU fitment, DTC, repair procedure, wiring, pinout, torque, adaptation or OEM-part applicability is inferred. The query remains capped at 3,000 bindings and completeness remains unknown.
+
+Evidence:
+- Volkswagen Passat series Q216754: https://www.wikidata.org/wiki/Q216754
+- Volkswagen Passat B8 Q15305561: https://www.wikidata.org/wiki/Q15305561
+- Volkswagen Golf Mk7 Q62362: https://www.wikidata.org/wiki/Q62362
+- car model Q3231690: https://www.wikidata.org/wiki/Q3231690
+- car model series Q59773381: https://www.wikidata.org/wiki/Q59773381
+- Volkswagen Group Q156578: https://www.wikidata.org/wiki/Q156578
+- Structured-data license: CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/
