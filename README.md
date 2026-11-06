@@ -66,7 +66,7 @@ A separate Rosstandart recall-campaign open-data source has been identified at e
 
 The current central source register contains 48 entries and the Russian/EAEU register contains 12 sources; both retain explicit access, rights, market and import boundaries.
 
-A related Kazakhstan EOKNO public register was reviewed on 2026-11-07. Its public title refers broadly to conformity documents under TR TS 018/2011, and official 2023 releases confirm that SBKTS and OTTS/OTSH records flow into the register. The current homepage routes new conformity-document issuance to TechReg; bulk reuse rights remain unconfirmed. No dataset licence, bulk API or offline reuse permission was identified, no records were downloaded, and the source remains discovery-only with no snapshot hash. See [the EOKNO register review](docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md).
+A related Kazakhstan EOKNO public register was reviewed on 2026-11-07. Its public title refers broadly to conformity documents under TR TS 018/2011, and official 2023 releases confirm that SBKTS and OTTS/OTSH records flow into the register. The latest indexed homepage snapshot (crawled approximately two months before review) routes new conformity-document issuance to TechReg, but a live fetch timed out; bulk reuse rights remain unconfirmed. No dataset licence, bulk API or offline reuse permission was identified, no records were downloaded, and the source remains discovery-only with no snapshot hash. See [the EOKNO register review](docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md).
 
 ## Windows build and verification
 

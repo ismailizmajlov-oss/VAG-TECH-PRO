@@ -12,7 +12,7 @@ The official Kazakhstan State Revenue Committee release dated 2023-05-12 confirm
 
 - No dataset-specific open licence or written permission for bulk reuse, automated extraction, offline caching, third-party display or redistribution was identified.
 - No documented API, bulk export contract, reproducible dataset snapshot or current dataset revision was identified.
-- The current EOKNO homepage notice says new conformity-document issuance is handled by the KTRM Technical Regulation system at [techreg.gov.kz](https://techreg.gov.kz/index/); general EOKNO functions moved to KEDEN. The relationship between this issuance interface and the visible EOKNO public-register page is not fully documented.
+- The latest indexed EOKNO homepage snapshot (reported as crawled approximately two months before 2026-11-07) lists the TR TS 018/2011 register and contains a notice saying new conformity-document issuance is handled by the KTRM Technical Regulation system at [techreg.gov.kz](https://techreg.gov.kz/index/); general EOKNO functions moved to KEDEN. A live homepage fetch timed out, so the notice's present-day status is not independently verified.
 - No records were downloaded. No source-file hash or snapshot SHA-256 is claimed.
 - The source remains `permission_required`, `data_ingested=false`, and `product_import_allowed=false`.
 - No VIN, applicant, address, owner or other personal data is to be collected.
@@ -23,7 +23,7 @@ The official Kazakhstan State Revenue Committee release dated 2023-05-12 confirm
 1. [EOKNO public register](https://eokno.gov.kz/public-register/register-ktrm2.xhtml) — page title and public search controls observed on 2026-11-07.
 2. [Kazakhstan State Revenue Committee press release, 2023-05-12](https://kgd.gov.kz/ru/news/press-reliz-po-avtomatizacii-v-edinoe-okno-po-eksportno-importnym-operaciyam-polucheniya) — confirms the SBKTS module and online publication of SBKTS records.
 3. [Committee of Technical Regulation and Metrology release, 2023-12-28](https://www.gov.kz/org/mti-ktrm/press/news/details/679816?lang=ru) — confirms OTTS/OTSH details enter the EOKNO register online after registration and can be checked by QR or register search.
-4. [Current EOKNO homepage](https://eokno.gov.kz/) — observed 2026-11-07; directs conformity-document issuance to the KTRM Technical Regulation system at techreg.gov.kz.
+4. [EOKNO homepage index snapshot](https://eokno.gov.kz/index.xhtml) — search index reports a crawl approximately two months before 2026-11-07; it lists the TR TS 018/2011 register and shows the TechReg issuance notice. Live fetch on 2026-11-07 timed out; current status remains unverified.
 
 ## Re-entry criteria
 

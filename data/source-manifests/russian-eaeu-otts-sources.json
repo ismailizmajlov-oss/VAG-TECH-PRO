@@ -1033,9 +1033,9 @@
         "No exact VAG engine/gearbox code, ECU or repair applicability is exposed by the reviewed list fields.",
         "Detailed record pages may contain VIN-related and applicant/contact fields; privacy review is required before any processing.",
         "Do not treat a public search page as permission to cache or redistribute its records.",
-        "Current EOKNO homepage routes conformity-document issuance to techreg.gov.kz; its relationship to the techreg.kezekte.kz registry interface is not established."
+        "Latest indexed EOKNO homepage snapshot points conformity-document issuance to techreg.gov.kz; live status and its relationship to the techreg.kezekte.kz registry interface remain unverified."
       ],
-      "evidence_status": "TechReg registry list reviewed 2026-11-06; official KTRM 2023-12-28 release confirms OTTS/OTSH issuance and EOKNO register flow; current EOKNO homepage points issuance to techreg.gov.kz. Rights and system relationship remain unresolved.",
+      "evidence_status": "TechReg registry list reviewed 2026-11-06; official KTRM 2023-12-28 release confirms OTTS/OTSH issuance and EOKNO register flow; latest indexed EOKNO homepage snapshot points issuance to techreg.gov.kz, but live status could not be verified. Rights and system relationship remain unresolved.",
       "official_listing_evidence": {
         "url": "https://www.gov.kz/org/mti-ktrm/documents/details/350253?lang=ru",
         "publisher": "Committee of Technical Regulation and Metrology, Ministry of Trade and Integration of the Republic of Kazakhstan",
@@ -1046,19 +1046,23 @@
         "evidence": "Official gov.kz registry directory entry identifies the Committee and links the national technical-regulation registry. This confirms the official registry reference, not a data-reuse license.",
         "rights_effect": "no_bulk_export_offline_cache_display_or_redistribution_permission_inferred"
       },
-      "current_issuance_portal_url": "https://techreg.gov.kz/index/",
       "current_service_transition_evidence": {
-        "url": "https://eokno.gov.kz/",
+        "url": "https://eokno.gov.kz/index.xhtml",
         "reviewed_at": "2026-11-07",
-        "evidence": "Current EOKNO homepage notice says issuance of conformity-assessment documents is handled in the KTRM Technical Regulation system at techreg.gov.kz; general EOKNO functions moved to KEDEN.",
-        "relationship_note": "The relationship between techreg.gov.kz issuance and the separately observed techreg.kezekte.kz public-list interface has not been independently established."
+        "evidence_basis": "search_index_snapshot_crawled_approximately_two_months_before_2026-11-07",
+        "live_fetch_status": "timeout",
+        "live_status_verified": false,
+        "indexed_issuance_portal_url": "https://techreg.gov.kz/index/",
+        "evidence": "Latest indexed EOKNO homepage snapshot routes conformity-document issuance to the KTRM Technical Regulation system at techreg.gov.kz; a live fetch timed out, so present-day status is unverified.",
+        "relationship_note": "Relationship between techreg.gov.kz issuance and the separately observed techreg.kezekte.kz public-list interface has not been independently established."
       },
       "official_approval_workflow_evidence": {
         "url": "https://www.gov.kz/org/mti-ktrm/press/news/details/679816?lang=ru",
         "published_at": "2023-12-28",
         "reviewed_at": "2026-11-07",
         "evidence": "KTRM confirms OTTS/OTSH are issued through EOKNO and their registration details are transferred online to the EOKNO register; this does not grant reuse rights."
-      }
+      },
+      "indexed_issuance_portal_url": "https://techreg.gov.kz/index/"
     },
     {
       "source_id": "kyrgyzstan-single-window-otts-registry",
@@ -1207,11 +1211,13 @@
         },
         "scope_note": "Official KTRM release dated 2023-12-28 states that after an OTTS/OTSH registration number is assigned, information is transferred online into the EOKNO conformity-document register and can be verified there by QR or register search. The 2023-05-12 KGD release separately confirms SBKTS publication. This establishes the register workflow as of 2023/2024, not current completeness, bulk export, or reuse rights.",
         "current_service_notice": {
-          "url": "https://eokno.gov.kz/",
-          "observed_at": "2026-11-07",
-          "evidence": "Current EOKNO homepage notice states that general EOKNO functionality moved to KEDEN, while issuance of conformity-assessment documents is handled by the KTRM Technical Regulation system.",
-          "current_issuance_portal_url": "https://techreg.gov.kz/index/",
-          "implication": "The current issuance portal reference is identified; the public EOKNO register page remains separately visible. This notice does not establish a data API or reuse permission."
+          "url": "https://eokno.gov.kz/index.xhtml",
+          "reviewed_at": "2026-11-07",
+          "evidence_basis": "search_index_snapshot_crawled_approximately_two_months_before_2026-11-07",
+          "live_fetch_status": "timeout",
+          "live_status_verified": false,
+          "indexed_issuance_portal_url": "https://techreg.gov.kz/index/",
+          "evidence": "The latest available indexed homepage snapshot lists the TR TS 018/2011 conformity-document register and contains a notice stating that new conformity-document issuance is handled by the KTRM Technical Regulation system at techreg.gov.kz; general EOKNO functions moved to KEDEN. A live fetch of the homepage timed out, so the notice's present-day status is not independently verified."
         }
       },
       "access_and_reuse": {
@@ -1224,8 +1230,8 @@
         "offline_cache": "not_confirmed",
         "redistribution": "not_confirmed",
         "operator_identity": "portal is an official Kazakhstan public-service endpoint; current technical operator and data rightsholder for bulk reuse were not independently confirmed",
-        "current_issuance_portal_url": "https://techreg.gov.kz/index/",
-        "current_service_transition": "observed_on_2026-11-07"
+        "current_service_transition": "indexed_notice_observed_live_status_unverified",
+        "issuance_portal_url_from_indexed_notice": "https://techreg.gov.kz/index/"
       },
       "technical_scope": {
         "document_type_coverage": {
@@ -1238,19 +1244,19 @@
         "engine_gearbox_pairing": "not_established",
         "ecu_dtc_or_repair_applicability": "not_established",
         "exact_vag_record_identified": false,
-        "current_issuance_portal_url": "https://techreg.gov.kz/index/"
+        "issuance_portal_url_from_indexed_notice": "https://techreg.gov.kz/index/"
       },
       "limitations": [
         "Official KTRM release dated 2023-12-28 confirms OTTS/OTSH records are transferred online to the EOKNO conformity-document register after registration and can be checked by QR or register search; this is historical workflow evidence, not a current completeness guarantee.",
         "Official KGD release dated 2023-05-12 confirms the SBKTS module and publication of SBKTS records.",
-        "The current EOKNO homepage says conformity-document issuance is handled by the KTRM Technical Regulation system at techreg.gov.kz; the relationship between that issuance interface and the visible public register endpoint is not fully documented.",
+        "The latest indexed EOKNO homepage snapshot (crawled approximately two months before 2026-11-07) states that conformity-document issuance is handled by techreg.gov.kz; a live fetch timed out, so current service status is unverified.",
         "No dataset-specific open licence or written permission for bulk reuse, automated extraction, offline caching, third-party display or redistribution was identified.",
         "No documented API, bulk export contract, reproducible current snapshot or dataset revision was identified.",
         "No records were downloaded; no source snapshot or SHA-256 is claimed.",
         "No VAG engine code, gearbox code, exact powertrain pair, ECU, DTC or repair applicability was established.",
         "Do not process VIN, applicant, address, owner or other personal fields if encountered during any future authorized review."
       ],
-      "evidence_status": "Official KTRM release confirms OTTS/OTSH records flow into the EOKNO register after registration; official KGD release confirms SBKTS publication; current EOKNO notice points conformity-document issuance to TechReg. Data reuse rights, current completeness and API remain unverified; no records downloaded.",
+      "evidence_status": "Official KTRM release confirms OTTS/OTSH records flow into the EOKNO register after registration; official KGD release confirms SBKTS publication; the latest indexed EOKNO homepage snapshot points issuance to TechReg, but live status could not be verified. Data reuse rights and current register completeness remain unresolved; no records downloaded.",
       "evidence_reviewed": [
         {
           "url": "https://eokno.gov.kz/public-register/register-ktrm2.xhtml",
@@ -1270,12 +1276,14 @@
           "evidence": "KTRM states that after OTTS/OTSH registration numbers are assigned, details enter the EOKNO conformity-document register online and can be checked by QR or register search."
         },
         {
-          "url": "https://eokno.gov.kz/",
+          "url": "https://eokno.gov.kz/index.xhtml",
           "reviewed_at": "2026-11-07",
-          "evidence": "Current homepage notice states that conformity-document issuance is handled by the KTRM Technical Regulation system at techreg.gov.kz; general EOKNO functions moved to KEDEN."
+          "crawl_age_note": "search index reported a crawl approximately two months before review",
+          "live_fetch_status": "timeout",
+          "evidence": "Indexed homepage lists the TR TS 018/2011 conformity-document register and shows a notice directing conformity-document issuance to techreg.gov.kz; live current status not verified."
         }
       ],
-      "project_decision": "discovery_only; the EOKNO register is an official OTTS/OTSH/SBKTS verification endpoint by documented 2023/2024 workflow, but no licence or written permission for automated extraction, bulk storage, offline caching, display or redistribution has been established. Keep product import disabled until rights are confirmed."
+      "project_decision": "discovery_only; official 2023/2024 releases confirm EOKNO OTTS/OTSH/SBKTS register workflows. The latest indexed homepage snapshot points new conformity-document issuance to TechReg, but the live status of that notice could not be verified. No licence or written permission for automated extraction, bulk storage, offline caching, display or redistribution has been established. Keep product import disabled until rights are confirmed."
     }
   ],
   "updated_at": "2026-11-07"
