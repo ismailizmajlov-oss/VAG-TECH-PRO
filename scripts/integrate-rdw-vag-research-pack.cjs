@@ -16,6 +16,11 @@ function fail(message) { throw new Error(message); }
 function safeJoin(root, relative) {
   const base = path.resolve(root), target = path.resolve(base, relative), rel = path.relative(base, target);
   if (!rel || rel === ".." || rel.startsWith(".." + path.sep) || path.isAbsolute(rel)) fail("Path escaped root: " + relative);
+  if (fs.existsSync(target)) {
+    const baseReal = fs.realpathSync(base), targetReal = fs.realpathSync(target);
+    const realRel = path.relative(baseReal, targetReal);
+    if (!realRel || realRel === ".." || realRel.startsWith(".." + path.sep) || path.isAbsolute(realRel)) fail("Symlink escaped root: " + relative);
+  }
   return target;
 }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, "utf8")); }
@@ -238,15 +243,20 @@ function patchLifecycle(desktopRoot) {
 function patchPackage(desktopRoot) {
   const file = safeJoin(desktopRoot, "package.json");
   const pkg = readJson(file);
-  if (!pkg.scripts || typeof pkg.scripts["test:research"] !== "string" || typeof pkg.scripts["verify:local-research"] !== "string") fail("Desktop research scripts missing");
+  if (!pkg.scripts) fail("Desktop package scripts missing");
   if (!JSON.stringify(pkg.build?.extraResources || []).includes("data/research")) fail("Desktop package does not include offline research-data resources");
-  for (const testFile of ["tests/rdw-vag-research-db.test.cjs","tests/rdw-vag-research-ui-contract.test.cjs"]) if (!pkg.scripts["test:research"].includes(testFile)) pkg.scripts["test:research"] += " " + testFile;
-  const verify = "node scripts/verify-rdw-vag-research-pack.cjs";
-  if (!pkg.scripts["verify:local-research"].includes(verify)) pkg.scripts["verify:local-research"] += " && " + verify;
-  pkg.scripts["verify:rdw-research"] = verify;
+  const testKey = typeof pkg.scripts["test:research"] === "string" ? "test:research" : (typeof pkg.scripts.test === "string" ? "test" : null);
+  if (!testKey) fail("Desktop package has no test script for RDW contract tests");
+  const testCommand = pkg.scripts[testKey];
+  const hasGlob = /tests\/\*\*?\/?.*\.test\.cjs|tests\/\*\.test\.cjs/.test(testCommand);
+  if (!hasGlob) {
+    for (const testFile of ["tests/rdw-vag-research-db.test.cjs", "tests/rdw-vag-research-ui-contract.test.cjs"]) {
+      if (!pkg.scripts[testKey].includes(testFile)) pkg.scripts[testKey] += " " + testFile;
+    }
+  }
+  pkg.scripts["verify:rdw-research"] = "node scripts/verify-rdw-vag-research-pack.cjs";
   atomicJson(file, pkg);
 }
-
 function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNumber, artifactSha) {
   const packRoot = locatePackRoot(downloadRoot);
   const validated = validatePack(repoRoot, packRoot);
