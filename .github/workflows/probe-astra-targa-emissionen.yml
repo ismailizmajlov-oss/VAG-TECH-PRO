@@ -1,0 +1,48 @@
+name: ASTRA TARGA emissionen per-gearbox schema probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/probe_astra_targa_emissionen.py"
+      - "tests/test_astra_targa_emissionen_probe.py"
+      - ".github/workflows/probe-astra-targa-emissionen.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe official per-gearbox approval rows (bounded range only)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Test parser and source-defined pairing boundary
+        run: |
+          python -m unittest discover -s tests -p "test_astra_targa_emissionen_probe.py" -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Read bounded 2 MiB source preview
+        shell: pwsh
+        run: |
+          python scripts/probe_astra_targa_emissionen.py --output artifacts/astra-targa-emissionen-probe.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload probe evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: astra-targa-emissionen-schema-probe
+          path: artifacts/astra-targa-emissionen-probe.json
+          if-no-files-found: warn
+          retention-days: 30
