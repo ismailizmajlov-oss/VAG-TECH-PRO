@@ -86,8 +86,12 @@ function patch(desktopRoot) {
     '        databaseSha256: kbaDeSummary.databaseSha256,',
     '      },'
   ].join("\n");
-  const productionReportAnchor = '      production_fitment_rows_added: 0,';
-  if (!verifier.includes("kba_de_vag_stock:")) verifier = replaceExactly(verifier, productionReportAnchor, kbaReport + "\n" + productionReportAnchor, "KBA verification report");
+  const productionReportLines = verifier.split("\n").filter((line) => /^\s*production_fitment_rows_added: 0,$/.test(line));
+  if (productionReportLines.length !== 1) fail("KBA verification report: expected exactly one production-fitment summary anchor, found " + productionReportLines.length);
+  const productionReportAnchor = productionReportLines[0];
+  const reportIndent = productionReportAnchor.match(/^\s*/)[0];
+  const kbaReportAtIndent = kbaReport.split("\n").map((line) => reportIndent + line.trimStart()).join("\n");
+  if (!verifier.includes("kba_de_vag_stock:")) verifier = replaceExactly(verifier, productionReportAnchor, kbaReportAtIndent + "\n" + productionReportAnchor, "KBA verification report");
 
   const kbaTestAssertions = [
     '  assert.deepEqual(result.kba_de_vag_stock, {',
