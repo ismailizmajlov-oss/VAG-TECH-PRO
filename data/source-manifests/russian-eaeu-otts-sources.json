@@ -1284,6 +1284,81 @@
         }
       ],
       "project_decision": "discovery_only; official 2023/2024 releases confirm EOKNO OTTS/OTSH/SBKTS register workflows. The latest indexed homepage snapshot points new conformity-document issuance to TechReg, but the live status of that notice could not be verified. No licence or written permission for automated extraction, bulk storage, offline caching, display or redistribution has been established. Keep product import disabled until rights are confirmed."
+    },
+    {
+      "source_id": "kyrgyz-single-window-public-registry",
+      "publisher": "State Enterprise «Single Window» Center under the State Customs Service of the Cabinet of Ministers of the Kyrgyz Republic",
+      "source_type": "kyrgyz_national_vehicle_type_approval_public_register",
+      "source_url": "https://smart.trade.kg/registry?lng=ru",
+      "official_portal_url": "https://trade.kg/",
+      "vehicle_approval_system_url": "https://car.trade.kg/",
+      "public_registry_project_url": "https://trade.kg/projects/public-registry",
+      "vehicle_approval_project_url": "https://trade.kg/projects/vehicles",
+      "announcement_url": "https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema",
+      "market_scope": [
+        "KG",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "type_approval_document_metadata_only",
+      "observed_public_query": {
+        "observed_at": "2026-11-07",
+        "registry_status": "pilot",
+        "login_required": false,
+        "search_route": "https://smart.trade.kg/registry?lng=ru",
+        "search_fields": [
+          "approval_number",
+          "make",
+          "model"
+        ],
+        "general_public_verification_fields": [
+          "document_number",
+          "VIN"
+        ],
+        "ot_ts_summary_count": 1,
+        "count_treatment": "portal_summary_only_not_a_complete_or_verified_corpus_count",
+        "personal_data_display_claim": "official project page says personal data are not displayed",
+        "record_schema_retrieved": false,
+        "result_retrieval_independently_tested": false,
+        "engine_fields_in_application_form": true,
+        "engine_fields_in_public_record_schema": "not_established",
+        "note": "No-login public search route is documented by the operator. This is not permission for automated extraction, bulk export, offline caching, display or redistribution."
+      },
+      "access_and_reuse": {
+        "public_query": "observed_without_login",
+        "documented_api": "not_identified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "commercial_use": "not_confirmed",
+        "third_party_display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "verification_status": "official_public_register_pilot_and_no_login_route_observed_record_schema_and_reuse_rights_unresolved",
+      "limitations": [
+        "The public registry is described by the operator as a pilot; no complete corpus count or coverage statement is established.",
+        "The homepage's one-OTTS summary is a portal counter only and is not treated as a current, complete or independently verified corpus count.",
+        "The public registry project page says no login is required and that personal data are not displayed, but the actual public record schema and a returned OTTS record were not retrieved in this review.",
+        "The vehicle-approval application system is intended for certification bodies and experts; its application form includes engine and other vehicle characteristics, but those input fields must not be assumed to appear in public records.",
+        "No dataset-specific open licence or written permission for automated extraction, bulk export, offline caching, third-party display or redistribution was identified.",
+        "No documented API, bulk export contract or reproducible dataset snapshot was identified.",
+        "No exact VAG engine code, gearbox code, engine/gearbox pairing, ECU, DTC or repair applicability was established.",
+        "The older sbkts.trade.kg/otts route was previously observed with a CAPTCHA gate; it is retained as a separate legacy interface and no CAPTCHA was bypassed."
+      ],
+      "evidence_status": "Official State Enterprise portal, public-registry project page, vehicle-approval system page and 2026-08-24 announcement reviewed 2026-11-07. The public registry is a pilot with no-login search; no record bytes or dataset snapshot were downloaded, and reuse rights remain unresolved.",
+      "project_decision": "discovery_only_no_automation_no_import_until_documented_record_schema_and_written_reuse_rights_are_confirmed"
     }
   ],
   "updated_at": "2026-11-07"
