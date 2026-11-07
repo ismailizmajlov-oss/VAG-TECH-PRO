@@ -44,7 +44,7 @@ A Windows-only workflow will acquire the exact published CSV over HTTPS from the
 2. SHA-256 of every retained VAG source row over canonical JSON of the original parsed field strings;
 3. SHA-256 of the generated SQLite database and pack manifest.
 
-The workflow fails closed if the published snapshot changes from the pinned source hash, byte size, schema or reviewed counts. The first acquisition is complete; the SQLite pack build and independent verification remain a separate gate.
+The workflow fails closed if the published snapshot changes from the pinned source hash, byte size, schema or reviewed counts. Windows CI run 18 (2026-11-07) completed the read-only SQLite pack build and independent verification. The artifact contains 773 VAG facts across 24 models, four brands and 19 parameter keys; SQLite integrity_check returned `ok`, foreign_key_check returned no violations, and all 773 rows carry source-row SHA-256 values. The source CSV SHA-256 is `93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375`; the SQLite SHA-256 is `e6b072e3a649d78887cca72ee06c7619e85babeb9f10523f289f5be0cc50fd32`; the artifact ZIP SHA-256 is `fa2420fec3ecd0a06d261b31fd2b70f6539616a9bdf354dc45efbd3e55c1c483` (artifact ID `13573936451`). The pack is still a CI research artifact and is not yet included in the desktop installer or production catalog.
 
 ## Rights and attribution
 
@@ -64,4 +64,4 @@ The published licence covers the dataset. It does not transfer rights in the und
 3. CarDir source index and method: https://cardir.ru/istochniki/
 4. Example VAG model pages showing model/generation and powertrain-conditioned reference sections: Volkswagen Golf https://cardir.ru/volkswagen/golf/ ; Audi A4 https://cardir.ru/audi/a4/ ; Skoda Octavia https://cardir.ru/skoda/octavia/
 
-**Disposition:** licensed research pack only; market_scope=UNKNOWN; data_ingested=false; production_import=false; product_import_allowed=false; source_snapshot_sha256=null until a Windows acquisition artifact supplies the actual file.
+**Disposition:** verified licensed research pack only; market_scope=UNKNOWN; `data_ingested=false`; `production_import=false`; `product_import_allowed=false`; source snapshot and SQLite hashes are pinned above. Desktop integration and any production use remain disabled.
