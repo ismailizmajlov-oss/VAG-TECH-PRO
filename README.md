@@ -40,6 +40,7 @@ The current research snapshots contain useful public data, but none of the follo
 | MechanicDB generic guidance | 275 generic guidance rows and 75 generic SAE DTC references | ODbL-1.0; generic educational reference only, no VAG or exact-vehicle applicability |
 | AutoDiag2 VAG community candidates | 110 model candidates, 259 version candidates, 1,083 unverified engine fields, 179 ECU candidates and 3,170 configuration candidates; 956 unattributed make-level DTC rows excluded, 0 retained | ODbL-1.0 / DbCL-1.0; separate read-only research pack, market UNKNOWN; no verified engine codes, transmission records or exact fitment |
 | MechanicDB manufacturer-labelled DTC candidates | 2 rows | ODbL-1.0; quarantined from normal DTC lookup pending technical review; not OEM-confirmed |
+| KBA DE VAG stock identity research | 264,847 aggregate observations, 8 exact manufacturer labels, 802 make/trade-name pairs, 4,155 make/raw-type-key pairs, 17 federal states and four annual reference dates (2023–2026) | DL-DE BY 2.0; DE-only aggregate stock; Typschlüssel remains a raw field, not confirmed TSN; no engine/gearbox, ECU, DTC, repair or individual-vehicle fitment |
 | ASTRA / FEDRO Swiss TAS VAG research | 45,215 VAG-group type-approval index rows and 53,414 emissions/gearbox rows in the 2026-10-29 source snapshot; 5,420 exact variant/version links, 28,489 wildcard-scope links, 19,505 unlinked | Swiss OGD with FEDRO attribution; separate CH-only research namespace; `engineType` and stamped marking stay distinct; `chGearboxType` is not a VAG gearbox code; no RU/EAEU or repair fitment |
 
 Each pack remains in its own namespace with its own manifest, attribution/license material, source revision and hashes. Share-Alike obligations are retained. Generic DTC and generic repair guidance are not linked to a VAG configuration or ECU.
@@ -99,9 +100,28 @@ Run 300 used Windows-hosted CI and a separate Windows Server 2022 lifecycle runn
 A previous dependency audit in run 240 reported zero vulnerabilities for production-only and full dependency trees; run 300 did not repeat that audit. Deprecated transitive-package and GitHub Actions Node.js compatibility warnings remain maintenance items.
 
 
+## KBA DE VAG stock research pack — 2026-11-07
+
+The KBA FZ Hersteller Handelsnamen Pkw dataset is published by Kraftfahrt-Bundesamt through GovData/Mobilithek under Datenlizenz Deutschland – Namensnennung – Version 2.0 (DL-DE BY 2.0). The published licence permits commercial use, display, offline caching, bulk reuse and redistribution with attribution and a notice for modified data. The official whole-vehicle type-approval XLSX remains unavailable (HTTP 503); no approval-list data or hash is claimed for that separate dataset.
+
+The passenger-car stock CSV was acquired on 2026-11-07 through the KBA Statistikportal ArcGIS Hub legacy download endpoint. The 65,366,675-byte snapshot contains 1,047,991 source rows; the exact VAG manufacturer allowlist retains 264,847 aggregate observations across eight labels. The normalized research SQLite contains 17 federal states, four annual reference dates (2023-01-01 through 2026-01-01), 794 trade names and 2,225 raw type keys. There are 802 make/trade-name pairs, 4,155 make/type-key pairs and 16,301 make/trade/type/reference-date tuples.
+
+Independent artifact audit verified:
+- artifact ZIP SHA-256: cb61541e6ac5ad6c3eea2fba9fb2947cc6c83a63aea4f8777beb67b017536d82 (27,883,683 bytes);
+- source CSV SHA-256: 03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468;
+- source manifest SHA-256: c40e207200762a9c901a20c024236f84b78699b0d8a68067e0f0a5db13b9e46d;
+- pack manifest SHA-256: 62bb1867371099c5fdf9e92509684dd1344cc9cb365cf1392684f529a1e7557f;
+- SQLite SHA-256: c61720c363d1f26a2618e16b420c91559634b90347149b312eb18e23be054111.
+
+The SQLite audit returned PRAGMA integrity_check=ok, no foreign-key violations, and nine expected tables. The source-row hash is SHA-256 over canonical JSON of the original parsed CSV field strings; original column names and raw Typschlüssel values are retained.
+
+This pack is Germany-only aggregate stock research, not a vehicle build sheet. The downloaded columns contain no HSN field. Typschlüssel is not promoted to HSN or confirmed TSN; annual Berichtszeitpunkt is not model year or generation. The source provides no engine code, gearbox code, engine/gearbox pair, ECU, DTC, wiring, repair procedure or individual-vehicle fitment. No Russian/EAEU applicability is inferred.
+
+The KBA pack build completed successfully in [workflow run 3](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42327842556). It remains a separate research pack: research_pack_ingested=true, while data_ingested=false, product_database_ingested=false and product_import_allowed=false. Desktop integration has not yet passed a complete Windows build/lifecycle. Windows run 473 failed in the earlier source-rights test gate before KBA integration; the stale status contract and central-register state have since been corrected, but a subsequent successful run is still required. The pack is not represented as production vehicle fitment.
+
 ## Current source work after RDW pack run 34 — 2026-11-07
 
-The current main branch contains 48 central source-register entries and 12 entries in the dedicated Russian/EAEU register; the source-manifest bundle contains 15 manifests. RDW pack run 34 is the latest completed successful acquisition/build. It is a separate NL-only research pack, not Russian/EAEU OTTS and not production vehicle fitment.
+The current main branch contains 48 central source-register entries and 12 entries in the dedicated Russian/EAEU register; the source-manifest bundle contains 15 manifests. RDW pack run 34 is the latest completed successful RDW acquisition/build. The separate KBA DE stock research pack run 3 is the latest completed KBA research build; both remain market-specific research packs, not Russian/EAEU production fitment.
 
 The Dutch national data catalogue lists the six selected RDW vehicle identity and TGK datasets under CC0 1.0: [RDW base vehicle data](https://data.overheid.nl/dataset/basisregistratie-voertuigen---rdw), [TGK drive](https://data.overheid.nl/dataset/81ac19f5-d0e5-4411-847e-f8698d4a42f2), [TGK gearbox](https://data.overheid.nl/dataset/8a5be559-87b6-4224-9bbc-45dae886c427), [TGK base](https://data.overheid.nl/dataset/38afb954-4d3b-4363-9875-4a16117ab86b), [TGK make](https://data.overheid.nl/dataset/68f02697-4c7a-4a5c-ae1d-b253aa3ecc89), and [TGK manufacturer trade name](https://data.overheid.nl/dataset/1f00bd5c-63e9-4262-9603-311712339a30). The source is NL registration evidence with EU type-approval identifiers; it is not RU/EAEU evidence.
 
