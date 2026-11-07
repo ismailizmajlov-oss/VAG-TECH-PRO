@@ -22,7 +22,7 @@
     "generic_code_ranges": [
       "P0xxx",
       "P2xxx",
-      "P34xx-P39xx",
+      "P34xx",
       "B0xxx",
       "C0xxx",
       "U0xxx",
@@ -31,6 +31,7 @@
     "excluded_manufacturer_controlled_ranges": [
       "P1xxx",
       "P30xx-P33xx",
+      "P35xx-P39xx",
       "B1xxx-B2xxx",
       "C1xxx-C2xxx",
       "U1xxx-U2xxx"

@@ -25,7 +25,7 @@ ARTIFACTS = {
 }
 
 GENERIC_OBD_CODE_RE = re.compile(
-    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P3[4-9][0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$"
+    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$"
 )
 
 # Sources without explicit data-specific display/cache/redistribution rights must
@@ -127,9 +127,9 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex generic-only boundary failed")
     if source_manifest.get("scope", {}).get("manufacturer_specific_codes_included") is not False:
         raise ValueError("OBDex source manifest claims manufacturer-specific DTCs")
-    if source_manifest.get("scope", {}).get("generic_code_ranges") != ["P0xxx","P2xxx","P34xx-P39xx","B0xxx","C0xxx","U0xxx","U3xxx"]:
+    if source_manifest.get("scope", {}).get("generic_code_ranges") != ["P0xxx","P2xxx","P34xx","B0xxx","C0xxx","U0xxx","U3xxx"]:
         raise ValueError("OBDex generic code ranges are not explicitly constrained")
-    if source_manifest.get("scope", {}).get("excluded_manufacturer_controlled_ranges") != ["P1xxx","P30xx-P33xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"]:
+    if source_manifest.get("scope", {}).get("excluded_manufacturer_controlled_ranges") != ["P1xxx","P30xx-P33xx","P35xx-P39xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"]:
         raise ValueError("OBDex manufacturer-controlled ranges are not explicitly excluded")
     if source_manifest.get("scope", {}).get("exact_vag_fitment") is not False:
         raise ValueError("OBDex source manifest claims exact VAG fitment")

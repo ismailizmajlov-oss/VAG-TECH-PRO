@@ -43,7 +43,7 @@ misapplied to third-party source documents.
 - Market scope: `UNKNOWN`; no RU/EAEU, EU or North-American market claim.
 - Manufacturer-specific ranges remain excluded: P1xxx, P30xx–P33xx, B1xxx–B2xxx,
   C1xxx–C2xxx and U1xxx–U2xxx.
-- P3 records are admitted only in the explicitly permitted P34xx–P39xx range.
+- Only P34xx records are admitted from the mixed P3 family (155 records in this pinned snapshot). P35xx–P39xx remain excluded until the source and each code's standardized status are independently established.
 - VAG-specific DTC rows: 0.
 - Exact vehicle, generation, model-year, engine, gearbox, ECU and PR-code fitment: none.
 - Repair-cost estimates and generic repair suggestions are not presented as VAG OEM procedures.

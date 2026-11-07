@@ -98,8 +98,8 @@ class OfflineDataPackRightsTests(unittest.TestCase):
 
     def test_obdex_lock_pins_generic_ranges_and_external_reference_quarantine(self):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
-        self.assertEqual(lock["scope"]["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx-P39xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])
-        self.assertEqual(lock["scope"]["excluded_manufacturer_controlled_ranges"], ["P1xxx", "P30xx-P33xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])
+        self.assertEqual(lock["scope"]["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])
+        self.assertEqual(lock["scope"]["excluded_manufacturer_controlled_ranges"], ["P1xxx", "P30xx-P33xx", "P35xx-P39xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])
         self.assertEqual(lock["source_reference_policy"], {
             "validation": "syntax_only",
             "external_fetch": False,
@@ -109,7 +109,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         })
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
-        self.assertIn("const p3GenericCode = /^P3[4-9][0-9A-F]{2}$/;", workflow)
+        self.assertIn("const p3GenericCode = /^P34[0-9A-F]{2}$/;", workflow)\n        self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P34C8"))\n        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P3500"))\n        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P33FF"))
         self.assertIn("sourceManifest.scope.generic_code_ranges", workflow)
         self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
 
