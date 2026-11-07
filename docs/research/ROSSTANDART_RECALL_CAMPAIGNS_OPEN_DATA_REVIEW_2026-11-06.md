@@ -52,3 +52,15 @@ If rights and the actual schema are later confirmed, evaluate a separate RU reca
 - 2023 Rosstandart webinar report: https://www.normacs.info/news/73140
 - 2026 independent schema/snapshot review: https://glav-auto.ru/news/kak-proverit-otzyvnuyu-kampaniyu
 - Typical open-data terms: https://data.gov.ru/information-usage
+
+
+## Latest metadata-only probe — run 30, 2026-11-07
+
+The Windows metadata-only probe completed its test and upload steps in [run 30](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349245). Both official endpoints still timed out with WinError 10060 at 2026-11-07 15:51:05 UTC:
+
+- Landing page: https://easy.gost.ru/opendata/7706406291-recallcampaigns/
+- Archive page: https://easy.gost.ru/opendata/7706406291-recallcampaigns/archive/
+
+The metadata-only artifact is ID `13580796001`; ZIP SHA-256 `8f75859e11caec06854615ffba0f3c2b43e68d8f2beffdf871add9d944f76f2a`. The 1,689-byte JSON report SHA-256 is `20299026879c3849fc0a8f64b34436e13fe5473c33f02cce9043b37ea114f0e6`. No page HTML, download links, terms links, file, schema or snapshot were retrieved. No VIN-level rows were downloaded.
+
+**Decision unchanged:** this is a successful metadata-only probe with an unsuccessful source retrieval. The source remains discovery-only; `source_snapshot_sha256=null`, `data_ingested=false`, and dataset-specific offline caching/redistribution rights remain unestablished. Do not use third-party mirrors or the reported historical snapshot as a substitute for the official file.
