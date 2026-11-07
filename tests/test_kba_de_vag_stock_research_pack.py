@@ -64,6 +64,10 @@ class KbaResearchPackTests(unittest.TestCase):
     def test_build_verifies_counts_hashes_and_exact_market_scope(self):
         result = builder.verify(self.output)
         self.assertEqual(result["status"], "verified_research_only")
+        pack_manifest = builder.read_json(self.output / "manifest.json")
+        self.assertIs(pack_manifest["research_pack_ingested"], True)
+        self.assertIs(pack_manifest["product_database_ingested"], False)
+        self.assertIs(pack_manifest["data_ingested"], False)
         self.assertEqual(result["counts"]["source_rows"], 9)
         self.assertEqual(result["counts"]["vag_stock_observations"], 8)
         self.assertEqual(result["counts"]["manufacturer_labels"], 8)
