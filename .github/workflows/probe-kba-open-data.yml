@@ -1,0 +1,39 @@
+name: Probe KBA German vehicle identity open data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/probe_kba_open_data.py"
+      - "tests/test_kba_open_data_probe.py"
+      - ".github/workflows/probe-kba-open-data.yml"
+      - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kba-public-source-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test read-only KBA probe and exact manufacturer allowlist
+        run: python -m unittest discover -s tests -p "test_kba_open_data_probe.py" -v
+      - name: Probe official ArcGIS and KBA public delivery routes
+        run: python scripts/probe_kba_open_data.py --out kba-probe-out
+      - name: Upload probe diagnostics and any retrieved public source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: kba-public-source-probe-${{ github.run_id }}
+          path: kba-probe-out/
+          if-no-files-found: error
+          retention-days: 3
