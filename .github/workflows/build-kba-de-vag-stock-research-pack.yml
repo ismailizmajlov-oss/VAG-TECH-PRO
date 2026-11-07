@@ -1,0 +1,105 @@
+name: Build KBA Germany VAG stock SQLite research pack
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-kba-de-vag-stock-research-pack.yml"
+      - "scripts/build_kba_de_vag_stock_research_pack.py"
+      - "scripts/probe_kba_open_data.py"
+      - "tests/test_kba_de_vag_stock_research_pack.py"
+      - "tests/test_kba_open_data_probe.py"
+      - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-kba-de-stock-research-pack-\${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-verify:
+    name: Acquire and verify KBA DE VAG aggregate stock research pack
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - name: Checkout pinned source, rights manifest and builder
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Compile and run offline KBA policy tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python --version
+          python -m py_compile scripts/probe_kba_open_data.py scripts/build_kba_de_vag_stock_research_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "KBA Python compilation failed." }
+          python -m unittest discover -s tests -p "test_kba_open_data_probe.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "KBA probe policy tests failed." }
+          python -m unittest discover -s tests -p "test_kba_de_vag_stock_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "KBA SQLite pack policy tests failed." }
+
+      - name: Acquire public KBA CSV and probe report
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/probe_kba_open_data.py --out artifacts/kba-probe 2>&1 | Tee-Object -FilePath kba-probe.log
+          if ($LASTEXITCODE -ne 0) { throw "KBA public source acquisition failed." }
+          $source = Get-Content -LiteralPath data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json -Raw | ConvertFrom-Json
+          $report = Get-Content -LiteralPath artifacts/kba-probe/probe-report.json -Raw | ConvertFrom-Json
+          if ($report.status -ne "resource_acquired_schema_available" -or
+              $report.download.sha256 -ne $source.snapshot.source_snapshot_sha256 -or
+              $report.download.bytes -ne $source.snapshot.file_bytes -or
+              $report.csv_schema.row_count -ne $source.snapshot.source_row_count) {
+            throw "KBA acquisition differs from the reviewed source snapshot; refusing to build."
+          }
+          $observed = @($report.csv_schema.exact_vag_manufacturer_values | Sort-Object)
+          $expected = @($source.snapshot.vag_manufacturer_labels | Sort-Object)
+          if (Compare-Object -ReferenceObject $expected -DifferenceObject $observed) {
+            throw "KBA exact manufacturer allowlist differs from the pinned source manifest."
+          }
+          if (($report.csv_schema.columns -join "|") -ne ($source.snapshot.observed_columns -join "|")) {
+            throw "KBA CSV schema differs from the reviewed source manifest."
+          }
+          "KBA source SHA-256: $($report.download.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Source rows: $($report.csv_schema.row_count); exact VAG manufacturer labels: $($observed -join ', ')" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Build normalized SQLite research pack and verify every source-row hash
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_kba_de_vag_stock_research_pack.py --csv artifacts/kba-probe/source-download.csv --source-manifest data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json --output-dir artifacts/kba-de-vag-stock-research-pack 2>&1 | Tee-Object -FilePath kba-pack-build.log
+          if ($LASTEXITCODE -ne 0) { throw "KBA SQLite research-pack build failed." }
+          python scripts/build_kba_de_vag_stock_research_pack.py --verify-only --output-dir artifacts/kba-de-vag-stock-research-pack 2>&1 | Tee-Object -FilePath kba-pack-verify.log
+          if ($LASTEXITCODE -ne 0) { throw "KBA independent SQLite/provenance verification failed." }
+          $manifest = Get-Content -LiteralPath artifacts/kba-de-vag-stock-research-pack/manifest.json -Raw | ConvertFrom-Json
+          if ($manifest.market_scope.Count -ne 1 -or $manifest.market_scope[0] -ne "DE" -or
+              $manifest.production_import -ne $false -or $manifest.product_import_allowed -ne $false -or
+              $manifest.ru_eaeu_applicability -ne $false -or $manifest.exact_engine_gearbox_pair -ne $false -or
+              $manifest.exact_vehicle_fitment -ne $false -or $manifest.engine_codes_included -ne $false -or
+              $manifest.gearbox_codes_included -ne $false) {
+            throw "KBA research pack escaped its DE-only aggregate-stock boundary."
+          }
+          "## KBA Germany VAG stock research pack" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Market: DE only; production import: false; exact vehicle fitment: false; engine/gearbox pair: false; RU/EAEU applicability: false." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Counts: $($manifest.counts | ConvertTo-Json -Compress)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "SQLite SHA-256: $($manifest.database.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload verified KBA SQLite, source snapshot and provenance
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: kba-de-vag-stock-research-pack
+          path: |
+            artifacts/kba-de-vag-stock-research-pack/**
+            kba-probe.log
+            kba-pack-build.log
+            kba-pack-verify.log
+          if-no-files-found: error
+          retention-days: 90
