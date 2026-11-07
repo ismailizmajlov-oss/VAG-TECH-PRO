@@ -41,6 +41,6 @@ if (updatedLifecycle.includes(oldStatus) || updatedAstraLines.length > 1 || upda
 }
 process.stdout.write(JSON.stringify({
   status: 'patched',
-  fix: 'Start-DesktopAndWait status message moved from success pipeline to host stream',
+  fix: 'Start-DesktopAndWait emits one session object; optional ASTRA status never enters success pipeline',
   files: ['scripts/windows-installer-lifecycle.ps1', 'tests/windows-lifecycle-script-contract.test.cjs']
 }, null, 2) + '\n');
