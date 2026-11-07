@@ -98,6 +98,13 @@ def parse_preview(raw: bytes) -> dict:
         or "typengenehmigungsnummer" in cell.casefold()
         for cell in rows[0][:4]
     )
+    header_fields = rows[0] if header_like else []
+    header_field_count = len(header_fields)
+    header_trailing_empty_fields = 0
+    for value in reversed(header_fields):
+        if value.strip():
+            break
+        header_trailing_empty_fields += 1
     if header_like:
         rows = rows[1:]
 
@@ -129,6 +136,9 @@ def parse_preview(raw: bytes) -> dict:
         "complete_rows_in_preview": len(rows),
         "rows_meeting_published_field_schema": len(valid),
         "header_like_first_row": header_like,
+        "header_field_count": header_field_count,
+        "header_fields": header_fields,
+        "header_trailing_empty_fields": header_trailing_empty_fields,
         "field_count_min": min(lengths) if lengths else None,
         "field_count_max": max(lengths) if lengths else None,
         "field_count_mode": Counter(lengths).most_common(1)[0][0] if lengths else None,
