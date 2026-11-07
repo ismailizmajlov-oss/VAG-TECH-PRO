@@ -153,10 +153,13 @@ def read_csv_rows(path: Path, retrieved_date: date | None = None) -> tuple[list[
 def inspect_csv(path: Path, source: dict[str,Any], retrieved_date: date | None = None):
     rows,summary=read_csv_rows(path,retrieved_date)
     expected=source.get("snapshot") or {}
-    if summary["source_row_count"] != expected.get("expected_source_row_count"):
-        raise ValueError("CarDir source row count differs from reviewed snapshot count")
-    if summary["model_count"] != expected.get("expected_model_count"):
-        raise ValueError("CarDir model count differs from reviewed snapshot count")
+    if summary["source_row_count"] != expected.get("expected_source_row_count") or summary["model_count"] != expected.get("expected_model_count"):
+        raise ValueError(
+            "CarDir live CSV differs from the reviewed publisher snapshot: "
+            f"observed rows={summary['source_row_count']} (expected {expected.get('expected_source_row_count')}), "
+            f"observed brand/model pairs={summary['model_count']} (expected {expected.get('expected_model_count')}), "
+            f"VAG rows={summary['vag_row_count']}, VAG models={summary['vag_model_count']}"
+        )
     return rows,summary
 
 
@@ -167,8 +170,8 @@ class CardirRedirectHandler(urllib.request.HTTPRedirectHandler):
 
 
 def acquire(source_manifest_path: Path,output_dir: Path) -> dict[str,Any]:
-    source_raw=source_manifest_path.read_bytes()
     source=read_json(source_manifest_path); validate_rights(source)
+    source_raw=source_manifest_path.read_bytes()
     if output_dir.exists():
         raise FileExistsError(f"Refusing to overwrite acquisition directory: {output_dir}")
     output_dir.parent.mkdir(parents=True,exist_ok=True); output_dir.mkdir()
@@ -198,7 +201,7 @@ def acquire(source_manifest_path: Path,output_dir: Path) -> dict[str,Any]:
         if total<=0: raise ValueError("CarDir CSV download is empty")
         os.replace(temp_path,final_path)
         retrieved=datetime.now(timezone.utc)
-        _,summary=inspect_csv(final_path,source,retrieved.date())
+        rows,summary=read_csv_rows(final_path,retrieved.date())
         snapshot={
             "schema_version":1,"source_id":SOURCE_ID,"source_file":"source.csv",
             "source_url":DATA_URL,"data_page_url":DATA_PAGE_URL,"source_revision":source["data_revision"],
@@ -207,11 +210,30 @@ def acquire(source_manifest_path: Path,output_dir: Path) -> dict[str,Any]:
             "source_snapshot_sha256":sha256_file(final_path),"source_file_bytes":final_path.stat().st_size,
             **summary
         }
+        # Persist the observed snapshot before enforcing the reviewed counts. If the
+        # publisher changes the file, CI can retain this probe evidence without building a pack.
         write_json(output_dir/"snapshot.json",snapshot)
+        expected=source["snapshot"]
+        if summary["source_row_count"]!=expected.get("expected_source_row_count") or summary["model_count"]!=expected.get("expected_model_count"):
+            raise ValueError(
+                "CarDir live CSV differs from the reviewed publisher snapshot: "
+                f"observed rows={summary['source_row_count']} (expected {expected.get('expected_source_row_count')}), "
+                f"observed brand/model pairs={summary['model_count']} (expected {expected.get('expected_model_count')}), "
+                f"VAG rows={summary['vag_row_count']}, VAG models={summary['vag_model_count']}"
+            )
+        pinned_hash=expected.get("source_snapshot_sha256")
+        pinned_bytes=expected.get("source_file_bytes")
+        if pinned_hash and snapshot["source_snapshot_sha256"]!=pinned_hash:
+            raise ValueError("CarDir live CSV differs from the pinned source snapshot SHA-256")
+        if pinned_bytes and snapshot["source_file_bytes"]!=pinned_bytes:
+            raise ValueError("CarDir live CSV differs from the pinned source snapshot byte size")
         return {"status":"acquired_schema_verified",**snapshot}
     except Exception:
         if temp_path.exists(): temp_path.unlink()
-        shutil.rmtree(output_dir,ignore_errors=True)
+        # Keep a complete CSV + snapshot as auditable evidence when the only failure
+        # is a changed publisher snapshot; remove incomplete/network-error staging.
+        if not (final_path.exists() and (output_dir/"snapshot.json").is_file()):
+            shutil.rmtree(output_dir,ignore_errors=True)
         raise
 
 
@@ -223,6 +245,12 @@ def verify_snapshot(csv_path: Path,snapshot_path: Path,source_manifest_path: Pat
         raise ValueError("CarDir snapshot source identity mismatch")
     if snapshot.get("source_manifest_sha256")!=sha256_bytes(source_raw):
         raise ValueError("CarDir source-manifest SHA-256 mismatch")
+    pinned_hash=(source.get("snapshot") or {}).get("source_snapshot_sha256")
+    pinned_bytes=(source.get("snapshot") or {}).get("source_file_bytes")
+    if pinned_hash and snapshot.get("source_snapshot_sha256")!=pinned_hash:
+        raise ValueError("CarDir snapshot differs from pinned source SHA-256")
+    if pinned_bytes and snapshot.get("source_file_bytes")!=pinned_bytes:
+        raise ValueError("CarDir snapshot differs from pinned source byte size")
     if snapshot.get("source_snapshot_sha256")!=sha256_file(csv_path):
         raise ValueError("CarDir source CSV SHA-256 mismatch")
     if snapshot.get("source_file_bytes")!=csv_path.stat().st_size:
