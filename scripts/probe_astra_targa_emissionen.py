@@ -41,6 +41,16 @@ REQUIRED_HEADERS = {
     "drive": ("antrieb",),
     "homologation_date": ("homologationsdatum",),
 }
+# Zero-based positions from the published 42-field core table. The live file
+# currently has additional columns; runtime extraction resolves fields by header.
+FIELDS = {
+    "approval_number": 0, "make": 1, "type_variant_version": 2,
+    "gearbox_classification": 9, "final_drive_ratio": 10,
+    "engine_make": 13, "engine_type": 14, "engine_construction": 15,
+    "fuel": 16, "displacement_cc": 19, "power_kw": 20, "power_rpm": 21,
+    "torque_nm": 22, "torque_rpm": 23, "emission_control": 24,
+    "drive": 26, "emissions_code": 28, "homologation_date": 41,
+}
 VAG_MAKES = {
     "VW", "VOLKSWAGEN", "AUDI", "SEAT", "SKODA", "ŠKODA",
     "CUPRA", "PORSCHE", "BENTLEY", "LAMBORGHINI", "BUGATTI",
