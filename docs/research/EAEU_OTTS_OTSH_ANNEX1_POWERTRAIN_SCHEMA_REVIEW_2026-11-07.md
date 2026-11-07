@@ -38,15 +38,20 @@ The current consolidated form's Appendix No. 1, headed "Общие характ�
 
 These are **attachment-level form fields**. They are distinct from the short public registry-summary fields observed on the ELPTS page on 2026-11-06. That visible table included a "Печатная форма ОТТС (ОТШ)" column but did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. No filled attachment was retrieved, so the actual availability, completeness and access terms for individual documents remain unresolved.
 
-## EEC Order No. 126 — forward-looking unified-register initiative
+## EEC Order No. 126 — unified-register implementation plan
 
-The official EEC legal portal lists Collegium Order No. 126 of 2026-08-11, published and effective 2026-08-14. Its title approves a plan to improve EAEU law governing electronic vehicle passports and the formation of a unified register of issued OTTS, OTSH, SBKTS and registered cancellation notices. The signed two-page order says the attached plan is approved and the order enters into force on publication.
+The official six-page PDF for Collegium Order No. 126 of 2026-08-11 includes the approved implementation plan (pages 3–6 of the PDF). The order was published and entered into force on 2026-08-14. The plan contains four milestones:
 
-- Official EEC 2026 orders index: https://docs.eaeunion.org/en/documents/464/
-- Signed order PDF: https://docs.eaeunion.org/upload/iblock/db6/3ecew1lvopjk2zx2raf66047bn274ofu/Rasporyazhenie-Kollegii-_-126-ot-11-avgusta-2026-g.pdf
-- Separate annex archive linked by the EEC portal: https://docs.eaeunion.org/upload/iblock/387/skbs5epusvw0sn84ne8g2ywy3oq4rn6m/skachat-v-word.zip
+| Item | Target | Planned measure | Expected result |
+|---|---|---|---|
+| 1 | Q4 2026 | Draft amendments to the rules for filling OTTS/OTSH and related vehicle-approval forms under Decision No. 232 | Electronic form rules for approval documents and cancellation notices under TR TS 018/2011 |
+| 2 | Q4 2026 | Draft amendments to the regulation on the unified register under Decision No. 225 | Formation from electronic information in national parts and the ability to transfer information from the unified register |
+| 3 | Q1 2027 | Draft amendments to Decisions No. 88 (2016-07-26), No. 81 (2016-07-12) and No. 122 (2015-09-22) | Legal support for the unified register based on electronic national-part information and information transfer |
+| 4 | Q1 2027 | Agree mechanisms for providing customs-release information to the national electronic-passport operator and the Russian administrator | Define the information composition and provision procedure; implementation may be by protocol or Customs Code amendments |
 
-The annex archive was not retrieved in this review, so no implementation milestones, technical fields, API, access model or delivery dates are inferred. The order is a legal/administrative roadmap, not a live registry endpoint, data publication, open-data licence or permission to bulk extract, cache, display or redistribute approval records. It does not change any source's `permission_required` status or `data_ingested=false` state. The annex and subsequent official implementation acts should be monitored as a possible future access route; no importer or data mapping is enabled on this basis.
+Primary source: [official EEC Order No. 126 PDF, including the plan](https://docs.eaeunion.org/upload/iblock/db6/3ecew1lvopjk2zx2raf66047bn274ofu/Rasporyazhenie-Kollegii-_-126-ot-11-avgusta-2026-g.pdf). The official EEC index is https://docs.eaeunion.org/en/documents/464/.
+
+These are **planned legal/administrative milestones**, not evidence that the amendments or registry are already implemented. The plan points to electronic information in national parts and a future ability to transfer information; it does not itself expose a live OTTS API, publish records, define the final public fields, or grant rights to bulk extract, cache, display or redistribute data. The existing source remains `permission_required`, `data_ingested=false`, and `product_import_allowed=false`. No importer or data mapping is enabled on the basis of this roadmap. Monitor the Q4 2026 and Q1 2027 acts and re-review their actual text, endpoint, fields and reuse terms before any acquisition.
 
 ## Required interpretation for VAG TECH PRO
 
