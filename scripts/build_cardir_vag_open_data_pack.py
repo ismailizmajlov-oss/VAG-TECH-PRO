@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Acquire and build a fail-closed CarDir CC BY 4.0 VAG owner-manual facts pack."""
 from __future__ import annotations
-import argparse, csv, hashlib, json, os, re, shutil, sqlite3, tempfile, urllib.request
+import argparse, csv, hashlib, json, os, re, shutil, sqlite3, tempfile, urllib.request, unicodedata
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -21,6 +21,7 @@ VIN_RE = re.compile(r"(?<![A-HJ-NPR-Z0-9])[A-HJ-NPR-Z0-9]{17}(?![A-HJ-NPR-Z0-9])
 KEY_RE = re.compile(r"^[a-z0-9_]+$")
 ALLOWED_HOSTS = {"cardir.ru","www.cardir.ru"}
 TABLES = {"pack_metadata","source_registry","source_files","brands","models","facts"}
+INDEXES = {"idx_cardir_facts_brand_model","idx_cardir_facts_parameter","idx_cardir_facts_qualifier","idx_cardir_facts_search"}
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -69,6 +70,11 @@ def normalize_brand(value: str) -> str:
 
 def is_vag_brand(value: str) -> bool:
     return normalize_brand(value) in ALLOWED_BRANDS
+
+
+def fold_search(row: dict[str,str]) -> str:
+    fields=("brand","model","key","key_label_ru","qualifier","value","unit","source_title","source_page")
+    return unicodedata.normalize("NFKC"," ".join(row.get(key,"") for key in fields)).casefold()
 
 
 def validate_rights(source: dict[str, Any]) -> None:
@@ -309,7 +315,7 @@ def create_database(db_path: Path,source: dict[str,Any],snapshot: dict[str,Any],
         CREATE TABLE facts(
           source_row_number INTEGER PRIMARY KEY,source_id TEXT NOT NULL REFERENCES source_registry(source_id),
           brand_id INTEGER NOT NULL REFERENCES brands(brand_id),model_id INTEGER NOT NULL REFERENCES models(model_id),
-          parameter_key TEXT NOT NULL,parameter_label_ru TEXT NOT NULL,qualifier_raw TEXT NOT NULL,value_raw TEXT NOT NULL,unit_raw TEXT NOT NULL,
+          parameter_key TEXT NOT NULL,parameter_label_ru TEXT NOT NULL,qualifier_raw TEXT NOT NULL,search_text_folded TEXT NOT NULL,value_raw TEXT NOT NULL,unit_raw TEXT NOT NULL,
           source_title TEXT NOT NULL,source_page TEXT NOT NULL,source_url TEXT NOT NULL,page_url TEXT NOT NULL,verified_at TEXT NOT NULL,
           raw_fields_json TEXT NOT NULL,source_row_sha256 TEXT NOT NULL CHECK(length(source_row_sha256)=64),
           publisher_verification_status TEXT NOT NULL CHECK(publisher_verification_status='publisher_verified'),
@@ -324,6 +330,7 @@ def create_database(db_path: Path,source: dict[str,Any],snapshot: dict[str,Any],
         CREATE INDEX idx_cardir_facts_brand_model ON facts(brand_id,model_id);
         CREATE INDEX idx_cardir_facts_parameter ON facts(parameter_key);
         CREATE INDEX idx_cardir_facts_qualifier ON facts(qualifier_raw);
+        CREATE INDEX idx_cardir_facts_search ON facts(search_text_folded);
         """)
         rights=source["rights"]
         with db:
@@ -349,14 +356,14 @@ def create_database(db_path: Path,source: dict[str,Any],snapshot: dict[str,Any],
                     model_ids[model_key]=int(db.execute("INSERT INTO models(brand_id,source_value) VALUES (?,?)",(brand_ids[brand],row["model"])).lastrowid)
                 precision="model_and_raw_qualifier_text" if row["qualifier"].strip() else "model_level_only"
                 db.execute("""INSERT INTO facts(
-                  source_row_number,source_id,brand_id,model_id,parameter_key,parameter_label_ru,qualifier_raw,value_raw,unit_raw,
+                  source_row_number,source_id,brand_id,model_id,parameter_key,parameter_label_ru,qualifier_raw,search_text_folded,value_raw,unit_raw,
                   source_title,source_page,source_url,page_url,verified_at,raw_fields_json,source_row_sha256,
                   publisher_verification_status,technical_review_status,market_scope,applicability_precision,
                   model_generation,model_year_from,model_year_to,engine_code,transmission_code,
                   exact_engine_gearbox_pair,production_fitment,ecu_fitment,dtc_fitment,repair_procedure
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,0,0,0,0,0)""",(
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,0,0,0,0,0)""",(
                     source_row_number,SOURCE_ID,brand_ids[brand],model_ids[model_key],row["key"],row["key_label_ru"],
-                    row["qualifier"],row["value"],row["unit"],row["source_title"],row["source_page"],row["source_url"],
+                    row["qualifier"],fold_search(row),row["value"],row["unit"],row["source_title"],row["source_page"],row["source_url"],
                     row["page_url"],row["verified_at"],raw_json,row_hash,"publisher_verified","not_independently_reviewed",
                     "UNKNOWN",precision
                 ))
@@ -398,13 +405,27 @@ def build(csv_path: Path,snapshot_path: Path,source_manifest_path: Path,output_d
         key_counts={}
         for row in rows:
             if is_vag_brand(row["brand"]): key_counts[row["key"]]=key_counts.get(row["key"],0)+1
+        report={
+            "status":"verified_research_only","source_id":SOURCE_ID,
+            "source_snapshot_sha256":snapshot["source_snapshot_sha256"],
+            "source_manifest_sha256":sha256_file(source_manifest_path),
+            "database_sha256":sha256_file(staging/"cardir-vag-owner-manual-facts.sqlite"),
+            "counts":{"source_rows":snapshot["source_row_count"],"source_models":snapshot["model_count"],"vag_facts":counts["facts"],"vag_brands":counts["brands"],"vag_models":counts["models"],"parameter_keys":counts["parameter_keys"],"parameter_counts":dict(sorted(key_counts.items()))},
+            "market_scope":["UNKNOWN"],"production_import":False,"product_import_allowed":False,
+            "exact_engine_gearbox_pair":False,"ru_eaeu_applicability":False
+        }
+        write_json(staging/"build-report.json",report)
         manifest={
-            "schema_version":1,"pack_id":PACK_ID,"source_id":SOURCE_ID,"publisher":"CarDir",
+            "schema_version":2,"status":"verified_research_only","pack_id":PACK_ID,"source_id":SOURCE_ID,"publisher":"CarDir",
             "source_revision":source["data_revision"],"license":{"id":LICENSE_ID,"url":LICENSE_URL,"attribution_required":True},
             "attribution_file":"ATTRIBUTION.md","license_file":"LICENSE.txt","source_manifest_file":"source-manifest.json",
-            "source_snapshot_file":"source-snapshot.json","source_snapshot_sha256":snapshot["source_snapshot_sha256"],
-            "source_manifest_sha256":sha256_file(source_manifest_path),"source_file":"source.csv","source_file_bytes":snapshot["source_file_bytes"],
-            "database":{"file":"cardir-vag-owner-manual-facts.sqlite","sha256":sha256_file(staging/"cardir-vag-owner-manual-facts.sqlite"),"integrity_check":"ok","foreign_key_violations":0},
+            "source_snapshot_file":"source-snapshot.json","build_report_file":"build-report.json",
+            "source_snapshot_sha256":snapshot["source_snapshot_sha256"],"source_manifest_sha256":sha256_file(source_manifest_path),
+            "source_file":"source.csv","source_file_bytes":snapshot["source_file_bytes"],
+            "source_record_hash_method":"SHA-256 of compact canonical UTF-8 JSON over original CSV field strings with sorted keys",
+            "search_index":{"column":"search_text_folded","normalization":"Unicode NFKC + casefold","source_fields":["brand","model","key","key_label_ru","qualifier","value","unit","source_title","source_page"]},
+            "database":{"file":"cardir-vag-owner-manual-facts.sqlite","sha256":sha256_file(staging/"cardir-vag-owner-manual-facts.sqlite"),"byte_size":(staging/"cardir-vag-owner-manual-facts.sqlite").stat().st_size,"integrity_check":"ok","foreign_key_violations":0},
+            "build_report_sha256":sha256_file(staging/"build-report.json"),
             "counts":{"source_rows":snapshot["source_row_count"],"source_models":snapshot["model_count"],"vag_facts":counts["facts"],"vag_brands":counts["brands"],"vag_models":counts["models"],"parameter_keys":counts["parameter_keys"],"parameter_counts":dict(sorted(key_counts.items()))},
             "market_scope":["UNKNOWN"],"applicability_precision":"model_and_raw_qualifier_text",
             "publisher_verification_status":"publisher_verified","technical_review_status":"not_independently_reviewed",
@@ -428,7 +449,7 @@ def verify_pack(pack_dir: Path):
     source_manifest=read_json(pack_dir/"source-manifest.json")
     snapshot=read_json(pack_dir/"source-snapshot.json")
     validate_rights(source_manifest)
-    if manifest.get("pack_id")!=PACK_ID or manifest.get("source_id")!=SOURCE_ID: raise ValueError("Cardir pack identity mismatch")
+    if manifest.get("schema_version")!=2 or manifest.get("status")!="verified_research_only" or manifest.get("pack_id")!=PACK_ID or manifest.get("source_id")!=SOURCE_ID: raise ValueError("Cardir pack identity/schema/status mismatch")
     if manifest.get("market_scope")!=["UNKNOWN"] or manifest.get("product_import_allowed") is not False or manifest.get("production_import") is not False:
         raise ValueError("Cardir pack escaped UNKNOWN-market research-only boundary")
     for key in ("exact_vehicle_fitment","exact_engine_code_mapping","exact_gearbox_code_mapping","exact_engine_gearbox_pair","model_generation_inferred","model_year_inferred","ru_eaeu_applicability","ecu_fitment","dtc_fitment","repair_procedure","wiring_or_pinout"):
@@ -439,8 +460,12 @@ def verify_pack(pack_dir: Path):
     if sha256_file(source_path)!=manifest.get("source_manifest_sha256") or snapshot.get("source_manifest_sha256")!=sha256_file(source_path):
         raise ValueError("Cardir source-manifest SHA-256 mismatch")
     _,snapshot,rows=verify_snapshot(csv_path,snapshot_path,source_path)
+    build_report_path=pack_dir/"build-report.json"
+    if sha256_file(build_report_path)!=manifest.get("build_report_sha256"): raise ValueError("Cardir build-report SHA-256 mismatch")
+    build_report=read_json(build_report_path)
     db_path=pack_dir/manifest["database"]["file"]
-    if sha256_file(db_path)!=manifest["database"]["sha256"]: raise ValueError("Cardir SQLite SHA-256 mismatch")
+    if sha256_file(db_path)!=manifest["database"]["sha256"] or db_path.stat().st_size!=manifest["database"].get("byte_size"): raise ValueError("Cardir SQLite SHA-256/size mismatch")
+    if build_report.get("database_sha256")!=manifest["database"]["sha256"] or build_report.get("source_snapshot_sha256")!=manifest["source_snapshot_sha256"] or build_report.get("status")!="verified_research_only": raise ValueError("Cardir build-report provenance mismatch")
     db=sqlite3.connect(f"file:{db_path.resolve().as_posix()}?mode=ro",uri=True); db.row_factory=sqlite3.Row
     try:
         db.execute("PRAGMA query_only=ON")
@@ -448,19 +473,23 @@ def verify_pack(pack_dir: Path):
             raise ValueError("Cardir SQLite integrity/foreign-key check failed")
         tables={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         if tables!=TABLES: raise ValueError("Cardir SQLite table set mismatch")
-        facts=db.execute("SELECT source_row_number,raw_fields_json,source_row_sha256 FROM facts ORDER BY source_row_number").fetchall()
+        indexes={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='index'")}
+        if not INDEXES.issubset(indexes): raise ValueError("Cardir SQLite search indexes missing")
+        facts=db.execute("SELECT source_row_number,raw_fields_json,source_row_sha256,search_text_folded FROM facts ORDER BY source_row_number").fetchall()
         expected=[(n,row) for n,row in enumerate(rows,start=2) if is_vag_brand(row["brand"])]
         if len(facts)!=len(expected) or len(facts)!=manifest["counts"]["vag_facts"]: raise ValueError("Cardir SQLite retained-row parity mismatch")
         for stored,(line,row) in zip(facts,expected):
             raw=canonical_bytes(row).decode("utf-8")
-            if stored["source_row_number"]!=line or stored["raw_fields_json"]!=raw or stored["source_row_sha256"]!=sha256_bytes(raw.encode("utf-8")):
-                raise ValueError(f"Cardir source-row provenance mismatch at line {line}")
+            if stored["source_row_number"]!=line or stored["raw_fields_json"]!=raw or stored["source_row_sha256"]!=sha256_bytes(raw.encode("utf-8")) or stored["search_text_folded"]!=fold_search(row):
+                raise ValueError(f"Cardir source-row provenance/search index mismatch at line {line}")
             if VIN_RE.search(stored["raw_fields_json"]): raise ValueError(f"VIN-like data found in retained row {line}")
         bad=db.execute("SELECT count(*) FROM facts WHERE market_scope<>'UNKNOWN' OR technical_review_status<>'not_independently_reviewed' OR publisher_verification_status<>'publisher_verified' OR exact_engine_gearbox_pair<>0 OR production_fitment<>0 OR ecu_fitment<>0 OR dtc_fitment<>0 OR repair_procedure<>0 OR model_generation IS NOT NULL OR model_year_from IS NOT NULL OR model_year_to IS NOT NULL OR engine_code IS NOT NULL OR transmission_code IS NOT NULL").fetchone()[0]
         if bad: raise ValueError("Cardir SQLite applicability boundary failed")
         if db.execute("SELECT count(*) FROM source_registry WHERE source_id=? AND license_id=? AND market_scope='UNKNOWN' AND production_import=0 AND exact_engine_gearbox_pair=0 AND ru_eaeu_applicability=0",(SOURCE_ID,LICENSE_ID)).fetchone()[0]!=1:
             raise ValueError("Cardir SQLite source registry mismatch")
-        counts={"vag_facts":len(facts),"vag_brands":db.execute("SELECT count(*) FROM brands").fetchone()[0],"vag_models":db.execute("SELECT count(*) FROM models").fetchone()[0]}
+        counts={"vag_facts":len(facts),"vag_brands":db.execute("SELECT count(*) FROM brands").fetchone()[0],"vag_models":db.execute("SELECT count(*) FROM models").fetchone()[0],"parameter_keys":db.execute("SELECT count(DISTINCT parameter_key) FROM facts").fetchone()[0]}
+        for key in ("vag_facts","vag_brands","vag_models","parameter_keys"):
+            if counts[key]!=manifest["counts"][key]: raise ValueError("Cardir SQLite count mismatch: "+key)
     finally: db.close()
     return {"status":"verified_research_only","pack_id":PACK_ID,"source_snapshot_sha256":manifest["source_snapshot_sha256"],
             "source_manifest_sha256":manifest["source_manifest_sha256"],"database_sha256":manifest["database"]["sha256"],
