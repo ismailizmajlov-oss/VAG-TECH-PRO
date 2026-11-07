@@ -1,0 +1,64 @@
+name: Build ASTRA TARGA legacy VAG research pack
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build_astra_targa_legacy_vag_research_pack.py"
+      - "scripts/probe_astra_targa_legacy.py"
+      - "tests/test_astra_targa_legacy_pack.py"
+      - ".github/workflows/build-astra-targa-legacy-vag-pack.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Download, hash, filter and verify CH-only ASTRA TARGA research pack
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Test exact make allowlist, published schema and SQLite boundaries
+        run: |
+          python -m unittest discover -s tests -p "test_astra_targa_legacy_*.py" -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Download pinned official ASTRA source and build separate VAG research SQLite
+        shell: pwsh
+        run: |
+          python scripts/build_astra_targa_legacy_vag_research_pack.py --output-dir artifacts/astra-targa-legacy
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Remove any raw source temporary file before artifact upload
+        if: always()
+        shell: pwsh
+        run: |
+          $raw = "artifacts/astra-targa-legacy/TG-Automobil.txt"
+          if (Test-Path $raw) { Remove-Item -LiteralPath $raw -Force }
+
+      - name: Upload verified research pack and audit manifests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: astra-targa-legacy-vag-research-pack
+          path: |
+            artifacts/astra-targa-legacy/astra-targa-legacy-vag-research-pack.zip
+            artifacts/astra-targa-legacy/astra-targa-legacy-vag.sqlite
+            artifacts/astra-targa-legacy/pack-manifest.json
+            artifacts/astra-targa-legacy/source-manifest.json
+            artifacts/astra-targa-legacy/ATTRIBUTION.txt
+            artifacts/astra-targa-legacy/field-map.json
+            artifacts/astra-targa-legacy/build-report.json
+            artifacts/astra-targa-legacy/final-verification.json
+          if-no-files-found: warn
+          retention-days: 30
