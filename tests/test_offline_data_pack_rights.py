@@ -114,6 +114,16 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
 
 
+    def test_obdex_acquisition_is_called_once_by_offline_pack_workflow(self):
+        workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
+        trigger_block = workflow.split("jobs:", 1)[0]
+        self.assertIn("workflow_call:", trigger_block)
+        self.assertIn("workflow_dispatch:", trigger_block)
+        self.assertNotIn("pull_request:", trigger_block)
+        self.assertNotIn("push:", trigger_block)
+        pack_workflow = (ROOT / ".github" / "workflows" / "build-windows-offline-data-packs.yml").read_text(encoding="utf-8")
+        self.assertIn("obdex-generic-cc0.lock.json", pack_workflow)
+
     def test_obdex_refresh_lock_and_artifact_are_revision_pinned(self):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         self.assertEqual(lock["commit_sha"], "9ba1ffa095f3140d9e21b985b322ddea3134bb60")
