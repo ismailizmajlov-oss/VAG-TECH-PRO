@@ -57,6 +57,9 @@ class CardirVagOpenDataPackTests(unittest.TestCase):
         self.assertFalse(manifest["exact_engine_gearbox_pair"]); self.assertFalse(manifest["ru_eaeu_applicability"])
         self.assertEqual(manifest["publisher_verification_status"],"publisher_verified")
         self.assertEqual(manifest["technical_review_status"],"not_independently_reviewed")
+        self.assertEqual(manifest["schema_version"],2)
+        self.assertEqual(manifest["status"],"verified_research_only")
+        self.assertTrue((self.output/"build-report.json").is_file())
     def test_exact_brand_allowlist_excludes_substrings(self):
         _,summary=builder.read_csv_rows(self.csv)
         self.assertEqual(summary["vag_row_count"],8)
@@ -70,6 +73,15 @@ class CardirVagOpenDataPackTests(unittest.TestCase):
         try:
             row=db.execute("SELECT qualifier_raw,engine_code,transmission_code,exact_engine_gearbox_pair,market_scope FROM facts WHERE parameter_key='gearbox_oil_spec'").fetchone()
             self.assertEqual(row[0],"DSG DQ381 (0GC)"); self.assertIsNone(row[1]); self.assertIsNone(row[2]); self.assertEqual(row[3],0); self.assertEqual(row[4],"UNKNOWN")
+        finally: db.close()
+    def test_search_text_is_unicode_normalized_and_casefolded(self):
+        builder.build(self.csv,self.snapshot,self.source,self.output)
+        import sqlite3
+        db=sqlite3.connect(self.output/"cardir-vag-owner-manual-facts.sqlite")
+        try:
+            row=db.execute("SELECT search_text_folded FROM facts WHERE model_id=(SELECT model_id FROM models WHERE source_value='Octavia' LIMIT 1) LIMIT 1").fetchone()
+            self.assertIn("octavia",row[0])
+            self.assertIn("объём моторного масла",row[0])
         finally: db.close()
     def test_snapshot_hash_mismatch_fails_closed(self):
         bad=dict(self.snapshot_obj); bad["source_snapshot_sha256"]="0"*64
