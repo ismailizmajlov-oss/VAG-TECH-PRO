@@ -341,6 +341,16 @@ def _parse_document(record: ET.Element) -> dict[str, Any]:
             f"EAEU document {document_id} has multiple variants but at least one "
             "VehicleTypeVariantId is missing (Decision No. 88, table 6, rule 34)"
         )
+    variant_ids = [
+        value for item in variant_elements
+        if (value := _first_direct_text(item, "VehicleTypeVariantId"))
+    ]
+    if len(variant_ids) != len(set(variant_ids)):
+        duplicates = sorted({value for value in variant_ids if variant_ids.count(value) > 1})
+        raise ValueError(
+            f"EAEU document {document_id} contains duplicate VehicleTypeVariantId values: "
+            + ", ".join(duplicates)
+        )
     variants = [_parse_variant(item) for item in variant_elements]
 
     status_element = _first_direct(record, "ConformityDocStatusDetails")
