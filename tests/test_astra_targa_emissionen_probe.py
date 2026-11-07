@@ -2,7 +2,7 @@ import csv
 import io
 import unittest
 
-from scripts.probe_astra_targa_emissionen import FIELDS, parse_preview, validate_header
+from scripts.probe_astra_targa_emissionen import FIELDS, parse_preview, resolve_header_positions
 
 
 def header():
@@ -37,11 +37,11 @@ def row(make, engine, gearbox):
 
 class AstraTargaEmissionenProbeTests(unittest.TestCase):
     def test_documented_42_field_schema(self):
-        validate_header(header())
+        resolve_header_positions(header())
         bad = header()
         bad[9] = "unknown"
-        with self.assertRaisesRegex(ValueError, "Header mismatch"):
-            validate_header(bad)
+        with self.assertRaisesRegex(ValueError, "Required ASTRA emissionen field"):
+            resolve_header_positions(bad)
 
     def test_per_gearbox_row_is_preserved_without_oem_code_promotion(self):
         stream = io.StringIO()
