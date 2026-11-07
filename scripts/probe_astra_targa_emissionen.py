@@ -24,41 +24,22 @@ ASTRA_OPEN_DATA_URL = "https://www.astra.admin.ch/de/news-homologation"
 ASTRA_VEHICLE_DATA_URL = "https://www.astra.admin.ch/de/fahrzeugdaten"
 OGD_POLICY_URL = "https://www.bk.admin.ch/en/open-government-data-ogd-2"
 PREVIEW_LIMIT = 2 * 1024 * 1024
-FIELDS = {
-    "approval_number": 0,
-    "make": 1,
-    "type_variant_version": 2,
-    "unladen_weight_from": 3,
-    "unladen_weight_to": 4,
-    "gearbox_classification": 9,
-    "final_drive_ratio": 10,
-    "engine_make": 13,
-    "engine_type": 14,
-    "engine_construction": 15,
-    "fuel": 16,
-    "displacement_cc": 19,
-    "power_kw": 20,
-    "power_rpm": 21,
-    "torque_nm": 22,
-    "torque_rpm": 23,
-    "emission_control": 24,
-    "drive": 26,
-    "emissions_code": 28,
-    "homologation_date": 41,
-}
-HEADER_CHECKS = {
-    0: ("tg-code",),
-    1: ("marke",),
-    2: ("typ",),
-    9: ("getriebe",),
-    10: ("iachse",),
-    13: ("motormarke",),
-    14: ("motortyp",),
-    16: ("treibstoff",),
-    19: ("hubraum",),
-    20: ("leistung",),
-    22: ("drehmoment",),
-    41: ("homologationsdatum",),
+REQUIRED_HEADERS = {
+    "approval_number": ("tgcode", "typengenehmigungsnummer"),
+    "make": ("marke",),
+    "type_variant_version": ("typ",),
+    "gearbox_classification": ("getriebe",),
+    "final_drive_ratio": ("iachse",),
+    "engine_make": ("motormarke",),
+    "engine_type": ("motortyp",),
+    "engine_construction": ("bauart",),
+    "fuel": ("treibstoff",),
+    "displacement_cc": ("hubraum",),
+    "power_kw": ("leistung",),
+    "torque_nm": ("drehmoment",),
+    "emission_control": ("abgasreinigung",),
+    "drive": ("antrieb",),
+    "homologation_date": ("homologationsdatum",),
 }
 VAG_MAKES = {
     "VW", "VOLKSWAGEN", "AUDI", "SEAT", "SKODA", "ŠKODA",
@@ -67,7 +48,9 @@ VAG_MAKES = {
 
 
 def norm(value: str) -> str:
-    return " ".join(unicodedata.normalize("NFKC", value or "").strip().casefold().split())
+    value = unicodedata.normalize("NFKC", value or "").casefold()
+    value = value.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+    return "".join(ch for ch in value if ch.isalnum())
 
 
 def normalize_make(value: str) -> str:
@@ -83,13 +66,17 @@ def decode(raw: bytes) -> tuple[str, str]:
     raise ValueError("Unsupported preview encoding")
 
 
-def validate_header(header: list[str]) -> None:
-    if len(header) != 42:
-        raise ValueError(f"Expected 42 emissionen columns, got {len(header)}")
-    for index, tokens in HEADER_CHECKS.items():
-        observed = norm(header[index])
-        if not all(token in observed for token in tokens):
-            raise ValueError(f"Header mismatch at column {index}: {header[index]!r}")
+def resolve_header_positions(header: list[str]) -> dict[str, int]:
+    if len(header) < 42:
+        raise ValueError(f"Expected at least 42 documented emissionen columns, got {len(header)}")
+    normalized = [norm(value) for value in header]
+    positions = {}
+    for key, aliases in REQUIRED_HEADERS.items():
+        matches = [index for index, value in enumerate(normalized) if value in aliases]
+        if not matches:
+            raise ValueError(f"Required ASTRA emissionen field {key!r} not found in header: {header}")
+        positions[key] = matches[0]
+    return positions
 
 
 def parse_preview(raw: bytes) -> dict:
@@ -101,39 +88,32 @@ def parse_preview(raw: bytes) -> dict:
     if not rows:
         raise ValueError("No complete emissionen TSV rows found")
     header = rows[0]
-    validate_header(header)
+    positions = resolve_header_positions(header)
     data_rows = rows[1:]
     make_counts = Counter()
     first_vag = None
     invalid = 0
     for row in data_rows:
-        if len(row) != 42:
+        if len(row) != len(header):
             invalid += 1
             continue
-        make = normalize_make(row[FIELDS["make"]])
+        make = normalize_make(row[positions["make"]])
         if make in VAG_MAKES:
             make_counts[make] += 1
             if first_vag is None:
                 first_vag = {
                     key: row[index].strip()
-                    for key, index in FIELDS.items()
-                    if key in {
-                        "approval_number", "make", "type_variant_version",
-                        "gearbox_classification", "final_drive_ratio",
-                        "engine_make", "engine_type", "fuel",
-                        "displacement_cc", "power_kw", "torque_nm",
-                        "homologation_date",
-                    }
+                    for key, index in positions.items()
                 }
     return {
         "encoding": encoding,
         "column_count": len(header),
         "header": header,
+        "field_positions_zero_based": positions,
         "complete_data_rows_in_preview": len(data_rows),
         "invalid_row_lengths": invalid,
         "vag_exact_make_counts_in_preview": dict(sorted(make_counts.items())),
         "first_vag_row_sample": first_vag,
-        "field_positions_zero_based": FIELDS,
         "vag_make_allowlist_exact_only": sorted(VAG_MAKES),
         "documented_row_semantics": "ASTRA TARGA documentation states that one row is emitted for each gearbox variant.",
         "limitations": [
@@ -141,7 +121,7 @@ def parse_preview(raw: bytes) -> dict:
             "No rows are imported by this probe.",
             "Getriebe is an ASTRA approval classification, not a confirmed VAG gearbox code.",
             "Motortyp is a raw approval field, not independently confirmed as a VAG factory engine code.",
-            "A row preserves an ASTRA source-defined approval-variant association only; not production vehicle fitment.",
+            "A row preserves a source-defined approval-variant association only; not production vehicle fitment.",
             "CH only; no RU/EAEU applicability, model year or generation is inferred.",
         ],
     }
@@ -200,7 +180,7 @@ def main() -> int:
     except Exception as exc:
         report["probe_status"] = "probe_failed"
         report["error_type"] = type(exc).__name__
-        report["error"] = str(exc)[:1000]
+        report["error"] = str(exc)[:2000]
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
