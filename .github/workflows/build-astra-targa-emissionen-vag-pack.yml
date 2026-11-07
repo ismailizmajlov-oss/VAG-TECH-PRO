@@ -1,0 +1,64 @@
+name: Build ASTRA TARGA per-gearbox VAG research pack
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build_astra_targa_emissionen_vag_research_pack.py"
+      - "scripts/probe_astra_targa_emissionen.py"
+      - "tests/test_astra_targa_emissionen_*.py"
+      - ".github/workflows/build-astra-targa-emissionen-vag-pack.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Download, hash and verify CH approval-variant rows
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Test parser, exact VAG make filter and SQLite applicability guards
+        run: |
+          python -m unittest discover -s tests -p "test_astra_targa_emissionen_*.py" -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Download pinned official ASTRA emissionen source and build SQLite
+        shell: pwsh
+        run: |
+          python scripts/build_astra_targa_emissionen_vag_research_pack.py --output-dir artifacts/astra-targa-emissionen
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Remove any raw source temporary file before artifact upload
+        if: always()
+        shell: pwsh
+        run: |
+          $raw = "artifacts/astra-targa-emissionen/emissionen.txt"
+          if (Test-Path $raw) { Remove-Item -LiteralPath $raw -Force }
+
+      - name: Upload verified research pack and audit manifests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: astra-targa-emissionen-vag-research-pack
+          path: |
+            artifacts/astra-targa-emissionen/astra-targa-emissionen-vag-research-pack.zip
+            artifacts/astra-targa-emissionen/astra-targa-emissionen-vag.sqlite
+            artifacts/astra-targa-emissionen/pack-manifest.json
+            artifacts/astra-targa-emissionen/source-manifest.json
+            artifacts/astra-targa-emissionen/ATTRIBUTION.txt
+            artifacts/astra-targa-emissionen/field-map.json
+            artifacts/astra-targa-emissionen/build-report.json
+            artifacts/astra-targa-emissionen/final-verification.json
+          if-no-files-found: warn
+          retention-days: 30
