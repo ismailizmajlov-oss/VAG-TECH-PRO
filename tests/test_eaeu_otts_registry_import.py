@@ -24,11 +24,9 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
           <VehicleTypeVariantId>VAR-AMBIGUOUS</VehicleTypeVariantId>
           <EngineDetails><VehicleComponentMakeName>Test Engine A</VehicleComponentMakeName><VehicleComponentModelCode>TEST-ENG-A</VehicleComponentModelCode></EngineDetails>
           <EngineDetails><VehicleComponentMakeName>Test Engine B</VehicleComponentMakeName><VehicleComponentModelCode>TEST-ENG-B</VehicleComponentModelCode></EngineDetails>
-          <VehicleTransmissionDetails>
-            <TransmissionUnitDetails><VehicleUnitKindCode>05</VehicleUnitKindCode><VehicleComponentModelCode>TEST-GEAR-A</VehicleComponentModelCode></TransmissionUnitDetails>
+                      <TransmissionUnitDetails><VehicleUnitKindCode>05</VehicleUnitKindCode><VehicleComponentModelCode>TEST-GEAR-A</VehicleComponentModelCode></TransmissionUnitDetails>
             <TransmissionUnitDetails><VehicleUnitKindCode>05</VehicleUnitKindCode><VehicleComponentModelCode>TEST-GEAR-B</VehicleComponentModelCode></TransmissionUnitDetails>
-          </VehicleTransmissionDetails>
-        </VehicleVariantDetails>
+                  </VehicleVariantDetails>
         """
     sbkts = ""
     if include_sbkts:
@@ -39,8 +37,14 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
           <DocStartDate>2025-02-01</DocStartDate>
           <ConformityDocKindCode>40</ConformityDocKindCode>
           <ApplicantDetails><BusinessEntityName>Applicant Secret Synthetic</BusinessEntityName></ApplicantDetails>
-          <VehicleV2Details><VehicleIdentificationNumberId>VIN-SYNTHETIC-DO-NOT-STORE</VehicleIdentificationNumberId></VehicleV2Details>
+          <VehicleV2Details><VehicleIdentificatioNNumberId>VIN-SYNTHETIC-DO-NOT-STORE</VehicleIdentificationNumberId></VehicleV2Details>
         </VehicleConformityDocDetails>
+        """
+    vehicle_v2 = """
+        <VehicleV2Details>
+          <VehicleIdentificatioNNumberId>VIN-SYNTHETIC-OTTS-DO-NOT-STORE</VehicleIdentificatioNNumberId>
+          <VehicleManufacturingYear>2024</VehicleManufacturingYear>
+        </VehicleV2Details>
         """
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
     <ConformityVehicleDocsRegistryDetails xmlns="{NS}"
@@ -83,8 +87,7 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
             <EngineMaxPowerDetails><EngineMaxPowerMeasure measurementUnitCode="KWT">110</EngineMaxPowerMeasure></EngineMaxPowerDetails>
             <EngineMaxTorqueDetails><EngineMaxTorqueMeasure measurementUnitCode="NEW">250</EngineMaxTorqueMeasure></EngineMaxTorqueDetails>
           </EngineDetails>
-          <VehicleTransmissionDetails>
-            <TransmissionUnitDetails>
+                      <TransmissionUnitDetails>
               <VehicleUnitKindCode>05</VehicleUnitKindCode>
               <VehicleComponentMakeName>Test Gearbox Make</VehicleComponentMakeName>
               <VehicleComponentModelCode>TEST-GEARBOX-CODE-01</VehicleComponentModelCode>
@@ -95,16 +98,18 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
               <VehicleUnitKindCode>10</VehicleUnitKindCode>
               <VehicleComponentModelCode>TEST-TRANSFER-CASE-01</VehicleComponentModelCode>
             </TransmissionUnitDetails>
-          </VehicleTransmissionDetails>
-          <ECUModelCode>TEST-ECU-MODEL-01</ECUModelCode>
+                    <ECUModelCode>TEST-ECU-MODEL-01</ECUModelCode>
         </VehicleVariantDetails>
         {second_variant}
+        {vehicle_v2}
       </VehicleConformityDocDetails>
       {sbkts}
     </ConformityVehicleDocsRegistryDetails>
     """
     element_prefixes = {
         "EDocHeader": "ccdo",
+        "VehicleManufacturingYear": "trsdo",
+        "VehicleIdentificatioNNumberId": "trsdo",
         "EDocCode": "csdo",
         "EDocDateTime": "csdo",
         "LanguageCode": "csdo",
@@ -139,7 +144,6 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
         "EngineMaxPowerMeasure": "csdo",
         "EngineMaxTorqueDetails": "trcdo",
         "EngineMaxTorqueMeasure": "trsdo",
-        "VehicleTransmissionDetails": "trcdo",
         "TransmissionUnitDetails": "trcdo",
         "VehicleUnitKindCode": "trsdo",
         "TransmissionUnitGearQuantity": "trsdo",
@@ -237,6 +241,7 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         document = parsed["documents"][0]
         self.assertNotIn("Applicant Secret Synthetic", json.dumps(document, ensure_ascii=False))
         self.assertNotIn("VIN-SYNTHETIC-DO-NOT-STORE", json.dumps(document, ensure_ascii=False))
+        self.assertNotIn("VIN-SYNTHETIC-OTTS-DO-NOT-STORE", json.dumps(document, ensure_ascii=False))
         self.assertNotIn("Test Certification Authority", json.dumps(document, ensure_ascii=False))
         self.assertNotIn("Test Vehicle Manufacturer", json.dumps(document, ensure_ascii=False))
         self.assertEqual(document["issuing_country_code"], "RU")

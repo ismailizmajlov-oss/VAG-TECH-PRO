@@ -75,6 +75,10 @@ def _namespace(tag: str) -> str | None:
 
 SCHEMA_ELEMENT_NAMESPACE_PREFIX = {
     EXPECTED_ROOT: "root",
+    "EDocHeader": "ccdo",
+    "ApplicantDetails": "trcdo",
+    "BusinessEntityName": "csdo",
+    "ConformityAuthorityInformationDetails": "trcdo",
     "VehicleConformityDocDetails": "trcdo",
     "ConformityDocKindCode": "trsdo",
     "ConformityDocKindName": "trsdo",
@@ -109,6 +113,10 @@ SCHEMA_ELEMENT_NAMESPACE_PREFIX = {
     "VehicleMakeCode": "trsdo",
     "VehicleMakeName": "csdo",
     "VehicleTechCategoryCode": "trsdo",
+    "VehicleManufacturerDetails": "trcdo",
+    "VehicleV2Details": "trcdo",
+    "VehicleManufacturingYear": "trsdo",
+    "VehicleIdentificatioNNumberId": "trsdo",
     "VehicleTypeDetails": "trcdo",
     "VehicleTypeId": "trsdo",
     "VehicleTypeVariantId": "trsdo",

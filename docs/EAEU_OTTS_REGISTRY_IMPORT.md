@@ -48,6 +48,7 @@ The root must use the exact R.TR.TS.07.001 namespace. Each recognized field is c
 - If multiple engine or gearbox candidates occur under a variant, the importer does not create a cross-product.
 - The Decision No. 88 rule populates VehicleManufacturingYear for SBKTS; because SBKTS is skipped, model_year remains NULL for OTTS/OTSH. Approval issue/start dates are not model years.
 - Applicant, conformity-authority and vehicle-manufacturer entity names (which can contain a natural person's name), contact, VIN and embedded binary-document fields are not stored.
+- Document-level VehicleV2Details VIN and manufacturing-year fields are also not promoted into variant applicability; they are not nested under a specific VehicleVariantDetails.
 - The output is a staging database only and is never merged into production automatically.
 
 Decision No. 225 paragraph 9 lists engine and gearbox characteristics in SBKTS, but also VIN and applicant data; SBKTS is skipped. See docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md for the public-access basis, schema evidence and remaining legal/technical blockers.
