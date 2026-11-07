@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T11:54:00Z",
+  "updated_at": "2026-11-07T11:55:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4844,15 +4844,28 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_reference_source_pending_snapshot",
+      "verification_status": "licensed_source_snapshot_acquired_pack_build_pending",
       "research_pack": {
-        "status": "pending_snapshot_acquisition",
+        "status": "source_snapshot_acquired_schema_verified",
         "research_pack_allowed": true,
         "production_import": false,
         "exact_engine_gearbox_pair": false,
         "ru_eaeu_applicability": false,
         "expected_source_rows": 41649,
-        "expected_models": 561
+        "expected_models": 561,
+        "source_snapshot_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
+        "source_file_bytes": 14291137,
+        "source_rows": 41649,
+        "source_models": 561,
+        "vag_fact_rows": 773,
+        "vag_models": 24,
+        "vag_brand_values": [
+          "Audi",
+          "Porsche",
+          "Skoda",
+          "Volkswagen"
+        ],
+        "retrieved_at_utc": "2026-11-07T11:54:13.614079+00:00"
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     }
