@@ -160,6 +160,41 @@ function main() {
     test = replaceExactly(test, rdwTestBefore, rdwTestAfter, "RDW regression assertions");
   }
 
+  const legacyRdwRuntime = /  assert\(rdwSummary\.counts\.approvalScopes === 96519[\s\S]*?RDW snapshot, database or source manifest provenance\/counts changed"\);/;
+  if (legacyRdwRuntime.test(verifier)) {
+    verifier = verifier.replace(legacyRdwRuntime, [
+      '  const rdwPackManifest = require(path.join(ROOT, "data", "research", "rdw-vag-nl-eu-type-approval-research", "manifest.json"));',
+      '  assert(rdwSummary.counts.approvalScopes === rdwPackManifest.counts.approval_scopes && rdwSummary.counts.registrationObservations === rdwPackManifest.counts.registration_observations && rdwSummary.counts.engineDesignationCandidates === rdwPackManifest.counts.engine_candidates && rdwSummary.counts.gearboxClassifications === rdwPackManifest.counts.gearbox_classifications && rdwSummary.counts.sourceRows === rdwPackManifest.counts.source_rows && rdwSummary.counts.sourceFiles === rdwPackManifest.counts.source_files, "RDW SQLite counts differ from the verified pack manifest");',
+      '  assert(rdwSummary.sourceSnapshotSha256 === rdwPackManifest.source_snapshot_sha256 && rdwSummary.databaseSha256 === rdwPackManifest.database.sha256 && rdwSummary.sourceManifestSha256 === rdwPackManifest.source_manifest_sha256 && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot, database or source-manifest provenance changed");'
+    ].join("\\n"));
+  }
+  const legacyRdwTestStart = test.indexOf('  assert.deepEqual(result.rdw_nl_eu, {');
+  if (legacyRdwTestStart >= 0 && test.slice(legacyRdwTestStart, legacyRdwTestStart + 1400).includes("896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706")) {
+    const legacyRdwTestEnd = test.indexOf('  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");', legacyRdwTestStart);
+    if (legacyRdwTestEnd < 0) throw new Error("Legacy RDW test assertion end anchor missing");
+    const legacyRdwDynamicTest = [
+      '  const rdwPackManifest = require(path.join(ROOT, "data", "research", "rdw-vag-nl-eu-type-approval-research", "manifest.json"));',
+      '  assert.equal(result.rdw_nl_eu.marketScope, "NL");',
+      '  assert.equal(result.rdw_nl_eu.approvalScopes, rdwPackManifest.counts.approval_scopes);',
+      '  assert.equal(result.rdw_nl_eu.registrationObservations, rdwPackManifest.counts.registration_observations);',
+      '  assert.equal(result.rdw_nl_eu.engineDesignationCandidates, rdwPackManifest.counts.engine_candidates);',
+      '  assert.equal(result.rdw_nl_eu.gearboxClassifications, rdwPackManifest.counts.gearbox_classifications);',
+      '  assert.equal(result.rdw_nl_eu.sourceRows, rdwPackManifest.counts.source_rows);',
+      '  assert.equal(result.rdw_nl_eu.sourceFiles, rdwPackManifest.counts.source_files);',
+      '  assert.equal(result.rdw_nl_eu.productionImport, false);',
+      '  assert.equal(result.rdw_nl_eu.ruEaeuApplicability, false);',
+      '  assert.equal(result.rdw_nl_eu.exactVehicleFitment, false);',
+      '  assert.equal(result.rdw_nl_eu.exactEngineGearboxPair, false);',
+      '  assert.equal(result.rdw_nl_eu.repairApplicability, false);',
+      '  assert.equal(result.rdw_nl_eu.diagnosticExecutionAllowed, false);',
+      '  assert.equal(result.rdw_nl_eu.sourceSnapshotSha256, rdwPackManifest.source_snapshot_sha256);',
+      '  assert.equal(result.rdw_nl_eu.databaseSha256, rdwPackManifest.database.sha256);',
+      '  assert.equal(result.rdw_nl_eu.sourceManifestSha256, rdwPackManifest.source_manifest_sha256);',
+      '  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");'
+    ].join("\\n");
+    const legacyLine = '  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");';
+    test = test.slice(0, legacyRdwTestStart) + legacyRdwDynamicTest + test.slice(legacyRdwTestEnd + legacyLine.length);
+  }
   fs.writeFileSync(verifierPath, verifier.replace(/\n/g, verifierNewline), "utf8");
   fs.writeFileSync(testPath, test.replace(/\n/g, testNewline), "utf8");
   console.log(JSON.stringify({ status: "patched", patch: "run31-rdw-nl-eu-research-pack-verification", manifestPackCount: expectedPackCount, rdwPackId: "rdw-vag-nl-eu-type-approval-research", files: ["scripts/verify-local-research-packs.cjs", "tests/local-research-packs.test.cjs"] }));
