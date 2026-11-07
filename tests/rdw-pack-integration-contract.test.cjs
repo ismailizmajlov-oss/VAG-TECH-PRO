@@ -3,6 +3,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const os = require("node:os");
 const path = require("node:path");
+const fs = require("node:fs");
 const { resolvePackDatabaseFile } = require("../scripts/integrate-rdw-vag-research-pack.cjs");
 
 test("RDW integration resolves the manifest database.path field", () => {
@@ -35,6 +36,18 @@ test("RDW integration rejects database paths escaping the pack root", () => {
   } finally {
     require("node:fs").rmSync(root, { recursive: true, force: true });
   }
+});
+
+
+const rdwIntegrationSource = fs.readFileSync(path.join(__dirname, "../scripts/integrate-rdw-vag-research-pack.cjs"), "utf8");
+
+test("RDW UI patch composes with the prior CH-only ASTRA TARGA tab", () => {
+  assert.match(rdwIntegrationSource, /datasetTypeAnchors/);
+  assert.match(rdwIntegrationSource, /"astra" \| "astra-targa"/);
+  assert.match(rdwIntegrationSource, /"astra" \| "rdw"/);
+  assert.match(rdwIntegrationSource, /placeholderAnchors/);
+  assert.match(rdwIntegrationSource, /astra-targa.*Motortyp.*Getriebe/s);
+  assert.match(rdwIntegrationSource, /dataset === "rdw"/);
 });
 
 function fsTemp() {
