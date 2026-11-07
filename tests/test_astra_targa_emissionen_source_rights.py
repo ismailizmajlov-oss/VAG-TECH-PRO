@@ -93,9 +93,11 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
 
 
 
-    def test_latest_run16_pack_hashes_counts_and_zero_pair_boundary(self):
+    def test_run16_pack_hashes_counts_and_zero_pair_boundary_match_source_manifest(self):
         manifest = json.loads((ROOT / "data" / "source-manifests" / "astra-targa-emissionen-open-data.json").read_text(encoding="utf-8"))
-        build = manifest["latest_pack_build"]
+        register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        source = next(item for item in register["sources"] if item["source_id"] == SOURCE_ID)
+        build = source["research_pack_build_evidence"]
         self.assertEqual(build["workflow_run_number"], 16)
         self.assertEqual(build["artifact_id"], 13580905833)
         self.assertEqual(build["source_file_sha256"], manifest["snapshot"]["file_sha256"])
