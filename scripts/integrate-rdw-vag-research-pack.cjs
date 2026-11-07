@@ -176,10 +176,16 @@ function patchUi(desktopRoot) {
   const astraType = 'type AstraSummary = {\n  counts: { approvals: number; emissionsGearboxRows: number; linkedScopeRows: number; exactScopeLinks: number; wildcardScopeLinks: number; unlinkedScopeRows: number };\n  sourceRevision: string; sourceSnapshotSha256: string; databaseSha256: string; sourceManifestSha256: string;\n  marketScope: string; rightsStatus: string; attributionText: string; sourceUrl: string; ruEaeuApplicability: false;\n};';
   const rdwTypes = astraType + '\ntype RdwSummary = { counts: { approvalScopes: number; registrationObservations: number; engineDesignationCandidates: number; gearboxClassifications: number; auxiliaryRows: number; sourceRows: number; sourceFiles: number }; marketScope: string; rightsStatus: string; attributionText: string; sourceUrl: string; licenseUrl: string; sourceSnapshotSha256: string; databaseSha256: string; sourceManifestSha256: string; warning: string };\ntype RdwRegistrationObservation = { make: string; tradeName: string; vehicleCategory: string; registrationCount: number; sourceRowSha256: string; sourceRevision: string | null; sourceFileSha256: string | null; sourceUrl: string; verificationStatus: string };\ntype RdwEngineCandidate = { engineDesignation: string; engineTypeApprovalNumber: string | null; displacementCc: number | null; cylinders: number | null; sourceRowSha256: string; sourceRevision: string | null; sourceFileSha256: string | null; sourceUrl: string; verificationStatus: string };\ntype RdwGearboxCandidate = { gearboxTypeClassification: string; sourceRowSha256: string; sourceRevision: string | null; sourceFileSha256: string | null; sourceUrl: string; verificationStatus: string };\ntype RdwRow = { id: string; typeApprovalNumber: string; variant: string; version: string; revision: string; exactScopeKey: { typeApprovalNumber: string; variant: string; version: string; revision: string }; applicabilityPrecision: string; reviewStatus: string; marketScope: string; registrationObservations: RdwRegistrationObservation[]; engineDesignationCandidates: RdwEngineCandidate[]; gearboxClassifications: RdwGearboxCandidate[]; modelYear: null; generation: null; engineCode: null; gearboxCode: null; exactVehicleFitment: false; productionFitment: false; ruEaeuApplicability: false; exactEngineGearboxPair: false; repairApplicability: false; diagnosticExecutionAllowed: false; sourceRevision: string; sourceSnapshotSha256: string; databaseSha256: string; sourceManifestSha256: string; marketWarning: string; warning: string; sourceUrl: string };';
   text = replaceOnce(text, astraType, rdwTypes, "RDW summary/row types");
-  text = replaceOnce(text,
-    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra";',
-    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "rdw";',
-    "RDW dataset type");
+  const datasetTypeAnchors = [
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "astra-targa";',
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra";'
+  ];
+  const datasetTypeAnchor = datasetTypeAnchors.find((candidate) => text.includes(candidate));
+  if (!datasetTypeAnchor) fail("RDW dataset type anchor missing from the pinned desktop source.");
+  const datasetTypeReplacement = datasetTypeAnchor
+    .replace(' | "astra" | "astra-targa";', ' | "astra" | "astra-targa" | "rdw";')
+    .replace(' | "astra";', ' | "astra" | "rdw";');
+  text = replaceOnce(text, datasetTypeAnchor, datasetTypeReplacement, "RDW dataset type");
   text = replaceOnce(text,
     '  { id: "astra", label: "ОТТС · CH", hint: "ASTRA/FEDRO · Swiss OGD · только Швейцария" },',
     '  { id: "astra", label: "ОТТС · CH", hint: "ASTRA/FEDRO · Swiss OGD · только Швейцария" },\n  { id: "rdw", label: "ОТТС · NL/EU", hint: "RDW · CC0 · Нидерланды · исследовательский слой" },',
@@ -196,7 +202,14 @@ function patchUi(desktopRoot) {
   text = replaceOnce(text, astraStat, astraStat + '\n      <article className="research-stat"><small>ОТТС / одобрения NL</small><strong>{formatNumber(rdw?.counts?.approvalScopes)}</strong><span>{formatNumber(rdw?.counts?.engineDesignationCandidates)} обозначений двигателя · {formatNumber(rdw?.counts?.gearboxClassifications)} классификаций КПП · NL only</span></article>', "RDW statistic");
   const astraBoundary = '      {astra && <p>Отдельный справочник ASTRA/FEDRO содержит {formatNumber(astra.counts.approvals)} швейцарских типовых одобрений и {formatNumber(astra.counts.emissionsGearboxRows)} строк выбросов/классов КПП. Это только рынок CH: не российские/ЕАЭС ОТТС, не VIN-комплектация и не заводская применимость. engineType сохраняется как обозначение в одобрении и не подтверждает заводской код двигателя VAG; stamped marking — отдельно; chGearboxType — швейцарская классификация, не код КПП VAG. Точные связи variant/version относятся только к области швейцарского одобрения; wildcard не является точной версией.</p>}';
   text = replaceOnce(text, astraBoundary, astraBoundary + '\n      {rdw && <p>Отдельный RDW pack содержит {formatNumber(rdw.counts.approvalScopes)} точных ключей одобрения variant/version/revision для Нидерландов. Это не российские/ЕАЭС ОТТС и не применимость к конкретному автомобилю. Обозначения двигателя и классификации КПП показываются отдельными списками: их совместное присутствие в одном approval scope не подтверждает пару; это не заводские коды VAG, не модельный год, не поколение и не ремонтные данные.</p>}', "RDW research boundary");
-  text = replaceOnce(text, 'placeholder={dataset === "astra" ?', 'placeholder={dataset === "rdw" ? "Номер одобрения, variant/version, модель или обозначение двигателя RDW…" : dataset === "astra" ?', "RDW search placeholder");
+  const placeholderAnchors = [
+    'placeholder={dataset === "astra-targa" ? "Номер одобрения, Motortyp, Getriebe или тип двигателя CH…" : dataset === "astra" ?',
+    'placeholder={dataset === "astra" ?'
+  ];
+  const placeholderAnchor = placeholderAnchors.find((candidate) => text.includes(candidate));
+  if (!placeholderAnchor) fail("RDW search placeholder anchor missing from the pinned desktop source.");
+  const rdwPlaceholder = 'placeholder={dataset === "rdw" ? "Номер одобрения, variant/version, модель или обозначение двигателя RDW…" : ' + placeholderAnchor.slice('placeholder={'.length);
+  text = replaceOnce(text, placeholderAnchor, rdwPlaceholder, "RDW search placeholder");
 
   const genericCard = '      {dataset === "generic-guidance" && (rows as unknown as GenericGuidanceRow[]).map((row) => <article className="research-result" key={row.guidanceId}>';
   const rdwCard = [
