@@ -1573,7 +1573,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run81 local SQLite core syntax check failed" }
           node --test desktop-source/tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-run81-tests.log"
           if ($LASTEXITCODE -ne 0) { throw "Run81 payload contract tests failed" }
-          "technical_payload_validation=run81; schema_kinds=11; renderer_metadata_aligned=true; generic_vag_dtc_strict=true; dtc_alias_consistency=true; provenance_preserved=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "technical_payload_validation=run81; schema_kinds=12; renderer_metadata_aligned=true; generic_vag_dtc_strict=true; dtc_alias_consistency=true; provenance_preserved=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
           foreach ($relative in @("lib/local-core-db.cjs", "tests/local-core-db.test.cjs", "data/schemas/technical-record-payloads.schema.json", "source-verification.txt")) {
             $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
