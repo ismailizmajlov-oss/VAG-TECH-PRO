@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T04:12:00Z",
+  "updated_at": "2026-11-07T04:14:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -2006,10 +2006,17 @@
         "public_query_route": "A distinct official OTTS page is visible at docs.elpts.ru/ncher/otts. Its manufacturer filter lists AUDI AG and Volkswagen AG as selectable options, but the observed active date-filtered result set was empty; no VAG OTTS record count is established. Separate OTSH and SBKTS pages remain distinct.",
         "machine_readable_api": "not_verified",
         "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
-        "bulk_export": "not_established",
+        "bulk_export": "CSV, PDF and XML export controls observed on the public OTTS page; export endpoint, scope, completeness, file download and reuse rights not verified",
         "offline_cache": "not_established",
         "automated_extraction": "not_established",
-        "pdf_download_and_redistribution": "not_established"
+        "pdf_download_and_redistribution": "not_established",
+        "export_controls_observed": [
+          "CSV",
+          "PDF",
+          "XML"
+        ],
+        "export_file_downloaded": false,
+        "export_endpoint_verified": false
       },
       "rights": {
         "data_license_status": "not_established",
@@ -2031,10 +2038,11 @@
         "An ELPTS operator notice dated 2026-08-21 confirms that an internal AS EOTTS data-entry issue involving additional-reduction and hydraulic transmissions was fixed. It does not identify a public gearbox field, internal schema, factory gearbox code, reuse rights or exact fitment.",
         "The current consolidated EEC Decision No. 232 Annex 1 form defines engine and gearbox make/type fields in OTTS/OTSH attachments, but the 2026-11-06 visible ELPTS summary table did not expose them. The printed-form column is not evidence that a filled attachment was retrieved or that its contents may be cached or redistributed.",
         "On 2026-11-07 the OTTS manufacturer filter showed AUDI AG and Volkswagen AG as option labels only; the indexed active date range returned no rows. This does not establish any VAG OTTS record or coverage count.",
-        "The separate SBKTS search snapshot showed a Volkswagen/FAW-Volkswagen metadata row for 04.11.2026–05.11.2026; it remains SBKTS, not OTTS, and is not fitment evidence."
+        "The separate SBKTS search snapshot showed a Volkswagen/FAW-Volkswagen metadata row for 04.11.2026–05.11.2026; it remains SBKTS, not OTTS, and is not fitment evidence.",
+        "The 2026-11-07 page showed CSV/PDF/XML export controls, but no export was activated or downloaded; endpoint, export scope, completeness and reuse rights remain unverified."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "official ELPTS OTTS page rechecked 2026-11-07; manufacturer filter options AUDI AG and Volkswagen AG observed but no VAG OTTS records returned in active date range; separate SBKTS Volkswagen metadata observation kept distinct; no dataset-specific reuse rights, bulk API or powertrain fields in the visible OTTS table established; no records or PDFs downloaded; EEC Decision No. 232 current consolidated Annex 1 engine/transmission form fields reviewed 2026-11-07; no filled attachment retrieved and no rights change.",
+      "evidence_status": "official ELPTS OTTS page rechecked 2026-11-07; total label 14822 and CSV/PDF/XML export controls visible with active date filter 06.11.2026–07.11.2026; filtered result label empty; AUDI AG and Volkswagen AG appear only as manufacturer filter options; no VAG OTTS records or count verified; no export file, PDF, attachment or record downloaded; no dataset-specific reuse rights, bulk API or powertrain fields in the visible OTTS table established; no rights change.",
       "public_page_observations": {
         "observed_at": "2026-11-07",
         "ot_ts": {
@@ -2043,8 +2051,8 @@
           "observed_at": "2026-11-07",
           "visible_total_label": "Всего оформлено: 14822",
           "visible_date_filters": [
-            "05.11.2026",
-            "06.11.2026"
+            "06.11.2026",
+            "07.11.2026"
           ],
           "search_result_label": "Найдено: []",
           "filtered_result_count": 0,
@@ -2070,7 +2078,7 @@
           "public_table_exposes_ecu": false,
           "count_interpretation": "The visible total is a UI label, not a verified complete-corpus count. The active date filter returned zero rows in the indexed page snapshot. Manufacturer filter options AUDI AG and Volkswagen AG are not records and do not establish VAG OTTS coverage.",
           "technical_scope": "document_identity_and_registry_status_metadata_only",
-          "rights_effect": "none; manufacturer filter options and a public PDF column do not establish bulk export, automated extraction, offline cache, commercial display or redistribution rights",
+          "rights_effect": "none; visible CSV/PDF/XML controls and a public page do not establish a dataset-specific licence, bulk extraction, persistent offline cache, commercial display or redistribution rights",
           "manufacturer_filter_options_observed": [
             "AUDI AG",
             "Volkswagen AG"
@@ -2080,7 +2088,17 @@
           "vag_record_count_verified": false,
           "bulk_api_discovered": false,
           "pdf_column_visible": true,
-          "pdf_downloaded": false
+          "pdf_downloaded": false,
+          "visible_export_controls": [
+            "CSV",
+            "PDF",
+            "XML"
+          ],
+          "export_controls_observed": true,
+          "export_file_downloaded": false,
+          "export_endpoint_verified": false,
+          "export_scope": "not_established",
+          "visible_total_interpretation": "UI label observed while date filter was 06.11.2026–07.11.2026; not verified as a complete-corpus count and not a VAG count"
         },
         "ot_sh": {
           "url": "https://docs.elpts.ru/ncher/otsh",
