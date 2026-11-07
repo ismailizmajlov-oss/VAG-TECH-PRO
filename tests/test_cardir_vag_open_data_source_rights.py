@@ -30,7 +30,10 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(len(matches),1); source=matches[0]
         self.assertIs(source["data_ingested"],False); self.assertIs(source["product_import_allowed"],False)
         self.assertEqual(source["rights"]["permission_status"],"not_required_under_published_CC_BY_4_0")
-        self.assertEqual(source["research_pack"]["status"],"pending_snapshot_acquisition")
+        self.assertEqual(source["research_pack"]["status"],"source_snapshot_acquired_schema_verified")
+        self.assertEqual(source["research_pack"]["vag_fact_rows"],773)
+        self.assertEqual(source["research_pack"]["vag_models"],24)
+        self.assertEqual(source["research_pack"]["source_snapshot_sha256"],"93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375")
         self.assertIs(source["research_pack"]["production_import"],False)
     def test_not_misclassified_as_russian_or_eaeu_otts(self):
         self.assertNotIn(SOURCE_ID,{s.get("source_id") for s in self.ru["sources"]})
