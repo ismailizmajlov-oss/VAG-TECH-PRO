@@ -481,7 +481,7 @@ def main():
         if not args.source_manifest or not args.csv or not args.snapshot_manifest: parser.error("--build requires --source-manifest, --csv and --snapshot-manifest")
         result=build(args.csv,args.snapshot_manifest,args.source_manifest,args.output_dir)
     else: result=verify_pack(args.output_dir)
-    print(json.dumps(result,ensure_ascii=False,indent=2))
+    print(json.dumps(result,ensure_ascii=True,indent=2))
     return 0
 
 
