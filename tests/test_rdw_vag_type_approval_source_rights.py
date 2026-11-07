@@ -146,5 +146,44 @@ class RdwEuVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertIn("volgnummerrevisieuitvoering='0'", where)
 
 
+
+    def test_latest_live_probe_records_exact_scope_without_promoting_engine_gearbox_pair(self):
+        probe = self.manifest["latest_probe"]
+        self.assertEqual(probe["workflow_run_number"], 29)
+        self.assertEqual(probe["probe_status"], "schema_and_exact_scope_verified")
+        self.assertEqual(probe["market_scope"], ["NL"])
+        self.assertEqual(probe["approval_scope_key"], {
+            "typegoedkeuringsnummer": "e1*2018/858*00302*10",
+            "variant": "ACDUCAX0",
+            "uitvoering": "FD6FD6DD002PR4VNB0OO",
+            "revision": "0",
+        })
+        self.assertEqual(probe["matched_rows"]["tgk_drive"]["motorcode"], "DUC")
+        self.assertEqual(probe["matched_rows"]["tgk_gearbox"]["codetypeversnellingsbak"], "A")
+        self.assertFalse(probe["field_semantics"]["motorcode_is_confirmed_vag_factory_engine_code"])
+        self.assertFalse(probe["field_semantics"]["codetypeversnellingsbak_is_confirmed_vag_gearbox_code"])
+        self.assertFalse(probe["field_semantics"]["engine_gearbox_pair_claim"])
+        self.assertFalse(probe["field_semantics"]["generation_inferred"])
+        self.assertFalse(probe["field_semantics"]["model_year_inferred"])
+        self.assertIsNone(probe["source_snapshot_sha256"])
+        self.assertEqual(probe["source_snapshot_status"], "probe_only_no_full_snapshot")
+        self.assertFalse(probe["product_import_allowed"])
+        self.assertFalse(probe["data_ingested"])
+        self.assertFalse(probe["ru_eaeu_applicability"])
+        self.assertIn("VIN", probe["excluded_registration_fields"])
+
+    def test_rd_w_pack_is_included_in_offline_desktop_but_not_product_database(self):
+        evidence = self.source["research_pack_build_evidence"]
+        integration = evidence["desktop_integration_evidence"]
+        self.assertTrue(evidence["integrated_into_desktop_installer"])
+        self.assertEqual(evidence["desktop_integration_status"], "included_in_offline_desktop_research_catalog_in_windows_ci_installer")
+        self.assertEqual(integration["workflow_run_number"], 647)
+        self.assertEqual(integration["desktop_version"], "0.2.4")
+        self.assertIs(integration["product_database_import"], False)
+        self.assertFalse(self.source["data_ingested"])
+        self.assertFalse(self.source["product_import_allowed"])
+        self.assertFalse(self.source["applicability"]["ru_eaeu_applicability"])
+        self.assertIs(integration["exact_engine_gearbox_pair"], False)
+
 if __name__ == "__main__":
     unittest.main()
