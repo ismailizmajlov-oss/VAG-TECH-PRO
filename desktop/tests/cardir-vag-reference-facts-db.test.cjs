@@ -2,10 +2,12 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const path = require("node:path");
 const { getCardirSummary, searchCardirFacts } = require("../lib/cardir-vag-reference-facts-db.cjs");
+const researchRoot = path.resolve(__dirname, "../data/research");
 
 test("CarDir pack is a hash-verified CC BY 4.0 research-only SQLite resource", () => {
-  const summary = getCardirSummary();
+  const summary = getCardirSummary(researchRoot);
   assert.equal(summary.counts.sourceRows, 41649);
   assert.equal(summary.counts.vagFacts, 773);
   assert.equal(summary.counts.vagBrands, 4);
@@ -25,7 +27,7 @@ test("CarDir pack is a hash-verified CC BY 4.0 research-only SQLite resource", (
 });
 
 test("CarDir search returns publisher facts with raw qualifiers and complete provenance", () => {
-  const rows = searchCardirFacts("Octavia", 10);
+  const rows = searchCardirFacts("Octavia", 10, researchRoot);
   assert.ok(rows.length > 0);
   const row = rows.find((item) => item.model === "Octavia");
   assert.ok(row);
@@ -53,8 +55,8 @@ test("CarDir search returns publisher facts with raw qualifiers and complete pro
 });
 
 test("CarDir search uses the normalized Russian and Latin search index", () => {
-  const russian = searchCardirFacts("объём моторного масла", 10);
-  const latin = searchCardirFacts("Volkswagen", 10);
+  const russian = searchCardirFacts("объём моторного масла", 10, researchRoot);
+  const latin = searchCardirFacts("Volkswagen", 10, researchRoot);
   assert.ok(russian.length > 0);
   assert.ok(latin.length > 0);
   assert.ok(russian.every((row) => row.sourceRowSha256.length === 64));
