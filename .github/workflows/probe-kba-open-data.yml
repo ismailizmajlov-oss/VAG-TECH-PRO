@@ -8,6 +8,9 @@ on:
       - "tests/test_kba_open_data_probe.py"
       - ".github/workflows/probe-kba-open-data.yml"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
+      - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
+      - "scripts/probe_kba_whole_vehicle_approvals.py"
+      - "tests/test_kba_whole_vehicle_approvals_probe.py"
   workflow_dispatch:
 
 permissions:
@@ -26,14 +29,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Test read-only KBA probe and exact manufacturer allowlist
-        run: python -m unittest discover -s tests -p "test_kba_open_data_probe.py" -v
+      - name: Test read-only KBA probes, exact manufacturer filters and XLSX safety
+        run: |
+          python -m unittest discover -s tests -p "test_kba_open_data_probe.py" -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests -p "test_kba_whole_vehicle_approvals_probe.py" -v
       - name: Probe official ArcGIS and KBA public delivery routes
         run: python scripts/probe_kba_open_data.py --out kba-probe-out
-      - name: Upload probe diagnostics and any retrieved public source snapshot
+      - name: Probe official KBA whole-vehicle type-approval XLSX
+        run: python scripts/probe_kba_whole_vehicle_approvals.py --out kba-whole-approvals-probe-out
+      - name: Upload probe diagnostics and any retrieved public source snapshots
         uses: actions/upload-artifact@v4
         with:
           name: kba-public-source-probe-${{ github.run_id }}
-          path: kba-probe-out/
+          path: |
+            kba-probe-out/
+            kba-whole-approvals-probe-out/
           if-no-files-found: error
           retention-days: 3
