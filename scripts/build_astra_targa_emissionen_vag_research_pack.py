@@ -49,7 +49,9 @@ REQUIRED_HEADERS = {
     "fuel": ("treibstoff",),
     "displacement_cc": ("hubraum",),
     "power_kw": ("leistung",),
+    "power_rpm": ("leistungbeinnmin",),
     "torque_nm": ("drehmoment",),
+    "torque_rpm": ("drehmomentbeinnmin",),
     "emission_control": ("abgasreinigung",),
     "drive": ("antrieb",),
     "emissions_code": ("emissionscode",),
@@ -294,6 +296,30 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
                 model_year_inferred,generation_inferred,engine_type_status,gearbox_status
               ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,batch)
+        db.commit()
+        rights_status = "approved_by_published_ogd_terms"
+        metadata = {
+            "pack_id": PACK_ID,
+            "source_id": SOURCE_ID,
+            "source_revision": source_meta["source_revision"],
+            "source_file_sha256": source_meta["file_sha256"],
+            "market_scope": "CH",
+            "rights_status": rights_status,
+            "attribution_required": "true",
+            "source_defined_variant_link": "true",
+            "exact_vag_factory_code_pair": "false",
+            "exact_vehicle_fitment": "false",
+            "ru_eaeu_applicability": "false",
+            "model_year_inferred": "false",
+            "generation_inferred": "false",
+            "source_row_hash_method": "SHA-256 of canonical JSON array of all original parsed TSV field strings",
+        }
+        db.executemany("INSERT INTO pack_metadata(key,value) VALUES(?,?)", metadata.items())
+        db.execute("INSERT INTO source_files VALUES(?,?,?,?,?,?,?,?,?)", (
+            SOURCE_ID, SOURCE_URL, source_meta["source_revision"], source_meta["etag"],
+            source_meta["file_size_bytes"], source_meta["file_sha256"], "CH",
+            rights_status, 1
+        ))
         db.commit()
     except Exception:
         db.rollback()
