@@ -270,7 +270,8 @@ function integrate(repoRoot, desktopRoot, packDir, sourceRunId, artifactSha) {
   }
   patchApi(desktopRoot);
   patchUi(desktopRoot);
-  patchLifecycle(desktopRoot);\n  patchResearchVerifier(desktopRoot);
+  patchLifecycle(desktopRoot);
+  patchResearchVerifier(desktopRoot);
   const packagePath = safeJoin(desktopRoot,"package.json");
   const pkg = readJson(packagePath);
   if (!pkg.scripts || typeof pkg.scripts["test:research"] !== "string" || typeof pkg.scripts["verify:local-research"] !== "string") fail("Desktop research scripts are missing");
