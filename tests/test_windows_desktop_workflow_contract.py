@@ -277,6 +277,19 @@ def main() -> None:
         if marker not in workflow:
             raise SystemExit(f"Windows workflow is missing technical-library packaging contract: {marker}")
 
+    patch_set_line = next((line for line in text.splitlines() if "patch_set = " in line), "")
+    required_patch_set = (
+        "run76-desktop-row-types-fix",
+        "run77-lifecycle-session-output",
+        "run78-rdw-ui-contract",
+        "run79-typed-technical-payload-renderer",
+        "run80-technical-payload-schema-validation",
+        "run81-strict-dtc-oem-supersession-validation",
+    )
+    missing_patch_set = [marker for marker in required_patch_set if marker not in patch_set_line]
+    if missing_patch_set:
+        raise SystemExit(f"Windows build metadata patch_set omits applied desktop changes: {missing_patch_set}")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
