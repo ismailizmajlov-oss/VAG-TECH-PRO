@@ -27,9 +27,8 @@ ITEM_ID = "d277ec18ff1e442597c9411d7c1aaeaa"
 MAX_DOWNLOAD_BYTES = 100 * 1024 * 1024
 TIMEOUT_SECONDS = 35
 EXACT_VAG_MANUFACTURER_LABELS = {
-    "volkswagen", "volkswagen ag", "vw", "audi", "audi ag", "seat", "seat s.a.",
-    "skoda", "škoda", "skoda auto", "škoda auto", "porsche", "porsche ag",
-    "bentley", "bentley motors", "lamborghini", "bugatti", "cupra",
+    "volkswagen (d)", "audi (d)", "audi (h)", "skoda (cz)", "seat (e)",
+    "porsche", "bentley (uk)", "lamborghini (i)",
 }
 
 
