@@ -27,9 +27,7 @@ fs.writeFileSync(scriptPath, lifecycle, 'utf8');
 let tests = fs.readFileSync(testPath, 'utf8');
 const testName = 'Windows lifecycle readiness helper emits one session object without pipeline noise';
 if (!tests.includes(testName)) {
-  const astraStatusLines = script.split(/\r?\n/).filter((line) => line.includes("ASTRA offline CH approval search passed"));
-  assert.ok(astraStatusLines.length <= 1, "ASTRA lifecycle status line must not be duplicated");
-  for (const line of astraStatusLines) assert.match(line, /\bWrite-(Host|Verbose)\b/, "ASTRA status must not enter the success pipeline");
+  tests += `\n\ntest(${JSON.stringify(testName)}, () => {\n  const match = script.match(/function Start-DesktopAndWait\\s*\\{([\\s\\S]*?)\\n\\}/);\n  assert.ok(match, "Start-DesktopAndWait function must exist");\n  assert.doesNotMatch(match[1], /\\bWrite-Output\\b/, "status messages must not enter the function success pipeline");\n  const astraStatusLines = script.split(/\\r?\\n/).filter((line) => line.includes("ASTRA offline CH approval search passed"));\n  assert.ok(astraStatusLines.length <= 1, "ASTRA lifecycle status line must not be duplicated");\n  for (const line of astraStatusLines) assert.match(line, /\\bWrite-(Host|Verbose)\\b/, "ASTRA status must not enter the success pipeline");\n  assert.match(match[1], /return \\@\\{ Process = \\$process; BaseUrl = \\$baseUrl \\}/);\n});\n`;
 }
 fs.writeFileSync(testPath, tests, 'utf8');
 
