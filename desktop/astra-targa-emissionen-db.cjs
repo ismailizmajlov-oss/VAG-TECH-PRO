@@ -65,6 +65,7 @@ function getAstraTargaSummary(explicitRoot) {
   const source = readJson(sourceManifestFile);
   const registry = readJson(registryManifestFile);
   const report = readJson(buildReportFile);
+  const fieldMap = readJson(fieldMapFile);
   const final = readJson(finalVerificationFile);
   const attribution = fs.readFileSync(attributionFile, "utf8");
   const rights = source.rights || {};
@@ -82,7 +83,8 @@ function getAstraTargaSummary(explicitRoot) {
       policy.generation_inferred !== false || policy.repair_procedure_applicability !== false || policy.diagnostic_execution_allowed !== false ||
       !attribution.includes(ATTRIBUTION) || !attribution.includes("Swiss Open Government Data") ||
       final.database_sha256 !== entry.database_sha256 || final.source_file_sha256 !== pack.source_file?.file_sha256 ||
-      final.exact_vag_factory_code_pair !== false || final.ru_eaeu_applicability !== false) {
+      final.exact_vag_factory_code_pair !== false || final.ru_eaeu_applicability !== false ||
+      ["approval_number", "make", "type", "engine_type", "gearbox", "homologation_date"].some((key) => !Array.isArray(fieldMap.required_headers?.[key]) || !Number.isInteger(fieldMap.resolved_positions?.[key]))) {
     fail("ASTRA TARGA source manifest, rights, attribution or pack provenance failed");
   }
   const db = openReadOnly(database);
@@ -112,8 +114,14 @@ function getAstraTargaSummary(explicitRoot) {
       ruEaeuApplicabilityRows: Number(pack.counts?.ru_eaeu_applicability_rows || 0)
     };
     const invalidRows = db.prepare("SELECT count(*) AS n FROM approval_powertrain_variant_rows WHERE market_scope!='CH' OR applicability_precision!='CH_type_approval_gearbox_variant_row' OR exact_vag_factory_code_pair!=0 OR exact_vehicle_fitment!=0 OR ru_eaeu_applicability!=0 OR model_year_inferred!=0 OR generation_inferred!=0 OR engine_type_status!='raw_approval_engine_type_candidate' OR gearbox_status!='raw_approval_classification_not_vag_gearbox_code'").get().n;
+    const reportCounts = report.counts || {};
+    const reportMismatch = reportCounts.approval_powertrain_variant_rows !== counts.approvalPowertrainVariantRows ||
+      reportCounts.source_defined_variant_link_rows !== counts.sourceDefinedVariantLinkRows ||
+      reportCounts.exact_vag_factory_code_pair_rows !== counts.exactVagFactoryCodePairRows ||
+      reportCounts.exact_vehicle_fitment_rows !== counts.exactVehicleFitmentRows ||
+      reportCounts.ru_eaeu_applicability_rows !== counts.ruEaeuApplicabilityRows;
     const dtcTables = db.prepare("SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND lower(name) LIKE '%dtc%'").get().n;
-    if (invalidRows || dtcTables || counts.approvalPowertrainVariantRows !== 53240 ||
+    if (invalidRows || reportMismatch || dtcTables || counts.approvalPowertrainVariantRows !== 53240 ||
         Object.keys(expected).some((key) => counts[key] !== expected[key]) ||
         counts.sourceDefinedVariantLinkRows !== counts.approvalPowertrainVariantRows) fail("ASTRA TARGA row counts or CH-only candidate boundary failed");
     return {
