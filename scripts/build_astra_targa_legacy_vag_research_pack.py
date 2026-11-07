@@ -38,7 +38,7 @@ EMBAG_URL = "https://www.fedlex.admin.ch/eli/cc/2023/682/en"
 EXPECTED_SIZE = 322_893_637
 EXPECTED_LAST_MODIFIED = "Thu, 30 Jul 2026 09:22:48 GMT"
 EXPECTED_ETAG = '"133ef745-657d09d960472"'
-CHUNK_SIZE = 16 * 1024 * 1024
+CHUNK_SIZE = 2 * 1024 * 1024
 
 FIELDS = {
     "approval_number": 0,
@@ -149,7 +149,6 @@ def _range_request(start: int, end: int, etag: str | None) -> tuple[bytes, dict]
         headers["If-Range"] = etag
     request = urllib.request.Request(SOURCE_URL, headers=headers, method="GET")
     with urllib.request.urlopen(request, timeout=180) as response:
-        body = response.read()
         metadata = {
             "status": response.status,
             "content_range": response.headers.get("Content-Range"),
@@ -158,16 +157,22 @@ def _range_request(start: int, end: int, etag: str | None) -> tuple[bytes, dict]
             "etag": response.headers.get("ETag"),
             "accept_ranges": response.headers.get("Accept-Ranges"),
         }
-    expected_range = f"bytes {start}-{end}/{EXPECTED_SIZE}"
-    if metadata["status"] != 206 or metadata["content_range"] != expected_range:
-        raise ValueError(
-            f"ASTRA range response mismatch: expected {expected_range}, "
-            f"got {metadata['status']} {metadata['content_range']}"
-        )
-    if len(body) != end - start + 1:
-        raise ValueError(f"ASTRA range byte count mismatch at {start}: got {len(body)}")
-    if metadata["last_modified"] != EXPECTED_LAST_MODIFIED or metadata["etag"] != EXPECTED_ETAG:
-        raise ValueError("ASTRA source revision changed since the bounded schema probe; re-review before ingest")
+        expected_range = f"bytes {start}-{end}/{EXPECTED_SIZE}"
+        # Validate status and headers before reading any body. If the server
+        # ignores Range, do not accidentally buffer the entire 323 MB file.
+        if metadata["status"] != 206 or metadata["content_range"] != expected_range:
+            raise ValueError(
+                f"ASTRA range response mismatch: expected {expected_range}, "
+                f"got {metadata['status']} {metadata['content_range']}"
+            )
+        if metadata["last_modified"] != EXPECTED_LAST_MODIFIED or metadata["etag"] != EXPECTED_ETAG:
+            raise ValueError("ASTRA source revision changed since the bounded schema probe; re-review before ingest")
+        expected_length = end - start + 1
+        if metadata["content_length"] and int(metadata["content_length"]) != expected_length:
+            raise ValueError(f"ASTRA range Content-Length mismatch: expected {expected_length}, got {metadata['content_length']}")
+        body = response.read(expected_length)
+        if len(body) != expected_length or response.read(1):
+            raise ValueError(f"ASTRA range byte count mismatch at {start}: got {len(body)}")
     return body, metadata
 
 
