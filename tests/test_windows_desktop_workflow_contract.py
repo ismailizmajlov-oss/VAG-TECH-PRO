@@ -94,6 +94,23 @@ def main() -> None:
     missing_status_output_guard = [item for item in status_output_guard if item not in apply_text]
     if missing_status_output_guard:
         raise SystemExit(f"Windows lifecycle patch must accept an existing safe Write-Host/Write-Verbose line and reject pipeline output: {missing_status_output_guard}")
+    hardening_call = "node apply-desktop-hardening-run35.cjs"
+    hardening_guard = 'if ($LASTEXITCODE -ne 0) { throw "Desktop hardening run35 patch failed" }'
+    local_core_check = "node --check apply-local-core-host-origin-run51.cjs"
+    if not (hardening_call in text and hardening_guard in text and local_core_check in text):
+        raise SystemExit("Windows workflow must fail immediately when the run35 hardening patch exits non-zero")
+    if not (text.index(hardening_call) < text.index(hardening_guard) < text.index(local_core_check)):
+        raise SystemExit("Windows run35 hardening exit-code guard must be immediately after the patch and before the next script")
+    kba_path_markers = (
+        "data/source-manifests/kba-de-whole-vehicle-type-approvals.json",
+        "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json",
+        "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md",
+    )
+    missing_kba_paths = [marker for marker in kba_path_markers if text.count(marker) < 2]
+    if missing_kba_paths:
+        raise SystemExit(f"KBA source changes must trigger both push and pull-request validation: {missing_kba_paths}")
+    if text.count("tests/test_kba_germany_open_data_source_rights.py") < 3 or "python tests/test_kba_germany_open_data_source_rights.py" not in text:
+        raise SystemExit("KBA source-rights test must run and be covered by both push/PR path filters")
     if "python tests/test_decode_tr_source_rights.py" not in text:
         raise SystemExit("Windows source-rights gate does not execute the decode.tr quarantine test")
     if text.count('tests/test_decode_tr_source_rights.py') < 3:

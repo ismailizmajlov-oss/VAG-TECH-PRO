@@ -40,6 +40,10 @@ on:
       - "data/research/wikidata-vag-generations/**"
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
+      - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
+      - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
+      - "tests/test_kba_germany_open_data_source_rights.py"
       - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
       - "docs/research/RDW_EU_VAG_TYPE_APPROVAL_OPEN_DATA_REVIEW_2026-11-06.md"
       - "tests/test_rdw_vag_type_approval_source_rights.py"
@@ -122,6 +126,10 @@ on:
       - "tests/test_windows_desktop_workflow_contract.py"
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
+      - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
+      - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
+      - "tests/test_kba_germany_open_data_source_rights.py"
       - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
       - "docs/research/RDW_EU_VAG_TYPE_APPROVAL_OPEN_DATA_REVIEW_2026-11-06.md"
       - "tests/test_rdw_vag_type_approval_source_rights.py"
@@ -286,6 +294,7 @@ jobs:
           }
           node --check apply-desktop-hardening-run35.cjs
           node apply-desktop-hardening-run35.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Desktop hardening run35 patch failed" }
           node --check apply-local-core-host-origin-run51.cjs
           node apply-local-core-host-origin-run51.cjs 2>&1 | Tee-Object -FilePath "local-core-host-origin-patch.log"
           if ($LASTEXITCODE -ne 0) { throw "Local-core Host/Origin hardening patch failed" }
@@ -956,6 +965,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Source-register sync script compilation failed" }
           python -m unittest discover -s tests -p "test_sync_vag_source_register_source_rights.py" -v
           if ($LASTEXITCODE -ne 0) { throw "Source-register sync contract tests failed" }
+          python tests/test_kba_germany_open_data_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "KBA source-rights contract tests failed" }
           $syncOutput = python scripts/sync_vag_source_register.py --source "data/source-manifests/vag-factory-source-register.json" --desktop-root "desktop-source"
           if ($LASTEXITCODE -ne 0) { throw "Could not synchronize central source-rights register into desktop payload" }
           $syncOutput | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-source-register-sync.log"
