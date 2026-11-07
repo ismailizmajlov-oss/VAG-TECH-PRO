@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "source_id": "kba-de-fz-hersteller-handelsnamen-pkw",
+  "publisher": "Kraftfahrt-Bundesamt (KBA), published via GovData/Mobilithek",
+  "source_kind": "official_german_passenger_car_manufacturer_trade_name_and_hsn_tsn_reference",
+  "reviewed_at": "2026-11-07",
+  "market_scope": [
+    "DE"
+  ],
+  "catalog_url": "https://www.govdata.de/suche/daten/fz-hersteller-handelsnamen-pkw?ids=638594fd-195a-4e03-b91c-f5ea2eacfa39",
+  "resource_url": "https://das-kba-statistikportal.hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
+  "snapshot": {
+    "status": "metadata_reviewed_resource_unavailable",
+    "catalog_published_at": "2026-01-26",
+    "catalog_last_modified_at": "2026-01-26",
+    "temporal_coverage": "2023-01-01",
+    "reference_date_rule": "annual reference date of 1 January",
+    "resource_format": "CSV",
+    "resource_access_status": "HTTP_400_on_2026-11-07",
+    "source_revision": "GovData metadata last modified 2026-01-26; EU data portal indicates temporal coverage 2023-01-01; actual file revision unknown",
+    "downloaded": false,
+    "file_sha256": null,
+    "source_snapshot_sha256": null
+  },
+  "data_products": {
+    "manufacturer_trade_name_hsn_tsn": {
+      "title": "FZ Hersteller Handelsnamen Pkw",
+      "catalog_url": "https://www.govdata.de/suche/daten/fz-hersteller-handelsnamen-pkw?ids=638594fd-195a-4e03-b91c-f5ea2eacfa39",
+      "resource_url": "https://das-kba-statistikportal.hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
+      "format": "CSV",
+      "description": "KBA overview of manufacturer and trade names intended to resolve HSN/TSN values from German registration documents; reference date is 1 January of the relevant year.",
+      "catalog_fields_indicated_by_description_and_tags": [
+        "manufacturer_code_HSN",
+        "type_code_TSN",
+        "manufacturer",
+        "trade_name"
+      ],
+      "exact_column_schema_status": "not_verified_no_file_downloaded",
+      "temporal_coverage_source": "EU data portal metadata indicates 2023-01-01"
+    }
+  },
+  "rights": {
+    "data_license_status": "Datenlizenz Deutschland – Namensnennung – Version 2.0 (DL-DE BY 2.0), explicitly listed as freie Nutzung by GovData for this dataset",
+    "rights_status": "approved_by_published_DL_DE_BY_2_0",
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "bulk_reuse_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": true,
+    "attribution": "Source: Kraftfahrt-Bundesamt (KBA), FZ Hersteller Handelsnamen Pkw, published via GovData/Mobilithek; Datenlizenz Deutschland – Namensnennung – Version 2.0 (DL-DE BY 2.0); https://www.govdata.de/suche/daten/fz-hersteller-handelsnamen-pkw?ids=638594fd-195a-4e03-b91c-f5ea2eacfa39. Mark transformed/modified data as such.",
+    "permission_status": "not_required_under_published_open_license",
+    "account_created": false,
+    "paid_terms_accepted": false,
+    "evidence_urls": [
+      "https://www.govdata.de/suche/daten/fz-hersteller-handelsnamen-pkw?ids=638594fd-195a-4e03-b91c-f5ea2eacfa39",
+      "https://www.govdata.de/dl-de/by-2-0",
+      "https://www.govdata.de/informationen/faq"
+    ],
+    "evidence": "The GovData dataset detail page marks the dataset as freie Nutzung under DL-DE BY 2.0. The published licence permits commercial and non-commercial copying, display, modification, processing, transfer to third parties, combining with other datasets and integration into products, subject to attribution and a notice where data has been modified."
+  },
+  "field_status": {
+    "hsn_tsn_manufacturer_trade_name": "dataset_description_and_tags_only_columns_not_verified",
+    "engine_code": "not_provided_or_not_verified",
+    "gearbox_code": "not_provided_or_not_verified",
+    "engine_gearbox_pair": "not_provided",
+    "model_year": "reference_date_is_not_model_year",
+    "generation": "not_assumed",
+    "ecu_dtc_repair_content": "not_provided"
+  },
+  "applicability_policy": {
+    "market_scope": "DE only",
+    "vehicle_scope": "German passenger-car identity and manufacturer/trade-name lookup",
+    "vag_make_filter": "must use exact source manufacturer values after acquisition; no fuzzy make mapping",
+    "hsn_tsn_semantics": "registration identity keys only; not engine or gearbox codes",
+    "model_year_generation": "not inferred from annual reference date",
+    "individual_vehicle_fitment": false,
+    "exact_engine_gearbox_pair": false,
+    "production_fitment": false,
+    "ru_eaeu_applicability": false,
+    "ecu_dtc_repair_applicability": false,
+    "diagnostic_execution_allowed": false
+  },
+  "import_policy": {
+    "product_import_allowed": false,
+    "data_ingested": false,
+    "research_pack_allowed_after_resource_and_schema_review": true,
+    "production_fitment": false,
+    "ru_eaeu_applicability": false
+  },
+  "verification_status": "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified",
+  "product_import_allowed": false,
+  "data_ingested": false,
+  "source_revision": "GovData metadata last modified 2026-01-26; EU data portal temporal coverage 2023-01-01; actual file revision unknown",
+  "source_snapshot_sha256": null,
+  "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
+  "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The CSV resource returned HTTP 400 on 2026-11-07; no bytes, rows or hash were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. HSN/TSN are German registration identity keys only, not engine/gearbox codes or model-year/generation proof."
+}
