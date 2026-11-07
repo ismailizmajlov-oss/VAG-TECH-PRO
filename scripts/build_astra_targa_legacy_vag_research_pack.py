@@ -390,23 +390,22 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
                         exact_vehicle_fitment_claim,exact_engine_gearbox_pair_claim,ru_eaeu_applicability_claim
                       ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                     """, batch_records)
-                    first_id = db.execute("SELECT last_insert_rowid()").fetchone()[0] - len(batch_records) + 1
-                    for offset, values in enumerate(batch_records):
-                        record_id = first_id + offset
-                        row_hash_value = values[1]
-                        engine_values = values[17:28]
-                        if engine_values[1] or engine_values[10]:
-                            batch_engines.append((
-                                record_id, row_hash_value, engine_values[0], engine_values[1],
-                                engine_values[10], engine_values[11],
-                                "unverified_source_engine_marking", "CH"
-                            ))
-                        for slot, (raw, ratio, assignment) in enumerate(gearbox_fields if len(batch_records) == 1 else [], start=1):
-                            pass
-                    # Rebuild engine/gearbox child rows from the same source batch without
-                    # deriving a pair. Each child points only to its approval record.
                     batch_records = []
-                # Child rows are inserted below in a second deterministic pass.
+        # Flush the final partial batch; otherwise trailing VAG rows under 500
+        # would be silently omitted from the research database.
+        if batch_records:
+            db.executemany("""
+              INSERT INTO type_approval_records(
+                source_row_number,source_row_sha256,source_record_locator,source_file_sha256,
+                market_scope,approval_number_raw,approval_date_raw,valid_import_until_raw,
+                extension_date_raw,extension_positions_raw,vehicle_group_raw,vehicle_class_raw,
+                make_raw,make_normalized,type_raw,variant_version_raw,eu_whole_vehicle_approval_raw,
+                engine_make_raw,engine_type_raw,engine_construction_raw,fuel_raw,displacement_cc_raw,
+                power_kw_raw,power_rpm_raw,max_torque_nm_raw,max_torque_rpm_raw,engine_marking_raw,
+                engine_marking_location_raw,applicability_precision,technical_identity_status,
+                exact_vehicle_fitment_claim,exact_engine_gearbox_pair_claim,ru_eaeu_applicability_claim
+              ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """, batch_records)
         db.commit()
     except Exception:
         db.rollback()
@@ -621,15 +620,8 @@ def build_pack(output_dir: Path) -> dict:
     report_path = output_dir / "build-report.json"
     report_path.write_text(json.dumps(data_report, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     archive_path = output_dir / "astra-targa-legacy-vag-research-pack.zip"
-    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
-        for file_path in [database_path, source_manifest_path, attribution_path, field_map_path, pack_manifest_path, report_path]:
-            archive.write(file_path, arcname=file_path.name)
-    pack_manifest["archive"] = {
-        "name": archive_path.name, "sha256": sha256_bytes(archive_path.read_bytes()),
-        "size_bytes": archive_path.stat().st_size,
-    }
-    pack_manifest_path.write_text(json.dumps(pack_manifest, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    # Rebuild archive once with its own digest excluded from the archive manifest to avoid recursion.
+    # The archive digest is recorded in final-verification.json outside the ZIP
+    # to avoid a self-referential manifest hash.
     with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for file_path in [database_path, source_manifest_path, attribution_path, field_map_path, pack_manifest_path, report_path]:
             archive.write(file_path, arcname=file_path.name)
