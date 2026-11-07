@@ -221,6 +221,13 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Decision No. 88, table 6, rule 34"):
             importer.parse_registry_export(raw)
 
+    def test_single_variant_with_multiple_variant_id_elements_is_rejected(self):
+        raw = _xml(ambiguous=False, include_sbkts=False)
+        identifier = b"<trsdo:VehicleTypeVariantId>VAR-EXACT-01</trsdo:VehicleTypeVariantId>"
+        raw = raw.replace(identifier, identifier + identifier, 1)
+        with self.assertRaisesRegex(ValueError, "multiple VehicleTypeVariantId elements"):
+            importer.parse_registry_export(raw)
+
     def test_duplicate_variant_ids_are_rejected(self):
         raw = _xml(ambiguous=True, include_sbkts=False).replace(
             b"VAR-AMBIGUOUS", b"VAR-EXACT-01", 1
