@@ -66,7 +66,7 @@ function validatePack(repoRoot, packRoot) {
   const licenseFile = path.join(packRoot, "LICENSE.txt");
   const attributionFile = path.join(packRoot, "ATTRIBUTION.md");
   const sourceCsv = path.join(packRoot, "source-snapshot.csv");
-  const databaseFile = path.join(packRoot, pack.database?.path || "");
+  const databaseFile = safeJoin(packRoot, pack.database?.path || "");
   const sourceHash = shaFile(sourceFile), rootSourceHash = shaFile(safeJoin(repoRoot, SOURCE_MANIFEST));
   const databaseHash = shaFile(databaseFile), sourceCsvHash = shaFile(sourceCsv);
   const rights = source.rights || {}, snapshot = source.snapshot || {};
