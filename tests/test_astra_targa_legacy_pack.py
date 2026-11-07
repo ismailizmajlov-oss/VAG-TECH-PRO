@@ -8,7 +8,6 @@ from pathlib import Path
 from scripts.build_astra_targa_legacy_vag_research_pack import (
     FIELDS,
     HEADER_CHECKS,
-    MIN_REQUIRED_COLUMNS if False else FIELDS,
     build_database,
     canonical_row_sha256,
     create_schema,
