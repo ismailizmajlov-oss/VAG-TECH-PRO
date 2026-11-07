@@ -341,6 +341,12 @@ def _parse_document(record: ET.Element) -> dict[str, Any]:
             f"EAEU document {document_id} has multiple variants but at least one "
             "VehicleTypeVariantId is missing (Decision No. 88, table 6, rule 34)"
         )
+    for variant_index, item in enumerate(variant_elements, start=1):
+        if len(_direct_children(item, "VehicleTypeVariantId")) > 1:
+            raise ValueError(
+                f"EAEU document {document_id} variant {variant_index} contains "
+                "multiple VehicleTypeVariantId elements"
+            )
     variant_ids = [
         value for item in variant_elements
         if (value := _first_direct_text(item, "VehicleTypeVariantId"))
