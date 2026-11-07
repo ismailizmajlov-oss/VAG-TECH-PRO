@@ -1,61 +1,17 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-07T07:57:46.0914559Z",
+  "recorded_at_utc": "2026-11-07T08:02:15.6610993Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run71",
-  "run_id": 42352972920,
-  "run_number": 565,
+  "run_id": 42353707147,
+  "run_number": 567,
   "run_attempt": 1,
   "status": "completed",
-  "conclusion": "failure",
-  "head_sha": "02113724967829d9272db9493bc0f402b2218a2b",
+  "conclusion": "cancelled",
+  "head_sha": "9c5a8cf59593f6561151443487436db14ba63a81",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42352972920",
-  "jobs": [
-    {
-      "id": 128345546547,
-      "name": "build-and-lifecycle",
-      "status": "completed",
-      "conclusion": "failure",
-      "runner_name": "GitHub Actions 1000002384",
-      "started_at": "2026-11-07T07:54:24Z",
-      "completed_at": "2026-11-07T07:57:32Z"
-    },
-    {
-      "id": 128346189331,
-      "name": "Windows Server 2022 installer compatibility lifecycle",
-      "status": "completed",
-      "conclusion": "skipped",
-      "runner_name": null,
-      "started_at": "2026-11-07T07:57:33Z",
-      "completed_at": "2026-11-07T07:57:32Z"
-    }
-  ],
-  "artifacts": [
-    {
-      "id": 13566871416,
-      "name": "vag-tech-pro-desktop-source-audit-42352972920",
-      "size_in_bytes": 246383,
-      "expired": false,
-      "created_at": "2026-11-07T07:57:13Z",
-      "expires_at": "2026-12-07T07:57:13Z"
-    },
-    {
-      "id": 13566866437,
-      "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 207146932,
-      "expired": false,
-      "created_at": "2026-11-07T07:57:29Z",
-      "expires_at": "2026-11-21T07:57:14Z"
-    },
-    {
-      "id": 13566107591,
-      "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
-      "size_in_bytes": 24888,
-      "expired": false,
-      "created_at": "2026-11-07T07:56:06Z",
-      "expires_at": "2026-11-14T07:56:05Z"
-    }
-  ],
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42353707147",
+  "jobs": [],
+  "artifacts": [],
   "native_windows_10_11": {
     "runner_gate_enabled": false,
     "lifecycle_job_result": "skipped",
