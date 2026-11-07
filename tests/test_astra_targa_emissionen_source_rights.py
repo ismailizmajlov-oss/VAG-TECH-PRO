@@ -73,6 +73,8 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
         self.assertIn("const anchorCandidates = [", script)
         self.assertIn('Write-Host "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."', script)
         self.assertIn('Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."', script)
+        self.assertIn("не является подтверждённым заводским кодом VAG", script)
+        self.assertIn("не является кодом КПП VAG", script)
 
 
 if __name__ == "__main__":
