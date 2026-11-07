@@ -280,7 +280,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         match = re.fullmatch(r'"use strict";\s*module\.exports = "([A-Za-z0-9+/=]+)";\s*', module_text)
         self.assertIsNotNone(match)
         compressed = base64.b64decode(match.group(1), validate=True)
-        self.assertEqual(hashlib.sha256(compressed).hexdigest(), "13e89e254c3a5ac77c70152d49876c78e6fdd2d1d0a49dec74cb743d4cbf108b")
+        self.assertEqual(hashlib.sha256(compressed).hexdigest(), "68995287fd4b8b583ba339ffdf6412fcb07c30c3e11d922d402c12edc959a5c7")
         inner = gzip.decompress(compressed)
         self.assertEqual(hashlib.sha256(inner).hexdigest(), "39d6684b4be0e23752a7f7d0db5d4d1a7a59006ceb6e6d4b3fbd33780b7f4b387")
         inner_text = inner.decode("utf-8")
