@@ -127,9 +127,14 @@ def is_vag_make(value: str) -> bool:
     return normalize_make(value) in VAG_MAKES
 
 
-def validate_header(header: list[str]) -> None:
+def validate_header(header: list[str]) -> list[str]:
+    # The pinned ASTRA revision has 224 header fields but 223 data fields:
+    # the final header cell is empty. Preserve this anomaly in metadata while
+    # trimming only that single trailing empty header field for row parsing.
+    if len(header) == 224 and header[-1].strip() == "":
+        header = header[:-1]
     if len(header) != 223:
-        raise ValueError(f"ASTRA TARGA schema column count changed: expected 223, got {len(header)}")
+        raise ValueError(f"ASTRA TARGA schema column count changed: expected 223 data columns (or 224 with one trailing empty header), got {len(header)}")
     for index, tokens in HEADER_CHECKS.items():
         observed = normalize_text(header[index])
         if not all(token in observed for token in tokens):
@@ -137,6 +142,7 @@ def validate_header(header: list[str]) -> None:
                 f"ASTRA TARGA header mismatch at zero-based column {index}: "
                 f"expected tokens {tokens}, observed {header[index]!r}"
             )
+    return header
 
 
 def download_pinned_source(destination: Path) -> dict:
@@ -306,7 +312,7 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
             header = next(reader, None)
             if header is None:
                 raise ValueError("ASTRA TARGA source file is empty")
-            validate_header(header)
+            header = validate_header(header)
             for source_row_number, row in enumerate(reader, start=2):
                 if not row or not any(value.strip() for value in row):
                     continue
@@ -405,7 +411,7 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
         with source_path.open("r", encoding="cp1252", newline="") as handle:
             reader = csv.reader(handle, delimiter="\t", quotechar='"')
             header = next(reader)
-            validate_header(header)
+            header = validate_header(header)
             for source_row_number, row in enumerate(reader, start=2):
                 if not row or not any(value.strip() for value in row) or len(row) != len(header):
                     continue
