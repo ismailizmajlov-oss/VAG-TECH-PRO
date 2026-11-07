@@ -157,5 +157,17 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertTrue(source["rights"]["source_references_quarantined"])
 
 
+    def test_desktop_research_sync_guard_matches_obdex_locked_ranges(self):
+        lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
+        sync_source = (ROOT / "scripts" / "sync-desktop-research-manifest.cjs").read_text(encoding="utf-8")
+        allowed = json.dumps(lock["scope"]["generic_code_ranges"])
+        excluded = json.dumps(lock["scope"]["excluded_manufacturer_controlled_ranges"])
+        self.assertIn(f"JSON.stringify(scope.generic_code_ranges) !== JSON.stringify({allowed})", sync_source)
+        self.assertIn(f"JSON.stringify(scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify({excluded})", sync_source)
+        self.assertIn("P35xx-P39xx", excluded)
+        self.assertIn("P34xx", allowed)
+        self.assertNotIn("P34xx-P39xx", allowed)
+
+
 if __name__ == "__main__":
     unittest.main()
