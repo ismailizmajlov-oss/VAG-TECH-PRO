@@ -109,8 +109,16 @@ class KbaGermanyOpenDataSourceRightsTests(unittest.TestCase):
         self.assertFalse(manifest["applicability_policy"]["exact_engine_gearbox_pair"])
         self.assertFalse(manifest["applicability_policy"]["ru_eaeu_applicability"])
         self.assertFalse(manifest["applicability_policy"]["production_fitment"])
-        self.assertEqual(manifest["import_policy"]["research_pack_status"],
-                         "separate_de_identity_research_pack_build_pending")
+        expected_pack_status = "separate_de_identity_research_pack_built_verified_desktop_integration_pending"
+        self.assertEqual(manifest["import_policy"]["research_pack_status"], expected_pack_status)
+        self.assertEqual(manifest["research_pack_status"], expected_pack_status)
+        self.assertEqual(source["research_pack_status"], expected_pack_status)
+        self.assertIs(source["research_pack_ingested"], True)
+        self.assertIs(manifest["research_pack_ingested"], True)
+        self.assertIs(source["product_database_ingested"], False)
+        self.assertIs(manifest["product_database_ingested"], False)
+        self.assertIs(source["data_ingested"], False)
+        self.assertIs(manifest["data_ingested"], False)
         self.assertEqual(manifest["source_revision"],
                          "ArcGIS item modified 2026-08-05T07:52:21Z; CSV downloaded 2026-11-07")
 
