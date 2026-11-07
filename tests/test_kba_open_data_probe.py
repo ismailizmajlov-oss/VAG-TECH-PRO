@@ -12,10 +12,17 @@ import probe_kba_open_data as probe
 
 class KbaOpenDataProbeTests(unittest.TestCase):
     def test_exact_vag_manufacturer_allowlist_does_not_use_substrings(self):
-        values = ["Volkswagen AG", "AUDI", "Audi supplier GmbH", "Skoda Auto", "VW Classic Parts", "SEAT"]
+        values = [
+            "VOLKSWAGEN (D)", "AUDI (D)", "AUDI (H)", "SKODA (CZ)", "SEAT (E)",
+            "PORSCHE", "BENTLEY (UK)", "LAMBORGHINI (I)",
+            "Audi supplier GmbH", "VW Classic Parts", "AUDI (D) spare parts",
+        ]
         self.assertEqual(
             probe.exact_vag_manufacturer_values(values),
-            ["Volkswagen AG", "AUDI", "Skoda Auto", "SEAT"],
+            [
+                "VOLKSWAGEN (D)", "AUDI (D)", "AUDI (H)", "SKODA (CZ)", "SEAT (E)",
+                "PORSCHE", "BENTLEY (UK)", "LAMBORGHINI (I)",
+            ],
         )
 
     def test_csv_schema_and_rows_are_read_without_renaming_source_columns(self):
