@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T04:14:00Z",
+  "updated_at": "2026-11-07T15:17:43Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -653,7 +653,7 @@
       "source_id": "obdex-generic-cc0",
       "publisher": "foerbsnavi / OBDex",
       "url": "https://github.com/foerbsnavi/OBDex",
-      "pinned_revision": "09c8aac3d7cb3477a8d9345dfff90b82457b64d1",
+      "pinned_revision": "9ba1ffa095f3140d9e21b985b322ddea3134bb60",
       "source_manifest_path": "data/source-manifests/obdex-generic-cc0.lock.json",
       "source_kind": "generic_sae_iso_obd2_dtc_and_pid_reference_dataset",
       "market_scope": [
@@ -711,7 +711,7 @@
         "Repair estimates, costs and generic repair text are not promoted as OEM repair advice."
       ],
       "project_decision": "allow_separate_generic_CC0_reference_pack_only; keep separate from VAG-specific data and exact vehicle fitment",
-      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-05; per-source-file_and_per-row_SHA256; SQLite_integrity_verified",
+      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-07; acquisition_CI_pending",
       "data_ingested": false
     },
     {

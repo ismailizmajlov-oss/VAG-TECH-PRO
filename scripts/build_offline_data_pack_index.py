@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 ARTIFACTS = {
-    "obdex": ("vag-tech-pro-obdex-cc0-2026-11-02", "obdex-generic-cc0"),
+    "obdex": ("vag-tech-pro-obdex-cc0-2026-11-07", "obdex-generic-cc0"),
     "vehiclesdb": ("vag-identity-vehiclesdb-cc-by-4.0", "vehiclesdb-vag-identity"),
     "obdb": ("obdb-vag-research-cc-by-sa", "obdb-vag-signals-cc-by-sa"),
 }

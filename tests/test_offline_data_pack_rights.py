@@ -114,10 +114,36 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
 
 
+    def test_obdex_acquisition_is_called_once_by_offline_pack_workflow(self):
+        workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
+        trigger_block = workflow.split("jobs:", 1)[0]
+        self.assertIn("workflow_call:", trigger_block)
+        self.assertIn("workflow_dispatch:", trigger_block)
+        self.assertNotIn("pull_request:", trigger_block)
+        self.assertNotIn("push:", trigger_block)
+        pack_workflow = (ROOT / ".github" / "workflows" / "build-windows-offline-data-packs.yml").read_text(encoding="utf-8")
+        self.assertIn("obdex-generic-cc0.lock.json", pack_workflow)
+
+    def test_obdex_refresh_lock_and_artifact_are_revision_pinned(self):
+        lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
+        self.assertEqual(lock["commit_sha"], "9ba1ffa095f3140d9e21b985b322ddea3134bb60")
+        self.assertEqual(lock["commit_date_utc"], "2026-11-07T13:43:17Z")
+        self.assertEqual(lock["license_url"], "https://github.com/foerbsnavi/OBDex/blob/9ba1ffa095f3140d9e21b985b322ddea3134bb60/LICENSE-DATA")
+        self.assertEqual(MODULE.ARTIFACTS["obdex"][0], "vag-tech-pro-obdex-cc0-2026-11-07")
+        workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
+        self.assertIn("vag-tech-pro-obdex-cc0-2026-11-07", workflow)
+
+    def test_desktop_obdex_revision_test_tracks_the_pack_manifest(self):
+        patch = (ROOT / "apply-research-pack-hash-fix-run44.cjs").read_text(encoding="utf-8")
+        self.assertIn("rows[0].upstreamRevision, obdexPack.upstream_revision", patch)
+        self.assertIn(r'tests.match(/^  assert\.equal\(rows\[0\]\.upstreamRevision', patch)
+        self.assertIn("oldRevisionAssertions.length === 1", patch)
+        self.assertIn("stale or ambiguous desktop test patch", patch)
+
     def test_obdex_source_register_is_generic_and_not_vag_fitment(self):
         registry = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
         source = next(item for item in registry["sources"] if item["source_id"] == "obdex-generic-cc0")
-        self.assertEqual(source["pinned_revision"], "09c8aac3d7cb3477a8d9345dfff90b82457b64d1")
+        self.assertEqual(source["pinned_revision"], "9ba1ffa095f3140d9e21b985b322ddea3134bb60")
         self.assertEqual(source["rights"]["data_license_status"], "CC0-1.0 for upstream data files only")
         self.assertEqual(source["market_scope"], ["UNKNOWN"])
         self.assertFalse(source["applicability"]["vag_specific"])
