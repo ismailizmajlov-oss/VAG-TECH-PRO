@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T04:02:47Z",
+  "updated_at": "2026-11-07T04:12:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4631,6 +4631,130 @@
       },
       "project_decision": "approved for a separately namespaced, read-only CH research pack with mandatory attribution; never promote raw approval labels to VAG factory codes or RU/EAEU fitment",
       "evidence_status": "official ASTRA OGD pages, Swiss OGD policy, opendata.swiss terms and EMBAG/EMOTA Art.10 reviewed 2026-11-07",
+      "data_ingested": false
+    },
+    {
+      "source_id": "astra-fedro-targa-legacy-type-approvals-ch",
+      "publisher": "Federal Roads Office (FEDRO / ASTRA), Swiss Confederation",
+      "url": "https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/TG-Automobil.txt",
+      "source_kind": "official_open_government_third_generation_type_approval_data",
+      "market_scope": [
+        "CH"
+      ],
+      "snapshot": {
+        "source_revision": "Thu, 30 Jul 2026 09:22:48 GMT",
+        "etag": "\"133ef745-657d09d960472\"",
+        "file_size_bytes": 322893637,
+        "source_file_sha256": "5851dc2bf2cd06efee42a380e75b661eafa4b577a2edc8ecca2269cb9f950b4b",
+        "format": "tab-delimited TXT; CP1252; 223 data columns; 224 header fields with one trailing empty field",
+        "downloaded_at_utc": "2026-11-07T04:10:29.884488+00:00",
+        "source_generation": "third_generation_type_approvals_after_1995"
+      },
+      "data_products": {
+        "source_file": "TG-Automobil.txt",
+        "source_url": "https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/TG-Automobil.txt",
+        "data_description": "https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/2220-Datenbeschreibung/Basisdaten_TG_ab_1995.pdf"
+      },
+      "rights": {
+        "data_license_status": "Swiss Open Government Data (OGD); no separate CC identifier assigned in the reviewed ASTRA publication",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "attribution": "Source: Federal Roads Office (FEDRO / ASTRA), Type approval data (TARGA), third-generation automobile records (TG-Automobil.txt), source revision 2026-07-30; https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/TG-Automobil.txt. Swiss Open Government Data (OGD). VAG-only research extraction; source rows and field values are unchanged where retained.",
+        "rights_status": "approved_by_official_astra_ogd_publication_and_swiss_ogd_reuse_terms",
+        "evidence": "ASTRA identifies TARGA type-approval information products as open data and states that standardized technical type-approval data are freely available. Swiss OGD policy permits reuse subject to source disclosure; opendata.swiss terms explain commercial use and mandatory attribution. Only the free factual type-approval file is included.",
+        "evidence_urls": [
+          "https://www.astra.admin.ch/de/news-homologation",
+          "https://opendata.swiss/en/terms-of-use",
+          "https://opendata.swiss/en/faq",
+          "https://www.bk.admin.ch/en/open-government-data-ogd-2",
+          "https://www.fedlex.admin.ch/eli/cc/2023/682/en"
+        ],
+        "excluded_products": [
+          "paid holder/location data",
+          "registration-plate mappings",
+          "eDatenblatt portal output",
+          "non-public type-approval documents"
+        ]
+      },
+      "coverage": {
+        "source_generation": "third_generation_after_1995",
+        "vehicle_group": "TG-Automobil.txt only; includes passenger and other automobile classes present in the source",
+        "exact_make_filter": true,
+        "source_rows_scanned": 210673,
+        "approval_records": 45041,
+        "engine_marking_candidates": 45041,
+        "gearbox_classifications": 53476,
+        "exact_engine_gearbox_pair_rows": 0,
+        "make_counts": {
+          "AUDI": 14510,
+          "BENTLEY": 286,
+          "BUGATTI": 9,
+          "CUPRA": 222,
+          "LAMBORGHINI": 384,
+          "PORSCHE": 1374,
+          "SEAT": 3455,
+          "SKODA": 4116,
+          "VW": 20685
+        },
+        "vehicle_class_counts": {
+          "": 92,
+          "M1": 37897,
+          "M2": 202,
+          "N1": 5768,
+          "N2": 1050,
+          "T1": 1,
+          "T1a": 19,
+          "T2": 4,
+          "T2a": 8
+        }
+      },
+      "field_status": {
+        "approval_number_and_date": "raw official CH type-approval record fields",
+        "engine_make_type_and_marking": "raw approval fields; Motorkennzeichen is a source engine-marking candidate, not independently confirmed as a VAG factory engine code",
+        "gearbox_1_to_4": "raw approval gearbox classifications; not VAG gearbox codes",
+        "engine_gearbox_pair": "not established; no pair table and no pair claim",
+        "model_year": "not inferred from approval date",
+        "generation": "not inferred",
+        "ecu_dtc_repair_content": "not provided"
+      },
+      "applicability_policy": {
+        "market_scope": "CH only",
+        "applicability_precision": "CH_type_approval_record",
+        "engine_marking": "unverified source candidate only",
+        "gearbox_classification": "raw source classification only",
+        "engine_gearbox_pair": false,
+        "exact_engine_gearbox_pair": false,
+        "individual_vehicle_fitment": false,
+        "production_fitment": false,
+        "ru_eaeu_applicability": false,
+        "model_year_generation": "not inferred",
+        "repair_procedure_applicability": false,
+        "diagnostic_execution_allowed": false
+      },
+      "research_pack": {
+        "pack_id": "astra-fedro-targa-legacy-vag-research",
+        "status": "verified_research_only",
+        "database_sha256": "c3469b30ba2ce631ba72cb2dd4bd16e208dd4f1efa0a61ddbae564982818274b",
+        "database_size_bytes": 43474944,
+        "archive_sha256": "6350ea1e562aea8f2c57cbd31a779b17b6ef36d73981d673de596af3adf28fb4",
+        "counts": {
+          "approval_records": 45041,
+          "engine_marking_candidates": 45041,
+          "gearbox_classifications": 53476,
+          "records_with_any_gearbox": 45041,
+          "records_with_engine_marking": 45041,
+          "exact_engine_gearbox_pair_rows": 0
+        },
+        "production_import": false,
+        "product_import_allowed": false,
+        "ru_eaeu_applicability": false
+      },
+      "project_decision": "approved for a separately namespaced CH-only read-only research pack with mandatory attribution; preserve engine-marking candidates and gearbox classifications separately and never infer pairs",
+      "evidence_status": "official ASTRA TARGA product documentation and ASTRA/Swiss OGD reuse terms reviewed 2026-11-07",
       "data_ingested": false
     }
   ],
