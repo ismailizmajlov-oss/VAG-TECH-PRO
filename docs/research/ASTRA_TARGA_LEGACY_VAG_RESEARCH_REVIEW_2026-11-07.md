@@ -66,6 +66,14 @@ The values are stored as raw source fields. In particular:
 - `data_ingested=false` remains the production-register value even after the separate research pack is built.
 - The source is never mixed with generic OBD-II or VAG-specific DTC datasets.
 
+## Related third-generation per-gearbox emissions dataset
+
+The same official OGD directory also publishes `emissionen.txt` (directory listing: 68 MB, Last-Modified 2026-07-30 11:22 UTC): https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/emissionen.txt
+
+ASTRA's TARGA documentation says this dataset is for motor vehicles (not trailers) and **one row is emitted for each gearbox variant**. Its 42-field schema includes approval code (`TG-Code`), make, type/variant/version, gearbox classification, final-drive ratio, engine make/type, fuel, displacement, power, torque, emissions and homologation date (documentation pages 5–6). This is stronger than the multi-slot gearbox fields in `TG-Automobil.txt`: a row can preserve a source-defined approval-variant engine-type/gearbox-classification association.
+
+It still does not provide a confirmed VAG factory gearbox code. The raw `Motortyp` and `Getriebe` values must remain source labels; a row is not a production-vehicle fitment, and the exact VAG factory code pair is not confirmed. A separate bounded probe and hash-pinned SQLite pack are required before this product can be used. The future schema should call these `approval_powertrain_variant_rows`, not `vag_engine_gearbox_pairs`, and record `source_defined_engine_gearbox_variant_link=true` alongside `exact_vag_factory_code_pair=false`.
+
 ## Other TARGA generations
 
 ASTRA's official page also lists a second-generation 1985–1995 Excel dataset and first-generation pre-1985 scanned approval sheets. They are separate products and are not included in this third-generation pack. The second-generation workbook is a candidate for a subsequent schema probe; scanned PDFs require a separate quality and OCR review.
