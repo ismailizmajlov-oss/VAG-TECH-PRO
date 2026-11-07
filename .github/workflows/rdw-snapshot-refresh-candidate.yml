@@ -1,0 +1,80 @@
+name: RDW NL/EU snapshot refresh candidate (isolated)
+
+on:
+  push:
+    branches: [rdw-snapshot-refresh-20261108]
+    paths:
+      - ".github/workflows/rdw-snapshot-refresh-candidate.yml"
+      - "research-refresh/rdw-eu-vag-type-approval-open-data-candidate.json"
+      - "scripts/build_rdw_vag_research_pack.py"
+      - "tests/test_rdw_vag_research_pack.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-rdw-snapshot-refresh-candidate
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-verify-candidate:
+    name: Acquire and verify refreshed NL-only CC0 snapshot without promotion
+    runs-on: windows-2025
+    timeout-minutes: 90
+    steps:
+      - name: Checkout isolated refresh branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Compile and run offline policy tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m py_compile scripts/build_rdw_vag_research_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "RDW builder compilation failed." }
+          python -m unittest discover -s tests -p "test_rdw_vag_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "RDW research-pack policy tests failed." }
+          python -m unittest discover -s tests -p "test_rdw_vag_type_approval_source_rights.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "RDW source-rights tests failed." }
+
+      - name: Acquire candidate snapshot from six allowlisted RDW datasets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_rdw_vag_research_pack.py --manifest research-refresh/rdw-eu-vag-type-approval-open-data-candidate.json --output-dir artifacts/rdw-vag-research-pack-refresh-candidate 2>&1 | Tee-Object -FilePath rdw-refresh-candidate-build.log
+          if ($LASTEXITCODE -ne 0) { throw "RDW candidate snapshot acquisition/build failed." }
+          python scripts/build_rdw_vag_research_pack.py --verify-only --output-dir artifacts/rdw-vag-research-pack-refresh-candidate
+          if ($LASTEXITCODE -ne 0) { throw "RDW candidate snapshot independent verification failed." }
+          $source = Get-Content -LiteralPath artifacts/rdw-vag-research-pack-refresh-candidate/rdw-eu-vag-type-approval-open-data.json -Raw | ConvertFrom-Json
+          $pack = Get-Content -LiteralPath artifacts/rdw-vag-research-pack-refresh-candidate/manifest.json -Raw | ConvertFrom-Json
+          if ($source.snapshot_refresh.status -ne "candidate_snapshot_acquired_pending_review" -or
+              $source.snapshot_refresh.promotion_approved -ne $false -or
+              $source.snapshot_refresh.candidate_source_snapshot_sha256 -ne $source.snapshot.source_snapshot_sha256 -or
+              $source.data_ingested -ne $false -or $source.import_policy.production_import -ne $false -or
+              $source.import_policy.ru_eaeu_applicability -ne $false -or
+              $pack.market_scope.Count -ne 1 -or $pack.market_scope[0] -ne "NL" -or
+              $pack.production_import -ne $false -or $pack.ru_eaeu_applicability -ne $false -or
+              $pack.exact_engine_gearbox_pair -ne $false -or $pack.pair_table_created -ne $false) {
+            throw "RDW refresh candidate crossed its research-only/no-promotion boundary."
+          }
+          "## RDW refresh candidate (not promoted)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Previous snapshot: $($source.snapshot_refresh.previous_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Candidate snapshot: $($source.snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Counts: $($pack.counts | ConvertTo-Json -Compress)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "SQLite SHA-256: $($pack.database.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Promotion approved: false" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload candidate SQLite, source snapshots and provenance (not a release)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rdw-vag-nl-eu-snapshot-refresh-candidate
+          path: |
+            artifacts/rdw-vag-research-pack-refresh-candidate/**
+            rdw-refresh-candidate-build.log
+          if-no-files-found: error
+          retention-days: 90
