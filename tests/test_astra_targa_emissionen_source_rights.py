@@ -79,5 +79,17 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
         self.assertNotIn('Write-Output "ASTRA TARGA offline CH source-row search passed; no OEM pair, RU/EAEU fitment or repair claims."', script)
 
 
+    def test_targa_ui_patch_preserves_research_row_type_closure(self):
+        script = (ROOT / "scripts" / "integrate-astra-targa-emissionen-vag-research-pack.cjs").read_text(encoding="utf-8")
+        self.assertIn("homologationDate?: string | null;\\n};", script)
+
+    def test_targa_reader_checks_field_map_and_build_report_counts(self):
+        reader = (ROOT / "desktop" / "astra-targa-emissionen-db.cjs").read_text(encoding="utf-8")
+        self.assertIn("const fieldMap = readJson(fieldMapFile);", reader)
+        self.assertIn("const reportMismatch", reader)
+        self.assertIn("reportCounts.exact_vag_factory_code_pair_rows !== counts.exactVagFactoryCodePairRows", reader)
+
+
+
 if __name__ == "__main__":
     unittest.main()
