@@ -137,3 +137,20 @@ Windows desktop validation [run 400](https://github.com/ismailizmajlov-oss/VAG-T
 The integration code now reads the manifest's `database.path`, rejects missing or root-escaping paths, and returns the pinned relative path for the desktop manifest. A regression test covers the current `path` field, missing/legacy `file` fields and path traversal. Changes are in commits `93d9506ca74139cf561a04a6ebb2563fcedf4ccb`, `4b156b5e42f4d03812a8f0515d38d1a4e8a3159d` and `ddac5d9d01425bb24690ccecf7765991db7ed70c`. **A fresh successful Windows desktop run is still required** before the pack can be described as integrated or included in a verified installer.
 
 The run-34 pack remains NL-only and `verified_research_only`. It is not RU/EAEU OTTS, does not establish production fitment, and does not provide ECU, DTC, test-plan, repair, wiring, pinout, torque, adaptation or service-schedule data. Production import remains false.
+
+
+## Filtered research pack audit — run 38, 2026-11-07
+
+The refreshed six-dataset Windows pack completed successfully in [run 38](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42412783042), source commit \`ff4f7a830ad52537ecbdce2a1bdff29a0564d25d\`. The pack artifact is ID \`13591335193\`, size 148,730,574 bytes, ZIP SHA-256 \`2742ae7da6a19331deccab7b4cfd84ae0f6e4a2d3f9d60744e84401e5de8fea1\`.
+
+- Pack manifest SHA-256: \`b8f0236769fd8e520dba53cb1d46d3a98e0d84170eab036e515a49ebd616c48f\`.
+- Source manifest SHA-256: \`09922f66485a9564a7ed320f79983b3a3c27c6dccc52b84b0877f2d20907a242\`.
+- Aggregate filtered snapshot SHA-256: \`48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615\`.
+- SQLite database: 404,590,592 bytes; SHA-256 \`683c8700ddce1a4689376c4599b8229d2afdf284bd0f8aa32b7c29e6afdc33f5\`.
+- Six source files, 604,765 source rows, 96,521 exact approval/variant/version/revision scopes, 102,664 registration observations, 93,831 engine-designation candidates, 93,543 gearbox classifications and 314,727 auxiliary rows.
+- Scope diagnostics: 93,543 scopes have both an engine-designation observation and a separate gearbox-classification observation; 190 are engine-only; 98 scopes contain multiple engine rows; 908 distinct engine-designation values and four gearbox-classification values. These are not pair records and are not a factory fitment graph.
+- SQLite \`integrity_check=ok\`, zero foreign-key violations, six source-file hashes/sizes/row counts and all 604,765 per-row hashes were independently verified. The artifact contains no VIN, plate, holder, ownership or address fields.
+
+The refreshed snapshot changes counts and hashes from run 34. Windows run 698 attempt 2 successfully downloaded and integrated the run-38 RDW pack and the DE-only KBA pack, but its local research verifier then failed because the RDW verifier patch still pinned run-34 counts and snapshot hash. The failure was \`RDW snapshot, database or source manifest provenance/counts changed\`; run85, the full desktop tests, NSIS packaging and lifecycle were consequently skipped. The verifier and dependent KBA patch are being changed to compare runtime counts and hashes to the immutable pack manifest, rather than stale constants.
+
+The RDW pack remains NL-only, CC0 research data, not Russian/EAEU OTTS, not OEM-confirmed VAG engine/gearbox codes, not an exact engine/gearbox pair, and not production fitment. No DTC, ECU, wiring, pinout, repair procedure, torque, adaptation or service-interval applicability is created.

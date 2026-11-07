@@ -153,3 +153,16 @@ test("RDW verifier patch increments an existing TARGA-era pack count and is idem
 function fsTemp() {
   return require("node:fs").mkdtempSync(path.join(os.tmpdir(), "rdw-pack-path-test-"));
 }
+
+
+test("RDW desktop verification binds refreshed counts and hashes to the pack manifest", () => {
+  assert.match(rdwVerifierPatchSource, /rdw\.counts\.approval_scopes/);
+  assert.match(rdwVerifierPatchSource, /rdw\.source_snapshot_sha256/);
+  assert.match(rdwVerifierPatchSource, /rdwPack\.counts\.approval_scopes/);
+  assert.ok(!rdwVerifierPatchSource.includes("896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706"));
+  assert.ok(!rdwVerifierPatchSource.includes("counts.approvalScopes === 96519"));
+  assert.match(rdwIntegrationSource, /counts\.approvalScopes -le 0/);
+  assert.match(rdwIntegrationSource, /sourceSnapshotSha256 -notmatch/);
+  assert.match(rdwIntegrationSource, /e1\*2018\/858\*00302\*10/);
+  assert.ok(!rdwIntegrationSource.includes("counts.approvalScopes -ne 96519"));
+});

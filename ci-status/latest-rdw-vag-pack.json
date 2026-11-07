@@ -5,8 +5,8 @@
   "run_id": 42412783042,
   "run_number": 38,
   "run_attempt": 1,
-  "run_status_at_record": "in_progress",
-  "run_conclusion_at_record": null,
+  "run_status_at_record": "completed",
+  "run_conclusion_at_record": "success",
   "build_job_result": "success",
   "head_sha": "ff4f7a830ad52537ecbdce2a1bdff29a0564d25d",
   "head_branch": "main",
@@ -54,5 +54,43 @@
   "pack_artifact_present": true,
   "pack_ready": true,
   "release_ready": false,
-  "release_readiness_note": "NL-only CC0 type-approval research pack; not RU/EAEU fitment, OEM engine/gearbox codes, exact powertrain pairing or repair authorization."
+  "release_readiness_note": "NL-only CC0 type-approval research pack; not RU/EAEU fitment, OEM engine/gearbox codes, exact powertrain pairing or repair authorization.",
+  "artifact_sha256": "2742ae7da6a19331deccab7b4cfd84ae0f6e4a2d3f9d60744e84401e5de8fea1",
+  "artifact_size_bytes": 148730574,
+  "artifact_expires_at_utc": "2027-02-05T20:48:06Z",
+  "pack_manifest_sha256": "b8f0236769fd8e520dba53cb1d46d3a98e0d84170eab036e515a49ebd616c48f",
+  "source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
+  "database_sha256": "683c8700ddce1a4689376c4599b8229d2afdf284bd0f8aa32b7c29e6afdc33f5",
+  "database_byte_size": 404590592,
+  "license_sha256": "50433783ab62c96cc94ee2d8893350307edcaa3b532bd94a04c8b085ee10cdaa",
+  "attribution_sha256": "2504d2ff8d9b8096e79fd8dbd9db76e4f56aa237a820b92a541dd061fd897361",
+  "build_report_sha256": "2bb89a407e7709a37da322a59f90dadc69d8b8f8e5c24b1f04be87729c9c212c",
+  "counts": {
+    "source_files": 6,
+    "approval_scopes": 96521,
+    "registration_observations": 102664,
+    "engine_candidates": 93831,
+    "gearbox_classifications": 93543,
+    "auxiliary_rows": 314727,
+    "source_rows": 604765
+  },
+  "scope_coverage": {
+    "scopes_with_engine_and_gearbox_rows": 93543,
+    "engine_only_scopes": 190,
+    "gearbox_only_scopes": 0,
+    "scopes_with_multiple_engine_rows": 98,
+    "scopes_with_multiple_gearbox_rows": 0,
+    "unique_engine_designation_values": 908,
+    "unique_gearbox_classification_values": 4,
+    "missing_engine_designation_rows": 0,
+    "missing_gearbox_classification_rows": 0
+  },
+  "source_revisions": {
+    "registration": "1794034652",
+    "tgk_base": "1794021089",
+    "tgk_drive": "1794021088",
+    "tgk_gearbox": "1794021092",
+    "tgk_make": "1794021091",
+    "tgk_trade_name": "1794021092"
+  }
 }

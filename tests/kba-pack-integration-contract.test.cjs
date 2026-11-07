@@ -124,7 +124,7 @@ test("KBA verifier patch accepts the RDW revision, appends its reader before ass
     const testsDir = path.join(desktopRoot, "tests");
     fs.mkdirSync(scriptsDir, { recursive: true });
     fs.mkdirSync(testsDir, { recursive: true });
-    const rdwCountAssertion = '  assert(rdwSummary.counts.approvalScopes === 96519 && rdwSummary.counts.registrationObservations === 102662 && rdwSummary.counts.engineDesignationCandidates === 93836 && rdwSummary.counts.gearboxClassifications === 93548 && rdwSummary.counts.sourceRows === 604785 && rdwSummary.sourceSnapshotSha256 === "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706" && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot, database or source manifest provenance/counts changed");';
+    const rdwCountAssertion = '  assert(rdwSummary.counts.approvalScopes === rdw.counts.approval_scopes && rdwSummary.counts.registrationObservations === rdw.counts.registration_observations && rdwSummary.counts.engineDesignationCandidates === rdw.counts.engine_candidates && rdwSummary.counts.gearboxClassifications === rdw.counts.gearbox_classifications && rdwSummary.counts.sourceRows === rdw.counts.source_rows && rdwSummary.counts.sourceFiles === rdw.counts.source_files && rdwSummary.sourceSnapshotSha256 === rdw.source_snapshot_sha256 && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot counts and provenance must match the pinned pack manifest");';
     const verifier = [
       'const assert = require("node:assert/strict");',
       'const path = require("node:path");',

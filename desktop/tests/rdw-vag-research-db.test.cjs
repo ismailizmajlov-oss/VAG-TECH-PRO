@@ -2,11 +2,12 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const path = require("node:path");
 const { getRdwSummary, searchRdwApprovals, clearCache } = require("../lib/rdw-vag-research-db.cjs");
 
 const RESEARCH_ROOT = path.join(__dirname, "..", "data", "research");
-const APPROVAL = "e1*2018/858*00403*07";
+const APPROVAL = "e1*2018/858*00302*10";
 
 test("RDW pack verifies CC0 provenance, hashes, NL scope and research-only boundaries", () => {
   clearCache();
@@ -21,13 +22,20 @@ test("RDW pack verifies CC0 provenance, hashes, NL scope and research-only bound
   assert.equal(summary.exactEngineGearboxPair, false);
   assert.equal(summary.repairApplicability, false);
   assert.equal(summary.diagnosticExecutionAllowed, false);
-  assert.equal(summary.sourceSnapshotSha256, "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706");
-  assert.equal(summary.counts.approvalScopes, 96519);
-  assert.equal(summary.counts.registrationObservations, 102662);
-  assert.equal(summary.counts.engineDesignationCandidates, 93836);
-  assert.equal(summary.counts.gearboxClassifications, 93548);
-  assert.equal(summary.counts.sourceRows, 604785);
-  assert.equal(summary.counts.sourceFiles, 6);
+  const pack = JSON.parse(fs.readFileSync(path.join(RESEARCH_ROOT, "manifest.json"), "utf8")).packs.find((item) => item.id === "rdw-vag-nl-eu-type-approval-research");
+  assert.ok(pack, "RDW research pack must be present in the local manifest");
+  assert.equal(summary.sourceSnapshotSha256, pack.source_snapshot_sha256);
+  assert.equal(summary.databaseSha256, pack.database_sha256);
+  assert.equal(summary.sourceManifestSha256, pack.source_manifest_sha256);
+  assert.deepEqual(summary.counts, {
+    approvalScopes: pack.counts.approval_scopes,
+    registrationObservations: pack.counts.registration_observations,
+    engineDesignationCandidates: pack.counts.engine_candidates,
+    gearboxClassifications: pack.counts.gearbox_classifications,
+    auxiliaryRows: pack.counts.auxiliary_rows,
+    sourceRows: pack.counts.source_rows,
+    sourceFiles: pack.counts.source_files
+  });
   assert.match(summary.databaseSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceManifestSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.attributionText, /RDW Open Data \(Netherlands\)/);
@@ -38,7 +46,7 @@ test("exact RDW approval scope keeps engine and gearbox observations separate", 
   const row = rows.find((item) =>
     item.typeApprovalNumber === APPROVAL &&
     item.variant === "ACDUCAX0" &&
-    item.version === "FD6FD6DD002PR4VNB50OO" &&
+    item.version === "FD6FD6DD002PR4VNB0OO" &&
     item.revision === "0"
   );
   assert.ok(row, "expected reviewed RDW approval scope was not found");
@@ -47,7 +55,7 @@ test("exact RDW approval scope keeps engine and gearbox observations separate", 
   assert.deepEqual(row.exactScopeKey, {
     typeApprovalNumber: APPROVAL,
     variant: "ACDUCAX0",
-    version: "FD6FD6DD002PR4VNB50OO",
+    version: "FD6FD6DD002PR4VNB0OO",
     revision: "0"
   });
   assert.ok(row.engineDesignationCandidates.some((item) => item.engineDesignation === "DUC"));
@@ -70,7 +78,7 @@ test("exact RDW approval scope keeps engine and gearbox observations separate", 
 });
 
 test("RDW trade-name search works offline and rejects undersized queries", () => {
-  const rows = searchRdwApprovals("TAYRON", 10, RESEARCH_ROOT);
+  const rows = searchRdwApprovals("TIGUAN", 10, RESEARCH_ROOT);
   assert.ok(rows.length > 0);
   assert.ok(rows.every((row) => row.marketScope === "NL" && row.exactEngineGearboxPair === false));
   assert.throws(() => searchRdwApprovals("A", 10, RESEARCH_ROOT), /минимум два символа/);
