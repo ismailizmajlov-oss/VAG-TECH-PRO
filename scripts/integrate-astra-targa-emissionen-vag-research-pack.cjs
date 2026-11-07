@@ -178,6 +178,19 @@ function patchLifecycle(desktopRoot) {
   text = replaceOnce(text, anchor, anchor + "\n" + check, "ASTRA TARGA offline lifecycle check");
   fs.writeFileSync(file, text, "utf8");
 }
+function patchResearchVerifier(desktopRoot) {
+  const file = path.join(desktopRoot, "scripts/verify-local-research-packs.cjs");
+  let text = fs.readFileSync(file, "utf8");
+  if (text.includes("astraTargaSummary")) return;
+  if (!text.includes("manifest.packs.length === 10")) fail("Run74 research verifier manifest count anchor missing");
+  text = text.replace("manifest.packs.length === 10", "manifest.packs.length === 11");
+  text = text.replace("Expected ten registered research packs, including the CH-only ASTRA and AutoDiag2 packs", "Expected eleven registered research packs, including separate CH-only ASTRA TAS and TARGA packs");
+  const summaryLine = '  const astraSummary = require(path.join(ROOT, "lib", "astra-ch-tas-db.cjs")).getAstraSummary(RESEARCH);';
+  if (!text.includes(summaryLine)) fail("Run74 ASTRA summary verifier anchor missing");
+  const targaCheck = summaryLine + '\n  const astraTargaSummary = require(path.join(ROOT, "lib", "astra-targa-emissionen-db.cjs")).getAstraTargaSummary(RESEARCH);\n  assert(astraTargaSummary.id === "astra-fedro-targa-emissionen-approval-variants-ch" && astraTargaSummary.marketScope === "CH" && astraTargaSummary.productionImport === false && astraTargaSummary.productImportAllowed === false && astraTargaSummary.ruEaeuApplicability === false && astraTargaSummary.exactVagFactoryCodePair === false && astraTargaSummary.counts.approvalPowertrainVariantRows === 53240 && astraTargaSummary.counts.exactVagFactoryCodePairRows === 0, "ASTRA TARGA must remain separately namespaced CH-only research, never factory fitment");';
+  text = text.replace(summaryLine, targaCheck);
+  fs.writeFileSync(file, text, "utf8");
+}
 function integrate(repoRoot, desktopRoot, packDir, sourceRunId, artifactSha) {
   const registryManifestPath = safeJoin(desktopRoot, "data/source-manifests/astra-targa-emissionen-open-data.json");
   const validated = validatePack(packDir, registryManifestPath);
@@ -257,7 +270,7 @@ function integrate(repoRoot, desktopRoot, packDir, sourceRunId, artifactSha) {
   }
   patchApi(desktopRoot);
   patchUi(desktopRoot);
-  patchLifecycle(desktopRoot);
+  patchLifecycle(desktopRoot);\n  patchResearchVerifier(desktopRoot);
   const packagePath = safeJoin(desktopRoot,"package.json");
   const pkg = readJson(packagePath);
   if (!pkg.scripts || typeof pkg.scripts["test:research"] !== "string" || typeof pkg.scripts["verify:local-research"] !== "string") fail("Desktop research scripts are missing");
