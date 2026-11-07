@@ -33,14 +33,17 @@ function main() {
   let test = testOriginal.replace(/\r\n/g, "\n");
 
   if (!verifier.includes("astraTargaSummary")) throw new Error("TARGA-enhanced verifier must be applied before the RDW verifier patch.");
-  const packCountMatches = [...verifier.matchAll(/manifest\\.packs\\.length === (\\d+)/g)];
+  const packCountMatches = [...verifier.matchAll(/manifest\.packs\.length === (\d+)/g)];
   if (packCountMatches.length !== 1) throw new Error("RDW research pack manifest cardinality: expected exactly one numeric pack-count assertion, found " + packCountMatches.length);
   const currentPackCount = Number(packCountMatches[0][1]);
+  let expectedPackCount = currentPackCount;
   if (!verifier.includes('rdwSummary.id === rdw.id')) {
     if (!Number.isSafeInteger(currentPackCount) || currentPackCount < 11 || currentPackCount > 30) throw new Error("RDW research pack manifest cardinality: unexpected pre-RDW pack count " + currentPackCount);
-    const nextPackCount = currentPackCount + 1;
-    verifier = verifier.replace(/manifest\\.packs\\.length === \\d+/, "manifest.packs.length === " + nextPackCount);
-    verifier = verifier.replace(/"Expected [^"]*research packs[^"]*"/, '"Expected ' + nextPackCount + ' separately licensed research packs, including the NL-only RDW approval research pack"');
+    expectedPackCount = currentPackCount + 1;
+    const messageMatch = verifier.match(/"Expected [^"]*research packs[^"]*"/);
+    if (!messageMatch) throw new Error("RDW research pack manifest cardinality: assertion message anchor missing");
+    verifier = verifier.replace(/manifest\.packs\.length === \d+/, "manifest.packs.length === " + expectedPackCount);
+    verifier = verifier.replace(messageMatch[0], '"Expected ' + expectedPackCount + ' separately licensed research packs, including the NL-only RDW approval research pack"');
   }
 
   verifier = replaceExactly(verifier,
@@ -68,7 +71,7 @@ function main() {
 
   fs.writeFileSync(verifierPath, verifier.replace(/\n/g, verifierNewline), "utf8");
   fs.writeFileSync(testPath, test.replace(/\n/g, testNewline), "utf8");
-  console.log(JSON.stringify({ status: "patched", patch: "run31-rdw-nl-eu-research-pack-verification", manifestPackCount: currentPackCount + (verifier.includes("rdwSummary.id === rdw.id") ? 0 : 1), rdwPackId: "rdw-vag-nl-eu-type-approval-research", files: ["scripts/verify-local-research-packs.cjs", "tests/local-research-packs.test.cjs"] }));
+  console.log(JSON.stringify({ status: "patched", patch: "run31-rdw-nl-eu-research-pack-verification", manifestPackCount: expectedPackCount, rdwPackId: "rdw-vag-nl-eu-type-approval-research", files: ["scripts/verify-local-research-packs.cjs", "tests/local-research-packs.test.cjs"] }));
 }
 try { main(); }
 catch (error) { console.error("Run31 RDW research-pack verifier patch failed: " + error.message); process.exitCode = 1; }
