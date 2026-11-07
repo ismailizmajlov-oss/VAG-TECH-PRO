@@ -62,15 +62,52 @@ function patch(desktopRoot) {
   ].join("\n");
   verifier = replaceExactly(verifier, rdwCountAssertion, rdwCountAssertion + "\n" + kbaReader + "\n" + kbaAssertions, "KBA runtime reader/rights/provenance/count verification");
 
-  verifier = replaceExactly(verifier,
-    '      rdw_nl_eu: {\n        marketScope: rdwSummary.marketScope,\n        approvalScopes: rdwSummary.counts.approvalScopes,\n        registrationObservations: rdwSummary.counts.registrationObservations,\n        engineDesignationCandidates: rdwSummary.counts.engineDesignationCandidates,\n        gearboxClassifications: rdwSummary.counts.gearboxClassifications,\n        sourceRows: rdwSummary.counts.sourceRows,\n        sourceFiles: rdwSummary.counts.sourceFiles,\n        productionImport: rdwSummary.productionImport,\n        ruEaeuApplicability: rdwSummary.ruEaeuApplicability,\n        exactVehicleFitment: rdwSummary.exactVehicleFitment,\n        exactEngineGearboxPair: rdwSummary.exactEngineGearboxPair,\n        repairApplicability: rdwSummary.repairApplicability,\n        diagnosticExecutionAllowed: rdwSummary.diagnosticExecutionAllowed,\n        sourceSnapshotSha256: rdwSummary.sourceSnapshotSha256,\n        sourceManifestSha256: rdwSummary.sourceManifestSha256,\n        databaseSha256: rdwSummary.databaseSha256,\n      },\n      production_fitment_rows_added: 0,\n',
-    '      rdw_nl_eu: {\n        marketScope: rdwSummary.marketScope,\n        approvalScopes: rdwSummary.counts.approvalScopes,\n        registrationObservations: rdwSummary.counts.registrationObservations,\n        engineDesignationCandidates: rdwSummary.counts.engineDesignationCandidates,\n        gearboxClassifications: rdwSummary.counts.gearboxClassifications,\n        sourceRows: rdwSummary.counts.sourceRows,\n        sourceFiles: rdwSummary.counts.sourceFiles,\n        productionImport: rdwSummary.productionImport,\n        ruEaeuApplicability: rdwSummary.ruEaeuApplicability,\n        exactVehicleFitment: rdwSummary.exactVehicleFitment,\n        exactEngineGearboxPair: rdwSummary.exactEngineGearboxPair,\n        repairApplicability: rdwSummary.repairApplicability,\n        diagnosticExecutionAllowed: rdwSummary.diagnosticExecutionAllowed,\n        sourceSnapshotSha256: rdwSummary.sourceSnapshotSha256,\n        sourceManifestSha256: rdwSummary.sourceManifestSha256,\n        databaseSha256: rdwSummary.databaseSha256,\n      },\n      kba_de_vag_stock: {\n        marketScope: kbaDeSummary.marketScope,\n        vagStockObservations: kbaDeSummary.counts.vagStockObservations,\n        manufacturerLabels: kbaDeSummary.counts.manufacturerLabels,\n        uniqueMakeTradeNamePairs: kbaDeSummary.counts.uniqueMakeTradeNamePairs,\n        uniqueMakeTypeKeyPairs: kbaDeSummary.counts.uniqueMakeTypeKeyPairs,\n        uniqueMakeTradeTypeReferenceDateTuples: kbaDeSummary.counts.uniqueMakeTradeTypeReferenceDateTuples,\n        federalStates: kbaDeSummary.counts.federalStates,\n        referenceDates: kbaDeSummary.counts.referenceDates,\n        researchPackIngested: kbaDeSummary.researchPackIngested,\n        productDatabaseIngested: kbaDeSummary.productDatabaseIngested,\n        productionImport: kbaDeSummary.productionImport,\n        productImportAllowed: kbaDeSummary.productImportAllowed,\n        ruEaeuApplicability: kbaDeSummary.ruEaeuApplicability,\n        exactVehicleFitment: kbaDeSummary.exactVehicleFitment,\n        exactEngineGearboxPair: kbaDeSummary.exactEngineGearboxPair,\n        repairApplicability: kbaDeSummary.repairApplicability,\n        diagnosticExecutionAllowed: kbaDeSummary.diagnosticExecutionAllowed,\n        sourceSnapshotSha256: kbaDeSummary.sourceSnapshotSha256,\n        sourceManifestSha256: kbaDeSummary.sourceManifestSha256,\n        databaseSha256: kbaDeSummary.databaseSha256,\n      },\n      production_fitment_rows_added: 0,\n',
-    "KBA verification report");
+  const kbaReport = [
+    '      kba_de_vag_stock: {',
+    '        marketScope: kbaDeSummary.marketScope,',
+    '        vagStockObservations: kbaDeSummary.counts.vagStockObservations,',
+    '        manufacturerLabels: kbaDeSummary.counts.manufacturerLabels,',
+    '        uniqueMakeTradeNamePairs: kbaDeSummary.counts.uniqueMakeTradeNamePairs,',
+    '        uniqueMakeTypeKeyPairs: kbaDeSummary.counts.uniqueMakeTypeKeyPairs,',
+    '        uniqueMakeTradeTypeReferenceDateTuples: kbaDeSummary.counts.uniqueMakeTradeTypeReferenceDateTuples,',
+    '        federalStates: kbaDeSummary.counts.federalStates,',
+    '        referenceDates: kbaDeSummary.counts.referenceDates,',
+    '        researchPackIngested: kbaDeSummary.researchPackIngested,',
+    '        productDatabaseIngested: kbaDeSummary.productDatabaseIngested,',
+    '        productionImport: kbaDeSummary.productionImport,',
+    '        productImportAllowed: kbaDeSummary.productImportAllowed,',
+    '        ruEaeuApplicability: kbaDeSummary.ruEaeuApplicability,',
+    '        exactVehicleFitment: kbaDeSummary.exactVehicleFitment,',
+    '        exactEngineGearboxPair: kbaDeSummary.exactEngineGearboxPair,',
+    '        repairApplicability: kbaDeSummary.repairApplicability,',
+    '        diagnosticExecutionAllowed: kbaDeSummary.diagnosticExecutionAllowed,',
+    '        sourceSnapshotSha256: kbaDeSummary.sourceSnapshotSha256,',
+    '        sourceManifestSha256: kbaDeSummary.sourceManifestSha256,',
+    '        databaseSha256: kbaDeSummary.databaseSha256,',
+    '      },'
+  ].join("\n");
+  const productionReportAnchor = '      production_fitment_rows_added: 0,';
+  if (!verifier.includes("kba_de_vag_stock:")) verifier = replaceExactly(verifier, productionReportAnchor, kbaReport + "\n" + productionReportAnchor, "KBA verification report");
 
-  test = replaceExactly(test,
-    '  assert.match(result.rdw_nl_eu.sourceManifestSha256, /^[a-f0-9]{64}$/);\n  assert.match(result.rdw_nl_eu.databaseSha256, /^[a-f0-9]{64}$/);\n  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");\n',
-    '  assert.match(result.rdw_nl_eu.sourceManifestSha256, /^[a-f0-9]{64}$/);\n  assert.match(result.rdw_nl_eu.databaseSha256, /^[a-f0-9]{64}$/);\n  assert.deepEqual(result.kba_de_vag_stock, {\n    marketScope: "DE", vagStockObservations: 264847, manufacturerLabels: 8,\n    uniqueMakeTradeNamePairs: 802, uniqueMakeTypeKeyPairs: 4155,\n    uniqueMakeTradeTypeReferenceDateTuples: 16301, federalStates: 17, referenceDates: 4,\n    researchPackIngested: true, productDatabaseIngested: false,\n    productionImport: false, productImportAllowed: false, ruEaeuApplicability: false,\n    exactVehicleFitment: false, exactEngineGearboxPair: false, repairApplicability: false,\n    diagnosticExecutionAllowed: false,\n    sourceSnapshotSha256: result.kba_de_vag_stock.sourceSnapshotSha256,\n    sourceManifestSha256: result.kba_de_vag_stock.sourceManifestSha256,\n    databaseSha256: result.kba_de_vag_stock.databaseSha256\n  });\n  assert.match(result.kba_de_vag_stock.sourceSnapshotSha256, /^[a-f0-9]{64}$/);\n  assert.match(result.kba_de_vag_stock.sourceManifestSha256, /^[a-f0-9]{64}$/);\n  assert.match(result.kba_de_vag_stock.databaseSha256, /^[a-f0-9]{64}$/);\n  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");\n',
-    "KBA verifier regression assertions");
+  const kbaTestAssertions = [
+    '  assert.deepEqual(result.kba_de_vag_stock, {',
+    '    marketScope: "DE", vagStockObservations: 264847, manufacturerLabels: 8,',
+    '    uniqueMakeTradeNamePairs: 802, uniqueMakeTypeKeyPairs: 4155,',
+    '    uniqueMakeTradeTypeReferenceDateTuples: 16301, federalStates: 17, referenceDates: 4,',
+    '    researchPackIngested: true, productDatabaseIngested: false,',
+    '    productionImport: false, productImportAllowed: false, ruEaeuApplicability: false,',
+    '    exactVehicleFitment: false, exactEngineGearboxPair: false, repairApplicability: false,',
+    '    diagnosticExecutionAllowed: false,',
+    '    sourceSnapshotSha256: result.kba_de_vag_stock.sourceSnapshotSha256,',
+    '    sourceManifestSha256: result.kba_de_vag_stock.sourceManifestSha256,',
+    '    databaseSha256: result.kba_de_vag_stock.databaseSha256',
+    '  });',
+    '  assert.match(result.kba_de_vag_stock.sourceSnapshotSha256, /^[a-f0-9]{64}$/);',
+    '  assert.match(result.kba_de_vag_stock.sourceManifestSha256, /^[a-f0-9]{64}$/);',
+    '  assert.match(result.kba_de_vag_stock.databaseSha256, /^[a-f0-9]{64}$/);'
+  ].join("\n");
+  const candidateAssertion = '  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");';
+  if (!test.includes("result.kba_de_vag_stock")) test = replaceExactly(test, candidateAssertion, kbaTestAssertions + "\n" + candidateAssertion, "KBA verifier regression assertions");
 
   fs.writeFileSync(verifierPath, verifier.replace(/\n/g, verifierNewline), "utf8");
   fs.writeFileSync(testPath, test.replace(/\n/g, testNewline), "utf8");
