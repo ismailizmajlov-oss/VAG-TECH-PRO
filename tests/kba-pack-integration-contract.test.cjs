@@ -13,6 +13,8 @@ test("KBA pack builder pins the public licence, exact labels and DE aggregate-on
   assert.match(builder, /approved_by_published_DL_DE_BY_2_0/);
   assert.match(builder, /EXACT_LABELS/);
   assert.match(builder, /source_record_sha256/);
+  assert.match(builder, /research_pack_ingested/);
+  assert.match(builder, /product_database_ingested/);
   assert.match(builder, /exact_engine_gearbox_pair/);
   assert.match(builder, /ru_eaeu_applicability/);
   assert.match(builder, /source-row SHA-256/);
@@ -28,6 +30,8 @@ test("KBA desktop integration verifies pack hashes and keeps it out of productio
   assert.match(integration, /source_run_id/);
   assert.match(integration, /market_scope: \["DE"\]/);
   assert.match(integration, /product_import_allowed: false/);
+  assert.match(integration, /research_pack_ingested: true/);
+  assert.match(integration, /product_database_ingested: false/);
   assert.match(integration, /exact_engine_gearbox_pair: false/);
   assert.match(integration, /source_snapshot_csv_in_desktop: false/);
   assert.match(integration, /kba-de-stock-research-db\.cjs/);
