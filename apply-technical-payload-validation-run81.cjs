@@ -145,7 +145,7 @@ if (!tests.includes("run81 validates renderer metadata and DTC payload boundarie
     '  core.importPackage(dbPath, packageOf([valid], { package_id: "run81-generic-valid" }));',
     '  const vagLeakPayload = { ...payload, ecu_family: "MED17.5.25" };',
     '  const vagLeak = { ...valid, natural_key: "run81:generic:leak", source_record_key: "run81:generic:leak", payload: vagLeakPayload, record_sha256: core.sha256(vagLeakPayload) };',
-    '  assert.throws(() => core.importPackage(dbPath, packageOf([vagLeak], { package_id: "run81-generic-vag-leak" })), /payload field|field.*allowed|unexpected/i);',
+    '  assert.throws(() => core.importPackage(dbPath, packageOf([vagLeak], { package_id: "run81-generic-vag-leak" })), /unsupported field/i);',
     '  const conflictPayload = { code: "P0300", dtc_code: "P0301", description: "Conflicting aliases" };',
     '  const conflict = { ...valid, natural_key: "run81:generic:conflict", source_record_key: "run81:generic:conflict", payload: conflictPayload, record_sha256: core.sha256(conflictPayload) };',
     '  assert.throws(() => core.importPackage(dbPath, packageOf([conflict], { package_id: "run81-generic-conflict" })), /code and dtc_code must match/i);',
