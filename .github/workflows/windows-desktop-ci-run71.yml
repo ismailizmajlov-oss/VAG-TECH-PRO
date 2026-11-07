@@ -1351,7 +1351,7 @@ jobs:
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
 
-      - name: Resolve latest successful RDW NL/EU research pack run
+      - name: Resolve latest successful RDW NL/EU research pack compatible with pinned manifest
         id: rdw-pack
         shell: pwsh
         env:
@@ -1361,14 +1361,13 @@ jobs:
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
           $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/acquire-rdw-vag-research-pack.yml/runs?branch=main&per_page=100"
           $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
-          $run = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1
-          if (-not $run) { throw "No RDW NL/EU research-pack workflow run exists." }
-          for ($attempt = 0; $attempt -lt 120 -and $run.status -ne "completed"; $attempt++) {
-            Start-Sleep -Seconds 20
-            $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
-            $run = $response.workflow_runs | Where-Object { $_.id -eq $run.id } | Select-Object -First 1
+          $successfulRuns = @($response.workflow_runs | Where-Object { $_.head_branch -eq "main" -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "workflow_dispatch") } | Sort-Object run_number -Descending)
+          $run = $successfulRuns | Select-Object -First 1
+          if (-not $run) { throw "No successful RDW NL/EU research-pack run exists; a new snapshot must pass rights, schema and provenance checks before desktop integration." }
+          $latestObservedRun = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1
+          if ($latestObservedRun -and $latestObservedRun.id -ne $run.id) {
+            Write-Host "Latest observed RDW run #$($latestObservedRun.run_number) is $($latestObservedRun.status)/$($latestObservedRun.conclusion); using latest successful run #$($run.run_number) only. The integration step must match its source-manifest and snapshot hashes to the pinned repository manifest."
           }
-          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "Latest RDW pack run did not complete successfully within the 40-minute wait window; refusing stale artifact fallback." }
           $artifactsUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts"
           $artifacts = Invoke-RestMethod -Uri $artifactsUri -Headers $headers -Method Get
           $artifact = $artifacts.artifacts | Where-Object { $_.name -eq "rdw-vag-nl-eu-type-approval-research-pack" -and -not $_.expired } | Select-Object -First 1
