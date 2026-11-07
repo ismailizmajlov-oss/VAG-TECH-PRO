@@ -311,6 +311,56 @@
         "data_imported": false,
         "source_snapshot_sha256": null,
         "review_date": "2026-11-07"
+      },
+      "legal_roadmap": {
+        "act": "EEC Collegium Order No. 126 of 2026-08-11",
+        "adopted_on": "2026-08-11",
+        "published_on": "2026-08-14",
+        "effective_on": "2026-08-14",
+        "official_pdf_url": "https://docs.eaeunion.org/upload/iblock/db6/3ecew1lvopjk2zx2raf66047bn274ofu/Rasporyazhenie-Kollegii-_-126-ot-11-avgusta-2026-g.pdf",
+        "plan_pages_in_pdf": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "status": "planned_not_implemented_by_order",
+        "milestones": [
+          {
+            "item": 1,
+            "due": "2026-Q4",
+            "action": "Prepare a draft EEC Collegium decision amending the rules for filling electronic OTTS/OTSH and related vehicle-approval forms.",
+            "expected_result": "Electronic form rules for approval documents and cancellation notices under TR TS 018/2011."
+          },
+          {
+            "item": 2,
+            "due": "2026-Q4",
+            "action": "Prepare a draft EEC Collegium decision amending the regulation on the unified register of issued OTTS, OTSH, SBKTS and cancellation notices.",
+            "expected_result": "Enable formation of the unified register from electronic information in national parts and provide for transfer of information from the register."
+          },
+          {
+            "item": 3,
+            "due": "2027-Q1",
+            "action": "Prepare draft amendments to EEC Collegium Decisions No. 88 (2016-07-26), No. 81 (2016-07-12) and No. 122 (2015-09-22).",
+            "expected_result": "Legal support for the unified register based on electronic national-part information and information transfer."
+          },
+          {
+            "item": 4,
+            "due": "2027-Q1",
+            "action": "Develop agreed mechanisms and conditions for providing customs-release information to the national electronic-passport operator and the Russian administrator.",
+            "expected_result": "Define the information composition and procedure for provision; implementation may be by protocol or amendments to the EAEU Customs Code."
+          }
+        ],
+        "rights_boundary": {
+          "live_registry_endpoint_established": false,
+          "bulk_reuse_allowed": "not_established",
+          "offline_cache_allowed": "not_established",
+          "display_and_redistribution_allowed": "not_established",
+          "written_permission_obtained": false,
+          "data_ingested": false,
+          "product_import_allowed": false
+        },
+        "interpretation": "Roadmap only. The order does not itself publish approval records, provide an API, complete the planned legal changes, or grant reuse/caching/redistribution rights."
       }
     },
     {
