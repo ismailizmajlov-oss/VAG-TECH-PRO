@@ -102,6 +102,34 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
         self.assertIn("No CAPTCHA was bypassed", source["observed_public_query"]["note"])
 
+
+    def test_kyrgyz_no_login_public_registry_remains_discovery_only(self):
+        source = self.sources["kyrgyz-single-window-public-registry"]
+        self.assertEqual(source["status"], "permission_required")
+        self.assertEqual(source["market_scope"], ["KG", "EAEU_TR_TS_018_2011"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        observed = source["observed_public_query"]
+        self.assertEqual(observed["registry_status"], "pilot")
+        self.assertFalse(observed["login_required"])
+        self.assertEqual(observed["search_fields"], ["approval_number", "make", "model"])
+        self.assertEqual(observed["ot_ts_summary_count"], 1)
+        self.assertEqual(observed["count_treatment"], "portal_summary_only_not_a_complete_or_verified_corpus_count")
+        self.assertFalse(observed["record_schema_retrieved"])
+        self.assertFalse(observed["result_retrieval_independently_tested"])
+        self.assertTrue(observed["engine_fields_in_application_form"])
+        self.assertEqual(observed["engine_fields_in_public_record_schema"], "not_established")
+        access = source["access_and_reuse"]
+        self.assertEqual(access["public_query"], "observed_without_login")
+        self.assertEqual(access["documented_api"], "not_identified")
+        self.assertEqual(access["bulk_export"], "not_established")
+        self.assertEqual(access["automated_extraction"], "not_established")
+        self.assertEqual(access["offline_cache"], "not_confirmed")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        self.assertIn("not a verified", source["project_decision"])
+        self.assertIn("not evidence", " ".join(source["limitations"]))
+
     def test_elpts_otts_public_table_is_metadata_only_and_not_ingested(self):
         source = self.sources["elpts-national-otts-register"]
         self.assertEqual(source["status"], "permission_required")
