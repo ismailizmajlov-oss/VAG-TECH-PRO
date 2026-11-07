@@ -294,7 +294,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         self.assertIn("node apply-technical-payload-validation-run80.cjs --desktop-root desktop-source", workflow_text)
         self.assertIn("node --test desktop-source/tests/local-core-db.test.cjs", workflow_text)
         loader_text = loader.read_text(encoding="utf-8")
-        self.assertIn("compressed SHA-256 mismatch", loader_text)
+        self.assertIn("compressed patch SHA-256 mismatch", loader_text)
         self.assertIn("patch SHA-256 mismatch", loader_text)
 
 if __name__ == "__main__":
