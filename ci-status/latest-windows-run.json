@@ -1,17 +1,61 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-07T05:36:05.0943841Z",
+  "recorded_at_utc": "2026-11-07T05:36:23.1354941Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run71",
-  "run_id": 42343373631,
-  "run_number": 529,
+  "run_id": 42343154693,
+  "run_number": 524,
   "run_attempt": 1,
   "status": "completed",
-  "conclusion": "cancelled",
-  "head_sha": "a3d8c1cef16dd6469a5a27b3dd185dd3cd544ab5",
+  "conclusion": "failure",
+  "head_sha": "89c69978ba3805e9c81bad00cea227b4dac74d63",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42343373631",
-  "jobs": [],
-  "artifacts": [],
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42343154693",
+  "jobs": [
+    {
+      "id": 128315085303,
+      "name": "build-and-lifecycle",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "GitHub Actions 1000002314",
+      "started_at": "2026-11-07T05:32:30Z",
+      "completed_at": "2026-11-07T05:36:06Z"
+    },
+    {
+      "id": 128315883021,
+      "name": "Windows Server 2022 installer compatibility lifecycle",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runner_name": null,
+      "started_at": "2026-11-07T05:36:06Z",
+      "completed_at": "2026-11-07T05:36:06Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13562587594,
+      "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
+      "size_in_bytes": 24888,
+      "expired": false,
+      "created_at": "2026-11-07T05:34:31Z",
+      "expires_at": "2026-11-14T05:34:30Z"
+    },
+    {
+      "id": 13561829029,
+      "name": "vag-tech-pro-desktop-source-audit-42343154693",
+      "size_in_bytes": 246451,
+      "expired": false,
+      "created_at": "2026-11-07T05:35:41Z",
+      "expires_at": "2026-12-07T05:35:40Z"
+    },
+    {
+      "id": 13561689167,
+      "name": "vag-tech-pro-windows-x64-run71",
+      "size_in_bytes": 207146111,
+      "expired": false,
+      "created_at": "2026-11-07T05:36:01Z",
+      "expires_at": "2026-11-21T05:35:42Z"
+    }
+  ],
   "native_windows_10_11": {
     "runner_gate_enabled": false,
     "lifecycle_job_result": "skipped",
