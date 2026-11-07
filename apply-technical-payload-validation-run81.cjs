@@ -64,6 +64,10 @@ if (!core.includes("// run81: renderer-aligned strict payload contract")) {
     /for \(const field of \["hardware_revision", "software_revision", "coding_notes", "security_access_document_ref", "programming_notes"\]\) technicalPayloadString\(record, payload, field\);/g,
     'for (const field of ["ecu_family", "ecu_address", "hardware_revision", "software_revision", "hardware_number", "software_number", "coding_notes", "security_access_document_ref", "programming_notes"]) technicalPayloadString(record, payload, field);',
     "ECU profile display metadata");
+  core = replaceOnce(core,
+    /      if \(!\(typeof \(payload\.old_part_number \|\| payload\.from_part_number\) === "string" && \(payload\.old_part_number \|\| payload\.from_part_number\)\.trim\(\)\)\) technicalPayloadError\(record, "old_part_number or from_part_number is required"\);\n      if \(!\(typeof \(payload\.new_part_number \|\| payload\.to_part_number\) === "string" && \(payload\.new_part_number \|\| payload\.to_part_number\)\.trim\(\)\)\) technicalPayloadError\(record, "new_part_number or to_part_number is required"\);\n      for \(const field of \["old_part_number", "new_part_number", "from_part_number", "to_part_number", "supersession_status", "applicability_note"\]\) technicalPayloadString\(record, payload, field\);/g,
+    '      for (const field of ["old_part_number", "new_part_number", "from_part_number", "to_part_number", "supersession_status", "applicability_note"]) technicalPayloadString(record, payload, field);\\n      const oldPart = payload.old_part_number != null ? payload.old_part_number : payload.from_part_number;\\n      const newPart = payload.new_part_number != null ? payload.new_part_number : payload.to_part_number;\\n      if (typeof oldPart !== "string" || !oldPart.trim()) technicalPayloadError(record, "old_part_number or from_part_number is required");\\n      if (typeof newPart !== "string" || !newPart.trim()) technicalPayloadError(record, "new_part_number or to_part_number is required");\\n      if (payload.old_part_number != null && payload.from_part_number != null && payload.old_part_number.trim() !== payload.from_part_number.trim()) technicalPayloadError(record, "old_part_number and from_part_number must match");\\n      if (payload.new_part_number != null && payload.to_part_number != null && payload.new_part_number.trim() !== payload.to_part_number.trim()) technicalPayloadError(record, "new_part_number and to_part_number must match");\\n      if (oldPart.trim() === newPart.trim()) technicalPayloadError(record, "old and new part numbers must differ");',
+    "OEM supersession alias consistency");
   core = core.replace("\nfunction validateRecord(record, packageInfo) {", "\n// run81: renderer-aligned strict payload contract\nfunction validateRecord(record, packageInfo) {");
   fs.writeFileSync(corePath, core, "utf8");
 }
@@ -117,8 +121,8 @@ schema.$defs.dtc_vag_specific = {
 schema.$defs.oem_supersession = {
   type: "object",
   properties: {
-    old_part_number: { type: "string" }, new_part_number: { type: "string" },
-    from_part_number: { type: "string" }, to_part_number: { type: "string" },
+    old_part_number: { type: "string", minLength: 1 }, new_part_number: { type: "string", minLength: 1 },
+    from_part_number: { type: "string", minLength: 1 }, to_part_number: { type: "string", minLength: 1 },
     supersession_status: { type: "string" }, applicability_note: { type: "string" }
   },
   allOf: [
@@ -164,6 +168,20 @@ if (!tests.includes("run81 validates renderer metadata and DTC payload boundarie
     '  assert.throws(() => core.importPackage(dbPath, packageOf([conflict], { package_id: "run81-generic-conflict" })), /code and dtc_code must match/i);',
     '});',
     "",
+    'test("run81 validates OEM supersession aliases and rejects self-replacement", (t) => {',
+    '  const { dbPath } = fixture(t);',
+    '  core.registerSource(dbPath, source());',
+    '  const payload = { old_part_number: "06K115562", new_part_number: "06K115562A", supersession_status: "superseded" };',
+    '  const valid = { record_type: "oem_supersession", natural_key: "run81:oem:06K115562:06K115562A", source_record_key: "run81:oem:06K115562:06K115562A", title: "OEM part supersession", market_scope: "ALL", applicability_precision: "unknown", payload, record_sha256: core.sha256(payload) };',
+    '  core.importPackage(dbPath, packageOf([valid], { package_id: "run81-oem-valid" }));',
+    '  const conflictingPayload = { ...payload, from_part_number: "06K115563" };',
+    '  const conflicting = { ...valid, natural_key: "run81:oem:alias-conflict", source_record_key: "run81:oem:alias-conflict", payload: conflictingPayload, record_sha256: core.sha256(conflictingPayload) };',
+    '  assert.throws(() => core.importPackage(dbPath, packageOf([conflicting], { package_id: "run81-oem-alias-conflict" })), /old_part_number and from_part_number must match/i);',
+    '  const selfPayload = { old_part_number: "06K115562", new_part_number: "06K115562" };',
+    '  const selfReplacement = { ...valid, natural_key: "run81:oem:self", source_record_key: "run81:oem:self", payload: selfPayload, record_sha256: core.sha256(selfPayload) };',
+    '  assert.throws(() => core.importPackage(dbPath, packageOf([selfReplacement], { package_id: "run81-oem-self" })), /old and new part numbers must differ/i);',
+    '});',
+    "",
     'test("run81 JSON schema matches the renderer and strict DTC payload contract", () => {',
     '  const schemaPath = path.join(__dirname, "..", "data", "schemas", "technical-record-payloads.schema.json");',
     '  const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));',
@@ -171,8 +189,8 @@ if (!tests.includes("run81 validates renderer metadata and DTC payload boundarie
     '  for (const field of ["test_purpose", "system", "system_name", "ecu_family"]) assert.ok(schema.$defs.diagnostic_test_plan.properties[field]);',
     '  for (const field of ["ecu_family", "ecu_address", "hardware_number", "software_number"]) assert.ok(schema.$defs.ecu_profile.properties[field]);',
     '  assert.equal(schema.$defs.dtc_generic.additionalProperties, false);',
-    '  assert.equal(schema.$defs.dtc_vag_specific.additionalProperties, false);
-  assert.equal(schema.$defs.oem_supersession.additionalProperties, false);',
+    '  assert.equal(schema.$defs.dtc_vag_specific.additionalProperties, false);',
+    '  assert.equal(schema.$defs.oem_supersession.additionalProperties, false);',
     '});',
     ""
   ].join("\n");
