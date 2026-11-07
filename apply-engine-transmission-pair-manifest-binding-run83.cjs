@@ -83,7 +83,7 @@ const helperReplacement = [
   "  const evidence = pair?.payload?.pair_evidence;",
   '  const sourceId = overrides.source_id || "test-open-source";',
   '  const snapshotManifest = { upstream_revision: overrides.source_revision || "rev1", record_count: records.length };',
-  "  if (evidence) snapshotManifest.documents = [{ source_id: sourceId, document_id: evidence.source_document_id, url: evidence.source_document_url, sha256: evidence.source_document_sha256, revision: evidence.document_revision, document_type: evidence.document_type, market_scope: pair.market_scope, variant_scope_keys: [evidence.variant_scope_key] }];',
+  '  if (evidence) snapshotManifest.documents = [{ source_id: sourceId, document_id: evidence.source_document_id, url: evidence.source_document_url, sha256: evidence.source_document_sha256, revision: evidence.document_revision, document_type: evidence.document_type, market_scope: pair.market_scope, variant_scope_keys: [evidence.variant_scope_key] }];',
   "  const { snapshot_manifest: manifestOverride, ...packageOverrides } = overrides;",
   '  const pkg = { package_kind: "vehicle_catalog", package_id: "test-catalog-package", source_id: sourceId, source_revision: "rev1", market_scope: "RU",',
   '    source_snapshot_sha256: "b".repeat(64), license_sha256: "a".repeat(64), rights_evidence_sha256: "c".repeat(64),',
