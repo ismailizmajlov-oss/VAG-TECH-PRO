@@ -10,7 +10,7 @@ This source is distinct from the older `sbkts.trade.kg/otts` interface, which wa
 
 - The [official portal](https://trade.kg/) says its public registers are open without registration. Its current homepage describes the OTTS/OTSH registry search by approval number, make and model.
 - The [public-registry project page](https://trade.kg/projects/public-registry) describes a pilot, says no login is required, and says personal data are not displayed. It links to [smart.trade.kg/registry](https://smart.trade.kg/registry?lng=ru) for public lookup by document number or VIN.
-- The portal homepage currently shows a summary counter of one OTTS record. This is only a portal counter; it is not a verified, complete or stable corpus count.
+- The separate [cert.trade.kg landing page](https://cert.trade.kg/) displays UI counters of one OTTS document and zero OTSH documents. These are portal counters only; they are not verified, complete or stable public-register corpus counts.
 - The [vehicle-approval project page](https://trade.kg/projects/vehicles) identifies [car.trade.kg](https://car.trade.kg/) as the application system for certification bodies and experts. It describes application fields for the vehicle/chassis, engine and other characteristics, and says issued documents are published to the public registry.
 - The [24 August 2026 announcement](https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema) describes the OTTS/OTSH issuance workflow and publication of approved documents into an electronic register.
 
@@ -31,11 +31,12 @@ The register is Kyrgyz national data in the EAEU TR TS 018/2011 context. It is n
 
 ## Evidence reviewed
 
-1. [Official Single Window homepage](https://trade.kg/) — reviewed 2026-11-07; public registers without login, OTTS/OTSH search fields and one-record summary counter.
-2. [Public registry project page](https://trade.kg/projects/public-registry) — reviewed 2026-11-07; pilot status, no-login lookup and personal-data display statement.
-3. [Public registry application](https://smart.trade.kg/registry?lng=ru) — identified from the official link; JavaScript page did not expose a readable record schema in this review.
-4. [SBKTS/OTTS/OTSH application system description](https://trade.kg/projects/vehicles) — reviewed 2026-11-07; professional user scope, application workflow and engine/vehicle form fields.
-5. [Official 24 August 2026 launch announcement](https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema) — reviewed 2026-11-07; electronic issuance and registry publication workflow.
+1. [Official Single Window homepage](https://trade.kg/) — reviewed 2026-11-07; public registers without login and OTTS/OTSH search fields.
+2. [CertTrade landing page](https://cert.trade.kg/) — reviewed 2026-11-07; one-OTTS and zero-OTSH UI counters, not verified corpus counts.
+3. [Public registry project page](https://trade.kg/projects/public-registry) — reviewed 2026-11-07; pilot status, no-login lookup and personal-data display statement.
+4. [Public registry application](https://smart.trade.kg/registry?lng=ru) — identified from the official link; JavaScript page did not expose a readable record schema in this review.
+5. [SBKTS/OTTS/OTSH application system description](https://trade.kg/projects/vehicles) — reviewed 2026-11-07; professional user scope, application workflow and engine/vehicle form fields.
+6. [Official 24 August 2026 launch announcement](https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema) — reviewed 2026-11-07; electronic issuance and registry publication workflow.
 
 ## Re-entry criteria
 
