@@ -11,7 +11,7 @@ class CardirVagOpenDataPackTests(unittest.TestCase):
         self.temp=Path(tempfile.mkdtemp(prefix="cardir-vag-pack-test-"))
         self.csv=self.temp/"source.csv"; self.source=self.temp/"source-manifest.json"; self.snapshot=self.temp/"snapshot.json"; self.output=self.temp/"pack"
         rows=[
-          ["Audi","A4","oil_volume_with_filter","Масло с фильтром","2.0 TFSI","4.6","л","Руководство по эксплуатации Audi A4, 2024","стр. 213","https://cardir.ru/istochnik/101/#page-213","https://cardir.ru/audi/a4/maslo/","2026-11-06"],
+          ["Audi","A4","oil_volume_with_filter","Объём моторного масла с фильтром","2.0 TFSI","4.6","л","Руководство по эксплуатации Audi A4, 2024","стр. 213","https://cardir.ru/istochnik/101/#page-213","https://cardir.ru/audi/a4/maslo/","2026-11-06"],
           ["Volkswagen","Golf","gearbox_oil_spec","Масло КПП","DSG DQ381 (0GC)","G 052 182 A2","","Руководство по эксплуатации Volkswagen Golf, 2024","стр. 144","https://cardir.ru/istochnik/102/#page-144","https://cardir.ru/volkswagen/golf/maslo-kpp/","2026-11-06"],
           ["Škoda","Octavia","coolant_spec","Антифриз","1.4 TSI","G12evo","","Руководство по эксплуатации Skoda Octavia, 2024","стр. 173","https://cardir.ru/istochnik/103/#page-173","https://cardir.ru/skoda/octavia/antifriz/","2026-11-06"],
           ["SEAT","Leon","service_interval_km","Межсервисный интервал","","15000","км","Руководство по эксплуатации SEAT Leon, 2022","стр. 88","https://cardir.ru/istochnik/104/#page-88","https://cardir.ru/seat/leon/to/","2026-11-06"],
@@ -79,9 +79,10 @@ class CardirVagOpenDataPackTests(unittest.TestCase):
         import sqlite3
         db=sqlite3.connect(self.output/"cardir-vag-owner-manual-facts.sqlite")
         try:
-            row=db.execute("SELECT search_text_folded FROM facts WHERE model_id=(SELECT model_id FROM models WHERE source_value='Octavia' LIMIT 1) LIMIT 1").fetchone()
-            self.assertIn("octavia",row[0])
-            self.assertIn("объём моторного масла",row[0])
+            row=db.execute("SELECT search_text_folded FROM facts WHERE parameter_key='oil_volume_with_filter' AND model_id=(SELECT model_id FROM models WHERE source_value='A4' LIMIT 1) LIMIT 1").fetchone()
+            self.assertIsNotNone(row)
+            self.assertIn("audi",row[0])
+            self.assertIn("объём моторного масла с фильтром",row[0])
         finally: db.close()
     def test_snapshot_hash_mismatch_fails_closed(self):
         bad=dict(self.snapshot_obj); bad["source_snapshot_sha256"]="0"*64
