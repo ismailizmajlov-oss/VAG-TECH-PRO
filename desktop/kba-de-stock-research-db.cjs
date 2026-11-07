@@ -70,6 +70,8 @@ function getKbaSummary(explicitRoot) {
     JSON.stringify(entry.market_scope) === JSON.stringify(["DE"]) &&
     entry.applicability_precision === "aggregate_stock_observation" &&
     entry.review_status === "verified_research_only" &&
+    entry.research_pack_ingested === true && entry.product_database_ingested === false && entry.data_ingested === false &&
+    entry.source_file_included_in_desktop === false &&
     entry.production_import === false && entry.product_import_allowed === false &&
     entry.ru_eaeu_applicability === false && entry.fitment_claim === false &&
     entry.exact_vehicle_fitment === false && entry.exact_engine_gearbox_pair === false &&
@@ -108,6 +110,7 @@ function getKbaSummary(explicitRoot) {
     pack.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
     pack.database?.sha256 === entry.database_sha256 &&
     pack.exact_engine_gearbox_pair === false && pack.exact_vehicle_fitment === false &&
+    pack.research_pack_ingested === true && pack.product_database_ingested === false && pack.data_ingested === false &&
     pack.production_import === false && pack.product_import_allowed === false &&
     pack.ru_eaeu_applicability === false &&
     source.source_id === SOURCE_ID && source.data_ingested === false &&
@@ -124,6 +127,8 @@ function getKbaSummary(explicitRoot) {
     buildReport.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
     buildReport.exact_engine_gearbox_pair_claim === false &&
     integrationReport.status === "integrated_verified_research_only" &&
+    integrationReport.research_pack_ingested === true && integrationReport.product_database_ingested === false &&
+    integrationReport.source_snapshot_csv_in_desktop === false &&
     integrationReport.market_scope === "DE" &&
     integrationReport.database_sha256 === entry.database_sha256 &&
     integrationReport.source_manifest_sha256 === entry.source_manifest_sha256 &&
@@ -196,7 +201,8 @@ function getKbaSummary(explicitRoot) {
     sourceUrl: SOURCE_URL, license: LICENSE_ID, licenseUrl: LICENSE_URL,
     rightsStatus: rights.rights_status, attributionText: attributionText.trim(),
     marketScope: "DE", applicabilityPrecision: "aggregate_stock_observation",
-    reviewStatus: "verified_research_only", productionImport: false, productImportAllowed: false,
+    reviewStatus: "verified_research_only", researchPackIngested: true, productDatabaseIngested: false,
+    productionImport: false, productImportAllowed: false, dataIngested: false,
     ruEaeuApplicability: false, fitmentClaim: false, exactVehicleFitment: false, exactEngineGearboxPair: false,
     diagnosticExecutionAllowed: false, modelYearInferred: false, generationInferred: false, engineCodesIncluded: false,
     gearboxCodesIncluded: false, ecuFitment: false, dtcFitment: false, repairApplicability: false,
