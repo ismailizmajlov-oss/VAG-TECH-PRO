@@ -123,6 +123,12 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("vag-tech-pro-obdex-cc0-2026-11-07", workflow)
 
+    def test_desktop_obdex_revision_test_tracks_the_pack_manifest(self):
+        patch = (ROOT / "apply-research-pack-hash-fix-run44.cjs").read_text(encoding="utf-8")
+        self.assertIn("rows[0].upstreamRevision, obdexPack.source_revision", patch)
+        self.assertIn("oldRevisionAssertions.length === 1", patch)
+        self.assertIn("stale or ambiguous desktop test patch", patch)
+
     def test_obdex_source_register_is_generic_and_not_vag_fitment(self):
         registry = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
         source = next(item for item in registry["sources"] if item["source_id"] == "obdex-generic-cc0")
