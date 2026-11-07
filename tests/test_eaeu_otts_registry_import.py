@@ -221,6 +221,13 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Decision No. 88, table 6, rule 34"):
             importer.parse_registry_export(raw)
 
+    def test_duplicate_variant_ids_are_rejected(self):
+        raw = _xml(ambiguous=True, include_sbkts=False).replace(
+            b"VAR-AMBIGUOUS", b"VAR-EXACT-01", 1
+        )
+        with self.assertRaisesRegex(ValueError, "duplicate VehicleTypeVariantId"):
+            importer.parse_registry_export(raw)
+
     def test_pair_candidate_without_variant_id_is_explicitly_unlabelled(self):
         raw = _xml(ambiguous=False, include_sbkts=False).replace(
             b"<trsdo:VehicleTypeVariantId>VAR-EXACT-01</trsdo:VehicleTypeVariantId>", b""
