@@ -4433,7 +4433,7 @@
       "vehicle_approval_project_url": "https://trade.kg/projects/vehicles",
       "announcement_url": "https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema",
       "source_kind": "kyrgyz_national_vehicle_type_approval_public_register",
-      "source_revision": "official_portal_and_project_pages_observed_2026-11-07; no dataset release or API revision identified",
+      "source_revision": "official_portal_project_pages_and_digital_code_legal_review_2026-11-07; no dataset release, record schema or API revision identified",
       "market_scope": [
         "KG",
         "EAEU_TR_TS_018_2011"
@@ -4499,7 +4499,27 @@
         "offline_cache_allowed": "not_established",
         "commercial_display_allowed": "not_established",
         "redistribution_allowed": "not_established",
-        "permission_evidence": null
+        "permission_evidence": null,
+        "statutory_access_basis": {
+          "jurisdiction": "KG",
+          "code": "Digital Code of the Kyrgyz Republic No. 178 of 2025-07-31",
+          "effective_date": "2026-02-05",
+          "articles": [
+            "1(14)",
+            "1(39)",
+            "25",
+            "26",
+            "59",
+            "60",
+            "62"
+          ],
+          "public_access_basis_identified": true,
+          "bulk_export_allowed": "not_confirmed",
+          "offline_cache_allowed": "not_confirmed",
+          "third_party_display_allowed": "not_confirmed",
+          "redistribution_allowed": "not_confirmed",
+          "product_import_cleared": false
+        }
       },
       "applicability": {
         "market_scope": "Kyrgyz national register; EAEU TR TS 018/2011 context",
@@ -4512,12 +4532,12 @@
         "russian_market_scope": false,
         "engine_characteristics_in_public_record_schema": "not_established"
       },
-      "verification_status": "official_public_register_pilot_and_no_login_route_observed; record_schema_and_reuse_rights_unresolved",
+      "verification_status": "official_public_registry_pilot_and_no_login_route_observed; statutory_access_and_reuse_law_reviewed; record_schema_and_product_reuse_rights_unresolved",
       "product_import_allowed": false,
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion",
-      "project_decision": "discovery_only. The official portal advertises a no-login public registry pilot and OTTS/OTSH search by approval number, make and model; the public route was identified but record retrieval and schema were not independently verified. The vehicle-approval application workflow mentions engine characteristics, but this does not establish that those fields are exposed in public records. Do not automate, bulk extract, cache, bundle, display or redistribute records until the operator confirms documented access and reuse rights in writing.",
+      "project_decision": "discovery_only. Official no-login public lookup and a statutory public-access/data-use framework are now documented. The Digital Code does not by itself establish that this particular registry is a state digital resource, that its records are machine-readable open data, or that bulk extraction, offline caching, third-party display and redistribution are permitted. Do not automate, cache, bundle, display or redistribute records until the operator confirms the resource classification, record owner/metadata terms and reuse scope in writing or a formal legal review clears those points.",
       "limitations": [
         "The public registry is described by the operator as a pilot; no complete corpus count or coverage statement is established.",
         "The homepage's one-OTTS summary is a portal counter only and is not treated as a current, complete or independently verified corpus count.",
@@ -4526,7 +4546,12 @@
         "No dataset-specific open licence or written permission for automated extraction, bulk export, offline caching, third-party display or redistribution was identified.",
         "No documented API, bulk export contract or reproducible dataset snapshot was identified.",
         "No exact VAG engine code, gearbox code, engine/gearbox pairing, ECU, DTC or repair applicability was established.",
-        "The older sbkts.trade.kg/otts route was previously observed with a CAPTCHA gate; it is retained as a separate legacy interface and no CAPTCHA was bypassed."
+        "The older sbkts.trade.kg/otts route was previously observed with a CAPTCHA gate; it is retained as a separate legacy interface and no CAPTCHA was bypassed.",
+        "The Digital Code (No. 178 of 2025-07-31), effective 2026-02-05 under Law No. 179, identifies public-access and data-use principles but does not automatically clear this registry for product reuse.",
+        "Article 1(14) defines a state/municipal digital resource by its state-service purpose; the official portal identifies a state enterprise under the State Customs Service, but formal classification of this specific register under Article 1(14) was not found.",
+        "Article 1(39) defines open data as machine-readable data without reuse restrictions. The observed registry is a JavaScript public-lookup page; no machine-readable bulk dataset, API, export schema or no-reuse-restrictions statement was retrieved.",
+        "Articles 25, 26 and 60 preserve digital-record/resource-owner rights and access terms; Articles 59 and 62 are not treated as an automatic licence for automated extraction, offline caching, third-party display or redistribution.",
+        "No record-level metadata was retrieved, so record-owner identity and any attribution condition under Article 59(3) remain unknown."
       ],
       "evidence_reviewed": [
         {
@@ -4559,8 +4584,51 @@
           "reviewed_at": "2026-11-07",
           "published_at": "2026-08-24",
           "evidence": "Official announcement describes the electronic OTTS/OTSH issuance workflow and publication of approved documents into the electronic register."
+        },
+        {
+          "url": "https://reestr.dpa.gov.kg/ru/npa/59",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Official State Agency for Personal Data Protection publication of the Digital Code No. 178. Reviewed definitions 1(14) and 1(39), Articles 25, 26, 59, 60 and 62. The Code distinguishes public access, open-data reuse, digital-record owner rights and state-resource access."
+        },
+        {
+          "url": "https://reestr.dpa.gov.kg/ru/npa/60",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Official publication of Law No. 179 of 2025-07-31. It states that the Digital Code enters into force six months after official publication and records publication in Erkin-Too on 2025-08-05, No. 58 (3714), yielding an effective date of 2026-02-05."
         }
-      ]
+      ],
+      "legal_basis_review": {
+        "reviewed_at": "2026-11-07",
+        "code_title": "Digital Code of the Kyrgyz Republic",
+        "code_number": "178",
+        "code_date": "2025-07-31",
+        "enabling_law": {
+          "title": "Law of the Kyrgyz Republic on Enactment of the Digital Code",
+          "number": "179",
+          "date": "2025-07-31",
+          "official_publication": "Erkin-Too, 2025-08-05, No. 58 (3714)",
+          "entry_into_force_rule": "six months after official publication",
+          "calculated_code_effective_date": "2026-02-05"
+        },
+        "articles": {
+          "25": "Digital records are subject to their owner's digital rights; the owner can determine access conditions and use/distribution rights.",
+          "26": "The digital-resource owner may control access to the resource and distribute data from it.",
+          "59": "Digital data may be used by any person subject to intellectual-property rights and statutory restrictions; digital records are presumed publicly accessible unless metadata restricts access; record metadata may require source attribution.",
+          "60": "Access to digital records is on terms set by the record owner or resource owner; record metadata must identify the owner sufficiently.",
+          "62": "Digital records from state and municipal digital resources are provided free and without restrictions unless otherwise established by law.",
+          "1(14)": "A state/municipal digital resource is a digital resource created to provide state services by state or municipal bodies.",
+          "1(39)": "Open data must be available in machine-readable format without restrictions on reuse."
+        },
+        "interpretation": {
+          "operator_status": "The official portal identifies the operator as a state enterprise under the State Customs Service of the Cabinet of Ministers.",
+          "state_resource_classification": "not_formally_confirmed_under_article_1_14; the operator's state-enterprise status alone is not treated as proof that this specific register is a state/municipal digital resource.",
+          "public_access": "official no-login public registry pilot is advertised; this confirms public lookup access, not bulk reuse.",
+          "open_data_status": "not_confirmed_under_article_1_39; no machine-readable public dataset, documented API, export schema or no-reuse-restrictions statement was observed.",
+          "record_owner_and_metadata_terms": "not_identified; no actual record metadata or record-level terms were retrieved.",
+          "article_62_application": "potentially relevant only if the register is formally a state/municipal digital resource; it is not treated as a blanket licence for caching, third-party display or redistribution.",
+          "reuse_rights": "not_cleared for automated extraction, bulk export, offline caching, third-party display or redistribution."
+        },
+        "decision": "statutory_public_access_and_data_use_provisions_identified_but_product_reuse_not_cleared; retain discovery_only and require operator confirmation or formal legal review before any automated acquisition or offline product use"
+      }
     },
     {
       "source_id": "astra-fedro-targa-emissionen-approval-variants-ch",
