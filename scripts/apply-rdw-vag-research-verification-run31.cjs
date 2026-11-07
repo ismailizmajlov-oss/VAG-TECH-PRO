@@ -71,10 +71,33 @@ function main() {
   ].join("\n");
   verifier = replaceExactly(verifier, targaAssertion, targaAssertion + "\n" + rdwRuntime, "RDW runtime rights/provenance/count verification");
 
-  verifier = replaceExactly(verifier,
-    '      astra_ch_tas: {\n        marketScope: astraSummary.marketScope,\n        approvals: astraSummary.counts.approvals,\n        emissionsGearboxRows: astraSummary.counts.emissionsGearboxRows,\n        linkedScopeRows: astraSummary.counts.linkedScopeRows,\n        exactScopeLinks: astraSummary.counts.exactScopeLinks,\n        wildcardScopeLinks: astraSummary.counts.wildcardScopeLinks,\n        unlinkedScopeRows: astraSummary.counts.unlinkedScopeRows,\n        productionImport: astraSummary.productionImport,\n        ruEaeuApplicability: astraSummary.ruEaeuApplicability,\n        exactVehicleFitment: astraSummary.exactVehicleFitment,\n        repairApplicability: astraSummary.repairApplicability,\n        diagnosticExecutionAllowed: astraSummary.diagnosticExecutionAllowed,\n        databaseSha256: astraSummary.databaseSha256,\n      },\n      production_fitment_rows_added: 0,\n',
-    '      astra_ch_tas: {\n        marketScope: astraSummary.marketScope,\n        approvals: astraSummary.counts.approvals,\n        emissionsGearboxRows: astraSummary.counts.emissionsGearboxRows,\n        linkedScopeRows: astraSummary.counts.linkedScopeRows,\n        exactScopeLinks: astraSummary.counts.exactScopeLinks,\n        wildcardScopeLinks: astraSummary.counts.wildcardScopeLinks,\n        unlinkedScopeRows: astraSummary.counts.unlinkedScopeRows,\n        productionImport: astraSummary.productionImport,\n        ruEaeuApplicability: astraSummary.ruEaeuApplicability,\n        exactVehicleFitment: astraSummary.exactVehicleFitment,\n        repairApplicability: astraSummary.repairApplicability,\n        diagnosticExecutionAllowed: astraSummary.diagnosticExecutionAllowed,\n        databaseSha256: astraSummary.databaseSha256,\n      },\n      rdw_nl_eu: {\n        marketScope: rdwSummary.marketScope,\n        approvalScopes: rdwSummary.counts.approvalScopes,\n        registrationObservations: rdwSummary.counts.registrationObservations,\n        engineDesignationCandidates: rdwSummary.counts.engineDesignationCandidates,\n        gearboxClassifications: rdwSummary.counts.gearboxClassifications,\n        sourceRows: rdwSummary.counts.sourceRows,\n        sourceFiles: rdwSummary.counts.sourceFiles,\n        productionImport: rdwSummary.productionImport,\n        ruEaeuApplicability: rdwSummary.ruEaeuApplicability,\n        exactVehicleFitment: rdwSummary.exactVehicleFitment,\n        exactEngineGearboxPair: rdwSummary.exactEngineGearboxPair,\n        repairApplicability: rdwSummary.repairApplicability,\n        diagnosticExecutionAllowed: rdwSummary.diagnosticExecutionAllowed,\n        sourceSnapshotSha256: rdwSummary.sourceSnapshotSha256,\n        sourceManifestSha256: rdwSummary.sourceManifestSha256,\n        databaseSha256: rdwSummary.databaseSha256,\n      },\n      production_fitment_rows_added: 0,\n',
-    "RDW verification report");
+  const rdwReport = [
+    '      rdw_nl_eu: {',
+    '        marketScope: rdwSummary.marketScope,',
+    '        approvalScopes: rdwSummary.counts.approvalScopes,',
+    '        registrationObservations: rdwSummary.counts.registrationObservations,',
+    '        engineDesignationCandidates: rdwSummary.counts.engineDesignationCandidates,',
+    '        gearboxClassifications: rdwSummary.counts.gearboxClassifications,',
+    '        sourceRows: rdwSummary.counts.sourceRows,',
+    '        sourceFiles: rdwSummary.counts.sourceFiles,',
+    '        productionImport: rdwSummary.productionImport,',
+    '        ruEaeuApplicability: rdwSummary.ruEaeuApplicability,',
+    '        exactVehicleFitment: rdwSummary.exactVehicleFitment,',
+    '        exactEngineGearboxPair: rdwSummary.exactEngineGearboxPair,',
+    '        repairApplicability: rdwSummary.repairApplicability,',
+    '        diagnosticExecutionAllowed: rdwSummary.diagnosticExecutionAllowed,',
+    '        sourceSnapshotSha256: rdwSummary.sourceSnapshotSha256,',
+    '        sourceManifestSha256: rdwSummary.sourceManifestSha256,',
+    '        databaseSha256: rdwSummary.databaseSha256,',
+    '      },'
+  ].join("\n");
+  const productionReportLines = verifier.split("\n").filter((line) => /^\s*production_fitment_rows_added: 0,$/.test(line));
+  if (productionReportLines.length !== 1) throw new Error("RDW verification report: expected exactly one production-fitment summary anchor, found " + productionReportLines.length);
+  const productionReportAnchor = productionReportLines[0];
+  const reportIndent = productionReportAnchor.match(/^\s*/)[0];
+  const rdwReportBaseIndent = rdwReport.match(/^\s*/)[0].length;
+  const rdwReportAtIndent = rdwReport.split("\n").map((line) => reportIndent + line.slice(rdwReportBaseIndent)).join("\n");
+  if (!verifier.includes("rdw_nl_eu:")) verifier = replaceExactly(verifier, productionReportAnchor, rdwReportAtIndent + "\n" + productionReportAnchor, "RDW verification report");
 
   test = replaceExactly(test,
     '  assert.deepEqual(result.astra_ch_tas, {\n    marketScope: "CH",\n    approvals: 45215,\n    emissionsGearboxRows: 53414,\n    linkedScopeRows: 33909,\n    exactScopeLinks: 5420,\n    wildcardScopeLinks: 28489,\n    unlinkedScopeRows: 19505,\n    productionImport: false,\n    ruEaeuApplicability: false,\n    exactVehicleFitment: false,\n    repairApplicability: false,\n    diagnosticExecutionAllowed: false,\n    databaseSha256: "161800c884f6cdcc3b52c8cc87df51a2d853e7cbc640dea18847f40c0576b7f5"\n  });\n  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");\n',
