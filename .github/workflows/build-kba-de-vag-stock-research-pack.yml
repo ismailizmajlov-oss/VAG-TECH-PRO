@@ -81,7 +81,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA independent SQLite/provenance verification failed." }
           $manifest = Get-Content -LiteralPath artifacts/kba-de-vag-stock-research-pack/manifest.json -Raw | ConvertFrom-Json
           if ($manifest.market_scope.Count -ne 1 -or $manifest.market_scope[0] -ne "DE" -or
-              $manifest.production_import -ne $false -or $manifest.product_import_allowed -ne $false -or
+              $manifest.research_pack_ingested -ne $true -or $manifest.product_database_ingested -ne $false -or $manifest.production_import -ne $false -or $manifest.product_import_allowed -ne $false -or
               $manifest.ru_eaeu_applicability -ne $false -or $manifest.exact_engine_gearbox_pair -ne $false -or
               $manifest.exact_vehicle_fitment -ne $false -or $manifest.engine_codes_included -ne $false -or
               $manifest.gearbox_codes_included -ne $false) {
