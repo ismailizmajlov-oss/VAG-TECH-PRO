@@ -38,6 +38,16 @@ The current consolidated form's Appendix No. 1, headed "Общие характ�
 
 These are **attachment-level form fields**. They are distinct from the short public registry-summary fields observed on the ELPTS page on 2026-11-06. That visible table included a "Печатная форма ОТТС (ОТШ)" column but did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. No filled attachment was retrieved, so the actual availability, completeness and access terms for individual documents remain unresolved.
 
+## EEC Order No. 126 — forward-looking unified-register initiative
+
+The official EEC legal portal lists Collegium Order No. 126 of 2026-08-11, published and effective 2026-08-14. Its title approves a plan to improve EAEU law governing electronic vehicle passports and the formation of a unified register of issued OTTS, OTSH, SBKTS and registered cancellation notices. The signed two-page order says the attached plan is approved and the order enters into force on publication.
+
+- Official EEC 2026 orders index: https://docs.eaeunion.org/en/documents/464/
+- Signed order PDF: https://docs.eaeunion.org/upload/iblock/db6/3ecew1lvopjk2zx2raf66047bn274ofu/Rasporyazhenie-Kollegii-_-126-ot-11-avgusta-2026-g.pdf
+- Separate annex archive linked by the EEC portal: https://docs.eaeunion.org/upload/iblock/387/skbs5epusvw0sn84ne8g2ywy3oq4rn6m/skachat-v-word.zip
+
+The annex archive was not retrieved in this review, so no implementation milestones, technical fields, API, access model or delivery dates are inferred. The order is a legal/administrative roadmap, not a live registry endpoint, data publication, open-data licence or permission to bulk extract, cache, display or redistribute approval records. It does not change any source's `permission_required` status or `data_ingested=false` state. The annex and subsequent official implementation acts should be monitored as a possible future access route; no importer or data mapping is enabled on this basis.
+
 ## Required interpretation for VAG TECH PRO
 
 1. Store the document's raw values exactly as printed. Do not silently normalize or translate a manufacturer "make/type" label into a VAG three-letter engine code or gearbox code.
