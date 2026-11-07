@@ -36,25 +36,18 @@ The pack contains 53,240 VAG-make rows retained from 280,993 scanned source rows
 
 The pack is a read-only research namespace. It is not imported into the product vehicle-configuration database and must never be promoted into Russian/EAEU production fitment.
 
-## Latest verified pack build — run 16, 2026-11-07
+## Latest verified pack build — run 25, 2026-11-07
 
-The Windows source acquisition and SQLite build completed successfully in [workflow run 16](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349228), source commit `d228c5158fc2056abf3d016a55ead952d1973c19`.
+The Windows source acquisition and SQLite build completed successfully in [workflow run 25](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42389267213), source commit `db6df4c6955289ba0f08c12ae08f1eaae75f1018`. The source file revision is unchanged from 2026-07-30; this run rebuilds the pack with the current source manifest and attribution metadata.
 
 - 280,993 source rows scanned; 53,240 exact VAG-make rows retained; zero malformed rows.
 - 53,240 source-defined approval/gearbox-variant rows; **zero** exact VAG factory code pairs.
 - Zero exact vehicle-fitment rows; zero RU/EAEU applicability rows.
 - SQLite `integrity_check=ok`; no foreign-key violations.
 - Database SHA-256: `408980e7a8923223b5f7f4fe5120be961b65317d8e96abb25e2b9e4965ccd926` (28,864,512 bytes).
-- Inner research-pack archive SHA-256: `5bf0a552cfc057b52c66640db36d6c671e9994a613f4c6d7b5d296948be33be3` (5,683,005 bytes).
-- Pack-manifest SHA-256: `6699777df7619ad9394d52471b2b34c494b0089fac46d55c260a7a9a2ff5506c`.
-- Source-manifest SHA-256: `fb3a594436c3c17be1eb7b27a05af2e0b3006c619a200343317342b42d3843e3`.
-- Outer CI artifact ID `13580905833`, 11,229,081 bytes, SHA-256 `fac173f744dcd5d7acb47702371771d684034c8a5141251ec1eb685dfe71d51c`.
+- Inner research-pack archive SHA-256: `6029405c986aca792fba66084938508bfa47fd8e39d9a55fbcef95d8d4bacee1` (5,683,005 bytes).
+- Pack-manifest SHA-256: `89c4f9f865ac212ffeb29eb1c52f817693ee25fd8a817fc617e4dc98e7ced996`.
+- Source-manifest SHA-256: `1c92ab5b80ac2c95a95f853f82c09c1070928d16961b1a8c0dea27c7b6ac15ec`.
+- Outer CI artifact ID `13581110826`, 11,229,087 bytes, SHA-256 `58f5867cf4fb504eba328ad68f0f2fc874bb5d83f7f3062a6a1d1fca7a866e7e`.
 
-The subsequent desktop CI run 657 resolved run 16, downloaded the artifact, and completed the separate CH-only desktop integration and staging-audit steps successfully. The final NSIS build and lifecycle for run 657 were still running when this evidence was recorded; do not claim the run 657 installer/lifecycle complete until its final result is successful.
-
-## Reproduction and verification
-
-The Windows pack workflow runs parser, exact-make filter and SQLite applicability tests before downloading the official source. It deletes the raw source file before artifact upload. The pack manifest and final-verification report pin source, pack, database, counts and boundary flags. The desktop reader rechecks the database hash, manifest, SQLite integrity, counts, market scope and zero-pair flags at runtime.
-
-The next refresh must re-download the official source and reproduce the source hash, row counts, schema and rights boundary before the pack is accepted. A changed source snapshot must generate a new review and new hashes; it must not silently reuse the old pack.
-
+The per-gearbox source row is a source-defined CH approval variant link. Engine designation and gearbox classification remain raw source fields; they are not promoted to a confirmed VAG factory code pair. The pack is research-only, separately namespaced, attribution-required and not imported into production fitment or RU/EAEU data. Desktop inclusion is recorded only after the corresponding Windows CI installer and lifecycle complete successfully.
