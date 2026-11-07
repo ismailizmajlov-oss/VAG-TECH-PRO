@@ -68,6 +68,7 @@ function validatePack(repoRoot, packRoot) {
   const sourceCsv = path.join(packRoot, "source-snapshot.csv");
   const databaseFile = safeJoin(packRoot, pack.database?.path || "");
   const sourceHash = shaFile(sourceFile), rootSourceHash = shaFile(safeJoin(repoRoot, SOURCE_MANIFEST));
+  const builderHash = shaFile(safeJoin(repoRoot, "scripts/build_kba_de_vag_stock_research_pack.py"));
   const databaseHash = shaFile(databaseFile), sourceCsvHash = shaFile(sourceCsv);
   const rights = source.rights || {}, snapshot = source.snapshot || {};
   const licenseText = fs.readFileSync(licenseFile, "utf8"), attributionText = fs.readFileSync(attributionFile, "utf8");
@@ -76,6 +77,7 @@ function validatePack(repoRoot, packRoot) {
   assert(JSON.stringify(pack.market_scope) === JSON.stringify(["DE"]), "KBA pack must be DE-only");
   assert(pack.license === LICENSE_ID && pack.license_url === "https://www.govdata.de/dl-de/by-2-0", "KBA licence identity mismatch");
   assert(pack.source_manifest_sha256 === sourceHash && sourceHash === rootSourceHash, "KBA pack source manifest differs from pinned repository manifest");
+  assert(pack.build_script_sha256 === builderHash, "KBA pack was built by a different or stale builder revision");
   assert(pack.database?.sha256 === databaseHash && pack.database?.byte_size === fs.statSync(databaseFile).size, "KBA SQLite hash/size mismatch");
   assert(pack.source_snapshot_sha256 === sourceCsvHash && sourceCsvHash === snapshot.source_snapshot_sha256, "KBA CSV snapshot hash mismatch");
   assert(pack.source_file?.byte_size === fs.statSync(sourceCsv).size && pack.source_file?.row_count === snapshot.source_row_count, "KBA CSV byte-size/row-count mismatch");
