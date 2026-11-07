@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """SQLite regression tests for technical-library rights, applicability and DTC namespace gates."""
 from __future__ import annotations
+import base64
+import gzip
 import hashlib
 import json
+import re
 import sqlite3
 import unittest
 from pathlib import Path
@@ -266,6 +269,33 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(sqlite3.IntegrityError, "permission reference"):
             self.db.execute("UPDATE technical_source_rights SET rights_status='approved' WHERE source_document_id=?", (source_document_id,))
+
+    def test_run80_payload_validator_is_pinned_and_wired_into_windows_ci(self) -> None:
+        payload_module = ROOT / "apply-technical-payload-validation-run80.payload.cjs"
+        loader = ROOT / "apply-technical-payload-validation-run80.cjs"
+        workflow = ROOT / ".github/workflows/windows-desktop-ci-run71.yml"
+        self.assertTrue(payload_module.is_file())
+        self.assertTrue(loader.is_file())
+        module_text = payload_module.read_text(encoding="utf-8")
+        match = re.fullmatch(r'"use strict";\\s*module\\.exports = "([A-Za-z0-9+/=]+)";\\s*', module_text)
+        self.assertIsNotNone(match)
+        compressed = base64.b64decode(match.group(1), validate=True)
+        self.assertEqual(hashlib.sha256(compressed).hexdigest(), "13e89e254c3a5ac77c70152d49876c78e6fdd2d1d0a49dec74cb743d4cbf108b")
+        inner = gzip.decompress(compressed)
+        self.assertEqual(hashlib.sha256(inner).hexdigest(), "39d6684b4be0e23752a7f7d0db5d4d1a7a59006ceb6e6d4b3fbd33780b7f4b387")
+        inner_text = inner.decode("utf-8")
+        for kind in ("diagnostic_test_plan", "repair_procedure", "wiring_diagram", "ecu_pinout", "torque_specification", "adaptation", "service_interval", "ecu_profile", "oem_part"):
+            self.assertIn(kind, inner_text)
+        self.assertIn("run80 rejects an invalid member before creating any import batch or record", inner_text)
+        self.assertIn("technicalPayloadNoCredential", inner_text)
+        self.assertIn("validateTechnicalPayload(record)", inner_text)
+        workflow_text = workflow.read_text(encoding="utf-8")
+        self.assertIn("Validate technical payload schema at SQLite import boundary (run80)", workflow_text)
+        self.assertIn("node apply-technical-payload-validation-run80.cjs --desktop-root desktop-source", workflow_text)
+        self.assertIn("node --test desktop-source/tests/local-core-db.test.cjs", workflow_text)
+        loader_text = loader.read_text(encoding="utf-8")
+        self.assertIn("compressed SHA-256 mismatch", loader_text)
+        self.assertIn("patch SHA-256 mismatch", loader_text)
 
 if __name__ == "__main__":
     unittest.main()
