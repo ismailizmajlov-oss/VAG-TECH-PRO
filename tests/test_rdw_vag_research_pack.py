@@ -26,6 +26,7 @@ class RdwVagResearchPackTests(unittest.TestCase):
         self.source["source_snapshot_sha256"] = None
         self.source["hash_status"] = "unit_test_fixture_no_live_snapshot"
         self.source.pop("research_pack", None)
+        self.source.pop("snapshot_refresh", None)
         self.source_bytes = (json.dumps(self.source, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
         self.key = (
             "e1*2018/858*00403*07",
@@ -211,6 +212,75 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 self.assertTrue(expected.issubset(indexes))
             finally:
                 db.close()
+
+    def test_unreviewed_snapshot_refresh_is_rejected(self):
+        pending = dict(self.source)
+        pending["snapshot_refresh"] = {
+            "status": "pending_candidate_reacquisition_and_review",
+            "promotion_approved": False,
+        }
+        with self.assertRaisesRegex(ValueError, "not approved"):
+            rdw.prepare_snapshot_manifest(pending, [])
+
+    def test_reviewed_snapshot_refresh_requires_complete_nl_only_evidence(self):
+        source_files = [{
+            "dataset_id": "fixture-dataset",
+            "dataset_name": "fixture",
+            "source_revision": "1",
+            "sha256": "a" * 64,
+            "byte_size": 10,
+            "row_count": 2,
+            "source_columns_sha256": "b" * 64,
+            "required_columns_sha256": "c" * 64,
+            "query_spec_sha256": "d" * 64,
+        }]
+        entries = rdw.snapshot_manifest_entries(source_files)
+        snapshot_sha = rdw.sha256_bytes(rdw.canonical_bytes(entries))
+        revisions = {"fixture": "1"}
+        source = dict(self.source)
+        source["snapshot"] = {
+            "status": "filtered_research_snapshot_acquired",
+            "source_revision": revisions,
+            "source_snapshot_sha256": snapshot_sha,
+            "source_files": entries,
+        }
+        source["source_snapshot_sha256"] = snapshot_sha
+        source["snapshot_refresh"] = {
+            "status": "reviewed_snapshot_approved_for_nl_only_research_pack",
+            "promotion_approved": True,
+            "candidate_source_snapshot_sha256": snapshot_sha,
+            "review_evidence": {
+                "status": "independently_verified",
+                "candidate_artifact_sha256": "1" * 64,
+                "candidate_manifest_sha256": "2" * 64,
+                "candidate_database_sha256": "3" * 64,
+                "source_snapshot_sha256": snapshot_sha,
+                "source_file_hashes_verified": 1,
+                "source_file_sizes_and_row_counts_verified": 1,
+                "source_row_hash_parity_verified": 1,
+                "source_rows_verified": 2,
+                "sqlite_integrity_check": "ok",
+                "foreign_key_violations": 0,
+                "forbidden_source_fields": 0,
+                "market_scope": ["NL"],
+                "production_import": False,
+                "ru_eaeu_applicability": False,
+                "exact_engine_gearbox_pair": False,
+                "model_year_inferred": False,
+                "generation_inferred": False,
+            },
+        }
+        updated, actual_sha, actual_revisions = rdw.prepare_snapshot_manifest(source, source_files)
+        self.assertEqual(actual_sha, snapshot_sha)
+        self.assertEqual(actual_revisions, revisions)
+        self.assertFalse(updated["data_ingested"])
+
+        incomplete = dict(source)
+        incomplete["snapshot_refresh"] = dict(source["snapshot_refresh"])
+        incomplete["snapshot_refresh"]["review_evidence"] = dict(source["snapshot_refresh"]["review_evidence"])
+        incomplete["snapshot_refresh"]["review_evidence"]["source_row_hash_parity_verified"] = 0
+        with self.assertRaisesRegex(ValueError, "integrity gates"):
+            rdw.prepare_snapshot_manifest(incomplete, source_files)
 
     def test_pinned_snapshot_manifest_rejects_changed_source_files(self):
         with tempfile.TemporaryDirectory() as tmp:

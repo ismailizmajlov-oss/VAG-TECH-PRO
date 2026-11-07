@@ -3,7 +3,7 @@
   "source_id": "rdw-eu-vag-type-approval-open-data-nl",
   "publisher": "RDW (Dienst Wegverkeer), Netherlands",
   "source_kind": "official_open_government_vehicle_type_approval_and_vehicle_identity_data",
-  "reviewed_at": "2026-11-07",
+  "reviewed_at": "2026-11-08",
   "market_scope": [
     "NL"
   ],
@@ -11,66 +11,66 @@
   "snapshot": {
     "status": "filtered_research_snapshot_acquired",
     "source_revision": {
-      "registration": "1793949098",
-      "tgk_base": "1793934950",
-      "tgk_drive": "1793934949",
-      "tgk_gearbox": "1793934955",
-      "tgk_make": "1793934954",
-      "tgk_trade_name": "1793934953"
+      "registration": "1794034652",
+      "tgk_base": "1794021089",
+      "tgk_drive": "1794021088",
+      "tgk_gearbox": "1794021092",
+      "tgk_make": "1794021091",
+      "tgk_trade_name": "1794021092"
     },
-    "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+    "source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
     "source_files": [
       {
         "dataset_id": "4by9-ammk",
         "dataset_name": "tgk_drive",
-        "source_revision": "1793934949",
-        "sha256": "1a9e934560a7a4db95a3894d08a92b8f884656b1593e346a25d93bf3fd77a315",
-        "byte_size": 20734442,
-        "row_count": 93836,
+        "source_revision": "1794021088",
+        "sha256": "721ee2dafa7179cc5e569954ac6c79fb68372f3250c3ab066a2e2ee860a768ab",
+        "byte_size": 20733400,
+        "row_count": 93831,
         "source_columns_sha256": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
         "required_columns_sha256": "96bb78edcb08cd601be5c4a2c14e7bda14c52117fb6706e6fa11f0fa12134563",
-        "query_spec_sha256": "2bf1d7cf485c40c0c02be160276bca62afedc25fc3c645842586b0edbd2f92e0"
+        "query_spec_sha256": "35ea0dd3ad6de8b808f0d88a5d3066dc3f5eabc8df916d5bf204126f87d35f52"
       },
       {
         "dataset_id": "7rjk-eycs",
         "dataset_name": "tgk_gearbox",
-        "source_revision": "1793934955",
-        "sha256": "a78716743002807a7c1610ce6e79ab3547e7b8a3e1e61ba092eedd1f06a6e55d",
-        "byte_size": 17223494,
-        "row_count": 93548,
+        "source_revision": "1794021092",
+        "sha256": "ec1b327185db5f97e65866352ebe6b9d4bd895753fd45d33b132d9ed8de2c470",
+        "byte_size": 17222640,
+        "row_count": 93543,
         "source_columns_sha256": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
         "required_columns_sha256": "36bf29ac302066fd7f20d7d7b3e839068a8f34bfeb315972108e5887ecf8a92c",
-        "query_spec_sha256": "9eabcd2eb9a376b22331366d6251582151c0c3a77023426f2b40b9dca1b00624"
+        "query_spec_sha256": "92e9b7d482ddcead8eea33c0ed9963dd732261259ec185cd4a161686549f2a4a"
       },
       {
         "dataset_id": "byxc-wwua",
         "dataset_name": "tgk_base",
-        "source_revision": "1793934950",
-        "sha256": "75e93fc2b12e245b814add05207510f2cf0ba6a5deb79dc7267ffb5362eda70d",
-        "byte_size": 20822844,
-        "row_count": 93739,
+        "source_revision": "1794021089",
+        "sha256": "5ba606377b25e70503610f4a382c567524f086037cf9d8c748a5beb379dae663",
+        "byte_size": 20821802,
+        "row_count": 93734,
         "source_columns_sha256": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
         "required_columns_sha256": "e53f8ed89f0c8fc8e2b18ad995a6cb360ccc8a0802400bf7155a4b487a22c680",
-        "query_spec_sha256": "4785d32db9321480b46b4821bf8c7b05182971fa13d164728f710e93851c0d46"
+        "query_spec_sha256": "222d3fc3eb8f5b4a5eb943e2a0c72a336fb9105fe44aa78977c8cbbf5b29fff0"
       },
       {
         "dataset_id": "kyri-nuah",
         "dataset_name": "tgk_make",
-        "source_revision": "1793934954",
-        "sha256": "028e106a4b01481977ca1e6c002a29604cc087d7967e49fe591b966f2bb00947",
-        "byte_size": 19386628,
-        "row_count": 110279,
+        "source_revision": "1794021091",
+        "sha256": "ac841d761434c46075f4f026e621bc33794bde4eb6811fff207616aa9582b9ad",
+        "byte_size": 19386351,
+        "row_count": 110277,
         "source_columns_sha256": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
         "required_columns_sha256": "81d6a4712a57463f7daf48cf65ece3d69f80a1a5cc73ea3baea749a404e75e45",
-        "query_spec_sha256": "693d558ded8b79582de400e9a57121d2416dc9c67f5306637744dbd193d0ed4d"
+        "query_spec_sha256": "89302eab5ae077a52a75184c9103758bec7b0bc62692442da1428812d2f41b81"
       },
       {
         "dataset_id": "m9d7-ebf2",
         "dataset_name": "registration",
-        "source_revision": "1793949098",
-        "sha256": "e18ef809d62fbaceaf0169d09f79b8850afe3906238bb8d62ae05bd3181b0230",
-        "byte_size": 25911680,
-        "row_count": 102662,
+        "source_revision": "1794034652",
+        "sha256": "73e0c8b86b3e3ad1772992db4bff4580f770c8bd55eaf141585cb44937d41818",
+        "byte_size": 25912389,
+        "row_count": 102664,
         "source_columns_sha256": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
         "required_columns_sha256": "b676f300d3c96d41312184e6ce92ed1218bde890f964f6801fe32043e8f5280b",
         "query_spec_sha256": "c904deadfbbab3dc97d4826b25b9a6d453c88055792e903abd47db821ecd3705"
@@ -78,17 +78,17 @@
       {
         "dataset_id": "x5v3-sewk",
         "dataset_name": "tgk_trade_name",
-        "source_revision": "1793934953",
-        "sha256": "360e741e9a12c08f431a5c9744b1322cd194a445669081400f7d9db200c53c40",
-        "byte_size": 23419974,
-        "row_count": 110721,
-        "source_columns_sha256": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134",
+        "source_revision": "1794021092",
+        "sha256": "5d24e201377e59583e8a3d58670e929a32c88bd143c9cdb0ebd29ee97805b111",
+        "byte_size": 23419059,
+        "row_count": 110716,
+        "source_columns_sha256": "b527208227197ad11ad27ece83b43faf26afe66cc90c991a31a44181fcbd",
         "required_columns_sha256": "7b25a58f3fa95ec5e139e20443026eecce60f75f1d8343b04baf7cba1b26657d",
-        "query_spec_sha256": "5a15eaaaecd78614e78b46c8aaf354202f5e2c113431579917cbfc7ec9d34064"
+        "query_spec_sha256": "4df2e3b85494bce2b03adbc6ac4d54c6ddd4f5a681d50d6a20503ef8942a2029"
       }
     ],
-    "note": "Six allowlisted filtered CC0 RDW snapshots were acquired at the recorded UTC time and hashed. This is a separate NL-only research snapshot; data_ingested remains false because no production vehicle-fitment import is authorized or claimed.",
-    "acquired_at_utc": "2026-11-06T21:11:14.142884+00:00"
+    "note": "Six allowlisted filtered CC0 RDW snapshots were acquired at the recorded UTC time, independently hashed and row-hash checked. This is a separate NL-only research snapshot; data_ingested remains false because no production vehicle-fitment import is authorized or claimed.",
+    "acquired_at_utc": "2026-11-07T19:18:47.023227+00:00"
   },
   "data_products": {
     "registered_vehicle_identity": {
@@ -265,7 +265,7 @@
   },
   "project_decision": "Rights-cleared for a separate NL/EU type-approval research pack after the live schema probe. No production fitment, no RU/EAEU applicability, no model-year inference, no VAG engine/gearbox-code assertion and no engine/gearbox pairing.",
   "data_ingested": false,
-  "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+  "source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
   "hash_status": "six_filtered_source_snapshots_and_sqlite_research_pack_hashed; production_import_not_performed",
   "probe": {
     "status": "schema_and_exact_scope_verified",
@@ -339,30 +339,19 @@
     "model_scope": "Dutch trade-name observations linked to EU type-approval number, variant, version and revision.",
     "note": "Not a VIN build sheet and not proof of individual-vehicle factory build."
   },
-  "research_pack": {
-    "status": "verified_research_only",
-    "pack_id": "rdw-vag-nl-eu-type-approval-research",
-    "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
-    "market_scope": [
-      "NL"
-    ],
-    "production_import": false,
-    "ru_eaeu_applicability": false,
-    "exact_engine_gearbox_pair": false
-  },
   "latest_probe": {
-    "workflow_run_number": 29,
-    "workflow_run_id": 42388349238,
-    "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349238",
-    "source_commit": "d228c5158fc2056abf3d016a55ead952d1973c19",
-    "probed_at_utc": "2026-11-07T15:51:17.841440Z",
+    "workflow_run_number": 44,
+    "workflow_run_id": 42396231140,
+    "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42396231140",
+    "source_commit": "e36890630a1704e3ef4ad6cf7e60235f06302261",
+    "probed_at_utc": "2026-11-07T17:25:46.726937Z",
     "probe_status": "schema_and_exact_scope_verified",
-    "probe_artifact_id": 13580426621,
+    "probe_artifact_id": 13583795467,
     "probe_artifact_name": "rdw-vag-type-approval-schema-probe",
-    "probe_artifact_sha256": "a1f33e348a2f43c7f81b588a42b2d0f47cf537b2f89211ad2819a3fdf81dc97e",
-    "probe_report_sha256": "3204605e157d31d573d08670ef54b652f8d6574074e664a99bb4f652b2029ae4",
-    "probe_report_bytes": 8331,
-    "source_manifest_sha256": "c4b45564b97407febeee8f8ce64de2a5a6acb8dbf2f75f4877f40911bc9104a8",
+    "probe_artifact_sha256": "c4d7d78b6ee6d9b9f4ea8bbdf7dd7d667c6f5858251062402a0b413fb1fb61a5",
+    "probe_report_sha256": "4122cad820af36440dec37bed04c6f1c298ec250ddf3e557f71204512ae41460",
+    "probe_report_bytes": 8339,
+    "source_manifest_sha256": "cbbe22e0ce9898cabf16ff184c4b6680a0363762af6713b35196fe1aee36d01a",
     "source_snapshot_sha256": null,
     "source_snapshot_status": "probe_only_no_full_snapshot",
     "market_scope": [
@@ -370,57 +359,65 @@
     ],
     "approval_jurisdiction": "EU type approval",
     "approval_scope_key": {
-      "typegoedkeuringsnummer": "e1*2018/858*00302*10",
+      "typegoedkeuringsnummer": "e1*2018/858*00403*07",
       "variant": "ACDUCAX0",
-      "uitvoering": "FD6FD6DD002PR4VNB0OO",
+      "uitvoering": "FD6FD6DD002PR4VNB50OO",
       "revision": "0"
     },
     "registration_observation": {
       "make": "VOLKSWAGEN",
-      "trade_name": "TIGUAN",
+      "trade_name": "TAYRON",
       "vehicle_category": "Personenauto",
       "displacement_cc": "1498",
       "cylinders": "4",
-      "source_row_sha256": "f951088fe5411165d869876b55a2dc653303e5d83e46f90ad76fb78f26371874",
+      "source_row_sha256": "4369b391638cb2b6da382dfe78c69ed52b52e02292335876352d66f145b9ed12",
       "first_registration_date_is_model_year": false
     },
     "matched_rows": {
       "tgk_base": {
         "vehicle_category": "M1",
-        "source_row_sha256": "4d72c6b57f9e848d8f62f5e8b06a2748f77f28b249343d297cbfc4543d5bd141"
+        "source_row_sha256": "ca8caceea7c5e87fa20dab06b6d6c93a4ee303aee45fb5892854a3f54e1f0f2f"
       },
       "tgk_drive": {
         "motorcode": "DUC",
         "displacement_cc": "1498.00",
         "cylinders": "4",
-        "source_row_sha256": "01ded494eca0be7eee0465c7f2ece55caa53d94a1736ca59e9fedee6b3f2a1da"
+        "source_row_sha256": "394bf45e64a106c3da1832bff45dcd517a9976fbec43a46e1951974cc27ed6bd"
       },
       "tgk_gearbox": {
         "codetypeversnellingsbak": "A",
-        "source_row_sha256": "9b2c34a4ff83756b8324b837ed1c9fe232dd1b821d5a4787f0fae3256ab7fb16"
+        "source_row_sha256": "8e799476a3a4228b33a0b1bfcc4d7fdf3a29f15fbb897978057ed2d94f507961"
       },
       "tgk_make": [
         {
           "merkcoderdw": "VOLK",
-          "source_row_sha256": "88555e173e442132880995fd1bb4f6f32de945150f3cafd6dc279f942bf01247"
+          "source_row_sha256": "45bdd24431d7bc8ed813fcb531dec27a8474279ab0d6fcb62013f97c7895917b"
         },
         {
           "merkcoderdw": "VWVP",
-          "source_row_sha256": "83b1378c6b5d997ab880e1f16bee9664e93d726dad9c24b872ff2d96e02a6833"
+          "source_row_sha256": "cb3702c0b73a420d2bd69749ebb444846f0f3d2ba92d32b0ea530a6e3cee36a6"
         }
       ],
       "tgk_trade_name": {
-        "manufacturer_trade_name": "TIGUAN",
-        "type_designation": "CT",
-        "source_row_sha256": "345ea61603a7dcf7e24d625c3c1386b7a7c2c9d6dfa49da4f5622178ce384443"
+        "manufacturer_trade_name": "TAYRON",
+        "type_designation": "R4",
+        "source_row_sha256": "02c9fb96320df89c996f50aa446fe523690f479d201d2be784731372a92f77b2"
       }
     },
+    "metadata_rows_updated_at_utc": {
+      "m9d7-ebf2": "2026-11-07T06:57:32Z",
+      "4by9-ammk": "2026-11-07T03:11:28Z",
+      "7rjk-eycs": "2026-11-07T03:11:32Z",
+      "byxc-wwua": "2026-11-07T03:11:29Z",
+      "kyri-nuah": "2026-11-07T03:11:31Z",
+      "x5v3-sewk": "2026-11-07T03:11:32Z"
+    },
     "metadata_columns_sha256": {
+      "m9d7-ebf2": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
       "4by9-ammk": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
       "7rjk-eycs": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
       "byxc-wwua": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
       "kyri-nuah": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
-      "m9d7-ebf2": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
       "x5v3-sewk": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134"
     },
     "excluded_registration_fields": [
@@ -442,5 +439,242 @@
     "product_import_allowed": false,
     "data_ingested": false,
     "ru_eaeu_applicability": false
+  },
+  "snapshot_history": [
+    {
+      "status": "filtered_research_snapshot_acquired",
+      "source_revision": {
+        "registration": "1793949098",
+        "tgk_base": "1793934950",
+        "tgk_drive": "1793934949",
+        "tgk_gearbox": "1793934955",
+        "tgk_make": "1793934954",
+        "tgk_trade_name": "1793934953"
+      },
+      "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "source_files": [
+        {
+          "dataset_id": "4by9-ammk",
+          "dataset_name": "tgk_drive",
+          "source_revision": "1793934949",
+          "sha256": "1a9e934560a7a4db95a3894d08a92b8f884656b1593e346a25d93bf3fd77a315",
+          "byte_size": 20734442,
+          "row_count": 93836,
+          "source_columns_sha256": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
+          "required_columns_sha256": "96bb78edcb08cd601be5c4a2c14e7bda14c52117fb6706e6fa11f0fa12134563",
+          "query_spec_sha256": "2bf1d7cf485c40c0c02be160276bca62afedc25fc3c645842586b0edbd2f92e0"
+        },
+        {
+          "dataset_id": "7rjk-eycs",
+          "dataset_name": "tgk_gearbox",
+          "source_revision": "1793934955",
+          "sha256": "a78716743002807a7c1610ce6e79ab3547e7b8a3e1e61ba092eedd1f06a6e55d",
+          "byte_size": 17223494,
+          "row_count": 93548,
+          "source_columns_sha256": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
+          "required_columns_sha256": "36bf29ac302066fd7f20d7d7b3e839068a8f34bfeb315972108e5887ecf8a92c",
+          "query_spec_sha256": "9eabcd2eb9a376b22331366d6251582151c0c3a77023426f2b40b9dca1b00624"
+        },
+        {
+          "dataset_id": "byxc-wwua",
+          "dataset_name": "tgk_base",
+          "source_revision": "1793934950",
+          "sha256": "75e93fc2b12e245b814add05207510f2cf0ba6a5deb79dc7267ffb5362eda70d",
+          "byte_size": 20822844,
+          "row_count": 93739,
+          "source_columns_sha256": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
+          "required_columns_sha256": "e53f8ed89f0c8fc8e2b18ad995a6cb360ccc8a0802400bf7155a4b487a22c680",
+          "query_spec_sha256": "4785d32db9321480b46b4821bf8c7b05182971fa13d164728f710e93851c0d46"
+        },
+        {
+          "dataset_id": "kyri-nuah",
+          "dataset_name": "tgk_make",
+          "source_revision": "1793934954",
+          "sha256": "028e106a4b01481977ca1e6c002a29604cc087d7967e49fe591b966f2bb00947",
+          "byte_size": 19386628,
+          "row_count": 110279,
+          "source_columns_sha256": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
+          "required_columns_sha256": "81d6a4712a57463f7daf48cf65ece3d69f80a1a5cc73ea3baea749a404e75e45",
+          "query_spec_sha256": "693d558ded8b79582de400e9a57121d2416dc9c67f5306637744dbd193d0ed4d"
+        },
+        {
+          "dataset_id": "m9d7-ebf2",
+          "dataset_name": "registration",
+          "source_revision": "1793949098",
+          "sha256": "e18ef809d62fbaceaf0169d09f79b8850afe3906238bb8d62ae05bd3181b0230",
+          "byte_size": 25911680,
+          "row_count": 102662,
+          "source_columns_sha256": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
+          "required_columns_sha256": "b676f300d3c96d41312184e6ce92ed1218bde890f964f6801fe32043e8f5280b",
+          "query_spec_sha256": "c904deadfbbab3dc97d4826b25b9a6d453c88055792e903abd47db821ecd3705"
+        },
+        {
+          "dataset_id": "x5v3-sewk",
+          "dataset_name": "tgk_trade_name",
+          "source_revision": "1793934953",
+          "sha256": "360e741e9a12c08f431a5c9744b1322cd194a445669081400f7d9db200c53c40",
+          "byte_size": 23419974,
+          "row_count": 110721,
+          "source_columns_sha256": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134",
+          "required_columns_sha256": "7b25a58f3fa95ec5e139e20443026eecce60f75f1d8343b04baf7cba1b26657d",
+          "query_spec_sha256": "5a15eaaaecd78614e78b46c8aaf354202f5e2c113431579917cbfc7ec9d34064"
+        }
+      ],
+      "note": "Six allowlisted filtered CC0 RDW snapshots were acquired at the recorded UTC time and hashed. This is a separate NL-only research snapshot; data_ingested remains false because no production vehicle-fitment import is authorized or claimed.",
+      "acquired_at_utc": "2026-11-06T21:11:14.142884+00:00",
+      "superseded_at_utc": "2026-11-08T00:00:00Z",
+      "superseded_reason": "RDW live rowsUpdatedAt revisions changed after this snapshot; preserved for audit and not treated as current."
+    }
+  ],
+  "research_pack_history": [
+    {
+      "status": "verified_research_only",
+      "pack_id": "rdw-vag-nl-eu-type-approval-research",
+      "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "market_scope": [
+        "NL"
+      ],
+      "production_import": false,
+      "ru_eaeu_applicability": false,
+      "exact_engine_gearbox_pair": false,
+      "recorded_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "status_note": "Previous verified NL-only research pack; stale relative to newer RDW source revisions."
+    }
+  ],
+  "snapshot_refresh": {
+    "status": "reviewed_snapshot_approved_for_nl_only_research_pack",
+    "previous_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+    "observed_probe_run_id": 42396231140,
+    "observed_probe_run_number": 44,
+    "observed_dataset_revision_timestamps": {
+      "m9d7-ebf2": "2026-11-07T06:57:32Z",
+      "4by9-ammk": "2026-11-07T03:11:28Z",
+      "7rjk-eycs": "2026-11-07T03:11:32Z",
+      "byxc-wwua": "2026-11-07T03:11:29Z",
+      "kyri-nuah": "2026-11-07T03:11:31Z",
+      "x5v3-sewk": "2026-11-07T03:11:32Z"
+    },
+    "candidate_source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
+    "candidate_source_revision": {
+      "registration": "1794034652",
+      "tgk_base": "1794021089",
+      "tgk_drive": "1794021088",
+      "tgk_gearbox": "1794021092",
+      "tgk_make": "1794021091",
+      "tgk_trade_name": "1794021092"
+    },
+    "candidate_source_files": [
+      {
+        "dataset_id": "4by9-ammk",
+        "dataset_name": "tgk_drive",
+        "source_revision": "1794021088",
+        "sha256": "721ee2dafa7179cc5e569954ac6c79fb68372f3250c3ab066a2e2ee860a768ab",
+        "byte_size": 20733400,
+        "row_count": 93831,
+        "source_columns_sha256": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
+        "required_columns_sha256": "96bb78edcb08cd601be5c4a2c14e7bda14c52117fb6706e6fa11f0fa12134563",
+        "query_spec_sha256": "35ea0dd3ad6de8b808f0d88a5d3066dc3f5eabc8df916d5bf204126f87d35f52"
+      },
+      {
+        "dataset_id": "7rjk-eycs",
+        "dataset_name": "tgk_gearbox",
+        "source_revision": "1794021092",
+        "sha256": "ec1b327185db5f97e65866352ebe6b9d4bd895753fd45d33b132d9ed8de2c470",
+        "byte_size": 17222640,
+        "row_count": 93543,
+        "source_columns_sha256": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
+        "required_columns_sha256": "36bf29ac302066fd7f20d7d7b3e839068a8f34bfeb315972108e5887ecf8a92c",
+        "query_spec_sha256": "92e9b7d482ddcead8eea33c0ed9963dd732261259ec185cd4a161686549f2a4a"
+      },
+      {
+        "dataset_id": "byxc-wwua",
+        "dataset_name": "tgk_base",
+        "source_revision": "1794021089",
+        "sha256": "5ba606377b25e70503610f4a382c567524f086037cf9d8c748a5beb379dae663",
+        "byte_size": 20821802,
+        "row_count": 93734,
+        "source_columns_sha256": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
+        "required_columns_sha256": "e53f8ed89f0c8fc8e2b18ad995a6cb360ccc8a0802400bf7155a4b487a22c680",
+        "query_spec_sha256": "222d3fc3eb8f5b4a5eb943e2a0c72a336fb9105fe44aa78977c8cbbf5b29fff0"
+      },
+      {
+        "dataset_id": "kyri-nuah",
+        "dataset_name": "tgk_make",
+        "source_revision": "1794021091",
+        "sha256": "ac841d761434c46075f4f026e621bc33794bde4eb6811fff207616aa9582b9ad",
+        "byte_size": 19386351,
+        "row_count": 110277,
+        "source_columns_sha256": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
+        "required_columns_sha256": "81d6a4712a57463f7daf48cf65ece3d69f80a1a5cc73ea3baea749a404e75e45",
+        "query_spec_sha256": "89302eab5ae077a52a75184c9103758bec7b0bc62692442da1428812d2f41b81"
+      },
+      {
+        "dataset_id": "m9d7-ebf2",
+        "dataset_name": "registration",
+        "source_revision": "1794034652",
+        "sha256": "73e0c8b86b3e3ad1772992db4bff4580f770c8bd55eaf141585cb44937d41818",
+        "byte_size": 25912389,
+        "row_count": 102664,
+        "source_columns_sha256": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
+        "required_columns_sha256": "b676f300d3c96d41312184e6ce92ed1218bde890f964f6801fe32043e8f5280b",
+        "query_spec_sha256": "c904deadfbbab3dc97d4826b25b9a6d453c88055792e903abd47db821ecd3705"
+      },
+      {
+        "dataset_id": "x5v3-sewk",
+        "dataset_name": "tgk_trade_name",
+        "source_revision": "1794021092",
+        "sha256": "5d24e201377e59583e8a3d58670e929a32c88bd143c9cdb0ebd29ee97805b111",
+        "byte_size": 23419059,
+        "row_count": 110716,
+        "source_columns_sha256": "b527208227197ad11ad27ece83b43faf26afe66cc90c991a31a44181fcbd",
+        "required_columns_sha256": "7b25a58f3fa95ec5e139e20443026eecce60f75f1d8343b04baf7cba1b26657d",
+        "query_spec_sha256": "4df2e3b85494bce2b03adbc6ac4d54c6ddd4f5a681d50d6a20503ef8942a2029"
+      }
+    ],
+    "candidate_acquired_at_utc": "2026-11-07T19:18:47.023227+00:00",
+    "promotion_approved": true,
+    "review_evidence": {
+      "status": "independently_verified",
+      "reviewed_at_utc": "2026-11-07T20:26:00Z",
+      "review_scope": "approved_only_for_separate_NL_only_read_only_research_pack",
+      "candidate_workflow_run_id": 42402198620,
+      "candidate_workflow_run_number": 2,
+      "candidate_artifact_id": 13587121835,
+      "candidate_artifact_sha256": "b12b8054ae309bc568da2c79f84e52df03f64f2714d1aeeeb0ba1e61b34332d9",
+      "candidate_manifest_sha256": "1dc2c058bebf833e3b0ed0a27e0f9eeea1a9eeed42ce1b888d39e6465537a4fd",
+      "candidate_database_sha256": "5fa5f97ca233ea59111ef3ccb6aa6ed03c1e20ed9dba31c371e7d8a2d1253702",
+      "source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
+      "source_file_hashes_verified": 6,
+      "source_file_sizes_and_row_counts_verified": 6,
+      "source_row_hash_parity_verified": 6,
+      "source_rows_verified": 604765,
+      "sqlite_integrity_check": "ok",
+      "foreign_key_violations": 0,
+      "forbidden_source_fields": 0,
+      "market_scope": [
+        "NL"
+      ],
+      "production_import": false,
+      "ru_eaeu_applicability": false,
+      "exact_engine_gearbox_pair": false,
+      "model_year_inferred": false,
+      "generation_inferred": false,
+      "independent_audit_method": "Verified downloaded archive SHA-256; independently checked six JSONL source-file SHA-256, byte sizes and row counts; compared all 604765 canonical per-row SHA-256 values with SQLite source_rows; ran SQLite integrity_check and foreign_key_check; reviewed table schemas, market scope, no-pair design and forbidden-field allowlists."
+    },
+    "product_import_allowed": false,
+    "production_import": false,
+    "ru_eaeu_applicability": false,
+    "note": "The refreshed six-file CC0 snapshot was independently verified and approved only for a separately namespaced NL-only read-only research pack. It is not a production-data promotion, does not establish RU/EAEU applicability, does not confirm VAG engine or gearbox codes, does not create an engine/gearbox pair, and does not infer model year or generation."
+  },
+  "research_pack": {
+    "status": "verified_research_only",
+    "pack_id": "rdw-vag-nl-eu-type-approval-research",
+    "source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
+    "market_scope": [
+      "NL"
+    ],
+    "production_import": false,
+    "ru_eaeu_applicability": false,
+    "exact_engine_gearbox_pair": false
   }
 }

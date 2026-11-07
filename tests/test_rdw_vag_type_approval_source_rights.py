@@ -30,7 +30,7 @@ class RdwEuVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertEqual(sample["gearbox_type_classification"], "A")
         self.assertFalse(sample["exact_engine_gearbox_pair_claim"])
         self.assertEqual(self.manifest["snapshot"]["status"], "filtered_research_snapshot_acquired")
-        self.assertEqual(self.manifest["snapshot"]["source_snapshot_sha256"], "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706")
+        self.assertEqual(self.manifest["snapshot"]["source_snapshot_sha256"], "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615")
         self.assertEqual(len(self.manifest["snapshot"]["source_files"]), 6)
         self.assertEqual(self.manifest["source_snapshot_sha256"], self.manifest["snapshot"]["source_snapshot_sha256"])
         self.assertEqual(self.source["source_snapshot_sha256"], self.manifest["snapshot"]["source_snapshot_sha256"])
@@ -40,6 +40,30 @@ class RdwEuVagTypeApprovalSourceRightsTests(unittest.TestCase):
         self.assertIn("Run 30 built a separate CC0 NL-only research pack", self.source["project_decision"])
         self.assertFalse(self.source["applicability"]["production_fitment"])
         self.assertFalse(self.source["applicability"]["ru_eaeu_applicability"])
+
+    def test_refreshed_snapshot_review_approves_only_nl_research_pack(self):
+        refresh = self.manifest["snapshot_refresh"]
+        review = refresh["review_evidence"]
+        self.assertEqual(refresh["status"], "reviewed_snapshot_approved_for_nl_only_research_pack")
+        self.assertIs(refresh["promotion_approved"], True)
+        self.assertEqual(review["status"], "independently_verified")
+        self.assertEqual(review["source_snapshot_sha256"], self.manifest["source_snapshot_sha256"])
+        self.assertEqual(review["source_file_hashes_verified"], 6)
+        self.assertEqual(review["source_row_hash_parity_verified"], 6)
+        self.assertEqual(review["source_rows_verified"], 604765)
+        self.assertEqual(review["sqlite_integrity_check"], "ok")
+        self.assertEqual(review["foreign_key_violations"], 0)
+        self.assertEqual(review["forbidden_source_fields"], 0)
+        self.assertEqual(review["market_scope"], ["NL"])
+        self.assertIs(review["production_import"], False)
+        self.assertIs(review["ru_eaeu_applicability"], False)
+        self.assertIs(review["exact_engine_gearbox_pair"], False)
+        self.assertIs(review["model_year_inferred"], False)
+        self.assertIs(review["generation_inferred"], False)
+        self.assertFalse(self.manifest["data_ingested"])
+        self.assertFalse(self.source["data_ingested"])
+        self.assertFalse(self.source["product_import_allowed"])
+        self.assertEqual(self.source["snapshot_refresh_review"]["candidate_artifact_id"], 13587121835)
 
     def test_published_cc0_rights_cover_offline_reuse_and_redistribution(self):
         rights = self.source["rights"]
@@ -149,13 +173,13 @@ class RdwEuVagTypeApprovalSourceRightsTests(unittest.TestCase):
 
     def test_latest_live_probe_records_exact_scope_without_promoting_engine_gearbox_pair(self):
         probe = self.manifest["latest_probe"]
-        self.assertEqual(probe["workflow_run_number"], 29)
+        self.assertEqual(probe["workflow_run_number"], 44)
         self.assertEqual(probe["probe_status"], "schema_and_exact_scope_verified")
         self.assertEqual(probe["market_scope"], ["NL"])
         self.assertEqual(probe["approval_scope_key"], {
-            "typegoedkeuringsnummer": "e1*2018/858*00302*10",
+            "typegoedkeuringsnummer": "e1*2018/858*00403*07",
             "variant": "ACDUCAX0",
-            "uitvoering": "FD6FD6DD002PR4VNB0OO",
+            "uitvoering": "FD6FD6DD002PR4VNB50OO",
             "revision": "0",
         })
         self.assertEqual(probe["matched_rows"]["tgk_drive"]["motorcode"], "DUC")

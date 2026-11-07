@@ -126,6 +126,39 @@ def prepare_snapshot_manifest(
     }
     snapshot_sha = sha256_bytes(canonical_bytes(entries))
     snapshot = source_manifest.get("snapshot") or {}
+    refresh = source_manifest.get("snapshot_refresh")
+    if refresh is not None:
+        if refresh.get("promotion_approved") is not True:
+            raise ValueError("RDW snapshot refresh is not approved for the separate research pack")
+        review = refresh.get("review_evidence") or {}
+        if (
+            refresh.get("status") != "reviewed_snapshot_approved_for_nl_only_research_pack"
+            or refresh.get("candidate_source_snapshot_sha256") != snapshot_sha
+            or review.get("status") != "independently_verified"
+            or review.get("source_snapshot_sha256") != snapshot_sha
+        ):
+            raise ValueError("RDW snapshot refresh review evidence is missing or does not match the acquired snapshot")
+        for field in ("candidate_artifact_sha256", "candidate_manifest_sha256", "candidate_database_sha256"):
+            value = review.get(field)
+            if not isinstance(value, str) or len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
+                raise ValueError(f"RDW snapshot refresh review evidence has an invalid {field}")
+        expected_rows = sum(int(item["row_count"]) for item in source_files)
+        if (
+            review.get("source_file_hashes_verified") != len(entries)
+            or review.get("source_file_sizes_and_row_counts_verified") != len(entries)
+            or review.get("source_row_hash_parity_verified") != len(entries)
+            or review.get("source_rows_verified") != expected_rows
+            or review.get("sqlite_integrity_check") != "ok"
+            or review.get("foreign_key_violations") != 0
+            or review.get("forbidden_source_fields") != 0
+            or review.get("market_scope") != ["NL"]
+            or review.get("production_import") is not False
+            or review.get("ru_eaeu_applicability") is not False
+            or review.get("exact_engine_gearbox_pair") is not False
+            or review.get("model_year_inferred") is not False
+            or review.get("generation_inferred") is not False
+        ):
+            raise ValueError("RDW snapshot refresh review evidence failed its research-only or integrity gates")
     expected_status = "filtered_research_snapshot_acquired"
 
     if snapshot.get("status") == expected_status:

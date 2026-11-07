@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T17:21:50Z",
+  "updated_at": "2026-11-07T20:26:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4121,10 +4121,10 @@
       "verification_status": "rights_cleared_filtered_research_pack_built_research_only_not_oem_fitment",
       "product_import_allowed": false,
       "data_ingested": false,
-      "source_revision": "RDW rowsUpdatedAt: m9d7-ebf2=2026-11-06T07:11:38Z; 4by9-ammk=2026-11-06T03:15:49Z; 7rjk-eycs=2026-11-06T03:15:55Z; byxc-wwua=2026-11-06T03:15:50Z; kyri-nuah=2026-11-06T03:15:54Z; x5v3-sewk=2026-11-06T03:15:53Z",
-      "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "source_revision": "RDW rowsUpdatedAt: m9d7-ebf2=2026-11-07T06:57:32Z; 4by9-ammk=2026-11-07T03:11:28Z; 7rjk-eycs=2026-11-07T03:11:32Z; byxc-wwua=2026-11-07T03:11:29Z; kyri-nuah=2026-11-07T03:11:31Z; x5v3-sewk=2026-11-07T03:11:32Z",
+      "source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
       "hash_status": "six_filtered_source_snapshots_and_sqlite_research_pack_hashed; production_import_not_performed",
-      "project_decision": "Run 30 built a separate CC0 NL-only research pack with 604785 source rows, 96519 exact RDW approval/variant/version/revision scopes, 102662 registration observations, 93836 engine-designation candidates and 93548 gearbox classifications. Six filtered source snapshots are pinned by aggregate SHA-256 896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706. The source manifest records exact source revisions, per-file hashes and query-spec hashes; the next pack build must reproduce these values or fail closed. Engine and gearbox remain separate; no pair table or exact pair claim exists. Product import remains disabled and data_ingested=false. Run 647 (2026-11-07) integrated the verified pack into the offline desktop research catalog. It remains a separate NL-only research namespace and is not imported into the product vehicle-configuration database.",
+      "project_decision": "Run 30 built a separate CC0 NL-only research pack with 604785 source rows, 96519 exact RDW approval/variant/version/revision scopes, 102662 registration observations, 93836 engine-designation candidates and 93548 gearbox classifications. The previous snapshot 896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706 is retained in history. Snapshot refresh run 2 acquired six revised files with aggregate SHA-256 48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615 and was independently audited; approved only for a separate NL-only read-only research pack. It does not update the product database, establish RU/EAEU applicability, infer model year/generation, confirm VAG engine/gearbox codes or pair engine and gearbox.",
       "research_pack_build_evidence": {
         "workflow_run_number": 30,
         "workflow_run_id": 42290057022,
@@ -4241,18 +4241,18 @@
         }
       },
       "latest_schema_probe": {
-        "workflow_run_number": 29,
-        "workflow_run_id": 42388349238,
-        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349238",
-        "source_commit": "d228c5158fc2056abf3d016a55ead952d1973c19",
-        "probed_at_utc": "2026-11-07T15:51:17.841440Z",
+        "workflow_run_number": 44,
+        "workflow_run_id": 42396231140,
+        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42396231140",
+        "source_commit": "e36890630a1704e3ef4ad6cf7e60235f06302261",
+        "probed_at_utc": "2026-11-07T17:25:46.726937Z",
         "probe_status": "schema_and_exact_scope_verified",
-        "probe_artifact_id": 13580426621,
+        "probe_artifact_id": 13583795467,
         "probe_artifact_name": "rdw-vag-type-approval-schema-probe",
-        "probe_artifact_sha256": "a1f33e348a2f43c7f81b588a42b2d0f47cf537b2f89211ad2819a3fdf81dc97e",
-        "probe_report_sha256": "3204605e157d31d573d08670ef54b652f8d6574074e664a99bb4f652b2029ae4",
-        "probe_report_bytes": 8331,
-        "source_manifest_sha256": "c4b45564b97407febeee8f8ce64de2a5a6acb8dbf2f75f4877f40911bc9104a8",
+        "probe_artifact_sha256": "c4d7d78b6ee6d9b9f4ea8bbdf7dd7d667c6f5858251062402a0b413fb1fb61a5",
+        "probe_report_sha256": "4122cad820af36440dec37bed04c6f1c298ec250ddf3e557f71204512ae41460",
+        "probe_report_bytes": 8339,
+        "source_manifest_sha256": "cbbe22e0ce9898cabf16ff184c4b6680a0363762af6713b35196fe1aee36d01a",
         "source_snapshot_sha256": null,
         "source_snapshot_status": "probe_only_no_full_snapshot",
         "market_scope": [
@@ -4260,57 +4260,65 @@
         ],
         "approval_jurisdiction": "EU type approval",
         "approval_scope_key": {
-          "typegoedkeuringsnummer": "e1*2018/858*00302*10",
+          "typegoedkeuringsnummer": "e1*2018/858*00403*07",
           "variant": "ACDUCAX0",
-          "uitvoering": "FD6FD6DD002PR4VNB0OO",
+          "uitvoering": "FD6FD6DD002PR4VNB50OO",
           "revision": "0"
         },
         "registration_observation": {
           "make": "VOLKSWAGEN",
-          "trade_name": "TIGUAN",
+          "trade_name": "TAYRON",
           "vehicle_category": "Personenauto",
           "displacement_cc": "1498",
           "cylinders": "4",
-          "source_row_sha256": "f951088fe5411165d869876b55a2dc653303e5d83e46f90ad76fb78f26371874",
+          "source_row_sha256": "4369b391638cb2b6da382dfe78c69ed52b52e02292335876352d66f145b9ed12",
           "first_registration_date_is_model_year": false
         },
         "matched_rows": {
           "tgk_base": {
             "vehicle_category": "M1",
-            "source_row_sha256": "4d72c6b57f9e848d8f62f5e8b06a2748f77f28b249343d297cbfc4543d5bd141"
+            "source_row_sha256": "ca8caceea7c5e87fa20dab06b6d6c93a4ee303aee45fb5892854a3f54e1f0f2f"
           },
           "tgk_drive": {
             "motorcode": "DUC",
             "displacement_cc": "1498.00",
             "cylinders": "4",
-            "source_row_sha256": "01ded494eca0be7eee0465c7f2ece55caa53d94a1736ca59e9fedee6b3f2a1da"
+            "source_row_sha256": "394bf45e64a106c3da1832bff45dcd517a9976fbec43a46e1951974cc27ed6bd"
           },
           "tgk_gearbox": {
             "codetypeversnellingsbak": "A",
-            "source_row_sha256": "9b2c34a4ff83756b8324b837ed1c9fe232dd1b821d5a4787f0fae3256ab7fb16"
+            "source_row_sha256": "8e799476a3a4228b33a0b1bfcc4d7fdf3a29f15fbb897978057ed2d94f507961"
           },
           "tgk_make": [
             {
               "merkcoderdw": "VOLK",
-              "source_row_sha256": "88555e173e442132880995fd1bb4f6f32de945150f3cafd6dc279f942bf01247"
+              "source_row_sha256": "45bdd24431d7bc8ed813fcb531dec27a8474279ab0d6fcb62013f97c7895917b"
             },
             {
               "merkcoderdw": "VWVP",
-              "source_row_sha256": "83b1378c6b5d997ab880e1f16bee9664e93d726dad9c24b872ff2d96e02a6833"
+              "source_row_sha256": "cb3702c0b73a420d2bd69749ebb444846f0f3d2ba92d32b0ea530a6e3cee36a6"
             }
           ],
           "tgk_trade_name": {
-            "manufacturer_trade_name": "TIGUAN",
-            "type_designation": "CT",
-            "source_row_sha256": "345ea61603a7dcf7e24d625c3c1386b7a7c2c9d6dfa49da4f5622178ce384443"
+            "manufacturer_trade_name": "TAYRON",
+            "type_designation": "R4",
+            "source_row_sha256": "02c9fb96320df89c996f50aa446fe523690f479d201d2be784731372a92f77b2"
           }
         },
+        "metadata_rows_updated_at_utc": {
+          "m9d7-ebf2": "2026-11-07T06:57:32Z",
+          "4by9-ammk": "2026-11-07T03:11:28Z",
+          "7rjk-eycs": "2026-11-07T03:11:32Z",
+          "byxc-wwua": "2026-11-07T03:11:29Z",
+          "kyri-nuah": "2026-11-07T03:11:31Z",
+          "x5v3-sewk": "2026-11-07T03:11:32Z"
+        },
         "metadata_columns_sha256": {
+          "m9d7-ebf2": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
           "4by9-ammk": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
           "7rjk-eycs": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
           "byxc-wwua": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
           "kyri-nuah": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
-          "m9d7-ebf2": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
           "x5v3-sewk": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134"
         },
         "excluded_registration_fields": [
@@ -4332,6 +4340,34 @@
         "product_import_allowed": false,
         "data_ingested": false,
         "ru_eaeu_applicability": false
+      },
+      "snapshot_refresh_review": {
+        "status": "independently_verified",
+        "reviewed_at_utc": "2026-11-07T20:26:00Z",
+        "review_scope": "approved_only_for_separate_NL_only_read_only_research_pack",
+        "candidate_workflow_run_id": 42402198620,
+        "candidate_workflow_run_number": 2,
+        "candidate_artifact_id": 13587121835,
+        "candidate_artifact_sha256": "b12b8054ae309bc568da2c79f84e52df03f64f2714d1aeeeb0ba1e61b34332d9",
+        "candidate_manifest_sha256": "1dc2c058bebf833e3b0ed0a27e0f9eeea1a9eeed42ce1b888d39e6465537a4fd",
+        "candidate_database_sha256": "5fa5f97ca233ea59111ef3ccb6aa6ed03c1e20ed9dba31c371e7d8a2d1253702",
+        "source_snapshot_sha256": "48f9fac3e05faeb02c90649bb42e288bb4473544f1daab7e79c817f44588a615",
+        "source_file_hashes_verified": 6,
+        "source_file_sizes_and_row_counts_verified": 6,
+        "source_row_hash_parity_verified": 6,
+        "source_rows_verified": 604765,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_violations": 0,
+        "forbidden_source_fields": 0,
+        "market_scope": [
+          "NL"
+        ],
+        "production_import": false,
+        "ru_eaeu_applicability": false,
+        "exact_engine_gearbox_pair": false,
+        "model_year_inferred": false,
+        "generation_inferred": false,
+        "independent_audit_method": "Verified downloaded archive SHA-256; independently checked six JSONL source-file SHA-256, byte sizes and row counts; compared all 604765 canonical per-row SHA-256 values with SQLite source_rows; ran SQLite integrity_check and foreign_key_check; reviewed table schemas, market scope, no-pair design and forbidden-field allowlists."
       }
     },
     {
