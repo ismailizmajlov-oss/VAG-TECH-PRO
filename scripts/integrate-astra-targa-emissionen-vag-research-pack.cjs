@@ -4,6 +4,10 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { DatabaseSync } = require("node:sqlite");
 
+const SOURCE_ID = "astra-fedro-targa-emissionen-approval-variants-ch";
+const SOURCE_URL = "https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/emissionen.txt";
+const PACK_ID = "astra-fedro-targa-emissionen-vag-research";
+
 function fail(message) { throw new Error(message); }
 function shaFile(file) { return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex"); }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, "utf8")); }
