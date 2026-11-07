@@ -107,7 +107,7 @@ The pack remains separate from the production vehicle catalog: research_pack_ing
 
 ## CarDir CC BY 4.0 VAG owner-manual facts — 2026-11-07
 
-CarDir publishes a curated CSV/JSON dataset of 41,128 verified owner-manual facts across 548 models (snapshot date stated as 2026-11-06). Its dataset page explicitly grants CC BY 4.0 reuse, including offline caching and redistribution with attribution. A Windows-only builder filters exact VAG brand labels, preserves raw model qualifiers and each row's source title/page/URL/verification date, and hashes the downloaded source CSV and every retained source row. The first reproducible acquisition is pending; no source-file hash is claimed until the workflow actually downloads the CSV.
+CarDir publishes a curated CSV/JSON dataset of 41,649 verified owner-manual facts across 561 models (snapshot date stated as 2026-11-07). Its dataset page explicitly grants CC BY 4.0 reuse, including offline caching and redistribution with attribution. A Windows-only builder filters exact VAG brand labels, preserves raw model qualifiers and each row's source title/page/URL/verification date, and hashes the downloaded source CSV and every retained source row. The first reproducible acquisition is pending; no source-file hash is claimed until the workflow actually downloads the CSV.
 
 The planned SQLite pack is separate and read-only. Its market scope is UNKNOWN because the CSV has no market field. It will not infer generations, model years, engine/gearbox codes, exact engine/gearbox pairs, ECU, DTC, repair procedures, wiring or pinouts. Publisher verification is retained as publisher verification, not represented as independent VAG OEM review. The source is not added to the Russian/EAEU OTTS register.
 
