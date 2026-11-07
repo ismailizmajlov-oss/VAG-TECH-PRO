@@ -75,6 +75,8 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
         self.assertIn('Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."', script)
         self.assertIn("не является подтверждённым заводским кодом VAG", script)
         self.assertIn("не является кодом КПП VAG", script)
+        self.assertIn('Write-Host "ASTRA TARGA offline CH source-row search passed; no OEM pair, RU/EAEU fitment or repair claims."', script)
+        self.assertNotIn('Write-Output "ASTRA TARGA offline CH source-row search passed; no OEM pair, RU/EAEU fitment or repair claims."', script)
 
 
 if __name__ == "__main__":
