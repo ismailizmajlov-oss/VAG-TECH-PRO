@@ -1,4 +1,5 @@
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -42,6 +43,29 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
         self.assertIs(manifest["applicability_policy"]["repair_procedure_applicability"], False)
         self.assertIs(manifest["applicability_policy"]["ru_eaeu_applicability"], False)
         self.assertEqual(manifest["coverage"]["vag_rows_in_research_pack"], 53240)
+
+
+    def test_desktop_integration_script_binds_manifest_constants(self):
+        manifest = json.loads((ROOT / "data" / "source-manifests" / "astra-targa-emissionen-open-data.json").read_text(encoding="utf-8"))
+        script = (ROOT / "scripts" / "integrate-astra-targa-emissionen-vag-research-pack.cjs").read_text(encoding="utf-8")
+        expected = {
+            "SOURCE_ID": manifest["source_id"],
+            "SOURCE_URL": manifest["source_url"],
+            "PACK_ID": "astra-fedro-targa-emissionen-vag-research",
+        }
+        for name, value in expected.items():
+            pattern = rf'const {name} = "{re.escape(value)}";'
+            self.assertRegex(script, pattern, f"{name} must be defined and match the verified source manifest")
+
+    def test_powershell_source_register_parsers_support_empty_json_property_names(self):
+        register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        self.assertTrue(any(
+            "" in item.get("coverage", {}).get("vehicle_class_counts", {})
+            for item in register["sources"]
+        ), "The current register includes an intentionally preserved empty source class key")
+        workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
+        self.assertIn("$sourceRegister = Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json -AsHashtable", workflow)
+        self.assertIn("$sourceRegisterJson = if (Test-Path $sourceRegisterPath) { Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json -AsHashtable } else { $null }", workflow)
 
 
 if __name__ == "__main__":
