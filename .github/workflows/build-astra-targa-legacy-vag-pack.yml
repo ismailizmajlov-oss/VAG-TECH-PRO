@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: astra-targa-legacy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Download, hash, filter and verify CH-only ASTRA TARGA research pack
