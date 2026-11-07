@@ -28,6 +28,9 @@ def main() -> None:
             "source_document", "applicability", "ecu", "provenance", "rights", "review"}.issubset(required):
         raise AssertionError("OEM DTC JSON schema is missing mandatory evidence fields")
     props = schema["properties"]
+    namespace_rules = schema.get("allOf", [])
+    if len(namespace_rules) != 3:
+        raise AssertionError("DTC JSON schema must bind generic, VAG-specific and other-OEM namespaces to manufacturer identity")
     for name in ("ecu", "source_document", "applicability", "provenance", "rights", "review"):
         if name not in props:
             raise AssertionError(f"Missing JSON schema property: {name}")
@@ -63,7 +66,7 @@ def main() -> None:
           VALUES ('P0123','generic_sae_iso','VOLKSWAGEN','RU',?,
                   'row 1','generic_only',?,'2026-11-03T00:00:00Z')""",
           (cc0_source, "a" * 64)),
-        "generic SAE/ISO DTC cannot be labelled"
+        "generic SAE/ISO DTC must use UNKNOWN manufacturer"
     )
 
     # A generic record is valid only with an unknown manufacturer, and this
