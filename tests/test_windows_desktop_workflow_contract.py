@@ -296,5 +296,42 @@ def main() -> None:
     if 'foreach ($folder in @("scripts", "lib", "app", "components", "electron", "tests"' not in text:
         raise SystemExit("Windows lifecycle artifact does not preserve the desktop app, UI and test sources")
 
+    kba_pipeline_paths = (
+        ".github/workflows/build-kba-de-vag-stock-research-pack.yml",
+        ".github/workflows/probe-kba-open-data.yml",
+        "scripts/build_kba_de_vag_stock_research_pack.py",
+        "scripts/probe_kba_open_data.py",
+        "scripts/integrate-kba-de-vag-stock-research-pack.cjs",
+        "scripts/apply-kba-de-vag-research-verification-run1.cjs",
+        "tests/test_kba_de_vag_stock_research_pack.py",
+        "tests/test_kba_open_data_probe.py",
+        "tests/kba-pack-integration-contract.test.cjs",
+    )
+    missing_kba_pipeline_paths = [marker for marker in kba_pipeline_paths if text.count(marker) < 2]
+    if missing_kba_pipeline_paths:
+        raise SystemExit(f"KBA pack code/data changes must trigger both push and pull-request validation: {missing_kba_pipeline_paths}")
+    kba_pipeline_steps = (
+        "python -m py_compile scripts/probe_kba_open_data.py scripts/build_kba_de_vag_stock_research_pack.py",
+        'python -m unittest discover -s tests -p "test_kba_de_vag_stock_research_pack.py" -v',
+        "node --test tests/kba-pack-integration-contract.test.cjs",
+        "Resolve latest successful KBA DE VAG stock research pack run",
+        "Download verified KBA DE VAG stock SQLite research pack",
+        "node scripts/integrate-kba-de-vag-stock-research-pack.cjs",
+        "node scripts/apply-kba-de-vag-research-verification-run1.cjs",
+        "npm run verify:kba-de-stock-research",
+        "kba-de-vag-stock-research/kba-de-vag-stock-research.sqlite",
+        "kba-de-vag-stock-research/desktop-integration-report.json",
+        "kba_de_vag_stock=run",
+        "aggregate_stock_observation",
+    )
+    missing_kba_pipeline_steps = [marker for marker in kba_pipeline_steps if marker not in text]
+    if missing_kba_pipeline_steps:
+        raise SystemExit(f"KBA pack integration/NSIS verification pipeline is incomplete: {missing_kba_pipeline_steps}")
+    kba_integrate_marker = "      - name: Integrate KBA DE VAG aggregate-stock pack into offline desktop"
+    desktop_tests_marker = "      - name: Run desktop, local core and research tests"
+    installer_build_marker = "      - name: Build first Windows x64 NSIS installer"
+    if not (text.index(kba_integrate_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker)):
+        raise SystemExit("KBA pack must be integrated and verified before desktop tests and NSIS packaging")
+
 if __name__ == "__main__":
     main()
