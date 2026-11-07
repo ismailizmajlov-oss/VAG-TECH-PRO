@@ -35,6 +35,8 @@ on:
       - "tests/test_rdw_vag_research_pack.py"
       - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
       - "tests/test_astra_ch_tas_desktop_integration.py"
+      - "data/source-manifests/astra-targa-emissionen-open-data.json"
+      - "tests/test_astra_targa_emissionen_source_rights.py"
       - "docs/research/ASTRA_CH_TAS_DESKTOP_INTEGRATION_2026-11-06.md"
       - "docs/VEHICLE_CONFIGURATION_MATCH_POLICY.md"
       - "apply-exact-vehicle-config-match-run64.py.gz.b64"
@@ -254,6 +256,8 @@ jobs:
           python tests/test_eaeu_otts_registry_import.py
           python tests/test_vw_flash_simos18_dtc_quarantine.py
           python tests/test_astra_ch_tas_desktop_integration.py
+          python tests/test_astra_targa_emissionen_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "ASTRA TARGA OGD rights and CH-only applicability tests failed." }
           python -m py_compile scripts/build_rdw_vag_research_pack.py
           python -m unittest discover -s tests -p "test_rdw_vag_research_pack.py" -v
           node --test tests/rdw-pack-integration-contract.test.cjs
