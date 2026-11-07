@@ -18,8 +18,8 @@ export interface AstraTargaRow {
   id: number; sourceRowNumber: number; sourceRecordSha256: string; sourceRecordLocator: string; sourceFileSha256: string;
   approvalNumber: string; make: string; type: string | null; gearboxClassification: string | null;
   finalDriveRatio: string | null; engineMake: string | null; engineType: string | null; engineConstruction: string | null;
-  fuel: string | null; displacementCc: string | null; powerKw: number | null; powerRpm: string | null;
-  torqueNm: string | null; torqueRpm: string | null; emissionControl: string | null; drive: string | null;
+  fuel: string | null; displacementCc: number | null; powerKw: number | null; powerRpm: string | null;
+  torqueNm: number | null; torqueRpm: string | null; emissionControl: string | null; drive: string | null;
   emissionsCode: string | null; homologationDate: string | null; marketScope: "CH"; applicabilityPrecision: string;
   sourceDefinedVariantLink: true; exactVagFactoryCodePair: false; exactVehicleFitment: false; ruEaeuApplicability: false;
   modelYear: null; generation: null; engineTypeStatus: string; gearboxStatus: string;
