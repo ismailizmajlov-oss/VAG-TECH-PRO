@@ -1327,15 +1327,16 @@
           "document_number",
           "VIN"
         ],
-        "ot_ts_summary_count": 1,
-        "count_treatment": "separate_cert_trade_landing_page_ui_counter_only_not_a_complete_or_verified_public_register_corpus_count",
+        "count_treatment": "separate_cert_trade_landing_page_ui_counters_only_not_a_complete_or_verified_public_register_corpus_count",
         "personal_data_display_claim": "official project page says personal data are not displayed",
         "record_schema_retrieved": false,
         "result_retrieval_independently_tested": false,
         "engine_fields_in_application_form": true,
         "engine_fields_in_public_record_schema": "not_established",
-        "note": "The no-login public search route is documented by trade.kg. The one-OTTS summary counter is displayed separately on cert.trade.kg and is not a verified corpus count. Neither observation grants automated extraction, bulk export, offline caching, display or redistribution rights.",
-        "summary_source_url": "https://cert.trade.kg/"
+        "note": "The no-login public search route is documented by trade.kg. The separate cert.trade.kg landing page shows one OTTS and zero OTSH UI counters; these are not verified corpus counts. Neither observation grants automated extraction, bulk export, offline caching, display or redistribution rights.",
+        "summary_source_url": "https://cert.trade.kg/",
+        "otts_summary_count": 1,
+        "otsh_summary_count": 0
       },
       "access_and_reuse": {
         "public_query": "observed_without_login",
