@@ -110,6 +110,25 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "boolean data_ingested"):
                 sync(source, desktop)
 
+    def test_restricted_source_cannot_be_marked_product_importable(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "source-register.json"
+            desktop = root / "desktop"
+            desktop.mkdir()
+            write_manifest(source, sources=[
+                {
+                    "source_id": "restricted-product-import",
+                    "data_ingested": False,
+                    "product_import_allowed": True,
+                    "verification_status": "quarantined_rights_unresolved",
+                    "rights": {"permission_status": "not_obtained"},
+                }
+            ])
+            with self.assertRaisesRegex(ValueError, "cannot be marked product-importable"):
+                sync(source, desktop)
+            self.assertFalse((desktop / "data/source-manifests/vag-factory-source-register.json").exists())
+
     def test_restricted_source_cannot_be_marked_ingested(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
