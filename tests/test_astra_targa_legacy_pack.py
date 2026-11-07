@@ -73,6 +73,10 @@ class AstraTargaLegacyPackTests(unittest.TestCase):
     def test_published_header_positions_are_checked(self):
         validate_header(make_header())
         header = make_header()
+        normalized = validate_header(header + [""])
+        self.assertEqual(len(normalized), COLUMN_COUNT)
+        with self.assertRaisesRegex(ValueError, "schema column count changed"):
+            validate_header(header + ["unexpected_extra_column"])
         header[FIELDS["engine_marking"]] = "not the engine marking field"
         with self.assertRaisesRegex(ValueError, "header mismatch"):
             validate_header(header)
