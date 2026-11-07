@@ -1,43 +1,43 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-07T05:43:41.7206486Z",
+  "recorded_at_utc": "2026-11-07T05:44:44.8986713Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run71",
-  "run_id": 42343879062,
-  "run_number": 539,
+  "run_id": 42343950916,
+  "run_number": 540,
   "run_attempt": 1,
   "status": "completed",
   "conclusion": "failure",
-  "head_sha": "48151a3acbda602a7af6bf8e9ad5cf7ca88bb697",
+  "head_sha": "152649a1171914a3564f6dcc259b068e9f195a24",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42343879062",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42343950916",
   "jobs": [
     {
-      "id": 128317290510,
+      "id": 128317512946,
       "name": "build-and-lifecycle",
       "status": "completed",
       "conclusion": "failure",
-      "runner_name": "GitHub Actions 1000002335",
-      "started_at": "2026-11-07T05:42:44Z",
-      "completed_at": "2026-11-07T05:43:28Z"
+      "runner_name": "GitHub Actions 1000002337",
+      "started_at": "2026-11-07T05:43:48Z",
+      "completed_at": "2026-11-07T05:44:30Z"
     },
     {
-      "id": 128317448751,
+      "id": 128317660548,
       "name": "Windows Server 2022 installer compatibility lifecycle",
       "status": "completed",
       "conclusion": "skipped",
       "runner_name": null,
-      "started_at": "2026-11-07T05:43:28Z",
-      "completed_at": "2026-11-07T05:43:28Z"
+      "started_at": "2026-11-07T05:44:30Z",
+      "completed_at": "2026-11-07T05:44:30Z"
     }
   ],
   "artifacts": [
     {
-      "id": 13561704957,
+      "id": 13562926552,
       "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 13189,
+      "size_in_bytes": 13193,
       "expired": false,
-      "created_at": "2026-11-07T05:43:24Z",
-      "expires_at": "2026-11-21T05:43:23Z"
+      "created_at": "2026-11-07T05:44:26Z",
+      "expires_at": "2026-11-21T05:44:25Z"
     }
   ],
   "native_windows_10_11": {
