@@ -170,7 +170,12 @@ function patchUi(desktopRoot) {
 function patchLifecycle(desktopRoot) {
   const file = path.join(desktopRoot, "scripts/windows-installer-lifecycle.ps1");
   let text = fs.readFileSync(file, "utf8");
-  const anchor = '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."';
+  const anchorCandidates = [
+    '  Write-Host "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
+    '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
+  ];
+  const anchor = anchorCandidates.find((candidate) => text.includes(candidate));
+  if (!anchor) fail("ASTRA TARGA lifecycle anchor missing in the pinned desktop source.");
   const check = [
     '  $targaSummary = Invoke-RestMethod -Uri "$baseUrl/api/local-research?dataset=astra-targa-summary" -TimeoutSec 30',
     '  if ($targaSummary.summary.marketScope -ne "CH" -or $targaSummary.summary.rightsStatus -ne "approved_by_published_ogd_terms" -or $targaSummary.summary.productionImport -ne $false -or $targaSummary.summary.ruEaeuApplicability -ne $false -or $targaSummary.summary.counts.approvalPowertrainVariantRows -ne 53240) { throw "ASTRA TARGA offline summary or CH-only boundary failed." }',
