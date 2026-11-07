@@ -22,6 +22,7 @@ def synthetic_xlsx():
 class KbaWholeVehicleApprovalProbeTests(unittest.TestCase):
     def test_only_official_kba_https_resource_is_accepted(self):
         probe.validate_official_url(probe.SOURCE_URL)
+        probe.validate_official_host("https://www.kba.de/download?id=123")
         with self.assertRaises(ValueError):
             probe.validate_official_url("https://example.com/file.xlsx")
         with self.assertRaises(ValueError):
