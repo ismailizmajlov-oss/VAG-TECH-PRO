@@ -60,7 +60,11 @@ function patch(desktopRoot) {
     '  assert(kbaDeSummary.id === kbaDe.id && kbaDeSummary.marketScope === "DE" && kbaDeSummary.license === "DL-DE-BY-2.0" && kbaDeSummary.rightsStatus === "approved_by_published_DL_DE_BY_2_0" && kbaDeSummary.researchPackIngested === true && kbaDeSummary.productDatabaseIngested === false && kbaDeSummary.productionImport === false && kbaDeSummary.productImportAllowed === false && kbaDeSummary.ruEaeuApplicability === false && kbaDeSummary.exactVehicleFitment === false && kbaDeSummary.exactEngineGearboxPair === false && kbaDeSummary.repairApplicability === false && kbaDeSummary.diagnosticExecutionAllowed === false, "KBA pack must remain separately namespaced DE-only aggregate stock research, never vehicle fitment");',
     '  assert(kbaDeSummary.counts.vagStockObservations === 264847 && kbaDeSummary.counts.manufacturerLabels === 8 && kbaDeSummary.counts.uniqueMakeTradeNamePairs === 802 && kbaDeSummary.counts.uniqueMakeTypeKeyPairs === 4155 && kbaDeSummary.counts.uniqueMakeTradeTypeReferenceDateTuples === 16301 && kbaDeSummary.counts.federalStates === 17 && kbaDeSummary.counts.referenceDates === 4 && kbaDeSummary.sourceSnapshotSha256 === kbaDe.source_snapshot_sha256 && kbaDeSummary.databaseSha256 === kbaDe.database_sha256 && kbaDeSummary.sourceManifestSha256 === kbaDe.source_manifest_sha256, "KBA source snapshot, database, licence or research counts changed");'
   ].join("\n");
-  verifier = replaceExactly(verifier, rdwCountAssertion, rdwCountAssertion + "\n" + kbaReader + "\n" + kbaAssertions, "KBA runtime reader/rights/provenance/count verification");
+  if (!verifier.includes(kbaReader)) {
+    verifier = replaceExactly(verifier, rdwCountAssertion, rdwCountAssertion + "\n" + kbaReader + "\n" + kbaAssertions, "KBA runtime reader/rights/provenance/count verification");
+  } else if (!verifier.includes(kbaAssertions)) {
+    verifier = replaceExactly(verifier, kbaReader, kbaReader + "\n" + kbaAssertions, "KBA runtime rights/provenance/count verification");
+  }
 
   const kbaReport = [
     '      kba_de_vag_stock: {',
