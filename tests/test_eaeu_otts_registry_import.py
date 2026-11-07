@@ -149,9 +149,25 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         self.assertEqual(exact["transmissions"][0]["unit_kind_code"], "05")
         self.assertEqual(exact["transmissions"][0]["unit_kind_label"], "gearbox")
         self.assertEqual(exact["pair_candidates"][0]["verification_status"], "candidate_unverified")
+        self.assertEqual(exact["pair_candidates"][0]["applicability_precision"], "same_approval_variant_id_single_pair_candidate")
+        self.assertEqual(exact["pair_candidates"][0]["evidence_rule"], "single_engine_and_single_gearbox_code_nested_under_same_approval_variant_element")
         self.assertEqual(exact["engines"][0]["code_namespace"], "EAEU_TR_TS_018_2011_VehicleComponentModelCode_engine")
         ambiguous = parsed["documents"][0]["variants"][1]
         self.assertEqual(ambiguous["pair_candidates"], [])
+
+    def test_pair_candidate_without_variant_id_is_explicitly_unlabelled(self):
+        raw = _xml(ambiguous=False, include_sbkts=False).replace(
+            b"<VehicleTypeVariantId>VAR-EXACT-01</VehicleTypeVariantId>", b""
+        )
+        parsed = importer.parse_registry_export(raw)
+        variant = parsed["documents"][0]["variants"][0]
+        self.assertIsNone(variant["variant_id"])
+        self.assertEqual(variant["applicability_precision"], "approval_variant_unlabelled_candidate")
+        self.assertEqual(len(variant["pair_candidates"]), 1)
+        pair = variant["pair_candidates"][0]
+        self.assertEqual(pair["applicability_precision"], "same_unlabelled_approval_variant_single_pair_candidate")
+        self.assertEqual(pair["evidence_rule"], "single_engine_and_single_gearbox_code_nested_under_same_approval_variant_element")
+        self.assertEqual(pair["verification_status"], "candidate_unverified")
 
     def test_sbkts_is_skipped_and_personal_or_vin_fields_are_not_parsed(self):
         parsed = importer.parse_registry_export(self.xml_path.read_bytes())
@@ -245,6 +261,7 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
             self.assertEqual(db.execute("SELECT COUNT(*) FROM approval_document").fetchone()[0], 1)
             self.assertEqual(db.execute("SELECT COUNT(*) FROM powertrain_pair_candidate").fetchone()[0], 1)
             self.assertEqual(db.execute("SELECT verification_status FROM powertrain_pair_candidate").fetchone()[0], "candidate_unverified")
+            self.assertEqual(db.execute("SELECT applicability_precision FROM powertrain_pair_candidate").fetchone()[0], "same_approval_variant_id_single_pair_candidate")
             self.assertEqual(db.execute("SELECT rights_status FROM import_run").fetchone()[0], "owner_attested_not_independently_verified")
             self.assertEqual(db.execute("SELECT distribution_eligible FROM import_run").fetchone()[0], 0)
             columns = {

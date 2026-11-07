@@ -182,18 +182,23 @@ def _parse_variant(element: ET.Element) -> dict[str, Any]:
     ]
     gearbox_unit_indexes = [index for index, unit in enumerate(transmissions) if unit.get("unit_kind_code") == "05"]
 
+    variant_id = _first_direct_text(element, "VehicleTypeVariantId")
     pair_candidates = []
     if len(engines) == 1 and len(engine_code_indexes) == 1 and len(gearbox_unit_indexes) == 1 and len(gearbox_indexes) == 1:
         pair_candidates.append({
             "engine_index": engine_code_indexes[0],
             "transmission_index": gearbox_indexes[0],
-            "evidence_rule": "single_engine_and_single_gearbox_code_nested_under_same_approval_variant",
-            "applicability_precision": "same_approval_variant_single_pair_candidate",
+            "evidence_rule": "single_engine_and_single_gearbox_code_nested_under_same_approval_variant_element",
+            "applicability_precision": (
+                "same_approval_variant_id_single_pair_candidate"
+                if variant_id
+                else "same_unlabelled_approval_variant_single_pair_candidate"
+            ),
             "verification_status": "candidate_unverified",
         })
 
     variant = {
-        "variant_id": _first_direct_text(element, "VehicleTypeVariantId"),
+        "variant_id": variant_id,
         "eco_class_code": _first_direct_text(element, "VehicleEcoClassCode"),
         "chassis_design_code": _first_direct_text(element, "VehicleChassisDesignCode"),
         "engines": engines,
@@ -202,7 +207,7 @@ def _parse_variant(element: ET.Element) -> dict[str, Any]:
         "pair_candidates": pair_candidates,
         "applicability_precision": (
             "approval_variant_candidate"
-            if _first_direct_text(element, "VehicleTypeVariantId")
+            if variant_id
             else "approval_variant_unlabelled_candidate"
         ),
         "verification_status": "candidate_unverified",
