@@ -388,7 +388,7 @@ jobs:
       - name: Upload immutable source snapshot and SQLite research database
         uses: actions/upload-artifact@v4
         with:
-          name: vag-tech-pro-obdex-cc0-2026-11-02
+          name: vag-tech-pro-obdex-cc0-2026-11-07
           path: research-output/
           if-no-files-found: error
           retention-days: 30
