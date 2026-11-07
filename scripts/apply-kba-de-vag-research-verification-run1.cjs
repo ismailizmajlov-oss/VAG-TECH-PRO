@@ -27,15 +27,34 @@ function patch(desktopRoot) {
   let verifier = verifierOriginal.replace(/\r\n/g, "\n");
   let test = testOriginal.replace(/\r\n/g, "\n");
 
-  verifier = replaceExactly(verifier,
-    '  assert(manifest.schema_version === 1 && Array.isArray(manifest.packs) && manifest.packs.length === 12, "Expected twelve separately licensed research packs, including CH-only ASTRA TAS/TARGA and NL-only RDW approval research");\n  const packIds = manifest.packs.map((pack) => pack.id);\n  assert(packIds.every((id) => typeof id === "string" && id.length > 0) && new Set(packIds).size === packIds.length, "Research pack IDs must be non-empty and unique");\n  const byId = Object.fromEntries(manifest.packs.map((pack) => [pack.id, pack]));\n',
-    '  assert(manifest.schema_version === 1 && Array.isArray(manifest.packs) && manifest.packs.length === 13, "Expected thirteen separately licensed research packs, including CH-only ASTRA TAS/TARGA, NL-only RDW and DE-only KBA research");\n  const packIds = manifest.packs.map((pack) => pack.id);\n  assert(packIds.every((id) => typeof id === "string" && id.length > 0) && new Set(packIds).size === packIds.length, "Research pack IDs must be non-empty and unique");\n  const byId = Object.fromEntries(manifest.packs.map((pack) => [pack.id, pack]));\n',
-    "KBA research pack manifest cardinality");
+  const packCountMatches = [...verifier.matchAll(/manifest\.packs\.length === (\d+)/g)];
+  if (packCountMatches.length !== 1) fail("KBA research pack manifest cardinality: expected exactly one numeric pack-count assertion, found " + packCountMatches.length);
+  const currentPackCount = Number(packCountMatches[0][1]);
+  let expectedPackCount = currentPackCount;
+  if (!verifier.includes("kbaDeSummary.id === kbaDe.id")) {
+    if (!Number.isSafeInteger(currentPackCount) || currentPackCount < 12 || currentPackCount > 30) fail("KBA research pack manifest cardinality: unexpected pre-KBA pack count " + currentPackCount);
+    expectedPackCount = currentPackCount + 1;
+    const messageMatch = verifier.match(/"Expected [^"]*research packs[^"]*"/);
+    if (!messageMatch) fail("KBA research pack manifest cardinality: assertion message anchor missing");
+    verifier = verifier.replace(/manifest\.packs\.length === \d+/, "manifest.packs.length === " + expectedPackCount);
+    verifier = verifier.replace(messageMatch[0], '"Expected ' + expectedPackCount + ' separately licensed research packs, including the DE-only KBA VAG stock research pack"');
+  }
 
-  verifier = replaceExactly(verifier,
-    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw, "Required generic, candidate, CH-only ASTRA TAS/TARGA and NL-only RDW packs must be registered");\n',
-    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  const kbaDe = byId["kba-de-vag-stock-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw && kbaDe, "Required generic, candidate, CH-only ASTRA TAS/TARGA, NL-only and DE-only research packs must be registered");\n',
-    "KBA pack registration");
+  const astraBinding = '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];';
+  const targaBinding = '  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];';
+  const rdwBinding = '  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];';
+  const kbaBinding = '  const kbaDe = byId["kba-de-vag-stock-research"];';
+  if (!verifier.includes(kbaBinding)) {
+    if (!verifier.includes(rdwBinding)) fail("KBA pack registration: RDW binding must exist before KBA");
+    verifier = replaceExactly(verifier, rdwBinding, rdwBinding + "\n" + kbaBinding, "KBA pack binding");
+  }
+  const requiredPackAssert = verifier.split("\n").find((line) => line.includes("assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra") && line.includes("rdw"));
+  if (!requiredPackAssert) fail("KBA pack registration: required research-pack assertion anchor missing");
+  if (!requiredPackAssert.includes("kbaDe")) {
+    const updatedPackAssert = requiredPackAssert.replace(/&& rdw,/, "&& rdw && kbaDe,");
+    if (updatedPackAssert === requiredPackAssert) fail("KBA pack registration: could not extend required-pack assertion");
+    verifier = replaceExactly(verifier, requiredPackAssert, updatedPackAssert, "KBA required-pack assertion");
+  }
 
   const rdwCountAssertion = '  assert(rdwSummary.counts.approvalScopes === 96519 && rdwSummary.counts.registrationObservations === 102662 && rdwSummary.counts.engineDesignationCandidates === 93836 && rdwSummary.counts.gearboxClassifications === 93548 && rdwSummary.counts.sourceRows === 604785 && rdwSummary.sourceSnapshotSha256 === "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706" && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot, database or source manifest provenance/counts changed");';
   const kbaReader = '  const kbaDeSummary = require(path.join(ROOT, "lib", "kba-de-stock-research-db.cjs")).getKbaSummary(RESEARCH);';
@@ -58,7 +77,7 @@ function patch(desktopRoot) {
 
   fs.writeFileSync(verifierPath, verifier.replace(/\n/g, verifierNewline), "utf8");
   fs.writeFileSync(testPath, test.replace(/\n/g, testNewline), "utf8");
-  return { status: "patched", files: ["scripts/verify-local-research-packs.cjs","tests/local-research-packs.test.cjs"], manifestPackCount: 13 };
+  return { status: "patched", files: ["scripts/verify-local-research-packs.cjs","tests/local-research-packs.test.cjs"], manifestPackCount: expectedPackCount };
 }
 function main() {
   const index = process.argv.indexOf("--desktop-root");
