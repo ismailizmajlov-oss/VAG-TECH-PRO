@@ -121,7 +121,7 @@ The KBA pack build completed successfully in [workflow run 3](https://github.com
 
 ## Current source work after RDW pack run 34 — 2026-11-07
 
-The current main branch contains 48 central source-register entries and 12 entries in the dedicated Russian/EAEU register; the source-manifest bundle contains 15 manifests. RDW pack run 34 is the latest completed successful RDW acquisition/build. The separate KBA DE stock research pack run 3 is the latest completed KBA research build; both remain market-specific research packs, not Russian/EAEU production fitment.
+The current main branch contains 51 central source-register entries and 13 entries in the dedicated Russian/EAEU register; the source-manifest bundle contains 15 manifests. RDW pack run 34 is the latest completed successful RDW acquisition/build. The separate KBA DE stock research pack run 3 is the latest completed KBA research build; both remain market-specific research packs, not Russian/EAEU production fitment.
 
 The Dutch national data catalogue lists the six selected RDW vehicle identity and TGK datasets under CC0 1.0: [RDW base vehicle data](https://data.overheid.nl/dataset/basisregistratie-voertuigen---rdw), [TGK drive](https://data.overheid.nl/dataset/81ac19f5-d0e5-4411-847e-f8698d4a42f2), [TGK gearbox](https://data.overheid.nl/dataset/8a5be559-87b6-4224-9bbc-45dae886c427), [TGK base](https://data.overheid.nl/dataset/38afb954-4d3b-4363-9875-4a16117ab86b), [TGK make](https://data.overheid.nl/dataset/68f02697-4c7a-4a5c-ae1d-b253aa3ecc89), and [TGK manufacturer trade name](https://data.overheid.nl/dataset/1f00bd5c-63e9-4262-9603-311712339a30). The source is NL registration evidence with EU type-approval identifiers; it is not RU/EAEU evidence.
 
