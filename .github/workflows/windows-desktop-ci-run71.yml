@@ -55,6 +55,12 @@ on:
       - "data/research/wikidata-vag-generations/**"
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
@@ -155,6 +161,12 @@ on:
       - "tests/test_windows_desktop_workflow_contract.py"
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
@@ -278,6 +290,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA SQLite research-pack tests failed." }
           python tests/test_kba_germany_open_data_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "KBA published licence/source-rights tests failed." }
+          python -m py_compile scripts/build_cardir_vag_open_data_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir builder compilation failed." }
+          python -m unittest discover -s tests -p "test_cardir_vag_open_data_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "CarDir SQLite research-pack tests failed." }
+          python tests/test_cardir_vag_open_data_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir source-rights tests failed." }
           node --test tests/kba-pack-integration-contract.test.cjs
           if ($LASTEXITCODE -ne 0) { throw "KBA desktop integration contract tests failed." }
 
