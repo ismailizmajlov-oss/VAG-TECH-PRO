@@ -17,6 +17,10 @@ on:
       - "desktop-package-lock.sha256"
       - "desktop/**"
       - "scripts/integrate-astra-ch-tas-run72.cjs"
+      - "scripts/integrate-astra-targa-emissionen-vag-research-pack.cjs"
+      - ".github/workflows/build-astra-targa-emissionen-vag-pack.yml"
+      - "data/source-manifests/astra-targa-emissionen-open-data.json"
+      - "tests/test_astra_targa_emissionen_source_rights.py"
       - "scripts/integrate-rdw-vag-research-pack.cjs"
       - ".github/workflows/build-kba-de-vag-stock-research-pack.yml"
       - ".github/workflows/probe-kba-open-data.yml"
@@ -119,6 +123,10 @@ on:
       - "desktop-package-lock.sha256"
       - "desktop/**"
       - "scripts/integrate-astra-ch-tas-run72.cjs"
+      - "scripts/integrate-astra-targa-emissionen-vag-research-pack.cjs"
+      - ".github/workflows/build-astra-targa-emissionen-vag-pack.yml"
+      - "data/source-manifests/astra-targa-emissionen-open-data.json"
+      - "tests/test_astra_targa_emissionen_source_rights.py"
       - "scripts/integrate-rdw-vag-research-pack.cjs"
       - ".github/workflows/build-kba-de-vag-stock-research-pack.yml"
       - ".github/workflows/probe-kba-open-data.yml"
@@ -1243,6 +1251,94 @@ jobs:
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
           "lifecycle_session_output=single_session_object; BaseUrl_preserved; run77_contract=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Resolve latest successful ASTRA TARGA per-gearbox research pack run
+        id: astra-targa-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-astra-targa-emissionen-vag-pack.yml/runs?branch=main&per_page=100"
+          $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
+          $run = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1
+          if (-not $run) { throw "No ASTRA TARGA per-gearbox research-pack workflow run exists." }
+          for ($attempt = 0; $attempt -lt 120 -and $run.status -ne "completed"; $attempt++) {
+            Start-Sleep -Seconds 20
+            $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
+            $run = $response.workflow_runs | Where-Object { $_.id -eq $run.id } | Select-Object -First 1
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "Latest ASTRA TARGA pack run did not complete successfully within 40 minutes; refusing stale artifact fallback." }
+          $artifactsUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts"
+          $artifacts = Invoke-RestMethod -Uri $artifactsUri -Headers $headers -Method Get
+          $artifact = $artifacts.artifacts | Where-Object { $_.name -eq "astra-targa-emissionen-vag-research-pack" -and -not $_.expired } | Select-Object -First 1
+          if (-not $artifact) { throw "Latest ASTRA TARGA run has no unexpired verified SQLite research-pack artifact." }
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($digest -notmatch "^[a-f0-9]{64}$") { throw "Latest ASTRA TARGA artifact has no valid SHA-256 digest." }
+          "run_id=$($run.id)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "ASTRA TARGA pack source run: #$($run.run_number) / $($run.id)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "ASTRA TARGA artifact SHA-256: $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download verified ASTRA TARGA per-gearbox research pack
+        uses: actions/download-artifact@v4
+        with:
+          name: astra-targa-emissionen-vag-research-pack
+          path: ${{ runner.temp }}/vag-tech-pro-astra-targa-pack
+          run-id: ${{ steps.astra-targa-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+
+      - name: Integrate ASTRA TARGA as a separate CH-only offline research catalog
+        shell: pwsh
+        run: |
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-astra-targa-pack"
+          node --check scripts/integrate-astra-targa-emissionen-vag-research-pack.cjs
+          node scripts/integrate-astra-targa-emissionen-vag-research-pack.cjs --repo-root . --desktop-root desktop-source --pack-dir $packDir --source-run-id "${{ steps.astra-targa-pack.outputs.run_id }}" --artifact-sha256 "${{ steps.astra-targa-pack.outputs.artifact_sha256 }}"
+          if ($LASTEXITCODE -ne 0) { throw "ASTRA TARGA desktop integration failed." }
+          Push-Location desktop-source
+          try {
+            node scripts/verify-astra-targa-emissionen-pack.cjs
+            if ($LASTEXITCODE -ne 0) { throw "ASTRA TARGA packaged research verifier failed." }
+            node --test tests/astra-targa-emissionen-db.test.cjs tests/astra-targa-emissionen-ui-contract.test.cjs
+            if ($LASTEXITCODE -ne 0) { throw "ASTRA TARGA desktop reader/UI tests failed." }
+          } finally { Pop-Location }
+          $report = Get-Content -LiteralPath "desktop-source/data/research/astra-targa-emissionen-vag-research/desktop-integration-report.json" -Raw | ConvertFrom-Json
+          if ($report.status -ne "integrated_verified_research_only" -or $report.market_scope[0] -ne "CH" -or $report.production_import -ne $false -or $report.ru_eaeu_applicability -ne $false -or $report.exact_vag_factory_code_pair -ne $false) { throw "ASTRA TARGA integration report crossed its CH-only research boundary." }
+          "ASTRA TARGA integrated: rows=$($report.counts.approval_powertrain_variant_rows); exact_factory_pairs=$($report.counts.exact_vag_factory_code_pair_rows); database_sha256=$($report.database_sha256)" | Add-Content -LiteralPath "desktop-source/source-verification.txt"
+
+      - name: Mirror ASTRA TARGA integration into Windows source-audit staging
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $sourceRoot = Join-Path $env:GITHUB_WORKSPACE "desktop-source"
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $files = @(
+            "app/api/local-research/route.ts",
+            "components/local-research-catalog.tsx",
+            "scripts/windows-installer-lifecycle.ps1",
+            "scripts/verify-astra-targa-emissionen-pack.cjs",
+            "lib/astra-targa-emissionen-db.cjs",
+            "tests/astra-targa-emissionen-db.test.cjs",
+            "tests/astra-targa-emissionen-ui-contract.test.cjs",
+            "data/research/manifest.json",
+            "data/research/astra-targa-emissionen-vag-research/desktop-integration-report.json",
+            "data/research/astra-targa-emissionen-vag-research/pack-manifest.json",
+            "data/research/astra-targa-emissionen-vag-research/source-manifest.json",
+            "data/research/astra-targa-emissionen-vag-research/source-registry-manifest.json",
+            "data/research/astra-targa-emissionen-vag-research/astra-targa-emissionen-vag.sqlite",
+            "data/source-manifests/astra-targa-emissionen-open-data.json",
+            "data/source-manifests/source-manifest-index.json"
+          )
+          foreach ($relative in $files) {
+            $sourceFile = Join-Path $sourceRoot $relative
+            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "ASTRA TARGA audit source is missing: $relative" }
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
 
       - name: Resolve latest successful RDW NL/EU research pack run
         id: rdw-pack
