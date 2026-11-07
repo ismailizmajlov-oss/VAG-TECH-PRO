@@ -303,7 +303,7 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
                     importer.parse_registry_export(bad)
 
     def test_unknown_document_kind_is_rejected(self):
-        bad = _xml(include_sbkts=False).replace(b"<trsdo:ConformityDocKindCode>30</trsdo:ConformityDocKindCode>", b"<ConformityDocKindCode>99</ConformityDocKindCode>")
+        bad = _xml(include_sbkts=False).replace(b"<trsdo:ConformityDocKindCode>30</trsdo:ConformityDocKindCode>", b"<trsdo:ConformityDocKindCode>99</trsdo:ConformityDocKindCode>")
         with self.assertRaisesRegex(ValueError, "Unsupported"):
             importer.parse_registry_export(bad)
 
