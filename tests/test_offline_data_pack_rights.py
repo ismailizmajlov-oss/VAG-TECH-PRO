@@ -135,7 +135,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
 
     def test_desktop_obdex_revision_test_tracks_the_pack_manifest(self):
         patch = (ROOT / "apply-research-pack-hash-fix-run44.cjs").read_text(encoding="utf-8")
-        self.assertIn("rows[0].upstreamRevision, obdexPack.source_revision", patch)
+        self.assertIn("rows[0].upstreamRevision, obdexPack.upstream_revision", patch)
         self.assertIn(r'tests.match(/^  assert\.equal\(rows\[0\]\.upstreamRevision', patch)
         self.assertIn("oldRevisionAssertions.length === 1", patch)
         self.assertIn("stale or ambiguous desktop test patch", patch)
