@@ -1,0 +1,1 @@
+Trigger Windows x64 validation for the corrected run81 strict technical payload patch (2026-11-07). No production data or release artifacts are included.
