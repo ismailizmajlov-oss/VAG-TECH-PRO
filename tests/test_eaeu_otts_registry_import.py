@@ -155,6 +155,13 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         ambiguous = parsed["documents"][0]["variants"][1]
         self.assertEqual(ambiguous["pair_candidates"], [])
 
+    def test_multiple_variants_require_variant_ids_under_decision_88_rule_34(self):
+        raw = _xml(ambiguous=True, include_sbkts=False).replace(
+            b"<VehicleTypeVariantId>VAR-AMBIGUOUS</VehicleTypeVariantId>", b"", 1
+        )
+        with self.assertRaisesRegex(ValueError, "Decision No. 88, table 6, rule 34"):
+            importer.parse_registry_export(raw)
+
     def test_pair_candidate_without_variant_id_is_explicitly_unlabelled(self):
         raw = _xml(ambiguous=False, include_sbkts=False).replace(
             b"<VehicleTypeVariantId>VAR-EXACT-01</VehicleTypeVariantId>", b""

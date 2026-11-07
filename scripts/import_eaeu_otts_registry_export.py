@@ -254,11 +254,22 @@ def _parse_document(record: ET.Element) -> dict[str, Any]:
         raise ValueError("EAEU OTTS/OTSH record is missing a valid DocStartDate")
 
     type_element = _first_direct(record, "VehicleTypeDetails")
-    variants = [_parse_variant(item) for item in _direct_children(record, "VehicleVariantDetails")]
-    if not variants:
-        variants = [_parse_variant(item) for item in _descendants(record, "VehicleVariantDetails")]
-    if not variants:
+    variant_elements = _direct_children(record, "VehicleVariantDetails")
+    if not variant_elements:
+        variant_elements = _descendants(record, "VehicleVariantDetails")
+    if not variant_elements:
         raise ValueError(f"EAEU document {document_id} contains no VehicleVariantDetails")
+    # Decision No. 88, table 6, rule 34: when a document contains more than
+    # one vehicle modification/variant, each variant identifier is required.
+    if len(variant_elements) > 1 and any(
+        not _first_direct_text(item, "VehicleTypeVariantId")
+        for item in variant_elements
+    ):
+        raise ValueError(
+            f"EAEU document {document_id} has multiple variants but at least one "
+            "VehicleTypeVariantId is missing (Decision No. 88, table 6, rule 34)"
+        )
+    variants = [_parse_variant(item) for item in variant_elements]
 
     status_element = _first_direct(record, "ConformityDocStatusDetails")
 
