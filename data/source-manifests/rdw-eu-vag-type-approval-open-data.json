@@ -3,7 +3,7 @@
   "source_id": "rdw-eu-vag-type-approval-open-data-nl",
   "publisher": "RDW (Dienst Wegverkeer), Netherlands",
   "source_kind": "official_open_government_vehicle_type_approval_and_vehicle_identity_data",
-  "reviewed_at": "2026-11-06",
+  "reviewed_at": "2026-11-07",
   "market_scope": [
     "NL"
   ],
@@ -349,5 +349,98 @@
     "production_import": false,
     "ru_eaeu_applicability": false,
     "exact_engine_gearbox_pair": false
+  },
+  "latest_probe": {
+    "workflow_run_number": 29,
+    "workflow_run_id": 42388349238,
+    "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349238",
+    "source_commit": "d228c5158fc2056abf3d016a55ead952d1973c19",
+    "probed_at_utc": "2026-11-07T15:51:17.841440Z",
+    "probe_status": "schema_and_exact_scope_verified",
+    "probe_artifact_id": 13580426621,
+    "probe_artifact_name": "rdw-vag-type-approval-schema-probe",
+    "probe_artifact_sha256": "a1f33e348a2f43c7f81b588a42b2d0f47cf537b2f89211ad2819a3fdf81dc97e",
+    "probe_report_sha256": "3204605e157d31d573d08670ef54b652f8d6574074e664a99bb4f652b2029ae4",
+    "probe_report_bytes": 8331,
+    "source_manifest_sha256": "c4b45564b97407febeee8f8ce64de2a5a6acb8dbf2f75f4877f40911bc9104a8",
+    "source_snapshot_sha256": null,
+    "source_snapshot_status": "probe_only_no_full_snapshot",
+    "market_scope": [
+      "NL"
+    ],
+    "approval_jurisdiction": "EU type approval",
+    "approval_scope_key": {
+      "typegoedkeuringsnummer": "e1*2018/858*00302*10",
+      "variant": "ACDUCAX0",
+      "uitvoering": "FD6FD6DD002PR4VNB0OO",
+      "revision": "0"
+    },
+    "registration_observation": {
+      "make": "VOLKSWAGEN",
+      "trade_name": "TIGUAN",
+      "vehicle_category": "Personenauto",
+      "displacement_cc": "1498",
+      "cylinders": "4",
+      "source_row_sha256": "f951088fe5411165d869876b55a2dc653303e5d83e46f90ad76fb78f26371874",
+      "first_registration_date_is_model_year": false
+    },
+    "matched_rows": {
+      "tgk_base": {
+        "vehicle_category": "M1",
+        "source_row_sha256": "4d72c6b57f9e848d8f62f5e8b06a2748f77f28b249343d297cbfc4543d5bd141"
+      },
+      "tgk_drive": {
+        "motorcode": "DUC",
+        "displacement_cc": "1498.00",
+        "cylinders": "4",
+        "source_row_sha256": "01ded494eca0be7eee0465c7f2ece55caa53d94a1736ca59e9fedee6b3f2a1da"
+      },
+      "tgk_gearbox": {
+        "codetypeversnellingsbak": "A",
+        "source_row_sha256": "9b2c34a4ff83756b8324b837ed1c9fe232dd1b821d5a4787f0fae3256ab7fb16"
+      },
+      "tgk_make": [
+        {
+          "merkcoderdw": "VOLK",
+          "source_row_sha256": "88555e173e442132880995fd1bb4f6f32de945150f3cafd6dc279f942bf01247"
+        },
+        {
+          "merkcoderdw": "VWVP",
+          "source_row_sha256": "83b1378c6b5d997ab880e1f16bee9664e93d726dad9c24b872ff2d96e02a6833"
+        }
+      ],
+      "tgk_trade_name": {
+        "manufacturer_trade_name": "TIGUAN",
+        "type_designation": "CT",
+        "source_row_sha256": "345ea61603a7dcf7e24d625c3c1386b7a7c2c9d6dfa49da4f5622178ce384443"
+      }
+    },
+    "metadata_columns_sha256": {
+      "4by9-ammk": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
+      "7rjk-eycs": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
+      "byxc-wwua": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
+      "kyri-nuah": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
+      "m9d7-ebf2": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
+      "x5v3-sewk": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134"
+    },
+    "excluded_registration_fields": [
+      "kenteken",
+      "VIN",
+      "holder",
+      "ownership",
+      "address",
+      "personal data"
+    ],
+    "field_semantics": {
+      "motorcode_is_confirmed_vag_factory_engine_code": false,
+      "codetypeversnellingsbak_is_confirmed_vag_gearbox_code": false,
+      "engine_gearbox_pair_claim": false,
+      "generation_inferred": false,
+      "model_year_inferred": false
+    },
+    "pairing_policy": "Engine and gearbox rows are retained separately; no Cartesian product or engine/gearbox pair is created.",
+    "product_import_allowed": false,
+    "data_ingested": false,
+    "ru_eaeu_applicability": false
   }
 }
