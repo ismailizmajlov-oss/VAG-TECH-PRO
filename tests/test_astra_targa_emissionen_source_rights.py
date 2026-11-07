@@ -87,6 +87,7 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
         reader = (ROOT / "desktop" / "astra-targa-emissionen-db.cjs").read_text(encoding="utf-8")
         self.assertIn("const fieldMap = readJson(fieldMapFile);", reader)
         self.assertIn("const reportMismatch", reader)
+        self.assertIn("fieldMap.required_headers.includes(key)", reader)
         self.assertIn("reportCounts.exact_vag_factory_code_pair_rows !== counts.exactVagFactoryCodePairRows", reader)
 
 
