@@ -29,6 +29,21 @@ for (const newline of ["\n", "\r\n"]) {
   if (replaced !== "__DTC_BLOCK__") throw new Error("Run81 newline regression self-test did not replace the DTC block");
 }
 
+function oemSupersessionPattern() {
+  return /      if \(!\(typeof \(payload\.old_part_number \|\| payload\.from_part_number\) === "string" && \(payload\.old_part_number \|\| payload\.from_part_number\)\.trim\(\)\)\) technicalPayloadError\(record, "old_part_number or from_part_number is required"\);\r?\n      if \(!\(typeof \(payload\.new_part_number \|\| payload\.to_part_number\) === "string" && \(payload\.new_part_number \|\| payload\.to_part_number\)\.trim\(\)\)\) technicalPayloadError\(record, "new_part_number or to_part_number is required"\);\r?\n      for \(const field of \["old_part_number", "new_part_number", "from_part_number", "to_part_number", "supersession_status", "applicability_note"\]\) technicalPayloadString\(record, payload, field\);/g;
+}
+
+// Exercise both LF and Windows CRLF for the three-line OEM supersession anchor.
+for (const newline of ["\n", "\r\n"]) {
+  const fixture = [
+    '      if (!(typeof (payload.old_part_number || payload.from_part_number) === "string" && (payload.old_part_number || payload.from_part_number).trim())) technicalPayloadError(record, "old_part_number or from_part_number is required");',
+    '      if (!(typeof (payload.new_part_number || payload.to_part_number) === "string" && (payload.new_part_number || payload.to_part_number).trim())) technicalPayloadError(record, "new_part_number or to_part_number is required");',
+    '      for (const field of ["old_part_number", "new_part_number", "from_part_number", "to_part_number", "supersession_status", "applicability_note"]) technicalPayloadString(record, payload, field);'
+  ].join(newline);
+  const replaced = replaceOnce(fixture, oemSupersessionPattern(), "__OEM_BLOCK__", "Run81 OEM newline regression self-test");
+  if (replaced !== "__OEM_BLOCK__") throw new Error("Run81 OEM newline regression self-test did not replace the supersession block");
+}
+
 const desktopRoot = path.resolve(argumentValue("--desktop-root", "desktop-source"));
 const corePath = path.join(desktopRoot, "lib", "local-core-db.cjs");
 const testPath = path.join(desktopRoot, "tests", "local-core-db.test.cjs");
@@ -83,7 +98,7 @@ if (!core.includes("// run81: renderer-aligned strict payload contract")) {
     'for (const field of ["ecu_family", "ecu_address", "hardware_revision", "software_revision", "hardware_number", "software_number", "coding_notes", "security_access_document_ref", "programming_notes"]) technicalPayloadString(record, payload, field);',
     "ECU profile display metadata");
   core = replaceOnce(core,
-    /      if \(!\(typeof \(payload\.old_part_number \|\| payload\.from_part_number\) === "string" && \(payload\.old_part_number \|\| payload\.from_part_number\)\.trim\(\)\)\) technicalPayloadError\(record, "old_part_number or from_part_number is required"\);\n      if \(!\(typeof \(payload\.new_part_number \|\| payload\.to_part_number\) === "string" && \(payload\.new_part_number \|\| payload\.to_part_number\)\.trim\(\)\)\) technicalPayloadError\(record, "new_part_number or to_part_number is required"\);\n      for \(const field of \["old_part_number", "new_part_number", "from_part_number", "to_part_number", "supersession_status", "applicability_note"\]\) technicalPayloadString\(record, payload, field\);/g,
+    oemSupersessionPattern(),
     '      for (const field of ["old_part_number", "new_part_number", "from_part_number", "to_part_number", "supersession_status", "applicability_note"]) technicalPayloadString(record, payload, field);\n      const oldPart = payload.old_part_number != null ? payload.old_part_number : payload.from_part_number;\n      const newPart = payload.new_part_number != null ? payload.new_part_number : payload.to_part_number;\n      if (typeof oldPart !== "string" || !oldPart.trim()) technicalPayloadError(record, "old_part_number or from_part_number is required");\n      if (typeof newPart !== "string" || !newPart.trim()) technicalPayloadError(record, "new_part_number or to_part_number is required");\n      if (payload.old_part_number != null && payload.from_part_number != null && payload.old_part_number.trim() !== payload.from_part_number.trim()) technicalPayloadError(record, "old_part_number and from_part_number must match");\n      if (payload.new_part_number != null && payload.to_part_number != null && payload.new_part_number.trim() !== payload.to_part_number.trim()) technicalPayloadError(record, "new_part_number and to_part_number must match");\n      if (oldPart.trim() === newPart.trim()) technicalPayloadError(record, "old and new part numbers must differ");',
     "OEM supersession alias consistency");
   core = core.replace("\nfunction validateRecord(record, packageInfo) {", "\n// run81: renderer-aligned strict payload contract\nfunction validateRecord(record, packageInfo) {");
