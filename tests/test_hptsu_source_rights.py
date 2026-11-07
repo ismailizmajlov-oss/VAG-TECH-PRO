@@ -52,7 +52,8 @@ class HptSuRightsRecordTests(unittest.TestCase):
     def test_project_is_fail_closed(self):
         self.assertEqual(self.source["access"]["status"], "restricted_registration_or_subscription_required")
         self.assertIn("restricted_no_bulk_import_no_product_pack", self.source["project_decision"])
-        self.assertIn("no HPT.SU records are currently imported or cached", self.source["project_decision"])
+        self.assertIn("without explicit owner authorization", self.source["project_decision"])
+        self.assertFalse(self.source["data_ingested"])
         self.assertEqual(self.source["rights"]["permission_status"], "no_project_permission_or_subscription_obtained")
 
 
