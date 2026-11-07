@@ -182,7 +182,7 @@ function patchLifecycle(desktopRoot) {
     '  $targaRows = Invoke-RestMethod -Uri "$baseUrl/api/local-research?dataset=astra-targa&q=1AB701&limit=10" -TimeoutSec 30',
     '  $targaSample = @($targaRows.rows | Where-Object { $_.approvalNumber -eq "1AB701" -and $_.engineType -eq "AEL" -and $_.gearboxClassification -eq "m6" }) | Select-Object -First 1',
     '  if (-not $targaSample -or $targaSample.marketScope -ne "CH" -or $targaSample.sourceDefinedVariantLink -ne $true -or $targaSample.exactVagFactoryCodePair -ne $false -or $targaSample.ruEaeuApplicability -ne $false -or $targaSample.modelYear -ne $null -or $targaSample.generation -ne $null) { throw "ASTRA TARGA offline search crossed its CH approval-only boundary." }',
-    '  Write-Output "ASTRA TARGA offline CH source-row search passed; no OEM pair, RU/EAEU fitment or repair claims."'
+    '  Write-Host "ASTRA TARGA offline CH source-row search passed; no OEM pair, RU/EAEU fitment or repair claims."'
   ].join("\n");
   text = replaceOnce(text, anchor, anchor + "\n" + check, "ASTRA TARGA offline lifecycle check");
   fs.writeFileSync(file, text, "utf8");
