@@ -255,7 +255,7 @@ function getCardirSummary(explicitRoot) {
     sourceSnapshotSha256: entry.source_snapshot_sha256,
     databaseSha256: entry.database_sha256,
     sourceManifestSha256: entry.source_manifest_sha256,
-    warning: "CarDir is a publisher-curated owner-manual fact dataset, not OEM workshop documentation. Market UNKNOWN; raw qualifiers are not parsed into exact model-year, generation, engine or gearbox applicability.",
+    warning: "CarDir is a publisher-curated owner-manual fact dataset, not OEM workshop documentation. Рынок UNKNOWN; исходные условия не интерпретируются into exact model-year, generation, engine or gearbox applicability.",
     productionImport: false,
     productImportAllowed: false,
     ruEaeuApplicability: false,
