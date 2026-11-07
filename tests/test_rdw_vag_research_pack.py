@@ -431,5 +431,30 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 rdw.build_pack(Path(tmp) / "pack", self.source, self.source_bytes, bad_datasets, self.metadata)
 
 
+    def test_candidate_snapshot_refresh_preserves_previous_hash_and_requires_review(self):
+        source = json.loads(json.dumps(self.source))
+        previous_hash = "a" * 64
+        source["snapshot_refresh"] = {
+            "status": "pending_candidate_reacquisition_and_review",
+            "previous_snapshot_sha256": previous_hash,
+            "promotion_approved": False,
+        }
+        source_bytes = (json.dumps(source, ensure_ascii=False, indent=2) + "\\n").encode("utf-8")
+        with tempfile.TemporaryDirectory() as tmp:
+            pack_dir = Path(tmp) / "candidate-pack"
+            report = rdw.build_pack(pack_dir, source, source_bytes, self.datasets, self.metadata)
+            embedded = json.loads((pack_dir / "rdw-eu-vag-type-approval-open-data.json").read_text(encoding="utf-8"))
+            refresh = embedded["snapshot_refresh"]
+            self.assertEqual(refresh["status"], "candidate_snapshot_acquired_pending_review")
+            self.assertEqual(refresh["previous_snapshot_sha256"], previous_hash)
+            self.assertEqual(refresh["candidate_source_snapshot_sha256"], report["source_snapshot_sha256"])
+            self.assertEqual(refresh["candidate_source_revision"], embedded["snapshot"]["source_revision"])
+            self.assertEqual(refresh["candidate_source_files"], embedded["snapshot"]["source_files"])
+            self.assertFalse(refresh["promotion_approved"])
+            self.assertFalse(embedded["data_ingested"])
+            self.assertFalse(embedded["import_policy"]["production_import"])
+            self.assertFalse(embedded["import_policy"]["ru_eaeu_applicability"])
+
+
 if __name__ == "__main__":
     unittest.main()
