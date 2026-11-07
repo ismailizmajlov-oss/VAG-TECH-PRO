@@ -2,41 +2,126 @@
   "schema_version": 1,
   "source_id": "kba-de-fz-hersteller-handelsnamen-pkw",
   "publisher": "Kraftfahrt-Bundesamt (KBA), published via GovData/Mobilithek",
-  "source_kind": "official_german_passenger_car_manufacturer_trade_name_and_hsn_tsn_reference",
+  "source_kind": "official_german_passenger_car_stock_by_manufacturer_trade_name_type_key",
   "reviewed_at": "2026-11-07",
   "market_scope": [
     "DE"
   ],
   "catalog_url": "https://www.govdata.de/suche/daten/fz-hersteller-handelsnamen-pkw?ids=638594fd-195a-4e03-b91c-f5ea2eacfa39",
-  "resource_url": "https://das-kba-statistikportal.hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
+  "resource_url": "https://hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
   "snapshot": {
-    "status": "metadata_reviewed_resource_unavailable",
+    "status": "source_snapshot_acquired_schema_verified",
     "catalog_published_at": "2026-01-26",
     "catalog_last_modified_at": "2026-01-26",
     "temporal_coverage": "2023-01-01",
     "reference_date_rule": "annual reference date of 1 January",
     "resource_format": "CSV",
-    "resource_access_status": "HTTP_400_on_2026-11-07",
-    "source_revision": "GovData metadata last modified 2026-01-26; EU data portal indicates temporal coverage 2023-01-01; actual file revision unknown",
-    "downloaded": false,
-    "file_sha256": null,
-    "source_snapshot_sha256": null
+    "resource_access_status": "HTTP_200_on_2026-11-07_via_hub_arcgis_legacy_download_api",
+    "source_revision": "ArcGIS item modified 2026-08-05T07:52:21Z (modified=1785916341000); CSV downloaded 2026-11-07",
+    "downloaded": true,
+    "file_sha256": "03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468",
+    "source_snapshot_sha256": "03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468",
+    "downloaded_at_utc": "2026-11-07T01:40:42.586730+00:00",
+    "file_bytes": 65366675,
+    "source_row_count": 1047991,
+    "filtered_vag_row_count": 264847,
+    "manufacturer_label_count": 8,
+    "vag_manufacturer_labels": [
+      "VOLKSWAGEN (D)",
+      "AUDI (D)",
+      "AUDI (H)",
+      "SKODA (CZ)",
+      "SEAT (E)",
+      "PORSCHE",
+      "BENTLEY (UK)",
+      "LAMBORGHINI (I)"
+    ],
+    "unique_make_trade_name_pairs": 802,
+    "unique_make_type_key_pairs": 4155,
+    "unique_make_trade_type_reference_date_tuples": 16301,
+    "unique_federal_states": 17,
+    "temporal_coverage_catalog": "2023-01-01",
+    "temporal_coverage_observed": [
+      "2023-01-01",
+      "2026-01-01"
+    ],
+    "report_date_counts": {
+      "2023-01-01": 258002,
+      "2024-01-01": 259653,
+      "2025-01-01": 264081,
+      "2026-01-01": 266255
+    },
+    "observed_columns": [
+      "Berichtszeitpunkt",
+      "Hersteller",
+      "Handelsname",
+      "Typschlüssel",
+      "Bundesland",
+      "Anzahl",
+      "ZS Anzahl",
+      "ObjectId"
+    ],
+    "observed_columns_sha256": "a03d348faa0570ac7bef32a810c453e8ef86a04bbe0a294594b2e7cb0e698e22",
+    "source_metadata_sha256": "a3d721590d799226bbf9168e535f0d11aac0da97c00d466d3cb4a88b97509a4a",
+    "service_metadata_sha256": "1bb9253d39526ee87ac9fc121ee45d77afe933dc17b008e35c6ad710a794c015",
+    "schema_probe_sha256": "65cdcfe97160da1a610eefb67ba9822af45dbffe24d26b379f4bd77256789954",
+    "access_attempts": [
+      {
+        "endpoint": "ArcGIS item metadata",
+        "http_status": 200,
+        "sha256": "a3d721590d799226bbf9168e535f0d11aac0da97c00d466d3cb4a88b97509a4a"
+      },
+      {
+        "endpoint": "ArcGIS FeatureServer metadata",
+        "http_status": 200,
+        "sha256": "1bb9253d39526ee87ac9fc121ee45d77afe933dc17b008e35c6ad710a794c015"
+      },
+      {
+        "endpoint": "ArcGIS FeatureServer one-row schema query",
+        "http_status": 200,
+        "sha256": "65cdcfe97160da1a610eefb67ba9822af45dbffe24d26b379f4bd77256789954"
+      },
+      {
+        "endpoint": "ArcGIS Hub v3 dataset metadata",
+        "http_status": 404
+      },
+      {
+        "endpoint": "ArcGIS Hub v3 files/4326/csv",
+        "http_status": 403
+      },
+      {
+        "endpoint": "ArcGIS Hub legacy CSV download",
+        "http_status": 200,
+        "sha256": "03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468",
+        "bytes": 65366675
+      }
+    ],
+    "note": "The live CSV schema supersedes the catalogue's HSN/TSN description for field mapping. The downloaded columns contain Hersteller, Handelsname and Typschlüssel, but no HSN field. Typschlüssel is retained as a raw KBA type key and is not promoted to a confirmed TSN without separate schema confirmation. The European Data Portal's 2023 temporal-coverage field is incomplete relative to the live CSV, which contains annual observations for 2023-2026."
   },
   "data_products": {
-    "manufacturer_trade_name_hsn_tsn": {
+    "manufacturer_trade_name_type_key_stock": {
       "title": "FZ Hersteller Handelsnamen Pkw",
       "catalog_url": "https://www.govdata.de/suche/daten/fz-hersteller-handelsnamen-pkw?ids=638594fd-195a-4e03-b91c-f5ea2eacfa39",
-      "resource_url": "https://das-kba-statistikportal.hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
+      "resource_url": "https://hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
       "format": "CSV",
-      "description": "KBA overview of manufacturer and trade names intended to resolve HSN/TSN values from German registration documents; reference date is 1 January of the relevant year.",
-      "catalog_fields_indicated_by_description_and_tags": [
-        "manufacturer_code_HSN",
-        "type_code_TSN",
-        "manufacturer",
-        "trade_name"
+      "description": "KBA German passenger-car stock observations by report date, manufacturer label, trade name, KBA type-key field, federal state and count. The downloaded schema does not contain an HSN column.",
+      "observed_columns": [
+        "Berichtszeitpunkt",
+        "Hersteller",
+        "Handelsname",
+        "Typschlüssel",
+        "Bundesland",
+        "Anzahl",
+        "ZS Anzahl",
+        "ObjectId"
       ],
-      "exact_column_schema_status": "not_verified_no_file_downloaded",
-      "temporal_coverage_source": "EU data portal metadata indicates 2023-01-01"
+      "exact_column_schema_status": "verified_from_full_downloaded_csv",
+      "temporal_coverage_observed": [
+        "2023-01-01",
+        "2026-01-01"
+      ],
+      "row_count": 1047991,
+      "filtered_vag_row_count": 264847
     }
   },
   "rights": {
@@ -60,20 +145,25 @@
     "evidence": "The GovData dataset detail page marks the dataset as freie Nutzung under DL-DE BY 2.0. The published licence permits commercial and non-commercial copying, display, modification, processing, transfer to third parties, combining with other datasets and integration into products, subject to attribution and a notice where data has been modified."
   },
   "field_status": {
-    "hsn_tsn_manufacturer_trade_name": "dataset_description_and_tags_only_columns_not_verified",
-    "engine_code": "not_provided_or_not_verified",
-    "gearbox_code": "not_provided_or_not_verified",
+    "manufacturer": "observed_exact_source_column_Hersteller",
+    "trade_name": "observed_exact_source_column_Handelsname",
+    "type_key": "observed_exact_source_column_Typschlüssel; raw source value only; not independently confirmed as TSN",
+    "hsn": "not_present_in_downloaded_column_schema",
+    "tsn": "not_promoted; Typschlüssel remains an unclassified raw type-key field",
+    "engine_code": "not_provided",
+    "gearbox_code": "not_provided",
     "engine_gearbox_pair": "not_provided",
-    "model_year": "reference_date_is_not_model_year",
-    "generation": "not_assumed",
+    "model_year": "Berichtszeitpunkt is an annual stock reference date, not model year",
+    "generation": "not_provided_or_inferred",
+    "vehicle_count": "Anzahl is a stock count by report date and federal state, not individual-vehicle fitment",
     "ecu_dtc_repair_content": "not_provided"
   },
   "applicability_policy": {
     "market_scope": "DE only",
-    "vehicle_scope": "German passenger-car identity and manufacturer/trade-name lookup",
-    "vag_make_filter": "must use exact source manufacturer values after acquisition; no fuzzy make mapping",
-    "hsn_tsn_semantics": "registration identity keys only; not engine or gearbox codes",
-    "model_year_generation": "not inferred from annual reference date",
+    "vehicle_scope": "German passenger-car stock identity observations by exact manufacturer label, trade name, raw type key, federal state and annual report date",
+    "vag_make_filter": "exact source manufacturer values only: VOLKSWAGEN (D); AUDI (D); AUDI (H); SKODA (CZ); SEAT (E); PORSCHE; BENTLEY (UK); LAMBORGHINI (I)",
+    "type_key_semantics": "Typschlüssel retained verbatim; not mapped to HSN or a confirmed TSN",
+    "model_year_generation": "annual report date is not model year or generation; both remain null",
     "individual_vehicle_fitment": false,
     "exact_engine_gearbox_pair": false,
     "production_fitment": false,
@@ -85,14 +175,17 @@
     "product_import_allowed": false,
     "data_ingested": false,
     "research_pack_allowed_after_resource_and_schema_review": true,
+    "research_pack_status": "separate_de_identity_research_pack_build_pending",
     "production_fitment": false,
     "ru_eaeu_applicability": false
   },
-  "verification_status": "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified",
+  "verification_status": "rights_cleared_source_snapshot_acquired_schema_verified_research_only_no_vehicle_fitment",
   "product_import_allowed": false,
   "data_ingested": false,
-  "source_revision": "GovData metadata last modified 2026-01-26; EU data portal temporal coverage 2023-01-01; actual file revision unknown",
-  "source_snapshot_sha256": null,
-  "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
-  "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The CSV resource returned HTTP 400 on 2026-11-07; no bytes, rows or hash were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. HSN/TSN are German registration identity keys only, not engine/gearbox codes or model-year/generation proof."
+  "source_revision": "ArcGIS item modified 2026-08-05T07:52:21Z; CSV downloaded 2026-11-07",
+  "source_snapshot_sha256": "03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468",
+  "hash_status": "Full 65,366,675-byte KBA CSV snapshot SHA-256 verified; 1,047,991 source rows and exact VAG subset counts recorded; production fitment import not performed.",
+  "project_decision": "Published DL-DE BY 2.0 rights are confirmed in the KBA ArcGIS item metadata and GovData catalogue. The full CSV was retrieved through the public ArcGIS Hub legacy download endpoint and hashed. Its observed schema contains manufacturer, trade name, raw Typschlüssel, annual report date, federal state and stock count; it contains no HSN field, no engine/gearbox codes and no factory configuration. Use only in a separate Germany-only identity research pack. Do not infer model year, generation, individual vehicle fitment, engine/gearbox pair, ECU, DTC, repair applicability or RU/EAEU applicability.",
+  "catalog_resource_url": "https://das-kba-statistikportal.hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
+  "source_service_url": "https://services-eu1.arcgis.com/U09msXRZoxesNntH/arcgis/rest/services/SP_Hersteller_Handelsnamen_PKW_5c784/FeatureServer"
 }
