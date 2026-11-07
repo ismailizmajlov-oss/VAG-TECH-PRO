@@ -15,12 +15,41 @@ const INDEXES = ["idx_kba_stock_manufacturer","idx_kba_stock_trade_name","idx_kb
 
 function fail(message) { throw new Error(message); }
 function assert(condition, message) { if (!condition) fail(message); }
+function isOutsideRoot(baseReal, candidateReal) {
+  const relative = path.relative(baseReal, candidateReal);
+  return relative === ".." || relative.startsWith(".." + path.sep) || path.isAbsolute(relative);
+}
+function lstatIfExists(file) {
+  try { return fs.lstatSync(file); }
+  catch (error) {
+    if (error && (error.code === "ENOENT" || error.code === "ENOTDIR")) return null;
+    throw error;
+  }
+}
 function safeJoin(root, relative) {
   const base = path.resolve(root), target = path.resolve(base, relative), rel = path.relative(base, target);
-  if (!rel || rel === ".." || rel.startsWith(".." + path.sep) || path.isAbsolute(rel)) fail("Path escaped root: " + relative);
-  if (fs.existsSync(target)) {
-    const baseReal = fs.realpathSync(base), targetReal = fs.realpathSync(target), realRel = path.relative(baseReal, targetReal);
-    if (!realRel || realRel === ".." || realRel.startsWith(".." + path.sep) || path.isAbsolute(realRel)) fail("Symlink escaped root: " + relative);
+  if (!rel || isOutsideRoot(base, target)) fail("Path escaped root: " + relative);
+
+  // Check the nearest existing ancestor, not only the leaf. This also rejects
+  // symlinked parents when the requested destination does not exist yet.
+  const baseReal = fs.realpathSync(base);
+  let ancestor = target;
+  while (!lstatIfExists(ancestor)) {
+    const parent = path.dirname(ancestor);
+    if (parent === ancestor) fail("No existing ancestor for path: " + relative);
+    ancestor = parent;
+  }
+  let ancestorReal;
+  try { ancestorReal = fs.realpathSync(ancestor); }
+  catch { fail("Unresolvable symlink ancestor: " + relative); }
+  if (isOutsideRoot(baseReal, ancestorReal)) fail("Symlink ancestor escaped root: " + relative);
+
+  if (lstatIfExists(target)) {
+    let targetReal;
+    try { targetReal = fs.realpathSync(target); }
+    catch { fail("Unresolvable symlink target: " + relative); }
+    const targetRelative = path.relative(baseReal, targetReal);
+    if (!targetRelative || isOutsideRoot(baseReal, targetReal)) fail("Symlink escaped root: " + relative);
   }
   return target;
 }
@@ -372,4 +401,4 @@ if (require.main === module) {
   try { main(process.argv.slice(2)); }
   catch (error) { process.stderr.write((error.stack || error.message) + "\n"); process.exitCode = 1; }
 }
-module.exports = { validatePack, locatePackRoot };
+module.exports = { validatePack, locatePackRoot, safeJoin };
