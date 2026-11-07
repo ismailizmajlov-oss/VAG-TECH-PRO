@@ -6,6 +6,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -416,6 +417,72 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
                 output_path=self.root / "staging.sqlite",
                 permission_evidence_path=evidence,
             )
+
+    def test_persistent_staging_rejects_wrong_source_host_scope_and_hashes_before_temp_creation(self):
+        parsed = importer.parse_registry_export(self.xml_path.read_bytes())
+        valid_source = _source_manifest()["sources"][0]
+        cases = (
+            ({**valid_source, "url": "https://portal.eaeunion.org.evil.example/"}, "official eaeunion.org HTTPS host"),
+            ({**valid_source, "url": "https://user@portal.eaeunion.org/"}, "official eaeunion.org HTTPS host"),
+            ({**valid_source, "market_scope": ["DE"]}, "market_scope must be exactly"),
+            ({**valid_source, "source_id": "another-source"}, "source_id=eaeu-otts-unified-register-public-portal"),
+        )
+        for index, (source, expected) in enumerate(cases):
+            with self.subTest(index=index):
+                output = self.root / f"invalid-source-{index}.sqlite"
+                with self.assertRaisesRegex(ValueError, expected):
+                    importer.write_staging_database(
+                        parsed,
+                        output_path=output,
+                        source=source,
+                        source_manifest_sha256="0" * 64,
+                        input_sha256="1" * 64,
+                        retrieved_at=self.retrieved_at,
+                        permission_evidence_sha256="2" * 64,
+                    )
+                self.assertFalse(output.exists())
+                self.assertFalse(Path(str(output) + ".manifest.json").exists())
+                self.assertEqual(list(self.root.glob(".*.staging")), [])
+
+        with self.assertRaisesRegex(ValueError, "input_sha256 must be a 64-character SHA-256"):
+            importer.write_staging_database(
+                parsed,
+                output_path=self.root / "invalid-hash.sqlite",
+                source=valid_source,
+                source_manifest_sha256="0" * 64,
+                input_sha256="not-a-hash",
+                retrieved_at=self.retrieved_at,
+                permission_evidence_sha256="2" * 64,
+            )
+        self.assertEqual(list(self.root.glob(".*.staging")), [])
+
+    def test_second_temp_file_creation_failure_cleans_first_temp_file(self):
+        parsed = importer.parse_registry_export(self.xml_path.read_bytes())
+        source = _source_manifest()["sources"][0]
+        original_mkstemp = importer.tempfile.mkstemp
+        calls = 0
+
+        def fail_second_mkstemp(*args, **kwargs):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                raise OSError("synthetic sidecar temp creation failure")
+            return original_mkstemp(*args, **kwargs)
+
+        with patch.object(importer.tempfile, "mkstemp", side_effect=fail_second_mkstemp):
+            with self.assertRaisesRegex(OSError, "synthetic sidecar temp creation failure"):
+                importer.write_staging_database(
+                    parsed,
+                    output_path=self.root / "temp-cleanup.sqlite",
+                    source=source,
+                    source_manifest_sha256="0" * 64,
+                    input_sha256="1" * 64,
+                    retrieved_at=self.retrieved_at,
+                    permission_evidence_sha256="2" * 64,
+                )
+        self.assertEqual(list(self.root.glob(".*.staging")), [])
+        self.assertFalse((self.root / "temp-cleanup.sqlite").exists())
+        self.assertFalse((self.root / "temp-cleanup.sqlite.manifest.json").exists())
 
     def test_existing_output_is_never_overwritten(self):
         output = self.root / "existing.sqlite"
