@@ -206,6 +206,23 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DTD/entity"):
             importer.parse_registry_export(bad)
 
+    def test_eec_imported_namespaces_are_allowed_for_schema_fields(self):
+        raw = _xml(include_sbkts=False)
+        raw = raw.replace(
+            b"<VehicleConformityDocDetails>",
+            b'<trcdo:VehicleConformityDocDetails xmlns:trcdo="urn:EEC:M:TR:ComplexDataObjects:v1.0.0">',
+            1,
+        ).replace(b"</VehicleConformityDocDetails>", b"</trcdo:VehicleConformityDocDetails>", 1)
+        raw = raw.replace(
+            b"<VehicleComponentModelCode>TEST-ENGINE-CODE-01</VehicleComponentModelCode>",
+            b'<trsdo:VehicleComponentModelCode xmlns:trsdo="urn:EEC:M:TR:SimpleDataObjects:v1.0.0">TEST-ENGINE-CODE-01</trsdo:VehicleComponentModelCode>',
+            1,
+        )
+        parsed = importer.parse_registry_export(raw)
+        self.assertEqual(len(parsed["documents"]), 1)
+        self.assertIn("urn:EEC:M:TR:ComplexDataObjects:v1.0.0", parsed["observed_namespaces"])
+        self.assertIn("urn:EEC:M:TR:SimpleDataObjects:v1.0.0", parsed["observed_namespaces"])
+
     def test_foreign_extension_elements_are_ignored(self):
         raw = _xml(include_sbkts=False).replace(
             b"</ConformityVehicleDocsRegistryDetails>",

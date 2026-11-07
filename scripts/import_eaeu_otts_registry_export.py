@@ -115,6 +115,16 @@ SCHEMA_ELEMENT_NAMES = frozenset({
 })
 
 
+def _is_allowed_import_namespace(namespace: str | None) -> bool:
+    return bool(
+        namespace
+        and re.fullmatch(
+            r"urn:EEC:M:(?:BaseDataTypes|ComplexDataObjects|SimpleDataObjects|TR:ComplexDataObjects|TR:SimpleDataObjects):v\d+\.\d+\.\d+",
+            namespace,
+        )
+    )
+
+
 def _validate_element_namespaces(root: ET.Element) -> None:
     unexpected: list[tuple[str, str | None]] = []
     for element in root.iter():
@@ -122,10 +132,18 @@ def _validate_element_namespaces(root: ET.Element) -> None:
             continue
         local_name = _local_name(element.tag)
         namespace = _namespace(element.tag)
-        # Ignore unrelated extension elements such as XMLDSig Signature, but
-        # never accept a foreign/unqualified element that imitates a field the
-        # importer actually interprets.
-        if local_name in SCHEMA_ELEMENT_NAMES and namespace != EXPECTED_NAMESPACE:
+        if local_name not in SCHEMA_ELEMENT_NAMES:
+            # Unrelated extension elements such as XMLDSig Signature are
+            # ignored; they do not feed any interpreted technical field.
+            continue
+        if local_name == EXPECTED_ROOT:
+            allowed = namespace == EXPECTED_NAMESPACE
+        else:
+            # Decision No. 88, table 12, imports the EEC base, common and
+            # TR-specific complex/simple data-object namespaces. Their model
+            # versions are independent of R.TR.TS.07.001's v1.0.0 namespace.
+            allowed = namespace == EXPECTED_NAMESPACE or _is_allowed_import_namespace(namespace)
+        if not allowed:
             unexpected.append((local_name, namespace))
             if len(unexpected) >= 5:
                 break
@@ -135,7 +153,7 @@ def _validate_element_namespaces(root: ET.Element) -> None:
         )
         raise ValueError(
             "Unexpected XML namespace for a recognized EAEU schema element; "
-            f"expected {EXPECTED_NAMESPACE!r}; found {details}"
+            f"expected the R.TR.TS.07.001 namespace or an imported EEC namespace; found {details}"
         )
 
 
@@ -381,6 +399,13 @@ def parse_registry_export(raw: bytes) -> dict[str, Any]:
         "message_created_at": _first_descendant_text(root, "EDocDateTime"),
         "language_code": _first_descendant_text(root, "LanguageCode"),
     }
+    observed_namespaces = sorted({
+        namespace
+        for element in root.iter()
+        if isinstance(element.tag, str)
+        for namespace in [_namespace(element.tag)]
+        if namespace
+    })
     records = [item for item in root.iter() if _local_name(item.tag) == "VehicleConformityDocDetails"]
     if not records:
         raise ValueError("EAEU registry export contains no VehicleConformityDocDetails records")
@@ -398,6 +423,7 @@ def parse_registry_export(raw: bytes) -> dict[str, Any]:
         "schema_id": SCHEMA_ID,
         "schema_version": SCHEMA_VERSION,
         "message_header": header,
+        "observed_namespaces": observed_namespaces,
         "documents": documents,
         "skipped_sbkts": skipped_sbkts,
         "counts": {
