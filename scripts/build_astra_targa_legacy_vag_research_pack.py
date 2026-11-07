@@ -476,7 +476,7 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
         }
         db.executemany("INSERT INTO pack_metadata(key,value) VALUES(?,?)", metadata.items())
         db.execute("""
-          INSERT INTO source_files VALUES(?,?,?,?,?,?,?,?)
+          INSERT INTO source_files VALUES(?,?,?,?,?,?,?,?,?)
         """, (
             SOURCE_ID,SOURCE_URL,source_meta["source_revision"],source_meta["etag"],
             source_meta["file_size_bytes"],source_meta["file_sha256"],"CH",
