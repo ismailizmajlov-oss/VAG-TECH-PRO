@@ -384,30 +384,6 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
                 exact_vehicle_fitment_claim,exact_engine_gearbox_pair_claim,ru_eaeu_applicability_claim
               ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, batch_records)
-        rights_status = "approved_by_official_astra_ogd_publication_and_swiss_ogd_reuse_terms"
-        metadata = {
-            "pack_id": PACK_ID,
-            "source_id": SOURCE_ID,
-            "source_revision": source_meta["source_revision"],
-            "source_file_sha256": source_meta["file_sha256"],
-            "market_scope": "CH",
-            "rights_status": rights_status,
-            "attribution_required": "true",
-            "production_import": "false",
-            "research_pack_ingested": "true",
-            "exact_vehicle_fitment": "false",
-            "exact_engine_gearbox_pair": "false",
-            "ru_eaeu_applicability": "false",
-            "model_year_inferred": "false",
-            "generation_inferred": "false",
-            "source_row_hash_method": "SHA-256 of canonical JSON array of all original parsed TSV field strings",
-        }
-        db.executemany("INSERT INTO pack_metadata(key,value) VALUES(?,?)", metadata.items())
-        db.execute("INSERT INTO source_files VALUES(?,?,?,?,?,?,?,?,?)", (
-            SOURCE_ID, SOURCE_URL, source_meta["source_revision"], source_meta["etag"],
-            source_meta["file_size_bytes"], source_meta["file_sha256"], "CH",
-            rights_status, 1
-        ))
         db.commit()
     except Exception:
         db.rollback()
@@ -470,6 +446,7 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
             "source_file_sha256": source_meta["file_sha256"], "market_scope": "CH",
             "rights_status": "approved_by_official_astra_ogd_publication_and_swiss_ogd_reuse_terms",
             "attribution_required": "true", "production_import": "false",
+            "research_pack_ingested": "true",
             "exact_vehicle_fitment": "false", "exact_engine_gearbox_pair": "false",
             "ru_eaeu_applicability": "false", "model_year_inferred": "false",
             "generation_inferred": "false", "engine_markings_are_candidates": "true",
