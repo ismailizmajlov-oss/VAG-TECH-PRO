@@ -9,9 +9,9 @@ def header():
     values = [f"field_{i}" for i in range(42)]
     names = {
         0: "TG-Code", 1: "Marke", 2: "Typ", 9: "Getriebe",
-        10: "iAchse", 13: "Motormarke", 14: "Motortyp",
+        10: "iAchse", 13: "Motormarke", 14: "Motortyp", 15: "Bauart",
         16: "Treibstoff", 19: "Hubraum", 20: "Leistung",
-        22: "Drehmoment", 41: "Homologationsdatum",
+        22: "Drehmoment", 24: "Abgasreinigung", 26: "Antrieb", 41: "Homologationsdatum",
     }
     for index, value in names.items():
         values[index] = value
