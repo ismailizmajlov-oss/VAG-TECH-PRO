@@ -103,6 +103,7 @@ test("KBA research verifier registers the thirteenth isolated pack after TARGA a
   assert.match(patch, /astra-fedro-targa-emissionen-approval-variants-ch/);
   assert.match(patch, /rdw-vag-nl-eu-type-approval-research/);
   assert.match(patch, /rdwCountAssertion/);
+  assert.match(patch, /CH-only ASTRA TAS\/TARGA and NL-only RDW packs/);
   assert.match(patch, /kba-de-vag-stock-research/);
   assert.match(patch, /kbaDeSummary\.marketScope === "DE"/);
   assert.match(patch, /researchPackIngested === true/);
