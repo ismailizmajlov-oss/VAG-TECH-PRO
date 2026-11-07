@@ -33,6 +33,13 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertNotIn(SOURCE_ID,{s.get("source_id") for s in self.ru["sources"]})
         self.assertEqual(self.manifest["applicability_policy"]["market_scope"],"UNKNOWN")
         self.assertIs(self.manifest["applicability_policy"]["ru_eaeu_applicability"],False)
+    def test_exact_brand_allowlist_matches_pack_builder(self):
+        import importlib.util
+        spec=importlib.util.spec_from_file_location("cardir_builder",ROOT/"scripts/build_cardir_vag_open_data_pack.py")
+        builder=importlib.util.module_from_spec(spec); spec.loader.exec_module(builder)
+        manifest_allowlist={builder.normalize_brand(x) for x in self.manifest["data_scope"]["vag_brand_allowlist"]}
+        self.assertEqual(manifest_allowlist,builder.ALLOWED_BRANDS)
+
     def test_no_factory_fitment_or_repair_claims(self):
         policy=self.manifest["applicability_policy"]
         for field in ("exact_engine_code_mapping","exact_gearbox_code_mapping","exact_engine_gearbox_pair","model_generation_inferred","model_year_inferred","exact_vehicle_fitment","ecu_fitment","dtc_fitment","wiring_or_pinout_content","repair_procedure_content","production_fitment"):
