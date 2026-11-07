@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T16:34:08Z",
+  "updated_at": "2026-11-07T17:21:50Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5227,6 +5227,123 @@
       "project_decision": "approved for a separately namespaced CH-only read-only research pack with mandatory attribution; preserve engine-marking candidates and gearbox classifications separately and never infer pairs",
       "evidence_status": "official ASTRA TARGA product documentation and ASTRA/Swiss OGD reuse terms reviewed 2026-11-07",
       "data_ingested": false
+    },
+    {
+      "source_id": "cars-base-ru-vehicle-catalog",
+      "publisher": "Cars Base / ИП Солдатенкова Альбина Сергеевна",
+      "url": "https://cars-base.ru/",
+      "terms_url": "https://cars-base.ru/public-offer",
+      "api_documentation_url": "https://cars-base.ru/api2",
+      "repository_url": "https://github.com/blanzh/carsBase",
+      "source_kind": "commercial_russian_vehicle_identity_generation_configuration_and_specification_catalog",
+      "source_revision": "public_homepage_offer_api_docs_and_repository_listing_reviewed_2026-11-08; no immutable dataset release identified",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "market_scope_precision": "publisher is Russian-language and references auto.ru catalog pages, but per-record country scope and complete upstream source lineage were not established",
+      "observed_homepage_counts_2026_11_08": {
+        "makes": 428,
+        "models": 4973,
+        "generations": 10166,
+        "configurations": 14501,
+        "modifications": 102196,
+        "evidence_type": "publisher homepage counters; not independently reconciled and not imported"
+      },
+      "advertised_fields": [
+        "make and model identifiers and names",
+        "generation names and year ranges",
+        "body configurations",
+        "modifications",
+        "generic engine displacement and power",
+        "generic transmission type",
+        "fuel and drive",
+        "vehicle dimensions and options",
+        "logos and configuration photographs"
+      ],
+      "upstream_lineage": {
+        "github_readme_references": [
+          "https://auto.ru/catalog/cars/",
+          "https://auto.ru/lcv/all/",
+          "https://auto.ru/motorcycle/all/"
+        ],
+        "rights_to_upstream_auto_ru_content": "not established",
+        "repository_license_file": "not found in reviewed root listing; no dataset license declared in README",
+        "per_record_provenance": "not independently established"
+      },
+      "access": {
+        "public_homepage": true,
+        "public_full_route_without_token": "basic aggregate makes/models route documented; no data request made",
+        "detailed_api_routes": "token required",
+        "demo_token": "test; documentation says demo data only and suitable for structure/integration testing",
+        "paid_api_or_file_access": "subscription/key required for detailed catalog and downloads",
+        "project_account_created": false,
+        "api_key_obtained": false,
+        "paid_terms_accepted": false,
+        "data_file_downloaded": false
+      },
+      "rights": {
+        "dataset_open_license": "not stated in reviewed repository or API documentation",
+        "offer_allows_use_in_own_products": true,
+        "own_product_use_scope": "offer says obtained data may be used in the user's own websites, CRM, catalogs, marketplaces, internal products and integrations",
+        "full_archive_publication_or_distribution_without_written_consent": false,
+        "raw_source_export_distribution_without_written_consent": false,
+        "api_key_transfer_to_third_parties": false,
+        "offline_cache_for_redistributed_desktop": "not expressly cleared",
+        "third_party_desktop_display_of_embedded_offline_subset": "not expressly cleared",
+        "upstream_source_redistribution_rights": "not established",
+        "commercial_use_for_selected_paid_access": "described by the offer for the selected access scope; no project purchase or acceptance",
+        "permission_status": "written_offline_embedding_and_end_user_distribution_permission_not_obtained",
+        "product_import_allowed": false,
+        "offline_cache_allowed": false,
+        "redistribution_allowed": false,
+        "attribution_required": "not specified in reviewed offer/API docs; must be clarified"
+      },
+      "applicability": {
+        "precision": "make_model_generation_configuration_candidate_only",
+        "per_record_market": "unknown",
+        "model_years": "publisher fields advertised; exact source lineage and per-market semantics not independently verified",
+        "factory_engine_codes": false,
+        "factory_gearbox_codes": false,
+        "exact_engine_gearbox_pairs": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_fitment": false,
+        "wiring_or_pinout_fitment": false,
+        "oem_parts_fitment": false
+      },
+      "verification_status": "public_metadata_and_offer_reviewed; dataset_license_upstream_rights_and_offline_distribution_scope_unresolved",
+      "evidence": [
+        {
+          "url": "https://cars-base.ru/",
+          "source_type": "publisher_homepage",
+          "reviewed_at": "2026-11-08",
+          "note": "Advertises 428 makes, 4,973 models, 10,166 generations, 14,501 configurations and 102,196 modifications; describes API and file formats."
+        },
+        {
+          "url": "https://cars-base.ru/public-offer",
+          "source_type": "publisher_public_offer",
+          "reviewed_at": "2026-11-08",
+          "note": "Sections 2 and 5 describe product/integration use, while section 5 prohibits publishing the full archive or distributing source exports to third parties without written consent."
+        },
+        {
+          "url": "https://cars-base.ru/api2",
+          "source_type": "publisher_api_documentation",
+          "reviewed_at": "2026-11-08",
+          "note": "Documents token-gated detailed API routes, token=test demo mode, a public basic /full route, and rate limits; does not state a dataset license or offline redistribution grant."
+        },
+        {
+          "url": "https://github.com/blanzh/carsBase",
+          "source_type": "public_repository_readme",
+          "reviewed_at": "2026-11-08",
+          "note": "README references auto.ru catalog sources for expanded data; no LICENSE file or explicit dataset reuse license was visible in the reviewed root listing."
+        }
+      ],
+      "project_decision": "discovery_only_no_import_no_api_or_file_download_no_payment. Reconsider only after written terms explicitly authorize embedding/caching the required subset in a redistributed offline Windows desktop application, end-user display and any required onward redistribution, and after the publisher substantiates rights to upstream Auto.ru-derived content and supplies row-level source/revision metadata. The published offer's allowance for use in own products does not clearly override its restriction on distributing full archives/source exports to third parties.",
+      "evidence_status": "official homepage, public offer, API documentation and repository README reviewed 2026-11-08; no account, key, API request, data download, payment or source snapshot used",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_snapshot_hash_claimed"
     }
   ],
   "minimum_fitment_evidence_fields": [
