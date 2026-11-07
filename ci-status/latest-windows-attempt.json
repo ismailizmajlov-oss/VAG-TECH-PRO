@@ -1,0 +1,35 @@
+{
+  "workflow": "windows-desktop-ci-run71",
+  "run_number": 700,
+  "run_id": 42420228828,
+  "run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42420228828",
+  "commit": "5e09222465e2e8b53156d5a0ca081d1f4a2bd367",
+  "status": "completed",
+  "conclusion": "failure",
+  "failed_step": "Bind pair evidence to canonical engine and transmission codes (run84)",
+  "error": "SyntaxError: Unexpected identifier 'engine_code' in apply-engine-transmission-pair-code-binding-run84.cjs at line 140; Markdown code backticks prematurely terminated a JavaScript template literal.",
+  "completed_checks": {
+    "rdw_run38_integration": true,
+    "kba_de_stock_pack_integration": true,
+    "rdw_manifest_provenance_verification": true,
+    "rdw_ui_contract_run78": true,
+    "typed_payload_renderer_run79": true,
+    "technical_payload_validation_run80": true,
+    "renderer_aligned_payload_run81": true,
+    "same_variant_primary_pair_evidence_run82": true,
+    "immutable_pair_manifest_binding_run83": true
+  },
+  "skipped_after_failure": [
+    "run85",
+    "full desktop test suite",
+    "ESLint",
+    "TypeScript",
+    "NSIS packaging",
+    "Windows installer lifecycle"
+  ],
+  "installer_built": false,
+  "source_audit_artifact_id": 13593835125,
+  "windows_bundle_artifact_id": 13592989119,
+  "windows_bundle_artifact_sha256": "9cb482e914863f4af2c2e5930c6ab43e3afef59831542cbc6c12d340a6ada87a",
+  "next_action": "Replace the nested template literal with an explicit string-array join, then rerun the complete Windows CI."
+}

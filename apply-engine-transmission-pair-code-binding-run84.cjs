@@ -133,12 +133,14 @@ test("run84 rejects pair links whose referenced engine or transmission code diff
     "schema pair required engine/transmission codes"
   );
 
-  docs += `
-
-## Engine/transmission component-code binding (run84)
-
-An exact pair record must carry both canonical `engine_code` and `transmission_code` values. Each value must match the corresponding raw observation in the cited primary document after Unicode NFKC normalization, trimming and case normalization; no fuzzy matching, descriptive-name inference or unreviewed alias mapping is accepted. During the same SQLite transaction, the importer resolves the referenced engine and transmission natural keys and checks that their stored codes match the pair record. A mismatch rolls back the entire package. If an approval document uses a manufacturer designation that cannot be shown to be the exact VAG code, keep it as a separate source candidate until a separately evidenced mapping workflow exists.
-`;
+  docs += [
+    "",
+    "",
+    "## Engine/transmission component-code binding (run84)",
+    "",
+    "An exact pair record must carry both canonical `engine_code` and `transmission_code` values. Each value must match the corresponding raw observation in the cited primary document after Unicode NFKC normalization, trimming and case normalization; no fuzzy matching, descriptive-name inference or unreviewed alias mapping is accepted. During the same SQLite transaction, the importer resolves the referenced engine and transmission natural keys and checks that their stored codes match the pair record. A mismatch rolls back the entire package. If an approval document uses a manufacturer designation that cannot be shown to be the exact VAG code, keep it as a separate source candidate until a separately evidenced mapping workflow exists.",
+    ""
+  ].join("\n");
 
   JSON.parse(schema);
   for (const relative of Object.values(files)) {
