@@ -6,11 +6,11 @@ const rdw = require("../lib/rdw-vag-research-db.cjs");
 
 const root = process.argv[2] ? path.resolve(process.argv[2]) : path.join(process.cwd(), "data", "research");
 const summary = rdw.getRdwSummary(root);
-const rows = rdw.searchRdwApprovals("e1*2018/858*00302*10", 50, root);
+const rows = rdw.searchRdwApprovals("e1*2018/858*00403*07", 50, root);
 const sample = rows.find((item) =>
-  item.typeApprovalNumber === "e1*2018/858*00302*10" &&
+  item.typeApprovalNumber === "e1*2018/858*00403*07" &&
   item.variant === "ACDUCAX0" &&
-  item.version === "FD6FD6DD002PR4VNB0OO" &&
+  item.version === "FD6FD6DD002PR4VNB50OO" &&
   item.revision === "0"
 );
 assert.ok(sample, "RDW offline verification sample was not found");

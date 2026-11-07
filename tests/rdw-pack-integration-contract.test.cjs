@@ -163,6 +163,7 @@ test("RDW desktop verification binds refreshed counts and hashes to the pack man
   assert.ok(!rdwVerifierPatchSource.includes("counts.approvalScopes === 96519"));
   assert.match(rdwIntegrationSource, /counts\.approvalScopes -le 0/);
   assert.match(rdwIntegrationSource, /sourceSnapshotSha256 -notmatch/);
-  assert.match(rdwIntegrationSource, /e1\*2018\/858\*00302\*10/);
+  assert.match(rdwIntegrationSource, /e1\*2018\/858\*00403\*07/);
+  assert.match(rdwIntegrationSource, /FD6FD6DD002PR4VNB50OO/);
   assert.ok(!rdwIntegrationSource.includes("counts.approvalScopes -ne 96519"));
 });

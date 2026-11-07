@@ -7,7 +7,7 @@ const path = require("node:path");
 const { getRdwSummary, searchRdwApprovals, clearCache } = require("../lib/rdw-vag-research-db.cjs");
 
 const RESEARCH_ROOT = path.join(__dirname, "..", "data", "research");
-const APPROVAL = "e1*2018/858*00302*10";
+const APPROVAL = "e1*2018/858*00403*07";
 
 test("RDW pack verifies CC0 provenance, hashes, NL scope and research-only boundaries", () => {
   clearCache();
@@ -46,7 +46,7 @@ test("exact RDW approval scope keeps engine and gearbox observations separate", 
   const row = rows.find((item) =>
     item.typeApprovalNumber === APPROVAL &&
     item.variant === "ACDUCAX0" &&
-    item.version === "FD6FD6DD002PR4VNB0OO" &&
+    item.version === "FD6FD6DD002PR4VNB50OO" &&
     item.revision === "0"
   );
   assert.ok(row, "expected reviewed RDW approval scope was not found");
@@ -55,7 +55,7 @@ test("exact RDW approval scope keeps engine and gearbox observations separate", 
   assert.deepEqual(row.exactScopeKey, {
     typeApprovalNumber: APPROVAL,
     variant: "ACDUCAX0",
-    version: "FD6FD6DD002PR4VNB0OO",
+    version: "FD6FD6DD002PR4VNB50OO",
     revision: "0"
   });
   assert.ok(row.engineDesignationCandidates.some((item) => item.engineDesignation === "DUC"));
@@ -78,7 +78,7 @@ test("exact RDW approval scope keeps engine and gearbox observations separate", 
 });
 
 test("RDW trade-name search works offline and rejects undersized queries", () => {
-  const rows = searchRdwApprovals("TIGUAN", 10, RESEARCH_ROOT);
+  const rows = searchRdwApprovals("TAYRON", 10, RESEARCH_ROOT);
   assert.ok(rows.length > 0);
   assert.ok(rows.every((row) => row.marketScope === "NL" && row.exactEngineGearboxPair === false));
   assert.throws(() => searchRdwApprovals("A", 10, RESEARCH_ROOT), /минимум два символа/);
