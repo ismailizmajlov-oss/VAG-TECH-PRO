@@ -227,7 +227,7 @@ function getCardirSummary(explicitRoot) {
     const badHashes = count(db, "SELECT count(*) AS n FROM facts WHERE length(source_row_sha256)!=64 OR source_row_sha256 GLOB '*[^0-9a-f]*'");
     assert(invalid === 0 && badHashes === 0, "CarDir fact rows crossed the research-only or provenance boundary");
     counts = {
-      sourceRows: count(db, "SELECT count(*) AS n FROM source_files"),
+      sourceRows: pack.counts.source_rows,
       vagFacts: count(db, "SELECT count(*) AS n FROM facts"),
       vagBrands: count(db, "SELECT count(*) AS n FROM brands"),
       vagModels: count(db, "SELECT count(*) AS n FROM models"),
@@ -243,6 +243,7 @@ function getCardirSummary(explicitRoot) {
   }
 
   return {
+    packId: PACK_ID,
     pack, counts, databaseFile,
     databaseHash: hashFile(databaseFile),
     sourceManifestHash: hashFile(sourceManifestFile),
