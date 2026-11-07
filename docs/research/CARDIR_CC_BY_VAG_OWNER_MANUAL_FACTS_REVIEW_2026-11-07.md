@@ -10,7 +10,7 @@ This is not an OEM primary database. CarDir is the publisher of a curated datase
 
 ## Publisher-published dataset scope
 
-The dataset page reviewed on 2026-11-07 states that the current snapshot was checked on 2026-11-06 and contains 41,128 verified values for 548 models. It offers CSV and JSON files and identifies these columns:
+The dataset page reviewed on 2026-11-07 states that the current snapshot was checked on 2026-11-07 and contains 41,649 verified values for 561 models. It offers CSV and JSON files and identifies these columns:
 
 - brand, model, key, key_label_ru
 - qualifier, value, unit
@@ -38,7 +38,7 @@ This source can add traceable owner-manual reference facts for maintenance secti
 
 No CSV bytes were available to the review process itself; the web reader does not expose the CSV body. Therefore no source-file SHA-256 is claimed in this document or the committed source manifest.
 
-A Windows-only workflow will acquire the exact published CSV over HTTPS from the URL below, reject redirects away from the CarDir host, enforce a download-size cap, validate the 12-column schema and the publisher-stated 41,128-row / 548-model snapshot, and calculate:
+A Windows-only workflow will acquire the exact published CSV over HTTPS from the URL below, reject redirects away from the CarDir host, enforce a download-size cap, validate the 12-column schema and the publisher-stated 41,649-row / 561-model snapshot, and calculate:
 
 1. SHA-256 of the complete source CSV;
 2. SHA-256 of every retained VAG source row over canonical JSON of the original parsed field strings;
