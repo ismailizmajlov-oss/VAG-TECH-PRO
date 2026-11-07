@@ -35,12 +35,12 @@ For the acquired HSN/TSN reference CSV, the source register records commercial u
 
 ## Research pack build and independent verification
 
-The separate DE-only pack was built by [KBA research workflow run 3](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42327842556), which completed successfully on 2026-11-07.
+The separate DE-only pack was built by [KBA research workflow run 7](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42328320491), which completed successfully on 2026-11-07.
 
-- Artifact ZIP: 27,883,683 bytes; SHA-256 cb61541e6ac5ad6c3eea2fba9fb2947cc6c83a63aea4f8777beb67b017536d82.
-- Pack manifest SHA-256: 62bb1867371099c5fdf9e92509684dd1344cc9cb365cf1392684f529a1e7557f.
-- Source-manifest SHA-256: c40e207200762a9c901a20c024236f84b78699b0d8a68067e0f0a5db13b9e46d.
-- SQLite SHA-256: c61720c363d1f26a2618e16b420c91559634b90347149b312eb18e23be054111.
+- Artifact ZIP: 27,883,868 bytes; SHA-256 fd75f0e2c0dd260cf95540f7bcf6cda7d4bfc79948cd332ff2ac3402461281bd.
+- Pack manifest SHA-256: 0322d9acc4236e89702377a1c8a90daea253f4b14f86d996fd28bbf505e4c8e2.
+- Source-manifest SHA-256: 3aab2daa3c03914001f8b80c92b0e47c1883e3e1ec6eb8589ac3065d2e1c04da.
+- SQLite SHA-256: 879ff1f66d3615ee2324b98d4d2defdcfae8018f48fe78f865fc1d3f13a5f4b9.
 - Source CSV SHA-256: 03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468.
 
 An independent read-only audit of the downloaded artifact reproduced the ZIP, source CSV, source-manifest, pack-manifest and SQLite hashes. SQLite returned PRAGMA integrity_check=ok, no foreign-key violations and nine expected tables. The database contains 264,847 stock observations, eight manufacturers, 794 trade names, 2,225 raw type keys, 17 federal states and four reference dates. It contains 802 make/trade-name pairs, 4,155 make/type-key pairs and 16,301 make/trade/type/reference-date tuples.
@@ -58,7 +58,7 @@ The pack is marked verified_research_only. It is separate from the production ve
 - The KBA whole-vehicle type-approval XLSX remains unacquired and has no source snapshot hash.
 - No production fitment import was performed.
 
-At the time of this review, Windows desktop validation run 473 failed in the earlier KBA source-rights contract gate before the KBA desktop integration step. The stale test expectation and central source-register state have since been corrected; a fresh successful Windows integration/lifecycle run is still required. No installer is claimed to contain this KBA pack until that run succeeds.
+Windows desktop validation run 474 successfully integrated the run-7 KBA pack into the staging desktop source and emitted a verified research-only integration report. The subsequent verifier-patch step failed because its JavaScript replacement string contained an unescaped newline. The patch script was corrected in commit d86c65bb320903ab3f4fb5b7131e5ea9eb66f5e3 and a regression assertion was added in commit 52673aed8e7dc6c21eb551e81bb98c7a2e6d867f. The source register and per-source manifest now agree on the built-but-not-yet-validated desktop-integration status. A fresh successful Windows build/lifecycle is still required; no installer is claimed to contain this KBA pack until that run succeeds.
 
 ## Evidence URLs
 
