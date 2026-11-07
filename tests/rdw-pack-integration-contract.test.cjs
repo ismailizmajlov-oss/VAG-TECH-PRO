@@ -56,10 +56,10 @@ const rdwVerifierPatchSource = fs.readFileSync(path.join(__dirname, "../scripts/
 
 test("RDW verifier patch composes after the separate ASTRA TARGA pack", () => {
   assert.match(rdwVerifierPatchSource, /astraTargaSummary/);
-  assert.match(rdwVerifierPatchSource, /manifest\\.packs\\.length === \\(\\d\\+\\)/);
-  assert.match(rdwVerifierPatchSource, /expectedPackCount = currentPackCount \\+ 1/);
-  assert.doesNotMatch(rdwVerifierPatchSource, /manifest\\.packs\\.length === 11/);
-  assert.doesNotMatch(rdwVerifierPatchSource, /manifest\\.packs\\.length === 12/);
+  assert.ok(rdwVerifierPatchSource.includes("/manifest\\.packs\\.length === (\\d+)/g"));
+  assert.ok(rdwVerifierPatchSource.includes("expectedPackCount = currentPackCount + 1"));
+  assert.ok(!rdwVerifierPatchSource.includes("manifest.packs.length === 11"));
+  assert.ok(!rdwVerifierPatchSource.includes("manifest.packs.length === 12"));
   assert.match(rdwVerifierPatchSource, /astra-fedro-targa-emissionen-approval-variants-ch/);
   assert.match(rdwVerifierPatchSource, /rdw-vag-nl-eu-type-approval-research/);
   assert.ok(rdwVerifierPatchSource.includes('.join("\\n")'), "RDW verifier patch must join inserted lines with actual newline escapes");
