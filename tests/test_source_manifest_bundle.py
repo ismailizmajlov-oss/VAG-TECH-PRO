@@ -76,6 +76,28 @@ class SourceManifestBundleTests(unittest.TestCase):
             with self.assertRaises(ValueError): sync(central,desktop)
             self.assertEqual((dest/"KEEP.txt").read_text(encoding="utf-8"),"previous bundle\n")
 
+
+    def test_kyrgyz_registry_statutory_access_does_not_clear_product_reuse(self)->None:
+        central=ROOT/"data"/"source-manifests"/"vag-factory-source-register.json"
+        registry=json.loads(central.read_text(encoding="utf-8"))
+        source=next(item for item in registry["sources"] if item["source_id"]=="kyrgyz-single-window-public-registry")
+        legal=source["legal_basis_review"]
+        rights=source["rights"]
+        self.assertEqual(legal["enabling_law"]["calculated_code_effective_date"],"2026-02-05")
+        self.assertIn("1(14)",legal["articles"])
+        self.assertIn("1(39)",legal["articles"])
+        self.assertIn("62",legal["articles"])
+        self.assertEqual(legal["interpretation"]["state_resource_classification"].split(";")[0],"not_formally_confirmed_under_article_1_14")
+        self.assertEqual(legal["interpretation"]["open_data_status"].split(";")[0],"not_confirmed_under_article_1_39")
+        self.assertEqual(rights["permission_status"],"not_obtained")
+        self.assertFalse(rights["statutory_access_basis"]["product_import_cleared"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source["data_ingested"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertFalse(source["applicability"]["russian_market_scope"])
+        for key in ("bulk_export_allowed","offline_cache_allowed","commercial_display_allowed","redistribution_allowed"):
+            self.assertEqual(rights[key],"not_established")
+
     def test_restricted_source_cannot_be_marked_ingested(self)->None:
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); source_dir=root/"source"; source_dir.mkdir()
