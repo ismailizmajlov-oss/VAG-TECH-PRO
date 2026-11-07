@@ -323,6 +323,8 @@ def main() -> None:
         "kba-de-vag-stock-research/desktop-integration-report.json",
         "kba_de_vag_stock=run",
         "aggregate_stock_observation",
+        "research_pack_ingested=true",
+        "product_database_ingested=false",
     )
     missing_kba_pipeline_steps = [marker for marker in kba_pipeline_steps if marker not in text]
     if missing_kba_pipeline_steps:
