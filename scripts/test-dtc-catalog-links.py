@@ -58,6 +58,31 @@ def main():
                 (oem_dtc_id,variant_id,evidence_id,market_scope,applicability_level)
                 VALUES (?, ?, ?, 'RU', 'variant_only')""", (dtc_id, variant_id, evidence_id))
 
+            # A linked VAG-specific record cannot be reclassified as generic SAE/ISO.
+            try:
+                db.execute("UPDATE oem_dtc_index SET dtc_namespace='generic_sae_iso', manufacturer='UNKNOWN' WHERE oem_dtc_id=?", (dtc_id,))
+                raise AssertionError("linked VAG DTC was unexpectedly reclassified as generic")
+            except sqlite3.IntegrityError:
+                pass
+            assert db.execute("SELECT dtc_namespace FROM oem_dtc_index WHERE oem_dtc_id=?", (dtc_id,)).fetchone()[0] == "manufacturer_specific_vag"
+
+            # Generic SAE/ISO records remain valid reference rows but cannot be
+            # inserted into the VAG-specific vehicle-applicability bridge.
+            db.execute("""INSERT INTO oem_dtc_index
+                (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                 evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+                VALUES ('P0101','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                        'generic reference row','generic_only',?,?)""",
+                (source_doc, "b"*64, now))
+            generic_dtc_id = db.execute("SELECT max(oem_dtc_id) FROM oem_dtc_index").fetchone()[0]
+            try:
+                db.execute("""INSERT INTO oem_dtc_vehicle_applicability
+                    (oem_dtc_id,variant_id,evidence_id,market_scope,applicability_level)
+                    VALUES (?, ?, ?, 'RU', 'variant_only')""", (generic_dtc_id, variant_id, evidence_id))
+                raise AssertionError("generic SAE/ISO DTC unexpectedly entered the VAG fitment bridge")
+            except sqlite3.IntegrityError:
+                pass
+
             db.execute("""INSERT INTO vehicle_catalog_evidence
                 (source_id,document_id,retrieved_at_utc,evidence_locator,claim_type,review_status)
                 VALUES ('fixture','DOC-3',?,'page 3','generation','technically_verified')""", (now,))
@@ -73,7 +98,9 @@ def main():
             assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
             assert db.execute("PRAGMA foreign_key_check").fetchall() == []
             assert db.execute("SELECT count(*) FROM oem_dtc_vehicle_applicability").fetchone()[0] == 1
-            print("PASS: DTC bridge, explicit applicability evidence, FK and integrity guards")
+            assert db.execute("SELECT count(*) FROM oem_dtc_index WHERE dtc_namespace='generic_sae_iso'").fetchone()[0] == 1
+            assert db.execute("SELECT count(*) FROM oem_dtc_vehicle_applicability a JOIN oem_dtc_index d ON d.oem_dtc_id=a.oem_dtc_id WHERE d.dtc_namespace<>'manufacturer_specific_vag'").fetchone()[0] == 0
+            print("PASS: VAG-only DTC bridge, generic DTC isolation, immutable namespace, evidence, FK and integrity guards")
 
 if __name__ == "__main__":
     main()
