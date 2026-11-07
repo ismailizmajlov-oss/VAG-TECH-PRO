@@ -53,5 +53,26 @@ class RosstandartRecallSourceRightsTests(unittest.TestCase):
         self.assertIn("do_not_download_or_import", self.source["project_decision"])
 
 
+
+    def test_latest_metadata_probe_records_timeout_without_snapshot_or_rights_upgrade(self):
+        probe = self.source["latest_metadata_probe"]
+        self.assertEqual(probe["workflow_run_number"], 30)
+        self.assertEqual(probe["status"], "metadata_probe_only_official_endpoints_unreachable")
+        self.assertEqual(probe["artifact_id"], 13580796001)
+        self.assertEqual(probe["artifact_sha256"], "8f75859e11caec06854615ffba0f3c2b43e68d8f2beffdf871add9d944f76f2a")
+        self.assertEqual(probe["report_sha256"], "20299026879c3849fc0a8f64b34436e13fe5473c33f02cce9043b37ea114f0e6")
+        self.assertEqual(len(probe["pages"]), 2)
+        self.assertTrue(all(page["retrieved"] is False for page in probe["pages"]))
+        self.assertEqual(probe["candidate_file_links"], [])
+        self.assertEqual(probe["terms_links"], [])
+        self.assertIs(probe["data_file_downloaded"], False)
+        self.assertIsNone(probe["source_snapshot_sha256"])
+        self.assertIs(probe["vin_level_rows_downloaded"], False)
+        self.assertIsNone(self.source["source_snapshot_sha256"])
+        self.assertIs(self.source["data_ingested"], False)
+        self.assertEqual(self.source["rights"]["permission_status"], "current_dataset_page_and_linked_terms_not_verified; no_written_permission_obtained")
+        self.assertEqual(self.source["rights"]["offline_cache_allowed"], "not_established")
+        self.assertEqual(self.source["rights"]["redistribution_allowed"], "not_established_for_packaged_offline_database")
+
 if __name__ == "__main__":
     unittest.main()
