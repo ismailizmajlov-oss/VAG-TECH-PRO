@@ -502,5 +502,70 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "dtc_namespace": {
+            "const": "generic_sae_iso"
+          }
+        },
+        "required": [
+          "dtc_namespace"
+        ]
+      },
+      "then": {
+        "properties": {
+          "manufacturer": {
+            "const": "UNKNOWN"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dtc_namespace": {
+            "const": "manufacturer_specific_vag"
+          }
+        },
+        "required": [
+          "dtc_namespace"
+        ]
+      },
+      "then": {
+        "properties": {
+          "manufacturer": {
+            "enum": [
+              "VOLKSWAGEN",
+              "AUDI",
+              "SKODA",
+              "SEAT",
+              "CUPRA"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dtc_namespace": {
+            "const": "manufacturer_specific_other"
+          }
+        },
+        "required": [
+          "dtc_namespace"
+        ]
+      },
+      "then": {
+        "properties": {
+          "manufacturer": {
+            "const": "OTHER"
+          }
+        }
+      }
+    }
+  ]
 }
