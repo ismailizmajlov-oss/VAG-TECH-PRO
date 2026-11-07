@@ -249,7 +249,7 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
                 selected_rows += 1
                 make_counts[make_normalized] += 1
                 engine_type = row[positions["engine_type"]]
-                gearbox = row[positions["gearbox_classification"]]
+                gearbox = row[positions["gearbox"]]
                 if engine_type.strip():
                     engine_type_counts[engine_type.strip()] += 1
                 if gearbox.strip():
