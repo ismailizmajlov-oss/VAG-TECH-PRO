@@ -2,10 +2,39 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
+const { safeJoin } = require("../scripts/integrate-kba-de-vag-stock-research-pack.cjs");
 
 const ROOT = path.join(__dirname, "..");
 function read(relative) { return fs.readFileSync(path.join(ROOT, relative), "utf8"); }
+
+test("KBA path guard rejects lexical traversal and symlinked ancestors before a leaf exists", (t) => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "vag-kba-path-guard-"));
+  try {
+    const root = path.join(temp, "root");
+    const outside = path.join(temp, "outside");
+    fs.mkdirSync(root);
+    fs.mkdirSync(outside);
+    assert.throws(() => safeJoin(root, "../outside/new.sqlite"), /Path escaped root/);
+
+    const link = path.join(root, "linked");
+    try {
+      fs.symlinkSync(outside, link, process.platform === "win32" ? "junction" : "dir");
+    } catch (error) {
+      if (process.platform === "win32" && ["EPERM", "EACCES", "ENOTSUP"].includes(error.code)) {
+        t.skip("Windows runner does not permit creating a directory junction in this environment");
+        return;
+      }
+      throw error;
+    }
+    assert.throws(() => safeJoin(root, "linked/new/deep.sqlite"), /Symlink ancestor escaped root/);
+    assert.equal(safeJoin(root, "fresh/new/deep.sqlite"), path.join(root, "fresh", "new", "deep.sqlite"));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
+
 
 test("KBA pack builder pins the public licence, exact labels and DE aggregate-only boundary", () => {
   const builder = read("scripts/build_kba_de_vag_stock_research_pack.py");
