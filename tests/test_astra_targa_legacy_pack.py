@@ -112,7 +112,7 @@ class AstraTargaLegacyPackTests(unittest.TestCase):
             self.assertFalse(any("pair" in name.casefold() for name in names))
             self.assertEqual(db.execute("SELECT count(*) FROM type_approval_records WHERE market_scope='CH'").fetchone()[0], 2)
             self.assertEqual(db.execute("SELECT count(*) FROM source_files").fetchone()[0], 1)
-            self.assertEqual(db.execute("SELECT count(*) FROM pack_metadata").fetchone()[0], 15)
+            self.assertEqual(db.execute("SELECT count(*) FROM pack_metadata").fetchone()[0], 19)
             self.assertEqual(db.execute("SELECT value FROM pack_metadata WHERE key='source_file_sha256'").fetchone()[0], "a" * 64)
             self.assertEqual(db.execute("SELECT count(*) FROM type_approval_records WHERE ru_eaeu_applicability_claim<>0").fetchone()[0], 0)
             self.assertEqual(db.execute("SELECT count(*) FROM engine_marking_candidates WHERE candidate_status='unverified_source_engine_marking'").fetchone()[0], 2)
