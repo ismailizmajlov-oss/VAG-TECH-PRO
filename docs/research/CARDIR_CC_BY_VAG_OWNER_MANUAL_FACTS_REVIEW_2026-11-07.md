@@ -36,7 +36,7 @@ This source can add traceable owner-manual reference facts for maintenance secti
 
 ## Snapshot acquisition and hashes
 
-No CSV bytes were available to the review process itself; the web reader does not expose the CSV body. Therefore no source-file SHA-256 is claimed in this document or the committed source manifest.
+The Windows acquisition workflow downloaded the exact published CSV on 2026-11-07. The 14,291,137-byte source snapshot has SHA-256 `93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375`. It contains 41,649 rows and 561 brand/model pairs; exact VAG brand equality retains 773 facts across 24 models and the observed labels Audi, Porsche, Skoda and Volkswagen. The source hash and byte size are now pinned in the committed source manifest.
 
 A Windows-only workflow will acquire the exact published CSV over HTTPS from the URL below, reject redirects away from the CarDir host, enforce a download-size cap, validate the 12-column schema and the publisher-stated 41,649-row / 561-model snapshot, and calculate:
 
@@ -44,7 +44,7 @@ A Windows-only workflow will acquire the exact published CSV over HTTPS from the
 2. SHA-256 of every retained VAG source row over canonical JSON of the original parsed field strings;
 3. SHA-256 of the generated SQLite database and pack manifest.
 
-The workflow must fail closed if the published snapshot changes without a reviewed source-manifest update. The committed manifest keeps the source snapshot hash null until the Windows acquisition actually succeeds.
+The workflow fails closed if the published snapshot changes from the pinned source hash, byte size, schema or reviewed counts. The first acquisition is complete; the SQLite pack build and independent verification remain a separate gate.
 
 ## Rights and attribution
 
