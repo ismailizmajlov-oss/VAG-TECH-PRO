@@ -11,6 +11,10 @@ on:
       - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
+      - "desktop/**"
+      - ".github/workflows/windows-desktop-ci-run71.yml"
+      - "README.md"
   pull_request:
     branches: [main]
     paths:
@@ -21,13 +25,17 @@ on:
       - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "data/source-manifests/vag-factory-source-register.json"
       - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
+      - "desktop/**"
+      - ".github/workflows/windows-desktop-ci-run71.yml"
+      - "README.md"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: vag-tech-pro-cardir-vag-open-facts-\${{ github.ref }}
+  group: vag-tech-pro-cardir-vag-open-facts-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
