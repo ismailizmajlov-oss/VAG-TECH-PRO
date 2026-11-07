@@ -96,9 +96,13 @@ test("KBA runtime reader is read-only and verifies the source/DB licence chain",
   assert.ok(!verifier.includes('require("../kba-de-stock-research-db.cjs")'));
 });
 
-test("KBA research verifier registers a twelfth isolated pack and checks its counts", () => {
+test("KBA research verifier registers the thirteenth isolated pack after TARGA and RDW", () => {
   const patch = read("scripts/apply-kba-de-vag-research-verification-run1.cjs");
   assert.match(patch, /manifest\.packs\.length === 12/);
+  assert.match(patch, /manifest\.packs\.length === 13/);
+  assert.match(patch, /astra-fedro-targa-emissionen-approval-variants-ch/);
+  assert.match(patch, /rdw-vag-nl-eu-type-approval-research/);
+  assert.match(patch, /rdwCountAssertion/);
   assert.match(patch, /kba-de-vag-stock-research/);
   assert.match(patch, /kbaDeSummary\.marketScope === "DE"/);
   assert.match(patch, /researchPackIngested === true/);
