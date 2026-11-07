@@ -139,70 +139,43 @@ def validate_header(header: list[str]) -> None:
             )
 
 
-def _range_request(start: int, end: int, etag: str | None) -> tuple[bytes, dict]:
-    headers = {
-        "Range": f"bytes={start}-{end}",
-        "Accept-Encoding": "identity",
-        "User-Agent": "VAG-TECH-PRO-ASTRA-TARGA-research-pack/1.0",
-    }
-    if etag:
-        headers["If-Range"] = etag
-    request = urllib.request.Request(SOURCE_URL, headers=headers, method="GET")
+def download_pinned_source(destination: Path) -> dict:
+    """Stream the complete pinned public file once; never buffer it in memory."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    request = urllib.request.Request(
+        SOURCE_URL,
+        headers={
+            "Accept-Encoding": "identity",
+            "User-Agent": "VAG-TECH-PRO-ASTRA-TARGA-research-pack/1.0",
+        },
+        method="GET",
+    )
+    digest = hashlib.sha256()
+    total = 0
     with urllib.request.urlopen(request, timeout=180) as response:
         metadata = {
             "status": response.status,
-            "content_range": response.headers.get("Content-Range"),
             "content_length": response.headers.get("Content-Length"),
             "last_modified": response.headers.get("Last-Modified"),
             "etag": response.headers.get("ETag"),
-            "accept_ranges": response.headers.get("Accept-Ranges"),
+            "content_type": response.headers.get("Content-Type"),
         }
-        expected_range = f"bytes {start}-{end}/{EXPECTED_SIZE}"
-        # Validate status and headers before reading any body. If the server
-        # ignores Range, do not accidentally buffer the entire 323 MB file.
-        if metadata["status"] != 206 or metadata["content_range"] != expected_range:
-            raise ValueError(
-                f"ASTRA range response mismatch: expected {expected_range}, "
-                f"got {metadata['status']} {metadata['content_range']}"
-            )
+        if response.status != 200:
+            raise ValueError(f"ASTRA full-file GET returned HTTP {response.status}, expected 200")
         if metadata["last_modified"] != EXPECTED_LAST_MODIFIED or metadata["etag"] != EXPECTED_ETAG:
             raise ValueError("ASTRA source revision changed since the bounded schema probe; re-review before ingest")
-        expected_length = end - start + 1
-        if metadata["content_length"] and int(metadata["content_length"]) != expected_length:
-            raise ValueError(f"ASTRA range Content-Length mismatch: expected {expected_length}, got {metadata['content_length']}")
-        body = response.read(expected_length)
-        if len(body) != expected_length or response.read(1):
-            raise ValueError(f"ASTRA range byte count mismatch at {start}: got {len(body)}")
-    return body, metadata
-
-
-def download_pinned_source(destination: Path) -> dict:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    digest = hashlib.sha256()
-    total = 0
-    first_metadata = None
-    with destination.open("wb") as output:
-        for start in range(0, EXPECTED_SIZE, CHUNK_SIZE):
-            end = min(EXPECTED_SIZE - 1, start + CHUNK_SIZE - 1)
-            last_error = None
-            for attempt in range(3):
-                try:
-                    chunk, metadata = _range_request(start, end, EXPECTED_ETAG)
-                    last_error = None
+        if metadata["content_length"] and int(metadata["content_length"]) != EXPECTED_SIZE:
+            raise ValueError(f"ASTRA Content-Length changed: expected {EXPECTED_SIZE}, got {metadata['content_length']}")
+        with destination.open("wb") as output:
+            while True:
+                chunk = response.read(8 * 1024 * 1024)
+                if not chunk:
                     break
-                except Exception as exc:
-                    last_error = exc
-                    if attempt < 2:
-                        time.sleep(2 ** attempt)
-            if last_error is not None:
-                raise RuntimeError(f"Could not download pinned ASTRA range {start}-{end}: {last_error}") from last_error
-            if first_metadata is None:
-                first_metadata = metadata
-            output.write(chunk)
-            digest.update(chunk)
-            total += len(chunk)
+                output.write(chunk)
+                digest.update(chunk)
+                total += len(chunk)
             output.flush()
-        os.fsync(output.fileno())
+            os.fsync(output.fileno())
     if total != EXPECTED_SIZE or destination.stat().st_size != EXPECTED_SIZE:
         raise ValueError(f"ASTRA source size mismatch: expected {EXPECTED_SIZE}, got {total}")
     return {
@@ -211,9 +184,9 @@ def download_pinned_source(destination: Path) -> dict:
         "etag": EXPECTED_ETAG,
         "file_size_bytes": total,
         "file_sha256": digest.hexdigest(),
-        "range_size_bytes": CHUNK_SIZE,
-        "range_requests": (EXPECTED_SIZE + CHUNK_SIZE - 1) // CHUNK_SIZE,
+        "download_mode": "single_streaming_http_get",
         "last_modified": EXPECTED_LAST_MODIFIED,
+        "content_type": metadata["content_type"],
     }
 
 
