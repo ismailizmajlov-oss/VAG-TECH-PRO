@@ -34,7 +34,7 @@ test("Windows offline lifecycle checks CarDir pack rights, search and non-fitmen
   assert.match(lifecycle, /cardir-summary/);
   assert.match(lifecycle, /dataset=cardir&q=/);
   assert.match(lifecycle, /marketScope -ne "UNKNOWN"/);
-  assert.match(lifecycle, /exactEngineGearboxPair -ne \$false/);
+  assert.match(lifecycle, /exactEngineGearboxPair -ne 0/);
   assert.match(lifecycle, /ruEaeuApplicability -ne \$false/);
   assert.match(lifecycle, /sourceRowSha256 -notmatch/);
 });
