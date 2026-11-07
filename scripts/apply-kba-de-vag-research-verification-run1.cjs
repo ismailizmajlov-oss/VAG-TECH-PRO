@@ -28,19 +28,18 @@ function patch(desktopRoot) {
   let test = testOriginal.replace(/\r\n/g, "\n");
 
   verifier = replaceExactly(verifier,
-    '  assert(manifest.schema_version === 1 && Array.isArray(manifest.packs) && manifest.packs.length === 11, "Expected eleven separately licensed research packs, including NL-only RDW approval research");\n  const packIds = manifest.packs.map((pack) => pack.id);\n  assert(packIds.every((id) => typeof id === "string" && id.length > 0) && new Set(packIds).size === packIds.length, "Research pack IDs must be non-empty and unique");\n  const byId = Object.fromEntries(manifest.packs.map((pack) => [pack.id, pack]));\n',
-    '  assert(manifest.schema_version === 1 && Array.isArray(manifest.packs) && manifest.packs.length === 12, "Expected twelve separately licensed research packs, including DE-only KBA aggregate stock research");\n  const packIds = manifest.packs.map((pack) => pack.id);\n  assert(packIds.every((id) => typeof id === "string" && id.length > 0) && new Set(packIds).size === packIds.length, "Research pack IDs must be non-empty and unique");\n  const byId = Object.fromEntries(manifest.packs.map((pack) => [pack.id, pack]));\n',
+    '  assert(manifest.schema_version === 1 && Array.isArray(manifest.packs) && manifest.packs.length === 12, "Expected twelve separately licensed research packs, including CH-only ASTRA TAS/TARGA and NL-only RDW approval research");\n  const packIds = manifest.packs.map((pack) => pack.id);\n  assert(packIds.every((id) => typeof id === "string" && id.length > 0) && new Set(packIds).size === packIds.length, "Research pack IDs must be non-empty and unique");\n  const byId = Object.fromEntries(manifest.packs.map((pack) => [pack.id, pack]));\n',
+    '  assert(manifest.schema_version === 1 && Array.isArray(manifest.packs) && manifest.packs.length === 13, "Expected thirteen separately licensed research packs, including CH-only ASTRA TAS/TARGA, NL-only RDW and DE-only KBA research");\n  const packIds = manifest.packs.map((pack) => pack.id);\n  assert(packIds.every((id) => typeof id === "string" && id.length > 0) && new Set(packIds).size === packIds.length, "Research pack IDs must be non-empty and unique");\n  const byId = Object.fromEntries(manifest.packs.map((pack) => [pack.id, pack]));\n',
     "KBA research pack manifest cardinality");
 
   verifier = replaceExactly(verifier,
-    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && rdw, "Required generic, candidate, CH-only and NL-only research packs must be registered");\n',
-    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  const kbaDe = byId["kba-de-vag-stock-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && rdw && kbaDe, "Required generic, candidate, CH-only, NL-only and DE-only research packs must be registered");\n',
+    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw, "Required generic, candidate, CH-only ASTRA TAS/TARGA and NL-only research packs must be registered");\n',
+    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  const kbaDe = byId["kba-de-vag-stock-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw && kbaDe, "Required generic, candidate, CH-only ASTRA TAS/TARGA, NL-only and DE-only research packs must be registered");\n',
     "KBA pack registration");
 
-  verifier = replaceExactly(verifier,
-    '  const rdwSummary = require(path.join(ROOT, "lib", "rdw-vag-research-db.cjs")).getRdwSummary(RESEARCH);\n  assert(wikidataGenerationSummary.counts.memberEntities === 109 && wikidataGenerationSummary.generationVerified === false, "Wikidata generation candidate runtime verification failed");\n',
-    '  const rdwSummary = require(path.join(ROOT, "lib", "rdw-vag-research-db.cjs")).getRdwSummary(RESEARCH);\n  const kbaDeSummary = require(path.join(ROOT, "lib", "kba-de-stock-research-db.cjs")).getKbaSummary(RESEARCH);\n  assert(wikidataGenerationSummary.counts.memberEntities === 109 && wikidataGenerationSummary.generationVerified === false, "Wikidata generation candidate runtime verification failed");\n',
-    "KBA runtime reader");
+  const rdwCountAssertion = '  assert(rdwSummary.counts.approvalScopes === 96519 && rdwSummary.counts.registrationObservations === 102662 && rdwSummary.counts.engineDesignationCandidates === 93836 && rdwSummary.counts.gearboxClassifications === 93548 && rdwSummary.counts.sourceRows === 604785 && rdwSummary.sourceSnapshotSha256 === "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706" && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot, database or source manifest provenance/counts changed");';
+  const kbaReader = '  const kbaDeSummary = require(path.join(ROOT, "lib", "kba-de-stock-research-db.cjs")).getKbaSummary(RESEARCH);';
+  verifier = replaceExactly(verifier, rdwCountAssertion, rdwCountAssertion + "\n" + kbaReader, "KBA runtime reader");
 
   verifier = replaceExactly(verifier,
     '  assert(rdwSummary.counts.approvalScopes === 96519 && rdwSummary.counts.registrationObservations === 102662 && rdwSummary.counts.engineDesignationCandidates === 93836 && rdwSummary.counts.gearboxClassifications === 93548 && rdwSummary.counts.sourceRows === 604785 && rdwSummary.sourceSnapshotSha256 === "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706" && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot, database or source manifest provenance/counts changed");\n',
@@ -59,7 +58,7 @@ function patch(desktopRoot) {
 
   fs.writeFileSync(verifierPath, verifier.replace(/\n/g, verifierNewline), "utf8");
   fs.writeFileSync(testPath, test.replace(/\n/g, testNewline), "utf8");
-  return { status: "patched", files: ["scripts/verify-local-research-packs.cjs","tests/local-research-packs.test.cjs"], manifestPackCount: 12 };
+  return { status: "patched", files: ["scripts/verify-local-research-packs.cjs","tests/local-research-packs.test.cjs"], manifestPackCount: 13 };
 }
 function main() {
   const index = process.argv.indexOf("--desktop-root");
