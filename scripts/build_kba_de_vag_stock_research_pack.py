@@ -289,8 +289,10 @@ def build(source_csv: Path, source_manifest_path: Path, output_dir: Path, builde
             raise RuntimeError("SQLite foreign_key_check failed")
         if db.execute("SELECT count(*) FROM v_stock_observations WHERE market_scope!='DE' OR review_status!='research_only' OR exact_engine_gearbox_pair!=0 OR ru_eaeu_applicability!=0").fetchone()[0]:
             raise RuntimeError("KBA view crossed its research-only applicability boundary")
+    db.close()
     with sqlite3.connect(db_tmp) as db:
         db.execute("VACUUM")
+    db.close()
     os.replace(db_tmp,db_final)
     database_hash=sha256_file(db_final)
     source_snapshot_copy=output_dir/"source-snapshot.csv"
