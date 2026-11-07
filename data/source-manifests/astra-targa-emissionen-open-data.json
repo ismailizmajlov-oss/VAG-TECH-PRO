@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "source_id": "astra-fedro-targa-emissionen-approval-variants-ch",
+  "publisher": "Federal Roads Office (FEDRO / ASTRA), Swiss Confederation",
+  "source_kind": "official_open_government_per_gearbox_type_approval_data",
+  "market_scope": [
+    "CH"
+  ],
+  "source_url": "https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/emissionen.txt",
+  "source_revision": "Thu, 30 Jul 2026 09:22:59 GMT",
+  "snapshot": {
+    "downloaded": true,
+    "downloaded_at_utc": "2026-11-07T04:01:16.755650+00:00",
+    "file_sha256": "a11c1727440d6d587a1bd0b37eaeb011afc050b8f356ef746fdd6e18898fdd92",
+    "file_size_bytes": 70829020,
+    "format": "tab-delimited TXT; CP1252; 65 columns",
+    "etag": "\"438c3dc-657d09e3d7852\"",
+    "last_modified": "Thu, 30 Jul 2026 09:22:59 GMT",
+    "source_generation": "third_generation_type_approvals_after_1995"
+  },
+  "rights": {
+    "data_license_status": "Swiss Open Government Data (OGD); no separate CC identifier assigned in the reviewed ASTRA publication",
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "bulk_reuse_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": true,
+    "attribution": "Source: Federal Roads Office (FEDRO / ASTRA), TARGA emissions data (emissionen.txt), third-generation type-approval data, source revision 2026-07-30; https://opendata.astra.admin.ch/ivzod/2000-Typengenehmigungen_TG_TARGA/2200-Basisdaten_TG_ab_1995/emissionen.txt. Swiss Open Government Data (OGD). VAG-only research extraction; source field values are retained as raw approval classifications and are not promoted to OEM VAG codes.",
+    "rights_status": "approved_by_published_ogd_terms",
+    "evidence": "ASTRA identifies TARGA type-approval information products as freely available OGD; the official vehicle-data page distinguishes free factual type-approval data from paid holder/location and registration-plate mapping products. Swiss OGD policy permits reuse subject to attribution.",
+    "evidence_urls": [
+      "https://www.astra.admin.ch/de/news-homologation",
+      "https://www.astra.admin.ch/de/fahrzeugdaten",
+      "https://www.bk.admin.ch/en/open-government-data-ogd-2",
+      "https://opendata.swiss/en/terms-of-use",
+      "https://www.fedlex.admin.ch/eli/cc/2023/682/en"
+    ],
+    "excluded_products": [
+      "paid holder/location data",
+      "registration-plate mappings",
+      "eDatenblatt portal output",
+      "non-public type-approval documents"
+    ]
+  },
+  "coverage": {
+    "source_generation": "third_generation_after_1995",
+    "vehicle_group": "motor vehicles; documentation states one row per gearbox variant",
+    "exact_make_filter": true,
+    "make_counts": {
+      "AUDI": 16759,
+      "BENTLEY": 286,
+      "BUGATTI": 9,
+      "CUPRA": 222,
+      "LAMBORGHINI": 436,
+      "PORSCHE": 1611,
+      "SEAT": 4006,
+      "SKODA": 4746,
+      "VW": 25165
+    },
+    "source_rows_scanned": 280993,
+    "vag_rows_in_research_pack": 53240,
+    "malformed_rows": 0
+  },
+  "applicability_policy": {
+    "market_scope": "CH only",
+    "applicability_precision": "CH_type_approval_gearbox_variant_row",
+    "source_defined_variant_link": true,
+    "exact_vag_factory_code_pair": false,
+    "exact_vehicle_fitment": false,
+    "production_fitment": false,
+    "ru_eaeu_applicability": false,
+    "model_year_inferred": false,
+    "generation_inferred": false,
+    "repair_procedure_applicability": false,
+    "diagnostic_execution_allowed": false
+  },
+  "field_status": {
+    "approval_number_make_type": "raw official CH type-approval fields",
+    "engine_make_type": "raw ASTRA approval engine fields; not independently confirmed VAG factory engine codes",
+    "gearbox": "raw ASTRA approval gearbox classification; not a confirmed VAG gearbox code",
+    "source_defined_variant_link": "one source row per gearbox variant; preserves source-defined approval type/gearbox association",
+    "exact_vag_factory_code_pair": "not established",
+    "model_year_generation": "not inferred",
+    "ecu_dtc_repair_content": "not provided"
+  },
+  "import_policy": {
+    "research_pack_allowed": true,
+    "data_ingested_to_research_pack": true,
+    "product_import_allowed": false,
+    "production_import": false,
+    "exact_vag_factory_code_pair": false,
+    "ru_eaeu_applicability": false
+  },
+  "source_manifest_notes": [
+    "The source-defined row is a Swiss approval gearbox-variant record, not a confirmed VAG factory engine/gearbox code pair.",
+    "No production fitment, RU/EAEU applicability, model year, generation, ECU, DTC, test plan or repair applicability is asserted."
+  ]
+}
