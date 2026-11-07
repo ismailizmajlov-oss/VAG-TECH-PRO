@@ -166,7 +166,7 @@ function searchAstraTargaRows(query, limit = 25, explicitRoot) {
       approvalNumber: row.approval_number_raw, make: row.make_raw, type: row.type_raw,
       gearboxClassification: row.gearbox_classification_raw, finalDriveRatio: row.final_drive_ratio_raw,
       engineMake: row.engine_make_raw, engineType: row.engine_type_raw, engineConstruction: row.engine_construction_raw,
-      fuel: row.fuel_raw, displacementCc: row.displacement_cc_raw == null ? null : Number(row.displacement_cc_raw), powerKw: row.power_kw_raw,
+      fuel: row.fuel_raw, displacementCc: row.displacement_cc_raw == null ? null : Number(row.displacement_cc_raw), powerKw: row.power_kw_raw == null ? null : Number(row.power_kw_raw),
       powerRpm: row.power_rpm_raw, torqueNm: row.torque_nm_raw == null ? null : Number(row.torque_nm_raw), torqueRpm: row.torque_rpm_raw,
       emissionControl: row.emission_control_raw, drive: row.drive_raw, emissionsCode: row.emissions_code_raw,
       homologationDate: row.homologation_date_raw, marketScope: "CH", applicabilityPrecision: row.applicability_precision,
