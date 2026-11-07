@@ -4805,7 +4805,7 @@
       "market_scope": [
         "UNKNOWN"
       ],
-      "data_revision": "2026-11-07",
+      "data_revision": "CarDir open-data snapshot 2026-11-07; SHA-256 72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
       "evidence_scope": [
         "owner_manual_reference_facts",
         "fluids",
@@ -4844,7 +4844,7 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_source_snapshot_acquired_pack_build_pending",
+      "verification_status": "licensed_source_snapshot_revised_pack_build_pending",
       "research_pack": {
         "status": "source_snapshot_acquired_schema_verified",
         "research_pack_allowed": true,
@@ -4853,8 +4853,8 @@
         "ru_eaeu_applicability": false,
         "expected_source_rows": 41649,
         "expected_models": 561,
-        "source_snapshot_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
-        "source_file_bytes": 14291137,
+        "source_snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+        "source_file_bytes": 14291343,
         "source_rows": 41649,
         "source_models": 561,
         "vag_fact_rows": 773,
@@ -4865,7 +4865,11 @@
           "Skoda",
           "Volkswagen"
         ],
-        "retrieved_at_utc": "2026-11-07T11:54:13.614079+00:00"
+        "retrieved_at_utc": "2026-11-07T13:00:14.942499+00:00",
+        "source_rows_changed": 1658,
+        "vag_rows_changed": 1,
+        "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
+        "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     }
