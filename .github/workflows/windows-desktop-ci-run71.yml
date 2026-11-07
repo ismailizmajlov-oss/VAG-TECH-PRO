@@ -61,7 +61,6 @@ on:
       - "tests/test_cardir_vag_open_data_pack.py"
       - "tests/test_cardir_vag_open_data_source_rights.py"
       - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
-      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
