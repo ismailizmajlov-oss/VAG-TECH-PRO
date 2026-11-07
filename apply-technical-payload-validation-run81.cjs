@@ -71,7 +71,7 @@ if (!core.includes("// run81: renderer-aligned strict payload contract")) {
 const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
 const enumValues = schema.properties && schema.properties.record_kind && schema.properties.record_kind.enum;
 if (!Array.isArray(enumValues)) throw new Error("Run81 schema record_kind enum is missing");
-for (const kind of ["dtc_generic", "dtc_vag_specific"]) if (!enumValues.includes(kind)) enumValues.push(kind);
+for (const kind of ["dtc_generic", "dtc_vag_specific", "oem_supersession"]) if (!enumValues.includes(kind)) enumValues.push(kind);
 schema.$defs = schema.$defs || {};
 schema.$defs.diagnostic_test_plan.properties = {
   ...schema.$defs.diagnostic_test_plan.properties,
@@ -114,8 +114,21 @@ schema.$defs.dtc_vag_specific = {
   ],
   additionalProperties: false
 };
+schema.$defs.oem_supersession = {
+  type: "object",
+  properties: {
+    old_part_number: { type: "string" }, new_part_number: { type: "string" },
+    from_part_number: { type: "string" }, to_part_number: { type: "string" },
+    supersession_status: { type: "string" }, applicability_note: { type: "string" }
+  },
+  allOf: [
+    { anyOf: [{ required: ["old_part_number"] }, { required: ["from_part_number"] }] },
+    { anyOf: [{ required: ["new_part_number"] }, { required: ["to_part_number"] }] }
+  ],
+  additionalProperties: false
+};
 schema.allOf = schema.allOf || [];
-for (const kind of ["dtc_generic", "dtc_vag_specific"]) {
+for (const kind of ["dtc_generic", "dtc_vag_specific", "oem_supersession"]) {
   if (!schema.allOf.some(rule => rule.if && rule.if.properties && rule.if.properties.record_kind && rule.if.properties.record_kind.const === kind)) {
     schema.allOf.push({ if: { properties: { record_kind: { const: kind } }, required: ["record_kind"] }, then: { properties: { payload: { $ref: "#/$defs/" + kind } } } });
   }
@@ -154,11 +167,12 @@ if (!tests.includes("run81 validates renderer metadata and DTC payload boundarie
     'test("run81 JSON schema matches the renderer and strict DTC payload contract", () => {',
     '  const schemaPath = path.join(__dirname, "..", "data", "schemas", "technical-record-payloads.schema.json");',
     '  const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));',
-    '  for (const kind of ["dtc_generic", "dtc_vag_specific"]) assert.ok(schema.properties.record_kind.enum.includes(kind));',
+    '  for (const kind of ["dtc_generic", "dtc_vag_specific", "oem_supersession"]) assert.ok(schema.properties.record_kind.enum.includes(kind));',
     '  for (const field of ["test_purpose", "system", "system_name", "ecu_family"]) assert.ok(schema.$defs.diagnostic_test_plan.properties[field]);',
     '  for (const field of ["ecu_family", "ecu_address", "hardware_number", "software_number"]) assert.ok(schema.$defs.ecu_profile.properties[field]);',
     '  assert.equal(schema.$defs.dtc_generic.additionalProperties, false);',
-    '  assert.equal(schema.$defs.dtc_vag_specific.additionalProperties, false);',
+    '  assert.equal(schema.$defs.dtc_vag_specific.additionalProperties, false);
+  assert.equal(schema.$defs.oem_supersession.additionalProperties, false);',
     '});',
     ""
   ].join("\n");
