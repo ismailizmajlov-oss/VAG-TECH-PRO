@@ -26,6 +26,7 @@ class CardirVagOpenDataPackTests(unittest.TestCase):
         self.source_obj={
           "source_id":builder.SOURCE_ID,"publisher":"CarDir","data_revision":"fixture-r1",
           "source_urls":{"csv":builder.DATA_URL,"dataset_page":builder.DATA_PAGE_URL},
+          "data_scope":{"vag_brand_allowlist":["Audi","Volkswagen","Volkswagen Commercial Vehicles","Volkswagen Nutzfahrzeuge","Skoda","Škoda","SEAT","CUPRA","Porsche","Bentley","Lamborghini","VW"]},
           "rights":{"rights_status":"approved_by_published_CC_BY_4_0","permission_status":"not_required_under_published_CC_BY_4_0",
             "license_id":"CC-BY-4.0","license_url":builder.LICENSE_URL,"commercial_use_allowed":True,"display_allowed":True,
             "offline_cache_allowed":True,"bulk_reuse_allowed":True,"redistribution_allowed":True,"attribution_required":True,
