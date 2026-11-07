@@ -67,5 +67,26 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
         self.assertIn("do not execute UDS commands", source["project_decision"])
 
 
+
+    def test_verified_pack_artifact_is_recorded_but_not_imported_or_integrated(self):
+        source = SOURCES["obdb-vag-signalsets-cc-by-sa"]
+        build = source["research_pack_build_evidence"]
+        self.assertEqual(build["workflow_run_number"], 4)
+        self.assertEqual(build["artifact_id"], 13198105454)
+        self.assertEqual(build["artifact_sha256"], "db6014167149322c8928d7f8762ea33421f7e142bd8864b0ae60307207578069")
+        self.assertEqual(build["database_sha256"], "d3c54051e2f3f73c211e6d84c4e84541a60901e01eeee843b8357efa1e421aa1")
+        self.assertEqual(build["manifest_sha256"], "29ec10e68214c66a5c3c14734b9f30e0eb9d25f0d03be3384a454c3ef1833f46")
+        self.assertEqual(build["license_id"], "CC-BY-SA-4.0")
+        self.assertIs(build["share_alike_required"], True)
+        self.assertIs(build["separate_pack_required"], True)
+        self.assertIs(build["execution_allowed"], False)
+        self.assertIs(build["product_database_import"], False)
+        self.assertEqual(build["desktop_integration_status"], "not_integrated")
+        self.assertIs(source["product_import_allowed"], False)
+        self.assertIs(source["data_ingested"], False)
+        self.assertEqual(build["counts"]["dtc_definitions"], 0)
+        self.assertEqual(build["counts"]["approved_test_plans"], 0)
+        self.assertEqual(build["counts"]["exact_vehicle_fitment"], 0)
+
 if __name__ == "__main__":
     unittest.main()
