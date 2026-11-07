@@ -58,6 +58,8 @@ test("KBA research verifier registers a twelfth isolated pack and checks its cou
   assert.match(patch, /manifest\.packs\.length === 12/);
   assert.match(patch, /kba-de-vag-stock-research/);
   assert.match(patch, /kbaDeSummary\.marketScope === "DE"/);
+  assert.match(patch, /researchPackIngested === true/);
+  assert.match(patch, /productDatabaseIngested === false/);
   assert.match(patch, /vagStockObservations === 264847/);
   assert.match(patch, /exactEngineGearboxPair === false/);
   assert.match(patch, /ruEaeuApplicability === false/);
