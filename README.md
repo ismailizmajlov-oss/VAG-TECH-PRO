@@ -102,26 +102,26 @@ A previous dependency audit in run 240 reported zero vulnerabilities for product
 
 ## KBA DE VAG stock research pack — 2026-11-07
 
-The KBA FZ Hersteller Handelsnamen Pkw dataset is published by Kraftfahrt-Bundesamt through GovData/Mobilithek under Datenlizenz Deutschland – Namensnennung – Version 2.0 (DL-DE BY 2.0). The published licence permits commercial use, display, offline caching, bulk reuse and redistribution with attribution and a notice for modified data. The official whole-vehicle type-approval XLSX remains unavailable (HTTP 503); no approval-list data or hash is claimed for that separate dataset.
+The KBA FZ Hersteller Handelsnamen Pkw dataset is published by Kraftfahrt-Bundesamt through GovData/Mobilithek under Datenlizenz Deutschland – Namensnennung – Version 2.0 (DL-DE BY 2.0). The published licence permits commercial use, display, offline caching, bulk reuse and redistribution with attribution and a notice for modified data. The separate official whole-vehicle type-approval XLSX remains unavailable (HTTP 503); no approval-list data or hash is claimed for that dataset.
 
 The passenger-car stock CSV was acquired on 2026-11-07 through the KBA Statistikportal ArcGIS Hub legacy download endpoint. The 65,366,675-byte snapshot contains 1,047,991 source rows; the exact VAG manufacturer allowlist retains 264,847 aggregate observations across eight labels. The normalized research SQLite contains 17 federal states, four annual reference dates (2023-01-01 through 2026-01-01), 794 trade names and 2,225 raw type keys. There are 802 make/trade-name pairs, 4,155 make/type-key pairs and 16,301 make/trade/type/reference-date tuples.
 
-Independent artifact audit verified:
-- artifact ZIP SHA-256: cb61541e6ac5ad6c3eea2fba9fb2947cc6c83a63aea4f8777beb67b017536d82 (27,883,683 bytes);
+The latest successful pack build is [KBA research workflow run 7](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42328320491). Independent artifact audit verified:
+- artifact ZIP SHA-256: fd75f0e2c0dd260cf95540f7bcf6cda7d4bfc79948cd332ff2ac3402461281bd (27,883,868 bytes);
 - source CSV SHA-256: 03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468;
-- source manifest SHA-256: c40e207200762a9c901a20c024236f84b78699b0d8a68067e0f0a5db13b9e46d;
-- pack manifest SHA-256: 62bb1867371099c5fdf9e92509684dd1344cc9cb365cf1392684f529a1e7557f;
-- SQLite SHA-256: c61720c363d1f26a2618e16b420c91559634b90347149b312eb18e23be054111.
+- generated source-manifest SHA-256: 3aab2daa3c03914001f8b80c92b0e47c1883e3e1ec6eb8589ac3065d2e1c04da;
+- pack manifest SHA-256: 0322d9acc4236e89702377a1c8a90daea253f4b14f86d996fd28bbf505e4c8e2;
+- SQLite SHA-256: 879ff1f66d3615ee2324b98d4d2defdcfae8018f48fe78f865fc1d3f13a5f4b9.
 
-The SQLite audit returned PRAGMA integrity_check=ok, no foreign-key violations, and nine expected tables. The source-row hash is SHA-256 over canonical JSON of the original parsed CSV field strings; original column names and raw Typschlüssel values are retained.
+The SQLite audit returned PRAGMA integrity_check=ok, no foreign-key violations and nine expected tables. Source-row hashes are SHA-256 over canonical JSON of the original parsed CSV field strings; original column names and raw Typschlüssel values are retained.
 
 This pack is Germany-only aggregate stock research, not a vehicle build sheet. The downloaded columns contain no HSN field. Typschlüssel is not promoted to HSN or confirmed TSN; annual Berichtszeitpunkt is not model year or generation. The source provides no engine code, gearbox code, engine/gearbox pair, ECU, DTC, wiring, repair procedure or individual-vehicle fitment. No Russian/EAEU applicability is inferred.
 
-The KBA pack build completed successfully in [workflow run 3](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42327842556). It remains a separate research pack: research_pack_ingested=true, while data_ingested=false, product_database_ingested=false and product_import_allowed=false. Desktop integration has not yet passed a complete Windows build/lifecycle. Windows run 473 failed in the earlier source-rights test gate before KBA integration; the stale status contract and central-register state have since been corrected, but a subsequent successful run is still required. The pack is not represented as production vehicle fitment.
+The pack remains separate from the production vehicle catalog: research_pack_ingested=true, while data_ingested=false, product_database_ingested=false and product_import_allowed=false. In Windows validation run 474, the KBA integration step successfully added the run-7 pack to the staging desktop source and generated a verified research-only integration report. The following verifier-patch step failed because of an unescaped newline in a JavaScript replacement string. The patch was corrected in commit d86c65bb320903ab3f4fb5b7131e5ea9eb66f5e3, with a regression assertion in commit 52673aed8e7dc6c21eb551e81bb98c7a2e6d867f. A fresh successful Windows build and lifecycle is still required; no installer is claimed to contain the KBA pack until that run succeeds.
 
 ## Current source work after RDW pack run 34 — 2026-11-07
 
-The current main branch contains 51 central source-register entries and 13 entries in the dedicated Russian/EAEU register; the source-manifest bundle contains 15 manifests. RDW pack run 34 is the latest completed successful RDW acquisition/build. The separate KBA DE stock research pack run 3 is the latest completed KBA research build; both remain market-specific research packs, not Russian/EAEU production fitment.
+The current main branch contains 51 central source-register entries and 13 entries in the dedicated Russian/EAEU register; the source-manifest bundle contains 15 manifests. RDW pack run 34 is the latest completed successful RDW acquisition/build. The separate KBA DE stock research pack run 7 is the latest completed KBA research build; both remain market-specific research packs, not Russian/EAEU production fitment.
 
 The Dutch national data catalogue lists the six selected RDW vehicle identity and TGK datasets under CC0 1.0: [RDW base vehicle data](https://data.overheid.nl/dataset/basisregistratie-voertuigen---rdw), [TGK drive](https://data.overheid.nl/dataset/81ac19f5-d0e5-4411-847e-f8698d4a42f2), [TGK gearbox](https://data.overheid.nl/dataset/8a5be559-87b6-4224-9bbc-45dae886c427), [TGK base](https://data.overheid.nl/dataset/38afb954-4d3b-4363-9875-4a16117ab86b), [TGK make](https://data.overheid.nl/dataset/68f02697-4c7a-4a5c-ae1d-b253aa3ecc89), and [TGK manufacturer trade name](https://data.overheid.nl/dataset/1f00bd5c-63e9-4262-9603-311712339a30). The source is NL registration evidence with EU type-approval identifiers; it is not RU/EAEU evidence.
 
