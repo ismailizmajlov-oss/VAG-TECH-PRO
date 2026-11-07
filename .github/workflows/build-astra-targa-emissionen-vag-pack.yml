@@ -8,6 +8,8 @@ on:
       - "scripts/build_astra_targa_emissionen_vag_research_pack.py"
       - "scripts/probe_astra_targa_emissionen.py"
       - "tests/test_astra_targa_emissionen_*.py"
+      - "data/source-manifests/astra-targa-emissionen-open-data.json"
+      - "data/source-manifests/vag-factory-source-register.json"
       - ".github/workflows/build-astra-targa-emissionen-vag-pack.yml"
 
 permissions:
