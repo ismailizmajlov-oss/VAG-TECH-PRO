@@ -63,7 +63,7 @@ tests = replaceOnce(
   '    const expected = crypto.createHash("sha256").update(fs.readFileSync(license)).digest("hex");\n    const originalStat = fs.statSync(license);\n    fs.writeFileSync(path.join(temp, "manifest.json"), JSON.stringify({\n      schema_version: 1,\n      packs: [{ id: "test-pack", license_file: "LICENSE.txt", license_file_sha256: expected }],\n    }));\n    assert.equal(local.verifyPackFileHash(temp, "test-pack", "license_file", "license_file_sha256").id, "test-pack");\n    fs.writeFileSync(license, "XX BY 4.0 license notice");\n    fs.utimesSync(license, originalStat.atime, originalStat.mtime);\n    assert.throws(() => local.verifyPackFileHash(temp, "test-pack", "license_file", "license_file_sha256"), /SHA-256 mismatch/);',
   "provenance hash regression test"
 );
-const oldRevisionAssertions = tests.match(/^  assert\\.equal\\(rows\\[0\\]\\.upstreamRevision, "[a-f0-9]{40}"\\);$/gm) || [];
+const oldRevisionAssertions = tests.match(/^  assert\.equal\(rows\[0\]\.upstreamRevision, "[a-f0-9]{40}"\);$/gm) || [];
 if (oldRevisionAssertions.length === 1) {
   tests = tests.replace(oldRevisionAssertions[0], "  assert.equal(rows[0].upstreamRevision, obdexPack.source_revision);");
 } else if (!tests.includes("assert.equal(rows[0].upstreamRevision, obdexPack.source_revision);")) {
