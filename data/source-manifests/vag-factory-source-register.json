@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T01:11:30Z",
+  "updated_at": "2026-11-07T01:12:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4322,9 +4322,10 @@
         "homepage_summary": {
           "url": "https://cert.trade.kg/",
           "observed_at": "2026-11-07",
-          "ot_ts_summary_count": 1,
-          "count_treatment": "separate_cert_trade_landing_page_ui_counter_only_not_a_complete_or_verified_public_register_corpus_count",
-          "note": "The one-OTTS counter is displayed on cert.trade.kg, not on the trade.kg public-registry project page; it is retained as a portal observation only."
+          "otts_summary_count": 1,
+          "otsh_summary_count": 0,
+          "count_treatment": "separate_cert_trade_landing_page_ui_counters_only_not_a_complete_or_verified_public_register_corpus_count",
+          "note": "The one-OTTS and zero-OTSH counters are displayed on cert.trade.kg, not on the trade.kg public-registry project page; they are portal observations only."
         },
         "vehicle_approval_workflow": {
           "application_system_url": "https://car.trade.kg/",
