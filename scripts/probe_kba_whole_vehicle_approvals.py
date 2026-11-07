@@ -37,6 +37,7 @@ MAX_DOWNLOAD_BYTES = 50 * 1024 * 1024
 MAX_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
 MAX_ZIP_ENTRIES = 2000
 TIMEOUT_SECONDS = 35
+HEADER_HINTS = ("hersteller", "manufacturer", "marke", "handelsname", "typbezeichnung", "typgenehmigungsnummer", "genehmigungsnummer", "approval number")
 NS = {
     "main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
     "rel": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
@@ -133,7 +134,7 @@ def parse_xlsx_headers(payload: bytes) -> dict[str, Any]:
                 continue
             root = ET.fromstring(archive.read(target))
             rows = root.findall(".//main:sheetData/main:row", NS)
-            nonempty_rows: list[list[str]] = []
+            nonempty_rows: list[tuple[int, list[str]]] = []
             for row in rows[:30]:
                 values: dict[int, str] = {}
                 for cell in row.findall("main:c", NS):
@@ -143,25 +144,40 @@ def parse_xlsx_headers(payload: bytes) -> dict[str, Any]:
                     value_node = cell.find("main:v", NS)
                     value = value_node.text if value_node is not None and value_node.text is not None else ""
                     if cell_type == "s" and value:
-                        value = shared_strings[int(value)]
+                        shared_index = int(value)
+                        if shared_index < 0 or shared_index >= len(shared_strings):
+                            raise ValueError("XLSX shared-string index is out of range")
+                        value = shared_strings[shared_index]
                     elif cell_type == "inlineStr":
                         value = "".join(node.text or "" for node in cell.findall(".//main:t", NS))
                     values[col] = value
                 if values:
                     width = max(values) + 1
-                    nonempty_rows.append([values.get(i, "") for i in range(width)])
-            header_index = next(
-                (i for i, row in enumerate(nonempty_rows) if any(str(v).strip() for v in row)),
-                None,
-            )
-            if header_index is None:
-                sheets.append({"name": name, "header": [], "sample_rows": []})
+                    row_number = int(row.attrib.get("r", len(nonempty_rows) + 1))
+                    nonempty_rows.append((row_number, [values.get(i, "") for i in range(width)]))
+            if not nonempty_rows:
+                sheets.append({"name": name, "header": [], "sample_rows": [], "header_status": "no_nonempty_rows"})
                 continue
-            header = [str(value).strip() for value in nonempty_rows[header_index]]
-            samples = nonempty_rows[header_index + 1:header_index + 3]
+
+            def header_score(values: list[str]) -> int:
+                normalized = [str(value).strip().casefold() for value in values]
+                return sum(1 for hint in HEADER_HINTS if any(hint in cell for cell in normalized))
+
+            candidates = [(header_score(values), index) for index, (_, values) in enumerate(nonempty_rows)]
+            score, header_index = max(candidates, default=(0, 0))
+            if score >= 2:
+                header_status = "candidate_header_by_known_field_names"
+            else:
+                header_index = 0
+                header_status = "unconfirmed_first_nonempty_row"
+            header_row_number, header_values = nonempty_rows[header_index]
+            header = [str(value).strip() for value in header_values]
+            samples = [values for _, values in nonempty_rows[header_index + 1:header_index + 3]]
             sheets.append({
                 "name": name,
-                "header_row_index_1_based_in_probe_window": header_index + 1,
+                "header_row_number": header_row_number,
+                "header_status": header_status,
+                "header_match_score": score,
                 "header": header,
                 "sample_rows": samples,
             })
