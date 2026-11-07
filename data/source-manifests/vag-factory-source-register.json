@@ -1760,7 +1760,45 @@
         "The adapted research database must remain separately licensed CC BY-SA 4.0 with attribution; do not merge into a differently licensed proprietary database."
       ],
       "evidence_status": "pinned_source_commits_and_each_repository_LICENSE_file_reviewed_2026-11-05; prior pack audit records 24 file hashes, record hashes and SQLite integrity",
-      "data_ingested": false
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "research_pack_build_evidence": {
+        "workflow_run_number": 4,
+        "workflow_run_id": 41562106883,
+        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/41562106883",
+        "source_commit": "eebcc64541de325ecfc26d2c2dcb1eadc0841cf0",
+        "artifact_id": 13198105454,
+        "artifact_name": "obdb-vag-research-cc-by-sa",
+        "artifact_sha256": "db6014167149322c8928d7f8762ea33421f7e142bd8864b0ae60307207578069",
+        "artifact_size_bytes": 839847,
+        "database_sha256": "d3c54051e2f3f73c211e6d84c4e84541a60901e01eeee843b8357efa1e421aa1",
+        "manifest_sha256": "29ec10e68214c66a5c3c14734b9f30e0eb9d25f0d03be3384a454c3ef1833f46",
+        "attribution_sha256": "fcacf8d13b2ff64dd3269661c748f07a906246a19be0c88e74e9d8e8f9791e14",
+        "built_at_utc": "2026-11-03T01:48:21Z",
+        "counts": {
+          "source_repositories": 6,
+          "upstream_files": 24,
+          "generation_candidates": 32,
+          "ecu_candidates": 15,
+          "uds_command_candidates": 2315,
+          "signal_candidates": 2480,
+          "dtc_definitions": 0,
+          "repair_procedures": 0,
+          "approved_test_plans": 0,
+          "exact_vehicle_fitment": 0,
+          "exact_ecu_fitment": 0,
+          "exact_engine_gearbox_pairs": 0
+        },
+        "license_id": "CC-BY-SA-4.0",
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "market_scope": "UNKNOWN",
+        "verification_status": "unverified_community_candidate",
+        "execution_allowed": false,
+        "product_database_import": false,
+        "desktop_integration_status": "not_integrated",
+        "status": "verified_research_pack_build_only"
+      }
     },
     {
       "source_id": "volkswagen-okapi-product-data-api",
