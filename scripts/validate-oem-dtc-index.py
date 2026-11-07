@@ -66,6 +66,31 @@ def main() -> None:
         "generic SAE/ISO DTC cannot be labelled"
     )
 
+    # A generic record is valid only with an unknown manufacturer, and this
+    # invariant must also survive later updates.
+    db.execute("""INSERT INTO oem_dtc_index
+      (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+       evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+      VALUES ('P0124','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+              'generic reference','generic_only',?,'2026-11-03T00:00:00Z')""",
+      (cc0_source, "d" * 64))
+    generic_record = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+    expect_integrity_error(
+        lambda: db.execute("UPDATE oem_dtc_index SET manufacturer='AUDI' WHERE oem_dtc_id=?", (generic_record,)),
+        "generic SAE/ISO DTC must use UNKNOWN manufacturer"
+    )
+
+    # A VAG-specific namespace must name an actual VAG Group make.
+    expect_integrity_error(
+        lambda: db.execute("""INSERT INTO oem_dtc_index
+          (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+           evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+          VALUES ('P0125','manufacturer_specific_vag','UNKNOWN','RU',?,
+                  'row 2','unknown',?,'2026-11-03T00:00:00Z')""",
+          (cc0_source, "e" * 64)),
+        "VAG-specific DTC requires a VAG Group manufacturer"
+    )
+
     db.execute("""INSERT INTO source_documents
       (source_id,publisher,document_id,document_type,revision,market_scope,
        license_status,reuse_scope,redistribution_allowed,retrieved_at_utc)
@@ -101,7 +126,7 @@ def main() -> None:
 
     if db.execute("PRAGMA foreign_key_check").fetchall():
         raise AssertionError("Foreign key violations detected")
-    print("OEM DTC index validation passed: JSON contract, 4 tables, integrity, namespace guard, rights gate.")
+    print("OEM DTC index validation passed: JSON contract, 4 tables, namespace/manufacturer insert+update guards, rights gate.")
 
 
 if __name__ == "__main__":
