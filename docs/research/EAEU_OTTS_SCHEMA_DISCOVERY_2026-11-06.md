@@ -44,7 +44,7 @@ The EEC's 2023 report on the temporary registry pilot also records that the earl
 
 The new scripts/import_eaeu_otts_registry_export.py parser is a fail-closed path for a future authorized XML export:
 
-1. It accepts only R.TR.TS.07.001 v1.0.0 with the exact namespace and root element.
+1. It requires the exact R.TR.TS.07.001 v1.0.0 root namespace and checks each recognized element against the field-specific imported namespace prefix documented in Decision No. 88, tables 12–13. The five imported namespace families are BaseDataTypes (bdt), ComplexDataObjects (ccdo), SimpleDataObjects (csdo), TR ComplexDataObjects (trcdo) and TR SimpleDataObjects (trsdo). This is a structural field map, not full XSD validation.
 2. It does not scrape the portal, call undocumented endpoints or download documents.
 3. Persistent SQLite staging is blocked unless the source register contains explicit owner-reviewed permission for commercial use, bulk reuse, offline caching, display and redistribution, plus a matching permission-evidence file SHA-256.
 4. It never writes into the production vehicle catalogue. The output is a separate staging SQLite with distribution_eligible=0.

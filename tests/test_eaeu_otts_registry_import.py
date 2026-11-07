@@ -206,6 +206,15 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DTD/entity"):
             importer.parse_registry_export(bad)
 
+    def test_recognized_field_rejects_wrong_but_valid_eec_namespace(self):
+        raw = _xml(include_sbkts=False).replace(
+            b"<VehicleComponentModelCode>TEST-ENGINE-CODE-01</VehicleComponentModelCode>",
+            b'<csdo:VehicleComponentModelCode xmlns:csdo="urn:EEC:M:SimpleDataObjects:v1.0.0">TEST-ENGINE-CODE-01</csdo:VehicleComponentModelCode>',
+            1,
+        )
+        with self.assertRaisesRegex(ValueError, "field-specific namespace mapping"):
+            importer.parse_registry_export(raw)
+
     def test_eec_imported_namespaces_are_allowed_for_schema_fields(self):
         raw = _xml(include_sbkts=False)
         raw = raw.replace(

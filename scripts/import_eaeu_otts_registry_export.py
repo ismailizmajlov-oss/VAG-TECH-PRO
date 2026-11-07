@@ -73,87 +73,86 @@ def _namespace(tag: str) -> str | None:
     return tag[1:].split("}", 1)[0]
 
 
-SCHEMA_ELEMENT_NAMES = frozenset({
-    EXPECTED_ROOT,
-    "VehicleConformityDocDetails",
-    "ConformityDocKindCode",
-    "ConformityDocKindName",
-    "ConformityDocStatusDetails",
-    "DocCreationDate",
-    "DocId",
-    "DocStartDate",
-    "DocStatusCode",
-    "DocValidityDate",
-    "ECUModelCode",
-    "EDocCode",
-    "EDocDateTime",
-    "EngineCapacityMeasure",
-    "EngineCompressionRate",
-    "EngineCylinderArrangementText",
-    "EngineCylinderQuantity",
-    "EngineDetails",
-    "EngineMaxPowerMeasure",
-    "EngineMaxTorqueMeasure",
-    "LanguageCode",
-    "TransmissionUnitDetails",
-    "TransmissionUnitGearQuantity",
-    "UnifiedCountryCode",
-    "VehicleChassisDesignCode",
-    "VehicleCommercialName",
-    "VehicleComponentMakeName",
-    "VehicleComponentModelCode",
-    "VehicleComponentText",
-    "VehicleEcoClassCode",
-    "VehicleMakeCode",
-    "VehicleMakeName",
-    "VehicleTechCategoryCode",
-    "VehicleTypeDetails",
-    "VehicleTypeId",
-    "VehicleTypeVariantId",
-    "VehicleUnitKindCode",
-    "VehicleVariantDetails",
-})
-
-
-def _is_allowed_import_namespace(namespace: str | None) -> bool:
-    return bool(
-        namespace
-        and re.fullmatch(
-            r"urn:EEC:M:(?:BaseDataTypes|ComplexDataObjects|SimpleDataObjects|TR:ComplexDataObjects|TR:SimpleDataObjects):v\d+\.\d+\.\d+",
-            namespace,
-        )
-    )
+SCHEMA_ELEMENT_NAMESPACE_PREFIX = {
+    EXPECTED_ROOT: "root",
+    "VehicleConformityDocDetails": "trcdo",
+    "ConformityDocKindCode": "trsdo",
+    "ConformityDocKindName": "trsdo",
+    "ConformityDocStatusDetails": "trcdo",
+    "DocCreationDate": "csdo",
+    "DocId": "csdo",
+    "DocStartDate": "csdo",
+    "DocStatusCode": "trsdo",
+    "DocValidityDate": "csdo",
+    "ECUModelCode": "trsdo",
+    "EDocCode": "csdo",
+    "EDocDateTime": "csdo",
+    "EngineCapacityMeasure": "trsdo",
+    "EngineCompressionRate": "trsdo",
+    "EngineCylinderArrangementText": "trsdo",
+    "EngineCylinderQuantity": "trsdo",
+    "EngineDetails": "trcdo",
+    "EngineMaxPowerDetails": "trcdo",
+    "EngineMaxPowerMeasure": "csdo",
+    "EngineMaxTorqueDetails": "trcdo",
+    "EngineMaxTorqueMeasure": "trsdo",
+    "LanguageCode": "csdo",
+    "TransmissionUnitDetails": "trcdo",
+    "TransmissionUnitGearQuantity": "trsdo",
+    "UnifiedCountryCode": "csdo",
+    "VehicleChassisDesignCode": "trsdo",
+    "VehicleCommercialName": "csdo",
+    "VehicleComponentMakeName": "trsdo",
+    "VehicleComponentModelCode": "trsdo",
+    "VehicleComponentText": "trsdo",
+    "VehicleEcoClassCode": "trsdo",
+    "VehicleMakeCode": "trsdo",
+    "VehicleMakeName": "csdo",
+    "VehicleTechCategoryCode": "trsdo",
+    "VehicleTypeDetails": "trcdo",
+    "VehicleTypeId": "trsdo",
+    "VehicleTypeVariantId": "trsdo",
+    "VehicleUnitKindCode": "trsdo",
+    "VehicleVariantDetails": "trcdo",
+}
+IMPORTED_NAMESPACE_PATTERNS = {
+    "bdt": re.compile(r"urn:EEC:M:BaseDataTypes:v\\d+\\.\\d+\\.\\d+"),
+    "ccdo": re.compile(r"urn:EEC:M:ComplexDataObjects:v\\d+\\.\\d+\\.\\d+"),
+    "csdo": re.compile(r"urn:EEC:M:SimpleDataObjects:v\\d+\\.\\d+\\.\\d+"),
+    "trcdo": re.compile(r"urn:EEC:M:TR:ComplexDataObjects:v\\d+\\.\\d+\\.\\d+"),
+    "trsdo": re.compile(r"urn:EEC:M:TR:SimpleDataObjects:v\\d+\\.\\d+\\.\\d+"),
+}
 
 
 def _validate_element_namespaces(root: ET.Element) -> None:
-    unexpected: list[tuple[str, str | None]] = []
+    unexpected: list[tuple[str, str | None, str]] = []
     for element in root.iter():
         if not isinstance(element.tag, str):
             continue
         local_name = _local_name(element.tag)
-        namespace = _namespace(element.tag)
-        if local_name not in SCHEMA_ELEMENT_NAMES:
+        expected_prefix = SCHEMA_ELEMENT_NAMESPACE_PREFIX.get(local_name)
+        if expected_prefix is None:
             # Unrelated extension elements such as XMLDSig Signature are
             # ignored; they do not feed any interpreted technical field.
             continue
-        if local_name == EXPECTED_ROOT:
+        namespace = _namespace(element.tag)
+        if expected_prefix == "root":
             allowed = namespace == EXPECTED_NAMESPACE
         else:
-            # Decision No. 88, table 12, imports the EEC base, common and
-            # TR-specific complex/simple data-object namespaces. Their model
-            # versions are independent of R.TR.TS.07.001's v1.0.0 namespace.
-            allowed = namespace == EXPECTED_NAMESPACE or _is_allowed_import_namespace(namespace)
+            pattern = IMPORTED_NAMESPACE_PATTERNS[expected_prefix]
+            allowed = bool(namespace and pattern.fullmatch(namespace))
         if not allowed:
-            unexpected.append((local_name, namespace))
+            unexpected.append((local_name, namespace, expected_prefix))
             if len(unexpected) >= 5:
                 break
     if unexpected:
         details = ", ".join(
-            f"{name!r} in {namespace!r}" for name, namespace in unexpected
+            f"{name!r} in {namespace!r} (expected {prefix})"
+            for name, namespace, prefix in unexpected
         )
         raise ValueError(
             "Unexpected XML namespace for a recognized EAEU schema element; "
-            f"expected the R.TR.TS.07.001 namespace or an imported EEC namespace; found {details}"
+            f"the field-specific namespace mapping from Decision No. 88 is required; found {details}"
         )
 
 

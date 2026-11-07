@@ -34,7 +34,7 @@ The tool checks the permission file's SHA-256 against the source register, refus
 
 ## XML parser safety
 
-The importer accepts only elements in the exact R.TR.TS.07.001 target namespace. It rejects foreign-namespace and unqualified elements when their local names imitate recognized schema fields, accepts the five imported EEC namespace families defined in Decision No. 88, table 12, and records every observed element namespace, while ignoring unrelated extension elements such as XMLDSig signatures. It also rejects DTD/entity declarations after removing interleaved NUL bytes so UTF-16/UTF-32 encoded declarations cannot bypass the pre-parse guard. These checks are structural safeguards; they do not validate a real registry export against an official XSD, which has not yet been retrieved.
+The root must use the exact R.TR.TS.07.001 namespace. Each recognized field is checked against its field-specific imported namespace prefix from Decision No. 88, tables 12–13 (for example, trcdo for complex vehicle records and trsdo for vehicle component codes). Foreign or unqualified lookalike fields are rejected; unrelated extension elements such as XMLDSig signatures are ignored; every observed element namespace is recorded. The field map is based on the published structure description, not a retrieved XSD, so full XSD validation is still not claimed. It also rejects DTD/entity declarations after removing interleaved NUL bytes so UTF-16/UTF-32 encoded declarations cannot bypass the pre-parse guard. These checks are structural safeguards; they do not validate a real registry export against an official XSD, which has not yet been retrieved.
 
 ## Data semantics
 
