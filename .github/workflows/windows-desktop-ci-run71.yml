@@ -91,6 +91,8 @@ on:
       - "docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
+      - "docs/research/HPT_SU_OTTS_AGGREGATOR_RIGHTS_REVIEW_2026-11-07.md"
+      - "tests/test_hpt_su_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/**"
@@ -192,6 +194,8 @@ on:
       - "docs/OTTS_AUTHORIZED_EXPORT_IMPORT.md"
       - "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "tests/test_otts_bot_source_rights.py"
+      - "docs/research/HPT_SU_OTTS_AGGREGATOR_RIGHTS_REVIEW_2026-11-07.md"
+      - "tests/test_hpt_su_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/**"
@@ -253,6 +257,7 @@ jobs:
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
           python tests/test_otts_bot_source_rights.py
+          python tests/test_hpt_su_source_rights.py
           python tests/test_openvag_source_rights.py
           python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
