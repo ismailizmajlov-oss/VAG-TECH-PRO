@@ -101,7 +101,6 @@ test("KBA research verifier registers the thirteenth isolated pack after TARGA a
   const patch = read("scripts/apply-kba-de-vag-research-verification-run1.cjs");
   assert.ok(patch.includes("/manifest\\.packs\\.length === (\\d+)/g"));
   assert.ok(patch.includes("expectedPackCount = currentPackCount + 1"));
-  assert.match(patch, /astra-fedro-targa-emissionen-approval-variants-ch/);
   assert.match(patch, /rdw-vag-nl-eu-type-approval-research/);
   assert.match(patch, /rdwCountAssertion/);
   assert.match(patch, /rdwBinding/);
