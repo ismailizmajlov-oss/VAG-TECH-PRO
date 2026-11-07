@@ -87,6 +87,7 @@ function validatePack(repoRoot, packRoot) {
   for (const key of ["commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed","attribution_required"]) assert(rights[key] === true, "KBA licence permission/condition missing: " + key);
   for (const key of ["production_import","product_import_allowed","data_ingested","ru_eaeu_applicability","individual_vehicle_fitment","exact_vehicle_fitment","model_year_inferred","generation_inferred","engine_codes_included","gearbox_codes_included","exact_engine_gearbox_pair","ecu_fitment","dtc_fitment","repair_applicability","diagnostic_execution_allowed"]) assert(pack[key] === false, "KBA applicability boundary failed: " + key);
   assert(pack.applicability_precision === "aggregate_stock_observation" && pack.review_status === "research_only", "KBA aggregate precision/review status mismatch");
+  assert(pack.research_pack_ingested === true && pack.product_database_ingested === false && buildReport.research_pack_ingested === true && buildReport.product_database_ingested === false, "KBA research-pack ingestion must be distinct from production database import");
   assert(pack.source_record_hash_method && /^[a-f0-9]{64}$/.test(pack.build_script_sha256 || ""), "KBA row-hash method/builder hash missing");
   assert(licenseText.includes("DL-DE BY 2.0") && licenseText.includes("https://www.govdata.de/dl-de/by-2-0"), "KBA licence reference missing");
   assert(attributionText.includes("Kraftfahrt-Bundesamt (KBA)") && attributionText.includes("DL-DE BY 2.0") && attributionText.includes(SOURCE_URL) && attributionText.includes("Modified data"), "KBA attribution/modified-data notice missing");
@@ -267,6 +268,7 @@ function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNu
     source_manifest_sha256: validated.sourceHash, source_snapshot_sha256: validated.snapshotHash,
     pack_manifest_sha256: validated.packManifestHash, database_sha256: validated.databaseHash,
     source_file_sha256: validated.sourceCsvHash, counts: validated.counts,
+    research_pack_ingested: true, product_database_ingested: false,
     production_import: false, product_import_allowed: false, ru_eaeu_applicability: false,
     exact_vehicle_fitment: false, exact_engine_gearbox_pair: false, repair_applicability: false,
     diagnostic_execution_allowed: false, source_snapshot_csv_in_desktop: false
@@ -279,8 +281,8 @@ function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNu
     source_url: SOURCE_URL, license: LICENSE_ID, license_url: "https://www.govdata.de/dl-de/by-2-0",
     license_status: "approved_by_published_DL_DE_BY_2_0", rights_status: "approved_by_published_DL_DE_BY_2_0",
     market_scope: ["DE"], applicability_precision: "aggregate_stock_observation",
-    review_status: "verified_research_only", production_import: false, product_import_allowed: false,
-    data_ingested: false, ru_eaeu_applicability: false, fitment_claim: false,
+    review_status: "verified_research_only", research_pack_ingested: true, product_database_ingested: false,
+    production_import: false, product_import_allowed: false, data_ingested: false, ru_eaeu_applicability: false, fitment_claim: false,
     exact_vehicle_fitment: false, exact_engine_gearbox_pair: false, repair_applicability: false,
     diagnostic_execution_allowed: false, model_year_inferred: false, generation_inferred: false,
     engine_codes_included: false, gearbox_codes_included: false, ecu_fitment: false, dtc_fitment: false,
