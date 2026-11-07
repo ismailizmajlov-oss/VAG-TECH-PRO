@@ -11,6 +11,7 @@ on:
       - .github/workflows/acquire-obdb-vag-signalsets.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - scripts/build_offline_data_pack_index.py
+      - apply-research-pack-hash-fix-run44.cjs
       - scripts/sync-desktop-research-manifest.cjs
       - scripts/verify_offline_data_pack_index.py
       - scripts/vag_identity_vehiclesdb_common.py
@@ -28,6 +29,7 @@ on:
       - .github/workflows/acquire-obdb-vag-signalsets.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
       - scripts/build_offline_data_pack_index.py
+      - apply-research-pack-hash-fix-run44.cjs
       - scripts/sync-desktop-research-manifest.cjs
       - scripts/verify_offline_data_pack_index.py
       - scripts/vag_identity_vehiclesdb_common.py
