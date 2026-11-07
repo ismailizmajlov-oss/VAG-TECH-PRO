@@ -58,6 +58,25 @@ The separate run-11 research pack contains only:
 
 The future pack must remain a separate read-only research namespace with production_import=false, ru_eaeu_applicability=false, individual_vehicle_fitment=false, and no engine/gearbox pairing table. Each source file and every imported row must retain provenance and SHA-256.
 
+
+
+## Live schema and exact-scope probe — run 29, 2026-11-07
+
+The official Windows CI probe passed on 2026-11-07: [run 29](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349238), source commit `d228c5158fc2056abf3d016a55ead952d1973c19`. It re-checked the current six RDW dataset schemas and matched a Volkswagen Tiguan observation to one exact EU approval scope:
+
+- Approval: `e1*2018/858*00302*10`
+- Variant: `ACDUCAX0`
+- Execution/version: `FD6FD6DD002PR4VNB0OO`
+- Revision: `0`
+- RDW trade name/type: `TIGUAN / CT`
+- Separate drive-table row: `motorcode=DUC`, 1,498 cc, four cylinders.
+- Separate gearbox-table row: `codetypeversnellingsbak=A`.
+- The make table returned two raw RDW labels, `VOLK` and `VWVP`.
+
+The probe artifact is ID `13580426621`, ZIP SHA-256 `a1f33e348a2f43c7f81b588a42b2d0f47cf537b2f89211ad2819a3fdf81dc97e`; the 8,331-byte JSON report SHA-256 is `3204605e157d31d573d08670ef54b652f8d6574074e664a99bb4f652b2029ae4`. It records per-row SHA-256 values and current schema-column hashes for all six datasets.
+
+This is exact **approval variant/version/revision scope**, not a factory powertrain pair. `DUC` is not confirmed as a VAG factory engine code, `A` is not a VAG gearbox code, and the separate rows are not combined into a pair. The probe selected no registration plate, VIN, holder, address or personal data. It did not download a full source snapshot; `source_snapshot_sha256=null`, `data_ingested=false`, and `product_import_allowed=false` remain unchanged. The market scope remains NL, not RU/EAEU.
+
 ## Source URLs
 
 - RDW public data portal: https://opendata.rdw.nl/
@@ -91,7 +110,7 @@ The separate Windows pack workflow completed successfully: [run 11](https://gith
 
 An independent read-only audit of the artifact found 93,548 approval scopes with both an engine candidate row and a gearbox classification row, 190 engine-only scopes and no gearbox-only scopes. However, 98 scopes contain more than one engine candidate row. There are 908 distinct engine-designation strings and four gearbox-classification values. These are aggregate coverage diagnostics only: **they are not pair records**, and the 98 multi-engine scopes demonstrate why joining by approval scope alone can be ambiguous. The pack contains no pair table.
 
-The pack remains NL-only and `verified_research_only`. RDW Motorcode values remain candidates, not OEM-confirmed VAG engine codes; gearbox values remain classifications, not VAG gearbox codes. No model year, generation, individual-vehicle fitment, ECU/DTC/repair applicability or RU/EAEU applicability is inferred. Product import is false and the pack is not integrated into the desktop installer.
+The pack remains NL-only and `verified_research_only`. Run 647 (2026-11-07) successfully included the verified SQLite pack in the offline desktop research catalog and Windows CI installer. This is not an import into the product vehicle-configuration database: `data_ingested=false`, `product_import_allowed=false`, and the pack remains separate from factory-fitment records. RDW Motorcode values remain candidates, not OEM-confirmed VAG engine codes; gearbox values remain classifications, not VAG gearbox codes. No model year, generation, individual-vehicle fitment, ECU/DTC/repair applicability or RU/EAEU applicability is inferred.
 
 Run 11 predates the latest RDW query-spec and source-column provenance changes. The current builder also adds a foreign key from each source row to its source-file artifact, verifies row-by-row parity between canonical JSONL snapshots and SQLite row hashes, and emits aggregate scope-overlap/ambiguity metrics without creating pair records. These latest integrity changes require a new successful build; the run-11 artifact is historical evidence and must not be described as validated by the newer checks.
 
