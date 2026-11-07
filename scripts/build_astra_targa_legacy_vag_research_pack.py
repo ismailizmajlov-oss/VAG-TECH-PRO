@@ -312,6 +312,7 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
             header = next(reader, None)
             if header is None:
                 raise ValueError("ASTRA TARGA source file is empty")
+            header_raw_field_count = len(header)
             header = validate_header(header)
             for source_row_number, row in enumerate(reader, start=2):
                 if not row or not any(value.strip() for value in row):
@@ -411,6 +412,8 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
         with source_path.open("r", encoding="cp1252", newline="") as handle:
             reader = csv.reader(handle, delimiter="\t", quotechar='"')
             header = next(reader)
+            if len(header) != header_raw_field_count:
+                raise ValueError("ASTRA TARGA header width changed between passes")
             header = validate_header(header)
             for source_row_number, row in enumerate(reader, start=2):
                 if not row or not any(value.strip() for value in row) or len(row) != len(header):
@@ -498,6 +501,9 @@ def build_database(source_path: Path, database_path: Path, source_meta: dict) ->
         "engine_marking_top_100": engine_markings.most_common(100),
         "gearbox_value_top_100": gearbox_values.most_common(100),
         "source_rows_scanned": source_rows, "malformed_rows": malformed_rows,
+        "header_raw_field_count": header_raw_field_count,
+        "header_data_field_count": len(header or []),
+        "header_trailing_empty_fields": (header_raw_field_count - len(header or [])) if header_raw_field_count is not None else None,
         "sqlite_integrity_check": integrity, "foreign_key_violations": len(fk_violations),
         "tables": sorted(table_names),
     }
@@ -523,7 +529,7 @@ def build_pack(output_dir: Path) -> dict:
             "file_size_bytes": source_meta["file_size_bytes"],
             "file_sha256": source_meta["file_sha256"],
             "source_generation": "third_generation_type_approvals_after_1995",
-            "format": "tab-delimited TXT; cp1252; 223 columns",
+            "format": "tab-delimited TXT; cp1252; 223 data columns; 224 header fields with one trailing empty field",
         },
         "rights": {
             "data_license_status": "Swiss Open Government Data (OGD); no separate CC identifier assigned in the reviewed ASTRA publication",
@@ -574,7 +580,7 @@ def build_pack(output_dir: Path) -> dict:
     attribution_path = output_dir / "ATTRIBUTION.txt"
     attribution_path.write_text(ATTRIBUTION + "\n", encoding="utf-8")
     field_map_path = output_dir / "field-map.json"
-    field_map_path.write_text(json.dumps({"zero_based_positions": FIELDS, "published_header_checks": HEADER_CHECKS}, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    field_map_path.write_text(json.dumps({"zero_based_positions": FIELDS, "published_header_checks": HEADER_CHECKS, "header_contract": {"raw_header_fields": 224, "effective_data_fields": 223, "trailing_empty_header_fields": 1}}, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     pack_manifest = {
         "schema_version": 1, "pack_id": PACK_ID, "source_id": SOURCE_ID,
         "status": "verified_research_only", "market_scope": ["CH"],
@@ -590,6 +596,7 @@ def build_pack(output_dir: Path) -> dict:
         "engine_marking_top_100": data_report["engine_marking_top_100"],
         "gearbox_value_top_100": data_report["gearbox_value_top_100"],
         "source_rows_scanned": data_report["source_rows_scanned"],
+        "header_contract": {"raw_header_fields": data_report["header_raw_field_count"], "effective_data_fields": data_report["header_data_field_count"], "trailing_empty_header_fields": data_report["header_trailing_empty_fields"]},
         "sqlite_integrity_check": data_report["sqlite_integrity_check"],
         "foreign_key_violations": data_report["foreign_key_violations"],
         "tables": data_report["tables"],
