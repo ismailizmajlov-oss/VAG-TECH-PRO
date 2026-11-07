@@ -1415,7 +1415,7 @@ jobs:
             New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
-          "kba_de_vag_stock=run${{ steps.kba-pack.outputs.run_number }}/${{ steps.kba-pack.outputs.run_id }}; artifact_sha256=${{ steps.kba-pack.outputs.artifact_sha256 }}; scope=DE; precision=aggregate_stock_observation; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "kba_de_vag_stock=run${{ steps.kba-pack.outputs.run_number }}/${{ steps.kba-pack.outputs.run_id }}; artifact_sha256=${{ steps.kba-pack.outputs.artifact_sha256 }}; scope=DE; precision=aggregate_stock_observation; research_pack_ingested=true; product_database_ingested=false; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
