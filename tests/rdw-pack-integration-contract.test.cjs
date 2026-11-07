@@ -50,6 +50,17 @@ test("RDW UI patch composes with the prior CH-only ASTRA TARGA tab", () => {
   assert.match(rdwIntegrationSource, /dataset === "rdw"/);
 });
 
+
+const rdwVerifierPatchSource = fs.readFileSync(path.join(__dirname, "../scripts/apply-rdw-vag-research-verification-run31.cjs"), "utf8");
+
+test("RDW verifier patch composes after the separate ASTRA TARGA pack", () => {
+  assert.match(rdwVerifierPatchSource, /astraTargaSummary/);
+  assert.match(rdwVerifierPatchSource, /manifest\.packs\.length === 11/);
+  assert.match(rdwVerifierPatchSource, /manifest\.packs\.length === 12/);
+  assert.match(rdwVerifierPatchSource, /astra-fedro-targa-emissionen-approval-variants-ch/);
+  assert.match(rdwVerifierPatchSource, /rdw-vag-nl-eu-type-approval-research/);
+});
+
 function fsTemp() {
   return require("node:fs").mkdtempSync(path.join(os.tmpdir(), "rdw-pack-path-test-"));
 }
