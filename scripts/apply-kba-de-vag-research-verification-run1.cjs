@@ -33,7 +33,7 @@ function patch(desktopRoot) {
     "KBA research pack manifest cardinality");
 
   verifier = replaceExactly(verifier,
-    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw, "Required generic, candidate, CH-only ASTRA TAS/TARGA and NL-only research packs must be registered");\n',
+    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw, "Required generic, candidate, CH-only ASTRA TAS/TARGA and NL-only RDW packs must be registered");\n',
     '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  const kbaDe = byId["kba-de-vag-stock-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw && kbaDe, "Required generic, candidate, CH-only ASTRA TAS/TARGA, NL-only and DE-only research packs must be registered");\n',
     "KBA pack registration");
 
