@@ -116,11 +116,11 @@ SCHEMA_ELEMENT_NAMESPACE_PREFIX = {
     "VehicleVariantDetails": "trcdo",
 }
 IMPORTED_NAMESPACE_PATTERNS = {
-    "bdt": re.compile(r"urn:EEC:M:BaseDataTypes:v\\d+\\.\\d+\\.\\d+"),
-    "ccdo": re.compile(r"urn:EEC:M:ComplexDataObjects:v\\d+\\.\\d+\\.\\d+"),
-    "csdo": re.compile(r"urn:EEC:M:SimpleDataObjects:v\\d+\\.\\d+\\.\\d+"),
-    "trcdo": re.compile(r"urn:EEC:M:TR:ComplexDataObjects:v\\d+\\.\\d+\\.\\d+"),
-    "trsdo": re.compile(r"urn:EEC:M:TR:SimpleDataObjects:v\\d+\\.\\d+\\.\\d+"),
+    "bdt": re.compile(r"urn:EEC:M:BaseDataTypes:v\d+\.\d+\.\d+"),
+    "ccdo": re.compile(r"urn:EEC:M:ComplexDataObjects:v\d+\.\d+\.\d+"),
+    "csdo": re.compile(r"urn:EEC:M:SimpleDataObjects:v\d+\.\d+\.\d+"),
+    "trcdo": re.compile(r"urn:EEC:M:TR:ComplexDataObjects:v\d+\.\d+\.\d+"),
+    "trsdo": re.compile(r"urn:EEC:M:TR:SimpleDataObjects:v\d+\.\d+\.\d+"),
 }
 
 

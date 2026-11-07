@@ -42,8 +42,13 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
           <VehicleV2Details><VehicleIdentificationNumberId>VIN-SYNTHETIC-DO-NOT-STORE</VehicleIdentificationNumberId></VehicleV2Details>
         </VehicleConformityDocDetails>
         """
-    return f"""<?xml version="1.0" encoding="UTF-8"?>
-    <ConformityVehicleDocsRegistryDetails xmlns="{NS}">
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+    <ConformityVehicleDocsRegistryDetails xmlns="{NS}"
+      xmlns:bdt="urn:EEC:M:BaseDataTypes:v1.0.0"
+      xmlns:ccdo="urn:EEC:M:ComplexDataObjects:v1.0.0"
+      xmlns:csdo="urn:EEC:M:SimpleDataObjects:v1.0.0"
+      xmlns:trcdo="urn:EEC:M:TR:ComplexDataObjects:v1.0.0"
+      xmlns:trsdo="urn:EEC:M:TR:SimpleDataObjects:v1.0.0">
       <EDocHeader>
         <EDocCode>R.TR.TS.07.001</EDocCode>
         <EDocDateTime>2026-11-06T00:00:00Z</EDocDateTime>
@@ -97,7 +102,57 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
       </VehicleConformityDocDetails>
       {sbkts}
     </ConformityVehicleDocsRegistryDetails>
-    """.encode("utf-8")
+    """
+    element_prefixes = {
+        "EDocHeader": "ccdo",
+        "EDocCode": "csdo",
+        "EDocDateTime": "csdo",
+        "LanguageCode": "csdo",
+        "VehicleConformityDocDetails": "trcdo",
+        "UnifiedCountryCode": "csdo",
+        "DocId": "csdo",
+        "DocCreationDate": "csdo",
+        "DocStartDate": "csdo",
+        "DocValidityDate": "csdo",
+        "ConformityDocKindCode": "trsdo",
+        "ConformityAuthorityInformationDetails": "trcdo",
+        "BusinessEntityName": "csdo",
+        "VehicleTypeDetails": "trcdo",
+        "VehicleMakeName": "csdo",
+        "VehicleMakeCode": "trsdo",
+        "VehicleCommercialName": "csdo",
+        "VehicleTypeId": "trsdo",
+        "VehicleTechCategoryCode": "trsdo",
+        "VehicleManufacturerDetails": "trcdo",
+        "ConformityDocStatusDetails": "trcdo",
+        "DocStatusCode": "trsdo",
+        "VehicleVariantDetails": "trcdo",
+        "VehicleTypeVariantId": "trsdo",
+        "VehicleEcoClassCode": "trsdo",
+        "EngineDetails": "trcdo",
+        "VehicleComponentMakeName": "trsdo",
+        "VehicleComponentModelCode": "trsdo",
+        "VehicleComponentText": "trsdo",
+        "EngineCylinderQuantity": "trsdo",
+        "EngineCapacityMeasure": "trsdo",
+        "EngineMaxPowerDetails": "trcdo",
+        "EngineMaxPowerMeasure": "csdo",
+        "EngineMaxTorqueDetails": "trcdo",
+        "EngineMaxTorqueMeasure": "trsdo",
+        "VehicleTransmissionDetails": "trcdo",
+        "TransmissionUnitDetails": "trcdo",
+        "VehicleUnitKindCode": "trsdo",
+        "TransmissionUnitGearQuantity": "trsdo",
+        "ECUModelCode": "trsdo",
+        "ApplicantDetails": "trcdo",
+        "VehicleV2Details": "trcdo",
+        "VehicleIdentificationNumberId": "trsdo",
+    }
+    for local_name, prefix in element_prefixes.items():
+        xml = xml.replace(f"<{local_name}>", f"<{prefix}:{local_name}>")
+        xml = xml.replace(f"</{local_name}>", f"</{prefix}:{local_name}>")
+        xml = xml.replace(f"<{local_name} ", f"<{prefix}:{local_name} ")
+    return xml.encode("utf-8")
 
 
 def _source_manifest(rights: dict | None = None) -> dict:
@@ -157,14 +212,14 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
 
     def test_multiple_variants_require_variant_ids_under_decision_88_rule_34(self):
         raw = _xml(ambiguous=True, include_sbkts=False).replace(
-            b"<VehicleTypeVariantId>VAR-AMBIGUOUS</VehicleTypeVariantId>", b"", 1
+            b"<trsdo:VehicleTypeVariantId>VAR-AMBIGUOUS</trsdo:VehicleTypeVariantId>", b"", 1
         )
         with self.assertRaisesRegex(ValueError, "Decision No. 88, table 6, rule 34"):
             importer.parse_registry_export(raw)
 
     def test_pair_candidate_without_variant_id_is_explicitly_unlabelled(self):
         raw = _xml(ambiguous=False, include_sbkts=False).replace(
-            b"<VehicleTypeVariantId>VAR-EXACT-01</VehicleTypeVariantId>", b""
+            b"<trsdo:VehicleTypeVariantId>VAR-EXACT-01</trsdo:VehicleTypeVariantId>", b""
         )
         parsed = importer.parse_registry_export(raw)
         variant = parsed["documents"][0]["variants"][0]
@@ -208,29 +263,19 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
 
     def test_recognized_field_rejects_wrong_but_valid_eec_namespace(self):
         raw = _xml(include_sbkts=False).replace(
-            b"<VehicleComponentModelCode>TEST-ENGINE-CODE-01</VehicleComponentModelCode>",
-            b'<csdo:VehicleComponentModelCode xmlns:csdo="urn:EEC:M:SimpleDataObjects:v1.0.0">TEST-ENGINE-CODE-01</csdo:VehicleComponentModelCode>',
+            b"<trsdo:VehicleComponentModelCode>TEST-ENGINE-CODE-01</trsdo:VehicleComponentModelCode>",
+            b'<csdo:VehicleComponentModelCode>TEST-ENGINE-CODE-01</csdo:VehicleComponentModelCode>',
             1,
         )
         with self.assertRaisesRegex(ValueError, "field-specific namespace mapping"):
             importer.parse_registry_export(raw)
 
     def test_eec_imported_namespaces_are_allowed_for_schema_fields(self):
-        raw = _xml(include_sbkts=False)
-        raw = raw.replace(
-            b"<VehicleConformityDocDetails>",
-            b'<trcdo:VehicleConformityDocDetails xmlns:trcdo="urn:EEC:M:TR:ComplexDataObjects:v1.0.0">',
-            1,
-        ).replace(b"</VehicleConformityDocDetails>", b"</trcdo:VehicleConformityDocDetails>", 1)
-        raw = raw.replace(
-            b"<VehicleComponentModelCode>TEST-ENGINE-CODE-01</VehicleComponentModelCode>",
-            b'<trsdo:VehicleComponentModelCode xmlns:trsdo="urn:EEC:M:TR:SimpleDataObjects:v1.0.0">TEST-ENGINE-CODE-01</trsdo:VehicleComponentModelCode>',
-            1,
-        )
-        parsed = importer.parse_registry_export(raw)
+        parsed = importer.parse_registry_export(_xml(include_sbkts=False))
         self.assertEqual(len(parsed["documents"]), 1)
         self.assertIn("urn:EEC:M:TR:ComplexDataObjects:v1.0.0", parsed["observed_namespaces"])
         self.assertIn("urn:EEC:M:TR:SimpleDataObjects:v1.0.0", parsed["observed_namespaces"])
+        self.assertIn("urn:EEC:M:SimpleDataObjects:v1.0.0", parsed["observed_namespaces"])
 
     def test_foreign_extension_elements_are_ignored(self):
         raw = _xml(include_sbkts=False).replace(
@@ -242,7 +287,7 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         self.assertEqual(len(parsed["documents"]), 1)
 
     def test_foreign_or_unqualified_schema_elements_are_rejected(self):
-        original = b"<VehicleComponentModelCode>TEST-ENGINE-CODE-01</VehicleComponentModelCode>"
+        original = b"<trsdo:VehicleComponentModelCode>TEST-ENGINE-CODE-01</trsdo:VehicleComponentModelCode>"
         replacements = (
             b'<evil:VehicleComponentModelCode xmlns:evil="urn:untrusted">TEST-ENGINE-CODE-01</evil:VehicleComponentModelCode>',
             b'<VehicleComponentModelCode xmlns="">TEST-ENGINE-CODE-01</VehicleComponentModelCode>',
@@ -254,7 +299,7 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
                     importer.parse_registry_export(bad)
 
     def test_unknown_document_kind_is_rejected(self):
-        bad = _xml(include_sbkts=False).replace(b"<ConformityDocKindCode>30</ConformityDocKindCode>", b"<ConformityDocKindCode>99</ConformityDocKindCode>")
+        bad = _xml(include_sbkts=False).replace(b"<trsdo:ConformityDocKindCode>30</trsdo:ConformityDocKindCode>", b"<ConformityDocKindCode>99</ConformityDocKindCode>")
         with self.assertRaisesRegex(ValueError, "Unsupported"):
             importer.parse_registry_export(bad)
 
