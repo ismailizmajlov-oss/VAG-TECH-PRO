@@ -84,7 +84,7 @@ function getAstraTargaSummary(explicitRoot) {
       !attribution.includes(ATTRIBUTION) || !attribution.includes("Swiss Open Government Data") ||
       final.database_sha256 !== entry.database_sha256 || final.source_file_sha256 !== pack.source_file?.file_sha256 ||
       final.exact_vag_factory_code_pair !== false || final.ru_eaeu_applicability !== false ||
-      ["approval_number", "make", "type", "engine_type", "gearbox", "homologation_date"].some((key) => !Array.isArray(fieldMap.required_headers?.[key]) || !Number.isInteger(fieldMap.resolved_positions?.[key]))) {
+      ["approval_number", "make", "type", "engine_type", "gearbox", "homologation_date"].some((key) => !Array.isArray(fieldMap.required_headers) || !fieldMap.required_headers.includes(key) || !Number.isInteger(fieldMap.resolved_positions?.[key]))) {
     fail("ASTRA TARGA source manifest, rights, attribution or pack provenance failed");
   }
   const db = openReadOnly(database);
