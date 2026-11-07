@@ -467,7 +467,21 @@
           "The provider advertises a free 50-request/day MCP tier after registration; no account or key was created.",
           "The API terms require an active API subscription for API use; no paid plan or API call was made.",
           "The provider describes the service as an aggregator and disclaims responsibility for accuracy; verify every document against its issuing authority."
-        ]
+        ],
+        "mcp_free_tier": {
+          "requests_per_day": 50,
+          "registration_required": true,
+          "used_by_project": false,
+          "observed_at": "2026-11-07"
+        },
+        "api_pricing": {
+          "entry_tier_rub_per_month": 1000,
+          "active_subscription_required": true,
+          "used_by_project": false,
+          "observed_at": "2026-11-07"
+        },
+        "pdf_download_requires_subscription": true,
+        "provider_states_api_download_is_not_included_in_api_access": true
       },
       "rights": {
         "database_rights_claimed": "Russian Civil Code Article 1334 database right in the provider's compilation",
@@ -492,7 +506,12 @@
         "redistribution_allowed": false,
         "api_key_sharing_allowed": false,
         "server_code_license": "MIT applies only to the hptsu-mcp server software; it is not a license for HPT.SU database contents or underlying documents",
-        "permission_status": "no_project_permission_or_subscription_obtained"
+        "permission_status": "no_project_permission_or_subscription_obtained",
+        "offline_cache_for_product_distribution_allowed": false,
+        "third_party_desktop_display_allowed": false,
+        "written_permission_for_product_distribution_obtained": false,
+        "api_internal_use_does_not_authorize_third_party_distribution": true,
+        "connector_mit_license_scope": "hptsu-mcp connector software only; not HPT.SU database or underlying documents"
       },
       "limitations": [
         "A public page, free MCP tier or statement that documents originate from open sources is not an open-data license for the provider's compiled database.",
@@ -500,15 +519,15 @@
         "The API terms permit internal use but prohibit third-party equivalent access, redistribution of API data and systematic transfer of a full current database copy without separate written consent.",
         "An OTTS is type-approval evidence, not an individual VIN build sheet and not proof of ECU, DTC, wiring, repair or exact engine/gearbox fitment."
       ],
-      "project_decision": "restricted_no_bulk_import_no_product_pack; consider individual documents only for the owner's own use after authorized access and document-level rights/applicability review; no HPT.SU records are currently imported or cached",
-      "evidence_status": "provider_offer_api_terms_pricing_and_mcp_pages_reviewed_2026-11-04",
+      "project_decision": "restricted_no_bulk_import_no_product_pack; no account, key, subscription or individual-document access for VAG TECH PRO without explicit owner authorization; reconsider only after written permission covering bulk retrieval, offline caching, redistribution and third-party Windows desktop display",
+      "evidence_status": "official HPT.SU offer, API terms, pricing and MCP pages reviewed 2026-11-07; no account, key, subscription or data access used",
       "terms_effective_dates": {
         "offer": "2026-08-22",
         "api_terms": "2026-05-27"
       },
       "rights_review_references": {
         "offer_sections": [
-          "2.3",
+          "2.1-2.3",
           "4.1.4",
           "11.1-11.5"
         ],
@@ -518,7 +537,10 @@
           "6.2-6.5",
           "8.6"
         ],
-        "pricing_page": "https://hpt.su/pricing/"
+        "pricing_page": "https://hpt.su/pricing/",
+        "mcp_page": "https://hpt.su/mcp/",
+        "connector_repository": "https://github.com/HPT-SU/hptsu-mcp",
+        "reviewed_at": "2026-11-07"
       },
       "data_ingested": false
     },
