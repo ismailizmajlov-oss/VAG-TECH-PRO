@@ -1535,7 +1535,7 @@ jobs:
             New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
-          "technical_payload_renderer=run79; typed_sections=12; generic_vag_dtc_separate=true; provenance_preserved=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "technical_payload_renderer=run79; typed_sections=14; canonical_ecu_kinds_mapped=true; generic_vag_dtc_separate=true; provenance_preserved=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
