@@ -65,7 +65,7 @@ tests = replaceOnce(
 );
 const oldRevisionAssertions = tests.match(/^  assert\.equal\(rows\[0\]\.upstreamRevision, "[a-f0-9]{40}"\);$/gm) || [];
 if (oldRevisionAssertions.length === 1) {
-  tests = tests.replace(oldRevisionAssertions[0], "  assert.equal(rows[0].upstreamRevision, obdexPack.source_revision);");
+  tests = tests.replace(oldRevisionAssertions[0], "  assert.equal(rows[0].upstreamRevision, obdexPack.upstream_revision);");
 } else if (!tests.includes("assert.equal(rows[0].upstreamRevision, obdexPack.source_revision);")) {
   throw new Error("Expected exactly one pinned OBDex revision assertion; refusing a stale or ambiguous desktop test patch.");
 }
