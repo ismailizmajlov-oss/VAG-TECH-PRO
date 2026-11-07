@@ -23,6 +23,7 @@ The technical schema and desktop workflows exist, but the presence of a table or
 - Engine codes, gearbox codes, ECU identities and exact pairings are never inferred from descriptive engine labels or model-year overlap.
 - Critical repair and diagnostic records require source revision, rights evidence, market, model/generation/year, exact engine/transmission/ECU relationships, applicability precision and technical review.
 - Import packages are hash-checked and rights-gated before a transaction commits. Revisions are retained; user vehicles are not overwritten by catalog imports.
+- The central source-register synchronizer fails closed for restricted/quarantined entries if either `data_ingested=true` or `product_import_allowed=true`; rights approval cannot be bypassed by leaving a source empty but marked importable.
 - Backups are integrity-checked, restore keeps a safety copy of the current database, and uninstall must preserve the per-user database.
 - No leaked, access-controlled or OEM-derived data with unresolved rights is imported, displayed, cached or redistributed.
 
