@@ -109,7 +109,10 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         })
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
-        self.assertIn("const p3GenericCode = /^P34[0-9A-F]{2}$/;", workflow)\n        self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P34C8"))\n        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P3500"))\n        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P33FF"))
+        self.assertIn("const p3GenericCode = /^P34[0-9A-F]{2}$/;", workflow)
+        self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P34C8"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P3500"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P33FF"))
         self.assertIn("sourceManifest.scope.generic_code_ranges", workflow)
         self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
 
