@@ -233,7 +233,7 @@ def create_schema(db: sqlite3.Connection) -> None:
       CREATE TABLE type_approval_records(
         id INTEGER PRIMARY KEY,
         source_row_number INTEGER NOT NULL UNIQUE,
-        source_row_sha256 TEXT NOT NULL UNIQUE CHECK(length(source_row_sha256)=64),
+        source_row_sha256 TEXT NOT NULL CHECK(length(source_row_sha256)=64),
         source_record_locator TEXT NOT NULL,
         source_file_sha256 TEXT NOT NULL CHECK(length(source_file_sha256)=64),
         market_scope TEXT NOT NULL CHECK(market_scope='CH'),
