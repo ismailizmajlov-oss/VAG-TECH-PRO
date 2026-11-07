@@ -4805,7 +4805,7 @@
       "market_scope": [
         "UNKNOWN"
       ],
-      "data_revision": "2026-11-06",
+      "data_revision": "2026-11-07",
       "evidence_scope": [
         "owner_manual_reference_facts",
         "fluids",
@@ -4851,8 +4851,8 @@
         "production_import": false,
         "exact_engine_gearbox_pair": false,
         "ru_eaeu_applicability": false,
-        "expected_source_rows": 41128,
-        "expected_models": 548
+        "expected_source_rows": 41649,
+        "expected_models": 561
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     }
