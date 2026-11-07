@@ -18,6 +18,9 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
     def test_snapshot_hash_stays_null_until_windows_acquisition(self):
         self.assertIsNone(self.manifest["snapshot"]["source_snapshot_sha256"])
         self.assertEqual(self.manifest["snapshot"]["status"],"pending_authorized_snapshot_acquisition")
+        self.assertEqual(self.manifest["snapshot"]["expected_data_updated_at"],"2026-11-07")
+        self.assertEqual(self.manifest["snapshot"]["expected_source_row_count"],41649)
+        self.assertEqual(self.manifest["snapshot"]["expected_model_count"],561)
         self.assertIs(self.manifest["import_policy"]["data_ingested"],False)
     def test_central_register_has_one_research_only_entry(self):
         matches=[s for s in self.register["sources"] if s.get("source_id")==SOURCE_ID]
