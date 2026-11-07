@@ -194,6 +194,23 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DTD/entity"):
             importer.parse_registry_export(bad)
 
+    def test_utf16_dtd_and_entity_declarations_are_rejected(self):
+        bad = f'<!DOCTYPE x [<!ENTITY e "x">]><ConformityVehicleDocsRegistryDetails xmlns="{NS}"/>'.encode("utf-16")
+        with self.assertRaisesRegex(ValueError, "DTD/entity"):
+            importer.parse_registry_export(bad)
+
+    def test_foreign_or_unqualified_schema_elements_are_rejected(self):
+        original = b"<VehicleComponentModelCode>TEST-ENGINE-CODE-01</VehicleComponentModelCode>"
+        replacements = (
+            b'<evil:VehicleComponentModelCode xmlns:evil="urn:untrusted">TEST-ENGINE-CODE-01</evil:VehicleComponentModelCode>',
+            b'<VehicleComponentModelCode xmlns="">TEST-ENGINE-CODE-01</VehicleComponentModelCode>',
+        )
+        for replacement in replacements:
+            with self.subTest(replacement=replacement[:48]):
+                bad = _xml(include_sbkts=False).replace(original, replacement, 1)
+                with self.assertRaisesRegex(ValueError, "Unexpected XML element namespace"):
+                    importer.parse_registry_export(bad)
+
     def test_unknown_document_kind_is_rejected(self):
         bad = _xml(include_sbkts=False).replace(b"<ConformityDocKindCode>30</ConformityDocKindCode>", b"<ConformityDocKindCode>99</ConformityDocKindCode>")
         with self.assertRaisesRegex(ValueError, "Unsupported"):

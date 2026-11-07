@@ -68,9 +68,29 @@ def _local_name(tag: str) -> str:
 
 
 def _namespace(tag: str) -> str | None:
-    if not tag.startswith("{"):
+    if not isinstance(tag, str) or not tag.startswith("{"):
         return None
     return tag[1:].split("}", 1)[0]
+
+
+def _validate_element_namespaces(root: ET.Element) -> None:
+    unexpected: list[tuple[str, str | None]] = []
+    for element in root.iter():
+        if not isinstance(element.tag, str):
+            continue
+        namespace = _namespace(element.tag)
+        if namespace != EXPECTED_NAMESPACE:
+            unexpected.append((_local_name(element.tag), namespace))
+            if len(unexpected) >= 5:
+                break
+    if unexpected:
+        details = ", ".join(
+            f"{name!r} in {namespace!r}" for name, namespace in unexpected
+        )
+        raise ValueError(
+            "Unexpected XML element namespace; every element must use "
+            f"{EXPECTED_NAMESPACE!r}; found {details}"
+        )
 
 
 def _text(element: ET.Element | None) -> str | None:
@@ -282,7 +302,9 @@ def parse_registry_export(raw: bytes) -> dict[str, Any]:
         raise ValueError("EAEU registry export is empty")
     if len(raw) > MAX_INPUT_BYTES:
         raise ValueError(f"EAEU registry export exceeds {MAX_INPUT_BYTES} bytes")
-    upper = raw.upper()
+    # XML markup is ASCII-compatible in UTF-8/16/32; strip interleaved NUL
+    # bytes so DTD/entity declarations cannot bypass the fail-closed scan.
+    upper = raw.upper().replace(b"\\x00", b"")
     if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
         raise ValueError("DTD/entity declarations are not accepted")
     try:
@@ -295,6 +317,7 @@ def parse_registry_export(raw: bytes) -> dict[str, Any]:
             f"Expected {EXPECTED_ROOT} in namespace {EXPECTED_NAMESPACE}; "
             f"received {_local_name(root.tag)} in {_namespace(root.tag)}"
         )
+    _validate_element_namespaces(root)
 
     header = {
         "document_code": _first_descendant_text(root, "EDocCode"),

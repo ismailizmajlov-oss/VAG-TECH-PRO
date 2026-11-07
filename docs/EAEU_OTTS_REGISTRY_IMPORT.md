@@ -32,6 +32,10 @@ Example, after the rights evidence has been reviewed and the source register has
 
 The tool checks the permission file's SHA-256 against the source register, refuses to overwrite an existing database/sidecar, writes transactionally to a new SQLite file, and runs SQLite integrity and foreign-key checks. A matching file hash proves integrity of the supplied evidence file, not its authenticity or legal scope. The recorded rights status therefore remains owner_attested_not_independently_verified.
 
+## XML parser safety
+
+The importer accepts only elements in the exact R.TR.TS.07.001 target namespace. It rejects foreign-namespace and unqualified elements even when their local names imitate schema fields, and rejects DTD/entity declarations after removing interleaved NUL bytes so UTF-16/UTF-32 encoded declarations cannot bypass the pre-parse guard. These checks are structural safeguards; they do not validate a real registry export against an official XSD, which has not yet been retrieved.
+
 ## Data semantics
 
 - Only document kinds 30 (OTTS) and 35 (OTSH) are staged. Code 40 (SBKTS) is skipped.
