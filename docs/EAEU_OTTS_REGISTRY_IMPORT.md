@@ -44,6 +44,7 @@ The root must use the exact R.TR.TS.07.001 namespace. Each recognized field is c
 - Engine and transmission candidates remain scoped to their source approval variant.
 - A pair candidate is created only when one coded engine and one coded gearbox appear under the same variant. It is still candidate_unverified; the importer never confirms fitment.
 - When a document contains multiple variants, every variant must carry VehicleTypeVariantId, following Decision No. 88, table 6, rule 34. A single unlabelled variant remains a candidate with explicitly reduced precision.
+- Each variant may contain at most one VehicleTypeVariantId, and non-empty variant IDs must be unique within the approval document. Repeated ID elements or duplicate IDs are rejected because they make the engine/gearbox observation scope ambiguous.
 - Pair-candidate precision is explicit: `same_approval_variant_id_single_pair_candidate` when `VehicleTypeVariantId` is present, and `same_unlabelled_approval_variant_single_pair_candidate` when the XML variant element has no ID. Both remain `candidate_unverified`; the XML element boundary is evidence only and is not factory-fitment confirmation.
 - If multiple engine or gearbox candidates occur under a variant, the importer does not create a cross-product.
 - The Decision No. 88 rule populates VehicleManufacturingYear for SBKTS; because SBKTS is skipped, model_year remains NULL for OTTS/OTSH. Approval issue/start dates are not model years.
