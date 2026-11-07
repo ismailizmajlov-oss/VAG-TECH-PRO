@@ -161,7 +161,7 @@ test("KBA verifier patch accepts the RDW revision, appends its reader before ass
       '      sourceManifestSha256: rdwSummary.sourceManifestSha256,',
       '      databaseSha256: rdwSummary.databaseSha256,',
       '    },',
-      '    production_fitment_rows_added: 0,',
+      '      production_fitment_rows_added: 0,',
       '  };',
       '}',
       ''
