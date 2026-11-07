@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { getCardirSummary, searchCardirFacts } = require("../cardir-vag-reference-facts-db.cjs");
+const { getCardirSummary, searchCardirFacts } = require("../lib/cardir-vag-reference-facts-db.cjs");
 
 test("CarDir pack is a hash-verified CC BY 4.0 research-only SQLite resource", () => {
   const summary = getCardirSummary();
