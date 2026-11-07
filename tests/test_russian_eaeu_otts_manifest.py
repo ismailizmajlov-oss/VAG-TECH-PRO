@@ -229,7 +229,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(central_hpt["rights"]["written_permission_for_product_distribution_obtained"])
         review = (ROOT / "docs" / "research" / "HPT_SU_OTTS_AGGREGATOR_RIGHTS_REVIEW_2026-11-07.md").read_text(encoding="utf-8")
         self.assertIn("Do not ingest, cache, bundle, mirror, or expose HPT.SU database records", review)
-        self.assertIn("connector code, not HPT.SU's database", review)
+        self.assertIn("connector code, **not** to HPT.SU's database", review)
         aggregators = self.sources["otts-bot-and-public-aggregators"]
         self.assertEqual(aggregators["status"], "permission_required")
         self.assertFalse(aggregators["data_ingested"])
