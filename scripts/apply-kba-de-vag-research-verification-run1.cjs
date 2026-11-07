@@ -40,8 +40,6 @@ function patch(desktopRoot) {
     verifier = verifier.replace(messageMatch[0], '"Expected ' + expectedPackCount + ' separately licensed research packs, including the DE-only KBA VAG stock research pack"');
   }
 
-  const astraBinding = '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];';
-  const targaBinding = '  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];';
   const rdwBinding = '  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];';
   const kbaBinding = '  const kbaDe = byId["kba-de-vag-stock-research"];';
   if (!verifier.includes(kbaBinding)) {
