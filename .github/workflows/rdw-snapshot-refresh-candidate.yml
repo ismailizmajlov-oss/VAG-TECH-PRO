@@ -41,6 +41,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "RDW research-pack policy tests failed." }
           python -m unittest discover -s tests -p "test_rdw_vag_type_approval_source_rights.py" -v
           if ($LASTEXITCODE -ne 0) { throw "RDW source-rights tests failed." }
+          python -m unittest discover -s tests -p "test_rdw_snapshot_refresh_candidate.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "RDW refresh-candidate safety tests failed." }
 
       - name: Acquire candidate snapshot from six allowlisted RDW datasets
         shell: pwsh
@@ -70,11 +72,12 @@ jobs:
           "Promotion approved: false" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Upload candidate SQLite, source snapshots and provenance (not a release)
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: rdw-vag-nl-eu-snapshot-refresh-candidate
           path: |
             artifacts/rdw-vag-research-pack-refresh-candidate/**
             rdw-refresh-candidate-build.log
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 90
