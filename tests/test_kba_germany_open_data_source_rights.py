@@ -41,20 +41,20 @@ class KbaGermanyOpenDataSourceRightsTests(unittest.TestCase):
                     self.assertFalse(rights["paid_terms_accepted"])
                     self.assertIn("https://www.govdata.de/dl-de/by-2-0", rights["evidence_urls"])
 
-    def test_no_data_or_hash_is_claimed_before_download(self):
-        for source_id, manifest in self.manifests.items():
-            with self.subTest(source_id=source_id):
-                source = self.registered[source_id]
-                for record in (source, manifest):
-                    self.assertFalse(record["data_ingested"])
-                    self.assertFalse(record["product_import_allowed"])
-                    self.assertIsNone(record["source_snapshot_sha256"])
-                    self.assertIn("No source bytes retrieved", record["hash_status"])
-                    self.assertEqual(record["verification_status"],
-                                     "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified")
-                self.assertFalse(manifest["snapshot"]["downloaded"])
-                self.assertIsNone(manifest["snapshot"]["file_sha256"])
-                self.assertIsNone(manifest["snapshot"]["source_snapshot_sha256"])
+    def test_unavailable_whole_vehicle_approval_list_has_no_snapshot_hash(self):
+        source_id = "kba-de-whole-vehicle-type-approvals"
+        manifest = self.manifests[source_id]
+        source = self.registered[source_id]
+        for record in (source, manifest):
+            self.assertFalse(record["data_ingested"])
+            self.assertFalse(record["product_import_allowed"])
+            self.assertIsNone(record["source_snapshot_sha256"])
+            self.assertIn("No source bytes retrieved", record["hash_status"])
+            self.assertEqual(record["verification_status"],
+                             "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified")
+        self.assertFalse(manifest["snapshot"]["downloaded"])
+        self.assertIsNone(manifest["snapshot"]["file_sha256"])
+        self.assertIsNone(manifest["snapshot"]["source_snapshot_sha256"])
 
     def test_whole_vehicle_approval_list_is_not_a_powertrain_catalogue(self):
         manifest = self.manifests["kba-de-whole-vehicle-type-approvals"]
@@ -69,17 +69,50 @@ class KbaGermanyOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(manifest["field_status"]["engine_code"], "not_provided_or_not_verified")
         self.assertEqual(manifest["field_status"]["gearbox_code"], "not_provided_or_not_verified")
 
-    def test_hsn_tsn_source_is_german_identity_only(self):
-        manifest = self.manifests["kba-de-fz-hersteller-handelsnamen-pkw"]
-        policy = manifest["applicability_policy"]
-        self.assertEqual(manifest["snapshot"]["temporal_coverage"], "2023-01-01")
-        self.assertEqual(manifest["snapshot"]["reference_date_rule"], "annual reference date of 1 January")
-        self.assertEqual(manifest["snapshot"]["resource_access_status"], "HTTP_400_on_2026-11-07")
-        self.assertEqual(manifest["field_status"]["model_year"], "reference_date_is_not_model_year")
-        self.assertFalse(policy["individual_vehicle_fitment"])
-        self.assertFalse(policy["exact_engine_gearbox_pair"])
-        self.assertFalse(policy["ru_eaeu_applicability"])
-        self.assertEqual(policy["hsn_tsn_semantics"], "registration identity keys only; not engine or gearbox codes")
+    def test_downloaded_kba_stock_snapshot_is_germany_only_identity_evidence(self):
+        source_id = "kba-de-fz-hersteller-handelsnamen-pkw"
+        manifest = self.manifests[source_id]
+        source = self.registered[source_id]
+        snapshot = manifest["snapshot"]
+        expected_sha = "03bd9f85e384b2b8bcd0e7d80b5f755eca568e9ad1c45e7fb3fe512e7fedc468"
+        expected_labels = [
+            "VOLKSWAGEN (D)", "AUDI (D)", "AUDI (H)", "SKODA (CZ)",
+            "SEAT (E)", "PORSCHE", "BENTLEY (UK)", "LAMBORGHINI (I)",
+        ]
+        expected_columns = [
+            "Berichtszeitpunkt", "Hersteller", "Handelsname", "Typschlüssel",
+            "Bundesland", "Anzahl", "ZS Anzahl", "ObjectId",
+        ]
+        self.assertEqual(snapshot["status"], "source_snapshot_acquired_schema_verified")
+        self.assertTrue(snapshot["downloaded"])
+        self.assertEqual(snapshot["resource_access_status"],
+                         "HTTP_200_on_2026-11-07_via_hub_arcgis_legacy_download_api")
+        self.assertEqual(snapshot["file_sha256"], expected_sha)
+        self.assertEqual(snapshot["source_snapshot_sha256"], expected_sha)
+        self.assertEqual(snapshot["file_bytes"], 65366675)
+        self.assertEqual(snapshot["source_row_count"], 1047991)
+        self.assertEqual(snapshot["filtered_vag_row_count"], 264847)
+        self.assertEqual(snapshot["observed_columns"], expected_columns)
+        self.assertEqual(snapshot["vag_manufacturer_labels"], expected_labels)
+        self.assertEqual(snapshot["temporal_coverage_observed"], ["2023-01-01", "2026-01-01"])
+        self.assertEqual(manifest["source_snapshot_sha256"], expected_sha)
+        self.assertEqual(source["source_snapshot_sha256"], expected_sha)
+        for record in (source, manifest):
+            self.assertFalse(record["data_ingested"])
+            self.assertFalse(record["product_import_allowed"])
+            self.assertEqual(record["verification_status"],
+                             "rights_cleared_source_snapshot_acquired_schema_verified_research_only_no_vehicle_fitment")
+        fields = manifest["field_status"]
+        self.assertEqual(fields["hsn"], "not_present_in_downloaded_column_schema")
+        self.assertIn("raw source value", fields["type_key"])
+        self.assertFalse(manifest["applicability_policy"]["individual_vehicle_fitment"])
+        self.assertFalse(manifest["applicability_policy"]["exact_engine_gearbox_pair"])
+        self.assertFalse(manifest["applicability_policy"]["ru_eaeu_applicability"])
+        self.assertFalse(manifest["applicability_policy"]["production_fitment"])
+        self.assertEqual(manifest["import_policy"]["research_pack_status"],
+                         "separate_de_identity_research_pack_build_pending")
+        self.assertEqual(manifest["source_revision"],
+                         "ArcGIS item modified 2026-08-05T07:52:21Z; CSV downloaded 2026-11-07")
 
     def test_attribution_and_urls_are_preserved(self):
         for manifest in self.manifests.values():
