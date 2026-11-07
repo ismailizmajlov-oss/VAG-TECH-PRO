@@ -96,50 +96,5 @@
     "The source-defined row is a Swiss approval gearbox-variant record, not a confirmed VAG factory engine/gearbox code pair.",
     "No production fitment, RU/EAEU applicability, model year, generation, ECU, DTC, test plan or repair applicability is asserted."
   ],
-  "reviewed_at": "2026-11-07",
-  "latest_pack_build": {
-    "workflow_run_number": 16,
-    "workflow_run_id": 42388349228,
-    "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349228",
-    "source_commit": "d228c5158fc2056abf3d016a55ead952d1973c19",
-    "artifact_id": 13580905833,
-    "artifact_sha256": "fac173f744dcd5d7acb47702371771d684034c8a5141251ec1eb685dfe71d51c",
-    "artifact_size_bytes": 11229081,
-    "pack_archive_sha256": "5bf0a552cfc057b52c66640db36d6c671e9994a613f4c6d7b5d296948be33be3",
-    "pack_archive_size_bytes": 5683005,
-    "pack_manifest_sha256": "6699777df7619ad9394d52471b2b34c494b0089fac46d55c260a7a9a2ff5506c",
-    "source_manifest_sha256": "fb3a594436c3c17be1eb7b27a05af2e0b3006c619a200343317342b42d3843e3",
-    "build_report_sha256": "9140d1630f34865a39ed64f5a320e78149c41176bd7aea0240a71f20d6eea443",
-    "final_verification_sha256": "d0373a568329df322cd22a9a68ea2d93a5048492ecff1b44c9a168b97124709d",
-    "database_sha256": "408980e7a8923223b5f7f4fe5120be961b65317d8e96abb25e2b9e4965ccd926",
-    "source_file_sha256": "a11c1727440d6d587a1bd0b37eaeb011afc050b8f356ef746fdd6e18898fdd92",
-    "source_revision": "Thu, 30 Jul 2026 09:22:59 GMT",
-    "counts": {
-      "approval_powertrain_variant_rows": 53240,
-      "source_defined_variant_link_rows": 53240,
-      "exact_vag_factory_code_pair_rows": 0,
-      "exact_vehicle_fitment_rows": 0,
-      "ru_eaeu_applicability_rows": 0
-    },
-    "make_counts": {
-      "AUDI": 16759,
-      "BENTLEY": 286,
-      "BUGATTI": 9,
-      "CUPRA": 222,
-      "LAMBORGHINI": 436,
-      "PORSCHE": 1611,
-      "SEAT": 4006,
-      "SKODA": 4746,
-      "VW": 25165
-    },
-    "source_rows_scanned": 280993,
-    "malformed_rows": 0,
-    "sqlite_integrity_check": "ok",
-    "foreign_key_violations": 0,
-    "exact_vag_factory_code_pair": false,
-    "exact_vehicle_fitment": false,
-    "ru_eaeu_applicability": false,
-    "production_import": false,
-    "note": "This is a verified CH-only research pack build. It does not establish an exact VAG factory engine/gearbox code pair, vehicle fitment, model year, generation or RU/EAEU applicability."
-  }
+  "reviewed_at": "2026-11-07"
 }
