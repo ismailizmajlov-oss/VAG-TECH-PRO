@@ -90,9 +90,11 @@ function getAstraTargaSummary(explicitRoot) {
     const integrity = db.prepare("PRAGMA integrity_check").all();
     if (integrity.length !== 1 || Object.values(integrity[0])[0] !== "ok" || db.prepare("PRAGMA foreign_key_check").all().length) fail("ASTRA TARGA SQLite integrity check failed");
     const meta = Object.fromEntries(db.prepare("SELECT key,value FROM pack_metadata").all().map((row) => [row.key, row.value]));
-    if (meta.pack_status !== "verified_research_only" || meta.rights_status !== "approved_by_published_ogd_terms" ||
-        meta.market_scope !== "CH" || meta.production_import !== "false" || meta.ru_eaeu_applicability !== "false" ||
-        meta.source_revision !== pack.source_revision || meta.source_manifest_sha256 !== entry.source_manifest_sha256) {
+    if (meta.pack_id !== PACK_ID || meta.source_id !== SOURCE_ID || meta.rights_status !== "approved_by_published_ogd_terms" ||
+        meta.market_scope !== "CH" || meta.ru_eaeu_applicability !== "false" || meta.exact_vag_factory_code_pair !== "false" ||
+        meta.exact_vehicle_fitment !== "false" || meta.model_year_inferred !== "false" || meta.generation_inferred !== "false" ||
+        meta.source_defined_variant_link !== "true" || meta.attribution_required !== "true" ||
+        meta.source_revision !== pack.source_revision || meta.source_file_sha256 !== pack.source_file?.file_sha256) {
       fail("ASTRA TARGA SQLite metadata mismatch");
     }
     const counts = {
