@@ -12,5 +12,6 @@ test("ASTRA TARGA is a separate CH-only research tab", () => {
   assert.match(source, /exactVagFactoryCodePair/);
   assert.match(source, /ruEaeuApplicability/);
   assert.match(source, /Swiss Open Government Data/);
-  assert.match(source, /не подтверждённый заводской код VAG/);
+  assert.match(source, /не является подтверждённым заводским кодом VAG/);
+  assert.match(source, /не является кодом КПП VAG/);
 });
