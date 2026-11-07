@@ -21,6 +21,7 @@ Review date: 2026-11-07
 - Catalogue metadata: published and last modified 2026-01-26. The European data portal record identifies temporal coverage 2023-01-01; this is not a model year.
 - Resource: CSV, linked through the KBA Statistikportal ArcGIS Hub.
 - Acquisition result on 2026-11-07: the CSV download endpoint returned HTTP 400 through the available retrieval path. No bytes were acquired; no file hash or data-row count is claimed.
+- European Data Portal cross-check on 2026-11-07: the same ArcGIS item ID is listed under KBA as publisher, with annual frequency, temporal coverage from 2023-01-01, eight distributions including one CSV, and distribution metadata dated 22 May 2026. The catalogue record was added on 29 January 2026 and updated on 26 July 2026. The access URL was not retrievable in this session; this is metadata corroboration only, not a successful download.
 
 ## Reuse rights
 

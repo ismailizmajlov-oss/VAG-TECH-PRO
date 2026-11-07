@@ -4207,7 +4207,25 @@
         "source_revision": "GovData metadata last modified 2026-01-26; EU data portal indicates temporal coverage 2023-01-01; actual file revision unknown",
         "downloaded": false,
         "file_sha256": null,
-        "source_snapshot_sha256": null
+        "source_snapshot_sha256": null,
+        "secondary_catalog_observations": [
+          {
+            "catalog": "European Data Portal",
+            "catalog_record_uri": "http://data.europa.eu/88u/dataset/https-www-arcgis-com-home-item-html-id-d277ec18ff1e442597c9411d7c1aaeaa-sublayer-0",
+            "publisher": "Kraftfahrt-Bundesamt (KBA)",
+            "observed_at": "2026-11-07",
+            "catalog_record_added_at": "2026-01-29",
+            "catalog_record_updated_at": "2026-07-26",
+            "temporal_coverage_start": "2023-01-01",
+            "distribution_count": 8,
+            "csv_distribution_count": 1,
+            "last_observed_distribution_update": "2026-05-22",
+            "resource_bytes_retrieved": false,
+            "file_sha256": null,
+            "source_snapshot_sha256": null,
+            "note": "Metadata cross-check only. The catalog exposes a CSV distribution, but its access URL and bytes were not retrieved; no import or hash is claimed."
+          }
+        ]
       },
       "data_products": {
         "manufacturer_trade_name_hsn_tsn": {
@@ -4262,10 +4280,10 @@
       "verification_status": "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified",
       "product_import_allowed": false,
       "data_ingested": false,
-      "source_revision": "GovData metadata last modified 2026-01-26; EU data portal temporal coverage 2023-01-01; actual file revision unknown",
+      "source_revision": "GovData metadata last modified 2026-01-26; European Data Portal record updated 2026-07-26 with 2023-01-01 temporal coverage and 8 listed distributions; actual file revision unknown",
       "source_snapshot_sha256": null,
       "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
-      "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The CSV resource returned HTTP 400 on 2026-11-07; no bytes, rows or hash were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. HSN/TSN are German registration identity keys only, not engine/gearbox codes or model-year/generation proof."
+      "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The official ArcGIS CSV endpoint returned HTTP 400 on 2026-11-07. The European Data Portal independently lists the same KBA ArcGIS item with 8 distributions, including one CSV last updated 2026-05-22, but the access URL and bytes were not retrieved. No rows or hashes were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. HSN/TSN are German registration identity keys only, not engine/gearbox codes or model-year/generation proof."
     }
   ],
   "minimum_fitment_evidence_fields": [
