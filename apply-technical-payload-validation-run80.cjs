@@ -8,10 +8,10 @@ const { spawnSync } = require("node:child_process");
 const encoded = require("./apply-technical-payload-validation-run80.payload.cjs");
 const compressed = Buffer.from(encoded, "base64");
 const compressedSha = crypto.createHash("sha256").update(compressed).digest("hex");
-if (compressedSha !== "68995287fd4b8b583ba339ffdf6412fcb07c30c3e11d922d402c12edc959a5c7") throw new Error("Run80 compressed patch SHA-256 mismatch");
+if (compressedSha !== "3b17b9f8ced47f8441c29b47a84f65b22fe85ee000c09e3a0a90dbe94ede62e7") throw new Error("Run80 compressed patch SHA-256 mismatch");
 const inner = zlib.gunzipSync(compressed);
 const innerSha = crypto.createHash("sha256").update(inner).digest("hex");
-if (innerSha !== "39d6684b4be0e23752a7f7d0db5d4d1a7a59006ceb6e6d4b3fbd33780b7f4b387") throw new Error("Run80 patch SHA-256 mismatch");
+if (innerSha !== "739b374073bf8f87f81abeefee45442d3d4a56e8cbaae324451b2405ed60fe07") throw new Error("Run80 patch SHA-256 mismatch");
 const temp = path.join(os.tmpdir(), "vag-tech-pro-run80-" + process.pid + ".cjs");
 fs.writeFileSync(temp, inner, { flag: "wx" });
 try {
