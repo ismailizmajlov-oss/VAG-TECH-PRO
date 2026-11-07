@@ -109,7 +109,8 @@ test("KBA research verifier registers the thirteenth isolated pack after TARGA a
   assert.match(patch, /kbaDeSummary\.marketScope === "DE"/);
   assert.match(patch, /researchPackIngested === true/);
   assert.match(patch, /productDatabaseIngested === false/);
-  assert.match(patch, /productDatabaseIngested: kbaDeSummary\.productDatabaseIngested,\n\s+productionImport/);
+  assert.match(patch, /productDatabaseIngested: kbaDeSummary\.productDatabaseIngested/);
+  assert.match(patch, /productionImport: kbaDeSummary\.productionImport/);
   assert.match(patch, /vagStockObservations === 264847/);
   assert.match(patch, /exactEngineGearboxPair === false/);
   assert.match(patch, /ruEaeuApplicability === false/);
