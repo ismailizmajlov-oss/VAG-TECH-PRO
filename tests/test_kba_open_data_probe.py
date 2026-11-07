@@ -26,20 +26,20 @@ class KbaOpenDataProbeTests(unittest.TestCase):
         )
 
     def test_csv_schema_and_rows_are_read_without_renaming_source_columns(self):
-        payload = b"Hersteller;Handelsname;Typschl\\u00fcssel;Berichtszeitpunkt\\r\\nVOLKSWAGEN (D);GOLF;0603;2026-01-01\\r\\nAUDI (D);A4;0588;2026-01-01\\r\\n"
+        payload = "Hersteller;Handelsname;Typschlüssel;Berichtszeitpunkt\r\nVOLKSWAGEN (D);GOLF;0603;01.01.2026\r\nAUDI (D);A4;0588;01.01.2026\r\n".encode("utf-8")
         parsed = probe.parse_csv_payload(payload)
         self.assertIsNotNone(parsed)
-        self.assertEqual(parsed["columns"], ["Hersteller", "Handelsname", "Typschl\\u00fcssel", "Berichtszeitpunkt"])
+        self.assertEqual(parsed["columns"], ["Hersteller", "Handelsname", "Typschlüssel", "Berichtszeitpunkt"])
         self.assertEqual(parsed["row_count"], 2)
         self.assertEqual(parsed["manufacturer_field_candidates"], ["Hersteller"])
         self.assertEqual(parsed["exact_vag_manufacturer_values"], ["VOLKSWAGEN (D)", "AUDI (D)"])
-        self.assertEqual(parsed["sample_rows"][0]["Typschl\\u00fcssel"], "0603")
+        self.assertEqual(parsed["sample_rows"][0]["Typschlüssel"], "0603")
         self.assertEqual(parsed["csv_sha256"], probe.sha256(payload))
 
     def test_zip_payload_extracts_csv_for_schema_only(self):
         memory = io.BytesIO()
         with zipfile.ZipFile(memory, "w", zipfile.ZIP_DEFLATED) as archive:
-            archive.writestr("kba.csv", "Hersteller,Handelsname,Typschlüssel,Berichtszeitpunkt\\nSKODA (CZ),Octavia,8004,2026-01-01\\n")
+            archive.writestr("kba.csv", "Hersteller,Handelsname,Typschlüssel,Berichtszeitpunkt\nSKODA (CZ),Octavia,8004,01.01.2026\n")
         parsed = probe.parse_csv_payload(memory.getvalue())
         self.assertEqual(parsed["filename"], "kba.csv")
         self.assertEqual(parsed["row_count"], 1)
