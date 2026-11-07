@@ -92,5 +92,37 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
 
 
 
+
+    def test_latest_run16_pack_hashes_counts_and_zero_pair_boundary(self):
+        manifest = json.loads((ROOT / "data" / "source-manifests" / "astra-targa-emissionen-open-data.json").read_text(encoding="utf-8"))
+        build = manifest["latest_pack_build"]
+        self.assertEqual(build["workflow_run_number"], 16)
+        self.assertEqual(build["artifact_id"], 13580905833)
+        self.assertEqual(build["source_file_sha256"], manifest["snapshot"]["file_sha256"])
+        self.assertEqual(build["database_sha256"], "408980e7a8923223b5f7f4fe5120be961b65317d8e96abb25e2b9e4965ccd926")
+        self.assertEqual(build["pack_archive_sha256"], "5bf0a552cfc057b52c66640db36d6c671e9994a613f4c6d7b5d296948be33be3")
+        self.assertEqual(build["artifact_sha256"], "fac173f744dcd5d7acb47702371771d684034c8a5141251ec1eb685dfe71d51c")
+        self.assertEqual(build["counts"]["approval_powertrain_variant_rows"], 53240)
+        self.assertEqual(build["counts"]["exact_vag_factory_code_pair_rows"], 0)
+        self.assertEqual(build["counts"]["exact_vehicle_fitment_rows"], 0)
+        self.assertEqual(build["counts"]["ru_eaeu_applicability_rows"], 0)
+        self.assertEqual(build["sqlite_integrity_check"], "ok")
+        self.assertEqual(build["foreign_key_violations"], 0)
+        self.assertFalse(build["exact_vag_factory_code_pair"])
+        self.assertFalse(build["ru_eaeu_applicability"])
+
+    def test_source_register_pins_same_latest_run16_pack_without_production_import(self):
+        register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        source = next(item for item in register["sources"] if item["source_id"] == SOURCE_ID)
+        build = source["research_pack_build_evidence"]
+        self.assertEqual(build["workflow_run_number"], 16)
+        self.assertEqual(build["artifact_sha256"], "fac173f744dcd5d7acb47702371771d684034c8a5141251ec1eb685dfe71d51c")
+        self.assertEqual(build["pack_archive_sha256"], "5bf0a552cfc057b52c66640db36d6c671e9994a613f4c6d7b5d296948be33be3")
+        self.assertIs(build["production_import"], False)
+        self.assertIs(build["ru_eaeu_applicability"], False)
+        self.assertIs(build["exact_vag_factory_code_pair"], False)
+        self.assertIs(source["product_import_allowed"], False)
+        self.assertIs(source["data_ingested"], False)
+
 if __name__ == "__main__":
     unittest.main()
