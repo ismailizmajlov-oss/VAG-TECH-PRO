@@ -16,8 +16,8 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
             self.assertIs(self.manifest["rights"][field],True)
         self.assertIn("cardir.ru/dannye",self.manifest["rights"]["attribution_text"])
     def test_windows_acquired_snapshot_hash_and_counts_are_pinned(self):
-        self.assertEqual(self.manifest["snapshot"]["source_snapshot_sha256"],"93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375")
-        self.assertEqual(self.manifest["snapshot"]["source_file_bytes"],14291137)
+        self.assertEqual(self.manifest["snapshot"]["source_snapshot_sha256"],"72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922")
+        self.assertEqual(self.manifest["snapshot"]["source_file_bytes"],14291343)
         self.assertEqual(self.manifest["snapshot"]["status"],"source_snapshot_acquired_schema_verified")
         self.assertEqual(self.manifest["snapshot"]["expected_data_updated_at"],"2026-11-07")
         self.assertEqual(self.manifest["snapshot"]["expected_source_row_count"],41649)
@@ -33,7 +33,7 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(source["research_pack"]["status"],"source_snapshot_acquired_schema_verified")
         self.assertEqual(source["research_pack"]["vag_fact_rows"],773)
         self.assertEqual(source["research_pack"]["vag_models"],24)
-        self.assertEqual(source["research_pack"]["source_snapshot_sha256"],"93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375")
+        self.assertEqual(source["research_pack"]["source_snapshot_sha256"],"72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922")
         self.assertIs(source["research_pack"]["production_import"],False)
     def test_not_misclassified_as_russian_or_eaeu_otts(self):
         self.assertNotIn(SOURCE_ID,{s.get("source_id") for s in self.ru["sources"]})
