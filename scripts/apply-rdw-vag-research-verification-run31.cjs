@@ -46,10 +46,22 @@ function main() {
     verifier = verifier.replace(messageMatch[0], '"Expected ' + expectedPackCount + ' separately licensed research packs, including the NL-only RDW approval research pack"');
   }
 
-  verifier = replaceExactly(verifier,
-    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra, "Required generic, candidate and CH-only research packs must be registered");\n',
-    '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];\n  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];\n  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];\n  assert(wikidataGenerations, "Wikidata generation candidate pack must be registered");\n  assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra && targa && rdw, "Required generic, candidate, CH-only ASTRA TAS/TARGA and NL-only RDW packs must be registered");\n',
-    "RDW pack registration");
+  const astraBinding = '  const astra = byId["astra-fedro-tas-type-approvals-open-data-ch"];';
+  const targaBinding = '  const targa = byId["astra-fedro-targa-emissionen-approval-variants-ch"];';
+  const rdwBinding = '  const rdw = byId["rdw-vag-nl-eu-type-approval-research"];';
+  if (!verifier.includes(rdwBinding)) {
+    if (!verifier.includes(astraBinding)) throw new Error("RDW pack registration: ASTRA TAS binding anchor missing");
+    if (!verifier.includes(targaBinding)) verifier = replaceExactly(verifier, astraBinding, astraBinding + "\n" + targaBinding, "RDW TARGA binding");
+    const insertionAnchor = verifier.includes(targaBinding) ? targaBinding : astraBinding;
+    verifier = replaceExactly(verifier, insertionAnchor, insertionAnchor + "\n" + rdwBinding, "RDW pack binding");
+  }
+  const requiredPackAssert = verifier.split("\n").find((line) => line.includes("assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata && astra"));
+  if (!requiredPackAssert) throw new Error("RDW pack registration: required research-pack assertion anchor missing");
+  if (!requiredPackAssert.includes("rdw")) {
+    const updatedPackAssert = requiredPackAssert.replace(/&& astra(?: && targa)?/, "&& astra && targa && rdw");
+    if (updatedPackAssert === requiredPackAssert) throw new Error("RDW pack registration: could not extend required-pack assertion");
+    verifier = replaceExactly(verifier, requiredPackAssert, updatedPackAssert, "RDW required-pack assertion");
+  }
 
   const targaAssertion = '  assert(astraTargaSummary.id === "astra-fedro-targa-emissionen-approval-variants-ch" && astraTargaSummary.marketScope === "CH" && astraTargaSummary.productionImport === false && astraTargaSummary.productImportAllowed === false && astraTargaSummary.ruEaeuApplicability === false && astraTargaSummary.exactVagFactoryCodePair === false && astraTargaSummary.counts.approvalPowertrainVariantRows === 53240 && astraTargaSummary.counts.exactVagFactoryCodePairRows === 0, "ASTRA TARGA must remain separately namespaced CH-only research, never factory fitment");';
   const rdwRuntime = [
