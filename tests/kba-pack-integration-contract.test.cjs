@@ -69,6 +69,16 @@ test("KBA desktop integration verifies pack hashes and keeps it out of productio
   assert.match(integration, /not confirmed TSN|не подтверждённая TSN/);
 });
 
+test("KBA desktop integration composes after the ASTRA TARGA and RDW research tabs", () => {
+  const integration = read("scripts/integrate-kba-de-vag-stock-research-pack.cjs");
+  assert.match(integration, /datasetAnchors = \[/);
+  assert.match(integration, /"astra" \| "astra-targa" \| "rdw"/);
+  assert.match(integration, /"astra" \| "rdw"/);
+  assert.match(integration, /placeholderAnchors = \[/);
+  assert.match(integration, /dataset === "astra-targa"/);
+  assert.match(integration, /dataset === "kba-de"/);
+});
+
 test("KBA runtime reader is read-only and verifies the source/DB licence chain", () => {
   const reader = read("desktop/kba-de-stock-research-db.cjs");
   assert.match(reader, /new DatabaseSync\(file, \{ readOnly: true \}\)/);
