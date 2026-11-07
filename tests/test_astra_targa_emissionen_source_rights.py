@@ -68,5 +68,12 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
         self.assertIn("$sourceRegisterJson = if (Test-Path $sourceRegisterPath) { Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json -AsHashtable } else { $null }", workflow)
 
 
+    def test_lifecycle_patch_accepts_the_pinned_desktop_write_host_anchor(self):
+        script = (ROOT / "scripts" / "integrate-astra-targa-emissionen-vag-research-pack.cjs").read_text(encoding="utf-8")
+        self.assertIn("const anchorCandidates = [", script)
+        self.assertIn('Write-Host "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."', script)
+        self.assertIn('Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."', script)
+
+
 if __name__ == "__main__":
     unittest.main()
