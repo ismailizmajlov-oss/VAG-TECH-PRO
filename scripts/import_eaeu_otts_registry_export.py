@@ -20,6 +20,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 SOURCE_ID = "eaeu-otts-unified-register-public-portal"
 SCHEMA_ID = "R.TR.TS.07.001"
@@ -621,6 +622,58 @@ def _create_database_schema(connection: sqlite3.Connection) -> None:
     connection.execute("PRAGMA application_id = 1448367186")
 
 
+
+def _validate_staging_source_metadata(
+    source: dict[str, Any],
+    *,
+    source_manifest_sha256: str,
+    input_sha256: str,
+    retrieved_at: str,
+    permission_evidence_sha256: str,
+) -> tuple[str, str, list[str]]:
+    if source.get("source_id") != SOURCE_ID:
+        raise ValueError(f"Persistent staging requires source_id={SOURCE_ID}")
+    source_url = source.get("url") or source.get("source_url")
+    if not isinstance(source_url, str):
+        raise ValueError("EAEU source register entry must contain an official HTTPS source URL")
+    try:
+        parsed_url = urlsplit(source_url)
+        hostname = (parsed_url.hostname or "").lower()
+        port = parsed_url.port
+    except ValueError as exc:
+        raise ValueError("EAEU source URL is malformed") from exc
+    if (
+        parsed_url.scheme != "https"
+        or not hostname
+        or (hostname != "eaeunion.org" and not hostname.endswith(".eaeunion.org"))
+        or parsed_url.username
+        or parsed_url.password
+        or port not in (None, 443)
+        or parsed_url.query
+        or parsed_url.fragment
+    ):
+        raise ValueError("EAEU source URL must use an official eaeunion.org HTTPS host without credentials, query or fragment")
+    market_scope = source.get("market_scope")
+    if market_scope != ["EAEU"]:
+        raise ValueError("EAEU staging source market_scope must be exactly ['EAEU']")
+    source_revision = source.get("source_revision") or f"Decision 88 / {SCHEMA_ID} v{SCHEMA_VERSION}"
+    if not isinstance(source_revision, str) or not source_revision.strip() or len(source_revision) > 240:
+        raise ValueError("EAEU source_revision must be a non-empty string of at most 240 characters")
+    for label, digest in (
+        ("source_manifest_sha256", source_manifest_sha256),
+        ("input_sha256", input_sha256),
+        ("permission_evidence_sha256", permission_evidence_sha256),
+    ):
+        if not isinstance(digest, str) or not re.fullmatch(r"[a-fA-F0-9]{64}", digest):
+            raise ValueError(f"{label} must be a 64-character SHA-256")
+    try:
+        parsed_time = datetime.fromisoformat(retrieved_at.replace("Z", "+00:00"))
+    except (AttributeError, ValueError) as exc:
+        raise ValueError("retrieved_at must be an ISO-8601 timestamp with timezone") from exc
+    if parsed_time.tzinfo is None:
+        raise ValueError("retrieved_at must include a timezone")
+    return source_url, source_revision, market_scope
+
 def write_staging_database(
     parsed: dict[str, Any],
     *,
@@ -638,22 +691,20 @@ def write_staging_database(
     if not parsed["documents"]:
         raise ValueError("No OTTS/OTSH records are available for persistent staging")
 
-    output.parent.mkdir(parents=True, exist_ok=True)
-    db_fd, db_temp_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".staging", dir=output.parent)
-    os.close(db_fd)
-    side_fd, side_temp_name = tempfile.mkstemp(prefix=f".{sidecar.name}.", suffix=".staging", dir=output.parent)
-    os.close(side_fd)
-    db_temp = Path(db_temp_name)
-    side_temp = Path(side_temp_name)
-    installed_db = False
-
+    source_url, source_revision, market_scope = _validate_staging_source_metadata(
+        source,
+        source_manifest_sha256=source_manifest_sha256,
+        input_sha256=input_sha256,
+        retrieved_at=retrieved_at,
+        permission_evidence_sha256=permission_evidence_sha256,
+    )
     source_id = source["source_id"]
-    source_url = source.get("url") or source.get("source_url")
-    if not isinstance(source_url, str) or not source_url.startswith("https://"):
-        raise ValueError("EAEU source register entry must contain an HTTPS source URL")
-    source_revision = source.get("source_revision") or f"Decision 88 / {SCHEMA_ID} v{SCHEMA_VERSION}"
-    market_scope = source.get("market_scope") or ["EAEU"]
     rights_status = "owner_attested_not_independently_verified"
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    db_temp: Path | None = None
+    side_temp: Path | None = None
+    installed_db = False
 
     counts = {
         "documents": 0,
@@ -665,6 +716,13 @@ def write_staging_database(
     }
 
     try:
+        db_fd, db_temp_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".staging", dir=output.parent)
+        db_temp = Path(db_temp_name)
+        os.close(db_fd)
+        side_fd, side_temp_name = tempfile.mkstemp(prefix=f".{sidecar.name}.", suffix=".staging", dir=output.parent)
+        side_temp = Path(side_temp_name)
+        os.close(side_fd)
+
         connection = sqlite3.connect(db_temp)
         try:
             connection.execute("PRAGMA journal_mode = DELETE")
@@ -864,6 +922,8 @@ def write_staging_database(
         raise
     finally:
         for temporary in (db_temp, side_temp):
+            if temporary is None:
+                continue
             try:
                 temporary.unlink(missing_ok=True)
             except OSError:
