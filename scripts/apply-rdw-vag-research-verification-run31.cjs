@@ -66,9 +66,11 @@ function main() {
   const targaAssertion = '  assert(astraTargaSummary.id === "astra-fedro-targa-emissionen-approval-variants-ch" && astraTargaSummary.marketScope === "CH" && astraTargaSummary.productionImport === false && astraTargaSummary.productImportAllowed === false && astraTargaSummary.ruEaeuApplicability === false && astraTargaSummary.exactVagFactoryCodePair === false && astraTargaSummary.counts.approvalPowertrainVariantRows === 53240 && astraTargaSummary.counts.exactVagFactoryCodePairRows === 0, "ASTRA TARGA must remain separately namespaced CH-only research, never factory fitment");';
   const rdwRuntime = [
     '  const rdwSummary = require(path.join(ROOT, "lib", "rdw-vag-research-db.cjs")).getRdwSummary(RESEARCH);',
+    '  const rdwPackManifest = require(path.join(ROOT, "data", "research", "rdw-vag-nl-eu-type-approval-research", "manifest.json"));',
     '  assert(rdwSummary.id === rdw.id && rdwSummary.marketScope === "NL" && rdwSummary.productionImport === false && rdwSummary.ruEaeuApplicability === false && rdwSummary.exactVehicleFitment === false && rdwSummary.exactEngineGearboxPair === false && rdwSummary.repairApplicability === false && rdwSummary.diagnosticExecutionAllowed === false, "RDW pack must remain separate NL-only approval research, never VAG production fitment");',
-    '  assert(rdwSummary.counts.approvalScopes === 96519 && rdwSummary.counts.registrationObservations === 102662 && rdwSummary.counts.engineDesignationCandidates === 93836 && rdwSummary.counts.gearboxClassifications === 93548 && rdwSummary.counts.sourceRows === 604785 && rdwSummary.sourceSnapshotSha256 === "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706" && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot, database or source manifest provenance/counts changed");'
-  ].join("\n");
+    '  assert(rdwSummary.counts.approvalScopes === rdwPackManifest.counts.approval_scopes && rdwSummary.counts.registrationObservations === rdwPackManifest.counts.registration_observations && rdwSummary.counts.engineDesignationCandidates === rdwPackManifest.counts.engine_candidates && rdwSummary.counts.gearboxClassifications === rdwPackManifest.counts.gearbox_classifications && rdwSummary.counts.sourceRows === rdwPackManifest.counts.source_rows && rdwSummary.counts.sourceFiles === rdwPackManifest.counts.source_files, "RDW SQLite counts differ from the verified pack manifest");',
+    '  assert(rdwSummary.sourceSnapshotSha256 === rdwPackManifest.source_snapshot_sha256 && rdwSummary.databaseSha256 === rdwPackManifest.database.sha256 && rdwSummary.sourceManifestSha256 === rdwPackManifest.source_manifest_sha256 && rdwSummary.databaseSha256 === rdw.database_sha256 && rdwSummary.sourceManifestSha256 === rdw.source_manifest_sha256, "RDW snapshot, database or source-manifest provenance changed");'
+  ].join("\\n");
   if (!verifier.includes('const rdwSummary = require(path.join(ROOT, "lib", "rdw-vag-research-db.cjs"))')) {
     verifier = replaceExactly(verifier, targaAssertion, targaAssertion + "\n" + rdwRuntime, "RDW runtime rights/provenance/count verification");
   }
@@ -101,10 +103,62 @@ function main() {
   const rdwReportAtIndent = rdwReport.split("\n").map((line) => reportIndent + line.slice(rdwReportBaseIndent)).join("\n");
   if (!verifier.includes("rdw_nl_eu:")) verifier = replaceExactly(verifier, productionReportAnchor, rdwReportAtIndent + "\n" + productionReportAnchor, "RDW verification report");
 
-  if (!test.includes("result.rdw_nl_eu")) test = replaceExactly(test,
-    '  assert.deepEqual(result.astra_ch_tas, {\n    marketScope: "CH",\n    approvals: 45215,\n    emissionsGearboxRows: 53414,\n    linkedScopeRows: 33909,\n    exactScopeLinks: 5420,\n    wildcardScopeLinks: 28489,\n    unlinkedScopeRows: 19505,\n    productionImport: false,\n    ruEaeuApplicability: false,\n    exactVehicleFitment: false,\n    repairApplicability: false,\n    diagnosticExecutionAllowed: false,\n    databaseSha256: "161800c884f6cdcc3b52c8cc87df51a2d853e7cbc640dea18847f40c0576b7f5"\n  });\n  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");\n',
-    '  assert.deepEqual(result.astra_ch_tas, {\n    marketScope: "CH",\n    approvals: 45215,\n    emissionsGearboxRows: 53414,\n    linkedScopeRows: 33909,\n    exactScopeLinks: 5420,\n    wildcardScopeLinks: 28489,\n    unlinkedScopeRows: 19505,\n    productionImport: false,\n    ruEaeuApplicability: false,\n    exactVehicleFitment: false,\n    repairApplicability: false,\n    diagnosticExecutionAllowed: false,\n    databaseSha256: "161800c884f6cdcc3b52c8cc87df51a2d853e7cbc640dea18847f40c0576b7f5"\n  });\n  assert.deepEqual(result.rdw_nl_eu, {\n    marketScope: "NL",\n    approvalScopes: 96519,\n    registrationObservations: 102662,\n    engineDesignationCandidates: 93836,\n    gearboxClassifications: 93548,\n    sourceRows: 604785,\n    sourceFiles: 6,\n    productionImport: false,\n    ruEaeuApplicability: false,\n    exactVehicleFitment: false,\n    exactEngineGearboxPair: false,\n    repairApplicability: false,\n    diagnosticExecutionAllowed: false,\n    sourceSnapshotSha256: "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",\n    sourceManifestSha256: result.rdw_nl_eu.sourceManifestSha256,\n    databaseSha256: result.rdw_nl_eu.databaseSha256\n  });\n  assert.match(result.rdw_nl_eu.sourceManifestSha256, /^[a-f0-9]{64}$/);\n  assert.match(result.rdw_nl_eu.databaseSha256, /^[a-f0-9]{64}$/);\n  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");\n',
-    "RDW regression assertions");
+  if (!test.includes("result.rdw_nl_eu")) {
+    const rdwTestBefore = [
+      '  assert.deepEqual(result.astra_ch_tas, {',
+      '    marketScope: "CH",',
+      '    approvals: 45215,',
+      '    emissionsGearboxRows: 53414,',
+      '    linkedScopeRows: 33909,',
+      '    exactScopeLinks: 5420,',
+      '    wildcardScopeLinks: 28489,',
+      '    unlinkedScopeRows: 19505,',
+      '    productionImport: false,',
+      '    ruEaeuApplicability: false,',
+      '    exactVehicleFitment: false,',
+      '    repairApplicability: false,',
+      '    diagnosticExecutionAllowed: false,',
+      '    databaseSha256: "161800c884f6cdcc3b52c8cc87df51a2d853e7cbc640dea18847f40c0576b7f5"',
+      '  });',
+      '  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");'
+    ].join("\\n");
+    const rdwTestAfter = [
+      '  assert.deepEqual(result.astra_ch_tas, {',
+      '    marketScope: "CH",',
+      '    approvals: 45215,',
+      '    emissionsGearboxRows: 53414,',
+      '    linkedScopeRows: 33909,',
+      '    exactScopeLinks: 5420,',
+      '    wildcardScopeLinks: 28489,',
+      '    unlinkedScopeRows: 19505,',
+      '    productionImport: false,',
+      '    ruEaeuApplicability: false,',
+      '    exactVehicleFitment: false,',
+      '    repairApplicability: false,',
+      '    diagnosticExecutionAllowed: false,',
+      '    databaseSha256: "161800c884f6cdcc3b52c8cc87df51a2d853e7cbc640dea18847f40c0576b7f5"',
+      '  });',
+      '  const rdwPackManifest = require(path.join(ROOT, "data", "research", "rdw-vag-nl-eu-type-approval-research", "manifest.json"));',
+      '  assert.equal(result.rdw_nl_eu.marketScope, "NL");',
+      '  assert.equal(result.rdw_nl_eu.approvalScopes, rdwPackManifest.counts.approval_scopes);',
+      '  assert.equal(result.rdw_nl_eu.registrationObservations, rdwPackManifest.counts.registration_observations);',
+      '  assert.equal(result.rdw_nl_eu.engineDesignationCandidates, rdwPackManifest.counts.engine_candidates);',
+      '  assert.equal(result.rdw_nl_eu.gearboxClassifications, rdwPackManifest.counts.gearbox_classifications);',
+      '  assert.equal(result.rdw_nl_eu.sourceRows, rdwPackManifest.counts.source_rows);',
+      '  assert.equal(result.rdw_nl_eu.sourceFiles, rdwPackManifest.counts.source_files);',
+      '  assert.equal(result.rdw_nl_eu.productionImport, false);',
+      '  assert.equal(result.rdw_nl_eu.ruEaeuApplicability, false);',
+      '  assert.equal(result.rdw_nl_eu.exactVehicleFitment, false);',
+      '  assert.equal(result.rdw_nl_eu.exactEngineGearboxPair, false);',
+      '  assert.equal(result.rdw_nl_eu.repairApplicability, false);',
+      '  assert.equal(result.rdw_nl_eu.diagnosticExecutionAllowed, false);',
+      '  assert.equal(result.rdw_nl_eu.sourceSnapshotSha256, rdwPackManifest.source_snapshot_sha256);',
+      '  assert.equal(result.rdw_nl_eu.databaseSha256, rdwPackManifest.database.sha256);',
+      '  assert.equal(result.rdw_nl_eu.sourceManifestSha256, rdwPackManifest.source_manifest_sha256);',
+      '  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");'
+    ].join("\\n");
+    test = replaceExactly(test, rdwTestBefore, rdwTestAfter, "RDW regression assertions");
+  }
 
   fs.writeFileSync(verifierPath, verifier.replace(/\n/g, verifierNewline), "utf8");
   fs.writeFileSync(testPath, test.replace(/\n/g, testNewline), "utf8");
