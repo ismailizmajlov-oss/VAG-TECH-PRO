@@ -5292,7 +5292,7 @@
         "third_party_desktop_display_of_embedded_offline_subset": "not expressly cleared",
         "upstream_source_redistribution_rights": "not established",
         "commercial_use_for_selected_paid_access": "described by the offer for the selected access scope; no project purchase or acceptance",
-        "permission_status": "written_offline_embedding_and_end_user_distribution_permission_not_obtained",
+        "permission_status": "not_obtained",
         "product_import_allowed": false,
         "offline_cache_allowed": false,
         "redistribution_allowed": false,
@@ -5311,7 +5311,7 @@
         "wiring_or_pinout_fitment": false,
         "oem_parts_fitment": false
       },
-      "verification_status": "public_metadata_and_offer_reviewed; dataset_license_upstream_rights_and_offline_distribution_scope_unresolved",
+      "verification_status": "quarantined_rights_unresolved",
       "evidence": [
         {
           "url": "https://cars-base.ru/",
