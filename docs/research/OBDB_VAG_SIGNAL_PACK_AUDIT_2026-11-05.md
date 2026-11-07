@@ -55,3 +55,10 @@ Keep the pack in a separate read-only CC BY-SA research namespace with the upstr
 The `LICENSE` file was fetched from each of the six repositories at the exact pinned commit listed in `data/source-manifests/vag-factory-source-register.json`. All six files identify **Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**. The pack therefore remains a separately licensed adapted database: retain contributor attribution and the CC BY-SA 4.0 share-alike notice for the adapted database. No repository's licence is inferred from the OBDb umbrella README alone.
 
 The licence review confirms permission for commercial use, display, offline caching and redistribution subject to CC BY-SA terms. It does not validate technical correctness, generation mapping, ECU support, RU/EAEU market applicability or safe execution. All command execution remains disabled.
+
+
+## Verified build artifact — workflow run 4, 2026-11-03
+
+The pinned research pack was built and independently verified in [Windows workflow run 4](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/41562106883), source commit `eebcc64541de325ecfc26d2c2dcb1eadc0841cf0`. The uploaded artifact is ID `13198105454`, 839,847 bytes, SHA-256 `db6014167149322c8928d7f8762ea33421f7e142bd8864b0ae60307207578069`. The included SQLite database SHA-256 is `d3c54051e2f3f73c211e6d84c4e84541a60901e01eeee843b8357efa1e421aa1`; `manifest.json` SHA-256 is `29ec10e68214c66a5c3c14734b9f30e0eb9d25f0d03be3384a454c3ef1833f46`.
+
+The pack remains a separate CC BY-SA 4.0 candidate reference and is **not integrated into the desktop installer** or product database. It has 2,315 UDS 0x22 read-command candidates, 2,480 signals, 32 generation candidates and 15 ECU candidates, but zero DTC definitions, zero approved test plans, zero exact vehicle fitments and zero exact ECU fitments. All commands are read-only reference records with execution disabled. Any future desktop inclusion must preserve all upstream license copies, contributor attribution and the CC BY-SA 4.0 share-alike notice; it must not be mixed into the main product database.
