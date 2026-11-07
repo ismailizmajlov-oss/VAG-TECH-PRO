@@ -109,6 +109,11 @@ def main() -> None:
     missing_kba_paths = [marker for marker in kba_path_markers if text.count(marker) < 2]
     if missing_kba_paths:
         raise SystemExit(f"KBA source changes must trigger both push and pull-request validation: {missing_kba_paths}")
+    kyrgyz_review_path = "docs/research/KYRGYZ_SINGLE_WINDOW_PUBLIC_REGISTRY_REVIEW_2026-11-07.md"
+    if text.count(kyrgyz_review_path) < 2:
+        raise SystemExit("Kyrgyz public-registry review must trigger both push and pull-request validation")
+    if text.count("tests/test_russian_eaeu_otts_manifest.py") < 3:
+        raise SystemExit("Russian/EAEU source-manifest tests must run and be covered by both push/PR path filters")
     if text.count("tests/test_kba_germany_open_data_source_rights.py") < 3 or "python tests/test_kba_germany_open_data_source_rights.py" not in text:
         raise SystemExit("KBA source-rights test must run and be covered by both push/PR path filters")
     if "python tests/test_decode_tr_source_rights.py" not in text:
