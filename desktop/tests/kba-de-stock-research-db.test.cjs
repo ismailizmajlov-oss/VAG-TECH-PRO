@@ -3,7 +3,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const { getKbaSummary, searchKbaStock, clearCache } = require("../kba-de-stock-research-db.cjs");
+const { getKbaSummary, searchKbaStock, clearCache } = require("../lib/kba-de-stock-research-db.cjs");
 
 
 test("KBA pack verifies DL-DE BY 2.0 provenance, source hashes and DE-only research boundary", () => {
