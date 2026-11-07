@@ -149,3 +149,48 @@ WHEN NEW.dtc_namespace = 'generic_sae_iso'
 BEGIN
   SELECT RAISE(ABORT, 'generic SAE/ISO DTC cannot be labelled as manufacturer-specific VAG');
 END;
+
+-- Keep namespace and manufacturer identity consistent on both insert and update.
+CREATE TRIGGER IF NOT EXISTS require_unknown_manufacturer_for_generic_dtc
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.dtc_namespace='generic_sae_iso' AND NEW.manufacturer<>'UNKNOWN'
+BEGIN
+  SELECT RAISE(ABORT, 'generic SAE/ISO DTC must use UNKNOWN manufacturer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS require_unknown_manufacturer_for_generic_dtc_update
+BEFORE UPDATE OF dtc_namespace, manufacturer ON oem_dtc_index
+WHEN NEW.dtc_namespace='generic_sae_iso' AND NEW.manufacturer<>'UNKNOWN'
+BEGIN
+  SELECT RAISE(ABORT, 'generic SAE/ISO DTC must use UNKNOWN manufacturer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS require_vag_manufacturer_for_vag_dtc
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.dtc_namespace='manufacturer_specific_vag'
+ AND NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+BEGIN
+  SELECT RAISE(ABORT, 'VAG-specific DTC requires a VAG Group manufacturer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS require_vag_manufacturer_for_vag_dtc_update
+BEFORE UPDATE OF dtc_namespace, manufacturer ON oem_dtc_index
+WHEN NEW.dtc_namespace='manufacturer_specific_vag'
+ AND NEW.manufacturer NOT IN ('VOLKSWAGEN','AUDI','SKODA','SEAT','CUPRA')
+BEGIN
+  SELECT RAISE(ABORT, 'VAG-specific DTC requires a VAG Group manufacturer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS require_other_manufacturer_for_other_oem_dtc
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.dtc_namespace='manufacturer_specific_other' AND NEW.manufacturer<>'OTHER'
+BEGIN
+  SELECT RAISE(ABORT, 'other manufacturer-specific DTC must use OTHER manufacturer');
+END;
+
+CREATE TRIGGER IF NOT EXISTS require_other_manufacturer_for_other_oem_dtc_update
+BEFORE UPDATE OF dtc_namespace, manufacturer ON oem_dtc_index
+WHEN NEW.dtc_namespace='manufacturer_specific_other' AND NEW.manufacturer<>'OTHER'
+BEGIN
+  SELECT RAISE(ABORT, 'other manufacturer-specific DTC must use OTHER manufacturer');
+END;
