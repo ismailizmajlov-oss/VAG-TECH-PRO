@@ -206,6 +206,15 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "DTD/entity"):
             importer.parse_registry_export(bad)
 
+    def test_foreign_extension_elements_are_ignored(self):
+        raw = _xml(include_sbkts=False).replace(
+            b"</ConformityVehicleDocsRegistryDetails>",
+            b'<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/></ConformityVehicleDocsRegistryDetails>',
+            1,
+        )
+        parsed = importer.parse_registry_export(raw)
+        self.assertEqual(len(parsed["documents"]), 1)
+
     def test_foreign_or_unqualified_schema_elements_are_rejected(self):
         original = b"<VehicleComponentModelCode>TEST-ENGINE-CODE-01</VehicleComponentModelCode>"
         replacements = (
@@ -215,7 +224,7 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
         for replacement in replacements:
             with self.subTest(replacement=replacement[:48]):
                 bad = _xml(include_sbkts=False).replace(original, replacement, 1)
-                with self.assertRaisesRegex(ValueError, "Unexpected XML element namespace"):
+                with self.assertRaisesRegex(ValueError, "Unexpected XML namespace for a recognized EAEU schema element"):
                     importer.parse_registry_export(bad)
 
     def test_unknown_document_kind_is_rejected(self):

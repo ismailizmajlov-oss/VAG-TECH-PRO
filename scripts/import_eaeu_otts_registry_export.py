@@ -73,14 +73,60 @@ def _namespace(tag: str) -> str | None:
     return tag[1:].split("}", 1)[0]
 
 
+SCHEMA_ELEMENT_NAMES = frozenset({
+    EXPECTED_ROOT,
+    "VehicleConformityDocDetails",
+    "ConformityDocKindCode",
+    "ConformityDocKindName",
+    "ConformityDocStatusDetails",
+    "DocCreationDate",
+    "DocId",
+    "DocStartDate",
+    "DocStatusCode",
+    "DocValidityDate",
+    "ECUModelCode",
+    "EDocCode",
+    "EDocDateTime",
+    "EngineCapacityMeasure",
+    "EngineCompressionRate",
+    "EngineCylinderArrangementText",
+    "EngineCylinderQuantity",
+    "EngineDetails",
+    "EngineMaxPowerMeasure",
+    "EngineMaxTorqueMeasure",
+    "LanguageCode",
+    "TransmissionUnitDetails",
+    "TransmissionUnitGearQuantity",
+    "UnifiedCountryCode",
+    "VehicleChassisDesignCode",
+    "VehicleCommercialName",
+    "VehicleComponentMakeName",
+    "VehicleComponentModelCode",
+    "VehicleComponentText",
+    "VehicleEcoClassCode",
+    "VehicleMakeCode",
+    "VehicleMakeName",
+    "VehicleTechCategoryCode",
+    "VehicleTypeDetails",
+    "VehicleTypeId",
+    "VehicleTypeVariantId",
+    "VehicleUnitKindCode",
+    "VehicleVariantDetails",
+})
+
+
 def _validate_element_namespaces(root: ET.Element) -> None:
     unexpected: list[tuple[str, str | None]] = []
     for element in root.iter():
         if not isinstance(element.tag, str):
             continue
+        local_name = _local_name(element.tag)
         namespace = _namespace(element.tag)
-        if namespace != EXPECTED_NAMESPACE:
-            unexpected.append((_local_name(element.tag), namespace))
+        # Ignore unrelated extension elements such as XMLDSig Signature, but
+        # never accept a foreign/unqualified element that imitates a field the
+        # importer actually interprets.
+        if local_name in SCHEMA_ELEMENT_NAMES and namespace != EXPECTED_NAMESPACE:
+            unexpected.append((local_name, namespace))
             if len(unexpected) >= 5:
                 break
     if unexpected:
@@ -88,8 +134,8 @@ def _validate_element_namespaces(root: ET.Element) -> None:
             f"{name!r} in {namespace!r}" for name, namespace in unexpected
         )
         raise ValueError(
-            "Unexpected XML element namespace; every element must use "
-            f"{EXPECTED_NAMESPACE!r}; found {details}"
+            "Unexpected XML namespace for a recognized EAEU schema element; "
+            f"expected {EXPECTED_NAMESPACE!r}; found {details}"
         )
 
 
