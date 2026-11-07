@@ -48,7 +48,14 @@ The current research snapshots contain useful public data, but none of the follo
 
 Each pack remains in its own namespace with its own manifest, attribution/license material, source revision and hashes. Share-Alike obligations are retained. Generic DTC and generic repair guidance are not linked to a VAG configuration or ECU.
 
-## Production-data status — 2026-11-07
+## Production-data status — 2026-11-08
+
+### Windows CI verification — 2026-11-08
+
+Windows desktop CI run 701 completed successfully on application commit `34c699ed1e1be0e2a467541d66bcf68f14a3e044`: [run 701](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42420697350). Both jobs passed. The run applied and checked the current offline research packs, run78–run85 evidence gates, desktop tests, ESLint, TypeScript, two Windows x64 NSIS installers, packaged source/schema verification, clean install, offline launch, backup/restore, upgrade-over-install and uninstall while preserving the user database; the Windows Server 2022 compatibility lifecycle also passed. The run produced source-audit, Windows installer and Server 2022 lifecycle artifacts.
+
+This does **not** replace the separate native Windows 10/11 x64 acceptance run: no owner-provided isolated Windows 10/11 client runner was available. The latest follow-up commits in this section are documentation-only; they do not alter the application binaries tested by run 701.
+
 
 **VAG TECH PRO is not yet a professional repair database or a release candidate.**
 
@@ -140,6 +147,12 @@ A 2026-11-07 review of the HPT.SU OTTS aggregator found that its public offer an
 ## Cars Base Russian vehicle catalog review — 2026-11-08
 
 Cars Base advertises Russian-language makes/models/generations/configurations/modifications and generic technical specifications. Its public offer permits use in a user's own products, but prohibits publishing the full archive or distributing source exports to third parties without written consent. The API documentation does not provide a dataset license or explicit offline-cache/end-user redistribution grant; detailed routes and file downloads require a key, while `token=test` is demo data only. The public GitHub repository README references Auto.ru catalog pages for expanded data, and no dataset LICENSE file was visible in the reviewed root listing. No account, key, paid access, API request or download was used. The source is registered as market UNKNOWN and discovery-only; no SQLite data or SHA-256 snapshot is claimed. Reconsider only after written permission for offline embedding, end-user display and redistribution plus proof of upstream Auto.ru data rights. See [the Cars Base rights review](docs/research/CARS_BASE_RUSSIAN_CATALOG_RIGHTS_REVIEW_2026-11-08.md).
+
+## Official Russian OTTS access route recheck — 2026-11-08
+
+The official Interstandart FAQ confirms that its special «Макет реестра ОТТС/ОТШ ТС» software is issued only where the applicant's Rosakkreditatsiya scope includes TR TS 018/2011 or GOST 33670. VAG TECH PRO is not an accredited certification body or testing laboratory and will not seek that restricted software or use another organization's credentials. This is a restriction on that software workflow, not proof that all public records are confidential.
+
+The official FGIS description confirms the national OTTS/OTSH registers, cancellation notices and the national part of the EAEU register. It does not grant VAG TECH PRO bulk retrieval, persistent SQLite caching, offline display or redistribution rights. The public ELPTS CSV/PDF/XML controls remain an access observation only: endpoint, completeness and reuse terms are unverified. A written-permission route and a precise rights request are documented in [the Interstandart access and permission review](docs/research/INTERSTANDART_OTTS_ACCESS_AND_PERMISSION_ROUTE_2026-11-08.md). No request was sent, no account/software/export was obtained, no data were imported and no rights flags were changed.
 
 ## Release blockers
 
