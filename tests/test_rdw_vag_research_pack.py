@@ -115,6 +115,24 @@ class RdwVagResearchPackTests(unittest.TestCase):
             "columns": [{"fieldName": field} for field in required],
         }
 
+    def test_committed_snapshot_and_refresh_hashes_are_valid_sha256(self):
+        source = json.loads(MANIFEST_PATH.read_text(encoding="utf-8-sig"))
+        groups = [source["snapshot"]["source_files"], source["snapshot_refresh"]["candidate_source_files"]]
+        for group in groups:
+            for item in group:
+                for field in ("sha256", "source_columns_sha256", "required_columns_sha256", "query_spec_sha256"):
+                    self.assertRegex(item[field], r"^[0-9a-f]{64}$", f"{item['dataset_id']}:{field}")
+
+    def test_snapshot_manifest_entries_reject_malformed_sha256(self):
+        item = {
+            "dataset_id": "fixture", "dataset_name": "fixture", "source_revision": "1",
+            "sha256": "a" * 64, "byte_size": 1, "row_count": 1,
+            "source_columns_sha256": "b" * 60, "required_columns_sha256": "c" * 64,
+            "query_spec_sha256": "d" * 64,
+        }
+        with self.assertRaisesRegex(ValueError, "Invalid RDW snapshot source_columns_sha256"):
+            rdw.snapshot_manifest_entries([item])
+
     def test_source_revisions_and_schema_are_rechecked_after_acquisition(self):
         names_by_id = {str(config["id"]): name for name, config in rdw.DATASETS.items()}
         with patch.object(

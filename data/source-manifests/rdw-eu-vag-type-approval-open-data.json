@@ -82,7 +82,7 @@
         "sha256": "5d24e201377e59583e8a3d58670e929a32c88bd143c9cdb0ebd29ee97805b111",
         "byte_size": 23419059,
         "row_count": 110716,
-        "source_columns_sha256": "b527208227197ad11ad27ece83b43faf26afe66cc90c991a31a44181fcbd",
+        "source_columns_sha256": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134",
         "required_columns_sha256": "7b25a58f3fa95ec5e139e20443026eecce60f75f1d8343b04baf7cba1b26657d",
         "query_spec_sha256": "4df2e3b85494bce2b03adbc6ac4d54c6ddd4f5a681d50d6a20503ef8942a2029"
       }
@@ -626,7 +626,7 @@
         "sha256": "5d24e201377e59583e8a3d58670e929a32c88bd143c9cdb0ebd29ee97805b111",
         "byte_size": 23419059,
         "row_count": 110716,
-        "source_columns_sha256": "b527208227197ad11ad27ece83b43faf26afe66cc90c991a31a44181fcbd",
+        "source_columns_sha256": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134",
         "required_columns_sha256": "7b25a58f3fa95ec5e139e20443026eecce60f75f1d8343b04baf7cba1b26657d",
         "query_spec_sha256": "4df2e3b85494bce2b03adbc6ac4d54c6ddd4f5a681d50d6a20503ef8942a2029"
       }

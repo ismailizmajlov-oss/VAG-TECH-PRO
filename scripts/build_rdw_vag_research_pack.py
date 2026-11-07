@@ -113,6 +113,11 @@ def snapshot_manifest_entries(source_files: list[dict[str, Any]]) -> list[dict[s
         "row_count", "source_columns_sha256", "required_columns_sha256", "query_spec_sha256",
     )
     entries = [{field: item[field] for field in fields} for item in source_files]
+    for item in entries:
+        for field in ("sha256", "source_columns_sha256", "required_columns_sha256", "query_spec_sha256"):
+            value = item.get(field)
+            if not isinstance(value, str) or len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
+                raise ValueError(f"Invalid RDW snapshot {field} for dataset {item.get('dataset_id')}")
     return sorted(entries, key=lambda item: item["dataset_id"])
 
 
