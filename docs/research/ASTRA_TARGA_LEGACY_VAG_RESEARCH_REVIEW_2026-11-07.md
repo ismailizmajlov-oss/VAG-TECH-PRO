@@ -59,6 +59,23 @@ The values are stored as raw source fields. In particular:
 6. Applicability precision is `CH_type_approval_record`. No VIN, individual-vehicle fitment, production fitment, ECU, DTC, test-plan, repair procedure, wiring, pinout, torque or adaptation applicability is claimed.
 7. No field from this source can establish RU/EAEU approval or Russian/EAEU market applicability.
 
+## Emissionen bounded probe result
+
+Windows CI run: https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42335907326
+
+- Source: `emissionen.txt`.
+- HTTP 206 confirmed the first 2 MiB range; total file size is `70,829,020` bytes.
+- Last-Modified: `Thu, 30 Jul 2026 09:22:59 GMT`.
+- ETag: `"438c3dc-657d09e3d7852"`.
+- Preview SHA-256: `9397822e766f9ae262c8db5021c2ef978f264958caa11291b7423846ce7ba1f7` (preview only, not the full file).
+- The live file has 65 columns, not the 42-column core list shown in the older PDF table. The probe therefore resolves fields by exact normalized header names and pins the current 65-column schema.
+- 8,437 complete data rows in the 2 MiB preview; all 65 columns; 7,160 exact `AUDI` make values in that preview.
+- Sample row: `TG-Code=1AB701`, `Marke=AUDI`, `Typ=A6 Quattro`, `Motortyp=AEL`, `Getriebe=m6`, `iAchse='4.11`, `Homologationsdatum=19950918`.
+- The source has no separate variant/version field in this file; the raw `Typ` field is retained without expanding it. Applicability is therefore `CH_type_approval_gearbox_variant_row`, not an exact model-year or variant/version assertion.
+- The leading apostrophe in the raw final-drive value is preserved; no numeric coercion is applied.
+
+The pack builder stores one row per source-defined gearbox variant with both raw engine type and raw gearbox classification. This supports a **source-defined approval-row association**, not a confirmed VAG factory code pair. It must not be shown as an OEM gearbox code or used for parts/repair selection without independent VAG evidence.
+
 ## Product boundary
 
 - Allowed: offline display and search in a separately namespaced ASTRA TARGA research section with source attribution, source revision, full source SHA-256, row SHA-256, market and explicit candidate status.
