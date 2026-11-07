@@ -1723,7 +1723,7 @@ jobs:
           $generationLinkCount = if ($generationReport) { $generationReport.counts.model_member_links } else { $null }
           $generationBindingCount = if ($generationReport) { $generationReport.counts.source_bindings } else { $null }
           $sourceRegisterPath = "desktop-source/data/source-manifests/vag-factory-source-register.json"
-          $sourceRegisterJson = if (Test-Path $sourceRegisterPath) { Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json } else { $null }
+          $sourceRegisterJson = if (Test-Path $sourceRegisterPath) { Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json -AsHashtable } else { $null }
           $sourceRegisterHash = if (Test-Path $sourceRegisterPath) { (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $sourceRegisterCount = if ($sourceRegisterJson) { @($sourceRegisterJson.sources).Count } else { $null }
           $sourceRegisterUpdatedAt = if ($sourceRegisterJson) { $sourceRegisterJson.updated_at } else { $null }
@@ -1935,7 +1935,7 @@ jobs:
           $sourceRegisterPath = Join-Path $desktopRoot "data/source-manifests/vag-factory-source-register.json"
           if (-not (Test-Path -LiteralPath $sourceRegisterPath -PathType Leaf)) { throw "Bundled source-rights register is missing from Windows artifact." }
           $sourceRegisterActualHash = (Get-FileHash -LiteralPath $sourceRegisterPath -Algorithm SHA256).Hash.ToLowerInvariant()
-          $sourceRegister = Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json
+          $sourceRegister = Get-Content -LiteralPath $sourceRegisterPath -Raw | ConvertFrom-Json -AsHashtable
           if ($metadata.vag_source_register_sha256 -ne $sourceRegisterActualHash -or $metadata.vag_source_register_source_count -ne @($sourceRegister.sources).Count -or $metadata.vag_source_register_updated_at -ne $sourceRegister.updated_at) { throw "Bundled source-rights register does not match build metadata." }
           $manifestDir = Join-Path $desktopRoot "data/source-manifests"
           $manifestIndexPath = Join-Path $manifestDir "source-manifest-index.json"
