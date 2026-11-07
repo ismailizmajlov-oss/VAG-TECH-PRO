@@ -4,7 +4,7 @@
   "publisher": "CarDir",
   "source_kind": "curated_owner_manual_reference_facts",
   "reviewed_at": "2026-11-07",
-  "data_revision": "CarDir open-data snapshot stated current 2026-11-06",
+  "data_revision": "CarDir open-data snapshot stated current 2026-11-07",
   "source_urls": {
     "dataset_page": "https://cardir.ru/dannye/",
     "csv": "https://cardir.ru/dannye/cardir-zapravochnye-obemy.csv",
@@ -35,9 +35,9 @@
   },
   "snapshot": {
     "status": "pending_authorized_snapshot_acquisition",
-    "expected_data_updated_at": "2026-11-06",
-    "expected_source_row_count": 41128,
-    "expected_model_count": 548,
+    "expected_data_updated_at": "2026-11-07",
+    "expected_source_row_count": 41649,
+    "expected_model_count": 561,
     "source_snapshot_sha256": null,
     "source_file_bytes": null,
     "note": "No CSV bytes or source-file SHA-256 are claimed until the Windows acquisition workflow downloads and verifies the exact published snapshot."
