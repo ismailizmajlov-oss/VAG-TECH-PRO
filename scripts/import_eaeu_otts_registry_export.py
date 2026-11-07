@@ -304,7 +304,7 @@ def parse_registry_export(raw: bytes) -> dict[str, Any]:
         raise ValueError(f"EAEU registry export exceeds {MAX_INPUT_BYTES} bytes")
     # XML markup is ASCII-compatible in UTF-8/16/32; strip interleaved NUL
     # bytes so DTD/entity declarations cannot bypass the fail-closed scan.
-    upper = raw.upper().replace(b"\\x00", b"")
+    upper = raw.upper().replace(b"\x00", b"")
     if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
         raise ValueError("DTD/entity declarations are not accepted")
     try:
