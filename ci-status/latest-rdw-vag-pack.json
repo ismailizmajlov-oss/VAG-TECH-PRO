@@ -1,39 +1,39 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-07T16:36:32.4634492Z",
+  "recorded_at_utc": "2026-11-07T20:53:11.6932087Z",
   "workflow": "Acquire rights-cleared RDW VAG type-approval research pack",
-  "run_id": 42388651928,
-  "run_number": 36,
+  "run_id": 42411679674,
+  "run_number": 37,
   "run_attempt": 1,
   "run_status_at_record": "in_progress",
   "run_conclusion_at_record": null,
   "build_job_result": "failure",
-  "head_sha": "e4b456c191aa315c99561cedb0561c4dc1661c60",
+  "head_sha": "1f40f581d3993df4bce76d21476af2bd98e45dc5",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388651928",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42411679674",
   "jobs": [
     {
-      "id": 128457050425,
+      "id": 128520971303,
       "name": "Acquire filtered CC0 RDW data and build isolated SQLite research pack",
       "status": "completed",
       "conclusion": "failure",
-      "runner_name": "GitHub Actions 1000002730",
-      "started_at": "2026-11-07T16:17:42Z",
-      "completed_at": "2026-11-07T16:36:18Z"
+      "runner_name": "GitHub Actions 1000002794",
+      "started_at": "2026-11-07T20:34:08Z",
+      "completed_at": "2026-11-07T20:52:58Z"
     },
     {
-      "id": 128461723270,
+      "id": 128525447870,
       "name": "Record RDW pack build evidence",
       "status": "in_progress",
       "conclusion": null,
-      "runner_name": "GitHub Actions 1000002755",
-      "started_at": "2026-11-07T16:36:22Z",
+      "runner_name": "GitHub Actions 1000002801",
+      "started_at": "2026-11-07T20:53:01Z",
       "completed_at": null
     }
   ],
   "artifacts": [],
   "source_id": "rdw-eu-vag-type-approval-open-data-nl",
-  "source_manifest_sha256": "cbbe22e0ce9898cabf16ff184c4b6680a0363762af6713b35196fe1aee36d01a",
+  "source_manifest_sha256": "8b524326aa1d6b81e453b0e51141e87fdf09a00a8eb30d1382609ae49f675327",
   "license": "CC0 1.0 for each listed dataset, as published in the Dutch national data catalogue",
   "rights_status": "approved_by_published_CC0_license",
   "market_scope": [
