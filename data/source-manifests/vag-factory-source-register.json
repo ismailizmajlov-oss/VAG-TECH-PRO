@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T04:14:00Z",
+  "updated_at": "2026-11-07T11:55:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4796,6 +4796,82 @@
       "project_decision": "approved for a separately namespaced CH-only read-only research pack with mandatory attribution; preserve engine-marking candidates and gearbox classifications separately and never infer pairs",
       "evidence_status": "official ASTRA TARGA product documentation and ASTRA/Swiss OGD reuse terms reviewed 2026-11-07",
       "data_ingested": false
+    },
+    {
+      "source_id": "cardir-vag-owner-manual-facts-cc-by-4.0",
+      "publisher": "CarDir",
+      "source_type": "curated_open_owner_manual_reference_facts",
+      "url": "https://cardir.ru/dannye/",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "data_revision": "CarDir open-data snapshot 2026-11-07; SHA-256 72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+      "evidence_scope": [
+        "owner_manual_reference_facts",
+        "fluids",
+        "service_intervals",
+        "tires",
+        "battery",
+        "spark_plugs",
+        "ac_refrigerant"
+      ],
+      "rights": {
+        "permission_status": "not_required_under_published_CC_BY_4_0",
+        "review_status": "approved_for_attributed_research_pack_only",
+        "rights_status": "approved_by_published_CC_BY_4_0",
+        "license_id": "CC-BY-4.0",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "attribution": "CarDir (https://cardir.ru/dannye/), CC BY 4.0"
+      },
+      "applicability": {
+        "precision": "model_and_raw_qualifier_text",
+        "market_scope": "UNKNOWN",
+        "exact_vehicle_fitment": false,
+        "exact_engine_code": false,
+        "exact_gearbox_code": false,
+        "exact_engine_gearbox_pair": false,
+        "model_generation": false,
+        "model_year": false,
+        "ru_eaeu": false,
+        "ecu": false,
+        "dtc": false,
+        "repair_procedure": false
+      },
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "verification_status": "licensed_source_snapshot_revised_pack_build_pending",
+      "research_pack": {
+        "status": "source_snapshot_acquired_schema_verified",
+        "research_pack_allowed": true,
+        "production_import": false,
+        "exact_engine_gearbox_pair": false,
+        "ru_eaeu_applicability": false,
+        "expected_source_rows": 41649,
+        "expected_models": 561,
+        "source_snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+        "source_file_bytes": 14291343,
+        "source_rows": 41649,
+        "source_models": 561,
+        "vag_fact_rows": 773,
+        "vag_models": 24,
+        "vag_brand_values": [
+          "Audi",
+          "Porsche",
+          "Skoda",
+          "Volkswagen"
+        ],
+        "retrieved_at_utc": "2026-11-07T13:00:14.942499+00:00",
+        "source_rows_changed": 1658,
+        "vag_rows_changed": 1,
+        "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
+        "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
+      },
+      "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     }
   ],
   "minimum_fitment_evidence_fields": [

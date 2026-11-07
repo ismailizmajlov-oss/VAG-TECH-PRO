@@ -27,6 +27,7 @@ on:
       - "scripts/build_kba_de_vag_stock_research_pack.py"
       - "scripts/probe_kba_open_data.py"
       - "scripts/integrate-kba-de-vag-stock-research-pack.cjs"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
       - "scripts/apply-kba-de-vag-research-verification-run1.cjs"
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
@@ -55,6 +56,11 @@ on:
       - "data/research/wikidata-vag-generations/**"
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
@@ -133,6 +139,7 @@ on:
       - "scripts/build_kba_de_vag_stock_research_pack.py"
       - "scripts/probe_kba_open_data.py"
       - "scripts/integrate-kba-de-vag-stock-research-pack.cjs"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
       - "scripts/apply-kba-de-vag-research-verification-run1.cjs"
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
@@ -155,6 +162,12 @@ on:
       - "tests/test_windows_desktop_workflow_contract.py"
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
@@ -278,6 +291,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA SQLite research-pack tests failed." }
           python tests/test_kba_germany_open_data_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "KBA published licence/source-rights tests failed." }
+          python -m py_compile scripts/build_cardir_vag_open_data_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir builder compilation failed." }
+          python -m unittest discover -s tests -p "test_cardir_vag_open_data_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "CarDir SQLite research-pack tests failed." }
+          python tests/test_cardir_vag_open_data_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir source-rights tests failed." }
           node --test tests/kba-pack-integration-contract.test.cjs
           if ($LASTEXITCODE -ne 0) { throw "KBA desktop integration contract tests failed." }
 
@@ -1516,6 +1535,100 @@ jobs:
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
           "kba_de_vag_stock=run${{ steps.kba-pack.outputs.run_number }}/${{ steps.kba-pack.outputs.run_id }}; artifact_sha256=${{ steps.kba-pack.outputs.artifact_sha256 }}; scope=DE; precision=aggregate_stock_observation; research_pack_ingested=true; product_database_ingested=false; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Resolve CarDir VAG owner-manual facts pack for exact source revision
+        id: cardir-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
+            $event = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+            $branch = [string]$event.pull_request.head.ref
+            $expectedHeadSha = [string]$event.pull_request.head.sha
+          } else {
+            $branch = [string]$env:GITHUB_REF_NAME
+            $expectedHeadSha = [string]$env:GITHUB_SHA
+          }
+          if ([string]::IsNullOrWhiteSpace($branch) -or $expectedHeadSha -notmatch "^[a-f0-9]{40}$") { throw "Cannot resolve exact CarDir source revision." }
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $encodedBranch = [uri]::EscapeDataString($branch)
+          $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-cardir-vag-open-data-pack.yml/runs?branch=$encodedBranch&per_page=100"
+          $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get -TimeoutSec 30
+          $run = $response.workflow_runs |
+            Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+            Sort-Object { [datetime]$_.created_at } -Descending |
+            Select-Object -First 1
+          if (-not $run) { throw "No CarDir research-pack build exists for exact source commit $expectedHeadSha; refusing stale artifact." }
+          $deadline = (Get-Date).AddMinutes(45)
+          while ($run.status -ne "completed" -and (Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 20
+            $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)" -Headers $headers -Method Get -TimeoutSec 30
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "CarDir research-pack build did not complete successfully for this commit. Run=$($run.id), status=$($run.status), conclusion=$($run.conclusion)" }
+          $artifactUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
+          $artifactResponse = Invoke-RestMethod -Uri $artifactUri -Headers $headers -Method Get -TimeoutSec 30
+          $artifact = $artifactResponse.artifacts | Where-Object { $_.name -eq "cardir-vag-owner-manual-facts-research-pack" -and $_.expired -eq $false } | Select-Object -First 1
+          if (-not $artifact) { throw "CarDir successful build has no unexpired research-pack artifact." }
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($digest -notmatch "^[a-f0-9]{64}$") { throw "CarDir artifact SHA-256 is invalid." }
+          "run_id=$($run.id)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "CarDir VAG owner-manual facts source run: #$($run.run_number) / $($run.id)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "CarDir artifact SHA-256: $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download verified CarDir VAG owner-manual facts SQLite research pack
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: cardir-vag-owner-manual-facts-research-pack
+          path: ${{ runner.temp }}/vag-tech-pro-cardir-pack
+          run-id: ${{ steps.cardir-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Integrate CarDir VAG reference facts into offline desktop
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-cardir-pack"
+          node --check scripts/integrate-cardir-vag-owner-manual-facts.cjs
+          node scripts/integrate-cardir-vag-owner-manual-facts.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id ${{ steps.cardir-pack.outputs.run_id }} --source-run-number ${{ steps.cardir-pack.outputs.run_number }} --artifact-sha256 ${{ steps.cardir-pack.outputs.artifact_sha256 }} 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/cardir-desktop-integration.log"
+          if ($LASTEXITCODE -ne 0) { throw "CarDir VAG reference-facts desktop integration failed." }
+          node --check desktop-source/lib/cardir-vag-reference-facts-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "CarDir desktop reader syntax check failed." }
+          node --test desktop-source/tests/cardir-vag-reference-facts-db.test.cjs desktop-source/tests/cardir-vag-reference-facts-ui-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/cardir-desktop-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "CarDir desktop database/UI contract tests failed." }
+          node desktop-source/scripts/verify-cardir-vag-open-data-pack.cjs desktop-source/data/research 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/cardir-desktop-verify.log"
+          if ($LASTEXITCODE -ne 0) { throw "CarDir installed research-pack verification failed." }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $metadataFiles = @(
+            "data/research/manifest.json",
+            "data/research/cardir-vag-owner-manual-facts-research/manifest.json",
+            "data/research/cardir-vag-owner-manual-facts-research/cardir-vag-owner-manual-facts.sqlite",
+            "data/research/cardir-vag-owner-manual-facts-research/source-manifest.json",
+            "data/research/cardir-vag-owner-manual-facts-research/source-snapshot.json",
+            "data/research/cardir-vag-owner-manual-facts-research/build-report.json",
+            "data/research/cardir-vag-owner-manual-facts-research/LICENSE.txt",
+            "data/research/cardir-vag-owner-manual-facts-research/ATTRIBUTION.md",
+            "data/research/cardir-vag-owner-manual-facts-research/desktop-integration-report.json",
+            "lib/cardir-vag-reference-facts-db.cjs",
+            "tests/cardir-vag-reference-facts-db.test.cjs",
+            "tests/cardir-vag-reference-facts-ui-contract.test.cjs",
+            "scripts/verify-cardir-vag-open-data-pack.cjs",
+            "components/local-research-catalog.tsx",
+            "app/api/local-research/route.ts",
+            "scripts/windows-installer-lifecycle.ps1",
+            "package.json"
+          )
+          foreach ($relative in $metadataFiles) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "CarDir audit source is missing: $relative" }
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          "cardir_vag_owner_manual_facts=run${{ steps.cardir-pack.outputs.run_number }}/${{ steps.cardir-pack.outputs.run_id }}; artifact_sha256=${{ steps.cardir-pack.outputs.artifact_sha256 }}; facts=773; models=24; brands=4; parameters=19; market=UNKNOWN; research_only=true; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Render typed technical payloads in offline workspace (run79)
         shell: pwsh
