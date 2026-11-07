@@ -265,12 +265,14 @@ def build(source_csv: Path, source_manifest_path: Path, output_dir: Path, builde
           "unique_make_trade_name_pairs":snapshot.get("unique_make_trade_name_pairs"),
           "unique_make_type_key_pairs":snapshot.get("unique_make_type_key_pairs"),
           "unique_make_trade_type_reference_date_tuples":snapshot.get("unique_make_trade_type_reference_date_tuples"),
-          "federal_states":snapshot.get("unique_federal_states"),
-          "reference_dates":snapshot.get("temporal_coverage_observed")
+          "federal_states":snapshot.get("unique_federal_states")
         }
         for key, value in expected.items():
             if value is not None and counts[key] != value:
                 raise ValueError(f"KBA source count mismatch for {key}: {counts[key]} != {value}")
+        coverage = snapshot.get("temporal_coverage_observed")
+        if coverage is not None and coverage != [counts["reference_dates"][0], counts["reference_dates"][-1]]:
+            raise ValueError("KBA observed temporal coverage differs from the acquired source")
         metadata = {
           "schema_version":1,"pack_id":PACK_ID,"source_id":SOURCE_ID,"market_scope":"DE",
           "license_id":LICENSE_ID,"source_snapshot_sha256":source_hash,
