@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/validate-russian-eaeu-otts-source-gates.yml"
       - ".github/workflows/validate-desktop-workflow-syntax-run1.yml"
       - "scripts/validate_workflow_yaml.py"
   pull_request:
     paths:
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/validate-russian-eaeu-otts-source-gates.yml"
       - ".github/workflows/validate-desktop-workflow-syntax-run1.yml"
       - "scripts/validate_workflow_yaml.py"
   workflow_dispatch:
@@ -30,6 +32,6 @@ jobs:
       - name: Install pinned YAML parser
         shell: pwsh
         run: python -m pip install --disable-pip-version-check PyYAML==6.0.3
-      - name: Parse Windows desktop workflow
+      - name: Parse Windows desktop and Russian/EAEU source workflows
         shell: pwsh
-        run: python scripts/validate_workflow_yaml.py .github/workflows/windows-desktop-ci-run71.yml
+        run: python scripts/validate_workflow_yaml.py .github/workflows/windows-desktop-ci-run71.yml .github/workflows/validate-russian-eaeu-otts-source-gates.yml
