@@ -235,5 +235,24 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(aggregators["data_ingested"])
 
 
+
+    def test_eec_order_126_is_a_future_roadmap_not_a_live_data_or_reuse_grant(self):
+        register_path = ROOT / "data" / "source-manifests" / "vag-factory-source-register.json"
+        register = json.loads(register_path.read_text(encoding="utf-8"))
+        source = next(item for item in register["sources"] if item["source_id"] == "eaeu-otts-unified-register-public-portal")
+        roadmap = source["legal_roadmap"]
+        self.assertEqual(roadmap["act"], "EEC Collegium Order No. 126 of 2026-08-11")
+        self.assertEqual(roadmap["published_on"], "2026-08-14")
+        self.assertEqual(roadmap["effective_on"], "2026-08-14")
+        self.assertEqual([item["due"] for item in roadmap["milestones"]], ["2026-Q4", "2026-Q4", "2027-Q1", "2027-Q1"])
+        self.assertEqual(roadmap["status"], "planned_not_implemented_by_order")
+        self.assertFalse(roadmap["rights_boundary"]["live_registry_endpoint_established"])
+        self.assertEqual(roadmap["rights_boundary"]["bulk_reuse_allowed"], "not_established")
+        self.assertEqual(roadmap["rights_boundary"]["offline_cache_allowed"], "not_established")
+        self.assertEqual(roadmap["rights_boundary"]["display_and_redistribution_allowed"], "not_established")
+        self.assertFalse(roadmap["rights_boundary"]["written_permission_obtained"])
+        self.assertFalse(source["data_ingested"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+
 if __name__ == "__main__":
     unittest.main()
