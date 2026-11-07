@@ -17,11 +17,6 @@ const statusFixes = [
     oldLine: '  Write-Output "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."',
     newLine: '  Write-Host "ASTRA offline CH approval search passed; no VAG factory fitment or repair claims."'
   },
-  {
-    marker: 'ASTRA TARGA offline CH source-row search passed',
-    oldLine: '  Write-Output "ASTRA TARGA offline CH source-row search passed; no OEM pair, RU/EAEU fitment or repair claims."',
-    newLine: '  Write-Host "ASTRA TARGA offline CH source-row search passed; no OEM pair, RU/EAEU fitment or repair claims."'
-  }
 ];
 
 for (const fix of statusFixes) {
