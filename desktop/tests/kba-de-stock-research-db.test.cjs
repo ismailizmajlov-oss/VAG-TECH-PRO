@@ -14,6 +14,8 @@ test("KBA pack verifies DL-DE BY 2.0 provenance, source hashes and DE-only resea
   assert.equal(summary.license, "DL-DE-BY-2.0");
   assert.equal(summary.rightsStatus, "approved_by_published_DL_DE_BY_2_0");
   assert.equal(summary.reviewStatus, "verified_research_only");
+  assert.equal(summary.researchPackIngested, true);
+  assert.equal(summary.productDatabaseIngested, false);
   assert.equal(summary.productionImport, false);
   assert.equal(summary.productImportAllowed, false);
   assert.equal(summary.ruEaeuApplicability, false);
