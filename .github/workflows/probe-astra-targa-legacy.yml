@@ -1,0 +1,46 @@
+name: ASTRA TARGA legacy open-data schema probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/probe_astra_targa_legacy.py"
+      - "tests/test_astra_targa_legacy_probe.py"
+      - ".github/workflows/probe-astra-targa-legacy.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Bounded ASTRA TARGA schema and rights-boundary probe
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Test probe parser and exact VAG make filter
+        run: python -m unittest discover -s tests -p "test_astra_targa_legacy_probe.py" -v
+
+      - name: Probe official ASTRA TARGA file using a bounded byte range
+        shell: pwsh
+        run: |
+          python scripts/probe_astra_targa_legacy.py --output artifacts/astra-targa-legacy-probe.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload bounded probe evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: astra-targa-legacy-schema-probe
+          path: artifacts/astra-targa-legacy-probe.json
+          if-no-files-found: warn
+          retention-days: 30
