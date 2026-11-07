@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "source_id": "rdw-eu-vag-type-approval-open-data-nl",
+  "publisher": "RDW (Dienst Wegverkeer), Netherlands",
+  "source_kind": "official_open_government_vehicle_type_approval_and_vehicle_identity_data",
+  "reviewed_at": "2026-11-07",
+  "market_scope": [
+    "NL"
+  ],
+  "approval_jurisdiction": "EU type-approval identifiers and variants as recorded in the RDW Netherlands datasets",
+  "snapshot": {
+    "status": "not_downloaded_probe_only",
+    "source_revision": null,
+    "source_snapshot_sha256": null,
+    "source_files": [],
+    "note": "Refresh candidate only. Latest RDW metadata probe observed newer dataset revisions; acquire and independently verify a new six-file snapshot before promotion. Previous snapshot remains in snapshot_history."
+  },
+  "data_products": {
+    "registered_vehicle_identity": {
+      "dataset_id": "m9d7-ebf2",
+      "title": "Basisregistratie Voertuigen - RDW / Gekentekende_voertuigen",
+      "catalog_url": "https://data.overheid.nl/dataset/basisregistratie-voertuigen---rdw",
+      "catalog_updated_at": "2022-04-07",
+      "catalog_license": "CC0 1.0",
+      "api_url": "https://opendata.rdw.nl/resource/m9d7-ebf2.json",
+      "use_fields": [
+        "merk",
+        "handelsbenaming",
+        "typegoedkeuringsnummer",
+        "variant",
+        "uitvoering",
+        "volgnummer_wijziging_eu_typegoedkeuring",
+        "datum_eerste_toelating",
+        "voertuigsoort",
+        "cilinderinhoud",
+        "aantal_cilinders"
+      ],
+      "excluded_fields": [
+        "kenteken",
+        "VIN",
+        "holder_or_owner_data",
+        "tenaamstelling_data",
+        "address_or_personal_data"
+      ],
+      "note": "The source dataset contains registration identifiers and other fields. The product query must select only the listed non-identifying make/model/type-approval fields; never request or persist kenteken, VIN or holder data."
+    },
+    "tgk_drive": {
+      "dataset_id": "4by9-ammk",
+      "title": "Open Data RDW: TGK Aandrijving Uitvoering",
+      "catalog_url": "https://data.overheid.nl/dataset/81ac19f5-d0e5-4411-847e-f8698d4a42f2",
+      "catalog_updated_at": "2026-09-19",
+      "catalog_license": "CC0 1.0",
+      "api_url": "https://opendata.rdw.nl/resource/4by9-ammk.json",
+      "expected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "motorcode",
+        "typegoedkeuringsnummermotor",
+        "aantalcilinders",
+        "cilinderinhoud"
+      ]
+    },
+    "tgk_gearbox": {
+      "dataset_id": "7rjk-eycs",
+      "title": "Open Data RDW: TGK Versnelling Uitvoering",
+      "catalog_url": "https://data.overheid.nl/dataset/8a5be559-87b6-4224-9bbc-45dae886c427",
+      "catalog_updated_at": "2026-09-19",
+      "catalog_license": "CC0 1.0",
+      "api_url": "https://opendata.rdw.nl/resource/7rjk-eycs.json",
+      "expected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "codetypeversnellingsbak"
+      ]
+    },
+    "tgk_base": {
+      "dataset_id": "byxc-wwua",
+      "title": "Open Data RDW: TGK Basis Uitvoering",
+      "catalog_url": "https://data.overheid.nl/dataset/38afb954-4d3b-4363-9875-4a16117ab86b",
+      "catalog_updated_at": "2026-09-20",
+      "catalog_license": "CC0 1.0",
+      "api_url": "https://opendata.rdw.nl/resource/byxc-wwua.json",
+      "expected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "begindatumrevisieuitvoering",
+        "voertuigcategorie"
+      ]
+    },
+    "tgk_make": {
+      "dataset_id": "kyri-nuah",
+      "title": "Open Data RDW: TGK Merk Uitvoering",
+      "catalog_url": "https://data.overheid.nl/dataset/68f02697-4c7a-4a5c-ae1d-b253aa3ecc89",
+      "catalog_updated_at": "2026-09-19",
+      "catalog_license": "CC0 1.0",
+      "api_url": "https://opendata.rdw.nl/resource/kyri-nuah.json",
+      "expected_fields": [
+        "typegoedkeuringsnummer",
+        "codevarianttgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "merkcoderdw"
+      ]
+    },
+    "tgk_trade_name": {
+      "dataset_id": "x5v3-sewk",
+      "title": "Open Data RDW: TGK Handelsbenaming Fabrikant",
+      "catalog_url": "https://data.overheid.nl/dataset/1f00bd5c-63e9-4262-9603-311712339a30",
+      "catalog_updated_at": "2026-09-21",
+      "catalog_license": "CC0 1.0",
+      "api_url": "https://opendata.rdw.nl/resource/x5v3-sewk.json",
+      "expected_fields": [
+        "typegoedkeuringsnummer",
+        "codevariantgk",
+        "codeuitvoeringtgk",
+        "volgnummerrevisieuitvoering",
+        "handelsbenamingfabrikant",
+        "typeaanduidingfabrikant"
+      ]
+    }
+  },
+  "rights": {
+    "data_license_status": "CC0 1.0 for each listed dataset, as published in the Dutch national data catalogue",
+    "rights_status": "approved_by_published_CC0_license",
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "bulk_reuse_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": false,
+    "attribution": "Source: RDW Open Data (Netherlands), CC0 1.0. Attribution is provided as a courtesy.",
+    "evidence_urls": [
+      "https://data.overheid.nl/dataset/basisregistratie-voertuigen---rdw",
+      "https://data.overheid.nl/dataset/81ac19f5-d0e5-4411-847e-f8698d4a42f2",
+      "https://data.overheid.nl/dataset/8a5be559-87b6-4224-9bbc-45dae886c427",
+      "https://data.overheid.nl/dataset/38afb954-4d3b-4363-9875-4a16117ab86b",
+      "https://data.overheid.nl/dataset/68f02697-4c7a-4a5c-ae1d-b253aa3ecc89",
+      "https://data.overheid.nl/dataset/1f00bd5c-63e9-4262-9603-311712339a30"
+    ],
+    "evidence_summary": "Each catalogue entry identifies RDW as data owner, public access and CC0 1.0. The TGK entries expose CSV, JSON and XML downloads. The product uses only the selected public datasets and does not include third-party websites or registration identifiers."
+  },
+  "field_semantics": {
+    "make_model": "merk and handelsbenaming are NL registration-dataset labels. They support NL observed make/trade-name identity only, not model generation or worldwide market applicability.",
+    "type_approval": "typegoedkeuringsnummer is the EU type-approval identifier. Variant, uitvoering and revision are preserved as separate exact raw fields.",
+    "engine_designation": "motorcode is preserved exactly as RDW publishes it. Until independently corroborated against an OEM source, it is an RDW engine designation candidate, not a confirmed VAG factory engine code.",
+    "gearbox_classification": "codetypeversnellingsbak is preserved exactly as RDW publishes it. It is an approval gearbox-type classification, not a VAG gearbox code.",
+    "model_year": "datum_eerste_toelating is a first-registration date, not model year or production date. It must not populate model_year.",
+    "manufacturer_trade_name": "handelsbenamingfabrikant and typeaanduidingfabrikant are approval/manufacturer trade-name fields, not generation identifiers."
+  },
+  "applicability_policy": {
+    "exact_scope_key": [
+      "typegoedkeuringsnummer",
+      "variant/codevarianttgk",
+      "uitvoering/codeuitvoeringtgk",
+      "volgnummer_wijziging_eu_typegoedkeuring/volgnummerrevisieuitvoering"
+    ],
+    "join_policy": "Only associate a source row with the exact same approval number, variant, version and revision. Preserve raw values. The exact key identifies approval scope only.",
+    "engine_gearbox_pairing": "NEVER cross-join engine rows and gearbox rows. Separate child datasets do not establish an exact engine/gearbox pair, even when both contain the same approval-scope key. No pair table or pairing claim may be emitted.",
+    "market_scope": "NL registration observations and EU type-approval identifiers; not RU/EAEU.",
+    "model_year": "not_assumed",
+    "generation": "not_assumed",
+    "individual_vehicle_fitment": false,
+    "vin_fitment": false,
+    "production_fitment": false,
+    "exact_vag_engine_code": false,
+    "exact_vag_gearbox_code": false,
+    "exact_engine_gearbox_pair": false,
+    "ru_eaeu_applicability": false,
+    "ecu_dtc_repair_applicability": false
+  },
+  "import_policy": {
+    "namespace": "separate_read_only_research_pack",
+    "production_import": false,
+    "ru_eaeu_applicability": false,
+    "preserve_source_revision": true,
+    "preserve_source_file_sha256": true,
+    "preserve_source_row_sha256": true,
+    "preserve_exact_approval_scope_key": true,
+    "never_store_registration_plate": true,
+    "never_store_vin_or_holder_data": true,
+    "never_cross_join_engine_and_gearbox": true,
+    "never_promote_rdW_motorcode_to_vag_engine_code_without_independent_oem_evidence": true,
+    "never_promote_rdW_gearbox_classification_to_vag_gearbox_code": true
+  },
+  "project_decision": "Rights-cleared for a separate NL/EU type-approval research pack after the live schema probe. No production fitment, no RU/EAEU applicability, no model-year inference, no VAG engine/gearbox-code assertion and no engine/gearbox pairing.",
+  "data_ingested": false,
+  "source_snapshot_sha256": null,
+  "hash_status": "refresh_candidate_pending_full_snapshot_previous_snapshot_preserved",
+  "probe": {
+    "status": "schema_and_exact_scope_verified",
+    "probed_at_utc": "2026-11-06T13:29:55.479249Z",
+    "run_id": 42225909008,
+    "run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42225909008",
+    "artifact_id": 13504898995,
+    "artifact_name": "rdw-vag-type-approval-schema-probe",
+    "artifact_zip_sha256": "7a34c9a0bd09b9c708d54ac029b21143ac6f3f9baff71d9a7f96428c671bed72",
+    "report_sha256": "ddab63bb946a3dc0b9d255de24b9b52b5dd49fdb479bab1fc57b11e396aa08be",
+    "source_manifest_sha256_at_probe": "16c9871b32fa8305427ffbc145ef3dc90f06770cd266528c78ce6db8a80c78f5",
+    "metadata_rows_updated_at_utc": {
+      "m9d7-ebf2": "2026-11-06T07:11:38Z",
+      "4by9-ammk": "2026-11-06T03:15:49Z",
+      "7rjk-eycs": "2026-11-06T03:15:55Z",
+      "byxc-wwua": "2026-11-06T03:15:50Z",
+      "kyri-nuah": "2026-11-06T03:15:54Z",
+      "x5v3-sewk": "2026-11-06T03:15:53Z"
+    },
+    "sample_approval_scope": {
+      "make": "VOLKSWAGEN",
+      "dutch_trade_name": "TAYRON",
+      "type_approval_number": "e1*2018/858*00403*07",
+      "variant": "ACDUCAX0",
+      "version": "FD6FD6DD002PR4VNB50OO",
+      "revision": "0",
+      "vehicle_category": "M1",
+      "revision_start_date": "2026-07-31",
+      "engine_designation_candidate": "DUC",
+      "displacement_cc": 1498,
+      "cylinders": 4,
+      "gearbox_type_classification": "A",
+      "manufacturer_trade_name": "TAYRON",
+      "manufacturer_type_designation": "R4",
+      "rdw_make_codes": [
+        "VOLK",
+        "VWVP"
+      ],
+      "engine_rows": 1,
+      "gearbox_classification_rows": 1,
+      "exact_engine_gearbox_pair_claim": false,
+      "applicability_precision": "exact_RDW_approval_variant_version_revision_scope",
+      "market_scope": "NL",
+      "source_row_sha256": {
+        "registration": "4369b391638cb2b6da382dfe78c69ed52b52e02292335876352d66f145b9ed12",
+        "base": "ca8caceea7c5e87fa20dab06b6d6c93a4ee303aee45fb5892854a3f54e1f0f2f",
+        "engine": "394bf45e64a106c3da1832bff45dcd517a9976fbec43a46e1951974cc27ed6bd",
+        "gearbox": "8e799476a3a4228b33a0b1bfcc4d7fdf3a29f15fbb897978057ed2d94f507961",
+        "make": [
+          "45bdd24431d7bc8ed813fcb531dec27a8474279ab0d6fcb62013f97c7895917b",
+          "cb3702c0b73a420d2bd69749ebb444846f0f3d2ba92d32b0ea530a6e3cee36a6"
+        ],
+        "trade_name": "02c9fb96320df89c996f50aa446fe523690f479d201d2be784731372a92f77b2"
+      }
+    },
+    "note": "This is a filtered live probe, not a full source snapshot. No full-source SHA-256 exists yet. Motorcode DUC is not confirmed as a VAG factory engine code; gearbox classification A is not a VAG gearbox code; the two rows are not paired."
+  },
+  "vehicle_scope": {
+    "makes": [
+      "AUDI",
+      "BENTLEY",
+      "BUGATTI",
+      "CUPRA",
+      "LAMBORGHINI",
+      "PORSCHE",
+      "SEAT",
+      "SKODA",
+      "VOLKSWAGEN"
+    ],
+    "make_scope": "Exact make labels from the Dutch registered-vehicle dataset; query allowlist only.",
+    "model_scope": "Dutch trade-name observations linked to EU type-approval number, variant, version and revision.",
+    "note": "Not a VIN build sheet and not proof of individual-vehicle factory build."
+  },
+  "latest_probe": {
+    "workflow_run_number": 44,
+    "workflow_run_id": 42396231140,
+    "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42396231140",
+    "source_commit": "e36890630a1704e3ef4ad6cf7e60235f06302261",
+    "probed_at_utc": "2026-11-07T17:25:46.726937Z",
+    "probe_status": "schema_and_exact_scope_verified",
+    "probe_artifact_id": 13583795467,
+    "probe_artifact_name": "rdw-vag-type-approval-schema-probe",
+    "probe_artifact_sha256": "c4d7d78b6ee6d9b9f4ea8bbdf7dd7d667c6f5858251062402a0b413fb1fb61a5",
+    "probe_report_sha256": "4122cad820af36440dec37bed04c6f1c298ec250ddf3e557f71204512ae41460",
+    "probe_report_bytes": 8339,
+    "source_manifest_sha256": "cbbe22e0ce9898cabf16ff184c4b6680a0363762af6713b35196fe1aee36d01a",
+    "source_snapshot_sha256": null,
+    "source_snapshot_status": "probe_only_no_full_snapshot",
+    "market_scope": [
+      "NL"
+    ],
+    "approval_jurisdiction": "EU type approval",
+    "approval_scope_key": {
+      "typegoedkeuringsnummer": "e1*2018/858*00403*07",
+      "variant": "ACDUCAX0",
+      "uitvoering": "FD6FD6DD002PR4VNB50OO",
+      "revision": "0"
+    },
+    "registration_observation": {
+      "make": "VOLKSWAGEN",
+      "trade_name": "TAYRON",
+      "vehicle_category": "Personenauto",
+      "displacement_cc": "1498",
+      "cylinders": "4",
+      "source_row_sha256": "4369b391638cb2b6da382dfe78c69ed52b52e02292335876352d66f145b9ed12",
+      "first_registration_date_is_model_year": false
+    },
+    "matched_rows": {
+      "tgk_base": {
+        "vehicle_category": "M1",
+        "source_row_sha256": "ca8caceea7c5e87fa20dab06b6d6c93a4ee303aee45fb5892854a3f54e1f0f2f"
+      },
+      "tgk_drive": {
+        "motorcode": "DUC",
+        "displacement_cc": "1498.00",
+        "cylinders": "4",
+        "source_row_sha256": "394bf45e64a106c3da1832bff45dcd517a9976fbec43a46e1951974cc27ed6bd"
+      },
+      "tgk_gearbox": {
+        "codetypeversnellingsbak": "A",
+        "source_row_sha256": "8e799476a3a4228b33a0b1bfcc4d7fdf3a29f15fbb897978057ed2d94f507961"
+      },
+      "tgk_make": [
+        {
+          "merkcoderdw": "VOLK",
+          "source_row_sha256": "45bdd24431d7bc8ed813fcb531dec27a8474279ab0d6fcb62013f97c7895917b"
+        },
+        {
+          "merkcoderdw": "VWVP",
+          "source_row_sha256": "cb3702c0b73a420d2bd69749ebb444846f0f3d2ba92d32b0ea530a6e3cee36a6"
+        }
+      ],
+      "tgk_trade_name": {
+        "manufacturer_trade_name": "TAYRON",
+        "type_designation": "R4",
+        "source_row_sha256": "02c9fb96320df89c996f50aa446fe523690f479d201d2be784731372a92f77b2"
+      }
+    },
+    "metadata_rows_updated_at_utc": {
+      "m9d7-ebf2": "2026-11-07T06:57:32Z",
+      "4by9-ammk": "2026-11-07T03:11:28Z",
+      "7rjk-eycs": "2026-11-07T03:11:32Z",
+      "byxc-wwua": "2026-11-07T03:11:29Z",
+      "kyri-nuah": "2026-11-07T03:11:31Z",
+      "x5v3-sewk": "2026-11-07T03:11:32Z"
+    },
+    "metadata_columns_sha256": {
+      "m9d7-ebf2": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
+      "4by9-ammk": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
+      "7rjk-eycs": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
+      "byxc-wwua": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
+      "kyri-nuah": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
+      "x5v3-sewk": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134"
+    },
+    "excluded_registration_fields": [
+      "kenteken",
+      "VIN",
+      "holder",
+      "ownership",
+      "address",
+      "personal data"
+    ],
+    "field_semantics": {
+      "motorcode_is_confirmed_vag_factory_engine_code": false,
+      "codetypeversnellingsbak_is_confirmed_vag_gearbox_code": false,
+      "engine_gearbox_pair_claim": false,
+      "generation_inferred": false,
+      "model_year_inferred": false
+    },
+    "pairing_policy": "Engine and gearbox rows are retained separately; no Cartesian product or engine/gearbox pair is created.",
+    "product_import_allowed": false,
+    "data_ingested": false,
+    "ru_eaeu_applicability": false
+  },
+  "snapshot_history": [
+    {
+      "status": "filtered_research_snapshot_acquired",
+      "source_revision": {
+        "registration": "1793949098",
+        "tgk_base": "1793934950",
+        "tgk_drive": "1793934949",
+        "tgk_gearbox": "1793934955",
+        "tgk_make": "1793934954",
+        "tgk_trade_name": "1793934953"
+      },
+      "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "source_files": [
+        {
+          "dataset_id": "4by9-ammk",
+          "dataset_name": "tgk_drive",
+          "source_revision": "1793934949",
+          "sha256": "1a9e934560a7a4db95a3894d08a92b8f884656b1593e346a25d93bf3fd77a315",
+          "byte_size": 20734442,
+          "row_count": 93836,
+          "source_columns_sha256": "3f6b01fa23e68ca5974382a70a4d9accdff210a5591f7e4edb2188178b41fcbd",
+          "required_columns_sha256": "96bb78edcb08cd601be5c4a2c14e7bda14c52117fb6706e6fa11f0fa12134563",
+          "query_spec_sha256": "2bf1d7cf485c40c0c02be160276bca62afedc25fc3c645842586b0edbd2f92e0"
+        },
+        {
+          "dataset_id": "7rjk-eycs",
+          "dataset_name": "tgk_gearbox",
+          "source_revision": "1793934955",
+          "sha256": "a78716743002807a7c1610ce6e79ab3547e7b8a3e1e61ba092eedd1f06a6e55d",
+          "byte_size": 17223494,
+          "row_count": 93548,
+          "source_columns_sha256": "2bf640ab42b09ff2257e83d131f7af845c2540fa0b7d8682c7c5351abf720d16",
+          "required_columns_sha256": "36bf29ac302066fd7f20d7d7b3e839068a8f34bfeb315972108e5887ecf8a92c",
+          "query_spec_sha256": "9eabcd2eb9a376b22331366d6251582151c0c3a77023426f2b40b9dca1b00624"
+        },
+        {
+          "dataset_id": "byxc-wwua",
+          "dataset_name": "tgk_base",
+          "source_revision": "1793934950",
+          "sha256": "75e93fc2b12e245b814add05207510f2cf0ba6a5deb79dc7267ffb5362eda70d",
+          "byte_size": 20822844,
+          "row_count": 93739,
+          "source_columns_sha256": "abf9cdb055197ad11ad27ece83b43faf26afe66cc90c991a31a44188a5954856",
+          "required_columns_sha256": "e53f8ed89f0c8fc8e2b18ad995a6cb360ccc8a0802400bf7155a4b487a22c680",
+          "query_spec_sha256": "4785d32db9321480b46b4821bf8c7b05182971fa13d164728f710e93851c0d46"
+        },
+        {
+          "dataset_id": "kyri-nuah",
+          "dataset_name": "tgk_make",
+          "source_revision": "1793934954",
+          "sha256": "028e106a4b01481977ca1e6c002a29604cc087d7967e49fe591b966f2bb00947",
+          "byte_size": 19386628,
+          "row_count": 110279,
+          "source_columns_sha256": "0e9d2696678fe7e57632dab7dcd750e384318c1a0361dc63cb22802ca528b69e",
+          "required_columns_sha256": "81d6a4712a57463f7daf48cf65ece3d69f80a1a5cc73ea3baea749a404e75e45",
+          "query_spec_sha256": "693d558ded8b79582de400e9a57121d2416dc9c67f5306637744dbd193d0ed4d"
+        },
+        {
+          "dataset_id": "m9d7-ebf2",
+          "dataset_name": "registration",
+          "source_revision": "1793949098",
+          "sha256": "e18ef809d62fbaceaf0169d09f79b8850afe3906238bb8d62ae05bd3181b0230",
+          "byte_size": 25911680,
+          "row_count": 102662,
+          "source_columns_sha256": "8cc89c7cd9d8c7df9c8b2929f96eb7b46e701bff934297f5f7e297d2a0eab385",
+          "required_columns_sha256": "b676f300d3c96d41312184e6ce92ed1218bde890f964f6801fe32043e8f5280b",
+          "query_spec_sha256": "c904deadfbbab3dc97d4826b25b9a6d453c88055792e903abd47db821ecd3705"
+        },
+        {
+          "dataset_id": "x5v3-sewk",
+          "dataset_name": "tgk_trade_name",
+          "source_revision": "1793934953",
+          "sha256": "360e741e9a12c08f431a5c9744b1322cd194a445669081400f7d9db200c53c40",
+          "byte_size": 23419974,
+          "row_count": 110721,
+          "source_columns_sha256": "b52720822771302d50a6cb1e13d71eddb9dbf7a54f3b85c93a40381d44f22134",
+          "required_columns_sha256": "7b25a58f3fa95ec5e139e20443026eecce60f75f1d8343b04baf7cba1b26657d",
+          "query_spec_sha256": "5a15eaaaecd78614e78b46c8aaf354202f5e2c113431579917cbfc7ec9d34064"
+        }
+      ],
+      "note": "Six allowlisted filtered CC0 RDW snapshots were acquired at the recorded UTC time and hashed. This is a separate NL-only research snapshot; data_ingested remains false because no production vehicle-fitment import is authorized or claimed.",
+      "acquired_at_utc": "2026-11-06T21:11:14.142884+00:00",
+      "superseded_at_utc": "2026-11-08T00:00:00Z",
+      "superseded_reason": "RDW live rowsUpdatedAt revisions changed after this snapshot; preserved for audit and not treated as current."
+    }
+  ],
+  "research_pack_history": [
+    {
+      "status": "verified_research_only",
+      "pack_id": "rdw-vag-nl-eu-type-approval-research",
+      "source_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "market_scope": [
+        "NL"
+      ],
+      "production_import": false,
+      "ru_eaeu_applicability": false,
+      "exact_engine_gearbox_pair": false,
+      "recorded_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+      "status_note": "Previous verified NL-only research pack; stale relative to newer RDW source revisions."
+    }
+  ],
+  "snapshot_refresh": {
+    "status": "pending_candidate_reacquisition_and_review",
+    "previous_snapshot_sha256": "896a34b9b8377f2ed20c34d7e0e33b4cf2ce1958e2cdd2b7326ee8c3157b0706",
+    "observed_probe_run_id": 42396231140,
+    "observed_probe_run_number": 44,
+    "observed_dataset_revision_timestamps": {
+      "m9d7-ebf2": "2026-11-07T06:57:32Z",
+      "4by9-ammk": "2026-11-07T03:11:28Z",
+      "7rjk-eycs": "2026-11-07T03:11:32Z",
+      "byxc-wwua": "2026-11-07T03:11:29Z",
+      "kyri-nuah": "2026-11-07T03:11:31Z",
+      "x5v3-sewk": "2026-11-07T03:11:32Z"
+    },
+    "product_import_allowed": false,
+    "production_import": false,
+    "ru_eaeu_applicability": false,
+    "note": "Candidate manifest only. Do not replace the production source manifest until a refreshed six-file CC0 snapshot has been acquired, hashed, independently verified and reviewed."
+  }
+}
