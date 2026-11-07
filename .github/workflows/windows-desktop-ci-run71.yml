@@ -1561,6 +1561,28 @@ jobs:
           }
           "technical_payload_validation=run80; schema_kinds=9; legacy_ecu_aliases=true; generic_vag_dtc_separate=true; credential_values_rejected=true; package_atomicity=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Align typed technical payloads with desktop renderer (run81)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-technical-payload-validation-run81.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run81 patch syntax check failed" }
+          node apply-technical-payload-validation-run81.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-run81.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run81 renderer-aligned payload patch failed" }
+          node --check desktop-source/lib/local-core-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run81 local SQLite core syntax check failed" }
+          node --test desktop-source/tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-run81-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run81 payload contract tests failed" }
+          "technical_payload_validation=run81; schema_kinds=11; renderer_metadata_aligned=true; generic_vag_dtc_strict=true; dtc_alias_consistency=true; provenance_preserved=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          foreach ($relative in @("lib/local-core-db.cjs", "tests/local-core-db.test.cjs", "data/schemas/technical-record-payloads.schema.json", "source-verification.txt")) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "Run81 audit source is missing: $relative" }
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
