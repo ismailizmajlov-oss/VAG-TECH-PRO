@@ -1,4 +1,5 @@
 "use strict";
+// run81 retry: schema and importer contracts are aligned; keep this patch idempotent.
 const fs = require("node:fs");
 const path = require("node:path");
 
