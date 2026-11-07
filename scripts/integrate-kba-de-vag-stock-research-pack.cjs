@@ -193,12 +193,18 @@ function patchApi(desktopRoot) {
 function patchUi(desktopRoot) {
   const file = safeJoin(desktopRoot, "components/local-research-catalog.tsx");
   let text = fs.readFileSync(file, "utf8");
-  const datasetAnchor = 'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "rdw";';
+  const datasetAnchors = [
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "astra-targa" | "rdw";',
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "rdw";'
+  ];
+  const datasetAnchor = datasetAnchors.find((candidate) => text.includes(candidate));
+  if (!datasetAnchor) fail("KBA dataset type anchor missing from the pinned desktop source.");
+  const kbaDatasetReplacement = datasetAnchor.replace(' | "rdw";', ' | "rdw" | "kba-de";');
   const kbaTypes = [
     'type KbaDeSummary = { counts: { sourceRows: number; vagStockObservations: number; manufacturerLabels: number; uniqueMakeTradeNamePairs: number; uniqueMakeTypeKeyPairs: number; uniqueMakeTradeTypeReferenceDateTuples: number; federalStates: number; referenceDates: number }; marketScope: string; rightsStatus: string; attributionText: string; sourceUrl: string; license: string; licenseUrl: string; sourceRevision: string; sourceSnapshotSha256: string; databaseSha256: string; sourceManifestSha256: string; warning: string; productionImport: false; productImportAllowed: false; ruEaeuApplicability: false; exactVehicleFitment: false; exactEngineGearboxPair: false; };',
     'type KbaDeRow = { id: string; sourceRowNumber: number; sourceObjectId: string; reportDateRaw: string; reportDate: string; manufacturer: string; tradeName: string; typeKey: string; federalState: string; vehicleCount: number; zsCountRaw: string; sourceRecordSha256: string; sourceRevision: string; sourceSnapshotSha256: string; sourceManifestSha256: string; marketScope: string; applicabilityPrecision: string; reviewStatus: string; exactVehicleFitment: false; modelYear: null; generation: null; engineCode: null; gearboxCode: null; exactEngineGearboxPair: false; ruEaeuApplicability: false; ecuFitment: false; dtcFitment: false; repairApplicability: false; sourceUrl: string; license: string; licenseUrl: string; warning: string };'
   ].join("\n");
-  text = replaceOnce(text, datasetAnchor, kbaTypes + '\ntype Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "rdw" | "kba-de";', "KBA types/dataset");
+  text = replaceOnce(text, datasetAnchor, kbaTypes + '\n' + kbaDatasetReplacement, "KBA types/dataset");
   const rdwTab = '  { id: "rdw", label: "ОТТС · NL/EU", hint: "RDW · CC0 · Нидерланды · исследовательский слой" },';
   text = replaceOnce(text, rdwTab, rdwTab + '\n  { id: "kba-de", label: "KBA · DE", hint: "KBA · DL-DE BY 2.0 · статистика парка, не применяемость" },', "KBA tab");
   const rdwState = '  const [rdwSummary, setRdwSummary] = useState<RdwSummary | null>(null);';
@@ -212,7 +218,14 @@ function patchUi(desktopRoot) {
   const rdwBoundary = '      {rdw && <p>Отдельный RDW pack содержит {formatNumber(rdw.counts.approvalScopes)} точных ключей одобрения variant/version/revision для Нидерландов. Это не российские/ЕАЭС ОТТС и не применимость к конкретному автомобилю. Обозначения двигателя и классификации КПП показываются отдельными списками: их совместное присутствие в одном approval scope не подтверждает пару; это не заводские коды VAG, не модельный год, не поколение и не ремонтные данные.</p>}';
   const kbaBoundary = '      {kbaDe && <p>Отдельный KBA pack содержит {formatNumber(kbaDe.counts.vagStockObservations)} агрегированных наблюдений парка Германии за 2023–2026 годы. Typschlüssel показывается только как исходное поле KBA и не подтверждён как TSN. Это не индивидуальные автомобили, не VIN-комплектация, не модельный год/поколение, не код двигателя/КПП и не подтверждённая применяемость. Двигатель/КПП, ECU, DTC и ремонтные данные отсутствуют; RU/ЕАЭС применимость не выводится.</p>}';
   text = replaceOnce(text, rdwBoundary, rdwBoundary + '\n' + kbaBoundary, "KBA research boundary");
-  text = replaceOnce(text, 'placeholder={dataset === "rdw" ? "Номер одобрения, variant/version, модель или обозначение двигателя RDW…" : dataset === "astra" ?', 'placeholder={dataset === "kba-de" ? "Марка, торговое имя, исходный Typschlüssel или федеральная земля KBA…" : dataset === "rdw" ? "Номер одобрения, variant/version, модель или обозначение двигателя RDW…" : dataset === "astra" ?', "KBA search placeholder");
+  const placeholderAnchors = [
+    'placeholder={dataset === "rdw" ? "Номер одобрения, variant/version, модель или обозначение двигателя RDW…" : dataset === "astra-targa" ? "Номер одобрения, Motortyp, Getriebe или тип двигателя CH…" : dataset === "astra" ?',
+    'placeholder={dataset === "rdw" ? "Номер одобрения, variant/version, модель или обозначение двигателя RDW…" : dataset === "astra" ?'
+  ];
+  const placeholderAnchor = placeholderAnchors.find((candidate) => text.includes(candidate));
+  if (!placeholderAnchor) fail("KBA search placeholder anchor missing from the pinned desktop source.");
+  const kbaPlaceholder = 'placeholder={dataset === "kba-de" ? "Марка, торговое имя, исходный Typschlüssel или федеральная земля KBA…" : ' + placeholderAnchor.slice('placeholder={'.length);
+  text = replaceOnce(text, placeholderAnchor, kbaPlaceholder, "KBA search placeholder");
 
   const genericCard = '      {dataset === "generic-guidance" && (rows as unknown as GenericGuidanceRow[]).map((row) => <article className="research-result" key={row.guidanceId}>';
   const kbaCard = [
