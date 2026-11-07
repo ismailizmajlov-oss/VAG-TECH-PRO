@@ -59,15 +59,15 @@ misapplied to third-party source documents.
    `tests/test_offline_data_pack_rights.py`
 
 
-## Acquisition and offline bundle verification — run 212
+## Acquisition and offline bundle verification — run 214
 
-The Windows offline data-pack workflow completed successfully on 2026-11-07 at 16:27:46 UTC:
-[run 212](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42391249456).
+The Windows offline data-pack workflow completed successfully on 2026-11-07:
+[run 214](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42391816422).
 
-- OBDex source artifact ID: `13581581954`; ZIP size: 33,741,177 bytes; SHA-256: `92668d4dd8109a93084a6cb4f1e935a382427b82ea3589f828ac6adfa18afbca`.
-- Verified Windows offline bundle artifact ID: `13581602022`; ZIP size: 37,222,865 bytes; SHA-256: `4d62975d1493ce494f1b967ae24c9d015493c256e2c0fc373d2bfd3125e588e7`.
-- Packaged OBDex SQLite SHA-256: `fe82b6cf68fae49fe1c9ab4ea4ced4238b416d426a6258fc3c764f32e8d5766f`.
-- OBDex source-manifest SHA-256: `620d40ecbdf60c0064d1cdeb207f851589cf187af38038a7171ac22b3a2317`.
+- OBDex source artifact ID: `13582141688`; ZIP size: 33,741,196 bytes; SHA-256: `e4f6696b6515fcf85194cde9ac7db0762ded3a9cdc2f6f1bcca6ab34ac284524`.
+- Verified Windows offline bundle artifact ID: `13581812389`; ZIP size: 37,222,896 bytes; SHA-256: `3e83523699cf60f0aaf355e3ae760527378d6346bf46d1f85bc3f0522681c23e`.
+- Packaged OBDex SQLite SHA-256: `1a6e98bb99495e584aa3606848acd8aac86f7959f1609a577d5ff43e816adb5a`.
+- OBDex source-manifest SHA-256: `d8bd107da550e826e4199311e54d993cfdef736ed31749c29e94961ea3d90fa2`.
 - Counts: 9,533 generic DTC identifiers and 132 generic PIDs; 0 VAG-specific DTC rows, 0 exact-vehicle fitment claims and 0 production rows.
 - The mixed P3 family contributes only 155 P34xx records in this pinned snapshot. P35xx–P39xx are explicitly excluded until their generic standardized status is independently established.
 - An independent read-only check of the database extracted from the final offline bundle returned `PRAGMA integrity_check=ok`, zero foreign-key violations, 9,533 DTC rows and 132 PID rows. All P3 rows are P34; no manufacturer-specific namespace or vehicle-fitment claim is present.
