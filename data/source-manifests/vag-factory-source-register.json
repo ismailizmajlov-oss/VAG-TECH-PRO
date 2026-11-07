@@ -4927,7 +4927,8 @@
         "exact_vehicle_fitment": false,
         "ru_eaeu_applicability": false,
         "production_import": false
-      }
+      },
+      "product_import_allowed": false
     },
     {
       "source_id": "astra-fedro-targa-legacy-type-approvals-ch",
