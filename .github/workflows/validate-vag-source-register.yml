@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/CARS_BASE_RUSSIAN_CATALOG_RIGHTS_REVIEW_2026-11-08.md"
+      - "tests/test_cars_base_source_rights.py"
       - "docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md"
       - "tests/test_kazakhstan_eokno_source_rights.py"
       - ".github/workflows/acquire-vag-engine-candidates.yml"
@@ -69,6 +71,8 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/CARS_BASE_RUSSIAN_CATALOG_RIGHTS_REVIEW_2026-11-08.md"
+      - "tests/test_cars_base_source_rights.py"
       - "docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md"
       - "tests/test_kazakhstan_eokno_source_rights.py"
       - ".github/workflows/acquire-vag-engine-candidates.yml"
