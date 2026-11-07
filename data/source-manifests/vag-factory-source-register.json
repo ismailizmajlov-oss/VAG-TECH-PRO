@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T00:01:08.337Z",
+  "updated_at": "2026-11-07T01:15:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4284,6 +4284,137 @@
       "source_snapshot_sha256": null,
       "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
       "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The official ArcGIS CSV endpoint returned HTTP 400 on 2026-11-07. The European Data Portal independently lists the same KBA ArcGIS item with 8 distributions, including one CSV last updated 2026-05-22, but the access URL and bytes were not retrieved. No rows or hashes were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. HSN/TSN are German registration identity keys only, not engine/gearbox codes or model-year/generation proof."
+    },
+    {
+      "source_id": "kyrgyz-single-window-public-registry",
+      "publisher": "State Enterprise «Single Window» Center under the State Customs Service of the Cabinet of Ministers of the Kyrgyz Republic",
+      "url": "https://smart.trade.kg/registry?lng=ru",
+      "official_portal_url": "https://trade.kg/",
+      "vehicle_approval_system_url": "https://car.trade.kg/",
+      "public_registry_project_url": "https://trade.kg/projects/public-registry",
+      "vehicle_approval_project_url": "https://trade.kg/projects/vehicles",
+      "announcement_url": "https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema",
+      "source_kind": "kyrgyz_national_vehicle_type_approval_public_register",
+      "source_revision": "official_portal_and_project_pages_observed_2026-11-07; no dataset release or API revision identified",
+      "market_scope": [
+        "KG",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "observed_claims": {
+        "public_registry": {
+          "title": "Публичный реестр",
+          "status": "pilot",
+          "login_required": false,
+          "search_route": "https://smart.trade.kg/registry?lng=ru",
+          "search_fields_from_official_homepage": [
+            "approval_number",
+            "make",
+            "model"
+          ],
+          "general_public_verification_by": [
+            "document_number",
+            "VIN"
+          ],
+          "personal_data_display_claim": "official project page says personal data are not displayed",
+          "record_schema_retrieved": false,
+          "result_retrieval_independently_tested": false
+        },
+        "homepage_summary": {
+          "observed_at": "2026-11-07",
+          "ot_ts_summary_count": 1,
+          "count_treatment": "portal_summary_only_not_a_complete_or_verified_corpus_count"
+        },
+        "vehicle_approval_workflow": {
+          "application_system_url": "https://car.trade.kg/",
+          "intended_users": [
+            "certification_bodies",
+            "experts"
+          ],
+          "document_types": [
+            "SBKTS",
+            "OTTS",
+            "OTSH"
+          ],
+          "application_form_fields_described_by_operator": [
+            "vehicle_or_chassis_or_special_vehicle",
+            "engine",
+            "other_characteristics"
+          ],
+          "issued_documents_published_to_public_registry": true,
+          "application_form_fields_are_not_public_record_schema": true
+        },
+        "legacy_route": {
+          "url": "https://sbkts.trade.kg/otts",
+          "previously_observed_captcha_gate": true,
+          "treated_as_separate_legacy_interface": true
+        }
+      },
+      "rights": {
+        "dataset_license": "not_found",
+        "permission_status": "not_obtained",
+        "public_query_visibility": "observed_without_login",
+        "bulk_export_allowed": "not_established",
+        "automated_extraction_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "commercial_display_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_evidence": null
+      },
+      "applicability": {
+        "market_scope": "Kyrgyz national register; EAEU TR TS 018/2011 context",
+        "applicability_precision": "type_approval_document_metadata_only",
+        "exact_vag_vehicle_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_repair_applicability": false,
+        "russian_market_scope": false,
+        "engine_characteristics_in_public_record_schema": "not_established"
+      },
+      "verification_status": "official_public_register_pilot_and_no_login_route_observed; record_schema_and_reuse_rights_unresolved",
+      "product_import_allowed": false,
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "project_decision": "discovery_only. The official portal advertises a no-login public registry pilot and OTTS/OTSH search by approval number, make and model; the public route was identified but record retrieval and schema were not independently verified. The vehicle-approval application workflow mentions engine characteristics, but this does not establish that those fields are exposed in public records. Do not automate, bulk extract, cache, bundle, display or redistribute records until the operator confirms documented access and reuse rights in writing.",
+      "limitations": [
+        "The public registry is described by the operator as a pilot; no complete corpus count or coverage statement is established.",
+        "The homepage's one-OTTS summary is a portal counter only and is not treated as a current, complete or independently verified corpus count.",
+        "The public registry project page says no login is required and that personal data are not displayed, but the actual public record schema and a returned OTTS record were not retrieved in this review.",
+        "The vehicle-approval application system is intended for certification bodies and experts; its application form includes engine and other vehicle characteristics, but those input fields must not be assumed to appear in public records.",
+        "No dataset-specific open licence or written permission for automated extraction, bulk export, offline caching, third-party display or redistribution was identified.",
+        "No documented API, bulk export contract or reproducible dataset snapshot was identified.",
+        "No exact VAG engine code, gearbox code, engine/gearbox pairing, ECU, DTC or repair applicability was established.",
+        "The older sbkts.trade.kg/otts route was previously observed with a CAPTCHA gate; it is retained as a separate legacy interface and no CAPTCHA was bypassed."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://trade.kg/",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Official portal homepage says the six public registers are open without registration; its registry summary lists one OTTS item and describes OTTS/OTSH search by approval number, make and model."
+        },
+        {
+          "url": "https://trade.kg/projects/public-registry",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Official project page describes a pilot public registry, no login, search by VIN or document number, and states that personal data are not displayed."
+        },
+        {
+          "url": "https://smart.trade.kg/registry?lng=ru",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Official no-login public-registry destination linked from the State Enterprise portal; the JavaScript application did not expose a readable record schema through the reviewed page."
+        },
+        {
+          "url": "https://trade.kg/projects/vehicles",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Official page identifies car.trade.kg as the SBKTS/OTTS/OTSH application system for certification bodies and experts; describes application fields for vehicle/chassis, engine and other characteristics and says issued documents enter the public register."
+        },
+        {
+          "url": "https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema",
+          "reviewed_at": "2026-11-07",
+          "published_at": "2026-08-24",
+          "evidence": "Official announcement describes the electronic OTTS/OTSH issuance workflow and publication of approved documents into the electronic register."
+        }
+      ]
     }
   ],
   "minimum_fitment_evidence_fields": [
