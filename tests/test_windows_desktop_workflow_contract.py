@@ -89,7 +89,9 @@ def main() -> None:
         "const astraStatusSafe =",
         "const astraStatusVerbose =",
         "astraOutputCount === 1 && astraHostCount === 0 && astraVerboseCount === 0",
-        "ASTRA lifecycle status message must occur exactly once",
+        "astraHostCount + astraVerboseCount > 1",
+        "(astraOutputCount !== 0 && astraHostCount + astraVerboseCount !== 0)",
+        "ASTRA lifecycle status message is duplicated or writes to the success pipeline.",
     )
     missing_status_output_guard = [item for item in status_output_guard if item not in apply_text]
     if missing_status_output_guard:
