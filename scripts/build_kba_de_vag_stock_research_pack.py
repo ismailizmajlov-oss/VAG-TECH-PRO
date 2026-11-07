@@ -277,7 +277,8 @@ def build(source_csv: Path, source_manifest_path: Path, output_dir: Path, builde
           "schema_version":1,"pack_id":PACK_ID,"source_id":SOURCE_ID,"market_scope":"DE",
           "license_id":LICENSE_ID,"source_snapshot_sha256":source_hash,
           "source_manifest_sha256":source_manifest_hash,"source_revision":source_revision,
-          "counts":counts,"production_import":False,"ru_eaeu_applicability":False,
+          "counts":counts,"research_pack_ingested":True,"product_database_ingested":False,
+          "production_import":False,"ru_eaeu_applicability":False,
           "exact_vehicle_fitment":False,"exact_engine_gearbox_pair":False
         }
         for key,value in metadata.items():
@@ -312,6 +313,7 @@ def build(source_csv: Path, source_manifest_path: Path, output_dir: Path, builde
         "row_count":source_rows,"filtered_vag_row_count":filtered_rows,"columns":COLUMNS,"columns_sha256":columns_hash},
       "database":{"path":db_final.name,"sha256":database_hash,"byte_size":db_final.stat().st_size},
       "counts":counts,"exact_vag_manufacturer_labels":sorted(labels_seen),
+      "research_pack_ingested":True,"product_database_ingested":False,
       "production_import":False,"product_import_allowed":False,"data_ingested":False,
       "ru_eaeu_applicability":False,"individual_vehicle_fitment":False,"exact_vehicle_fitment":False,
       "model_year_inferred":False,"generation_inferred":False,"engine_codes_included":False,
@@ -338,8 +340,8 @@ def build(source_csv: Path, source_manifest_path: Path, output_dir: Path, builde
     )
     report={"status":"verified_research_only","pack_id":PACK_ID,"source_snapshot_sha256":source_hash,
       "source_manifest_sha256":source_manifest_hash,"database_sha256":database_hash,"counts":counts,
-      "integrity_check":"ok","product_import_allowed":False,"exact_engine_gearbox_pair_claim":False,
-      "ru_eaeu_applicability":False}
+      "integrity_check":"ok","research_pack_ingested":True,"product_database_ingested":False,
+      "product_import_allowed":False,"exact_engine_gearbox_pair_claim":False,"ru_eaeu_applicability":False}
     (output_dir/"build-report.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     return manifest
 
@@ -359,7 +361,9 @@ def verify(output_dir: Path):
         raise ValueError("KBA source-record hash method is not documented")
     if manifest.get("status")!="verified_research_only" or manifest.get("market_scope")!=["DE"]:
         raise ValueError("KBA pack status/market scope mismatch")
-    for key in ("production_import","product_import_allowed","data_ingested","ru_eaeu_applicability",
+    if manifest.get("research_pack_ingested") is not True:
+        raise ValueError("KBA research-pack ingestion status is missing")
+    for key in ("product_database_ingested","production_import","product_import_allowed","data_ingested","ru_eaeu_applicability",
       "individual_vehicle_fitment","exact_vehicle_fitment","model_year_inferred","generation_inferred",
       "engine_codes_included","gearbox_codes_included","exact_engine_gearbox_pair","ecu_fitment",
       "dtc_fitment","repair_applicability","diagnostic_execution_allowed"):
