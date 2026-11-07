@@ -93,6 +93,10 @@ def validate_rights(source: dict[str, Any]) -> None:
             raise ValueError(f"CarDir applicability boundary must be false: {field}")
     if policy.get("market_scope") != "UNKNOWN":
         raise ValueError("CarDir market scope must remain UNKNOWN")
+    data_scope=source.get("data_scope") or {}
+    manifest_allowlist={normalize_brand(value) for value in data_scope.get("vag_brand_allowlist",[])}
+    if manifest_allowlist != ALLOWED_BRANDS:
+        raise ValueError("CarDir exact VAG brand allowlist differs between source manifest and builder")
     import_policy = source.get("import_policy") or {}
     if import_policy.get("research_pack_allowed") is not True or import_policy.get("production_import") is not False or import_policy.get("product_database_ingested") is not False or import_policy.get("product_import_allowed") is not False:
         raise ValueError("CarDir import policy must remain research-only")
