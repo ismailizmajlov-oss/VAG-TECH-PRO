@@ -61,10 +61,11 @@ test("KBA search returns raw German stock observations, not fitment claims", () 
   assert.match(rows[0].warning, /не подтверждён как TSN/);
 });
 
-test("KBA exact raw type-key search works offline and rejects undersized queries", () => {
+test("KBA raw type-key search uses an observed source value offline and rejects undersized queries", () => {
   const root = process.env.VAG_TECH_PRO_KBA_TEST_ROOT || path.join(__dirname, "..", "data", "research");
-  const rows = searchKbaStock("0603", 10, root);
+  const rows = searchKbaStock("279", 10, root);
   assert.ok(rows.length > 0);
   assert.ok(rows.every((row) => row.marketScope === "DE" && row.exactEngineGearboxPair === false));
+  assert.ok(rows.some((row) => row.manufacturer === "VOLKSWAGEN (D)" && row.tradeName === "GOLF" && row.typeKey === "279"));
   assert.throws(() => searchKbaStock("A", 10, root), /минимум два символа/);
 });
