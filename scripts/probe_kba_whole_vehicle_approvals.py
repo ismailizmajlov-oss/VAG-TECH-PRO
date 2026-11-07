@@ -49,10 +49,15 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def validate_official_url(url: str) -> None:
+def validate_official_host(url: str) -> None:
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme != "https" or parsed.hostname not in {"www.kba.de", "kba.de"}:
         raise ValueError("KBA probe accepts only the official HTTPS KBA host")
+
+
+def validate_official_url(url: str) -> None:
+    validate_official_host(url)
+    parsed = urllib.parse.urlparse(url)
     if not parsed.path.lower().endswith(".xlsx"):
         raise ValueError("KBA approval resource must be an XLSX URL")
 
@@ -199,7 +204,7 @@ def fetch_resource(url: str) -> dict[str, Any]:
     try:
         with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
             final_url = response.geturl()
-            validate_official_url(final_url)
+            validate_official_host(final_url)
             status = getattr(response, "status", 200)
             headers = dict(response.headers.items())
             body = response.read(MAX_DOWNLOAD_BYTES + 1)
