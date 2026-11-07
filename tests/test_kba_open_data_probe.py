@@ -26,24 +26,24 @@ class KbaOpenDataProbeTests(unittest.TestCase):
         )
 
     def test_csv_schema_and_rows_are_read_without_renaming_source_columns(self):
-        payload = b"Hersteller;Handelsname;HSN;TSN\r\nVolkswagen AG;GOLF;0603;ADF\r\nAudi AG;A4;0588;AHU\r\n"
+        payload = b"Hersteller;Handelsname;Typschl\\u00fcssel;Berichtszeitpunkt\\r\\nVOLKSWAGEN (D);GOLF;0603;2026-01-01\\r\\nAUDI (D);A4;0588;2026-01-01\\r\\n"
         parsed = probe.parse_csv_payload(payload)
         self.assertIsNotNone(parsed)
-        self.assertEqual(parsed["columns"], ["Hersteller", "Handelsname", "HSN", "TSN"])
+        self.assertEqual(parsed["columns"], ["Hersteller", "Handelsname", "Typschl\\u00fcssel", "Berichtszeitpunkt"])
         self.assertEqual(parsed["row_count"], 2)
         self.assertEqual(parsed["manufacturer_field_candidates"], ["Hersteller"])
-        self.assertEqual(parsed["exact_vag_manufacturer_values"], ["Volkswagen AG", "Audi AG"])
-        self.assertEqual(parsed["sample_rows"][0]["HSN"], "0603")
+        self.assertEqual(parsed["exact_vag_manufacturer_values"], ["VOLKSWAGEN (D)", "AUDI (D)"])
+        self.assertEqual(parsed["sample_rows"][0]["Typschl\\u00fcssel"], "0603")
         self.assertEqual(parsed["csv_sha256"], probe.sha256(payload))
 
     def test_zip_payload_extracts_csv_for_schema_only(self):
         memory = io.BytesIO()
         with zipfile.ZipFile(memory, "w", zipfile.ZIP_DEFLATED) as archive:
-            archive.writestr("kba.csv", "Hersteller,Handelsname,HSN,TSN\nŠKODA,Octavia,8004,ABC\n")
+            archive.writestr("kba.csv", "Hersteller,Handelsname,Typschlüssel,Berichtszeitpunkt\\nSKODA (CZ),Octavia,8004,2026-01-01\\n")
         parsed = probe.parse_csv_payload(memory.getvalue())
         self.assertEqual(parsed["filename"], "kba.csv")
         self.assertEqual(parsed["row_count"], 1)
-        self.assertEqual(parsed["exact_vag_manufacturer_values"], ["ŠKODA"])
+        self.assertEqual(parsed["exact_vag_manufacturer_values"], ["SKODA (CZ)"])
 
     def test_arcgis_error_json_is_not_misread_as_vehicle_data(self):
         self.assertIsNone(probe.parse_csv_payload(json.dumps({"error": {"code": 400}}).encode()))
