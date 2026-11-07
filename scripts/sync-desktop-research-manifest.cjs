@@ -88,7 +88,7 @@ function verifyObdex(packRoot, descriptor) {
   if (policy.validation !== "syntax_only" || policy.external_fetch !== false || policy.rights_review !== "not_inherited_from_cc0_dataset" || policy.display_policy !== "external_reference_link_only") fail("OBDex external source-reference policy is incomplete");
   const scope = sourceManifest.scope || {};
   if (scope.dtc_namespace !== "generic_sae_iso_obd2" || scope.manufacturer_specific_codes_included !== false || scope.exact_vag_fitment !== false || scope.repair_procedures_or_pinouts_included !== false) fail("OBDex generic-only scope failed");
-  if (JSON.stringify(scope.generic_code_ranges) !== JSON.stringify(["P0xxx", "P2xxx", "P34xx"])) fail("OBDex generic code ranges are not constrained");
+  if (JSON.stringify(scope.generic_code_ranges) !== JSON.stringify(["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])) fail("OBDex generic code ranges are not constrained");
   if (JSON.stringify(scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(["P1xxx", "P30xx-P33xx", "P35xx-P39xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])) fail("OBDex manufacturer-controlled ranges are not excluded");
   if (report.database_sha256 !== descriptor.database_sha256 || report.integrity_check !== "ok" || report.vag_specific_dtc_rows !== 0 || report.fitment_claims !== 0 || report.production_rows !== 0 || report.generic_dtcs !== 9533 || report.pids !== 132) fail("OBDex SQLite report failed its generic-only boundary");
   if (sha256File(safeJoin(packRoot, descriptor.database_path)) !== descriptor.database_sha256) fail("OBDex database hash mismatch");
