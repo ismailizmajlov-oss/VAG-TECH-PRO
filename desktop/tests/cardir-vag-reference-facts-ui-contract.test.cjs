@@ -14,8 +14,8 @@ test("CarDir is exposed as a separate offline research tab and API dataset", () 
   assert.match(ui, /"cardir"/);
   assert.match(ui, /CarDir · справочные значения/);
   assert.match(ui, /рынок UNKNOWN/);
-  assert.match(ui, /publisher_verified/);
-  assert.match(ui, /not_independently_reviewed/);
+  assert.match(ui, /publisherVerificationStatus/);
+  assert.match(ui, /technicalReviewStatus/);
   assert.match(api, /cardir-vag-reference-facts-db\.cjs/);
   assert.match(api, /dataset === "cardir-summary"/);
   assert.match(api, /dataset === "cardir"/);
