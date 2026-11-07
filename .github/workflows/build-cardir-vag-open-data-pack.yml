@@ -61,7 +61,7 @@ jobs:
           python scripts/build_cardir_vag_open_data_pack.py --acquire --source-manifest data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json --output-dir artifacts/cardir-source 2>&1 | Tee-Object -FilePath cardir-acquisition.log
           if ($LASTEXITCODE -ne 0) { throw "CarDir licensed source acquisition failed." }
           $snapshot = Get-Content -LiteralPath artifacts/cardir-source/snapshot.json -Raw | ConvertFrom-Json
-          if ($snapshot.source_row_count -ne 41128 -or $snapshot.model_count -ne 548 -or $snapshot.vag_row_count -le 0 -or $snapshot.source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") {
+          if ($snapshot.source_row_count -ne 41649 -or $snapshot.model_count -ne 561 -or $snapshot.vag_row_count -le 0 -or $snapshot.source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") {
             throw "CarDir source snapshot differs from the reviewed publisher dataset; refusing to build."
           }
           "CarDir source SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
