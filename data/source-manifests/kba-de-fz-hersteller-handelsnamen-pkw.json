@@ -175,9 +175,11 @@
     "product_import_allowed": false,
     "data_ingested": false,
     "research_pack_allowed_after_resource_and_schema_review": true,
-    "research_pack_status": "separate_de_identity_research_pack_build_pending",
+    "research_pack_status": "separate_de_identity_research_pack_built_verified_desktop_integration_pending",
     "production_fitment": false,
-    "ru_eaeu_applicability": false
+    "ru_eaeu_applicability": false,
+    "research_pack_ingested": true,
+    "product_database_ingested": false
   },
   "verification_status": "rights_cleared_source_snapshot_acquired_schema_verified_research_only_no_vehicle_fitment",
   "product_import_allowed": false,
@@ -187,5 +189,8 @@
   "hash_status": "Full 65,366,675-byte KBA CSV snapshot SHA-256 verified; 1,047,991 source rows and exact VAG subset counts recorded; production fitment import not performed.",
   "project_decision": "Published DL-DE BY 2.0 rights are confirmed in the KBA ArcGIS item metadata and GovData catalogue. The full CSV was retrieved through the public ArcGIS Hub legacy download endpoint and hashed. Its observed schema contains manufacturer, trade name, raw Typschlüssel, annual report date, federal state and stock count; it contains no HSN field, no engine/gearbox codes and no factory configuration. Use only in a separate Germany-only identity research pack. Do not infer model year, generation, individual vehicle fitment, engine/gearbox pair, ECU, DTC, repair applicability or RU/EAEU applicability.",
   "catalog_resource_url": "https://das-kba-statistikportal.hub.arcgis.com/api/download/v1/items/d277ec18ff1e442597c9411d7c1aaeaa/csv?layers=0",
-  "source_service_url": "https://services-eu1.arcgis.com/U09msXRZoxesNntH/arcgis/rest/services/SP_Hersteller_Handelsnamen_PKW_5c784/FeatureServer"
+  "source_service_url": "https://services-eu1.arcgis.com/U09msXRZoxesNntH/arcgis/rest/services/SP_Hersteller_Handelsnamen_PKW_5c784/FeatureServer",
+  "research_pack_status": "separate_de_identity_research_pack_built_verified_desktop_integration_pending",
+  "research_pack_ingested": true,
+  "product_database_ingested": false
 }
