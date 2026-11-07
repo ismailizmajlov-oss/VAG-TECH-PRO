@@ -93,7 +93,7 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
 
 
 
-    def test_run16_pack_hashes_counts_and_zero_pair_boundary_match_source_manifest(self):
+    def test_run25_pack_hashes_counts_and_zero_pair_boundary_match_source_manifest(self):
         manifest = json.loads((ROOT / "data" / "source-manifests" / "astra-targa-emissionen-open-data.json").read_text(encoding="utf-8"))
         register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
         source = next(item for item in register["sources"] if item["source_id"] == SOURCE_ID)
@@ -113,11 +113,11 @@ class AstraTargaEmissionenSourceRightsTests(unittest.TestCase):
         self.assertFalse(build["exact_vag_factory_code_pair"])
         self.assertFalse(build["ru_eaeu_applicability"])
 
-    def test_source_register_pins_same_latest_run16_pack_without_production_import(self):
+    def test_source_register_pins_same_latest_run25_pack_without_production_import(self):
         register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
         source = next(item for item in register["sources"] if item["source_id"] == SOURCE_ID)
         build = source["research_pack_build_evidence"]
-        self.assertEqual(build["workflow_run_number"], 16)
+        self.assertEqual(build["workflow_run_number"], 25)
         self.assertEqual(build["artifact_sha256"], "58f5867cf4fb504eba328ad68f0f2fc874bb5d83f7f3062a6a1d1fca7a866e7e")
         self.assertEqual(build["pack_archive_sha256"], "6029405c986aca792fba66084938508bfa47fd8e39d9a55fbcef95d8d4bacee1")
         self.assertIs(build["production_import"], False)
