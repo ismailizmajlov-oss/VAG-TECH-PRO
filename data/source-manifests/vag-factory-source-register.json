@@ -4379,7 +4379,9 @@
         "production_fitment": false,
         "ru_eaeu_applicability": false
       },
-      "research_pack_status": "separate_de_identity_research_pack_build_pending"
+      "research_pack_status": "separate_de_identity_research_pack_built_verified_desktop_integration_pending",
+      "research_pack_ingested": true,
+      "product_database_ingested": false
     },
     {
       "source_id": "kyrgyz-single-window-public-registry",
