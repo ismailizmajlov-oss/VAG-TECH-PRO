@@ -90,7 +90,8 @@ function patch(desktopRoot) {
   if (productionReportLines.length !== 1) fail("KBA verification report: expected exactly one production-fitment summary anchor, found " + productionReportLines.length);
   const productionReportAnchor = productionReportLines[0];
   const reportIndent = productionReportAnchor.match(/^\s*/)[0];
-  const kbaReportAtIndent = kbaReport.split("\n").map((line) => reportIndent + line.trimStart()).join("\n");
+  const kbaReportBaseIndent = kbaReport.match(/^\s*/)[0].length;
+  const kbaReportAtIndent = kbaReport.split("\n").map((line) => reportIndent + line.slice(kbaReportBaseIndent)).join("\n");
   if (!verifier.includes("kba_de_vag_stock:")) verifier = replaceExactly(verifier, productionReportAnchor, kbaReportAtIndent + "\n" + productionReportAnchor, "KBA verification report");
 
   const kbaTestAssertions = [
