@@ -519,7 +519,7 @@
         "The API terms permit internal use but prohibit third-party equivalent access, redistribution of API data and systematic transfer of a full current database copy without separate written consent.",
         "An OTTS is type-approval evidence, not an individual VIN build sheet and not proof of ECU, DTC, wiring, repair or exact engine/gearbox fitment."
       ],
-      "project_decision": "restricted_no_bulk_import_no_product_pack; no account, key, subscription or individual-document access for VAG TECH PRO without explicit owner authorization; reconsider only after written permission covering bulk retrieval, offline caching, redistribution and third-party Windows desktop display",
+      "project_decision": "restricted_no_bulk_import_no_product_pack; no account, key, subscription or individual-document access for VAG TECH PRO without explicit owner authorization; reconsider only after written permission covering bulk retrieval, offline caching, redistribution and third-party Windows desktop display; no HPT.SU records are currently imported or cached",
       "evidence_status": "official HPT.SU offer, API terms, pricing and MCP pages reviewed 2026-11-07; no account, key, subscription or data access used",
       "terms_effective_dates": {
         "offer": "2026-08-22",
