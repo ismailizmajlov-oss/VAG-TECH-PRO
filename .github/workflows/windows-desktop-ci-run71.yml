@@ -1537,6 +1537,30 @@ jobs:
           }
           "technical_payload_renderer=run79; typed_sections=14; canonical_ecu_kinds_mapped=true; generic_vag_dtc_separate=true; provenance_preserved=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Validate technical payload schema at SQLite import boundary (run80)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-technical-payload-validation-run80.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run80 patch loader syntax check failed" }
+          node --check apply-technical-payload-validation-run80.payload.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run80 compressed patch module syntax check failed" }
+          node apply-technical-payload-validation-run80.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-run80.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run80 technical payload validation patch failed" }
+          node --check desktop-source/lib/local-core-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run80 local SQLite core syntax check failed" }
+          node --test desktop-source/tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/technical-payload-validation-run80-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run80 technical payload importer tests failed" }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          foreach ($relative in @("lib/local-core-db.cjs", "tests/local-core-db.test.cjs", "source-verification.txt")) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "Run80 audit source is missing: $relative" }
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          "technical_payload_validation=run80; schema_kinds=9; legacy_ecu_aliases=true; generic_vag_dtc_separate=true; credential_values_rejected=true; package_atomicity=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
