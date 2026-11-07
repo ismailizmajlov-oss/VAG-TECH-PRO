@@ -59,6 +59,8 @@ def _read_and_validate(source_path: Path) -> tuple[bytes, dict[str, Any]]:
         restricted = permission_status in {"not_cleared", "not_obtained"} or "quarantined" in verification_status
         if restricted and source.get("data_ingested") is True:
             raise ValueError(f"Restricted/quarantined source cannot be marked ingested: {source_id}")
+        if restricted and source.get("product_import_allowed") is True:
+            raise ValueError(f"Restricted/quarantined source cannot be marked product-importable: {source_id}")
 
     if not seen:
         raise ValueError("Source register contains no source entries")
