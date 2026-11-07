@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T01:10:01Z",
+  "updated_at": "2026-11-07T01:11:30Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4320,9 +4320,11 @@
           "result_retrieval_independently_tested": false
         },
         "homepage_summary": {
+          "url": "https://cert.trade.kg/",
           "observed_at": "2026-11-07",
           "ot_ts_summary_count": 1,
-          "count_treatment": "portal_summary_only_not_a_complete_or_verified_corpus_count"
+          "count_treatment": "separate_cert_trade_landing_page_ui_counter_only_not_a_complete_or_verified_public_register_corpus_count",
+          "note": "The one-OTTS counter is displayed on cert.trade.kg, not on the trade.kg public-registry project page; it is retained as a portal observation only."
         },
         "vehicle_approval_workflow": {
           "application_system_url": "https://car.trade.kg/",
@@ -4392,6 +4394,11 @@
           "url": "https://trade.kg/",
           "reviewed_at": "2026-11-07",
           "evidence": "Official portal homepage says the six public registers are open without registration; its registry summary lists one OTTS item and describes OTTS/OTSH search by approval number, make and model."
+        },
+        {
+          "url": "https://cert.trade.kg/",
+          "reviewed_at": "2026-11-07",
+          "evidence": "Separate Single Window system landing page displays an OTTS summary counter of one; this is not treated as a verified public-register corpus count or a record-level schema."
         },
         {
           "url": "https://trade.kg/projects/public-registry",
