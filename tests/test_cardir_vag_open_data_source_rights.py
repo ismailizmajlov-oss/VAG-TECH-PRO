@@ -15,12 +15,15 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         for field in ("commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed","attribution_required"):
             self.assertIs(self.manifest["rights"][field],True)
         self.assertIn("cardir.ru/dannye",self.manifest["rights"]["attribution_text"])
-    def test_snapshot_hash_stays_null_until_windows_acquisition(self):
-        self.assertIsNone(self.manifest["snapshot"]["source_snapshot_sha256"])
-        self.assertEqual(self.manifest["snapshot"]["status"],"pending_authorized_snapshot_acquisition")
+    def test_windows_acquired_snapshot_hash_and_counts_are_pinned(self):
+        self.assertEqual(self.manifest["snapshot"]["source_snapshot_sha256"],"93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375")
+        self.assertEqual(self.manifest["snapshot"]["source_file_bytes"],14291137)
+        self.assertEqual(self.manifest["snapshot"]["status"],"source_snapshot_acquired_schema_verified")
         self.assertEqual(self.manifest["snapshot"]["expected_data_updated_at"],"2026-11-07")
         self.assertEqual(self.manifest["snapshot"]["expected_source_row_count"],41649)
         self.assertEqual(self.manifest["snapshot"]["expected_model_count"],561)
+        self.assertEqual(self.manifest["snapshot"]["observed_vag_row_count"],773)
+        self.assertEqual(self.manifest["snapshot"]["observed_vag_model_count"],24)
         self.assertIs(self.manifest["import_policy"]["data_ingested"],False)
     def test_central_register_has_one_research_only_entry(self):
         matches=[s for s in self.register["sources"] if s.get("source_id")==SOURCE_ID]
