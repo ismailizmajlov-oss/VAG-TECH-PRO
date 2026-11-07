@@ -12,6 +12,23 @@ function replaceOnce(text, pattern, replacement, label) {
   if (matches.length !== 1) throw new Error(label + " patch anchor count was " + matches.length + "; expected exactly one");
   return text.replace(pattern, replacement);
 }
+function dtcAnchorPattern() {
+  return /case "dtc_generic":\s*case "dtc_vag_specific": \{[\s\S]*?\r?\n    \}\r?\n    case "diagnostic_test_plan": \{/g;
+}
+
+// Exercise both LF and Windows CRLF before touching the desktop source.
+for (const newline of ["\n", "\r\n"]) {
+  const fixture = [
+    'case "dtc_generic":',
+    '    case "dtc_vag_specific": {',
+    '      break;',
+    '    }',
+    '    case "diagnostic_test_plan": {'
+  ].join(newline);
+  const replaced = replaceOnce(fixture, dtcAnchorPattern(), "__DTC_BLOCK__", "Run81 newline regression self-test");
+  if (replaced !== "__DTC_BLOCK__") throw new Error("Run81 newline regression self-test did not replace the DTC block");
+}
+
 const desktopRoot = path.resolve(argumentValue("--desktop-root", "desktop-source"));
 const corePath = path.join(desktopRoot, "lib", "local-core-db.cjs");
 const testPath = path.join(desktopRoot, "tests", "local-core-db.test.cjs");
@@ -48,7 +65,7 @@ if (!core.includes("// run81: renderer-aligned strict payload contract")) {
     '    }',
     '    case "diagnostic_test_plan": {'
   ].join("\n");
-  core = replaceOnce(core, /case "dtc_generic":\s*case "dtc_vag_specific": \{[\s\S]*?\n    \}\n    case "diagnostic_test_plan": \{/g, newDtc, "DTC payload");
+  core = replaceOnce(core, dtcAnchorPattern(), newDtc, "DTC payload");
   core = replaceOnce(core,
     /technicalPayloadOnlyKeys\(record, payload, \["preconditions", "steps", "expected_results", "test_conditions", "tool_requirements", "safety_notes"\], "payload"\);/g,
     'technicalPayloadOnlyKeys(record, payload, ["test_purpose", "purpose", "system", "system_name", "ecu_family", "ecu_identity_id", "preconditions", "steps", "expected_results", "test_conditions", "tool_requirements", "safety_notes"], "payload");',
