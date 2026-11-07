@@ -59,6 +59,8 @@ test("RDW verifier patch composes after the separate ASTRA TARGA pack", () => {
   assert.match(rdwVerifierPatchSource, /manifest\.packs\.length === 12/);
   assert.match(rdwVerifierPatchSource, /astra-fedro-targa-emissionen-approval-variants-ch/);
   assert.match(rdwVerifierPatchSource, /rdw-vag-nl-eu-type-approval-research/);
+  assert.ok(rdwVerifierPatchSource.includes('.join("\\n")'), "RDW verifier patch must join inserted lines with actual newline escapes");
+  assert.ok(!rdwVerifierPatchSource.includes('.join("\\\\n")'), "RDW verifier patch must not emit literal backslash-n text");
 });
 
 function fsTemp() {
