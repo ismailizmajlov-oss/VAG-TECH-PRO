@@ -47,3 +47,8 @@ CC0 does not require attribution, but the application should retain the voluntar
 ## Remaining boundary
 
 The dataset can populate the generic OBD-II layer only. A separate, independently licensed source is still required for VAG-specific DTC variants, ECU applicability, guided tests and factory repair instructions.
+
+
+## Current Windows offline bundle evidence — 2026-11-07
+
+The pinned revision was acquired and packaged successfully in [Windows offline data-pack workflow run 212](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42391249456). The verified bundle artifact is ID `13581602022`, SHA-256 `4d62975d1493ce494f1b967ae24c9d015493c256e2c0fc373d2bfd3125e588e7`. Its OBDex SQLite database SHA-256 is `fe82b6cf68fae49fe1c9ab4ea4ced4238b416d426a6258fc3c764f32e8d5766f`; the source manifest SHA-256 is `620d40ecbdf60c0064d1cdeb207f851589cf187af38038a7171ac22b3a2317`. Independent read-only validation returned `integrity_check=ok`, zero foreign-key violations, 9,533 generic DTCs, 132 generic PIDs, zero VAG-specific DTC rows and zero fitment claims. Only P34xx (155 entries) is admitted from the mixed P3 family; P35xx–P39xx remain excluded.

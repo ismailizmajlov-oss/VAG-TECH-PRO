@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T15:17:43Z",
+  "updated_at": "2026-11-07T16:27:46Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -711,8 +711,52 @@
         "Repair estimates, costs and generic repair text are not promoted as OEM repair advice."
       ],
       "project_decision": "allow_separate_generic_CC0_reference_pack_only; keep separate from VAG-specific data and exact vehicle fitment",
-      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-07; acquisition_CI_pending",
-      "data_ingested": false
+      "evidence_status": "pinned_commit_and_LICENSE-DATA_reviewed_2026-11-07; acquisition_and_offline_bundle_CI_success_run212",
+      "data_ingested": false,
+      "research_pack_ingested": true,
+      "product_database_ingested": false,
+      "product_import_allowed": false,
+      "acquisition_evidence": {
+        "workflow": ".github/workflows/build-windows-offline-data-packs.yml",
+        "workflow_run_id": 42391249456,
+        "workflow_run_number": 212,
+        "completed_at_utc": "2026-11-07T16:27:46Z",
+        "source_artifact_id": 13581581954,
+        "source_artifact_sha256": "92668d4dd8109a93084a6cb4f1e935a382427b82ea3589f828ac6adfa18afbca",
+        "offline_bundle_artifact_id": 13581602022,
+        "offline_bundle_sha256": "4d62975d1493ce494f1b967ae24c9d015493c256e2c0fc373d2bfd3125e588e7",
+        "database_sha256": "fe82b6cf68fae49fe1c9ab4ea4ced4238b416d426a6258fc3c764f32e8d5766f",
+        "source_manifest_sha256": "620d40ecbdf60c0064d1cdeb207f851589cf187af38038a7171ac22b3a2317",
+        "generic_code_ranges": [
+          "P0xxx",
+          "P2xxx",
+          "P34xx",
+          "B0xxx",
+          "C0xxx",
+          "U0xxx",
+          "U3xxx"
+        ],
+        "excluded_manufacturer_controlled_ranges": [
+          "P1xxx",
+          "P30xx-P33xx",
+          "P35xx-P39xx",
+          "B1xxx-B2xxx",
+          "C1xxx-C2xxx",
+          "U1xxx-U2xxx"
+        ],
+        "counts": {
+          "generic_dtc_rows": 9533,
+          "generic_pid_rows": 132,
+          "p34_generic_rows": 155,
+          "vag_specific_dtc_rows": 0,
+          "exact_vehicle_fitment_rows": 0,
+          "production_rows": 0
+        },
+        "sqlite_integrity_check": "ok",
+        "foreign_key_violations": 0,
+        "source_reference_policy": "raw references preserved in raw records only; not fetched, not copied, not linked",
+        "product_boundary": "separate generic reference pack; not production vehicle catalog"
+      }
     },
     {
       "source_id": "nhtsa-tsbs-public-index",
