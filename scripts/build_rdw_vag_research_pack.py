@@ -172,6 +172,14 @@ def prepare_snapshot_manifest(
     if existing_research_pack is not None and existing_research_pack != expected_research_pack:
         raise ValueError("RDW research-pack metadata differs from the pinned source snapshot")
     source_manifest["research_pack"] = expected_research_pack
+    refresh = source_manifest.get("snapshot_refresh")
+    if isinstance(refresh, dict) and refresh.get("status") == "pending_candidate_reacquisition_and_review":
+        refresh["status"] = "candidate_snapshot_acquired_pending_review"
+        refresh["candidate_source_snapshot_sha256"] = snapshot_sha
+        refresh["candidate_source_revision"] = revisions
+        refresh["candidate_source_files"] = entries
+        refresh["candidate_acquired_at_utc"] = datetime.now(timezone.utc).isoformat()
+        refresh["promotion_approved"] = False
     source_manifest["data_ingested"] = False
     return source_manifest, snapshot_sha, revisions
 
