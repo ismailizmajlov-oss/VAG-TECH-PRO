@@ -37,7 +37,7 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
           <DocStartDate>2025-02-01</DocStartDate>
           <ConformityDocKindCode>40</ConformityDocKindCode>
           <ApplicantDetails><BusinessEntityName>Applicant Secret Synthetic</BusinessEntityName></ApplicantDetails>
-          <VehicleV2Details><VehicleIdentificatioNNumberId>VIN-SYNTHETIC-DO-NOT-STORE</VehicleIdentificationNumberId></VehicleV2Details>
+          <VehicleV2Details><VehicleIdentificatioNNumberId>VIN-SYNTHETIC-DO-NOT-STORE</VehicleIdentificatioNNumberId></VehicleV2Details>
         </VehicleConformityDocDetails>
         """
     vehicle_v2 = """
@@ -150,7 +150,6 @@ def _xml(*, ambiguous: bool = False, include_sbkts: bool = True) -> bytes:
         "ECUModelCode": "trsdo",
         "ApplicantDetails": "trcdo",
         "VehicleV2Details": "trcdo",
-        "VehicleIdentificationNumberId": "trsdo",
     }
     for local_name, prefix in element_prefixes.items():
         xml = xml.replace(f"<{local_name}>", f"<{prefix}:{local_name}>")
