@@ -15,7 +15,7 @@ def synthetic_xlsx():
         archive.writestr("[Content_Types].xml", """<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>""")
         archive.writestr("xl/workbook.xml", """<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Genehmigungen" sheetId="1" r:id="rId1"/></sheets></workbook>""")
         archive.writestr("xl/_rels/workbook.xml.rels", """<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>""")
-        archive.writestr("xl/worksheets/sheet1.xml", """<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Hersteller</t></is></c><c r="B1" t="inlineStr"><is><t>Handelsname</t></is></c><c r="C1" t="inlineStr"><is><t>Typgenehmigungsnummer</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>VOLKSWAGEN AG</t></is></c><c r="B2" t="inlineStr"><is><t>Golf</t></is></c><c r="C2" t="inlineStr"><is><t>e1*2018/858*00001</t></is></c></row></sheetData></worksheet>""")
+        archive.writestr("xl/worksheets/sheet1.xml", """<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Liste der erteilten Typgenehmigungen</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>Hersteller</t></is></c><c r="B2" t="inlineStr"><is><t>Handelsname</t></is></c><c r="C2" t="inlineStr"><is><t>Typgenehmigungsnummer</t></is></c></row><row r="3"><c r="A3" t="inlineStr"><is><t>VOLKSWAGEN AG</t></is></c><c r="B3" t="inlineStr"><is><t>Golf</t></is></c><c r="C3" t="inlineStr"><is><t>e1*2018/858*00001</t></is></c></row></sheetData></worksheet>""")
     return output.getvalue()
 
 
@@ -33,6 +33,8 @@ class KbaWholeVehicleApprovalProbeTests(unittest.TestCase):
         parsed = probe.parse_xlsx_headers(synthetic_xlsx())
         self.assertEqual(parsed["sheet_count"], 1)
         self.assertEqual(parsed["sheets"][0]["name"], "Genehmigungen")
+        self.assertEqual(parsed["sheets"][0]["header_row_number"], 2)
+        self.assertEqual(parsed["sheets"][0]["header_status"], "candidate_header_by_known_field_names")
         self.assertEqual(
             parsed["sheets"][0]["header"],
             ["Hersteller", "Handelsname", "Typgenehmigungsnummer"],
