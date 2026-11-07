@@ -277,7 +277,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         self.assertTrue(payload_module.is_file())
         self.assertTrue(loader.is_file())
         module_text = payload_module.read_text(encoding="utf-8")
-        match = re.fullmatch(r'"use strict";\\s*module\\.exports = "([A-Za-z0-9+/=]+)";\\s*', module_text)
+        match = re.fullmatch(r'"use strict";\s*module\.exports = "([A-Za-z0-9+/=]+)";\s*', module_text)
         self.assertIsNotNone(match)
         compressed = base64.b64decode(match.group(1), validate=True)
         self.assertEqual(hashlib.sha256(compressed).hexdigest(), "13e89e254c3a5ac77c70152d49876c78e6fdd2d1d0a49dec74cb743d4cbf108b")
