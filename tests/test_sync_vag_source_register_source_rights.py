@@ -67,6 +67,30 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
                 sync(source, desktop)
             self.assertEqual(destination.read_text(encoding="utf-8"), "previous-good-register")
 
+    def test_astra_targa_legacy_remains_ch_only_and_never_forms_engine_gearbox_pairs(self):
+        manifest_path = ROOT / "data" / "source-manifests" / "astra-targa-legacy-open-data.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["source_id"], "astra-fedro-targa-legacy-type-approvals-ch")
+        self.assertEqual(manifest["market_scope"], ["CH"])
+        self.assertEqual(manifest["rights"]["rights_status"], "approved_by_official_astra_ogd_publication_and_swiss_ogd_reuse_terms")
+        for field in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed", "bulk_reuse_allowed", "redistribution_allowed", "attribution_required"):
+            self.assertIs(manifest["rights"][field], True)
+        self.assertEqual(manifest["snapshot"]["file_sha256"], "5851dc2bf2cd06efee42a380e75b661eafa4b577a2edc8ecca2269cb9f950b4b")
+        self.assertEqual(manifest["coverage"]["approval_records"], 45041)
+        self.assertEqual(manifest["coverage"]["gearbox_classifications"], 53476)
+        self.assertEqual(manifest["coverage"]["exact_engine_gearbox_pair_rows"], 0)
+        self.assertIs(manifest["applicability_policy"]["exact_engine_gearbox_pair"], False)
+        self.assertIs(manifest["applicability_policy"]["ru_eaeu_applicability"], False)
+        register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        matches = [item for item in register["sources"] if item["source_id"] == manifest["source_id"]]
+        self.assertEqual(len(matches), 1)
+        source = matches[0]
+        self.assertIs(source["data_ingested"], False)
+        self.assertEqual(source["research_pack"]["status"], "verified_research_only")
+        self.assertEqual(source["research_pack"]["counts"]["exact_engine_gearbox_pair_rows"], 0)
+        self.assertIs(source["research_pack"]["production_import"], False)
+
+
     def test_repository_source_register_has_explicit_boolean_ingest_state(self):
         manifest_path = ROOT / "data" / "source-manifests" / "vag-factory-source-register.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
