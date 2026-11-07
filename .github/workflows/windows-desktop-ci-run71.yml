@@ -96,6 +96,7 @@ on:
       - "tests/test_otts_bot_source_rights.py"
       - "docs/research/HPT_SU_OTTS_AGGREGATOR_RIGHTS_REVIEW_2026-11-07.md"
       - "tests/test_hpt_su_source_rights.py"
+      - "tests/test_cars_base_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/**"
@@ -202,6 +203,7 @@ on:
       - "tests/test_otts_bot_source_rights.py"
       - "docs/research/HPT_SU_OTTS_AGGREGATOR_RIGHTS_REVIEW_2026-11-07.md"
       - "tests/test_hpt_su_source_rights.py"
+      - "tests/test_cars_base_source_rights.py"
       - "data/source-manifests/mechanicdb-generic-repair-guidance.json"
       - "scripts/build_mechanicdb_generic_guidance.py"
       - "data/sql/**"
@@ -264,6 +266,7 @@ jobs:
           python tests/test_offline_data_pack_rights.py
           python tests/test_otts_bot_source_rights.py
           python tests/test_hpt_su_source_rights.py
+          python tests/test_cars_base_source_rights.py
           python tests/test_openvag_source_rights.py
           python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
@@ -1020,6 +1023,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Source-register sync contract tests failed" }
           python tests/test_kba_germany_open_data_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "KBA source-rights contract tests failed" }
+          python tests/test_cars_base_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "Cars Base source-rights contract tests failed" }
           $syncOutput = python scripts/sync_vag_source_register.py --source "data/source-manifests/vag-factory-source-register.json" --desktop-root "desktop-source"
           if ($LASTEXITCODE -ne 0) { throw "Could not synchronize central source-rights register into desktop payload" }
           $syncOutput | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-source-register-sync.log"
@@ -2043,6 +2048,7 @@ jobs:
             vag-source-register-sync.log
             scripts/sync_vag_source_register.py
             tests/test_sync_vag_source_register_source_rights.py
+            tests/test_cars_base_source_rights.py
           if-no-files-found: warn
           retention-days: 14
 
