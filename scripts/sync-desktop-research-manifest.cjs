@@ -87,6 +87,11 @@ function verifyObdex(packRoot, descriptor) {
   const policy = sourceManifest.source_reference_policy || {};
   if (policy.validation !== "syntax_only" || policy.external_fetch !== false || policy.rights_review !== "not_inherited_from_cc0_dataset" || policy.display_policy !== "external_reference_link_only") fail("OBDex external source-reference policy is incomplete");
   const scope = sourceManifest.scope || {};
+  const importPolicy = sourceManifest.import_policy || {};
+  if (!Array.isArray(importPolicy.normalized_product_namespace_exclusions) ||
+      JSON.stringify(importPolicy.normalized_product_namespace_exclusions) !== JSON.stringify(["U3xxx"]) ||
+      importPolicy.source_label_is_not_standard_allocation_proof !== true ||
+      importPolicy.production_catalog_ingestion !== false) fail("OBDex unresolved U3 family must remain research-only");
   if (scope.dtc_namespace !== "generic_sae_iso_obd2" || scope.manufacturer_specific_codes_included !== false || scope.exact_vag_fitment !== false || scope.repair_procedures_or_pinouts_included !== false) fail("OBDex generic-only scope failed");
   if (JSON.stringify(scope.generic_code_ranges) !== JSON.stringify(["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])) fail("OBDex generic code ranges are not constrained");
   if (JSON.stringify(scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(["P1xxx", "P30xx-P33xx", "P35xx-P39xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])) fail("OBDex manufacturer-controlled ranges are not excluded");
@@ -197,11 +202,15 @@ function sync(packRootArg, researchRootArg) {
     cache_allowed: true,
     redistribution_allowed: true,
     source_reference_policy: obSource.source_reference_policy,
+    normalized_product_namespace_exclusions: obSource.import_policy.normalized_product_namespace_exclusions,
+    unverified_current_standard_ranges: obSource.import_policy.unverified_current_standard_ranges,
+    source_label_is_not_standard_allocation_proof: obSource.import_policy.source_label_is_not_standard_allocation_proof,
     limitations: [
       "Generic SAE/ISO OBD-II only; never VAG-specific.",
       "No exact vehicle/ECU fitment or vehicle-specific test plan.",
       "No repair procedure, pinout, torque value or adaptation is provided.",
-      "External references are syntax-validated only; they are not fetched, displayed or re-licensed by the CC0 data grant."
+      "External references are syntax-validated only; they are not fetched, displayed or re-licensed by the CC0 data grant.",
+      "U3xxx rows retain the upstream source label in the isolated research database but are excluded from the normalized generic DTC namespace until current SAE J2012DA code-level allocation is verified."
     ]
   });
 
