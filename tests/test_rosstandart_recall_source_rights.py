@@ -56,14 +56,15 @@ class RosstandartRecallSourceRightsTests(unittest.TestCase):
 
     def test_latest_metadata_probe_records_timeout_without_snapshot_or_rights_upgrade(self):
         probe = self.source["latest_metadata_probe"]
-        self.assertEqual(probe["workflow_run_number"], 65)
-        self.assertEqual(probe["observed_at_utc"], "2026-11-08T11:20:30Z")
-        self.assertEqual(probe["source_commit"], "6eb256c6172a17d64bbe5185642f837e84f377ab")
+        self.assertEqual(probe["workflow_run_number"], 66)
+        self.assertEqual(probe["observed_at_utc"], "2026-11-08T11:23:45Z")
+        self.assertEqual(probe["source_commit"], "258f178a53780320aacc0a4f243a1944c1414293")
         self.assertIn(30, [entry["workflow_run_number"] for entry in self.source["metadata_probe_history"]])
+        self.assertIn(65, [entry["workflow_run_number"] for entry in self.source["metadata_probe_history"]])
         self.assertEqual(probe["status"], "metadata_probe_only_official_endpoints_unreachable")
-        self.assertEqual(probe["artifact_id"], 13615715224)
-        self.assertEqual(probe["artifact_sha256"], "f67877c55dc3e55cbc1de6ee7012604e62bd433989ec58a3b270988817d50223")
-        self.assertEqual(probe["report_sha256"], "3990cb88d2acb041910b46e4f3b5c3bd808238252f8e08c5347f169630d8980b")
+        self.assertEqual(probe["artifact_id"], 13614249761)
+        self.assertEqual(probe["artifact_sha256"], "41558a09ba3ea00d01541c89762926e5eaf15ca4b6bcf39214df8235a69c45fa")
+        self.assertEqual(probe["report_sha256"], "4954877df8711c1cb0bc9000b7bbc72b7e353a6dd0fa6b583a73ddf393835bf5")
         self.assertEqual(len(probe["pages"]), 2)
         self.assertTrue(all(page["retrieved"] is False for page in probe["pages"]))
         self.assertEqual(probe["candidate_file_links"], [])
