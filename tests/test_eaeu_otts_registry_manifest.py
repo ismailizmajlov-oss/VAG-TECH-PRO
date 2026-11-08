@@ -76,7 +76,11 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
     def test_elpts_public_otts_filter_options_do_not_establish_records_or_reuse_rights(self):
         source = self.factory_sources["elpts-national-otts-register-public-query"]
         observation = source["public_page_observations"]["ot_ts"]
-        self.assertEqual(observation["observed_at"], "2026-11-07")
+        self.assertEqual(observation["observed_at"], "2026-11-08")
+        self.assertEqual(observation["visible_date_filters"], ["07.11.2026", "08.11.2026"])
+        history = source["public_page_observations"]["history"]
+        self.assertEqual(history[0]["ot_ts"]["observed_at"], "2026-11-07")
+        self.assertEqual(history[0]["ot_ts"]["visible_date_filters"], ["06.11.2026", "07.11.2026"])
         self.assertEqual(observation["manufacturer_filter_options_observed"], ["AUDI AG", "Volkswagen AG"])
         self.assertTrue(observation["manufacturer_filter_values_are_options_only"])
         self.assertFalse(observation["vag_records_observed"])
