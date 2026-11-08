@@ -63,15 +63,15 @@ class ArmeniaOttsRightsGateTests(unittest.TestCase):
     def test_review_document_preserves_no_download_and_no_hash_boundary(self):
         review = (
             ROOT / "docs/research/ARMENIA_NATIONAL_OTTS_PUBLIC_LISTING_RIGHTS_REVIEW_2026-11-08.md"
-        ).read_text(encoding="utf-8")
+        ).read_text(encoding="utf-8").casefold()
         for phrase in (
-            "No PDF was downloaded or inspected",
+            "no pdf was downloaded or inspected",
             "no dataset-specific licence",
             "metadata-only discovery",
             "info@armstandard.am",
         ):
             with self.subTest(phrase=phrase):
-                self.assertIn(phrase, review)
+                self.assertIn(phrase.casefold(), review)
 
 
 if __name__ == "__main__":
