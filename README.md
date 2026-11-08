@@ -144,7 +144,7 @@ The latest separate Windows offline research bundle was built and independently 
 
 - OBDex CC0 generic reference: 9,533 generic DTC research rows and 132 PIDs; database SHA-256 `1347579f29af63e03dba181222b35a5cec2e372453b6e11e653b7764efc3b14c`. The 174 unresolved U3xxx rows remain isolated; none is VAG-specific.
 - VehiclesDB CC BY 4.0 identity research: 260 make/model candidates and 1,524 foreign-market evidence rows across 14 source registers; database SHA-256 `1ff7292a7b8a891c5dbeba71e411e2a3bf7151d383c1f79e2e13005054be0cb6`. It contains no RU/EAEU market evidence or exact generation/powertrain fitment.
-- OBDb CC BY-SA 4.0 community signal research: 82 generation candidates, 44 ECU candidates, 7,890 read-only UDS 0x22 command candidates and 8,446 signal candidates across 16 pinned repositories; database SHA-256 `6ee0de83b4e2fdd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14`. Market is UNKNOWN, execution is disabled and the records are not OEM-confirmed.
+- OBDb CC BY-SA 4.0 community signal research: 82 generation candidates, 44 ECU candidates, 7,890 read-only UDS 0x22 command candidates and 8,446 signal candidates across 16 pinned repositories; database SHA-256 `6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14`. Market is UNKNOWN, execution is disabled and the records are not OEM-confirmed.
 
 All three remain read-only research layers with their own attribution and licence boundaries; none is a verified VAG repair record or RU/EAEU fitment.
 ### OBDex generic DTC refresh and P3 range guard — 2026-11-08
