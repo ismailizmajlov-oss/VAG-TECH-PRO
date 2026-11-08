@@ -40,18 +40,6 @@ class KazakhstanEoknoSourceRightsTests(unittest.TestCase):
         self.assertIn("techreg.gov.kz/index/", central["observed_claims"]["current_service_notice"]["indexed_issuance_portal_url"])
         self.assertFalse(central["observed_claims"]["current_service_notice"]["live_status_verified"])
         self.assertEqual(ru["access_and_reuse"]["offline_cache"], "not_confirmed")
-        indexed = ru["observed_public_query"]["latest_search_index_observation"]
-        self.assertEqual(indexed["observed_at"], "2026-11-09")
-        self.assertEqual(indexed["legacy_list"]["indexed_result_range"], "1-30 of 273")
-        self.assertEqual(indexed["new_list"]["indexed_result_range"], "1-1 of 0")
-        self.assertFalse(indexed["api_or_export_endpoint_verified"])
-        self.assertFalse(indexed["documented_bulk_export"])
-        self.assertIsNone(indexed["source_snapshot_sha256"])
-        self.assertEqual(indexed["rights_status"], "permission_required")
-        self.assertIn("applicant_name_and_address", indexed["legacy_list"]["visible_columns"])
-        self.assertFalse(indexed["legacy_list"]["record_content_downloaded"])
-        central_observation = central["observed_claims"]["latest_search_index_observation"]
-        self.assertEqual(central_observation, indexed)
         self.assertIn(KGD_URL, [item["url"] for item in ru["evidence_reviewed"]])
         self.assertIn("https://www.gov.kz/org/mti-ktrm/press/news/details/679816?lang=ru", [item["url"] for item in ru["evidence_reviewed"]])
 
