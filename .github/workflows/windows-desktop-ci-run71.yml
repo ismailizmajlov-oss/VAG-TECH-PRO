@@ -856,7 +856,8 @@ jobs:
           $patchHash = (Get-FileHash -LiteralPath "apply-vehiclesdb-revision-manifest-run89.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
           $evidencePath = "desktop-source/data/research/vehiclesdb-vag-identity/desktop-test-revision-verification.json"
           $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
-          if ($evidence.status -ne "desktop_test_revision_bound_to_manifest" -or $evidence.source_revision -ne "v2026.10.4" -or $evidence.data_license -ne "CC-BY-4.0" -or $evidence.market_scope -ne "foreign_market_presence_only" -or $evidence.exact_fitment -ne $false -or $evidence.ru_evidence_present -ne $false) { throw "Run89 VehiclesDB evidence failed the foreign-market candidate-only gate" }
+          $vehiclesManifest = Get-Content -LiteralPath "desktop-source/data/research/vehiclesdb-vag-identity/manifest.json" -Raw | ConvertFrom-Json
+          if ($evidence.status -ne "desktop_test_revision_bound_to_manifest" -or $evidence.source_revision -ne $vehiclesManifest.source_revision -or $evidence.data_license -ne "CC-BY-4.0" -or $evidence.market_scope -ne "foreign_market_presence_only" -or $evidence.exact_fitment -ne $false -or $evidence.ru_evidence_present -ne $false) { throw "Run89 VehiclesDB evidence failed the foreign-market candidate-only gate" }
           "vehiclesdb_test_revision=$($evidence.source_revision); license=CC-BY-4.0; market=foreign_market_presence_only; exact_fitment=none; patch_sha256=$patchHash; manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)
