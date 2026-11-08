@@ -21,6 +21,7 @@ class KbaApprovalDesktopWorkflowContractTests(unittest.TestCase):
         self.assertIn("--verify --xlsx $xlsx --source-manifest $sourceManifest --out $rebuiltDir", workflow)
         self.assertIn("kba_approval_builder_sha256", workflow)
         self.assertIn("ConvertFrom-Json -AsHashtable", workflow)
+        self.assertIn("caseDistinctLabels", workflow)
         self.assertIn("Integrate KBA DE whole-vehicle approval metadata into offline desktop", workflow)
         self.assertIn("integrate-kba-de-approval-research-pack.cjs", workflow)
         self.assertIn("apply-kba-de-approval-research-verification-run1.cjs", workflow)
