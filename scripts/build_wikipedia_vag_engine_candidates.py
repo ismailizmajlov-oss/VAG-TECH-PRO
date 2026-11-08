@@ -138,8 +138,13 @@ class EngineCodeHTMLParser(HTMLParser):
         texts = [cell["text"] for cell in cells]
         labels = [index for index, text in enumerate(texts) if is_engine_code_label(text)]
         if labels:
-            values = [texts[index] for index in range(len(texts)) if index not in labels]
-            if values and any(extract_codes(value) for value in values):
+            value_indexes = [index for index in range(len(texts)) if index not in labels]
+            values = [texts[index] for index in value_indexes]
+            value_cells = [cells[index] for index in value_indexes]
+            # A header row has only TH cells; do not misread words such as "Power"
+            # as codes. A labelled TH/TD data row can still emit its TD value.
+            has_data_cell = any(cell["tag"] == "td" for cell in value_cells)
+            if has_data_cell and values and any(extract_codes(value) for value in values):
                 self._emit(cells, values, row_number)
             else:
                 self.engine_code_columns = set(labels)
