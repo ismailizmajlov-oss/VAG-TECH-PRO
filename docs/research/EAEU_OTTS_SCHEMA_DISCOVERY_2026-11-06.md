@@ -40,6 +40,10 @@ Decision No. 225 paragraph 8 lists OTTS/OTSH register fields such as make, comme
 
 The EEC's 2023 report on the temporary registry pilot also records that the earlier XML-submission mechanism did not provide machine-readable export from the unified register. This is historical evidence, not proof that no newer endpoint exists: https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf.
 
+## 2026-11-08 amendment cross-check
+
+The amended Order 2038 field list was rechecked on 2026-11-08 against the secondary republication. Internal FGIS Annex 1 now includes field 86 (resumption reason) and field 87 (resumption date). Public Annex 2 uses field 23 for resumption date and field 24 for resumption reason; public Annex 2 fields 27–28 separately describe early termination based on a cancellation notice. The importer accepts only the public Annex 2 namespace, so the internal 86/87 fields are retained in the source map but are not accepted as interchangeable aliases. The primary signed order and official public search endpoint remain unresolved; no data-reuse permission is inferred.
+
 ## Import and applicability rules
 
 The new scripts/import_eaeu_otts_registry_export.py parser is a fail-closed path for a future authorized XML export:
