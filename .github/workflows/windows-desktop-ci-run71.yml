@@ -27,6 +27,7 @@ on:
       - "tests/test_astra_targa_emissionen_source_rights.py"
       - "scripts/integrate-rdw-vag-research-pack.cjs"
       - ".github/workflows/build-kba-de-vag-stock-research-pack.yml"
+      - ".github/workflows/build-kba-de-vag-approval-research-pack.yml"
       - ".github/workflows/probe-kba-open-data.yml"
       - "scripts/build_kba_de_vag_stock_research_pack.py"
       - "scripts/probe_kba_open_data.py"
@@ -155,6 +156,17 @@ on:
       - "tests/test_astra_targa_emissionen_source_rights.py"
       - "scripts/integrate-rdw-vag-research-pack.cjs"
       - ".github/workflows/build-kba-de-vag-stock-research-pack.yml"
+      - ".github/workflows/build-kba-de-vag-approval-research-pack.yml"
+      - "scripts/integrate-kba-de-approval-research-pack.cjs"
+      - "scripts/apply-kba-de-approval-research-verification-run1.cjs"
+      - "desktop/kba-de-approval-research-db.cjs"
+      - "desktop/tests/kba-de-approval-research-db.test.cjs"
+      - "desktop/tests/kba-de-approval-ui-contract.test.cjs"
+      - "desktop/scripts/verify-kba-de-approval-research-pack.cjs"
+      - "tests/kba-approval-pack-integration-contract.test.cjs"
+      - "tests/kba-approval-verifier-patch.test.cjs"
+      - "tests/test_kba_approval_desktop_workflow_contract.py"
+      - "docs/research/KBA_DE_VAG_APPROVAL_DESKTOP_INTEGRATION_2026-11-08.md"
       - ".github/workflows/probe-kba-open-data.yml"
       - "scripts/build_kba_de_vag_stock_research_pack.py"
       - "scripts/probe_kba_open_data.py"
@@ -342,6 +354,9 @@ jobs:
           python -m unittest discover -s tests -p "test_kba_de_vag_stock_research_pack.py" -v
           if ($LASTEXITCODE -ne 0) { throw "KBA SQLite research-pack tests failed." }
           python tests/test_kba_germany_open_data_source_rights.py
+          python tests/test_kba_approval_desktop_workflow_contract.py
+          node --test tests/kba-approval-pack-integration-contract.test.cjs tests/kba-approval-verifier-patch.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "KBA approval desktop integration contract tests failed." }
           if ($LASTEXITCODE -ne 0) { throw "KBA published licence/source-rights tests failed." }
           node --test tests/kba-pack-integration-contract.test.cjs
           if ($LASTEXITCODE -ne 0) { throw "KBA desktop integration contract tests failed." }
@@ -1631,6 +1646,93 @@ jobs:
             Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
           }
           "kba_de_vag_stock=run${{ steps.kba-pack.outputs.run_number }}/${{ steps.kba-pack.outputs.run_id }}; artifact_sha256=${{ steps.kba-pack.outputs.artifact_sha256 }}; scope=DE; precision=aggregate_stock_observation; research_pack_ingested=true; product_database_ingested=false; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+      - name: Resolve latest KBA DE whole-vehicle approval research pack run
+        id: kba-approval-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-kba-de-vag-approval-research-pack.yml/runs?branch=main&per_page=100"
+          $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get
+          $run = @($response.workflow_runs | Where-Object { $_.head_branch -eq "main" -and $_.event -in @("push","workflow_dispatch") } | Sort-Object run_number -Descending | Select-Object -First 1) | Select-Object -First 1
+          if (-not $run) { throw "No KBA DE whole-vehicle approval research-pack run exists; refusing stale fallback." }
+          $deadline = (Get-Date).AddMinutes(45)
+          while ($run.status -ne "completed" -and (Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 20
+            $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)" -Headers $headers -Method Get
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "Latest KBA DE approval research-pack run did not complete successfully; refusing stale artifact." }
+          $artifactUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts"
+          $artifactResponse = Invoke-RestMethod -Uri $artifactUri -Headers $headers -Method Get
+          $artifactName = "kba-de-vag-approval-research-pack-$($run.id)"
+          $artifact = @($artifactResponse.artifacts | Where-Object { $_.name -eq $artifactName -and $_.expired -eq $false } | Select-Object -First 1)
+          if (-not $artifact) { throw "Latest successful KBA approval run has no unexpired verified pack artifact." }
+          $digest = ([string]$artifact[0].digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($digest -notmatch "^[a-f0-9]{64}$") { throw "KBA approval artifact SHA-256 is invalid." }
+          "run_id=$($run.id)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "KBA DE approval pack source run: #$($run.run_number) / $($run.id)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "KBA approval artifact SHA-256: $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download verified KBA DE whole-vehicle approval SQLite research pack
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: kba-de-vag-approval-research-pack-${{ steps.kba-approval-pack.outputs.run_id }}
+          path: ${{ runner.temp }}/vag-tech-pro-kba-approval-pack
+          run-id: ${{ steps.kba-approval-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Integrate KBA DE whole-vehicle approval metadata into offline desktop
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-kba-approval-pack"
+          node --check scripts/integrate-kba-de-approval-research-pack.cjs
+          node scripts/integrate-kba-de-approval-research-pack.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id ${{ steps.kba-approval-pack.outputs.run_id }} --source-run-number ${{ steps.kba-approval-pack.outputs.run_number }} --artifact-sha256 ${{ steps.kba-approval-pack.outputs.artifact_sha256 }} 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/kba-approval-desktop-integration.log"
+          if ($LASTEXITCODE -ne 0) { throw "KBA DE approval research-pack integration failed." }
+          node --check scripts/apply-kba-de-approval-research-verification-run1.cjs
+          node scripts/apply-kba-de-approval-research-verification-run1.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/kba-approval-verifier-patch.log"
+          if ($LASTEXITCODE -ne 0) { throw "KBA DE approval research verifier patch failed." }
+          node --test desktop-source/tests/kba-de-approval-research-db.test.cjs desktop-source/tests/kba-de-approval-ui-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/kba-approval-desktop-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "KBA DE approval reader/UI contract tests failed." }
+          node desktop-source/scripts/verify-kba-de-approval-research-pack.cjs desktop-source/data/research 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/kba-approval-desktop-verify.log"
+          if ($LASTEXITCODE -ne 0) { throw "KBA DE approval installed research-pack verification failed." }
+          node --test desktop-source/tests/local-research-packs.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/kba-approval-local-research-verifier-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "KBA DE approval central local-research verifier regression failed." }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $metadataFiles = @(
+            "data/research/manifest.json",
+            "data/research/kba-de-vag-type-approval-research/manifest.json",
+            "data/research/kba-de-vag-type-approval-research/kba-de-vag-approvals.sqlite",
+            "data/research/kba-de-vag-type-approval-research/source-manifest.json",
+            "data/research/kba-de-vag-type-approval-research/source-snapshot.xlsx",
+            "data/research/kba-de-vag-type-approval-research/build-report.json",
+            "data/research/kba-de-vag-type-approval-research/LICENSE.txt",
+            "data/research/kba-de-vag-type-approval-research/ATTRIBUTION.md",
+            "data/research/kba-de-vag-type-approval-research/RIGHTS-EVIDENCE.json",
+            "data/research/kba-de-vag-type-approval-research/desktop-integration-report.json",
+            "lib/kba-de-approval-research-db.cjs",
+            "tests/kba-de-approval-research-db.test.cjs",
+            "tests/kba-de-approval-ui-contract.test.cjs",
+            "scripts/verify-kba-de-approval-research-pack.cjs",
+            "scripts/verify-local-research-packs.cjs",
+            "tests/local-research-packs.test.cjs",
+            "components/local-research-catalog.tsx",
+            "app/api/local-research/route.ts",
+            "scripts/windows-installer-lifecycle.ps1",
+            "package.json"
+          )
+          foreach ($relative in $metadataFiles) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          "kba_de_whole_vehicle_approvals=run${{ steps.kba-approval-pack.outputs.run_number }}/${{ steps.kba-approval-pack.outputs.run_id }}; artifact_sha256=${{ steps.kba-approval-pack.outputs.artifact_sha256 }}; scope=DE; precision=type_approval_document_metadata_only; records=918; research_pack_ingested=true; product_database_ingested=false; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false; source_xlsx_retained=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Render typed technical payloads in offline workspace (run79)
         shell: pwsh
