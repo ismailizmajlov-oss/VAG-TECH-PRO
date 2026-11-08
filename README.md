@@ -19,6 +19,7 @@ The technical schema and desktop workflows exist, but the presence of a table or
 ## Evidence and safety rules
 
 - Generic SAE/ISO OBD-II records are never represented as VAG-specific.
+- SAE J2012/J2012DA is copyrighted: only bibliographic metadata and conservative namespace-boundary facts are recorded, not standard text, definition tables or the current licensed digital-annex allocation. The normalized importer rejects unresolved/reserved P35xx–P39xx, B3xxx, C3xxx and U3xxx ranges; the upstream OBDex U3xxx family remains isolated in its research-only snapshot.
 - Community signals, model labels, generation links and manufacturer-labelled DTC candidates remain research candidates until their provenance and applicability are independently verified.
 - Engine codes, gearbox codes, ECU identities and exact pairings are never inferred from descriptive engine labels or model-year overlap.
 - Critical repair and diagnostic records require source revision, rights evidence, market, model/generation/year, exact engine/transmission/ECU relationships, applicability precision and technical review.
@@ -75,7 +76,7 @@ The current consolidated EEC Decision No. 232 OTTS/OTSH Annex 1 form was reviewe
 
 A separate Rosstandart recall-campaign open-data source has been identified at easy.gost.ru. Historical public statements describe the register as open data for non-commercial services, and a 2023 webinar report describes reuse by business services. The current official dataset page and archive timed out during review on 2026-11-06. A separate metadata-only Windows CI probe [run 5](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42205049421) also failed to connect to both official URLs (WinError 10060); it downloaded no data file and found no current file or terms link. The current file schema and dataset-linked terms were therefore not retrieved. It is registered as a high-priority RU candidate only: no VIN rows, repair-completion/dealer fields or campaign text have been imported, and no snapshot hash is claimed. Recall remedy text must not be represented as a factory workshop procedure. See [the Rosstandart recall-campaign rights review](docs/research/ROSSTANDART_RECALL_CAMPAIGNS_OPEN_DATA_REVIEW_2026-11-06.md).
 
-The current central source register contains 54 entries and the Russian/EAEU register contains 13 sources; both retain explicit access, rights, market and import boundaries.
+The current central source register contains 55 entries and the Russian/EAEU register contains 13 sources; both retain explicit access, rights, market and import boundaries.
 
 A new Kyrgyz Single Window public vehicle-approval registry was reviewed on 2026-11-07. The operator describes a no-login pilot public registry for OTTS/OTSH and the separate cert.trade.kg landing page shows one-OTTS and zero-OTSH UI counters, which are not verified public-register corpus counts. The related certification application form includes engine characteristics, but this is not evidence that those fields are public-record fields. No dataset-specific reuse licence, documented API or bulk-export contract was found; the source is registered as permission-required, no records were downloaded and no hash is claimed. See the [Kyrgyz Single Window public registry review](docs/research/KYRGYZ_SINGLE_WINDOW_PUBLIC_REGISTRY_REVIEW_2026-11-07.md).
 
