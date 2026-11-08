@@ -47,7 +47,7 @@ function apply(root){
    '  const result = core.importPackage(dbPath, packageOf([valid], { package_id: "run86-generic-boundary-valid" }));','  assert.equal(result.inserted, 1);',
    '  const invalidPayload = { code: "P1A00", title: "Manufacturer-controlled range", namespace: "SAE/ISO" };',
    '  const invalid = { ...valid, natural_key: "generic:P1A00", source_record_key: "obd:P1A00", title: "P1A00", payload: invalidPayload, record_sha256: core.sha256(invalidPayload) };',
-   '  assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run86-generic-boundary-invalid" })), /outside generic SAE\\\\/ISO OBD-II ranges/);',
+   '  assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run86-generic-boundary-invalid" })), /outside generic SAE\\/ISO OBD-II ranges/);',
    '  const db = new DatabaseSync(dbPath, { readOnly: true });','  assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 1);',
    '  assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 1);','  db.close();','});',"",
    'test("run86 rejects generic DTC ranges in VAG-specific records", (t) => {','  const { dbPath } = fixture(t);','  core.registerSource(dbPath, source());',
