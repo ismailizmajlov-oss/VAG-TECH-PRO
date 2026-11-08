@@ -26,11 +26,11 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         generic=re.compile(ranges["generic_sae_iso"]["pattern"])
         manufacturer=re.compile(ranges["manufacturer_controlled"]["pattern"])
         unresolved=re.compile(ranges["unresolved_reserved"]["pattern"])
-        for code in ("P0300","P2ABC","P34C8","B0ABC","C0ABC","U0ABC"):
+        for code in ("P0300","P2ABC","P34C8","B0ABC","C0ABC","U0ABC","U3ABC"):
             self.assertTrue(generic.fullmatch(code),code)
         for code in ("P1ABC","P30AB","P33AB","B1ABC","B2ABC","C1ABC","C2ABC","U1ABC","U2ABC"):
             self.assertTrue(manufacturer.fullmatch(code),code)
-        for code in ("P35AB","P39AB","U3ABC","B3ABC","C3ABC"):
+        for code in ("P35AB","P39AB","B3ABC","C3ABC"):
             self.assertTrue(unresolved.fullmatch(code),code)
             self.assertFalse(generic.fullmatch(code),code)
             self.assertFalse(manufacturer.fullmatch(code),code)
@@ -47,7 +47,7 @@ class DtcNamespacePolicyTests(unittest.TestCase):
     def test_sql_triggers_do_not_admit_quarantined_ranges(self):
         self.assertIn("U0[0-9A-F][0-9A-F][0-9A-F]",self.sql)
         self.assertIn("P34[0-9A-F][0-9A-F]",self.sql)
-        self.assertNotIn("U3[0-9A-F]",self.sql)
+        self.assertIn("U3[0-9A-F]",self.sql)
         self.assertNotIn("P3[5-9]",self.sql)
         self.assertIn("P3[0-3]",self.sql)
         self.assertIn("B[1-2]",self.sql)
