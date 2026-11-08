@@ -38,7 +38,7 @@ function patch(desktopRoot) {
 
   const stockBinding = '  const kbaDe = byId["kba-de-vag-stock-research"];';
   const approvalBinding = '  const kbaApproval = byId["kba-de-vag-type-approval-research"];';
-  verifier = replaceExactly(verifier, stockBinding, stockBinding + "\n" + approvalBinding, "KBA approval pack binding");
+  if (!verifier.includes(approvalBinding)) verifier = replaceExactly(verifier, stockBinding, stockBinding + "\n" + approvalBinding, "KBA approval pack binding");
 
   const requiredLine = verifier.split("\n").find((line) =>
     line.includes("assert(ob && vag && obdb && vehiclesdb && mechanicdb && wikidata") &&
