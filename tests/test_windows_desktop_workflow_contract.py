@@ -124,6 +124,35 @@ def main() -> None:
         raise SystemExit("Kyrgyz public-registry review must trigger both push and pull-request validation")
     if text.count("tests/test_russian_eaeu_otts_manifest.py") < 3:
         raise SystemExit("Russian/EAEU source-manifest tests must run and be covered by both push/PR path filters")
+    armenia_rights_test = "tests/test_armstandard_registry_rights_gate.py"
+    if text.count(armenia_rights_test) < 3 or "python tests/test_armstandard_registry_rights_gate.py" not in text:
+        raise SystemExit("Armenian OTTS rights quarantine test must run and be covered by both push/PR path filters")
+    if text.index("python tests/test_armstandard_registry_rights_gate.py") > text.index("$syncOutput = python scripts/sync_vag_source_register.py"):
+        raise SystemExit("Armenian OTTS rights quarantine test must run before source-register synchronization")
+
+    research_manifest_contract = (
+        '$researchManifestPath = "desktop-source/data/research/manifest.json"',
+        '$researchPackIds = @($researchManifest.packs | ForEach-Object { [string]$_.id })',
+        '$researchManifestEntries = $researchPackIds.Count',
+        '$researchManifestSha = (Get-FileHash -LiteralPath $researchManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()',
+        'research_manifest_entries=$researchManifestEntries; research_manifest_sha256=$researchManifestSha;',
+    )
+    missing_research_manifest_contract = [marker for marker in research_manifest_contract if marker not in text]
+    if missing_research_manifest_contract or "research_manifest_entries=10;" in text:
+        raise SystemExit(f"Windows source audit must derive research pack counts and hash from the current manifest: {missing_research_manifest_contract}")
+
+    generation_count_contract = (
+        "members=$($evidence.counts.member_entities)",
+        "model_member_links=$($evidence.counts.model_member_links)",
+        "source_bindings=$($evidence.counts.source_bindings)",
+        "models_with_members=$($evidence.counts.models_with_members)",
+        "manufacturers=$($evidence.counts.manufacturers)",
+        "russian_labels=$($evidence.counts.russian_labels)",
+        "date_statements=$($evidence.counts.date_statements)",
+    )
+    missing_generation_count_contract = [marker for marker in generation_count_contract if marker not in text]
+    if missing_generation_count_contract or "members=9; model_member_links=10; source_bindings=14;" in text:
+        raise SystemExit(f"Windows source audit must print the actual Wikidata generation evidence counts: {missing_generation_count_contract}")
     if text.count("tests/test_kba_germany_open_data_source_rights.py") < 3 or "python tests/test_kba_germany_open_data_source_rights.py" not in text:
         raise SystemExit("KBA source-rights test must run and be covered by both push/PR path filters")
     if "python tests/test_decode_tr_source_rights.py" not in text:
