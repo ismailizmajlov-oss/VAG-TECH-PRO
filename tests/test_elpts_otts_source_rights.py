@@ -120,6 +120,28 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         self.assertEqual(make["applicability_precision"], "make_name_taxonomy_candidate_only; no model_or_powertrain_fitment_verified")
 
 
+    def test_eec_official_temporary_register_link_is_recorded_without_rights_upgrade(self):
+        registry = json.loads(REGISTER.read_text(encoding="utf-8"))
+        eaeu = next(
+            source for source in registry["sources"]
+            if source["source_id"] == "eaeu-otts-unified-register-public-portal"
+        )
+        observation = eaeu["access"]["official_temporary_register_page_observation_2026_11_09"]
+        self.assertEqual(observation["official_page_url"], "https://eec.eaeunion.org/comission/department/deptexreg/tr/temprorary_otts.php")
+        self.assertEqual(observation["linked_otts_url"], "https://portal.elpts.ru/ncher/otts")
+        self.assertEqual(observation["observed_at"], "2026-11-09")
+        self.assertEqual(observation["destination_fetch_status"], "502_bad_gateway_on_2026_11_09")
+        self.assertFalse(observation["destination_content_verified"])
+        self.assertFalse(observation["record_rows_observed"])
+        self.assertFalse(observation["export_or_api_verified"])
+        self.assertFalse(observation["data_downloaded"])
+        self.assertFalse(observation["data_ingested"])
+        self.assertFalse(observation["product_import_allowed"])
+        self.assertIsNone(observation["source_snapshot_sha256"])
+        self.assertEqual(eaeu["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(eaeu["rights"]["bulk_reuse_allowed"], "not_established")
+        self.assertEqual(eaeu["rights"]["offline_cache_allowed"], "not_established")
+        self.assertEqual(eaeu["rights"]["display_and_redistribution_allowed"], "not_established")
 
 if __name__ == "__main__":
     unittest.main()
