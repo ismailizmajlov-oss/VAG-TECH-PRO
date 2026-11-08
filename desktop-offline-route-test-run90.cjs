@@ -30,8 +30,9 @@ test("dedicated desktop route has no cloud authentication or Supabase dependency
   assert.match(read("components/local-offline-workspace.tsx"), /\/api\/local-core/);
   assert.match(read("components/local-data-admin.tsx"), /\/api\/local-core/);
   assert.match(read("components/local-research-catalog.tsx"), /\/api\/local-research/);
+  assert.match(route, /className="muted"/);
   const css = read("app/globals.css");
-  assert.match(css, /\.desktop-status\{/);
+  assert.match(css, /\.muted/);
 });
 
 test("offline desktop navigation exposes all repair modules and local data workflows", () => {
