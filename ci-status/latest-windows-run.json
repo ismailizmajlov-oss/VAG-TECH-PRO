@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-08T07:40:54Z",
+  "recorded_at_utc": "2026-11-08T09:42:00Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run87",
   "run_id": 42457978012,
   "run_number": 841,
@@ -73,7 +73,7 @@
     ]
   },
   "release_ready": false,
-  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle on tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77. It passed desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification, both NSIS x64 builds, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The Windows Server 2022 lifecycle also passed. Main now contains post-run metadata-only additions to the central and Russian/EAEU source registers for an Armenian national OTTS public listing; no desktop application code changed, but these source-register changes have not yet been validated by a newer Windows/source-rights CI run. Regression coverage is proposed in PR #56, with no PR-triggered workflow run observed yet. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers.",
+  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle on tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77. It passed desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification, both NSIS x64 builds, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The Windows Server 2022 lifecycle also passed. Main now contains post-run metadata-only additions to the central and Russian/EAEU source registers for an Armenian national OTTS public listing; no desktop application code changed, but these source-register changes have not yet been validated by a newer Windows/source-rights CI run. PR #56 was merged as b7f267662fbe1764c549ebaecaf8f0f693b37e3d. Thirteen cross-file contract assertions passed against the current central/regional manifests and Armenian rights review; no GitHub Actions run is exposed for the merge commit, so the merged Python regression test remains pending CI revalidation. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers.",
   "related_validation_workflows": [
     {
       "name": "Russian EAEU and VAG OEM source contracts",
@@ -125,11 +125,28 @@
   "armstandard_regression_test_pr": {
     "number": 56,
     "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/pull/56",
-    "head_sha": "b89832a0d6ef887ac0572eb19c1ad12e282dc4f1",
-    "state": "open",
+    "head_sha": "e4332adbd76974da94581551718707bae071144e",
+    "state": "merged",
+    "merge_commit_sha": "b7f267662fbe1764c549ebaecaf8f0f693b37e3d",
     "ci_run_observed": false,
-    "validation_status": "pending"
+    "validation_status": "merged; 13/13 cross-file contract assertions passed; Windows/source-rights CI revalidation pending"
   },
   "source_registry_state_head": "4fc262343564a9962295314b9d68fb21f709ddb8",
-  "source_registry_state_note": "The central and regional source-register metadata changes were present through this main revision; subsequent commits update documentation and CI status only."
+  "source_registry_state_note": "The central and regional source-register metadata changes were present through this main revision; subsequent commits update documentation and CI status only.",
+  "post_run_test_changes": [
+    {
+      "commit": "b7f267662fbe1764c549ebaecaf8f0f693b37e3d",
+      "pull_request": 56,
+      "path": "tests/test_armstandard_registry_rights_gate.py",
+      "change": "Adds three regression tests that keep the Armenian national OTTS public listing AM/EAEU metadata-only, without claiming PDF hashes, reuse rights or VAG/RU fitment; review-text assertions are case-insensitive.",
+      "manual_validation": {
+        "checks_passed": 13,
+        "checks_total": 13,
+        "scope": "current central source register, regional OTTS source register and Armenian rights review document",
+        "python_unittest_executed": false,
+        "github_actions_run_observed": false
+      },
+      "windows_ci_validation": "pending"
+    }
+  ]
 }
