@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T11:26:00Z",
+  "updated_at": "2026-11-08T12:42:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5077,16 +5077,62 @@
         "DE"
       ],
       "snapshot": {
-        "status": "metadata_reviewed_resource_unavailable",
+        "status": "resource_acquired_schema_available",
         "catalog_published_at": "2023-03-17",
         "catalog_last_modified_at": "2024-04-11",
         "coverage_start": "2019-01-01",
         "resource_format": "XLSX",
-        "resource_access_status": "HTTP_503_on_2026-11-07",
-        "source_revision": "GovData metadata last modified 2024-04-11; actual file revision unknown",
-        "downloaded": false,
-        "file_sha256": null,
-        "source_snapshot_sha256": null
+        "resource_access_status": "HTTP_200_on_2026-11-08",
+        "source_revision": "last-modified:2026-08-17T04:28:44Z;etag:70d6df0340b32bbd12e01b41e42ba210",
+        "downloaded": true,
+        "file_sha256": "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4",
+        "source_snapshot_sha256": "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4",
+        "byte_size": 909912,
+        "last_modified": "2026-08-17T04:28:44Z",
+        "etag": "\"70d6df0340b32bbd12e01b41e42ba210\"",
+        "probed_at_utc": "2026-11-08T12:41:44.152400+00:00",
+        "probe_run_id": 42481409966,
+        "probe_artifact_id": 13618031218,
+        "probe_artifact_sha256": "ae4bf438a6b6802446230bffd97f956742834ce823e4892ecc6f72ab79123e68",
+        "sheet_count": 1,
+        "sheet_name": "Tabelle1",
+        "header_row_number": 3,
+        "header_status": "verified_by_openpyxl_and_independent_probe",
+        "header": [
+          "Hersteller",
+          "Handelsname",
+          "Typbezeichnung",
+          "Genehmigungsobjekt",
+          "Typgenehmigungsnummer",
+          "Technischer Dienst",
+          "Vorgangsart",
+          "Datum der Genehmigung",
+          "Mitgliedstaat Typgenehmigung(en) Emissionen",
+          null,
+          "Technischer Dienst Emission",
+          null,
+          "Zuordnung Handelsnamen zu Typgenehmigung Emissionen",
+          "Zuordnung Handelsnamen zu Typgenehmigung Emissionen"
+        ],
+        "source_row_count": 3782,
+        "source_manufacturer_label_count": 116,
+        "vag_related_label_candidate_count": 918,
+        "vag_related_label_candidate_counts": {
+          "Volkswagen AG": 450,
+          "Audi AG": 353,
+          "AUDI AG": 28,
+          "Audi Sport GmbH": 52,
+          "Audi_Sport": 22,
+          "Audi Sport": 1,
+          "SEAT S.A.": 8,
+          "Seat S.A.": 4
+        },
+        "excluded_source_label_candidate_counts": {
+          "Bugatti Automobiles S.A.S.": 14
+        },
+        "distinct_approval_number_candidates": 918,
+        "approval_date_min": "2019-01-08",
+        "approval_date_max": "2026-06-30"
       },
       "data_products": {
         "whole_vehicle_type_approval_list": {
@@ -5140,13 +5186,16 @@
         "ecu_dtc_repair_applicability": false,
         "diagnostic_execution_allowed": false
       },
-      "verification_status": "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified",
+      "verification_status": "resource_acquired_schema_verified_exact_manufacturer_label_filter_reviewed_research_only",
       "product_import_allowed": false,
       "data_ingested": false,
-      "source_revision": "GovData metadata last modified 2024-04-11; actual file revision unknown",
-      "source_snapshot_sha256": null,
+      "source_revision": "last-modified:2026-08-17T04:28:44Z;etag:70d6df0340b32bbd12e01b41e42ba210",
+      "source_snapshot_sha256": "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4",
       "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
-      "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The XLSX resource returned HTTP 503 on 2026-11-07; no bytes, rows or hash were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. This source cannot establish engine/gearbox pairing, model year, generation, RU/EAEU applicability or repair data."
+      "project_decision": "The official KBA XLSX is now retrievable and its one-sheet schema is verified. A separate DE-only research pack may be built from 918 rows matching eight exact source manufacturer labels. This remains approval metadata research only: no model-year, generation, engine/gearbox, ECU, DTC, repair, individual-vehicle or RU/EAEU applicability is inferred. Bugatti Automobiles S.A.S. is excluded from the VAG-related candidate filter; Audi Sport labels are not normalized to Audi AG.",
+      "research_pack_built": false,
+      "research_pack_ingested": false,
+      "evidence_status": "KBA XLSX acquired on 2026-11-08; HTTP 200; Last-Modified 2026-08-17; ETag and SHA-256 pinned; one-sheet schema verified; 3,782 source rows and 918 rows under eight exact VAG-related manufacturer-label candidates. No model/generation/powertrain/repair or RU/EAEU applicability."
     },
     {
       "source_id": "kba-de-fz-hersteller-handelsnamen-pkw",

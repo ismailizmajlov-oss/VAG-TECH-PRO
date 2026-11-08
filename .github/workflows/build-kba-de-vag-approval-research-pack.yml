@@ -1,0 +1,57 @@
+name: Build KBA DE VAG type-approval research pack
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-kba-de-vag-approval-research-pack.yml"
+      - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
+      - "scripts/probe_kba_whole_vehicle_approvals.py"
+      - "scripts/verify_kba_probe_manifest.py"
+      - "scripts/build_kba_de_vag_approval_research_pack.py"
+      - "tests/test_kba_whole_vehicle_approvals_probe.py"
+      - "tests/test_kba_de_vag_approval_pack.py"
+permissions:
+  contents: read
+concurrency:
+  group: kba-de-vag-approval-research-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build-research-pack:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - name: Checkout pinned source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned workbook parser
+        run: python -m pip install --disable-pip-version-check openpyxl==3.1.5
+      - name: Run KBA source-probe regression tests
+        run: python -m unittest discover -s tests -p "test_kba_whole_vehicle_approvals_probe.py" -v
+      - name: Run KBA approval-pack regression tests
+        run: python -m unittest discover -s tests -p "test_kba_de_vag_approval_pack.py" -v
+      - name: Retrieve and validate official KBA workbook
+        run: python scripts/probe_kba_whole_vehicle_approvals.py --out kba-probe-out
+      - name: Match fresh probe to pinned source manifest
+        run: python scripts/verify_kba_probe_manifest.py --probe kba-probe-out/probe-report.json --source-manifest data/source-manifests/kba-de-whole-vehicle-type-approvals.json
+      - name: Build separate DE-only research SQLite
+        run: python scripts/build_kba_de_vag_approval_research_pack.py --xlsx kba-probe-out/kba-whole-vehicle-type-approvals.xlsx --source-manifest data/source-manifests/kba-de-whole-vehicle-type-approvals.json --out kba-approval-pack
+      - name: Re-open and verify complete research pack
+        run: python scripts/build_kba_de_vag_approval_research_pack.py --verify --xlsx kba-probe-out/kba-whole-vehicle-type-approvals.xlsx --source-manifest data/source-manifests/kba-de-whole-vehicle-type-approvals.json --out kba-approval-pack
+      - name: Upload source probe evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: kba-public-source-probe-${{ github.run_id }}
+          path: kba-probe-out/**
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload verified DE research pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: kba-de-vag-approval-research-pack-${{ github.run_id }}
+          path: kba-approval-pack/**
+          if-no-files-found: error
+          retention-days: 14

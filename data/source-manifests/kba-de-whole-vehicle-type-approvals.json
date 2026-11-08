@@ -3,7 +3,7 @@
   "source_id": "kba-de-whole-vehicle-type-approvals",
   "publisher": "Kraftfahrt-Bundesamt (KBA), published via GovData/Mobilithek",
   "source_kind": "official_german_whole_vehicle_type_approval_register",
-  "reviewed_at": "2026-11-07",
+  "reviewed_at": "2026-11-08",
   "market_scope": [
     "DE"
   ],
@@ -11,16 +11,66 @@
   "resource_url": "https://www.kba.de/DE/Themen/Typgenehmigung/Informationen_TGV/Liste_erteilter_Typgenehmigungen/liste_typgenehmigungen_Excel.xlsx?__blob=publicationFile&v=13",
   "approval_jurisdiction": "KBA-issued whole-vehicle approvals for M1/N1; the catalogue also identifies the EU Member State issuing the corresponding emissions type approval.",
   "snapshot": {
-    "status": "metadata_reviewed_resource_unavailable",
+    "status": "resource_acquired_schema_available",
     "catalog_published_at": "2023-03-17",
     "catalog_last_modified_at": "2024-04-11",
     "coverage_start": "2019-01-01",
     "resource_format": "XLSX",
-    "resource_access_status": "HTTP_503_on_2026-11-07",
-    "source_revision": "GovData metadata last modified 2024-04-11; actual file revision unknown",
-    "downloaded": false,
-    "file_sha256": null,
-    "source_snapshot_sha256": null
+    "resource_access_status": "HTTP_200_on_2026-11-08",
+    "source_revision": "last-modified:2026-08-17T04:28:44Z;etag:70d6df0340b32bbd12e01b41e42ba210",
+    "downloaded": true,
+    "file_sha256": "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4",
+    "source_snapshot_sha256": "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4",
+    "byte_size": 909912,
+    "last_modified": "2026-08-17T04:28:44Z",
+    "etag": "\"70d6df0340b32bbd12e01b41e42ba210\"",
+    "probed_at_utc": "2026-11-08T12:41:44.152400+00:00",
+    "probe_run_id": 42481409966,
+    "probe_run_number": 13,
+    "probe_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42481409966",
+    "probe_artifact_id": 13618031218,
+    "probe_artifact_sha256": "ae4bf438a6b6802446230bffd97f956742834ce823e4892ecc6f72ab79123e68",
+    "probe_report_sha256": "abe7e6e357fa1bed3e020759bf822f96b99e634e4a7ede7f66ea726a6333a3b0",
+    "sheet_count": 1,
+    "sheet_name": "Tabelle1",
+    "header_row_number": 3,
+    "header_status": "verified_by_openpyxl_and_independent_probe",
+    "header": [
+      "Hersteller",
+      "Handelsname",
+      "Typbezeichnung",
+      "Genehmigungsobjekt",
+      "Typgenehmigungsnummer",
+      "Technischer Dienst",
+      "Vorgangsart",
+      "Datum der Genehmigung",
+      "Mitgliedstaat Typgenehmigung(en) Emissionen",
+      null,
+      "Technischer Dienst Emission",
+      null,
+      "Zuordnung Handelsnamen zu Typgenehmigung Emissionen",
+      "Zuordnung Handelsnamen zu Typgenehmigung Emissionen"
+    ],
+    "source_row_count": 3782,
+    "source_manufacturer_label_count": 116,
+    "vag_related_label_candidate_count": 918,
+    "vag_related_label_candidate_counts": {
+      "Volkswagen AG": 450,
+      "Audi AG": 353,
+      "AUDI AG": 28,
+      "Audi Sport GmbH": 52,
+      "Audi_Sport": 22,
+      "Audi Sport": 1,
+      "SEAT S.A.": 8,
+      "Seat S.A.": 4
+    },
+    "excluded_source_label_candidate_counts": {
+      "Bugatti Automobiles S.A.S.": 14
+    },
+    "distinct_approval_number_candidates": 918,
+    "approval_date_min": "2019-01-08",
+    "approval_date_max": "2026-06-30",
+    "workbook_title": "Liste der erteilten Typgenehmigungen Gesamtfahrzeuge der Klassen M1 und N1"
   },
   "data_products": {
     "whole_vehicle_type_approval_list": {
@@ -37,8 +87,26 @@
         "emissions_type_approval_member_state",
         "procedure_type"
       ],
-      "exact_column_schema_status": "not_verified_no_file_downloaded",
-      "update_frequency": "regular_interval_as_stated_by_KBA"
+      "exact_column_schema_status": "verified_by_downloaded_workbook_and_probe",
+      "update_frequency": "regular_interval_as_stated_by_KBA",
+      "exact_columns": [
+        "Hersteller",
+        "Handelsname",
+        "Typbezeichnung",
+        "Genehmigungsobjekt",
+        "Typgenehmigungsnummer",
+        "Technischer Dienst",
+        "Vorgangsart",
+        "Datum der Genehmigung",
+        "Mitgliedstaat Typgenehmigung(en) Emissionen",
+        null,
+        "Technischer Dienst Emission",
+        null,
+        "Zuordnung Handelsnamen zu Typgenehmigung Emissionen",
+        "Zuordnung Handelsnamen zu Typgenehmigung Emissionen"
+      ],
+      "source_row_count": 3782,
+      "vag_related_label_candidate_count": 918
     }
   },
   "rights": {
@@ -59,22 +127,26 @@
       "https://www.govdata.de/dl-de/by-2-0",
       "https://www.govdata.de/informationen/faq"
     ],
-    "evidence": "The GovData dataset detail page marks the dataset as freie Nutzung under DL-DE BY 2.0. The published licence permits commercial and non-commercial copying, display, modification, processing, transfer to third parties, combining with other datasets and integration into products, subject to attribution and a notice where data has been modified."
+    "evidence": "The GovData dataset detail page marks the dataset as freie Nutzung under DL-DE BY 2.0. The published licence permits commercial and non-commercial copying, display, modification, processing, transfer to third parties, combining with other datasets and integration into products, subject to attribution and a notice where data has been modified.",
+    "reviewed_at_utc": "2026-11-08T12:41:44.152400Z"
   },
   "field_status": {
-    "manufacturer_trade_name_type_designation_approval_number": "catalog_description_and_tags_only_columns_not_verified",
-    "variant_version_revision": "not_verified",
-    "engine_code": "not_provided_or_not_verified",
-    "gearbox_code": "not_provided_or_not_verified",
-    "engine_gearbox_pair": "not_provided_or_not_verified",
-    "model_year": "not_assumed",
+    "manufacturer_trade_name_type_designation_approval_number": "present_as_exact_source_columns_and_preserved_without_alias_normalization",
+    "emissions_type_approval_member_state": "present_as_exact_source_column",
+    "procedure_type": "present_as_exact_source_column",
+    "technical_service": "present_as_exact_source_column",
+    "variant_version_revision": "not_provided_as_separate_fields",
+    "engine_code": "not_provided",
+    "gearbox_code": "not_provided",
+    "engine_gearbox_pair": "not_provided",
+    "model_year": "not_assumed_from_approval_date",
     "generation": "not_assumed",
-    "ecu_dtc_repair_content": "not_claimed"
+    "ecu_dtc_repair_content": "not_provided"
   },
   "applicability_policy": {
     "market_scope": "DE KBA approval list only",
     "approval_level": "whole-vehicle approval list; not an individual vehicle build sheet",
-    "vag_make_filter": "must use exact source manufacturer values after acquisition; no fuzzy make mapping",
+    "vag_make_filter": "exact source-label allowlist only; 8 labels preserved verbatim; no fuzzy matching, case folding or alias normalization; Audi Sport corporate relation remains review-only; Bugatti Automobiles S.A.S. excluded from this VAG-related candidate pack.",
     "engine_gearbox_pair": "never infer or construct from approval-level fields",
     "model_year_generation": "not inferred",
     "individual_vehicle_fitment": false,
@@ -88,16 +160,17 @@
     "product_import_allowed": false,
     "data_ingested": false,
     "research_pack_allowed_after_resource_and_schema_review": true,
+    "research_pack_build_pending": true,
     "production_fitment": false,
     "ru_eaeu_applicability": false
   },
-  "verification_status": "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified",
+  "verification_status": "resource_acquired_schema_verified_exact_manufacturer_label_filter_reviewed_research_only",
   "product_import_allowed": false,
   "data_ingested": false,
-  "source_revision": "GovData metadata last modified 2024-04-11; actual file revision unknown",
-  "source_snapshot_sha256": null,
-  "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
-  "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The XLSX resource returned HTTP 503 on 2026-11-07; no bytes, rows or hash were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. This source cannot establish engine/gearbox pairing, model year, generation, RU/EAEU applicability or repair data.",
+  "source_revision": "last-modified:2026-08-17T04:28:44Z;etag:70d6df0340b32bbd12e01b41e42ba210",
+  "source_snapshot_sha256": "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4",
+  "hash_status": "Exact official KBA XLSX bytes SHA-256 verified; per-row canonical hashes are generated only in the separate DE research pack.",
+  "project_decision": "The official KBA XLSX is now retrievable and its one-sheet schema is verified. A separate DE-only research pack may be built from 918 rows matching eight exact source manufacturer labels. This remains approval metadata research only: no model-year, generation, engine/gearbox, ECU, DTC, repair, individual-vehicle or RU/EAEU applicability is inferred. Bugatti Automobiles S.A.S. is excluded from the VAG-related candidate filter; Audi Sport labels are not normalized to Audi AG.",
   "probe_request": {
     "requested_at_utc": "2026-11-08T12:38:32Z",
     "reason": "Recheck the official KBA XLSX after the 2026-11-07 HTTP 503 observation; the published DL-DE BY 2.0 licence already clears research-pack display, caching and redistribution subject to attribution.",
@@ -110,6 +183,10 @@
       "Filter Volkswagen Group manufacturers by exact source values only.",
       "Keep type approval, variant and version scope distinct; do not infer model year, generation, engine code, gearbox code or ECU.",
       "Create only a separate DE research pack after independent source-row provenance and field semantics review."
-    ]
+    ],
+    "status": "completed",
+    "completed_at_utc": "2026-11-08T12:41:44.152400+00:00",
+    "probe_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42481409966",
+    "result": "resource_acquired_schema_available"
   }
 }
