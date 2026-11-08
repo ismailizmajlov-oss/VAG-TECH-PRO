@@ -116,5 +116,33 @@ class SourceManifestBundleTests(unittest.TestCase):
             desktop=root/"desktop"; desktop.mkdir()
             with self.assertRaisesRegex(ValueError,"symlink"): sync(central,desktop)
 
+    def test_eaeu_nsi_vehicle_reference_objects_remain_metadata_only(self)->None:
+        central=ROOT/"data"/"source-manifests"/"vag-factory-source-register.json"
+        registry=json.loads(central.read_text(encoding="utf-8"))
+        matches=[item for item in registry["sources"] if item["source_id"]=="eaeu-nsi-rest-api"]
+        self.assertEqual(len(matches),1)
+        source=matches[0]
+        discovery=source["catalog_discovery"]
+        objects={item["object_code"]:item for item in discovery["objects"]}
+        self.assertEqual(set(objects),{"2001","2024","2030"})
+        self.assertEqual(objects["2030"]["observed_record_count"],3)
+        self.assertEqual(objects["2030"]["relevance"],"vehicle_passport_document_type_only")
+        self.assertEqual(objects["2001"]["observed_record_count"],10)
+        self.assertEqual(objects["2001"]["relevance"],"conformity_document_type_only")
+        self.assertEqual(objects["2024"]["observed_record_count"],41)
+        self.assertEqual(objects["2024"]["relevance"],"broad_transport_category_only")
+        self.assertFalse(discovery["endpoint_catalog_or_openapi_retrieved"])
+        self.assertFalse(discovery["endpoints_called"])
+        self.assertFalse(discovery["bounded_findings"]["dedicated_otts_otsh_dataset_confirmed"])
+        self.assertFalse(discovery["bounded_findings"]["factory_engine_codes"])
+        self.assertFalse(discovery["bounded_findings"]["factory_gearbox_codes"])
+        self.assertFalse(discovery["bounded_findings"]["engine_gearbox_pairs"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["rights"]["permission_status"],"not_obtained")
+        for key in ("commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed"):
+            self.assertFalse(source["rights"][key])
+
 if __name__=="__main__":
     unittest.main()
