@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T07:14:30Z",
+  "updated_at": "2026-11-08T08:30:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -6129,6 +6129,115 @@
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion",
       "applicability_precision": "unknown_until_rights_cleared_and_workbook_reviewed"
+    },
+    {
+      "source_id": "armstandard-am-otts-public-register",
+      "publisher": "Ministry of Economy of the Republic of Armenia / National Body for Standards and Metrology (НОСМ)",
+      "url": "https://www.armstandard.am/ru/measTransApproves/1",
+      "linked_document_listing_url": "https://disk.yandex.ru/d/OT62kqPGuH6TyA",
+      "source_kind": "official_armenia_eaeu_vehicle_type_approval_public_listing",
+      "source_revision": "official_registry_page_and_linked_public_listing_observed_2026-11-08; no dataset revision or API revision identified",
+      "market_scope": [
+        "AM",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "legal_basis_observed": {
+        "authority_page_cites": "Order of the Minister of Economy of the Republic of Armenia No. 982-A dated 2020-08-07",
+        "stated_scope": "The registry page describes the National Body for Standards and Metrology's role in type approval under the EAEU agreement and TR CU 018/2011.",
+        "legal_effect": "authority and registry context only; no reuse licence inferred"
+      },
+      "observed_listing": {
+        "listing_title": "Сведения об одобрениях типа транспортного средства",
+        "visible_pdf_entries": 40,
+        "visible_entry_count_interpretation": "count of PDF items rendered in the reviewed public Yandex Disk listing; not a verified total corpus count",
+        "visible_file_date": "2026-03-31",
+        "sample_file_names_only": [
+          "00009.pdf",
+          "OTTC 021S.00003.pdf",
+          "OTTC 021S.00004.pdf",
+          "OTTC 021S.00007.pdf",
+          "OTTC 021S.00010.pdf",
+          "OTTC 021S.00011.pdf",
+          "OTTC 021S.00012.pdf",
+          "OTTC 021S.00014.pdf",
+          "OTTC 021S.00015.pdf",
+          "OTTC 021S.00018.pdf",
+          "OTTC 021S.00019.pdf",
+          "OTTC 021S.00020.pdf",
+          "OTTC 021S.00021.pdf"
+        ],
+        "files_downloaded": false,
+        "pdf_contents_inspected": false,
+        "vag_records_verified": false
+      },
+      "access": {
+        "public_registry_page_observed": true,
+        "public_linked_file_listing_observed": true,
+        "search_endpoint_or_api": "not_verified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "offline_cache": "not_established",
+        "third_party_display": "not_established",
+        "redistribution": "not_established"
+      },
+      "rights": {
+        "data_license_status": "not_established",
+        "permission_status": "not_obtained",
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_required_before_product_import_or_distribution": true,
+        "rights_evidence": "The official registry page and linked public Yandex Disk listing establish public discovery only. No dataset-specific licence or written permission for downloading, bulk extraction, SQLite storage, offline display or redistribution was located."
+      },
+      "applicability": {
+        "market_scope": "Armenian national registry in the EAEU TR CU 018/2011 context",
+        "applicability_precision": "type_approval_document_listing_only",
+        "exact_vag_vehicle_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_repair_applicability": false,
+        "russian_market_scope": false
+      },
+      "limitations": [
+        "The public registry page links a document listing but does not expose a verified machine-readable record catalogue in the reviewed rendering.",
+        "The 40 PDF entries are only the visible items in the linked listing; this is not a complete-corpus count.",
+        "The visible file names and dates do not identify VAG models, generations, engine codes, gearbox codes or exact powertrain pairings.",
+        "No PDF was downloaded or inspected; no file SHA-256 or record-level provenance is claimed.",
+        "No dataset-specific reuse licence for bulk extraction, local SQLite caching, offline display, commercial use or redistribution was found.",
+        "Armenian national approval records must not be treated as Russian approvals; EAEU context does not establish individual-market applicability without the approval's legal scope."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://www.armstandard.am/ru/measTransApproves/1",
+          "reviewed_at": "2026-11-08",
+          "evidence": "Official National Body for Standards and Metrology page titled 'Сведения об одобрениях типа транспортного средства'; cites Minister of Economy Order No. 982-A dated 2020-08-07 and links a public document listing."
+        },
+        {
+          "url": "https://disk.yandex.ru/d/OT62kqPGuH6TyA",
+          "reviewed_at": "2026-11-08",
+          "evidence": "Linked public listing rendered 40 PDF entries, with visible file dates 2026-03-31; file bytes were not downloaded."
+        },
+        {
+          "url": "https://www.armstandard.am/ru/page/Texekatvutryan_azatutyun",
+          "reviewed_at": "2026-11-08",
+          "evidence": "Official information-freedom page provides contact/navigation only in the reviewed rendering; no dataset reuse licence was identified."
+        }
+      ],
+      "rights_contact_route": {
+        "public_contact_email": "info@armstandard.am",
+        "contact_phone": "+374 10 232600",
+        "permission_request_sent": false,
+        "request_needed": "written permission or dataset-specific licence covering download, inspection, extraction, local storage, offline display, redistribution and attribution"
+      },
+      "verification_status": "official_registry_page_and_public_listing_observed; rights_and_document_contents_unverified",
+      "project_decision": "metadata_only_discovery; do not download, cache, import, display or redistribute documents until dataset-specific reuse rights are confirmed in writing or by an explicit published licence",
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "data_ingested": false,
+      "product_import_allowed": false
     }
   ],
   "minimum_fitment_evidence_fields": [
