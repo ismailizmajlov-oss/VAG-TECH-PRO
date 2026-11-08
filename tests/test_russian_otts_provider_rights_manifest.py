@@ -47,7 +47,7 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
         self.assertIn("Require written permission", source["notes"][3])
 
     def test_all_ru_eaeu_otts_candidates_remain_non_imported_without_clear_rights(self):
-        for source_id in ("rosstandart-fgis-reestr-kts", "eaeu-open-data-portal", "hpt-su-otts-api", "otts-bot", "otts-baza-ru", "elpts-national-otts-register"):
+        for source_id in ("rosstandart-fgis-reestr-kts", "eaeu-open-data-portal", "eaeu-temporary-otts-electronic-register", "hpt-su-otts-api", "otts-bot", "otts-baza-ru", "elpts-national-otts-register"):
             source = self.sources[source_id]
             self.assertFalse(source["data_ingested"], source_id)
             self.assertIsNone(source["source_snapshot_sha256"], source_id)
@@ -59,6 +59,24 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
                 "restricted_no_bulk_reuse_or_redistribution_without_written_permission",
             ), source_id)
 
+    def test_eec_temporary_otts_register_route_is_not_a_data_reuse_grant(self):
+        source = self.sources["eaeu-temporary-otts-electronic-register"]
+        self.assertEqual(source["source_url"], "https://eec.eaeunion.org/comission/department/deptexreg/tr/temprorary_otts.php")
+        self.assertEqual(source["linked_otts_register_url"], "https://portal.elpts.ru/ncher/otts")
+        self.assertEqual(source["market_scope"], ["EAEU"])
+        self.assertEqual(source["document_types"], ["OTTS"])
+        self.assertEqual(source["status"], "permission_required")
+        self.assertEqual(source["access"]["linked_destination_fetch_status"], "502_bad_gateway_on_2026_11_09")
+        self.assertFalse(source["access"]["linked_destination_content_verified"])
+        self.assertFalse(source["access"]["public_query_rows_observed"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["license"]["permission_status"], "not_obtained")
+        for field in ("commercial_use", "display", "offline_cache", "bulk_export", "redistribution"):
+            self.assertEqual(source["license"][field], "not_confirmed")
+        self.assertFalse(source["technical_scope"]["exact_engine_gearbox_pair"])
+        self.assertFalse(source["technical_scope"]["vag_record_observed"])
 
 if __name__ == "__main__":
     unittest.main()
