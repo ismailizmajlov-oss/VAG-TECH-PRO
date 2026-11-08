@@ -131,6 +131,9 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError("OBDex generic code ranges are not explicitly constrained")
     if source_manifest.get("scope", {}).get("excluded_manufacturer_controlled_ranges") != ["P1xxx","P30xx-P33xx","P35xx-P39xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"]:
         raise ValueError("OBDex manufacturer-controlled ranges are not explicitly excluded")
+    import_policy = source_manifest.get("import_policy", {})
+    if import_policy.get("normalized_product_namespace_exclusions") != ["U3xxx"] or import_policy.get("source_label_is_not_standard_allocation_proof") is not True or import_policy.get("production_catalog_ingestion") is not False:
+        raise ValueError("OBDex unresolved U3 family must remain outside the normalized generic DTC namespace")
     if source_manifest.get("scope", {}).get("exact_vag_fitment") is not False:
         raise ValueError("OBDex source manifest claims exact VAG fitment")
     if source_manifest.get("scope", {}).get("repair_procedures_or_pinouts_included") is not False:
@@ -153,6 +156,9 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
     if db.execute("SELECT count(*) FROM generic_dtc_research WHERE namespace<>'generic_sae_iso_obd2' OR vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex contains non-generic or fitment-claim DTC rows")
     generic_codes = [row["code"] for row in db.execute("SELECT code FROM generic_dtc_research")]
+    u3_unverified_count = sum(1 for code in generic_codes if code.startswith("U3"))
+    if u3_unverified_count < 1:
+        raise ValueError("OBDex U3 research rows were unexpectedly lost or not identified")
     if len(set(generic_codes)) != dtc_count or any(not GENERIC_OBD_CODE_RE.fullmatch(code) for code in generic_codes):
         raise ValueError("OBDex generic pack contains manufacturer-controlled or malformed DTC ranges")
     if db.execute("SELECT count(*) FROM generic_pid_research WHERE vehicle_fitment_claim<>0").fetchone()[0]:
@@ -173,7 +179,11 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         "license_files": [relative(root.parent, license_path)],
         "attribution_files": [relative(root.parent, source_manifest_path)],
         "status": "verified_research_only",
-        "product_eligibility": "generic_obd2_reference_only",
+        "product_eligibility": "generic_obd2_source_labelled_research_only",
+        "normalized_product_namespace_exclusions": ["U3xxx"],
+        "unverified_current_standard_ranges": ["U3xxx"],
+        "source_label_is_not_standard_allocation_proof": True,
+        "unverified_range_counts": {"U3xxx": u3_unverified_count},
         "market_scope": "global_generic_not_market_specific",
         "applicability_precision": "generic_code_only_no_vehicle_fitment",
         "counts": {"generic_dtcs": dtc_count, "pids": pid_count},
