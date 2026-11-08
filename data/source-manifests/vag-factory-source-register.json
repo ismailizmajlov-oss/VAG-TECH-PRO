@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T05:46:00Z",
+  "updated_at": "2026-11-08T05:49:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1654,14 +1654,83 @@
         "No diagnostic execution or repair advice is approved."
       ],
       "project_decision": "allow_separate_read_only_candidate_pack_only_under_ODbL_and_DbCL; do_not_promote_to_verified_vehicle_taxonomy_or_factory_codes; no gearbox inference; no diagnostic lookup",
-      "evidence_status": "pinned_v6_artifact_independently_audited_2026-11-05; source revision, asset hash, pack hash, internal checksums and SQLite integrity verified",
+      "evidence_status": "Pinned v6 release artifact independently audited 2026-11-05; latest main branch reviewed 2026-11-08. Repository ODbL/DbCL terms are explicit, but sampled Volkswagen/Audi DTC and Golf V engine/ECU rows cite third-party OBDCodex and FLEX vehicle-list sources whose reuse rights are not established; no latest-branch rows imported.",
       "exact_vehicle_fitment": false,
       "ecu_fitment": false,
       "diagnostic_execution_allowed": false,
       "repair_advice_approved": false,
       "engine_codes_verified": 0,
       "transmission_records": 0,
-      "data_ingested": false
+      "data_ingested": false,
+      "latest_branch_review": {
+        "reviewed_at_utc": "2026-11-08T05:49:00Z",
+        "upstream_branch": "main",
+        "commit_sha": "11e73fd6d105a071fa472f426d23225344921a19",
+        "commit_url": "https://github.com/autodiag2/database/commit/11e73fd6d105a071fa472f426d23225344921a19",
+        "commit_title": "fix ambiguous naming",
+        "source_snapshot_sha256": null,
+        "license_ids": [
+          "ODbL-1.0",
+          "DbCL-1.0"
+        ],
+        "license_file_sha256": "50a8762802c3303f5612c002bd35a3e617dcc7315ff7073f784b8682ea646cb5",
+        "code_license": "GPL-3.0-or-later_not_used",
+        "license_interpretation": "Repository-level ODbL/DbCL terms cover the repository database and its contents, subject to attribution and share-alike. They do not independently establish that third-party materials cited in individual records were licensed to the contributors or may be redistributed.",
+        "sha256_method": "SHA-256 computed from exact GitHub file contents; each sample was cross-checked against the GitHub Git-blob SHA-1 before recording.",
+        "sampled_records": [
+          {
+            "path": "data-src/ecu/generic/volkswagen/def.yml",
+            "git_blob_sha1": "00f7abe12a07bfc427412a85d29f81c4630d75ec",
+            "sha256": "b1d01c525b1f1404ffa21d654c21f98c6eede4049b9cc5ee1af845a7f17c4f09",
+            "observed_evidence": [
+              "obdcodex"
+            ],
+            "finding": "Make-level generic Volkswagen ECU bucket cites OBDCodex; not a factory ECU identity or verified VAG ECU record."
+          },
+          {
+            "path": "data-src/ecu/generic/audi/codes/P1639.yml",
+            "git_blob_sha1": "c6395852f65dd5c6efee1164868c6b16786ea39e",
+            "sha256": "75692736477dda18b9c9db8b972daab21010e9c431c4414ec3c5a4afe2c9cafb",
+            "observed_evidence": [
+              "obdcodex"
+            ],
+            "finding": "Audi-labelled P1639 entry cites OBDCodex without a data-specific reuse grant; no exact model, generation, ECU hardware/software or market applicability."
+          },
+          {
+            "path": "data-src/vehicle/Volkswagen/Golf/versions/V/BVX_MED9.5.yml",
+            "git_blob_sha1": "17c3b6ffe7c1cbdfb7ef125f69aaa8c50630a774",
+            "sha256": "e533584deae0a48fa3c6e4e4a59f21ea22bfde2a1a382e59d6501cf1f1a1771d",
+            "observed_evidence": [
+              "https://laytonecuremaps.co.uk/wp-content/uploads/2016/10/FLEX-FULL-vehicle-list-2020-11-9.pdf"
+            ],
+            "observed_fields": [
+              "Volkswagen Golf V",
+              "engine candidate BVX",
+              "ECU candidate Bosch MED9.5",
+              "power_kw 110.0"
+            ],
+            "missing_fields": [
+              "transmission_code",
+              "market_scope",
+              "primary OEM confirmation"
+            ],
+            "finding": "Candidate configuration references a third-party FLEX vehicle-list PDF; redistribution and source rights are not established."
+          },
+          {
+            "path": "data-src/engine/Volkswagen/BVX/def.yml",
+            "git_blob_sha1": "3ab153231699e2e3d03c8eb67ce4814e250b9315",
+            "sha256": "465cbc26c9ec5aaf84c095a279682f7d27b2b44758236128a72fc0a9f8133256",
+            "observed_evidence": [
+              "https://laytonecuremaps.co.uk/wp-content/uploads/2016/10/FLEX-FULL-vehicle-list-2020-11-9.pdf"
+            ],
+            "finding": "BVX label remains an unverified community engine candidate; the referenced source's rights and factory applicability are not established."
+          }
+        ],
+        "upstream_evidence_rights_status": "not_established_for_obdcodex_and_flex_referenced_materials",
+        "product_import_allowed": false,
+        "data_ingested": false,
+        "decision": "retain only the separately audited pinned v6 ODbL/DbCL candidate pack; do not ingest or promote sampled latest-main DTC/engine/ECU rows until per-record upstream rights and primary applicability evidence are established."
+      }
     },
     {
       "source_id": "mechanicdb-vag-dtc-candidates-odbl",
