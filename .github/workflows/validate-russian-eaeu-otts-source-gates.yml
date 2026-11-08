@@ -11,6 +11,7 @@ on:
       - tests/test_elpts_reference_rights_gate.py
       - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
       - tests/test_kazakhstan_eokno_source_rights.py
+      - tests/test_kazakhstan_techreg_source_rights.py
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
       - data/source-manifests/vw-okapi-product-catalog.json
@@ -36,6 +37,7 @@ on:
       - tests/test_elpts_reference_rights_gate.py
       - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
       - tests/test_kazakhstan_eokno_source_rights.py
+      - tests/test_kazakhstan_techreg_source_rights.py
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
       - docs/research/FGIS_PUBLIC_SEARCH_ORDER_2038_REVIEW_2026-11-06.md
       - data/source-manifests/vw-okapi-product-catalog.json
