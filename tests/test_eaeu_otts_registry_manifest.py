@@ -213,5 +213,42 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
 
 
+    def test_eec_2023_report_confirms_temporary_pilot_completion_and_request_only_export(self):
+        source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
+        pilot = source["access"]["pilot_project_2023_report"]
+        self.assertEqual(pilot["source_url"], "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf")
+        self.assertEqual(pilot["meeting_date"], "2023-04-18")
+        self.assertEqual(pilot["agenda_item"], 12)
+        self.assertEqual(pilot["pilot_period"], {"start": "2022-02-14", "end": "2022-12-31"})
+        self.assertEqual(pilot["historical_counts"]["ot_ts_approvals_and_revisions"], 2491)
+        self.assertEqual(pilot["historical_counts"]["ot_sh_approvals"], 111)
+        self.assertEqual(pilot["historical_counts"]["sbkts_certificates"], 313123)
+        self.assertEqual(pilot["machine_readable_export_during_pilot"]["access_method"], "request_by_interested_person")
+        self.assertEqual(pilot["conclusion"], "pilot_project_deemed_completed")
+        self.assertFalse(pilot["potential_joining_member_states_joined_during_pilot"])
+        self.assertEqual(pilot["current_availability"], "not_verified_after_pilot_completion")
+        self.assertIsNone(pilot["raw_report_sha256"])
+        self.assertFalse(pilot["vehicle_records_downloaded"])
+        self.assertFalse(pilot["vehicle_records_ingested"])
+        observation = source["access"]["official_temporary_register_page_observation_2026_11_09"]
+        self.assertEqual(observation["pilot_status"], "historical_pilot_completed_per_eec_2023_report")
+        self.assertFalse(observation["current_machine_readable_export_verified"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertFalse(source["data_ingested"])
+
+    def test_regional_manifest_keeps_completed_pilot_separate_from_current_data_rights(self):
+        source = self.russian_sources["eaeu-open-data-portal"]
+        pilot = source["pilot_project_2023_report"]
+        self.assertEqual(pilot["conclusion"], "pilot_project_deemed_completed")
+        self.assertEqual(pilot["historical_counts"]["ot_ts_approvals_and_revisions"], 2491)
+        self.assertEqual(pilot["machine_readable_export_during_pilot"]["current_availability"], "not_verified_after_pilot_completion")
+        self.assertEqual(source["status"], "discovery_only")
+        self.assertFalse(source["data_ingested"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["access_and_reuse"]["bulk_export"], "not_established")
+        self.assertEqual(source["access_and_reuse"]["offline_cache"], "not_confirmed")
+        self.assertEqual(source["access_and_reuse"]["redistribution"], "not_confirmed")
+
+
 if __name__ == "__main__":
     unittest.main()
