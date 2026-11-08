@@ -35,6 +35,7 @@ test("KBA whole-vehicle approval pack verifies DL-DE BY 2.0 provenance and DE-on
     approvalRecords: 918,
     manufacturerLabels: 8,
     distinctApprovalNumbers: 918,
+    distinctRowHashes: 918,
     sourceLabelPolicyRows: 9
   });
   for (const key of ["sourceSnapshotSha256","sourceFileSha256","databaseSha256","sourceManifestSha256","packManifestSha256","licenseSha256","attributionSha256","rightsEvidenceSha256","buildReportSha256","integrationReportSha256","sourceArtifactSha256"]) {
