@@ -26,6 +26,7 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
         self.assertEqual(len(source["pinned_source_repositories"]), 16)
         self.assertEqual(source["source_file_count"], 64)
         self.assertEqual(source["source_repository_count"], 16)
+        self.assertEqual(source["generation_only_repositories"], ["OBDb/Skoda-Octavia", "OBDb/Skoda-Superb", "OBDb/Skoda-Fabia"])
         for repo in source["pinned_source_repositories"]:
             self.assertTrue(repo["commit_sha"])
             self.assertEqual(repo["license_file"], "LICENSE")
@@ -34,7 +35,7 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
         manifest_sources = {item["repository"]: item for item in OBDB_MANIFEST["sources"]}
         pinned_sources = {item["repository"]: item for item in source["pinned_source_repositories"]}
         self.assertEqual(set(manifest_sources), set(pinned_sources))
-        self.assertEqual(len(manifest_sources), 13)
+        self.assertEqual(len(manifest_sources), 16)
         for repository, item in manifest_sources.items():
             pinned = pinned_sources[repository]
             for key in ("commit_sha", "commit_date", "make", "model", "generation_reference_url"):
@@ -60,6 +61,9 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
         scope = source["technical_scope"]
         self.assertEqual(counts["uds_command_candidates"], 7890)
         self.assertEqual(counts["signal_candidates"], 8446)
+        self.assertEqual(counts["source_repositories"], 16)
+        self.assertEqual(counts["upstream_files"], 64)
+        self.assertEqual(counts["generation_only_sources"], 3)
         self.assertEqual(counts["generation_candidates"], 82)
         self.assertEqual(counts["ecu_candidates"], 44)
         self.assertEqual(counts["dtc_definitions"], 0)
@@ -105,15 +109,10 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
         self.assertEqual(build["counts"]["ecu_candidates"], 44)
         self.assertEqual(build["counts"]["uds_command_candidates"], 7890)
         self.assertEqual(build["counts"]["signal_candidates"], 8446)
-        self.assertEqual(build["counts"]["source_repositories"], 13)
-        self.assertEqual(build["counts"]["upstream_files"], 52)
-        self.assertEqual(build["counts"]["generation_candidates"], 67)
-        self.assertEqual(build["counts"]["ecu_candidates"], 44)
-        self.assertEqual(build["counts"]["uds_command_candidates"], 7890)
-        self.assertEqual(build["counts"]["signal_candidates"], 8446)
         self.assertEqual(build["counts"]["dtc_definitions"], 0)
         self.assertEqual(build["counts"]["approved_test_plans"], 0)
         self.assertEqual(build["counts"]["exact_vehicle_fitment"], 0)
+        self.assertEqual(build["counts"]["generation_only_sources"], 3)
         self.assertEqual(build["generation_only_source_counts"], {"OBDb/Skoda-Octavia":{"generations":4,"ecus":0,"commands":0,"signals":0},"OBDb/Skoda-Superb":{"generations":7,"ecus":0,"commands":0,"signals":0},"OBDb/Skoda-Fabia":{"generations":4,"ecus":0,"commands":0,"signals":0}})
 
 if __name__ == "__main__":

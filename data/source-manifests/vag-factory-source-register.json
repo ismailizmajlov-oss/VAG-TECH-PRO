@@ -1925,6 +1925,7 @@
       "display_status": "read_only_research_candidate",
       "counts": {
         "source_repositories": 16,
+        "upstream_files": 64,
         "generation_candidates": 82,
         "ecu_candidates": 44,
         "uds_command_candidates": 7890,
@@ -1933,7 +1934,8 @@
         "repair_procedures": 0,
         "approved_test_plans": 0,
         "exact_vehicle_fitment_rows": 0,
-        "verified_generation_year_mappings": 0
+        "verified_generation_year_mappings": 0,
+        "generation_only_sources": 3
       },
       "rights": {
         "data_license": "CC-BY-SA-4.0",
@@ -1948,7 +1950,23 @@
         "attribution": "OBDb community contributors. Adapted by VAG TECH PRO into a separate read-only SQLite research database. The adapted database is licensed under CC BY-SA 4.0.",
         "share_alike_notice_required": true
       },
-      "technical_scope": "Community generation candidates and read-only UDS service 0x22 signals; no DTC definitions, no approved test plans and no executable tests",
+      "technical_scope": {
+        "command_service": "0x22",
+        "all_command_records_execution_allowed": false,
+        "signal_byte_formats_are_unverified": true,
+        "diagnostic_execution_allowed": false,
+        "test_plan_approved": false,
+        "exact_vehicle_fitment": false,
+        "exact_ecu_fitment": false,
+        "exact_engine_gearbox_mapping": false,
+        "dtc_definitions": false,
+        "repair_procedures": false,
+        "wiring_diagrams": false,
+        "factory_pinouts": false,
+        "market_scope": "UNKNOWN",
+        "generation_candidates": true,
+        "generation_only_sources": 3
+      },
       "project_decision": "allow_separate_read_only_CC_BY_SA_research_pack_only; preserve attribution and share_alike; candidate discovery only; do not present as validated DTC/test plan or exact vehicle/ECU fitment; do not execute UDS commands",
       "limitations": [
         "Only 16 community repositories and 64 pinned source files are represented; this is not a complete VAG catalogue.",
