@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 const fs=require("node:fs"),path=require("node:path");
-const GENERIC_PATTERN="^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$";
+const GENERIC_PATTERN="^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$";
 const MANUFACTURER_PATTERN="^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$";
-const UNRESOLVED_PATTERN="^(?:P3[5-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$";
+const UNRESOLVED_PATTERN="^(?:P3[5-9][0-9A-F]{2}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$";
 function replaceOnce(s,a,b,label){const n=s.split(a).length-1;if(n!==1)throw new Error(label+": expected one patch anchor, found "+n);return s.replace(a,b);}
 function read(root,rel){const f=path.join(root,rel);if(!fs.existsSync(f))throw new Error("run87 required file is missing: "+rel);return fs.readFileSync(f,"utf8");}
 function apply(root){
@@ -46,8 +46,11 @@ function apply(root){
  '  const validPayload = { code: "P34C8", title: "Exact pinned generic P34 fixture", namespace: "SAE/ISO" };',
  '  const valid = { ...genericDtc(), natural_key: "run87:generic:P34C8", source_record_key: "run87:generic:P34C8", title: "P34C8", payload: validPayload, record_sha256: core.sha256(validPayload) };',
  '  const result = core.importPackage(dbPath, packageOf([valid], { package_id: "run87-generic-p34-valid" }));',
- '  assert.equal(result.inserted, 1);',
- '  for (const code of ["P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC"]) {',
+ '  assert.equal(result.inserted, 1);
+  const u3Payload = { code: "U3ABC", title: "Exact pinned generic U3 fixture", namespace: "SAE/ISO" };
+  const u3Record = { ...genericDtc(), natural_key: "run87:generic:U3ABC", source_record_key: "run87:generic:U3ABC", title: "U3ABC", payload: u3Payload, record_sha256: core.sha256(u3Payload) };
+  assert.equal(core.importPackage(dbPath, packageOf([u3Record], { package_id: "run87-generic-u3-valid" })).inserted, 1);',
+ '  for (const code of ["P35A6", "P39AB", "B3ABC", "C3ABC"]) {',
  '    const payload = { code, title: "Unresolved/reserved range", namespace: "SAE/ISO" };',
  '    const invalid = { ...valid, natural_key: "run87:generic:" + code, source_record_key: "run87:generic:" + code, title: code, payload, record_sha256: core.sha256(payload) };',
  '    assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run87-generic-invalid-" + code })), /outside generic SAE\\/ISO OBD-II ranges/);',
@@ -58,8 +61,8 @@ function apply(root){
  '    assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run87-vag-invalid-" + code })), /outside manufacturer-controlled OBD-II ranges/);',
  '  }',
  '  const db = new DatabaseSync(dbPath, { readOnly: true });',
- '  assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 1);',
- '  assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 1);',
+ '  assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 2);',
+ '  assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 2);',
  '  db.close();',
  '});',
  ''].join("\n");
@@ -68,7 +71,7 @@ function apply(root){
  const newSection=[
  "## DTC namespace code-range boundary (run87)",
  "",
- "The importer uses the machine-readable policy in `data/policies/dtc-namespace-ranges.json`. Generic SAE/ISO records are limited to P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx. P34xx is accepted only when the exact identifier exists in the pinned source snapshot. Manufacturer-controlled ranges are limited to P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx. P35xx–P39xx, U3xxx, B3xxx and C3xxx are unresolved/reserved for this importer and are rejected from both normalized generic and manufacturer-specific namespaces. A manufacturer-controlled range does not prove VAG authorship, exact ECU fitment or repair applicability."
+ "The importer uses the machine-readable policy in `data/policies/dtc-namespace-ranges.json`. Generic SAE/ISO records are limited to P0xxx, P2xxx, P34xx, B0xxx, C0xxx, U0xxx and U3xxx. P34xx and U3xxx are accepted only when the exact identifier exists in a pinned source snapshot. Manufacturer-controlled ranges are limited to P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx. P35xx–P39xx, B3xxx and C3xxx are unresolved/reserved for this importer and are rejected from both normalized generic and manufacturer-specific namespaces. A manufacturer-controlled range does not prove VAG authorship, exact ECU fitment or repair applicability."
  ].join("\n");
  if(docs.includes(oldHeading))docs=docs.slice(0,docs.indexOf(oldHeading))+newSection+"\n";
  else if(!docs.includes("## DTC namespace code-range boundary (run87)"))throw new Error("run87 documentation anchor is missing");
