@@ -109,7 +109,7 @@ function verifyObdb(packRoot, descriptor) {
   if (sourceManifest.commercial_use_allowed !== true || sourceManifest.display_allowed !== true || sourceManifest.cache_allowed !== true || sourceManifest.redistribution_allowed !== true) fail("OBDb reuse rights are incomplete");
   if (sha256File(safeJoin(packRoot, descriptor.database_path)) !== descriptor.database_sha256 || sourceManifest.database_sha256 !== descriptor.database_sha256) fail("OBDb database hash mismatch");
   if (sha256File(safeJoin(packRoot, descriptor.manifest_path)) !== descriptor.manifest_sha256) fail("OBDb source manifest hash mismatch");
-  if ((sourceManifest.sources || []).length !== 16) fail("OBDb pinned source registry is incomplete");
+  if ((sourceManifest.sources || []).length !== 26) fail("OBDb pinned source registry is incomplete");
   return sourceManifest;
 }
 function verifyVehiclesDb(packRoot, descriptor) {
