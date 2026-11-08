@@ -1303,7 +1303,8 @@ jobs:
           if (-not (Test-Path -LiteralPath $researchManifestPath -PathType Leaf)) { throw "Current desktop research manifest is missing after pack synchronization." }
           $researchManifest = Get-Content -LiteralPath $researchManifestPath -Raw | ConvertFrom-Json
           $researchPackIds = @($researchManifest.packs | ForEach-Object { [string]$_.id })
-          if ($researchPackIds.Count -lt 1 -or $researchPackIds.Count -ne @($researchPackIds | Sort-Object -Unique).Count) { throw "Research manifest pack IDs are empty or duplicated." }
+          $uniqueResearchPackIds = @($researchPackIds | Sort-Object -Unique)
+          if ($researchPackIds.Count -lt 1 -or $researchPackIds.Count -ne $uniqueResearchPackIds.Count) { throw "Research manifest pack IDs are empty or duplicated." }
           $researchManifestEntries = $researchPackIds.Count
           $researchManifestSha = (Get-FileHash -LiteralPath $researchManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
           "research_manifest_entries=$researchManifestEntries; research_manifest_sha256=$researchManifestSha; ASTRA_CH=verified_research_only; production_import=false; RU_EAEU_applicability=false; exact_fitment=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
