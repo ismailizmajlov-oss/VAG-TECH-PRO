@@ -80,6 +80,8 @@ on:
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
+      - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
+      - "tests/test_wikipedia_vag_engine_list_rights_gate.py"
       - "tests/test_openvag_source_rights.py"
       - "tests/test_open_vehicle_schema_source_review.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
@@ -194,6 +196,8 @@ on:
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
+      - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
+      - "tests/test_wikipedia_vag_engine_list_rights_gate.py"
       - "tests/test_openvag_source_rights.py"
       - "tests/test_open_vehicle_schema_source_review.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
@@ -308,6 +312,8 @@ jobs:
           python tests/test_cars_base_source_rights.py
           python tests/test_elpts_reference_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "ELPTS reference-file and OTTS rights gate failed." }
+          python tests/test_wikipedia_vag_engine_list_rights_gate.py
+          if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed." }
           python tests/test_openvag_source_rights.py
           python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
@@ -1103,6 +1109,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Armenian OTTS source-rights quarantine tests failed" }
           python tests/test_elpts_reference_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "ELPTS reference-file and OTTS rights gate failed" }
+          python tests/test_wikipedia_vag_engine_list_rights_gate.py
+          if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed" }
           $syncOutput = python scripts/sync_vag_source_register.py --source "data/source-manifests/vag-factory-source-register.json" --desktop-root "desktop-source"
           if ($LASTEXITCODE -ne 0) { throw "Could not synchronize central source-rights register into desktop payload" }
           $syncOutput | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-source-register-sync.log"
@@ -2253,6 +2261,8 @@ jobs:
             tests/test_cars_base_source_rights.py
             tests/test_elpts_reference_rights_gate.py
             docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md
+            tests/test_wikipedia_vag_engine_list_rights_gate.py
+            docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md
           if-no-files-found: warn
           retention-days: 14
 
