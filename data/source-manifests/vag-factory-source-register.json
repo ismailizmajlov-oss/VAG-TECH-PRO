@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T02:02:00Z",
+  "updated_at": "2026-11-08T03:40:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5719,7 +5719,7 @@
       "market_scope": [
         "EAEU"
       ],
-      "resource_scope": "Unified EAEU normative-reference information objects; presence of OTTS/OTSH datasets not yet confirmed",
+      "resource_scope": "Unified EAEU normative-reference information objects; reviewed objects 2001, 2030 and 2024 are document/passport/transport-type classifiers only; no dedicated OTTS/OTSH dataset identified in the reviewed objects.",
       "access_evidence": "Official API page states unauthenticated users may access EAEU NSI objects and each request returns at most 1500 elements; pagination uses limit and offset",
       "rights": {
         "access_authentication_required": false,
@@ -5733,7 +5733,7 @@
         "metadata_reference_only": true
       },
       "project_decision": "discovery_only; public unauthenticated API access is not treated as a reuse, offline caching, bulk extraction or redistribution licence; no endpoint data or OTTS/OTSH records imported",
-      "evidence_status": "official API documentation reviewed 2026-11-08; dataset catalogue and OTTS/OTSH coverage not yet verified",
+      "evidence_status": "official API documentation and official NSI object pages 2001, 2030 and 2024 reviewed 2026-11-08; the reviewed objects provide document/passport/transport-type classification only, not OTTS/OTSH records or VAG powertrain fitment; no dataset-level reuse terms or endpoint catalogue verified",
       "api_limit_per_request": 1500,
       "pagination_parameters": [
         "limit",
@@ -5742,7 +5742,94 @@
       "source_snapshot_sha256": null,
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "metadata_only_discovery"
+      "verification_status": "metadata_only_discovery",
+      "catalog_discovery": {
+        "reviewed_at": "2026-11-08",
+        "official_registry_overview_url": "https://nsi.eaeunion.org/portal/info",
+        "api_documentation_url": "https://nsi.eaeunion.org/portal/info/api",
+        "api_documented_base_url": "https://nsi.eaeunion.org/api/v1/{endPoint}",
+        "api_access": "unauthenticated",
+        "max_objects_per_request": 1500,
+        "pagination_parameters": [
+          "limit",
+          "offset"
+        ],
+        "endpoint_catalog_or_openapi_retrieved": false,
+        "endpoints_called": false,
+        "objects": [
+          {
+            "object_code": "2030",
+            "title": "Классификатор видов паспортов транспортных средств, шасси транспортных средств, самоходных машин и других видов техники",
+            "official_url": "https://nsi.eaeunion.org/portal/2030",
+            "observed_record_count": 3,
+            "source_last_updated": "2016-10-30",
+            "visible_codes": [
+              "1",
+              "2",
+              "3"
+            ],
+            "relevance": "vehicle_passport_document_type_only",
+            "exact_vehicle_identity": false,
+            "engine_or_gearbox_codes": false
+          },
+          {
+            "object_code": "2001",
+            "title": "Классификатор видов документов об оценке соответствия",
+            "official_url": "https://nsi.eaeunion.org/portal/2001",
+            "observed_record_count": 10,
+            "source_last_updated": "2023-01-19",
+            "visible_codes": [
+              {
+                "code": "35",
+                "label": "одобрение типа шасси ЕАЭС"
+              },
+              {
+                "code": "40",
+                "label": "свидетельство о безопасности конструкции транспортного средства ЕАЭС"
+              },
+              {
+                "code": "45",
+                "label": "свидетельство о соответствии транспортного средства с внесенными изменениями"
+              }
+            ],
+            "relevance": "conformity_document_type_only",
+            "complete_otts_registry": false,
+            "exact_vehicle_identity": false,
+            "engine_or_gearbox_codes": false
+          },
+          {
+            "object_code": "2024",
+            "title": "Классификатор типов транспортных средств международной перевозки",
+            "official_url": "https://nsi.eaeunion.org/portal/2024",
+            "observed_record_count": 41,
+            "source_last_updated": "2015-06-12",
+            "visible_codes": [
+              {
+                "code": "301",
+                "label": "легковой автомобиль общего назначения"
+              },
+              {
+                "code": "302",
+                "label": "специальный легковой автомобиль"
+              }
+            ],
+            "relevance": "broad_transport_category_only",
+            "exact_vehicle_identity": false,
+            "engine_or_gearbox_codes": false
+          }
+        ],
+        "bounded_findings": {
+          "dedicated_otts_otsh_dataset_confirmed": false,
+          "vag_model_generation_year_taxonomy": false,
+          "factory_engine_codes": false,
+          "factory_gearbox_codes": false,
+          "engine_gearbox_pairs": false,
+          "ecu_or_dtc_content": false,
+          "repair_content": false,
+          "dataset_specific_reuse_license_found": false
+        },
+        "decision": "metadata_only; do not download, cache, import or redistribute records until an exact relevant endpoint and dataset-level reuse rights are verified"
+      }
     },
     {
       "source_id": "openvag-dtc-api-project",
