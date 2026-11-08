@@ -44,6 +44,10 @@ class ElptsReferenceRightsGateTests(unittest.TestCase):
                 self.assertFalse(source["data_ingested"])
                 self.assertFalse(source.get("product_import_allowed", False))
                 self.assertIsNone(source.get("source_snapshot_sha256"))
+                recheck = source["rights_recheck_2026_11_08"]
+                self.assertEqual(recheck["rights_effect"], "none; dataset-specific reuse rights remain not_established and permission_status remains not_obtained")
+                self.assertFalse(recheck["acquisition_state"]["product_import_allowed"])
+                self.assertFalse(recheck["acquisition_state"]["permission_request_sent"])
 
     def test_reference_workbooks_have_no_retrieved_bytes_or_fabricated_hash(self):
         registry = load_json(CENTRAL)
@@ -69,7 +73,7 @@ class ElptsReferenceRightsGateTests(unittest.TestCase):
         )
         self.assertEqual(source["status"], "permission_required")
         self.assertFalse(source["data_ingested"])
-        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source.get("product_import_allowed", False))
         self.assertIsNone(source["source_snapshot_sha256"])
         for field in ("commercial_use", "display", "offline_cache", "bulk_export", "redistribution"):
             with self.subTest(right=field):
@@ -79,7 +83,7 @@ class ElptsReferenceRightsGateTests(unittest.TestCase):
         review = (ROOT / REVIEW).read_text(encoding="utf-8").casefold()
         for phrase in (
             "do not download either xlsx",
-            "does not grant a dataset-specific reuse licence",
+            "they do not grant a dataset-specific reuse licence",
             "software-use tariff",
             "effective 2026-11-01",
             "permission request sent: no",
