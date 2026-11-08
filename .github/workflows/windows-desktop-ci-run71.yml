@@ -234,7 +234,7 @@ permissions:
 
 concurrency:
   group: vag-tech-pro-windows-x64-v2-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build-and-lifecycle:
