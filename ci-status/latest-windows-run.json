@@ -149,7 +149,6 @@
       "windows_ci_validation": "pending"
     }
   ],
-  "main_head_sha": "105ba92bc3730c415dce8afce7508ce1e2c606f0",
   "workflow_audit_fixes": [
     {
       "commit": "4b905b62f5763e4ab1e35dd470eb476a2919d82a",
@@ -175,5 +174,6 @@
     "python_unittest_executed": false,
     "windows_ci_validation": "pending",
     "latest_confirmed_windows_run": 841
-  }
+  },
+  "code_changes_head_sha": "105ba92bc3730c415dce8afce7508ce1e2c606f0"
 }
