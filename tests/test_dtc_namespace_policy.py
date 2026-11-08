@@ -26,16 +26,16 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         generic=re.compile(ranges["generic_sae_iso"]["pattern"])
         manufacturer=re.compile(ranges["manufacturer_controlled"]["pattern"])
         unresolved=re.compile(ranges["unresolved_reserved"]["pattern"])
-        for code in ("P0300","P2ABC","P34C8","B0ABC","C0ABC","U0ABC"):
+        for code in ("P0300","P2ABC","B0ABC","C0ABC","U0ABC"):
             self.assertTrue(generic.fullmatch(code),code)
         for code in ("P1ABC","P30AB","P33AB","B1ABC","B2ABC","C1ABC","C2ABC","U1ABC","U2ABC"):
             self.assertTrue(manufacturer.fullmatch(code),code)
-        for code in ("P35AB","P39AB","U3ABC","B3ABC","C3ABC"):
+        for code in ("P3400","P3497","P34C8","P35AB","P39AB","U3ABC","B3ABC","C3ABC"):
             self.assertTrue(unresolved.fullmatch(code),code)
             self.assertFalse(generic.fullmatch(code),code)
             self.assertFalse(manufacturer.fullmatch(code),code)
-        self.assertTrue(self.policy["quarantine_policy"]["require_exact_pinned_source_record_for_p34xx"])
-        self.assertEqual(self.policy["namespaces"]["generic_sae_iso"]["exact_source_record_required_for"],["P34xx"])
+        self.assertTrue(self.policy["quarantine_policy"]["quarantine_p34xx_until_current_standard_assignment"])
+        self.assertNotIn("P34",self.policy["namespaces"]["generic_sae_iso"]["pattern"])
         self.assertFalse(self.policy["quarantine_policy"]["manufacturer_controlled_range_proves_vag_authorship"])
 
     def test_json_schema_matches_policy(self):
@@ -47,7 +47,7 @@ class DtcNamespacePolicyTests(unittest.TestCase):
 
     def test_sql_triggers_do_not_admit_quarantined_ranges(self):
         self.assertIn("U0[0-9A-F][0-9A-F][0-9A-F]",self.sql)
-        self.assertIn("P34[0-9A-F][0-9A-F]",self.sql)
+        self.assertNotIn("NEW.dtc_code GLOB 'P34",self.sql)
         self.assertNotIn("U3[0-9A-F]",self.sql)
         self.assertNotIn("P3[5-9]",self.sql)
         self.assertIn("P3[0-3]",self.sql)
@@ -91,6 +91,9 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIs(lock["normalization_policy"]["research_pack_only"],True)
         self.assertIs(lock["normalization_policy"]["normalized_product_dtc_import_allowed"],False)
         self.assertIn("U3xxx",lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
+        self.assertIn("P34xxx-P39xxx",lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
+        self.assertEqual(lock["normalization_policy"]["p3_family_review"]["upstream_p3_record_count"],155)
+        self.assertFalse(lock["normalization_policy"]["p3_family_review"]["normalized_product_import_allowed"])
 
     def test_sae_source_is_metadata_only_and_not_ingested(self):
         register=json.loads(REGISTER_PATH.read_text(encoding="utf-8"))
@@ -104,6 +107,31 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         for field in ("commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed","standard_text_storage_allowed","dtc_definition_table_storage_allowed","allocation_spreadsheet_storage_allowed"):
             self.assertIs(rights[field],False)
         self.assertEqual(source["documents"][1]["current_revision"],"J2012DA_202607")
+
+    def test_p34_family_is_quarantined_until_current_sae_assignment(self):
+        generic=re.compile(self.policy["namespaces"]["generic_sae_iso"]["pattern"])
+        manufacturer=re.compile(self.policy["namespaces"]["manufacturer_controlled"]["pattern"])
+        unresolved=re.compile(self.policy["namespaces"]["unresolved_reserved"]["pattern"])
+        for code in ("P3400","P3497","P34C8","P3500","P39FF"):
+            self.assertTrue(unresolved.fullmatch(code),code)
+            self.assertFalse(generic.fullmatch(code),code)
+            self.assertFalse(manufacturer.fullmatch(code),code)
+
+    def test_run87_desktop_patch_quarantines_the_mixed_p3_family(self):
+        patch=(ROOT/"apply-dtc-namespace-range-guard-run87.cjs").read_text(encoding="utf-8")
+        self.assertIn("P3[4-9][0-9A-F]{2}",patch)
+        self.assertIn("P3400",patch)
+        self.assertIn("P34C8",patch)
+        self.assertIn("P39AB",patch)
+        self.assertIn("P3[4-9]",patch)
+
+    def test_dtc_range_documents_match_the_machine_policy(self):
+        review=(ROOT/"docs/research/DTC_NAMESPACE_RANGE_REVIEW_2026-11-08.md").read_text(encoding="utf-8")
+        policy=(ROOT/"docs/research/DTC_NAMESPACE_CODE_RANGE_POLICY_2026-11-08.md").read_text(encoding="utf-8")
+        self.assertIn("P34xxx",review)
+        self.assertIn("P34xxx-P39xxx",review)
+        self.assertIn("P34xxx-P39xxx",policy)
+        self.assertNotIn("P34xx is accepted as generic",review)
 
 if __name__=="__main__":
     unittest.main()
