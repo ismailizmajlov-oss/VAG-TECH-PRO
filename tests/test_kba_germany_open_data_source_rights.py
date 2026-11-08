@@ -41,27 +41,43 @@ class KbaGermanyOpenDataSourceRightsTests(unittest.TestCase):
                     self.assertFalse(rights["paid_terms_accepted"])
                     self.assertIn("https://www.govdata.de/dl-de/by-2-0", rights["evidence_urls"])
 
-    def test_unavailable_whole_vehicle_approval_list_has_no_snapshot_hash(self):
+    def test_whole_vehicle_approval_snapshot_is_pinned_but_not_ingested(self):
         source_id = "kba-de-whole-vehicle-type-approvals"
         manifest = self.manifests[source_id]
         source = self.registered[source_id]
+        expected_sha = "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4"
         for record in (source, manifest):
             self.assertFalse(record["data_ingested"])
             self.assertFalse(record["product_import_allowed"])
-            self.assertIsNone(record["source_snapshot_sha256"])
-            self.assertIn("No source bytes retrieved", record["hash_status"])
-            self.assertEqual(record["verification_status"],
-                             "rights_cleared_metadata_only_source_resource_unavailable_schema_not_verified")
-        self.assertFalse(manifest["snapshot"]["downloaded"])
-        self.assertIsNone(manifest["snapshot"]["file_sha256"])
-        self.assertIsNone(manifest["snapshot"]["source_snapshot_sha256"])
+            self.assertEqual(record["source_snapshot_sha256"], expected_sha)
+            self.assertIn("SHA-256 verified", record["hash_status"])
+            self.assertEqual(
+                record["verification_status"],
+                "resource_acquired_schema_verified_exact_manufacturer_label_filter_reviewed_research_only",
+            )
+        self.assertTrue(manifest["snapshot"]["downloaded"])
+        self.assertEqual(manifest["snapshot"]["file_sha256"], expected_sha)
+        self.assertEqual(manifest["snapshot"]["source_snapshot_sha256"], expected_sha)
+        self.assertEqual(manifest["snapshot"]["resource_access_status"], "HTTP_200_on_2026-11-08")
+        self.assertEqual(manifest["snapshot"]["byte_size"], 909912)
+        self.assertEqual(manifest["snapshot"]["source_row_count"], 3782)
+        self.assertEqual(manifest["snapshot"]["vag_related_label_candidate_count"], 918)
+        self.assertEqual(manifest["import_policy"]["research_pack_status"],
+                         "verified_de_only_research_pack_built; product_database_not_ingested")
+        self.assertFalse(manifest["import_policy"]["research_pack_build_pending"])
+        self.assertTrue(source["research_pack_built"])
+        self.assertFalse(source["research_pack_ingested"])
+        self.assertFalse(manifest["product_database_ingested"] if "product_database_ingested" in manifest else False)
 
     def test_whole_vehicle_approval_list_is_not_a_powertrain_catalogue(self):
         manifest = self.manifests["kba-de-whole-vehicle-type-approvals"]
         policy = manifest["applicability_policy"]
         self.assertEqual(manifest["snapshot"]["coverage_start"], "2019-01-01")
         self.assertEqual(manifest["snapshot"]["resource_format"], "XLSX")
-        self.assertEqual(manifest["snapshot"]["resource_access_status"], "HTTP_503_on_2026-11-07")
+        self.assertEqual(manifest["snapshot"]["resource_access_status"], "HTTP_200_on_2026-11-08")
+        self.assertTrue(manifest["snapshot"]["downloaded"])
+        self.assertEqual(manifest["snapshot"]["source_snapshot_sha256"], manifest["source_snapshot_sha256"])
+        self.assertEqual(manifest["snapshot"]["header_status"], "verified_by_openpyxl_and_independent_probe")
         self.assertFalse(policy["individual_vehicle_fitment"])
         self.assertFalse(policy["exact_engine_gearbox_pair"])
         self.assertFalse(policy["production_fitment"])
