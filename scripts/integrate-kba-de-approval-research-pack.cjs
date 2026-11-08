@@ -240,6 +240,7 @@ function patchUi(desktopRoot) {
     '      {dataset === "kba-de-approvals" && (rows as unknown as KbaApprovalRow[]).map((row) => <article className="research-result" key={row.id}>',
     '        <div className="research-result-top"><div><small>KBA · GERMANY · TYPE APPROVAL METADATA</small><h3>{row.manufacturerLabel} · {row.tradeName || row.typeDesignation || "без торгового имени"}</h3></div><span className="research-candidate">DE RESEARCH ONLY</span></div>',
     '        <div className="research-data-grid">',
+    '          <div><small>Классификация точной метки</small><b>{row.manufacturerLabelMappingStatus}</b></div>',
     '          <div><small>Номер одобрения типа</small><b>{row.approvalNumber || "—"}</b></div>',
     '          <div><small>Тип / объект одобрения</small><b>{row.typeDesignation || "—"} · {row.approvalObject || "—"}</b></div>',
     '          <div><small>Дата одобрения · не модельный год</small><b>{row.approvalDate || "—"}</b></div>',
