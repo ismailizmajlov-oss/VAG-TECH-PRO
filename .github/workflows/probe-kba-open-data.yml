@@ -46,4 +46,4 @@ jobs:
             kba-probe-out/
             kba-whole-approvals-probe-out/
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 30

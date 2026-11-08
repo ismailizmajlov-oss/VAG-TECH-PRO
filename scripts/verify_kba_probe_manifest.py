@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """Fail-closed check that a fresh KBA probe matches the pinned source manifest."""
 from __future__ import annotations
-import argparse,json
+import argparse,json,hashlib
 from pathlib import Path
 from urllib.parse import urlparse
 SOURCE_ID="kba-de-whole-vehicle-type-approvals"
 OFFICIAL={"www.kba.de","kba.de"}
 def verify(probe_path:Path,manifest_path:Path)->dict:
- p=json.loads(probe_path.read_text(encoding="utf-8")); m=json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+ raw_probe=probe_path.read_bytes(); m=json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+ if hashlib.sha256(raw_probe).hexdigest()!=m.get("snapshot",{}).get("probe_report_sha256"): raise ValueError("Pinned KBA probe-report SHA-256 mismatch")
+ p=json.loads(raw_probe.decode("utf-8-sig"))
  if p.get("source_id")!=SOURCE_ID or m.get("source_id")!=SOURCE_ID: raise ValueError("KBA source identity mismatch")
  if p.get("status")!="resource_acquired_schema_available" or p.get("probe_only") is not True: raise ValueError("KBA probe did not acquire a schema-verified source")
+ if m.get("snapshot",{}).get("probe_run_id")!=42481409966 or m.get("snapshot",{}).get("probe_artifact_id")!=13618031218: raise ValueError("Pinned KBA probe run/artifact identity mismatch")
  if p.get("product_import_allowed") is not False or p.get("data_ingested") is not False: raise ValueError("KBA probe must remain outside product data")
  r=p.get("resource",{}); s=m.get("snapshot",{}); u=urlparse(r.get("final_url") or r.get("url") or "")
  if r.get("status")!=200 or u.scheme!="https" or u.hostname not in OFFICIAL: raise ValueError("KBA resource did not return HTTP 200 from the official HTTPS host")
