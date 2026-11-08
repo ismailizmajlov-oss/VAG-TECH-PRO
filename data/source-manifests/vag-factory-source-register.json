@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T20:26:00Z",
+  "updated_at": "2026-11-08T01:22:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5380,6 +5380,48 @@
       "product_import_allowed": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_snapshot_hash_claimed"
+    },
+    {
+      "source_id": "sae-j2012-dtc-standard",
+      "publisher": "SAE International",
+      "url": "https://saemobilus.sae.org/standards/j2012_202509-diagnostic-trouble-code-definitions",
+      "related_document_url": "https://saemobilus.sae.org/standards/j2012da_012013-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions",
+      "source_kind": "copyrighted_diagnostic_standard_metadata_reference",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "documents": [
+        {
+          "document_id": "J2012_202509",
+          "revision": "2025-09-01",
+          "url": "https://saemobilus.sae.org/standards/j2012_202509-diagnostic-trouble-code-definitions"
+        },
+        {
+          "document_id": "J2012DA_012013",
+          "current_revision": "J2012DA_202607",
+          "revision_date": "2026-07-29",
+          "url": "https://saemobilus.sae.org/standards/j2012da_012013-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions"
+        }
+      ],
+      "rights": {
+        "data_license_status": "copyrighted_proprietary",
+        "permission_status": "not_obtained",
+        "commercial_use_allowed": false,
+        "display_allowed": false,
+        "offline_cache_allowed": false,
+        "bulk_reuse_allowed": false,
+        "redistribution_allowed": false,
+        "standard_text_storage_allowed": false,
+        "dtc_definition_table_storage_allowed": false,
+        "allocation_spreadsheet_storage_allowed": false,
+        "metadata_reference_only": true
+      },
+      "project_decision": "metadata_reference_only; no standard text, DTC definitions or allocation spreadsheet is stored, cached or redistributed; conservative namespace policy remains until current licensed annex content is lawfully obtained and reviewed",
+      "evidence_status": "SAE official catalogue metadata for J2012_202509 and current J2012DA_202607 reviewed 2026-11-08; no standard content or data annex acquired",
+      "source_snapshot_sha256": null,
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "verification_status": "rights_restricted_metadata_only"
     }
   ],
   "minimum_fitment_evidence_fields": [
