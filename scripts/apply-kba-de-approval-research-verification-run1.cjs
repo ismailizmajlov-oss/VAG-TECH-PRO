@@ -95,7 +95,7 @@ function patch(desktopRoot) {
   const candidateAssertion = '  assert.equal(result.mechanicdb_vag_dtc_candidates.displayStatus, "candidate_reference_visible_separate_namespace");';
   const approvalTestAssertions = [
     "  assert.deepEqual(result.kba_de_vag_approvals, {",
-    '    marketScope: "DE", approvalRecords: 918, manufacturerLabels: 8, distinctApprovalNumbers: 918, sourceRows: 3782,',
+    '    marketScope: "DE", approvalRecords: 918, manufacturerLabels: 8, distinctApprovalNumbers: 918, distinctRowHashes: 918, sourceRows: 3782,',
     "    productionImport: false, productImportAllowed: false, ruEaeuApplicability: false,",
     "    exactVehicleFitment: false, exactEngineGearboxPair: false, repairApplicability: false, diagnosticExecutionAllowed: false,",
     "    sourceSnapshotSha256: result.kba_de_vag_approvals.sourceSnapshotSha256,",
