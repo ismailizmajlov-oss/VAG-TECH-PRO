@@ -6,9 +6,7 @@ on:
     paths:
       - "scripts/probe_rosstandart_recall_open_data.py"
       - "tests/test_rosstandart_recall_probe.py"
-      - "data/source-manifests/vag-factory-source-register.json"
-      - "docs/research/ROSSTANDART_RECALL_CAMPAIGNS_OPEN_DATA_REVIEW_2026-11-06.md"
-      - ".github/workflows/probe-rosstandart-recall-open-data.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
