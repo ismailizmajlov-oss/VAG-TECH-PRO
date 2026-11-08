@@ -72,6 +72,7 @@ on:
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "tests/test_openvag_source_rights.py"
       - "tests/test_sae_j2012_source_rights.py"
+      - "tests/test_obdb_vag_signalsets_integration.py"
       - "tests/test_open_vehicle_schema_source_review.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
       - "data/source-manifests/obdex-generic-cc0.lock.json"
@@ -175,6 +176,7 @@ on:
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "tests/test_openvag_source_rights.py"
       - "tests/test_sae_j2012_source_rights.py"
+      - "tests/test_obdb_vag_signalsets_integration.py"
       - "tests/test_open_vehicle_schema_source_review.py"
       - "data/source-manifests/wal33d-dtc-candidate.json"
       - "data/source-manifests/obdex-generic-cc0.lock.json"
@@ -271,6 +273,7 @@ jobs:
           python tests/test_cars_base_source_rights.py
           python tests/test_openvag_source_rights.py
           python tests/test_sae_j2012_source_rights.py
+          python tests/test_obdb_vag_signalsets_integration.py
           python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
           python tests/test_decode_tr_source_rights.py
