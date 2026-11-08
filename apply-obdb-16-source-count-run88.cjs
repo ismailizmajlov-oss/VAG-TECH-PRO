@@ -127,6 +127,12 @@ function main() {
     ),
     replaceExact(
       desktopRoot,
+      "scripts/verify-local-research-packs.cjs",
+      'assert(obdbCounts.sources === 6 && obdbCounts.generations === 32 && obdbCounts.ecus === 15 && obdbCounts.commands === 2315 && obdbCounts.signals === 2480 && !obdbCounts.unsafeCommands && !obdbCounts.invalidSignals, `OBDb candidate/non-execution gate failed: ${JSON.stringify(obdbCounts)}`);',
+      'assert(obdbCounts.sources === 16 && obdbCounts.generations === 82 && obdbCounts.ecus === 44 && obdbCounts.commands === 7890 && obdbCounts.signals === 8446 && !obdbCounts.unsafeCommands && !obdbCounts.invalidSignals, `OBDb candidate/non-execution gate failed: ${JSON.stringify(obdbCounts)}`);'
+    ),
+    replaceExact(
+      desktopRoot,
       "tests/local-research-db.test.cjs",
       "assert.deepEqual(obdb.counts, { sources: 6, generations: 32, ecus: 15, commands: 2315, signals: 2480 });",
       "assert.deepEqual(obdb.counts, { sources: 16, generations: 82, ecus: 44, commands: 7890, signals: 8446 });"
