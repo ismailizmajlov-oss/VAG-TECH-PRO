@@ -114,13 +114,32 @@
     "status": "unsigned",
     "reason": "No owner-supplied code-signing certificate is configured."
   },
-  "latest_source_gate": {
+  "release_ready": false,
+  "release_readiness_note": "Run950 passed the full GitHub-hosted Windows x64 desktop build and lifecycle plus Windows Server 2022 compatibility lifecycle on the current main head. Both NSIS x64 installers were built; desktop/local-core/research tests, ESLint, TypeScript, source-manifest and technical-schema checks, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation passed. Individual installer SHA-256 values are retained in build-metadata.json inside the Windows artifact. Native Windows 10/11 acceptance remains skipped because the owner-provided runner gate is disabled. Installers are unsigned. No Russian/EAEU OTTS or production fitment rows and no verified VAG-specific DTC rows were added; licensed OEM repair corpus remains unresolved. No production release is authorized.",
+  "latest_source_register_validation": {
+    "workflow": "Validate VAG source-rights register",
     "run_id": 42529748074,
     "run_number": 412,
     "conclusion": "success",
     "head_sha": "3bf5c4e514269849c5f466c1a4249e82d92cb4ef",
     "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42529748074"
   },
-  "release_ready": false,
-  "release_readiness_note": "Run950 passed the full GitHub-hosted Windows x64 desktop build and lifecycle plus Windows Server 2022 compatibility lifecycle on the current main head. Both NSIS x64 installers were built; desktop/local-core/research tests, ESLint, TypeScript, source-manifest and technical-schema checks, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation passed. Individual installer SHA-256 values are retained in build-metadata.json inside the Windows artifact. Native Windows 10/11 acceptance remains skipped because the owner-provided runner gate is disabled. Installers are unsigned. No Russian/EAEU OTTS or production fitment rows and no verified VAG-specific DTC rows were added; licensed OEM repair corpus remains unresolved. No production release is authorized."
+  "latest_russian_eaeu_contract_validation": {
+    "workflow": "Validate Russian EAEU and VAG OEM source contracts",
+    "run_id": 42529748034,
+    "run_number": 224,
+    "conclusion": "success",
+    "head_sha": "3bf5c4e514269849c5f466c1a4249e82d92cb4ef",
+    "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42529748034",
+    "eaeu_xml_importer_tests": 22,
+    "checks": [
+      "DTD/entity rejection",
+      "field-specific namespace validation",
+      "SBKTS and VIN/PII exclusion",
+      "permission-evidence SHA-256 matching",
+      "atomic staging and cleanup",
+      "no-overwrite behavior",
+      "candidate-only engine/gearbox pairing"
+    ]
+  }
 }
