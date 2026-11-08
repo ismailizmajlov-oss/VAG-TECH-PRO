@@ -4,7 +4,7 @@
   "license_id": "CC-BY-SA-4.0",
   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
   "attribution": "OBDb community contributors. Adapted by VAG TECH PRO into a separate read-only SQLite research database. The adapted database is licensed under CC BY-SA 4.0.",
-  "purpose": "Read-only community diagnostic signal definitions for research. This dataset contains no DTC definitions, no repair procedures, no factory wiring diagrams and no exact vehicle fitment.",
+  "purpose": "Read-only community diagnostic signal definitions and generation candidates for research. This dataset contains no DTC definitions, no repair procedures, no factory wiring diagrams and no exact vehicle fitment.",
   "sources": [
     {
       "source_id": "obdb-audi-a4",
@@ -174,6 +174,45 @@
       "applicability_precision": "vehicle_model_candidate",
       "verification_status": "unverified_community_candidate",
       "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Leon"
+    },
+    {
+      "source_id": "obdb-skoda-octavia",
+      "repository": "OBDb/Skoda-Octavia",
+      "repository_url": "https://github.com/OBDb/Skoda-Octavia",
+      "make": "Škoda",
+      "model": "Octavia",
+      "commit_sha": "11bc46b92edcb0d2811fbb19bf858d7098a03535",
+      "commit_date": "2026-11-01T23:07:02Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Octavia"
+    },
+    {
+      "source_id": "obdb-skoda-superb",
+      "repository": "OBDb/Skoda-Superb",
+      "repository_url": "https://github.com/OBDb/Skoda-Superb",
+      "make": "Škoda",
+      "model": "Superb",
+      "commit_sha": "812c98b2cc2a760a35f91eac0cc07b9016d65196",
+      "commit_date": "2026-11-04T06:58:19Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Superb"
+    },
+    {
+      "source_id": "obdb-skoda-fabia",
+      "repository": "OBDb/Skoda-Fabia",
+      "repository_url": "https://github.com/OBDb/Skoda-Fabia",
+      "make": "Škoda",
+      "model": "Fabia",
+      "commit_sha": "3546761d7d8a1844bf2f8bc9f40ab4602a8237e0",
+      "commit_date": "2026-10-04T03:56:00Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Skoda_Fabia"
     }
   ]
 }
