@@ -13,6 +13,10 @@ NATIVE_WORKFLOW = ROOT / ".github" / "workflows" / "windows-10-11-native-lifecyc
 def main() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     native_text = NATIVE_WORKFLOW.read_text(encoding="utf-8")
+    if "windows-lifecycle-staging/desktop-source/lib/local-research-db.cjs" not in text:
+        raise SystemExit("Windows audit artifact must include the local research verifier source")
+    if "windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/manifest.json" not in text:
+        raise SystemExit("Windows audit artifact must include the exact OBDb pack manifest")
     if "group: vag-tech-pro-windows-x64-v3-${{ github.ref }}" not in text:
         raise SystemExit("Windows validation workflow must use the v3 concurrency group to bypass stale v2 runs")
     if "cancel-in-progress: true" not in text:
