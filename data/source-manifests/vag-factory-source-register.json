@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T20:26:00Z",
+  "updated_at": "2026-11-08T00:50:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5380,6 +5380,57 @@
       "product_import_allowed": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_snapshot_hash_claimed"
+    },
+    {
+      "source_id": "sae-j2012-dtc-standard",
+      "publisher": "SAE International",
+      "url": "https://saemobilus.sae.org/standards/j2012_202509-diagnostic-trouble-code-definitions",
+      "related_urls": [
+        "https://saemobilus.sae.org/standards/j2012da_012013-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions"
+      ],
+      "source_kind": "copyrighted_diagnostic_trouble_code_standard_metadata_and_namespace_reference",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "source_revision": "SAE J2012_202509 (2025-09-01); SAE J2012DA_202607 (2026-07-29); historical boundary evidence SAE J2012 MAR2013",
+      "evidence_scope": [
+        "bibliographic_standard_revision_metadata",
+        "conservative_dtc_namespace_range_policy_only"
+      ],
+      "applicability": {
+        "manufacturer": "UNKNOWN",
+        "vag_specific": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "ecu_mapping": false,
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "namespace_policy_only"
+      },
+      "rights": {
+        "data_license_status": "copyrighted_standard_no_project_reuse_license_acquired",
+        "standard_text_storage_allowed": false,
+        "definition_table_storage_allowed": false,
+        "current_annex_allocation_table_storage_allowed": false,
+        "metadata_display_allowed": "bibliographic_citation_and_official_source_link_only",
+        "offline_cache_allowed": false,
+        "redistribution_allowed": false,
+        "permission_status": "not_obtained"
+      },
+      "project_decision": "metadata_and_conservative_namespace_policy_only; do not ingest copyrighted standard text, definition tables or current digital-annex allocation data; unresolved ranges remain quarantined",
+      "evidence_status": "SAE official catalogue revisions reviewed 2026-11-08; historical public MAR2013 material used only to record conservative code-family boundaries; current digital annex not acquired under a reuse license",
+      "limitations": [
+        "SAE J2012 and its digital annex are copyrighted standards; no standard text or definition table is stored in VAG TECH PRO.",
+        "The current J2012DA_202607 allocation table has not been acquired under a reuse license; no code-level changes from that annex are inferred.",
+        "A manufacturer-controlled code range does not identify Volkswagen Group authorship.",
+        "A code-range classification does not establish ECU, model, generation, year, market or repair applicability."
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "metadata_only_no_standard_content_downloaded",
+      "data_ingested": false,
+      "research_pack_ingested": false,
+      "product_database_ingested": false,
+      "product_import_allowed": false
     }
   ],
   "minimum_fitment_evidence_fields": [
