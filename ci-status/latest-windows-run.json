@@ -98,7 +98,6 @@
       "reason": "Explicit repository approval flag for written reuse permission was not enabled; no candidate data were downloaded."
     }
   ],
-  "current_main_head": "4fc262343564a9962295314b9d68fb21f709ddb8",
   "post_run_source_register_changes": [
     {
       "commit": "b1157d68c1fe729a3a4b392140794c38399de18c",
@@ -130,5 +129,7 @@
     "state": "open",
     "ci_run_observed": false,
     "validation_status": "pending"
-  }
+  },
+  "source_registry_state_head": "4fc262343564a9962295314b9d68fb21f709ddb8",
+  "source_registry_state_note": "The central and regional source-register metadata changes were present through this main revision; subsequent commits update documentation and CI status only."
 }
