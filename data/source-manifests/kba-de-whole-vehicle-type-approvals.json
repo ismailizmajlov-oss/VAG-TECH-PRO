@@ -160,9 +160,12 @@
     "product_import_allowed": false,
     "data_ingested": false,
     "research_pack_allowed_after_resource_and_schema_review": true,
-    "research_pack_build_pending": true,
+    "research_pack_build_pending": false,
     "production_fitment": false,
-    "ru_eaeu_applicability": false
+    "ru_eaeu_applicability": false,
+    "research_pack_status": "verified_de_only_research_pack_built; product_database_not_ingested",
+    "research_pack_built_at_utc": "2026-11-08T13:05:51Z",
+    "research_pack_build_workflow_run_id": 42483260589
   },
   "verification_status": "resource_acquired_schema_verified_exact_manufacturer_label_filter_reviewed_research_only",
   "product_import_allowed": false,
