@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T13:09:03Z",
+  "updated_at": "2026-11-09T00:32:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -85,7 +85,7 @@
       ],
       "access": {
         "legal_access_basis": "EEC Collegium Decision No. 225 of 2014-12-02, paragraphs 2-5 and 11-13: the unified register consists of national parts, national parts must be accessible from official websites of authorized bodies and the EEC, specified registry fields must be published within five working days, and interested-person requests are handled by authorized bodies. Decision No. 88 of 2016-07-26 defines the technical information-exchange schema R.TR.TS.07.001; it is not the public-access legal basis.",
-        "current_portal_observation": "On 2026-11-06 the central portal root redirected to the EAEU open-data catalogue. This does not mean the unified vehicle-approval register is absent: Decision No. 225 requires national parts to be accessible through official websites. Russia's national part is identified as the FGIS Reestr KTS maintained by Interstandart; the exact public search endpoint and any machine-readable export remain unresolved.",
+        "current_portal_observation": "On 2026-11-06 the central portal root redirected to the EAEU open-data catalogue. This does not mean the unified vehicle-approval register is absent: Decision No. 225 requires national parts to be accessible through official websites. Russia's national part is identified as the FGIS Reestr KTS maintained by Interstandart; the exact public search endpoint and any machine-readable export remain unresolved. On 2026-11-09 the EEC's official temporary-register page was found and opened; it links to a distinct electronic OTTS register at https://portal.elpts.ru/ncher/otts (separate OTSH and SBKTS links are also present). The linked OTTS destination returned HTTP 502 during this review, so no records or export were inspected. This is an official navigation route, not evidence of bulk/API access or reuse rights.",
         "machine_readable_api": "Generic OData/REST interfaces are advertised for published EAEU open-data resources; an OTTS-specific resource, endpoint, schema and export method remain unverified.",
         "individual_query_access": "national_parts_on_official_websites_and_requests_to_authorized_bodies_under_decision_225",
         "bulk_export": "not_established",
@@ -168,7 +168,24 @@
             "public_record_search_endpoint": "not_resolved",
             "reuse_rights": "bulk_reuse_offline_cache_display_redistribution_not_established"
           }
-        ]
+        ],
+        "official_temporary_register_page_observation_2026_11_09": {
+          "official_page_url": "https://eec.eaeunion.org/comission/department/deptexreg/tr/temprorary_otts.php",
+          "official_page_title": "Временный реестр документов об оценке соответствия требованиям технического регламента Таможенного союза «О безопасности колесных транспортных средств» (ТР ТС 018/2011) (одобрений типа транспортного средства, одобрений типа шасси, свидетельств о безопасности конструкции транспортного средства) в электронном виде в рамках пилотного проекта",
+          "observed_at": "2026-11-09",
+          "linked_otts_label": "Реестр одобрений типа транспортного средства, оформленных в электронном виде",
+          "linked_otts_url": "https://portal.elpts.ru/ncher/otts",
+          "link_context": "The official EEC temporary-register page exposes distinct links for electronic OTTS, OTSH and SBKTS registers; the OTTS link is explicitly labelled as the register of electronically issued vehicle type approvals.",
+          "destination_fetch_status": "502_bad_gateway_on_2026_11_09",
+          "destination_content_verified": false,
+          "record_rows_observed": false,
+          "export_or_api_verified": false,
+          "rights_effect": "none; an official navigation link and public destination route do not establish bulk extraction, local persistent caching, offline display, commercial reuse or redistribution rights",
+          "data_downloaded": false,
+          "data_ingested": false,
+          "product_import_allowed": false,
+          "source_snapshot_sha256": null
+        }
       },
       "rights": {
         "data_license_status": "not_established",
@@ -196,7 +213,7 @@
         "The current consolidated EEC Decision No. 232 OTTS/OTSH Annex 1 form lists engine make/type, ECU marking, transmission type, gearbox make/type, gear count and ratios at attachment level. This is a normative blank-form schema, not proof that the current public summary query exposes these fields or that filled documents may be bulk cached, displayed or redistributed."
       ],
       "project_decision": "schema_only_importer_prepared; no data caching or product import until the current official query route, field exposure and written reuse rights are established",
-      "evidence_status": "Decision No. 225 public-access rules, Decision No. 88 exchange schema and current consolidated Decision No. 232 OTTS/OTSH Annex 1 form fields reviewed 2026-11-07; engine/gearbox fields are attachment-level form fields; current public summary exposure, filled attachment access and reuse rights remain unresolved.",
+      "evidence_status": "Decision No. 225 public-access rules, Decision No. 88 exchange schema and current consolidated Decision No. 232 OTTS/OTSH Annex 1 form fields reviewed 2026-11-07; engine/gearbox fields are attachment-level form fields; current public summary exposure, filled attachment access and reuse rights remain unresolved. Official EEC temporary-register page and its electronic OTTS link rechecked 2026-11-09; destination returned 502, no records or export inspected, no rights upgrade.",
       "registry_schema": {
         "schema_id": "R.TR.TS.07.001",
         "schema_version": "1.0.0",
