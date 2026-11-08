@@ -18,9 +18,9 @@ The current J2012DA is a licensed digital annex and its full current allocation 
 
 ## Normalized importer policy
 
-- Generic source-backed ranges: P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx. P34xx is accepted only for an exact identifier present in the pinned source snapshot.
+- Generic source-backed ranges: P0xxx, P2xxx, P34xx, B0xxx, C0xxx, U0xxx and U3xxx. P34xx and U3xxx are accepted only for exact identifiers present in a pinned source snapshot.
 - Manufacturer-controlled ranges: P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx.
-- Unresolved/reserved for this importer: P35xx–P39xx, U3xxx, B3xxx and C3xxx. These identifiers may be retained only in the `unknown` quarantine namespace; they are rejected from both normalized generic and manufacturer-specific namespaces.
+- Unresolved/reserved for this importer: P35xx–P39xx, B3xxx and C3xxx. These identifiers may be retained only in the `unknown` quarantine namespace; they are rejected from both normalized generic and manufacturer-specific namespaces. U3xxx is ISO/SAE-controlled, but only exact source-backed rows are admitted.
 - P34xx is admitted only when the exact record is present in the pinned source snapshot; the prefix alone is not proof that a code is assigned by the latest J2012DA.
 - A manufacturer-controlled range does not prove Volkswagen Group authorship. VAG-specific records still require a named VAG manufacturer, source-document revision, evidence locator, SHA-256, explicit rights for storage/display/redistribution, exact ECU/configuration applicability and independent technical review.
 
@@ -31,7 +31,7 @@ The pinned OBDex CC0 snapshot remains a separate research pack. Its P3/U3 family
 ## Verification required
 
 - JSON Schema patterns, SQLite insert/update triggers, the Python schema validator, the Node overlap auditor and the desktop pre-transaction importer use the same conservative ranges.
-- Regression tests reject P35xx–P39xx, U3xxx, B3xxx and C3xxx from both normalized generic and manufacturer-specific namespaces, including pre-transaction rollback.
+- Regression tests reject P35xx–P39xx, B3xxx and C3xxx from both normalized generic and manufacturer-specific namespaces, including pre-transaction rollback; U3xxx is accepted only in the generic namespace.
 - Invalid records must fail before transaction commit; no partial technical record or import-batch row may remain.
 - No DTC definition text, current SAE annex spreadsheet, or restricted standard content is copied into the repository.
 
