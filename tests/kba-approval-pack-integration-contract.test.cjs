@@ -100,6 +100,6 @@ test("KBA approval pack builder publishes a reusable, attributed DE-only researc
   assert.match(workflow, /build_kba_de_vag_approval_research_pack\.py/);
   const builder = read("scripts/build_kba_de_vag_approval_research_pack.py");
   assert.match(builder, /kba-de-vag-approvals\.sqlite/);
-  assert.match(workflow, /RIGHTS-EVIDENCE\.json/);
+  assert.match(builder, /RIGHTS-EVIDENCE\.json/);
   assert.match(workflow, /retention-days: 90/);
 });
