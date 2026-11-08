@@ -18,6 +18,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+OBDEX_LOCK_PATH = Path(__file__).resolve().parents[1] / "data/source-manifests/obdex-generic-cc0.lock.json"
+
 ARTIFACTS = {
     "obdex": ("vag-tech-pro-obdex-cc0-2026-11-07", "obdex-generic-cc0"),
     "vehiclesdb": ("vag-identity-vehiclesdb-cc-by-4.0", "vehiclesdb-vag-identity"),
@@ -103,6 +105,12 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
     license_path = find_one(root, "UPSTREAM-LICENSE.txt")
     report = read_json(report_path)
     source_manifest = read_json(source_manifest_path)
+    local_lock = read_json(OBDEX_LOCK_PATH)
+    normalization_policy = local_lock.get("normalization_policy", {})
+    if normalization_policy.get("research_pack_only") is not True or normalization_policy.get("normalized_product_dtc_import_allowed") is not False:
+        raise ValueError("OBDex U3 research rows must remain isolated from normalized product DTC import")
+    if "U3xxx" not in normalization_policy.get("unverified_ranges_for_normalized_import", []):
+        raise ValueError("OBDex unverified U3 range is not quarantined for normalized import")
     license_text = " ".join(license_path.read_text(encoding="utf-8-sig").split()).lower()
     if "cc0 1.0 universal" not in license_text or "applies to the data files" not in license_text:
         raise ValueError("OBDex CC0 data-license scope check failed")
@@ -174,6 +182,7 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         "attribution_files": [relative(root.parent, source_manifest_path)],
         "status": "verified_research_only",
         "product_eligibility": "generic_obd2_reference_only",
+        "normalization_policy": normalization_policy,
         "market_scope": "global_generic_not_market_specific",
         "applicability_precision": "generic_code_only_no_vehicle_fitment",
         "counts": {"generic_dtcs": dtc_count, "pids": pid_count},
