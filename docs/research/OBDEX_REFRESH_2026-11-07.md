@@ -73,3 +73,12 @@ The Windows offline data-pack workflow completed successfully on 2026-11-07:
 - An independent read-only check of the database extracted from the final offline bundle returned `PRAGMA integrity_check=ok`, zero foreign-key violations, 9,533 DTC rows and 132 PID rows. All P3 rows are P34; no manufacturer-specific namespace or vehicle-fitment claim is present.
 
 The OBDex pack remains a separate generic SAE/ISO reference. Its generic descriptions, causes and repair suggestions are not VAG factory repair instructions. Source URLs embedded in raw records are not fetched or displayed. The pack is included in the offline research bundle, but not merged into the production vehicle/technical catalog.
+
+
+## 2026-11-08 normalized namespace review
+
+The pinned research pack continues to preserve the upstream OBDex source classification, but that source-level label is not sufficient to promote every family into the normalized product DTC namespace. SAE J2012 MAR2013 describes U3xxx as manufacturer-controlled and ISO/SAE-reserved; the current SAE J2012DA revision is 2026-07-29 and its full allocation table has not been obtained under a redistribution licence. Therefore all 174 U3xxx rows remain in the isolated source-labelled research database and are excluded from normalized generic DTC import until code-level allocation is independently verified against the current annex. They are not reclassified as VAG-specific.
+
+P35xx-P39xx remain excluded from manufacturer-controlled DTC namespaces; the publicly accessible SAE J2012 MAR2013 allocation describes P3400-P3999 as SAE-reserved. The 155 P3 rows in the pinned OBDex snapshot are source-backed P34xx research records only; the prefix itself is not proof of current-standard assignment or vehicle applicability.
+
+No research rows were deleted and no production database was changed. The run87 guard only narrows admission to normalized generic and VAG-specific technical records; the original CC0 source snapshot and its hashes remain intact in the research pack.
