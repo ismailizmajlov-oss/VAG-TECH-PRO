@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-11-07",
+  "reviewed_at": "2026-11-08",
   "product_market": [
     "RU",
     "EAEU"
@@ -37,19 +37,20 @@
             "Corrects the preamble reference to Commission of the Customs Union Decision No. 877 dated 2011-12-09.",
             "Adds internal FGIS Annex 1 attributes 86 (resumption reason) and 87 (resumption date).",
             "Updates public Annex 2 field 25 and adds public fields 27 and 28 for early termination based on a cancellation notice."
-          ]
+          ],
+          "reviewed_at": "2026-11-08"
         },
         "secondary_republication_sources": [
           {
             "url": "https://law.tks.ru/document/779154",
             "quality": "secondary_republication",
-            "reviewed_at": "2026-11-06",
+            "reviewed_at": "2026-11-08",
             "note": "Contains Order 2038 and Annex 1/Annex 2 field lists; not the primary official signed copy."
           },
           {
             "url": "https://base.garant.ru/412785907/",
             "quality": "secondary_republication",
-            "reviewed_at": "2026-11-06",
+            "reviewed_at": "2026-11-08",
             "note": "Confirms Order 2038 and its requirement to publish/search Annex 2 electronic-record fields on the official Rosstandart website; not the primary official signed copy."
           }
         ]
@@ -82,7 +83,8 @@
         "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
         "The 28 public Annex 2 search fields contain approval identifiers/status and vehicle identity descriptors (make, commercial name, type, base vehicle/chassis, modifications, category and environmental class), but no engine or gearbox technical designation/code, ECU, DTC, repair or wiring fields. The Annex 1 PDF reference is not a grant to cache or redistribute the PDF. Never infer an engine/gearbox pair from Annex 2 metadata.",
         "The Annex 2 public-site search obligation reviewed in Order 2038 applies to electronically issued records; a metadata export using this public-search namespace must retain field 20 and must not silently treat a missing/false electronic-issuance flag as a publicly searchable record.",
-        "Interstandart's registry-software FAQ describes a formal application for accredited certification bodies or testing laboratories and requires licensed IBM/HCL Domino. The main FAQ lists TR TS 018/2011, while consolidated page text also lists GOST 33670; eligibility wording is inconsistent and requires written clarification. This software-access procedure is not a data-reuse license."
+        "Interstandart's registry-software FAQ describes a formal application for accredited certification bodies or testing laboratories and requires licensed IBM/HCL Domino. The main FAQ lists TR TS 018/2011, while consolidated page text also lists GOST 33670; eligibility wording is inconsistent and requires written clarification. This software-access procedure is not a data-reuse license.",
+        "The amended internal Annex 1 adds field 86 (resumption reason) and field 87 (resumption date); the public Annex 2 uses different field numbers 24 (resumption reason) and 23 (resumption date). Keep the namespaces separate."
       ],
       "ot_ts_attribute_map": [
         {
@@ -204,6 +206,16 @@
           "field": 80,
           "name": "full_otts_pdf",
           "precision": "document_file_rights_unconfirmed"
+        },
+        {
+          "field": 86,
+          "name": "resumption_reason",
+          "precision": "document_status"
+        },
+        {
+          "field": 87,
+          "name": "resumption_date",
+          "precision": "document_status"
         }
       ],
       "publication_contract": {
@@ -342,7 +354,7 @@
           "order_2335_secondary_copy_reviewed": true,
           "official_primary_order_copy_retrieved": false,
           "official_public_search_endpoint_resolved": false,
-          "reviewed_at": "2026-11-06",
+          "reviewed_at": "2026-11-08",
           "secondary_order_copies_reviewed": [
             "https://law.tks.ru/document/779154",
             "https://base.garant.ru/412785907/"
