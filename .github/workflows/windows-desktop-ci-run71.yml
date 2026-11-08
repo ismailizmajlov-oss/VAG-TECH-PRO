@@ -1708,7 +1708,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA approval pack rebuild with the current pinned builder failed." }
           python scripts/build_kba_de_vag_approval_research_pack.py --verify --xlsx $xlsx --source-manifest $sourceManifest --out $rebuiltDir
           if ($LASTEXITCODE -ne 0) { throw "KBA approval pack re-verification with the current pinned builder failed." }
-          $rebuiltManifest = Get-Content -LiteralPath (Join-Path $rebuiltDir "manifest.json") -Raw | ConvertFrom-Json
+          $rebuiltManifest = Get-Content -LiteralPath (Join-Path $rebuiltDir "manifest.json") -Raw | ConvertFrom-Json -AsHashtable
           if ($rebuiltManifest.build_script_sha256 -notmatch "^[a-f0-9]{64}$") { throw "KBA approval builder SHA-256 is missing or malformed." }
           "KBA approval pack rebuilt and verified with current builder SHA-256: $($rebuiltManifest.build_script_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
@@ -1720,8 +1720,8 @@ jobs:
           node --check scripts/integrate-kba-de-approval-research-pack.cjs
           node scripts/integrate-kba-de-approval-research-pack.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id ${{ steps.kba-approval-pack.outputs.run_id }} --source-run-number ${{ steps.kba-approval-pack.outputs.run_number }} --artifact-sha256 ${{ steps.kba-approval-pack.outputs.artifact_sha256 }} 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/kba-approval-desktop-integration.log"
           if ($LASTEXITCODE -ne 0) { throw "KBA DE approval research-pack integration failed." }
-          $integratedPackManifest = Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json
-          $integratedPackReport = Get-Content -LiteralPath (Join-Path $packDir "build-report.json") -Raw | ConvertFrom-Json
+          $integratedPackManifest = Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json -AsHashtable
+          $integratedPackReport = Get-Content -LiteralPath (Join-Path $packDir "build-report.json") -Raw | ConvertFrom-Json -AsHashtable
           if ($integratedPackManifest.build_script_sha256 -ne $integratedPackReport.builder_script_sha256) { throw "KBA builder SHA-256 differs between pack and build report." }
           "kba_approval_builder_sha256=$($integratedPackManifest.build_script_sha256); kba_approval_database_sha256=$($integratedPackManifest.database_sha256); kba_approval_source_snapshot_sha256=$($integratedPackManifest.source_snapshot_sha256); kba_approval_source_manifest_sha256=$($integratedPackManifest.source_manifest_sha256); source_artifact_sha256=${{ steps.kba-approval-pack.outputs.artifact_sha256 }}; source_run_id=${{ steps.kba-approval-pack.outputs.run_id }}" | Add-Content -LiteralPath "$env:GITHUB_WORKSPACE/source-verification.txt"
           node --check scripts/apply-kba-de-approval-research-verification-run1.cjs
@@ -2153,7 +2153,7 @@ jobs:
           $items = @()
           $sourceLine = Get-Content -LiteralPath "source-verification.txt" -Raw -ErrorAction SilentlyContinue
           $kbaApprovalReportPath = "desktop-source/data/research/kba-de-vag-type-approval-research/desktop-integration-report.json"
-          $kbaApprovalReport = if (Test-Path -LiteralPath $kbaApprovalReportPath) { Get-Content -LiteralPath $kbaApprovalReportPath -Raw | ConvertFrom-Json } else { $null }
+          $kbaApprovalReport = if (Test-Path -LiteralPath $kbaApprovalReportPath) { Get-Content -LiteralPath $kbaApprovalReportPath -Raw | ConvertFrom-Json -AsHashtable } else { $null }
           $kbaApprovalBuilderHash = if ($kbaApprovalReport) { $kbaApprovalReport.builder_script_sha256 } else { $null }
           $kbaApprovalDatabaseHash = if ($kbaApprovalReport) { $kbaApprovalReport.database_sha256 } else { $null }
           $kbaApprovalSnapshotHash = if ($kbaApprovalReport) { $kbaApprovalReport.source_snapshot_sha256 } else { $null }
