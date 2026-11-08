@@ -133,6 +133,7 @@ def main() -> None:
     research_manifest_contract = (
         '$researchManifestPath = "desktop-source/data/research/manifest.json"',
         '$researchPackIds = @($researchManifest.packs | ForEach-Object { [string]$_.id })',
+        '$uniqueResearchPackIds = @($researchPackIds | Sort-Object -Unique)',
         '$researchManifestEntries = $researchPackIds.Count',
         '$researchManifestSha = (Get-FileHash -LiteralPath $researchManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()',
         'research_manifest_entries=$researchManifestEntries; research_manifest_sha256=$researchManifestSha;',
