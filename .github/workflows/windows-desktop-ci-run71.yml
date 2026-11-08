@@ -2490,7 +2490,7 @@ jobs:
           $lifecycle = Join-Path $desktopRoot "scripts/windows-installer-lifecycle.ps1"
           if (-not (Test-Path $lifecycle)) { throw "Offline Windows lifecycle script was not packaged." }
           $researchManifestPath = Join-Path $desktopRoot "data/research/manifest.json"
-          $researchManifest = Get-Content -LiteralPath $researchManifestPath -Raw | ConvertFrom-Json
+          $researchManifest = Get-Content -LiteralPath $researchManifestPath -Raw | ConvertFrom-Json -AsHashtable
           $kbaEntry = @($researchManifest.packs | Where-Object { $_.id -eq "kba-de-vag-stock-research" }) | Select-Object -First 1
           if (-not $kbaEntry -or $kbaEntry.market_scope[0] -ne "DE" -or $kbaEntry.product_import_allowed -ne $false -or $kbaEntry.exact_engine_gearbox_pair -ne $false -or $kbaEntry.ru_eaeu_applicability -ne $false) { throw "Packaged KBA entry is missing or crossed its DE-only research boundary." }
           $kbaResearchRoot = Join-Path $desktopRoot "data/research"
