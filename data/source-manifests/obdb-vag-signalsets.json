@@ -83,6 +83,97 @@
       "applicability_precision": "vehicle_model_candidate",
       "verification_status": "unverified_community_candidate",
       "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Tarraco"
+    },
+    {
+      "source_id": "obdb-audi-a3",
+      "repository": "OBDb/Audi-A3",
+      "repository_url": "https://github.com/OBDb/Audi-A3",
+      "make": "Audi",
+      "model": "A3",
+      "commit_sha": "e4d9f206beb66f34c83d88be60179c9d46794d71",
+      "commit_date": "2026-11-02T06:57:32Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A3"
+    },
+    {
+      "source_id": "obdb-audi-a5",
+      "repository": "OBDb/Audi-A5",
+      "repository_url": "https://github.com/OBDb/Audi-A5",
+      "make": "Audi",
+      "model": "A5",
+      "commit_sha": "3b1d5a2c5bd05afa27e4670fd2a7c6a88409ef01",
+      "commit_date": "2026-11-06T15:57:23Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A5"
+    },
+    {
+      "source_id": "obdb-audi-a6",
+      "repository": "OBDb/Audi-A6",
+      "repository_url": "https://github.com/OBDb/Audi-A6",
+      "make": "Audi",
+      "model": "A6",
+      "commit_sha": "30e63657b73d45781a77756e15c56b9b26271830",
+      "commit_date": "2026-11-02T01:39:14Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A6"
+    },
+    {
+      "source_id": "obdb-volkswagen-tiguan",
+      "repository": "OBDb/Volkswagen-Tiguan",
+      "repository_url": "https://github.com/OBDb/Volkswagen-Tiguan",
+      "make": "Volkswagen",
+      "model": "Tiguan",
+      "commit_sha": "fb44b9ab350508ee83a0b682721d786f5ab4d14f",
+      "commit_date": "2026-11-07T01:09:03Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Tiguan"
+    },
+    {
+      "source_id": "obdb-volkswagen-jetta",
+      "repository": "OBDb/Volkswagen-Jetta",
+      "repository_url": "https://github.com/OBDb/Volkswagen-Jetta",
+      "make": "Volkswagen",
+      "model": "Jetta",
+      "commit_sha": "3250f827653ad2aadae4447bf7d77a07e4fcd6e1",
+      "commit_date": "2026-11-07T21:06:29Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Jetta"
+    },
+    {
+      "source_id": "obdb-volkswagen-polo",
+      "repository": "OBDb/Volkswagen-Polo",
+      "repository_url": "https://github.com/OBDb/Volkswagen-Polo",
+      "make": "Volkswagen",
+      "model": "Polo",
+      "commit_sha": "daa213639487dd49d338ae0052b0caacc99cb049",
+      "commit_date": "2026-11-07T19:06:50Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Polo"
+    },
+    {
+      "source_id": "obdb-seat-leon",
+      "repository": "OBDb/Seat-Leon",
+      "repository_url": "https://github.com/OBDb/Seat-Leon",
+      "make": "SEAT",
+      "model": "Leon",
+      "commit_sha": "23efbf59eccf9598416f2f249a2154211ba7e09d",
+      "commit_date": "2026-11-07T08:58:32Z",
+      "market_scope": "UNKNOWN",
+      "applicability_precision": "vehicle_model_candidate",
+      "verification_status": "unverified_community_candidate",
+      "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Leon"
     }
   ]
 }
