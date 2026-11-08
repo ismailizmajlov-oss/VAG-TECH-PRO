@@ -56,6 +56,14 @@ Windows desktop CI run 701 completed successfully on application commit `34c699e
 
 This does **not** replace the separate native Windows 10/11 x64 acceptance run: no owner-provided isolated Windows 10/11 client runner was available. The latest follow-up commits in this section are documentation-only; they do not alter the application binaries tested by run 701.
 
+### DTC namespace and research-pack quarantine — 2026-11-08
+
+Main now contains the run87 conservative DTC namespace policy, currently at commit `ff02578c4096355b0c223d04b1a2a6db24f24141`. The canonical policy is `data/policies/dtc-namespace-ranges.json`; it is wired into the OEM DTC JSON Schema, SQLite triggers, Python validator, Node overlap auditor and the Windows desktop patch sequence. Generic SAE/ISO ranges are limited to P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx; P34xx requires an exact pinned source row. Manufacturer-controlled ranges are P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx. P35xx–P39xx, U3xxx, B3xxx and C3xxx remain quarantined as unknown pending exact current-standard allocation evidence. Manufacturer-controlled ranges never establish VAG authorship.
+
+The pinned OBDex CC0 pack contains 174 upstream-labelled U3xxx rows. They remain in its separate research database and are explicitly barred from normalized product DTC import until exact current SAE J2012DA assignments are independently verified. SAE J2012/J2012DA is registered as metadata-only; no copyrighted standard text or current allocation table has been ingested, cached or redistributed.
+
+The run87 cross-layer tests, source-lock enforcement and Windows patcher have been committed, but **no Windows CI run has yet confirmed these latest changes**. The last successful Windows lifecycle remains run 701 on its earlier source revision. The new root validator, DTC audit and desktop pre-transaction rollback checks must pass before this policy is considered verified.
+
 
 **VAG TECH PRO is not yet a professional repair database or a release candidate.**
 
@@ -75,7 +83,7 @@ The current consolidated EEC Decision No. 232 OTTS/OTSH Annex 1 form was reviewe
 
 A separate Rosstandart recall-campaign open-data source has been identified at easy.gost.ru. Historical public statements describe the register as open data for non-commercial services, and a 2023 webinar report describes reuse by business services. The current official dataset page and archive timed out during review on 2026-11-06. A separate metadata-only Windows CI probe [run 5](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42205049421) also failed to connect to both official URLs (WinError 10060); it downloaded no data file and found no current file or terms link. The current file schema and dataset-linked terms were therefore not retrieved. It is registered as a high-priority RU candidate only: no VIN rows, repair-completion/dealer fields or campaign text have been imported, and no snapshot hash is claimed. Recall remedy text must not be represented as a factory workshop procedure. See [the Rosstandart recall-campaign rights review](docs/research/ROSSTANDART_RECALL_CAMPAIGNS_OPEN_DATA_REVIEW_2026-11-06.md).
 
-The current central source register contains 54 entries and the Russian/EAEU register contains 13 sources; both retain explicit access, rights, market and import boundaries.
+The current central source register contains 55 entries and the Russian/EAEU register contains 13 sources; both retain explicit access, rights, market and import boundaries.
 
 A new Kyrgyz Single Window public vehicle-approval registry was reviewed on 2026-11-07. The operator describes a no-login pilot public registry for OTTS/OTSH and the separate cert.trade.kg landing page shows one-OTTS and zero-OTSH UI counters, which are not verified public-register corpus counts. The related certification application form includes engine characteristics, but this is not evidence that those fields are public-record fields. No dataset-specific reuse licence, documented API or bulk-export contract was found; the source is registered as permission-required, no records were downloaded and no hash is claimed. See the [Kyrgyz Single Window public registry review](docs/research/KYRGYZ_SINGLE_WINDOW_PUBLIC_REGISTRY_REVIEW_2026-11-07.md).
 
