@@ -45,7 +45,8 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
         self.assertGreaterEqual(rows_seen, 5)
         self.assertEqual(codes, ["CAXA", "CAVD", "AEE", "2G", "3F", "AGB", "AZB", "AGB", "AZB"])
         self.assertEqual(rows[0]["section_heading"], "1.8 litre petrol engine")
-        self.assertEqual(rows[1]["section_heading"], "Another engine")
+        self.assertEqual(rows[1]["section_heading"], "1.8 litre petrol engine")
+        self.assertEqual(rows[2]["section_heading"], "Another engine")
         self.assertTrue(all("Gearbox" not in row["source_row_text"] for row in rows))
 
     def test_source_register_requires_pinned_revisions_and_sharealike_rights(self):
