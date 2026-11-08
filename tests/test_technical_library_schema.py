@@ -324,5 +324,22 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         self.assertIn("compressed patch SHA-256 mismatch", loader_text)
         self.assertIn("patch SHA-256 mismatch", loader_text)
 
+    def test_unresolved_reserved_dtc_ranges_remain_unknown_and_unpublishable(self) -> None:
+        source_document_id = self.insert_source_document("test-dtc-quarantine", "TEST-DTC-QUARANTINE", market_scope="UNKNOWN")
+        codes = ("P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC")
+        for code in codes:
+            self.db.execute("""INSERT INTO oem_dtc_index
+              (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+               evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+              VALUES (?,'unknown','UNKNOWN','UNKNOWN',?,'quarantine:unverified-allocation',
+                      'unknown',?,'2026-11-08T00:00:00Z')""",
+              (code, source_document_id, self.h("quarantine:" + code)))
+            row_id = self.db.execute("SELECT last_insert_rowid()").fetchone()[0]
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "publication blocked: insufficient exact applicability evidence"):
+                self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (row_id,))
+        self.assertEqual(self.db.execute("SELECT count(*) FROM oem_dtc_index").fetchone()[0], len(codes))
+        self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+
+
 if __name__ == "__main__":
     unittest.main()
