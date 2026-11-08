@@ -7,6 +7,7 @@ on:
       - automation/windows-desktop-build-run57
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/windows-desktop-ci-run71.yml
       - .github/workflows/acquire-obdex-cc0.yml
       - .github/workflows/acquire-obdb-vag-signalsets.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
@@ -26,6 +27,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/windows-desktop-ci-run71.yml
       - .github/workflows/acquire-obdex-cc0.yml
       - .github/workflows/acquire-obdb-vag-signalsets.yml
       - .github/workflows/acquire-vag-identity-vehiclesdb.yml
