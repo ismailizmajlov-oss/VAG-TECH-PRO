@@ -6,6 +6,11 @@ on:
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+      - "data/source-manifests/obdb-vag-signalsets.json"
+      - "tests/test_obdb_vag_signal_source_rights.py"
+      - "scripts/build_obdb_vag_research.py"
+      - "scripts/verify_obdb_vag_research.py"
+      - ".github/workflows/acquire-obdb-vag-signalsets.yml"
       - "tests/test_vehiclesdb_vag_identity_source_rights.py"
       - ".github/workflows/acquire-vag-identity-vehiclesdb.yml"
       - ".github/workflows/build-windows-offline-data-packs.yml"
@@ -80,6 +85,11 @@ on:
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+      - "data/source-manifests/obdb-vag-signalsets.json"
+      - "tests/test_obdb_vag_signal_source_rights.py"
+      - "scripts/build_obdb_vag_research.py"
+      - "scripts/verify_obdb_vag_research.py"
+      - ".github/workflows/acquire-obdb-vag-signalsets.yml"
       - "tests/test_vehiclesdb_vag_identity_source_rights.py"
       - ".github/workflows/acquire-vag-identity-vehiclesdb.yml"
       - ".github/workflows/build-windows-offline-data-packs.yml"
