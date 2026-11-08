@@ -19,7 +19,7 @@ No record, export, PDF or approval attachment was downloaded. No raw HTML respon
 - The visible table does not expose engine code, gearbox code, exact engine/gearbox pair, ECU, DTC or repair applicability.
 - CSV/PDF/XML export controls were last observed on 2026-11-07. They were not re-verified in the 2026-11-08 page snapshot; no export endpoint or scope is known.
 
-The opened page shell exposes the title, date filters and result/total labels, but not the raw HTML or a documented API contract. No undocumented endpoint was guessed or called.
+The opened page shell exposes the title, date filters and result/total labels, but not the raw HTML or a documented API contract. The earlier 2026-11-07 review document recorded a separate 06.11.2026–07.11.2026 page observation; the prior Russian manifest snapshot also retains its earlier 05.11.2026–06.11.2026 date filter. These are kept as distinct historical observations rather than silently rewritten. No undocumented endpoint was guessed or called.
 
 ## Rights and import boundary
 
