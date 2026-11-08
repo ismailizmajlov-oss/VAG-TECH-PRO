@@ -199,7 +199,12 @@ function patchApi(desktopRoot) {
 function patchUi(desktopRoot) {
   const file = safeJoin(desktopRoot, "components/local-research-catalog.tsx");
   let text = fs.readFileSync(file, "utf8");
-  const datasetAnchor = 'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "astra-targa" | "rdw" | "kba-de";';
+  const datasetAnchors = [
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "astra-targa" | "rdw" | "kba-de";',
+    'type Dataset = "vehicles" | "vehiclesdb" | "dtc" | "pids" | "uds" | "autodiag2" | "mechanicdb" | "wikidata" | "generic-guidance" | "wikidata-generations" | "astra" | "rdw" | "kba-de";'
+  ];
+  const datasetAnchor = datasetAnchors.find((candidate) => text.includes(candidate));
+  if (!datasetAnchor) fail("KBA approval dataset type anchor missing from the pinned desktop source.");
   const newDataset = datasetAnchor.replace(' | "kba-de";', ' | "kba-de" | "kba-de-approvals";');
   const types = [
     'type KbaApprovalSummary = { id: string; counts: { sourceRows: number; approvalRecords: number; manufacturerLabels: number; distinctApprovalNumbers: number; sourceLabelPolicyRows: number }; marketScope: string; rightsStatus: string; attributionText: string; sourceUrl: string; catalogUrl: string; license: string; licenseUrl: string; sourceRevision: string; sourceSnapshotSha256: string; sourceFileSha256: string; databaseSha256: string; sourceManifestSha256: string; warning: string; productionImport: false; productImportAllowed: false; ruEaeuApplicability: false; exactVehicleFitment: false; exactEngineGearboxPair: false; };',
