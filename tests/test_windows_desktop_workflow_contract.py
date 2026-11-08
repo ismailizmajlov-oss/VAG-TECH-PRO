@@ -358,5 +358,17 @@ def main() -> None:
     if not (text.index(kba_integrate_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker)):
         raise SystemExit("KBA pack must be integrated and verified before desktop tests and NSIS packaging")
 
+    metadata_marker = "      - name: Write build metadata"
+    if metadata_marker not in text:
+        raise SystemExit("Windows build metadata step is missing")
+    metadata_step = text.split(metadata_marker, 1)[1].split("\\n      - name:", 1)[0]
+    expected_oem_schema_path = '$oemDtcIndexSchemaPath = "desktop-source/data/schemas/oem-dtc-index.schema.json"'
+    if expected_oem_schema_path not in metadata_step:
+        raise SystemExit("OEM DTC schema SHA-256 must be computed from the staged desktop source tree")
+    if '$oemDtcIndexSchemaPath = "data/schemas/oem-dtc-index.schema.json"' in metadata_step:
+        raise SystemExit("OEM DTC schema hash path incorrectly points to the repository root")
+    if 'if (-not $oemDtcIndexSchemaHash) { throw "OEM DTC index schema is missing from the staged desktop source." }' not in metadata_step:
+        raise SystemExit("Windows metadata generation must fail closed when the OEM DTC schema is absent")
+
 if __name__ == "__main__":
     main()
