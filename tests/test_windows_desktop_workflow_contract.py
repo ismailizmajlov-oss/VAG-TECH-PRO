@@ -13,6 +13,8 @@ NATIVE_WORKFLOW = ROOT / ".github" / "workflows" / "windows-10-11-native-lifecyc
 def main() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     native_text = NATIVE_WORKFLOW.read_text(encoding="utf-8")
+    if "group: vag-tech-pro-windows-x64-v3-${{ github.ref }}" not in text:
+        raise SystemExit("Windows validation workflow must use the v3 concurrency group to bypass stale v2 runs")
     if "cancel-in-progress: true" not in text:
         raise SystemExit("Windows validation workflow must cancel superseded runs so the latest source snapshot is tested first")
     status_retry_contract = (
