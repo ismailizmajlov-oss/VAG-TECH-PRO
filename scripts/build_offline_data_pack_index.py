@@ -435,7 +435,8 @@ def verify_bundle(root: Path) -> dict[str, Any]:
             "manifest_path", "manifest_sha256", "license", "license_files",
             "attribution_files", "status", "product_eligibility", "market_scope",
             "applicability_precision", "counts", "source_revision", "source_revisions",
-            "make_counts", "warnings",
+            "make_counts", "warnings", "normalized_product_namespace_exclusions",
+            "unverified_current_standard_ranges", "source_label_is_not_standard_allocation_proof", "unverified_range_counts",
         ):
             if fresh.get(key) != pack.get(key):
                 raise ValueError(f"Pack index metadata drift for {pack_id}.{key}")
