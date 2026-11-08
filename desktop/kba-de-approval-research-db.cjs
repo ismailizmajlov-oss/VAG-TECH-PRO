@@ -12,7 +12,7 @@ const CATALOG_URL = "https://www.govdata.de/suche/daten/liste-der-erteilten-typg
 const LICENSE_ID = "DL-DE-BY-2.0";
 const LICENSE_URL = "https://www.govdata.de/dl-de/by-2-0";
 const EXPECTED_TABLES = ["approval_records", "source_files", "source_label_policy", "source_registry"];
-const EXPECTED_INDEXES = ["idx_kba_approval_date", "idx_kba_approval_number", "idx_kba_manufacturer", "idx_kba_trade_name"];
+const EXPECTED_INDEXES = ["idx_kba_appr_date", "idx_kba_appr_make", "idx_kba_appr_number", "idx_kba_appr_trade", "idx_kba_appr_type"];
 const WARNING = "Только метаданные одобрений типа транспортного средства Германии. Дата одобрения не является модельным годом. Данные не содержат коды двигателя/КПП, их точные пары, ECU, DTC или ремонтные процедуры; не подтверждают применимость к конкретному автомобилю и не распространяются на RU/ЕАЭС.";
 
 function assert(condition, message) {
