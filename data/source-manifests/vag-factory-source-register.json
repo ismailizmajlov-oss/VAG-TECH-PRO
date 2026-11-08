@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T01:22:00Z",
+  "updated_at": "2026-11-08T01:50:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5422,6 +5422,40 @@
       "data_ingested": false,
       "product_import_allowed": false,
       "verification_status": "rights_restricted_metadata_only"
+    },
+    {
+      "source_id": "eaeu-nsi-rest-api",
+      "publisher": "Eurasian Economic Union",
+      "url": "https://nsi.eaeunion.org/portal/info/api",
+      "api_base_url": "https://nsi.eaeunion.org/api/v1/",
+      "source_kind": "public_rest_api_discovery_metadata",
+      "market_scope": [
+        "EAEU"
+      ],
+      "resource_scope": "Unified EAEU normative-reference information objects; presence of OTTS/OTSH datasets not yet confirmed",
+      "access_evidence": "Official API page states unauthenticated users may access EAEU NSI objects and each request returns at most 1500 elements; pagination uses limit and offset",
+      "rights": {
+        "access_authentication_required": false,
+        "data_license_status": "not_stated",
+        "permission_status": "not_obtained",
+        "commercial_use_allowed": false,
+        "display_allowed": false,
+        "offline_cache_allowed": false,
+        "bulk_reuse_allowed": false,
+        "redistribution_allowed": false,
+        "metadata_reference_only": true
+      },
+      "project_decision": "discovery_only; public unauthenticated API access is not treated as a reuse, offline caching, bulk extraction or redistribution licence; no endpoint data or OTTS/OTSH records imported",
+      "evidence_status": "official API documentation reviewed 2026-11-08; dataset catalogue and OTTS/OTSH coverage not yet verified",
+      "api_limit_per_request": 1500,
+      "pagination_parameters": [
+        "limit",
+        "offset"
+      ],
+      "source_snapshot_sha256": null,
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "verification_status": "metadata_only_discovery"
     }
   ],
   "minimum_fitment_evidence_fields": [
