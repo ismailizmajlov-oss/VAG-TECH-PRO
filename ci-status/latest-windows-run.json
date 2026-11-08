@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-08T09:42:00Z",
+  "recorded_at_utc": "2026-11-08T09:46:00Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run87",
   "run_id": 42457978012,
   "run_number": 841,
@@ -73,7 +73,7 @@
     ]
   },
   "release_ready": false,
-  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle on tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77. It passed desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification, both NSIS x64 builds, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The Windows Server 2022 lifecycle also passed. Main now contains post-run metadata-only additions to the central and Russian/EAEU source registers for an Armenian national OTTS public listing; no desktop application code changed, but these source-register changes have not yet been validated by a newer Windows/source-rights CI run. PR #56 was merged as b7f267662fbe1764c549ebaecaf8f0f693b37e3d. Thirteen cross-file contract assertions passed against the current central/regional manifests and Armenian rights review; no GitHub Actions run is exposed for the merge commit, so the merged Python regression test remains pending CI revalidation. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers.",
+  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle on tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77. It passed desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification, both NSIS x64 builds, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The Windows Server 2022 lifecycle also passed. Main now contains post-run metadata-only additions to the central and Russian/EAEU source registers for an Armenian national OTTS public listing; no desktop application code changed, but these source-register changes have not yet been validated by a newer Windows/source-rights CI run. PR #56 was merged as b7f267662fbe1764c549ebaecaf8f0f693b37e3d. Thirteen cross-file contract assertions passed against the current central/regional manifests and Armenian rights review; no GitHub Actions run is exposed for the merge commit, so the merged Python regression test remains pending CI revalidation. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers. Workflow audit follow-up: the Armenian rights test is now wired into the Windows validation workflow; stale hardcoded research/Wikidata audit counts were replaced with manifest/evidence-derived values. Fifteen cross-file contract assertions passed, but no new Windows CI result has been observed; run841 remains the latest fully confirmed installer lifecycle.",
   "related_validation_workflows": [
     {
       "name": "Russian EAEU and VAG OEM source contracts",
@@ -148,5 +148,32 @@
       },
       "windows_ci_validation": "pending"
     }
-  ]
+  ],
+  "main_head_sha": "105ba92bc3730c415dce8afce7508ce1e2c606f0",
+  "workflow_audit_fixes": [
+    {
+      "commit": "4b905b62f5763e4ab1e35dd470eb476a2919d82a",
+      "path": ".github/workflows/windows-desktop-ci-run71.yml",
+      "change": "Wired the Armenian OTTS rights regression test into both push and pull-request path filters and the source-rights execution step. Replaced stale hardcoded research-manifest count with the current manifest's unique pack count and SHA-256. Replaced stale Wikidata generation counts with values read from integration evidence."
+    },
+    {
+      "commit": "ad8f3ccc8d16ad72c7a1472292db21982b37de7e",
+      "path": ".github/workflows/windows-desktop-ci-run71.yml",
+      "change": "Made duplicate-pack detection explicit by comparing the current pack ID list with its unique set."
+    },
+    {
+      "commit": "105ba92bc3730c415dce8afce7508ce1e2c606f0",
+      "path": "tests/test_windows_desktop_workflow_contract.py",
+      "change": "Added regression assertions for Armenian rights-test wiring, current research manifest count/hash derivation, duplicate pack IDs, and dynamic Wikidata generation counts."
+    }
+  ],
+  "workflow_audit_validation": {
+    "checks_passed": 15,
+    "checks_total": 15,
+    "scope": "current workflow YAML content, workflow-contract test, Armenian source manifests and rights review",
+    "method": "cross-file contract assertions through GitHub source reads",
+    "python_unittest_executed": false,
+    "windows_ci_validation": "pending",
+    "latest_confirmed_windows_run": 841
+  }
 }
