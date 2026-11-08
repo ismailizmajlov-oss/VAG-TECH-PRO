@@ -8,9 +8,9 @@ The normalized allowlists are:
 
 - Generic: P0xxx, P2xxx, B0xxx, C0xxx and U0xxx.
 - Manufacturer-controlled: P1xxx, P30xx-P33xx, B1xxx-B2xxx, C1xxx-C2xxx and U1xxx-U2xxx.
-- Unresolved/quarantined: P34xxx-P39xxx, U3xxx, B3xxx and C3xxx.
+- Unresolved/quarantined: P34xx-P39xx, U3xxx, B3xxx and C3xxx.
 
-The pinned OBDex CC0 source projection labels 155 P34xxx records as generic. That upstream label does not establish their exact current SAE/ISO allocation. All P34xxx rows remain in the isolated research pack and are excluded from normalized generic and manufacturer-specific DTC namespaces until exact current J2012DA assignments are independently verified.
+The pinned OBDex CC0 source projection labels 155 P34xx records as generic. That upstream label does not establish their exact current SAE/ISO allocation. All P34xx rows remain in the isolated research pack and are excluded from normalized generic and manufacturer-specific DTC namespaces until exact current J2012DA assignments are independently verified.
 
 ## What the guard does not prove
 
@@ -22,10 +22,10 @@ Generic OBDex records remain generic-only and do not acquire VAG vehicle fitment
 
 ## Verification
 
-- Root SQLite insert/update triggers reject cross-range namespace assignments and reject all P34xxx identifiers from the normalized generic namespace.
+- Root SQLite insert/update triggers reject cross-range namespace assignments and reject all P34xx identifiers from the normalized generic namespace.
 - The OEM DTC JSON Schema applies namespace-specific code patterns.
 - The desktop package validator checks code ranges before opening the SQLite import transaction.
-- Regression tests cover P34xxx quarantine, manufacturer-controlled P1/P3/B/C/U ranges, and rollback/no-partial-write behaviour.
+- Regression tests cover P34xx quarantine, manufacturer-controlled P1/P3/B/C/U ranges, and rollback/no-partial-write behaviour.
 - An independent audit utility reports namespace mismatches and cross-namespace identifier overlap.
 
 This policy is a classification guard, not a source licence or repair-data approval.
