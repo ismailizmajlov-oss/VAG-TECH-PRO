@@ -1695,6 +1695,11 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          $rootOemSchema = Join-Path $env:GITHUB_WORKSPACE "data/schemas/oem-dtc-index.schema.json"
+          if (-not (Test-Path -LiteralPath $rootOemSchema -PathType Leaf)) { throw "Root OEM DTC schema is missing." }
+          $desktopOemSchema = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/schemas/oem-dtc-index.schema.json"
+          New-Item -ItemType Directory -Force -Path (Split-Path -Parent $desktopOemSchema) | Out-Null
+          Copy-Item -LiteralPath $rootOemSchema -Destination $desktopOemSchema -Force
           node --check apply-dtc-namespace-range-guard-run86.cjs
           if ($LASTEXITCODE -ne 0) { throw "Run86 patch syntax check failed" }
           node apply-dtc-namespace-range-guard-run86.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/dtc-namespace-run86.log"
@@ -1704,17 +1709,9 @@ jobs:
           node --test desktop-source/tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/dtc-namespace-run86-tests.log"
           if ($LASTEXITCODE -ne 0) { throw "Run86 DTC namespace tests failed" }
           "dtc_namespace_code_ranges=run86; generic_ranges=P0xxx,P2xxx,P34xx,B0xxx,C0xxx,U0xxx,U3xxx; manufacturer_controlled_ranges=P1xxx,P30xx-P33xx,P35xx-P39xx,B1xxx-B2xxx,C1xxx-C2xxx,U1xxx-U2xxx; cross_namespace_import_rejected=true; validation_before_transaction=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
-          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
-          foreach ($relative in @("lib/local-core-db.cjs", "tests/local-core-db.test.cjs", "data/schemas/technical-record-payloads.schema.json", "data/schemas/oem-dtc-index.schema.json", "docs/LOCAL_VEHICLE_CATALOG_IMPORT.md")) {
-            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
-            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "Run86 audit source is missing: $relative" }
-            $destinationFile = Join-Path $auditRoot $relative
-            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
-            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
-          }
-          $patchAudit = Join-Path $auditRoot "scripts/patches/apply-dtc-namespace-range-guard-run86.cjs"
-          New-Item -ItemType Directory -Force -Path (Split-Path -Parent $patchAudit) | Out-Null
-          Copy-Item -LiteralPath "apply-dtc-namespace-range-guard-run86.cjs" -Destination $patchAudit -Force
+          $patchInSource = Join-Path $env:GITHUB_WORKSPACE "desktop-source/scripts/patches/apply-dtc-namespace-range-guard-run86.cjs"
+          New-Item -ItemType Directory -Force -Path (Split-Path -Parent $patchInSource) | Out-Null
+          Copy-Item -LiteralPath "apply-dtc-namespace-range-guard-run86.cjs" -Destination $patchInSource -Force
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
@@ -1954,7 +1951,7 @@ jobs:
           $technicalStepOrderPatchHash = if (Test-Path $technicalStepOrderPatchPath) { (Get-FileHash -LiteralPath $technicalStepOrderPatchPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $dtcNamespaceRangePatchPath = "apply-dtc-namespace-range-guard-run86.cjs"
           $dtcNamespaceRangePatchHash = if (Test-Path $dtcNamespaceRangePatchPath) { (Get-FileHash -LiteralPath $dtcNamespaceRangePatchPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
-          $oemDtcIndexSchemaPath = "desktop-source/data/schemas/oem-dtc-index.schema.json"
+          $oemDtcIndexSchemaPath = "data/schemas/oem-dtc-index.schema.json"
           $oemDtcIndexSchemaHash = if (Test-Path $oemDtcIndexSchemaPath) { (Get-FileHash -LiteralPath $oemDtcIndexSchemaPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
 
           foreach ($file in @(
@@ -2036,6 +2033,7 @@ jobs:
             windows-lifecycle-staging/desktop-source/data/sql/local-core-v2.sql
             windows-lifecycle-staging/desktop-source/docs/LOCAL_VEHICLE_CATALOG_IMPORT.md
             windows-lifecycle-staging/desktop-source/data/schemas/**
+            windows-lifecycle-staging/desktop-source/scripts/patches/apply-dtc-namespace-range-guard-run86.cjs
             windows-lifecycle-staging/desktop-source/scripts/verify-local-core.cjs
             windows-lifecycle-staging/desktop-source/scripts/windows-installer-lifecycle.ps1
           if-no-files-found: warn
