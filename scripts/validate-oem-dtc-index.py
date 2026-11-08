@@ -141,6 +141,10 @@ def main() -> None:
           (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,evidence_locator,applicability_level,source_claim_hash,created_at_utc)
           VALUES (?,'manufacturer_specific_vag','AUDI','RU',?,'unresolved or reserved range','exact_ecu_hw_sw',?,'2026-11-03T00:00:00Z')""",(code,vag_source,"4"*64)),
           "manufacturer-controlled DTC code is outside allowed OBD-II ranges")
+    expect_integrity_error(lambda: db.execute("""INSERT INTO oem_dtc_index
+      (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+      VALUES ('P35A6','manufacturer_specific_other','OTHER','RU',?,'unresolved or reserved other-OEM range','exact_ecu_hw_sw',?,'2026-11-03T00:00:00Z')""",(vag_source,"5"*64)),
+      "manufacturer-controlled DTC code is outside allowed OBD-II ranges")
     db.execute("""INSERT INTO source_documents
       (source_id,publisher,document_id,document_type,revision,market_scope,
        license_status,reuse_scope,redistribution_allowed,retrieved_at_utc)
