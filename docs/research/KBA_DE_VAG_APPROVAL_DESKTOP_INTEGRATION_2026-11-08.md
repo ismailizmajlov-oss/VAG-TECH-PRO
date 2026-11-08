@@ -32,7 +32,7 @@ The integration rechecks the published licence, all rights flags, source-manifes
 
 ## Desktop behaviour
 
-A separate KBA · ОТТС DE research tab exposes raw approval-document metadata:
+A separate KBA · DE approvals research tab exposes raw approval-document metadata:
 - manufacturer label, trade name and type designation;
 - approval object and type-approval number;
 - approval date and emissions-member-state field;
