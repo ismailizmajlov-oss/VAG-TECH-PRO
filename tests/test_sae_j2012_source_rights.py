@@ -40,6 +40,20 @@ class SaeJ2012SourceRightsTests(unittest.TestCase):
             "metadata_only_no_standard_content_downloaded",
         )
 
+    def test_current_standard_and_annex_revisions_are_metadata_only(self):
+        source = next(
+            source for source in self.registry["sources"]
+            if source.get("source_id") == "sae-j2012-dtc-standard"
+        )
+        self.assertIn("SAE J2012_202509", source["source_revision"])
+        self.assertIn("J2012DA_202607", source["source_revision"])
+        self.assertIn(
+            "https://saemobilus.sae.org/standards/j2012da_202510-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions",
+            source["related_urls"],
+        )
+        self.assertFalse(source["rights"]["current_annex_allocation_table_storage_allowed"])
+        self.assertIn("not licensed or acquired", source["evidence_status"])
+
     def test_standard_metadata_cannot_become_product_dtc_content(self):
         source = next(
             source for source in self.registry["sources"]
