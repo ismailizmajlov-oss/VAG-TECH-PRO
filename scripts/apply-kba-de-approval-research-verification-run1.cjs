@@ -56,7 +56,7 @@ function patch(desktopRoot) {
   const approvalReader = '  const kbaApprovalSummary = require(path.join(ROOT, "lib", "kba-de-approval-research-db.cjs")).getKbaApprovalSummary(RESEARCH);';
   const approvalAssertions = [
     '  assert(kbaApprovalSummary.id === kbaApproval.id && kbaApprovalSummary.sourceId === "kba-de-whole-vehicle-type-approvals" && kbaApprovalSummary.marketScope === "DE" && kbaApprovalSummary.license === "DL-DE-BY-2.0" && kbaApprovalSummary.rightsStatus === "approved_by_published_DL_DE_BY_2_0" && kbaApprovalSummary.applicabilityPrecision === "type_approval_document_metadata_only" && kbaApprovalSummary.researchPackIngested === true && kbaApprovalSummary.productDatabaseIngested === false && kbaApprovalSummary.productionImport === false && kbaApprovalSummary.productImportAllowed === false && kbaApprovalSummary.ruEaeuApplicability === false && kbaApprovalSummary.exactVehicleFitment === false && kbaApprovalSummary.exactEngineGearboxPair === false && kbaApprovalSummary.repairApplicability === false && kbaApprovalSummary.diagnosticExecutionAllowed === false, "KBA approval pack must remain separately namespaced DE-only document metadata, never vehicle fitment");',
-    '  assert(kbaApprovalSummary.counts.sourceRows === 3782 && kbaApprovalSummary.counts.approvalRecords === 918 && kbaApprovalSummary.counts.manufacturerLabels === 8 && kbaApprovalSummary.counts.distinctApprovalNumbers === 918 && kbaApprovalSummary.counts.sourceLabelPolicyRows === 9 && kbaApprovalSummary.sourceSnapshotSha256 === kbaApproval.source_snapshot_sha256 && kbaApprovalSummary.databaseSha256 === kbaApproval.database_sha256 && kbaApprovalSummary.sourceManifestSha256 === kbaApproval.source_manifest_sha256, "KBA approval snapshot, SQLite, source manifest or research counts changed");'
+    '  assert(kbaApprovalSummary.counts.sourceRows === 3782 && kbaApprovalSummary.counts.approvalRecords === 918 && kbaApprovalSummary.counts.manufacturerLabels === 8 && kbaApprovalSummary.counts.distinctApprovalNumbers === 918 && kbaApprovalSummary.counts.distinctRowHashes === 918 && kbaApprovalSummary.counts.sourceLabelPolicyRows === 9 && kbaApprovalSummary.sourceSnapshotSha256 === kbaApproval.source_snapshot_sha256 && kbaApprovalSummary.databaseSha256 === kbaApproval.database_sha256 && kbaApprovalSummary.sourceManifestSha256 === kbaApproval.source_manifest_sha256, "KBA approval snapshot, SQLite, source manifest or research counts changed");'
   ].join("\n");
   if (!verifier.includes(approvalReader)) {
     verifier = replaceExactly(verifier, stockReader, stockReader + "\n" + approvalReader + "\n" + approvalAssertions, "KBA approval runtime reader/rights/provenance/count verification");
@@ -69,7 +69,8 @@ function patch(desktopRoot) {
     "        marketScope: kbaApprovalSummary.marketScope,",
     "        approvalRecords: kbaApprovalSummary.counts.approvalRecords,",
     "        manufacturerLabels: kbaApprovalSummary.counts.manufacturerLabels,",
-    "        distinctApprovalNumbers: kbaApprovalSummary.counts.distinctApprovalNumbers,",
+    "        distinctApprovalNumbers: kbaApprovalSummary.counts.distinctApprovalNumbers,
+        distinctRowHashes: kbaApprovalSummary.counts.distinctRowHashes,",
     "        sourceRows: kbaApprovalSummary.counts.sourceRows,",
     "        productionImport: kbaApprovalSummary.productionImport,",
     "        productImportAllowed: kbaApprovalSummary.productImportAllowed,",
