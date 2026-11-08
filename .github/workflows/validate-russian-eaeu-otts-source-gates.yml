@@ -88,10 +88,14 @@ jobs:
         run: |
           python -m py_compile scripts/import_eaeu_otts_registry_export.py
           python -m unittest discover -s tests -p "test_eaeu_otts_registry_import.py" -v
-      - name: Validate Kazakhstan EOKNO rights and document-type boundary
-        run: python -m unittest discover -s tests -p "test_kazakhstan_eokno_source_rights.py" -v
-      - name: Validate ELPTS public OTTS and reference-file rights gate
-        run: python tests/test_elpts_reference_rights_gate.py
+      - name: Validate Kazakhstan EOKNO and TechReg registry rights boundaries
+        run: |
+          python -m unittest discover -s tests -p "test_kazakhstan_eokno_source_rights.py" -v
+          python -m unittest discover -s tests -p "test_kazakhstan_techreg_source_rights.py" -v
+      - name: Validate ELPTS public OTTS, reference-file rights and EEC pilot-order boundary
+        run: |
+          python tests/test_elpts_reference_rights_gate.py
+          python -m unittest discover -s tests -p "test_elpts_otts_source_rights.py" -v
       - name: Syntax-check the authorized FGIS importer
         run: node --check scripts/import-authorized-fgis-otts-export.cjs
       - name: Run transactional SQLite importer tests on Windows
