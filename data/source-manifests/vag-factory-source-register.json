@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-09T18:30:54Z",
+  "updated_at": "2026-11-08T20:11:48Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -2187,7 +2187,7 @@
       "catalog_documentation_url": "https://productdata.volkswagenag.com/product-catalog.html",
       "cache_documentation_url": "https://productdata.volkswagenag.com/data-update.html",
       "source_kind": "official_vw_product_configuration_catalog_api",
-      "source_revision": "published_terms_copyright_2019_reviewed_2026-11-06",
+      "source_revision": "published_terms_copyright_2019_and_current_public_catalog_docs_rechecked_2026-11-09",
       "market_scope": [
         "UNKNOWN"
       ],
@@ -2302,7 +2302,11 @@
         "api_right_non_transferable": true,
         "api_right_revocable": true,
         "api_right_non_sublicensable": true,
-        "current_price_status": "currently_free_but_reserves_right_to_charge"
+        "current_price_status": "currently_free_but_reserves_right_to_charge",
+        "last_reviewed_at": "2026-11-09",
+        "contractual_purpose_restricted": true,
+        "offline_cache_in_registered_application_documented": true,
+        "offline_database_distribution_requires_written_clarification": true
       },
       "applicability": {
         "precision": "market_specific_model_type_option_configuration_candidates_after_authenticated_access",
@@ -2313,7 +2317,17 @@
         "ECU_mapping": false,
         "DTC_mapping": false,
         "repair_procedure_fitment": false,
-        "review_status": "permission_required"
+        "review_status": "permission_required",
+        "public_type_fields": [
+          "base_type",
+          "model_year",
+          "version",
+          "type_code",
+          "sales_class"
+        ],
+        "type_description_may_contain_engine_or_transmission_text": true,
+        "type_description_is_not_factory_engine_or_gearbox_code": true,
+        "exact_powertrain_pairing_from_type_description": false
       },
       "data_ingested": false,
       "source_snapshot_sha256": null,
@@ -2324,9 +2338,12 @@
         "The caching guide documents cache refresh mechanics for a registered application; it does not confirm the right to distribute a pre-populated offline SQLite database with VAG TECH PRO.",
         "The authenticated country list has not been observed; Russian and EAEU market coverage remain unconfirmed.",
         "The public API schema does not establish factory engine codes, gearbox codes, ECU, DTC, repair procedures or exact repair fitment.",
-        "OKAPI data is customer information and non-binding; a buildable configuration is not proof of an existing vehicle's factory configuration."
+        "OKAPI data is customer information and non-binding; a buildable configuration is not proof of an existing vehicle's factory configuration.",
+        "The contractual purpose is limited to creating configurations, checking buildability and determining WLTP values; no authorization for a repair-data product was established.",
+        "The public overview's market list is explicitly non-exhaustive. EAEU member markets are not displayed, but absence from that list is not proof of unsupported status; the authenticated countries endpoint is required.",
+        "The official cache guide documents ETag and content-update headers for refreshing a registered application's cache, but it does not expressly grant redistribution of a pre-populated offline SQLite database with VAG TECH PRO."
       ],
-      "evidence_status": "official_terms_catalog_and_cache_documentation_reviewed_2026-11-05; no credentials, account, API call or data snapshot",
+      "evidence_status": "official_terms_catalog_market_overview_and_cache_documentation_rechecked_2026-11-09; no company request, credentials, API call or data snapshot",
       "source_manifest_path": "data/source-manifests/vw-okapi-product-catalog.json",
       "data_scope": {
         "endpoints": [
@@ -2365,8 +2382,42 @@
           "url": "https://productdata.volkswagenag.com/tutorial.html",
           "reviewed_at": "2026-11-06",
           "evidence": "Country-specific endpoints expose brands, models, types and options; type/order responses may contain market-specific technical data, but public docs do not establish factory engine/gearbox codes or repair fitment."
+        },
+        {
+          "url": "https://productdata.volkswagenag.com/overview.html",
+          "reviewed_at": "2026-11-09",
+          "evidence": "Official overview lists Audi, SEAT, ŠKODA, Volkswagen Commercial Vehicles and Volkswagen brands. Its public market list is explicitly non-exhaustive and displays AR, AU, BH, BE, BR, IC, CN, CY, CZ, DK, EE, FI, FR, DE, GR, IS, IE, IT, JP, JO, KW, LV, LB, LT, LU, MT, MX, MD, NL, NO, OM, PL, PT, QA, RS, ZA, ES, SE, CH, TW, TR, UA, AE and GB; AM, BY, KZ, KG and RU are not displayed. No authenticated country list was obtained."
+        },
+        {
+          "url": "https://productdata.volkswagenag.com/product-catalog.html",
+          "reviewed_at": "2026-11-09",
+          "evidence": "Official catalog docs expose country-specific brands, models, vehicle types and options. The example type payload includes base_type, model_year, version and type code. A type description containing engine/transmission wording is not a factory engine code, gearbox code or exact repair-fitment proof."
         }
-      ]
+      ],
+      "public_market_list_is_incomplete": true,
+      "eaeu_member_markets_not_observed_in_public_list": [
+        "AM",
+        "BY",
+        "KZ",
+        "KG",
+        "RU"
+      ],
+      "authenticated_country_list_obtained": false,
+      "contractual_scope": {
+        "permitted_purpose": [
+          "vehicle_configuration_creation",
+          "configuration_buildability_check",
+          "WLTP_determination"
+        ],
+        "registered_application_required": true,
+        "display_and_evaluate_in_registered_application": "permitted_subject_to_terms_after_access_approval",
+        "third_party_disclosure": "expressly_permitted_subject_to_terms_after_access_approval",
+        "offline_cache": "refresh_mechanism_documented_for_registered_application",
+        "offline_distribution_of_cached_database": "not_confirmed_requires_written_clarification",
+        "data_non_binding": true,
+        "actual_production_availability_guaranteed": false,
+        "repair_database_use_authorized": false
+      }
     },
     {
       "source_id": "vehiclesdb-vag-identity-cc-by-4.0",
