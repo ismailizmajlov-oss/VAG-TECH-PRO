@@ -211,5 +211,29 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertFalse(source["product_import_allowed"])
 
 
+    def test_autodiag2_latest_branch_rows_remain_quarantined_without_upstream_rights(self):
+        registry = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        source = next(item for item in registry["sources"] if item["source_id"] == "autodiag2-vag-community-v6")
+        review = source["latest_branch_review"]
+        self.assertEqual(review["commit_sha"], "11e73fd6d105a071fa472f426d23225344921a19")
+        self.assertEqual(review["license_ids"], ["ODbL-1.0", "DbCL-1.0"])
+        self.assertEqual(review["license_file_sha256"], "50a8762802c3303f5612c002bd35a3e617dcc7315ff7073f784b8682ea646cb5")
+        self.assertEqual(review["upstream_evidence_rights_status"], "not_established_for_obdcodex_and_flex_referenced_materials")
+        self.assertFalse(review["product_import_allowed"])
+        self.assertFalse(review["data_ingested"])
+        self.assertIsNone(review["source_snapshot_sha256"])
+        records = {item["path"]: item for item in review["sampled_records"]}
+        self.assertEqual(records["data-src/ecu/generic/volkswagen/def.yml"]["sha256"], "b1d01c525b1f1404ffa21d654c21f98c6eede4049b9cc5ee1af845a7f17c4f09")
+        self.assertEqual(records["data-src/ecu/generic/audi/codes/P1639.yml"]["sha256"], "75692736477dda18b9c9db8b972daab21010e9c431c4414ec3c5a4afe2c9cafb")
+        self.assertIn("obdcodex", records["data-src/ecu/generic/audi/codes/P1639.yml"]["observed_evidence"])
+        golf = records["data-src/vehicle/Volkswagen/Golf/versions/V/BVX_MED9.5.yml"]
+        self.assertEqual(golf["sha256"], "e533584deae0a48fa3c6e4e4a59f21ea22bfde2a1a382e59d6501cf1f1a1771d")
+        self.assertIn("transmission_code", golf["missing_fields"])
+        self.assertIn("FLEX-FULL-vehicle-list-2020-11-9.pdf", golf["observed_evidence"][0])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["diagnostic_execution_allowed"])
+        self.assertFalse(source["repair_advice_approved"])
+
+
 if __name__ == "__main__":
     unittest.main()
