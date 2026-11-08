@@ -333,7 +333,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
                evidence_locator,applicability_level,source_claim_hash,created_at_utc)
               VALUES (?,'unknown','UNKNOWN','UNKNOWN',?,'quarantine:unverified-allocation',
                       'unknown',?,'2026-11-08T00:00:00Z')""",
-              (code, source_document_id, self.h("quarantine:" + code)))
+              (code, source_document_id, hashlib.sha256(code.encode("ascii")).hexdigest()))
             row_id = self.db.execute("SELECT last_insert_rowid()").fetchone()[0]
             with self.assertRaisesRegex(sqlite3.IntegrityError, "publication blocked: insufficient exact applicability evidence"):
                 self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (row_id,))
