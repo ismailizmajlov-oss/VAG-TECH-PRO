@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T08:30:00Z",
+  "updated_at": "2026-11-08T11:16:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -2714,7 +2714,49 @@
           ],
           "product_decision": "retain_as_access_and_schema_discovery_evidence_only; no import or fitment claim"
         }
-      ]
+      ],
+      "rights_recheck_2026_11_08": {
+        "observed_at": "2026-11-08",
+        "official_homepage_url": "https://elpts.ru/",
+        "reference_directory_section": "Справочники АС СЭП",
+        "reference_directory_links": [
+          "Справочник марок",
+          "Справочник технических характеристик"
+        ],
+        "paid_report_service": {
+          "audience": "AS SEP participants under concluded service agreements",
+          "agreement": "separate additional agreement after request through the Centre for Applications",
+          "distinction": "This describes the statistical-report service; it neither proves that the linked XLSX reference workbooks are paid reports nor grants reuse rights in their contents."
+        },
+        "software_tariff_notice": {
+          "url": "https://elpts.ru/uvedomlenie-o-vnesenii-izmenenij-v-tarifnyj-plan-k-oferte-pravo-ispolzovaniya-po/",
+          "published_at": "2026-10-02",
+          "effective_at": "2026-11-01",
+          "change": "The notice says wording «и передача сведений в АС СЭП» was removed from paragraph 4 of the software-use tariff-plan conditions.",
+          "rights_interpretation": "software-use terms only; no dataset-specific licence or grant for bulk extraction, SQLite caching, offline display or redistribution"
+        },
+        "tariff_plan": {
+          "url": "https://elpts.ru/wp-content/uploads/2026/10/tarifnyj-plan-k-oferte-po-17.09.2026.pdf",
+          "document_date": "2026-09-17",
+          "scope": "ELPTS Electronic Type Approval software for specified certification bodies and manufacturers/authorized representatives working under TR TS 018/2011 and Government Resolution No. 855",
+          "listed_workstation_license_rub_per_year": 14400,
+          "accepted_by_project": false,
+          "rights_interpretation": "paid software-use tariff, not a licence for third-party reuse of reference datasets"
+        },
+        "rights_effect": "none; dataset-specific reuse rights remain not_established and permission_status remains not_obtained",
+        "acquisition_state": {
+          "xlsx_files_downloaded": false,
+          "ot_ts_records_exported": false,
+          "raw_bytes_retrieved": false,
+          "source_snapshot_sha256": null,
+          "data_ingested": false,
+          "product_import_allowed": false,
+          "external_account_created": false,
+          "paid_access_accepted": false,
+          "permission_request_sent": false
+        },
+        "review_document": "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
+      }
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
@@ -6066,7 +6108,49 @@
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion",
-      "applicability_precision": "make_name_taxonomy_candidate_only; no model_or_powertrain_fitment_verified"
+      "applicability_precision": "make_name_taxonomy_candidate_only; no model_or_powertrain_fitment_verified",
+      "rights_recheck_2026_11_08": {
+        "observed_at": "2026-11-08",
+        "official_homepage_url": "https://elpts.ru/",
+        "reference_directory_section": "Справочники АС СЭП",
+        "reference_directory_links": [
+          "Справочник марок",
+          "Справочник технических характеристик"
+        ],
+        "paid_report_service": {
+          "audience": "AS SEP participants under concluded service agreements",
+          "agreement": "separate additional agreement after request through the Centre for Applications",
+          "distinction": "This describes the statistical-report service; it neither proves that the linked XLSX reference workbooks are paid reports nor grants reuse rights in their contents."
+        },
+        "software_tariff_notice": {
+          "url": "https://elpts.ru/uvedomlenie-o-vnesenii-izmenenij-v-tarifnyj-plan-k-oferte-pravo-ispolzovaniya-po/",
+          "published_at": "2026-10-02",
+          "effective_at": "2026-11-01",
+          "change": "The notice says wording «и передача сведений в АС СЭП» was removed from paragraph 4 of the software-use tariff-plan conditions.",
+          "rights_interpretation": "software-use terms only; no dataset-specific licence or grant for bulk extraction, SQLite caching, offline display or redistribution"
+        },
+        "tariff_plan": {
+          "url": "https://elpts.ru/wp-content/uploads/2026/10/tarifnyj-plan-k-oferte-po-17.09.2026.pdf",
+          "document_date": "2026-09-17",
+          "scope": "ELPTS Electronic Type Approval software for specified certification bodies and manufacturers/authorized representatives working under TR TS 018/2011 and Government Resolution No. 855",
+          "listed_workstation_license_rub_per_year": 14400,
+          "accepted_by_project": false,
+          "rights_interpretation": "paid software-use tariff, not a licence for third-party reuse of reference datasets"
+        },
+        "rights_effect": "none; dataset-specific reuse rights remain not_established and permission_status remains not_obtained",
+        "acquisition_state": {
+          "xlsx_files_downloaded": false,
+          "ot_ts_records_exported": false,
+          "raw_bytes_retrieved": false,
+          "source_snapshot_sha256": null,
+          "data_ingested": false,
+          "product_import_allowed": false,
+          "external_account_created": false,
+          "paid_access_accepted": false,
+          "permission_request_sent": false
+        },
+        "review_document": "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
+      }
     },
     {
       "source_id": "elpts-sep-technical-characteristics-reference",
@@ -6128,7 +6212,49 @@
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_ingestion",
-      "applicability_precision": "unknown_until_rights_cleared_and_workbook_reviewed"
+      "applicability_precision": "unknown_until_rights_cleared_and_workbook_reviewed",
+      "rights_recheck_2026_11_08": {
+        "observed_at": "2026-11-08",
+        "official_homepage_url": "https://elpts.ru/",
+        "reference_directory_section": "Справочники АС СЭП",
+        "reference_directory_links": [
+          "Справочник марок",
+          "Справочник технических характеристик"
+        ],
+        "paid_report_service": {
+          "audience": "AS SEP participants under concluded service agreements",
+          "agreement": "separate additional agreement after request through the Centre for Applications",
+          "distinction": "This describes the statistical-report service; it neither proves that the linked XLSX reference workbooks are paid reports nor grants reuse rights in their contents."
+        },
+        "software_tariff_notice": {
+          "url": "https://elpts.ru/uvedomlenie-o-vnesenii-izmenenij-v-tarifnyj-plan-k-oferte-pravo-ispolzovaniya-po/",
+          "published_at": "2026-10-02",
+          "effective_at": "2026-11-01",
+          "change": "The notice says wording «и передача сведений в АС СЭП» was removed from paragraph 4 of the software-use tariff-plan conditions.",
+          "rights_interpretation": "software-use terms only; no dataset-specific licence or grant for bulk extraction, SQLite caching, offline display or redistribution"
+        },
+        "tariff_plan": {
+          "url": "https://elpts.ru/wp-content/uploads/2026/10/tarifnyj-plan-k-oferte-po-17.09.2026.pdf",
+          "document_date": "2026-09-17",
+          "scope": "ELPTS Electronic Type Approval software for specified certification bodies and manufacturers/authorized representatives working under TR TS 018/2011 and Government Resolution No. 855",
+          "listed_workstation_license_rub_per_year": 14400,
+          "accepted_by_project": false,
+          "rights_interpretation": "paid software-use tariff, not a licence for third-party reuse of reference datasets"
+        },
+        "rights_effect": "none; dataset-specific reuse rights remain not_established and permission_status remains not_obtained",
+        "acquisition_state": {
+          "xlsx_files_downloaded": false,
+          "ot_ts_records_exported": false,
+          "raw_bytes_retrieved": false,
+          "source_snapshot_sha256": null,
+          "data_ingested": false,
+          "product_import_allowed": false,
+          "external_account_created": false,
+          "paid_access_accepted": false,
+          "permission_request_sent": false
+        },
+        "review_document": "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
+      }
     },
     {
       "source_id": "armstandard-am-otts-public-register",
