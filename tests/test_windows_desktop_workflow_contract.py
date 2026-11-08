@@ -202,6 +202,10 @@ def main() -> None:
     if lifecycle_check not in text:
         raise SystemExit("Windows Server 2022 lifecycle does not compare the staged source-register hash with build metadata")
 
+    case_preserving_research_manifest = '$researchManifest = Get-Content -LiteralPath $researchManifestPath -Raw | ConvertFrom-Json -AsHashtable'
+    if case_preserving_research_manifest not in step:
+        raise SystemExit("Windows Server 2022 lifecycle must preserve case-distinct manufacturer keys when parsing the packaged research manifest")
+
     # The desktop workflow must consume the same immutable Wikidata snapshots
     # that the source manifests and integration scripts describe.
     model_source = json.loads((ROOT / "data/source-manifests/wikidata-vag-model-taxonomy.json").read_text(encoding="utf-8"))
