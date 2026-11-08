@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - automation/windows-desktop-build-run61-integrated
+      - automation/vag-tech-pro-obdb-run90
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
@@ -55,7 +56,7 @@ on:
       - "tests/test_offline_data_pack_rights.py"
       - "tests/test_sync_vag_source_register_source_rights.py"
       - "tests/test_windows_desktop_workflow_contract.py"
-      - "tests/obdb-source-count-run88.test.cjs"
+      - "tests/obdb-source-count-run90.test.cjs"
       - "tests/vehiclesdb-revision-manifest-run89.test.cjs"
       - "scripts/sync_vag_source_register.py"
       - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
@@ -175,7 +176,7 @@ on:
       - "tests/test_offline_data_pack_rights.py"
       - "tests/test_sync_vag_source_register_source_rights.py"
       - "tests/test_windows_desktop_workflow_contract.py"
-      - "tests/obdb-source-count-run88.test.cjs"
+      - "tests/obdb-source-count-run90.test.cjs"
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
@@ -830,21 +831,21 @@ jobs:
           if ($evidence.status -ne "verified_candidate_reference_only" -or $evidence.rows.generic_namespace_rows -ne 0 -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.vag_oem_confirmation -ne $false -or $evidence.diagnostic_execution_allowed -ne $false) { throw "Run59 candidate-browser evidence failed the separation/safety gate" }
           "mechanicdb_candidate_browser=separate_namespace; rows=2; OEM_fitment=none; generic_DTC_leakage=0; execution=disabled" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
-      - name: Synchronize desktop OBDb count gates with the 16-source pack (run88)
+      - name: Synchronize desktop OBDb count gates with the 26-source pack (run90)
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          node --check apply-obdb-16-source-count-run88.cjs
-          if ($LASTEXITCODE -ne 0) { throw "Run88 OBDb count synchronization patch syntax check failed" }
-          node --test tests/obdb-source-count-run88.test.cjs
-          if ($LASTEXITCODE -ne 0) { throw "Run88 OBDb count synchronization contract tests failed" }
-          node apply-obdb-16-source-count-run88.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/obdb-count-sync-run88.log"
-          if ($LASTEXITCODE -ne 0) { throw "Run88 OBDb count synchronization failed" }
-          $patchHash = (Get-FileHash -LiteralPath "apply-obdb-16-source-count-run88.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
+          node --check apply-obdb-26-source-count-run90.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run90 OBDb count synchronization patch syntax check failed" }
+          node --test tests/obdb-source-count-run90.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run90 OBDb count synchronization contract tests failed" }
+          node apply-obdb-26-source-count-run90.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/obdb-count-sync-run90.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run90 OBDb count synchronization failed" }
+          $patchHash = (Get-FileHash -LiteralPath "apply-obdb-26-source-count-run90.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
           $evidencePath = "desktop-source/data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json"
           $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
-          if ($evidence.status -ne "desktop_count_gates_synchronized" -or $evidence.counts.sources -ne 16 -or $evidence.counts.generations -ne 82 -or $evidence.counts.ecus -ne 44 -or $evidence.counts.commands -ne 7890 -or $evidence.counts.signals -ne 8446 -or $evidence.execution_allowed -ne $false) { throw "Run88 OBDb desktop evidence failed its candidate-only gate" }
-          "obdb_pack=CC-BY-SA-4.0; sources=16; generations=82; ecus=44; commands=7890; signals=8446; market=UNKNOWN; verification=unverified_community_candidate; execution=disabled; patch_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          if ($evidence.status -ne "desktop_count_gates_synchronized" -or $evidence.counts.sources -ne 26 -or $evidence.counts.generations -ne 115 -or $evidence.counts.ecus -ne 61 -or $evidence.counts.commands -ne 13579 -or $evidence.counts.signals -ne 14512 -or $evidence.execution_allowed -ne $false) { throw "Run90 OBDb desktop evidence failed its candidate-only gate" }
+          "obdb_pack=CC-BY-SA-4.0; sources=26; generations=115; ecus=61; commands=13579; signals=14512; market=UNKNOWN; verification=unverified_community_candidate; execution=disabled; patch_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Bind VehiclesDB test revision to the pinned manifest (run89)
         shell: pwsh

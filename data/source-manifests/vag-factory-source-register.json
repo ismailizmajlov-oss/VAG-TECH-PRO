@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T07:14:30Z",
+  "updated_at": "2026-11-08T08:16:16Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1986,12 +1986,122 @@
           "license_file": "LICENSE",
           "license_id": "CC-BY-SA-4.0",
           "generation_only": true
+        },
+        {
+          "repository": "OBDb/Volkswagen-Touran",
+          "commit_sha": "c748ab0fee54c581d97cd5165d2d5fa57930c262",
+          "commit_date": "2026-11-04T12:05:03Z",
+          "make": "Volkswagen",
+          "model": "Touran",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Touran",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Volkswagen-Touareg",
+          "commit_sha": "3a3e2fbd005c062c1d9680452a04c114a54321eb",
+          "commit_date": "2026-11-02T01:49:19Z",
+          "make": "Volkswagen",
+          "model": "Touareg",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Touareg",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Audi-Q5",
+          "commit_sha": "6404e34ae5233ba7af8bd6f280d1049927490951",
+          "commit_date": "2026-11-02T17:58:55Z",
+          "make": "Audi",
+          "model": "Q5",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q5",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Volkswagen-Scirocco",
+          "commit_sha": "f65e02e138bbe66c86fbef15c01d9466a39363b6",
+          "commit_date": "2026-11-08T04:03:44Z",
+          "make": "Volkswagen",
+          "model": "Scirocco",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Scirocco",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Volkswagen-Transporter",
+          "commit_sha": "05f275e8f6f7766e7890581d0205596354aaa474",
+          "commit_date": "2026-11-02T01:49:13Z",
+          "make": "Volkswagen",
+          "model": "Transporter",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Transporter",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Audi-A7",
+          "commit_sha": "8ffe933d20fca8f492d18d42ee6503aadb60962b",
+          "commit_date": "2026-11-03T08:56:59Z",
+          "make": "Audi",
+          "model": "A7",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A7",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Audi-Q3",
+          "commit_sha": "7c4ca3bc4a98bbbc9ac20712d9ad11b02ccdec8b",
+          "commit_date": "2026-11-07T22:57:43Z",
+          "make": "Audi",
+          "model": "Q3",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q3",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Audi-Q8",
+          "commit_sha": "40d46ebc09d9eb16b7c8c6d2f1c3ff609b406d37",
+          "commit_date": "2026-11-06T16:57:21Z",
+          "make": "Audi",
+          "model": "Q8",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q8",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Seat-Ibiza",
+          "commit_sha": "23d9a88695333237d6c1bc34584468538377df61",
+          "commit_date": "2026-11-08T00:01:28Z",
+          "make": "SEAT",
+          "model": "Ibiza",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Ibiza",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
+        },
+        {
+          "repository": "OBDb/Cupra-Formentor",
+          "commit_sha": "4b2f0c077153a2a5a051b4dd30b6ecfb715a5b8c",
+          "commit_date": "2026-11-07T16:58:04Z",
+          "make": "CUPRA",
+          "model": "Formentor",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Formentor",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0",
+          "generation_only": false
         }
       ],
       "source_manifest_path": "data/source-manifests/obdb-vag-signalsets.json",
-      "source_snapshot_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
-      "source_file_count": 64,
-      "source_repository_count": 16,
+      "source_snapshot_sha256": null,
+      "source_file_count": 104,
+      "source_repository_count": 26,
       "market_scope": [
         "UNKNOWN"
       ],
@@ -1999,12 +2109,12 @@
       "verification_status": "unverified_community_candidate",
       "display_status": "read_only_research_candidate",
       "counts": {
-        "source_repositories": 16,
-        "upstream_files": 64,
-        "generation_candidates": 82,
-        "ecu_candidates": 44,
-        "uds_command_candidates": 7890,
-        "signal_candidates": 8446,
+        "source_repositories": 26,
+        "upstream_files": 104,
+        "generation_candidates": 115,
+        "ecu_candidates": 61,
+        "uds_command_candidates": 13579,
+        "signal_candidates": 14512,
         "dtc_definitions": 0,
         "repair_procedures": 0,
         "approved_test_plans": 0,
@@ -2044,15 +2154,72 @@
       },
       "project_decision": "allow_separate_read_only_CC_BY_SA_research_pack_only; preserve attribution and share_alike; candidate discovery only; do not present as validated DTC/test plan or exact vehicle/ECU fitment; do not execute UDS commands",
       "limitations": [
-        "Only 16 community repositories and 64 pinned source files are represented; this is not a complete VAG catalogue.",
-        "Skoda Octavia, Superb and Fabia contribute generation candidates only; their signal, ECU and command counts are zero.",
-        "All 7,890 command candidates use UDS service 0x22 and are read-only; execution is disabled and none is an approved test plan.",
-        "No DTC definitions, repair procedures, factory wiring diagrams, pinouts, torque specifications, adaptations or exact vehicle/ECU fitment."
+        "Only 26 community repositories and 104 pinned source files are represented; this is not a complete VAG catalogue.",
+        "All 13,579 command candidates use UDS service 0x22 and are read-only; execution is disabled and none is an approved test plan.",
+        "No DTC definitions, repair procedures, factory wiring diagrams, pinouts, torque specifications, adaptations or service schedules are included.",
+        "All market scopes remain UNKNOWN; model/generation labels are community candidates and are not exact engine, gearbox, ECU or vehicle fitment.",
+        "Skoda Octavia, Superb and Fabia remain generation-only sources with no ECU, command or signal rows."
       ],
-      "evidence_status": "16 pinned OBDb repositories and all 64 source files fetched at immutable commits; every pinned LICENSE reviewed as CC BY-SA 4.0; run253 independently verified hashes, read-only UDS 0x22 service, disabled execution, SQLite integrity and foreign keys.",
+      "evidence_status": "26 pinned OBDb repositories and 104 upstream files preflighted; 13,579 read-only UDS 0x22 command candidates and 14,512 signal candidates are awaiting a new reproducible SQLite build and independent verification.",
       "data_ingested": false,
       "product_import_allowed": false,
       "research_pack_build_evidence": {
+        "status": "pending_rebuild",
+        "source_repository_count": 26,
+        "source_file_count": 104,
+        "counts": {
+          "generation_candidates": 115,
+          "ecu_candidates": 61,
+          "uds_command_candidates": 13579,
+          "signal_candidates": 14512,
+          "dtc_definitions": 0,
+          "approved_test_plans": 0,
+          "exact_vehicle_fitment": 0,
+          "execution_allowed": false
+        },
+        "license_id": "CC-BY-SA-4.0",
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "market_scope": "UNKNOWN",
+        "verification_status": "unverified_community_candidate",
+        "product_database_import": false
+      },
+      "generation_only_repositories": [
+        "OBDb/Skoda-Octavia",
+        "OBDb/Skoda-Superb",
+        "OBDb/Skoda-Fabia"
+      ],
+      "generation_only_source_counts": {
+        "OBDb/Skoda-Octavia": {
+          "generations": 4,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Superb": {
+          "generations": 7,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Fabia": {
+          "generations": 4,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        }
+      },
+      "offline_bundle": {
+        "status": "pending_rebuild",
+        "target_platform": "windows-x64",
+        "separate_database_count": 3,
+        "obdb_source_repository_count": 26,
+        "obdb_database_sha256": null,
+        "obdb_manifest_sha256": null,
+        "verification": "Awaiting a new 26-repository OBDb artifact and independent offline-bundle verification."
+      },
+      "previous_verified_snapshot_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
+      "previous_verified_build_evidence": {
         "workflow_run_number": 253,
         "workflow_run_id": 42443454970,
         "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
@@ -2110,32 +2277,7 @@
         "desktop_integration_status": "not_integrated",
         "status": "verified_research_pack_build_only"
       },
-      "generation_only_repositories": [
-        "OBDb/Skoda-Octavia",
-        "OBDb/Skoda-Superb",
-        "OBDb/Skoda-Fabia"
-      ],
-      "generation_only_source_counts": {
-        "OBDb/Skoda-Octavia": {
-          "generations": 4,
-          "ecus": 0,
-          "commands": 0,
-          "signals": 0
-        },
-        "OBDb/Skoda-Superb": {
-          "generations": 7,
-          "ecus": 0,
-          "commands": 0,
-          "signals": 0
-        },
-        "OBDb/Skoda-Fabia": {
-          "generations": 4,
-          "ecus": 0,
-          "commands": 0,
-          "signals": 0
-        }
-      },
-      "offline_bundle": {
+      "previous_verified_offline_bundle": {
         "status": "verified_offline_research_bundle_not_installer",
         "workflow_run_number": 253,
         "workflow_run_id": 42443454970,

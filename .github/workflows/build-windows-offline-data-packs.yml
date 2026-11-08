@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - automation/windows-desktop-build-run57
+      - automation/vag-tech-pro-obdb-run90
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
       - .github/workflows/windows-desktop-ci-run71.yml
@@ -19,8 +20,8 @@ on:
       - scripts/verify_vag_identity_vehiclesdb.py
       - scripts/test_vag_identity_vehiclesdb.py
       - tests/test_offline_data_pack_rights.py
-      - apply-obdb-16-source-count-run88.cjs
-      - tests/obdb-source-count-run88.test.cjs
+      - apply-obdb-26-source-count-run90.cjs
+      - tests/obdb-source-count-run90.test.cjs
       - apply-vehiclesdb-revision-manifest-run89.cjs
       - tests/vehiclesdb-revision-manifest-run89.test.cjs
       - data/source-manifests/obdex-generic-cc0.lock.json
@@ -41,8 +42,8 @@ on:
       - scripts/verify_vag_identity_vehiclesdb.py
       - scripts/test_vag_identity_vehiclesdb.py
       - tests/test_offline_data_pack_rights.py
-      - apply-obdb-16-source-count-run88.cjs
-      - tests/obdb-source-count-run88.test.cjs
+      - apply-obdb-26-source-count-run90.cjs
+      - tests/obdb-source-count-run90.test.cjs
       - apply-vehiclesdb-revision-manifest-run89.cjs
       - tests/vehiclesdb-revision-manifest-run89.test.cjs
       - data/source-manifests/obdex-generic-cc0.lock.json
