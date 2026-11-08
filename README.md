@@ -52,22 +52,22 @@ Each pack remains in its own namespace with its own manifest, attribution/licens
 
 ### Windows CI verification — 2026-11-09
 
-Windows desktop CI run87 (GitHub Actions run **949**) completed successfully on 2026-11-08 for tested desktop source revision `0e1116a2441d221ceea2acf00dbebca9a4753b6b`: [run 949](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42523879444). Both jobs passed: `build-and-lifecycle` on GitHub-hosted Windows x64 and the separate Windows Server 2022 installer-compatibility lifecycle.
+Windows desktop CI run87 (GitHub Actions run **953**) completed successfully on 2026-11-08 for tested desktop/source revision `6af565a73d2b667e591c86a87f05e707c3a41cfd`: [run 953](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532208535). Both jobs passed: `build-and-lifecycle` on GitHub-hosted Windows x64 and the separate Windows Server 2022 installer-compatibility lifecycle.
 
-The run reassembled and hash-verified the pinned desktop source and offline data-pack bundle; checked the 61-entry central source register, 15-entry Russian/EAEU source register and 19 non-empty source manifests; verified the 10-entry offline research manifest; and passed the full desktop, local-core and research test suites, ESLint, TypeScript, technical payload/schema checks, same-variant primary evidence for engine/transmission pairs, immutable source-document binding, canonical engine/gearbox code binding, procedure-step ordering and conservative DTC namespace quarantine. All 14 typed technical sections passed the packaging/schema and renderer contracts. It built two NSIS x64 installers and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The separate Windows Server 2022 lifecycle also passed.
+The run reassembled and hash-verified the pinned desktop source and offline data-pack bundle; checked the 61-entry central source register, 15-entry Russian/EAEU source register and 19 non-empty source manifests; verified the 13-pack offline research manifest; and passed the full desktop, local-core and research test suites, ESLint, TypeScript, technical payload/schema checks, same-variant primary evidence for engine/transmission pairs, immutable source-document binding, canonical engine/gearbox code binding, procedure-step ordering and conservative DTC namespace quarantine. All 14 typed technical sections passed the packaging/schema and renderer contracts. It built two NSIS x64 installers (0.2.3 and 0.2.4) and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The separate Windows Server 2022 lifecycle also passed. This remains GitHub-hosted Windows validation, not native Windows 10/11 client acceptance.
 
-## Latest Windows CI evidence — run 950
+## Latest Windows CI evidence — run 953
 
-[Windows x64 validation run 950](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42529748216) completed successfully on the current main head `3bf5c4e514269849c5f466c1a4249e82d92cb4ef` (2026-11-08). Both jobs passed: `build-and-lifecycle` on Windows Server 2025 and the separate Windows Server 2022 installer-compatibility lifecycle. The [central source-register validation run 412](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42529748074) and [Russian/EAEU OEM source-contract validation run 224](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42529748034) also passed on the same commit. Run 224 executed all 22 EAEU XML-importer tests, including DTD/entity rejection, namespace validation, SBKTS/VIN/PII exclusion, permission-evidence hash matching, staging cleanup and no-overwrite checks.
+[Windows x64 validation run 953](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532208535) completed successfully on 2026-11-08 for desktop/source revision `6af565a73d2b667e591c86a87f05e707c3a41cfd`. Both jobs passed: `build-and-lifecycle` on GitHub-hosted Windows x64 and the separate Windows Server 2022 installer-compatibility lifecycle.
 
-Run 950 reassembled and verified the pinned desktop source and offline data bundle; passed source-rights and research-pack checks, the full desktop/local-core/research test suites, ESLint, TypeScript, technical payload and package-schema checks; built both NSIS x64 installers (0.2.3 and 0.2.4); and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation checks. The Windows Server 2022 compatibility lifecycle also passed. This is GitHub-hosted Windows validation, not native Windows 10/11 client acceptance.
+Run 953 reassembled and verified the pinned desktop source and offline data bundle; passed source-rights, research-pack, desktop/local-core/research, ESLint and TypeScript checks; validated the typed technical payloads and package schemas; and passed the same-variant primary-evidence gate for engine/transmission pairs, immutable source-document binding, canonical engine/gearbox code binding, procedure-step ordering and conservative DTC namespace quarantine. It built both NSIS x64 installers (0.2.3 and 0.2.4) and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation checks. The Windows Server 2022 compatibility lifecycle also passed.
 
-Run 950 evidence:
-- Windows artifact ID `13637546171`, 1,369,309,007 bytes, ZIP digest `sha256:9bc82f5e65cfe589965f851f927b77addbfc51141c1fa2d5a8282ee809a6ad49`.
-- Desktop source-audit artifact ID `13637411597`, 2,496,565 bytes, ZIP digest `sha256:d18650407454610e3320496c930e096204a7c3cc26dd7ef057200025745e44c7`.
-- Windows Server 2022 lifecycle artifact ID `13637438089`, 6,988 bytes, digest `sha256:682790a9382ef363dd46396c91ec708cd5454a9969bf1a8a0feed5dbe0d87dcd`.
-- VehiclesDB schema diagnostic artifact ID `13636741857`, 24,882 bytes, digest `sha256:06030bd77c0f711c3311d67fe476295c15e92382125c7a952c2d48f481c40ed5`.
-- The individual installer SHA-256 values and byte sizes are retained in `build-metadata.json` inside the Windows artifact; they are not substituted with the enclosing ZIP digest.
+Run 953 evidence:
+- Windows artifact ID `13638393596`, 1,369,317,429 bytes, ZIP digest `sha256:21c0220b893832a0e2f866565219d598d1cadd6780c60ca13fdc8f7424595461`.
+- Desktop source-audit artifact ID `13638004717`, 2,496,564 bytes, ZIP digest `sha256:b64a15fd072965abd2373b01d916f4a416b3b05baeea905c973e14eb97998ac0`. The archive was downloaded and its ZIP SHA-256 independently matched the GitHub artifact digest.
+- Windows Server 2022 lifecycle artifact ID `13638762240`, 6,995 bytes, digest `sha256:b1db36a1274b8258d7b0e1c0afbe2228d24a37a4ae3e9d65c807e64a71907621`.
+- VehiclesDB schema diagnostic artifact ID `13638195403`, 24,882 bytes, digest `sha256:99e2586ce3a77274402553d45091d1e5c9742df246f43f57bfd93fdb88b45482`.
+- Individual installer SHA-256 values and byte sizes are recorded in `build-metadata.json` inside Windows artifact `13638393596`; they are not substituted with the enclosing ZIP digest.
 
 The packaged offline research bundle remains explicitly separated from verified repair data:
 - Source-manifest index: 19 entries, SHA-256 `8f5b6640e8fc0764a4306eabe1b40a6c9a305f51d9fbabbec0c1ab64c9cb9e08`.
@@ -80,18 +80,18 @@ The packaged offline research bundle remains explicitly separated from verified 
 - VehiclesDB: 260 model candidates and 1,524 foreign-market evidence rows; zero RU evidence.
 - MechanicDB: 275 generic guidance rows and 75 generic SAE DTC references; not VAG-specific or OEM procedures.
 - Two manufacturer-labelled MechanicDB DTC candidates remain unverified; **zero VAG-specific DTC rows are verified**.
-- Fourteen typed technical sections are represented in the desktop schema, but **zero production fitment rows and zero Russian/EAEU OTTS rows were added** by this run. The presence of a section or candidate pack does not mean it contains approved repair data.
+- Fourteen typed technical sections are represented in the desktop schema, but **zero production fitment rows and zero Russian/EAEU OTTS rows were added**. The presence of a section or candidate pack does not mean it contains approved repair data.
 
-Run 950 tested desktop/source commit `3bf5c4e514269849c5f466c1a4249e82d92cb4ef`. Subsequent commits `dd5a60868d2da1c80ab44741e6fcdc252cd1ab68`, `53b64a8e8e60c15743806603c1102661ec153c04`, `27d11103a18aa20f2acdedc10b4c4c3db2fe6881`, `0b0adc8db5c0d40825b8c7dd6393ecbddee28a0b`, `6f64e2ebc32a3003cd9d88ba83315c4e351c0565` and `b44f2daec68174a63a156042c21b944bb6bdf625` update only CI evidence and documentation; they do not change desktop source or data packs and are not represented as a new full Windows build. The workflow recorder writes the exact run evidence to [`ci-status/latest-windows-run.json`](ci-status/latest-windows-run.json).
+Run 953 tested desktop/source commit `6af565a73d2b667e591c86a87f05e707c3a41cfd`. Later commits update CI evidence, documentation, and a small workflow/test change to publish build metadata as a separate artifact; they do not change the tested desktop payload or research data. The standalone metadata-artifact change has not yet been exercised by a subsequent workflow run. The exact run record is maintained in [`ci-status/latest-windows-run.json`](ci-status/latest-windows-run.json).
 
-Run 950 does **not** clear the remaining release gates:
+Run 953 does **not** clear the remaining release gates:
 - Native Windows 10/11 x64 lifecycle remains skipped because the owner-controlled runner gate is disabled. Required labels: `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`.
 - Installers remain unsigned because no owner-supplied code-signing certificate is configured.
 - Russian/EAEU OTTS bulk reuse, persistent offline caching, display and redistribution rights remain unconfirmed.
 - A licensed OEM VAG DTC/ECU/test-plan corpus and rights-cleared repair procedures, wiring diagrams, pinouts, torque values, adaptations, service schedules and OEM parts/applicability data remain unavailable.
 - Exact Russian/EAEU model/generation/year and engine/gearbox pair evidence is not populated.
 
-Run 950 is CI evidence, not a public release. `release_ready=false`; no production release is authorized.
+Run 953 is CI evidence, not a public release. `release_ready=false`; no production release is authorized.
 
 ### DTC namespace and research-pack quarantine — 2026-11-08
 
