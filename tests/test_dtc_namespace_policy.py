@@ -124,6 +124,8 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIn("P34C8",patch)
         self.assertIn("P39AB",patch)
         self.assertIn("P3[4-9]",patch)
+        self.assertIn("ensureOemSchema",patch)
+        self.assertIn("path.join(__dirname,rel)",patch)
 
     def test_dtc_range_documents_match_the_machine_policy(self):
         review=(ROOT/"docs/research/DTC_NAMESPACE_RANGE_REVIEW_2026-11-08.md").read_text(encoding="utf-8")
