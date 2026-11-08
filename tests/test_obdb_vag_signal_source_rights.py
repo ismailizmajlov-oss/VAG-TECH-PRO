@@ -8,6 +8,9 @@ REGISTRY = json.loads(
     (ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8")
 )
 SOURCES = {item["source_id"]: item for item in REGISTRY["sources"]}
+OBDB_MANIFEST = json.loads(
+    (ROOT / "data" / "source-manifests" / "obdb-vag-signalsets.json").read_text(encoding="utf-8")
+)
 
 
 class ObdbVagSignalSourceRightsTests(unittest.TestCase):
@@ -20,13 +23,22 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
                     "redistribution_allowed", "attribution_required", "share_alike_required",
                     "separate_pack_required"):
             self.assertIs(rights[key], True)
-        self.assertEqual(len(source["pinned_source_repositories"]), 6)
-        self.assertEqual(source["source_file_count"], 24)
-        self.assertEqual(source["source_repository_count"], 6)
+        self.assertEqual(len(source["pinned_source_repositories"]), 13)
+        self.assertEqual(source["source_file_count"], 52)
+        self.assertEqual(source["source_repository_count"], 13)
         for repo in source["pinned_source_repositories"]:
             self.assertTrue(repo["commit_sha"])
             self.assertEqual(repo["license_file"], "LICENSE")
             self.assertEqual(repo["license_id"], "CC-BY-SA-4.0")
+            self.assertRegex(repo["commit_sha"], r"^[0-9a-f]{40}$")
+        manifest_sources = {item["repository"]: item for item in OBDB_MANIFEST["sources"]}
+        pinned_sources = {item["repository"]: item for item in source["pinned_source_repositories"]}
+        self.assertEqual(set(manifest_sources), set(pinned_sources))
+        self.assertEqual(len(manifest_sources), 13)
+        for repository, item in manifest_sources.items():
+            pinned = pinned_sources[repository]
+            for key in ("commit_sha", "commit_date", "make", "model", "generation_reference_url"):
+                self.assertEqual(pinned[key], item[key])
 
     def test_pack_is_candidate_only_and_never_executable(self):
         source = SOURCES["obdb-vag-signalsets-cc-by-sa"]
@@ -46,10 +58,10 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
         source = SOURCES["obdb-vag-signalsets-cc-by-sa"]
         counts = source["counts"]
         scope = source["technical_scope"]
-        self.assertEqual(counts["uds_command_candidates"], 2315)
-        self.assertEqual(counts["signal_candidates"], 2480)
-        self.assertEqual(counts["generation_candidates"], 32)
-        self.assertEqual(counts["ecu_candidates"], 15)
+        self.assertEqual(counts["uds_command_candidates"], 7890)
+        self.assertEqual(counts["signal_candidates"], 8446)
+        self.assertEqual(counts["generation_candidates"], 67)
+        self.assertEqual(counts["ecu_candidates"], 44)
         self.assertEqual(counts["dtc_definitions"], 0)
         self.assertEqual(counts["repair_procedures"], 0)
         self.assertEqual(counts["approved_test_plans"], 0)
@@ -71,11 +83,14 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
     def test_verified_pack_artifact_is_recorded_but_not_imported_or_integrated(self):
         source = SOURCES["obdb-vag-signalsets-cc-by-sa"]
         build = source["research_pack_build_evidence"]
-        self.assertEqual(build["workflow_run_number"], 4)
-        self.assertEqual(build["artifact_id"], 13198105454)
-        self.assertEqual(build["artifact_sha256"], "db6014167149322c8928d7f8762ea33421f7e142bd8864b0ae60307207578069")
-        self.assertEqual(build["database_sha256"], "d3c54051e2f3f73c211e6d84c4e84541a60901e01eeee843b8357efa1e421aa1")
-        self.assertEqual(build["manifest_sha256"], "29ec10e68214c66a5c3c14734b9f30e0eb9d25f0d03be3384a454c3ef1833f46")
+        self.assertEqual(build["workflow_run_number"], 239)
+        self.assertEqual(build["workflow_run_id"], 42440287999)
+        self.assertEqual(build["artifact_id"], 13601506999)
+        self.assertEqual(build["artifact_sha256"], "f7ec36322ec04adc4999f6de753e18a122e1203c3ea1f38a1d1ea933c7b466b8")
+        self.assertEqual(build["artifact_size_bytes"], 2665251)
+        self.assertEqual(build["database_sha256"], "9bbc9ae273e43f442f55928b683420b3a8b9ac5ba16b3ccab20d67ccfa2d2d48")
+        self.assertEqual(build["manifest_sha256"], "5af1913fc0d083fe2698ffd6c8abadf9ddb6a5523f48347cf5e3d7a2d317da84")
+        self.assertEqual(build["attribution_sha256"], "50852ca5d674e7f88e124ab198e2f66a269fce2543b95d63b7d9f29e2a57d7de")
         self.assertEqual(build["license_id"], "CC-BY-SA-4.0")
         self.assertIs(build["share_alike_required"], True)
         self.assertIs(build["separate_pack_required"], True)
@@ -84,6 +99,12 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
         self.assertEqual(build["desktop_integration_status"], "not_integrated")
         self.assertIs(source["product_import_allowed"], False)
         self.assertIs(source["data_ingested"], False)
+        self.assertEqual(build["counts"]["source_repositories"], 13)
+        self.assertEqual(build["counts"]["upstream_files"], 52)
+        self.assertEqual(build["counts"]["generation_candidates"], 67)
+        self.assertEqual(build["counts"]["ecu_candidates"], 44)
+        self.assertEqual(build["counts"]["uds_command_candidates"], 7890)
+        self.assertEqual(build["counts"]["signal_candidates"], 8446)
         self.assertEqual(build["counts"]["dtc_definitions"], 0)
         self.assertEqual(build["counts"]["approved_test_plans"], 0)
         self.assertEqual(build["counts"]["exact_vehicle_fitment"], 0)
