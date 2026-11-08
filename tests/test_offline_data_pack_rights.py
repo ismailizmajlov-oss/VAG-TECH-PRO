@@ -164,6 +164,21 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertTrue(source["rights"]["source_references_quarantined"])
 
 
+    def test_sae_j2012_standard_is_reference_only_and_not_cleared_for_product_reuse(self):
+        registry = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        source = next(item for item in registry["sources"] if item["source_id"] == "sae-j2012-dtc-standard")
+        self.assertEqual(source["current_revision"]["base_standard"], "J2012_202509")
+        self.assertEqual(source["current_revision"]["digital_annex"], "J2012DA_202607")
+        self.assertEqual(source["rights"]["permission_status"], "not_cleared")
+        self.assertEqual(source["rights"]["commercial_use_allowed"], "not_confirmed")
+        self.assertEqual(source["rights"]["display_allowed"], "not_confirmed")
+        self.assertEqual(source["rights"]["offline_cache_allowed"], "not_confirmed")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertFalse(source["evidence"]["current_digital_annex_full_allocation_table_acquired"])
+        self.assertTrue(source["evidence"]["no_standard_definition_text_copied"])
+
     def test_desktop_research_sync_guard_matches_obdex_locked_ranges(self):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         sync_source = (ROOT / "scripts" / "sync-desktop-research-manifest.cjs").read_text(encoding="utf-8")
