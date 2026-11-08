@@ -317,6 +317,14 @@ class EaeuOttsRegistryImportTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "Unexpected XML namespace for a recognized EAEU schema element"):
                     importer.parse_registry_export(bad)
 
+    def test_modified_vehicle_document_kind_45_is_rejected_not_misclassified(self):
+        bad = _xml(include_sbkts=False).replace(
+            b"<trsdo:ConformityDocKindCode>30</trsdo:ConformityDocKindCode>",
+            b"<trsdo:ConformityDocKindCode>45</trsdo:ConformityDocKindCode>",
+        )
+        with self.assertRaisesRegex(ValueError, "Unsupported EAEU conformity document kind code: 45"):
+            importer.parse_registry_export(bad)
+
     def test_unknown_document_kind_is_rejected(self):
         bad = _xml(include_sbkts=False).replace(b"<trsdo:ConformityDocKindCode>30</trsdo:ConformityDocKindCode>", b"<trsdo:ConformityDocKindCode>99</trsdo:ConformityDocKindCode>")
         with self.assertRaisesRegex(ValueError, "Unsupported"):
