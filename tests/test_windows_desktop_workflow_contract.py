@@ -13,6 +13,8 @@ NATIVE_WORKFLOW = ROOT / ".github" / "workflows" / "windows-10-11-native-lifecyc
 def main() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     native_text = NATIVE_WORKFLOW.read_text(encoding="utf-8")
+    if "cancel-in-progress: true" not in text:
+        raise SystemExit("Windows validation workflow must cancel superseded runs so the latest source snapshot is tested first")
     status_retry_contract = (
         "$published = $false",
         "for ($attempt = 1; $attempt -le 5; $attempt++)",

@@ -6,6 +6,7 @@ on:
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+      - "data/source-manifests/obdb-vag-signalsets.json"
       - "tests/test_obdb_vag_signal_source_rights.py"
       - "scripts/build_obdb_vag_research.py"
       - "scripts/verify_obdb_vag_research.py"
@@ -84,6 +85,7 @@ on:
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+      - "data/source-manifests/obdb-vag-signalsets.json"
       - "tests/test_obdb_vag_signal_source_rights.py"
       - "scripts/build_obdb_vag_research.py"
       - "scripts/verify_obdb_vag_research.py"

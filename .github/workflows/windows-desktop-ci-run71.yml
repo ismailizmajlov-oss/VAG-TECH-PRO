@@ -249,7 +249,7 @@ permissions:
 
 concurrency:
   group: vag-tech-pro-windows-x64-v2-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-and-lifecycle:
