@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T08:34:30Z",
+  "updated_at": "2026-11-08T08:37:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -2160,7 +2160,7 @@
         "All market scopes remain UNKNOWN; model/generation labels are community candidates and are not exact engine, gearbox, ECU or vehicle fitment.",
         "Skoda Octavia, Superb and Fabia remain generation-only sources with no ECU, command or signal rows."
       ],
-      "evidence_status": "Run 262 built and independently verified the 26-repository CC BY-SA research pack and the separate three-database Windows x64 offline bundle. Desktop count-gate integration is awaiting the corrected run90 patch and full Windows lifecycle validation.",
+      "evidence_status": "Run 262 built and independently verified the 26-repository CC BY-SA research pack and the separate three-database Windows x64 offline bundle. Run90 desktop count patch and contract tests were corrected in commit 2c564c1a0388c33e2a4d1480fdf958f3df2a6fba; full Windows integration and lifecycle validation are pending the next CI revision.",
       "data_ingested": false,
       "product_import_allowed": false,
       "research_pack_build_evidence": {
@@ -2218,7 +2218,7 @@
         "verification_status": "unverified_community_candidate",
         "execution_allowed": false,
         "product_database_import": false,
-        "desktop_integration_status": "pending_corrected_run90_and_full_windows_lifecycle",
+        "desktop_integration_status": "pending_run845_full_windows_ci",
         "status": "verified_research_pack_build_only"
       },
       "generation_only_repositories": [
