@@ -1621,7 +1621,18 @@
         "linked_otts_destination_status": "502_bad_gateway",
         "raw_page_bytes_captured": false,
         "source_snapshot_sha256": null,
-        "rights_effect": "none; official navigation does not grant reuse rights"
+        "rights_effect": "none; official navigation does not grant reuse rights",
+        "alternative_public_page_shell": {
+          "url": "https://docs.elpts.ru/ncher/otts",
+          "observed_at": "2026-11-09",
+          "page_title": "ОТТС",
+          "page_shell_accessible": true,
+          "dynamic_result_placeholders_unresolved": true,
+          "record_rows_observed": false,
+          "api_or_export_endpoint_verified": false,
+          "source_snapshot_sha256": null,
+          "relationship_to_eec_linked_portal": "separate docs.elpts.ru public page observed independently; not assumed to be the same endpoint as portal.elpts.ru"
+        }
       },
       "notes": [
         "The EEC official page confirms a distinct electronic OTTS navigation link, separate from OTSH and SBKTS.",
