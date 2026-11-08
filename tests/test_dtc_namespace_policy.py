@@ -62,6 +62,13 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIn('policy.namespaces.manufacturer_controlled.pattern',self.audit)
         self.assertIn('policy.namespaces.unresolved_reserved.pattern',self.audit)
 
+    def test_obdex_u3_rows_remain_research_only(self):
+        lock=json.loads((ROOT/"data/source-manifests/obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
+        self.assertIn("U3xxx",lock["scope"]["generic_code_ranges"])
+        self.assertIs(lock["normalization_policy"]["research_pack_only"],True)
+        self.assertIs(lock["normalization_policy"]["normalized_product_dtc_import_allowed"],False)
+        self.assertIn("U3xxx",lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
+
     def test_sae_source_is_metadata_only_and_not_ingested(self):
         register=json.loads(REGISTER_PATH.read_text(encoding="utf-8"))
         rows=[s for s in register["sources"] if s["source_id"]=="sae-j2012-dtc-standard"]
