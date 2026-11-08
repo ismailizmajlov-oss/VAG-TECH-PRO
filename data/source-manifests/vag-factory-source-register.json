@@ -5092,8 +5092,11 @@
         "etag": "\"70d6df0340b32bbd12e01b41e42ba210\"",
         "probed_at_utc": "2026-11-08T12:41:44.152400+00:00",
         "probe_run_id": 42481409966,
+        "probe_run_number": 13,
+        "probe_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42481409966",
         "probe_artifact_id": 13618031218,
         "probe_artifact_sha256": "ae4bf438a6b6802446230bffd97f956742834ce823e4892ecc6f72ab79123e68",
+        "probe_report_sha256": "abe7e6e357fa1bed3e020759bf822f96b99e634e4a7ede7f66ea726a6333a3b0",
         "sheet_count": 1,
         "sheet_name": "Tabelle1",
         "header_row_number": 3,
@@ -5132,7 +5135,8 @@
         },
         "distinct_approval_number_candidates": 918,
         "approval_date_min": "2019-01-08",
-        "approval_date_max": "2026-06-30"
+        "approval_date_max": "2026-06-30",
+        "workbook_title": "Liste der erteilten Typgenehmigungen Gesamtfahrzeuge der Klassen M1 und N1"
       },
       "data_products": {
         "whole_vehicle_type_approval_list": {
@@ -5149,8 +5153,26 @@
             "emissions_type_approval_member_state",
             "procedure_type"
           ],
-          "exact_column_schema_status": "not_verified_no_file_downloaded",
-          "update_frequency": "regular_interval_as_stated_by_KBA"
+          "exact_column_schema_status": "verified_by_downloaded_workbook_and_probe",
+          "update_frequency": "regular_interval_as_stated_by_KBA",
+          "exact_columns": [
+            "Hersteller",
+            "Handelsname",
+            "Typbezeichnung",
+            "Genehmigungsobjekt",
+            "Typgenehmigungsnummer",
+            "Technischer Dienst",
+            "Vorgangsart",
+            "Datum der Genehmigung",
+            "Mitgliedstaat Typgenehmigung(en) Emissionen",
+            null,
+            "Technischer Dienst Emission",
+            null,
+            "Zuordnung Handelsnamen zu Typgenehmigung Emissionen",
+            "Zuordnung Handelsnamen zu Typgenehmigung Emissionen"
+          ],
+          "source_row_count": 3782,
+          "vag_related_label_candidate_count": 918
         }
       },
       "rights": {
@@ -5171,12 +5193,13 @@
           "https://www.govdata.de/dl-de/by-2-0",
           "https://www.govdata.de/informationen/faq"
         ],
-        "evidence": "The GovData dataset detail page marks the dataset as freie Nutzung under DL-DE BY 2.0. The published licence permits commercial and non-commercial copying, display, modification, processing, transfer to third parties, combining with other datasets and integration into products, subject to attribution and a notice where data has been modified."
+        "evidence": "The GovData dataset detail page marks the dataset as freie Nutzung under DL-DE BY 2.0. The published licence permits commercial and non-commercial copying, display, modification, processing, transfer to third parties, combining with other datasets and integration into products, subject to attribution and a notice where data has been modified.",
+        "reviewed_at_utc": "2026-11-08T12:41:44.152400Z"
       },
       "applicability": {
         "market_scope": "DE KBA approval list only",
         "approval_level": "whole-vehicle approval list; not an individual vehicle build sheet",
-        "vag_make_filter": "must use exact source manufacturer values after acquisition; no fuzzy make mapping",
+        "vag_make_filter": "exact source-label allowlist only; 8 labels preserved verbatim; no fuzzy matching, case folding or alias normalization; Audi Sport corporate relation remains review-only; Bugatti Automobiles S.A.S. excluded from this VAG-related candidate pack.",
         "engine_gearbox_pair": "never infer or construct from approval-level fields",
         "model_year_generation": "not inferred",
         "individual_vehicle_fitment": false,
@@ -5191,11 +5214,11 @@
       "data_ingested": false,
       "source_revision": "last-modified:2026-08-17T04:28:44Z;etag:70d6df0340b32bbd12e01b41e42ba210",
       "source_snapshot_sha256": "127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4",
-      "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
+      "hash_status": "Exact official KBA XLSX bytes SHA-256 verified; per-row canonical hashes are generated only in the separate DE research pack.",
       "project_decision": "The official KBA XLSX is now retrievable and its one-sheet schema is verified. A separate DE-only research pack may be built from 918 rows matching eight exact source manufacturer labels. This remains approval metadata research only: no model-year, generation, engine/gearbox, ECU, DTC, repair, individual-vehicle or RU/EAEU applicability is inferred. Bugatti Automobiles S.A.S. is excluded from the VAG-related candidate filter; Audi Sport labels are not normalized to Audi AG.",
-      "research_pack_built": false,
+      "research_pack_built": true,
       "research_pack_ingested": false,
-      "evidence_status": "KBA XLSX acquired on 2026-11-08; HTTP 200; Last-Modified 2026-08-17; ETag and SHA-256 pinned; one-sheet schema verified; 3,782 source rows and 918 rows under eight exact VAG-related manufacturer-label candidates. No model/generation/powertrain/repair or RU/EAEU applicability."
+      "evidence_status": "KBA XLSX acquired 2026-11-08; HTTP 200; SHA-256 and ETag pinned; one-sheet schema verified; separate DE-only research pack built and verified; no vehicle or powertrain fitment inferred."
     },
     {
       "source_id": "kba-de-fz-hersteller-handelsnamen-pkw",
