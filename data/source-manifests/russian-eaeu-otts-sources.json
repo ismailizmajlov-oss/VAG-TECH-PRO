@@ -1103,6 +1103,47 @@
           "direct_fetch_status": "timeout",
           "search_indexed_text": "Записи 1-1 из 0; Нет записей",
           "count_treatment": "not_used_as_current_corpus_count"
+        },
+        "latest_search_index_observation": {
+          "observed_at": "2026-11-09",
+          "evidence_basis": "search_engine_indexed_page_text; direct page fetch not independently verified in this recheck",
+          "legacy_list": {
+            "url": "https://techreg.kezekte.kz/ru/cert/ot-registry/old/list",
+            "indexed_result_range": "1-30 of 273",
+            "visible_columns": [
+              "registration_number",
+              "issue_date",
+              "registry_entry_date",
+              "form_number",
+              "validity_from",
+              "validity_to",
+              "make",
+              "commercial_name",
+              "certification_body_name",
+              "applicant_name_and_address"
+            ],
+            "record_content_downloaded": false
+          },
+          "new_list": {
+            "url": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+            "indexed_result_range": "1-1 of 0",
+            "visible_columns": [
+              "document_type",
+              "manufacturer_BIN",
+              "manufacturer_name",
+              "certification_body_BIN",
+              "certification_body_name",
+              "make",
+              "type",
+              "category"
+            ],
+            "record_rows_observed": false
+          },
+          "api_or_export_endpoint_verified": false,
+          "documented_bulk_export": false,
+          "source_snapshot_sha256": null,
+          "rights_status": "permission_required",
+          "interpretation": "The indexed legacy page exposes a 273-record count label and the first 30 rows; the new list page reports zero rows. Neither observation establishes current live completeness, VAG record presence, a machine-readable export, or reuse rights. The legacy page exposes applicant/address fields; no applicant or contact data was copied."
         }
       },
       "access_and_reuse": {
@@ -1144,9 +1185,10 @@
         "No exact VAG engine/gearbox code, ECU or repair applicability is exposed by the reviewed list fields.",
         "Detailed record pages may contain VIN-related and applicant/contact fields; privacy review is required before any processing.",
         "Do not treat a public search page as permission to cache or redistribute its records.",
-        "Latest indexed EOKNO homepage snapshot points conformity-document issuance to techreg.gov.kz; live status and its relationship to the techreg.kezekte.kz registry interface remain unverified."
+        "Latest indexed EOKNO homepage snapshot points conformity-document issuance to techreg.gov.kz; live status and its relationship to the techreg.kezekte.kz registry interface remain unverified.",
+        "The 2026-11-09 search-indexed legacy list exposes applicant/address fields; do not copy applicant/contact data. The indexed 273 count is not a verified current live corpus count or VAG count."
       ],
-      "evidence_status": "TechReg registry list reviewed 2026-11-06; official KTRM 2023-12-28 release confirms OTTS/OTSH issuance and EOKNO register flow; latest indexed EOKNO homepage snapshot points issuance to techreg.gov.kz, but live status could not be verified. Rights and system relationship remain unresolved.",
+      "evidence_status": "TechReg registry list reviewed 2026-11-06; official KTRM 2023-12-28 release confirms OTTS/OTSH issuance and EOKNO register flow; latest indexed EOKNO homepage snapshot points issuance to techreg.gov.kz, but live status could not be verified. Rights and system relationship remain unresolved. On 2026-11-09, search-indexed page text showed the legacy list as 1-30 of 273 and the new list as 1-1 of 0; direct fetch and current completeness remain unverified. No records were copied.",
       "official_listing_evidence": {
         "url": "https://www.gov.kz/org/mti-ktrm/documents/details/350253?lang=ru",
         "publisher": "Committee of Technical Regulation and Metrology, Ministry of Trade and Integration of the Republic of Kazakhstan",
@@ -1173,7 +1215,21 @@
         "reviewed_at": "2026-11-07",
         "evidence": "KTRM confirms OTTS/OTSH are issued through EOKNO and their registration details are transferred online to the EOKNO register; this does not grant reuse rights."
       },
-      "indexed_issuance_portal_url": "https://techreg.gov.kz/index/"
+      "indexed_issuance_portal_url": "https://techreg.gov.kz/index/",
+      "evidence_reviewed": [
+        {
+          "url": "https://techreg.kezekte.kz/ru/cert/ot-registry/old/list",
+          "reviewed_at": "2026-11-09",
+          "evidence_basis": "search_engine_indexed_page_text",
+          "evidence": "Indexed page text shows records 1-30 of 273 and columns for registration number, dates, make, commercial name, certification body and applicant/address. No rows were downloaded; no VAG record count or reuse rights are established."
+        },
+        {
+          "url": "https://techreg.kezekte.kz/ru/cert/ot-registry/list",
+          "reviewed_at": "2026-11-09",
+          "evidence_basis": "search_engine_indexed_page_text",
+          "evidence": "Indexed page text shows records 1-1 of 0 and columns for document type, manufacturer/certification-body BIN and names, make, type and category. No record rows or export contract were observed."
+        }
+      ]
     },
     {
       "source_id": "kyrgyzstan-single-window-otts-registry",
