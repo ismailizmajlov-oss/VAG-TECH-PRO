@@ -171,6 +171,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn(f"JSON.stringify(scope.generic_code_ranges) !== JSON.stringify({allowed})", sync_source)
         self.assertIn(f"JSON.stringify(scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify({excluded})", sync_source)
         self.assertIn("P35xx-P39xx", excluded)
+        self.assertIn("generic_obd2_source_labelled_research_only", sync_source)
         self.assertIn("normalized_product_namespace_exclusions", sync_source)
         self.assertIn("U3xxx", sync_source)
         self.assertIn("P34xx", allowed)
