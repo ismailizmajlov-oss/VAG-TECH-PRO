@@ -179,5 +179,37 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("U3xxx", lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
 
 
+    def test_obdex_run257_acquisition_evidence_matches_independently_verified_bundle(self):
+        registry = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        source = next(item for item in registry["sources"] if item["source_id"] == "obdex-generic-cc0")
+        evidence = source["acquisition_evidence"]
+        bundle = source["offline_bundle"]
+        self.assertEqual(evidence["workflow_run_id"], 42449826346)
+        self.assertEqual(evidence["workflow_run_number"], 257)
+        self.assertEqual(evidence["source_artifact_id"], 13605022128)
+        self.assertEqual(evidence["source_artifact_sha256"], "c90764e2c2a7ea924ee59544be9119b15fccc2a58c301670576014b9af6f1a6c")
+        self.assertEqual(evidence["source_artifact_size_bytes"], 33741187)
+        self.assertEqual(evidence["offline_bundle_artifact_id"], 13604839352)
+        self.assertEqual(evidence["offline_bundle_sha256"], "675b83b5c255148da4750056e4942a398c71017e7da6a1c6a711ca95a2112909")
+        self.assertEqual(evidence["offline_bundle_size_bytes"], 39103188)
+        self.assertEqual(evidence["database_sha256"], "fb2797cd9ea5ff7a1cc92f9197f382150f1745d661dba7bc1310bb1d895dc046")
+        self.assertEqual(evidence["source_manifest_sha256"], "4c62614574095cc077c56506785a78041ddf0b68d0be158c1edc928a15865c15")
+        self.assertEqual(evidence["package_sha256"], "501007f853ce66523576d2971f6bdf1adeb999dc42a5963f0f6d37c605c428f1")
+        self.assertEqual(evidence["offline_bundle_index_sha256"], "27e9ee82377595f81ea1c71256fedd7c7ccc8936387bcd3e77b6567ae17eac88")
+        self.assertEqual(evidence["counts"]["p34_generic_rows"], 155)
+        self.assertEqual(evidence["counts"]["u3_research_rows"], 174)
+        self.assertEqual(evidence["counts"]["u3_normalized_rows"], 0)
+        self.assertFalse(evidence["normalized_product_dtc_import_allowed"])
+        self.assertEqual(source["data_counts_as_published"]["u3_quarantined_research_rows"], 174)
+        self.assertEqual(source["data_counts_as_published"]["vag_specific_dtc_rows"], 0)
+        self.assertEqual(source["data_counts_as_published"]["production_rows"], 0)
+        self.assertEqual(bundle["artifact_id"], 13604839352)
+        self.assertEqual(bundle["bundle_index_sha256"], evidence["offline_bundle_index_sha256"])
+        self.assertEqual(bundle["obdex_database_sha256"], evidence["database_sha256"])
+        self.assertEqual(bundle["obdex_manifest_sha256"], evidence["source_manifest_sha256"])
+        self.assertEqual(bundle["separate_database_count"], 3)
+        self.assertFalse(source["product_import_allowed"])
+
+
 if __name__ == "__main__":
     unittest.main()
