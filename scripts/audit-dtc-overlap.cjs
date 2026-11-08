@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
-const GENERIC_DTC_CODE_RE = /^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$/;
-const MANUFACTURER_DTC_CODE_RE = /^(?:P1[0-9A-F]{3}|P3(?:[0-3]|[5-9])[0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$/;
+const GENERIC_DTC_CODE_RE = /^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$/;
+const MANUFACTURER_DTC_CODE_RE = /^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$/;
 const VAG_MANUFACTURERS = new Set(["VOLKSWAGEN","AUDI","SKODA","SEAT","CUPRA"]);
 function normalizeCode(value) { return typeof value === "string" ? value.trim().toUpperCase() : ""; }
 function classifyDtcCode(value) {
@@ -9,6 +9,7 @@ function classifyDtcCode(value) {
   if (!/^[PBCU][0-9A-F]{4}$/.test(code)) return "unknown";
   if (GENERIC_DTC_CODE_RE.test(code)) return "generic_sae_iso";
   if (MANUFACTURER_DTC_CODE_RE.test(code)) return "manufacturer_controlled";
+  if (/^(?:P3[5-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$/.test(code)) return "unresolved_reserved";
   return "unknown";
 }
 function canonicalNamespace(value) {
