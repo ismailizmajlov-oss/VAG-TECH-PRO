@@ -43,6 +43,8 @@ test("KBA whole-vehicle approval pack verifies DL-DE BY 2.0 provenance and DE-on
   }
   assert.match(summary.attributionText, /Kraftfahrt-Bundesamt \(KBA\)/);
   assert.match(summary.attributionText, /DL-DE BY 2\.0/);
+  assert.equal(summary.sourceFileSha256, summary.sourceSnapshotSha256);
+  assert.match(summary.sourceRevision, /^last-modified:/);
   assert.match(summary.warning, /не распространяются на RU\/ЕАЭС/);
 });
 
@@ -72,6 +74,8 @@ test("KBA approval search returns raw approval metadata with row-level provenanc
   assert.match(row.sourceSnapshotSha256, /^[a-f0-9]{64}$/);
   assert.match(row.sourceManifestSha256, /^[a-f0-9]{64}$/);
   assert.equal(row.license, "DL-DE-BY-2.0");
+  assert.match(row.sourceRevision, /^last-modified:/);
+  assert.equal(row.sourceRevision, getKbaApprovalSummary(ROOT).sourceRevision);
   assert.match(row.warning, /не распространяются на RU\/ЕАЭС/);
 });
 
