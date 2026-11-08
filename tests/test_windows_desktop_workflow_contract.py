@@ -344,6 +344,14 @@ def main() -> None:
         raise SystemExit("Desktop source technical-surface inventory step is missing")
     if "desktop-source-technical-surface.txt" not in text or "desktop-source-inventory.txt" not in text:
         raise SystemExit("Desktop source inventory evidence is not uploaded")
+    source_inventory_contract = (
+        '$excludedSegments = @("node_modules", ".next", "release", "out", "coverage", "dist", "build", ".turbo", ".cache")',
+        "$segments = $relative -split '[\\\\/]+'",
+        '-not ($segments | Where-Object { $excludedSegments -contains $_ })',
+    )
+    missing_source_inventory_contract = [marker for marker in source_inventory_contract if marker not in text]
+    if missing_source_inventory_contract:
+        raise SystemExit(f"Desktop source audit must exclude generated directory trees by path segment: {missing_source_inventory_contract}")
     if "Upload desktop source audit evidence" not in text or "vag-tech-pro-desktop-source-audit-" not in text:
         raise SystemExit("Small desktop source audit artifact is not uploaded independently")
     if 'foreach ($folder in @("scripts", "lib", "app", "components", "electron", "tests"' not in text:
