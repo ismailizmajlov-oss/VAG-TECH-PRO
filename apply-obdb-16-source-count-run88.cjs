@@ -74,7 +74,7 @@ function validatePack(root) {
       manifest.display_allowed !== true ||
       manifest.cache_allowed !== true ||
       manifest.redistribution_allowed !== true ||
-      !manifest.counts || manifest.sources?.length !== expected.sources) {
+      !manifest.counts || !Array.isArray(manifest.sources) || manifest.sources.length !== expected.sources) {
     fail("OBDb manifest identity, rights or source-count gate failed");
   }
   for (const key of Object.keys(expected)) {
@@ -93,6 +93,16 @@ function validatePack(root) {
         source.execution_allowed !== false) {
       fail("OBDb source is not an isolated, unverified, non-executable candidate: " + source.source_id);
     }
+  }
+  const packRoot = path.resolve(root, "data/research/obdb-vag-signals-cc-by-sa");
+  const databasePath = path.resolve(packRoot, String(manifest.database_file || ""));
+  if (databasePath === packRoot || !databasePath.startsWith(packRoot + path.sep) ||
+      !/^[a-f0-9]{64}$/.test(manifest.database_sha256 || "")) {
+    fail("OBDb database path or SHA-256 declaration is invalid");
+  }
+  const database = regularFile(root, path.relative(root, databasePath));
+  if (sha256(fs.readFileSync(database.file)) !== manifest.database_sha256) {
+    fail("OBDb database SHA-256 does not match the pinned manifest");
   }
   return { manifest, manifestSha256: sha256(Buffer.from(item.text, "utf8")) };
 }
@@ -153,14 +163,24 @@ function main() {
     execution_allowed: false,
     counts: manifest.counts,
     source_ids: manifest.sources.map((source) => source.source_id).sort(),
-    patched_files: targets,
+    patched_files: targets.map(({ path: relativePath, sha256: fileSha256 }) => ({ path: relativePath, sha256: fileSha256 })),
   };
   const evidencePath = path.join(desktopRoot, "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json");
   if (fs.existsSync(evidencePath)) {
     const existing = fs.lstatSync(evidencePath);
     if (!existing.isFile() || existing.isSymbolicLink()) fail("Run88 evidence path is not a regular file");
+    let existingEvidence;
+    try {
+      existingEvidence = JSON.parse(fs.readFileSync(evidencePath, "utf8"));
+    } catch (error) {
+      fail("Existing Run88 evidence is not valid JSON: " + error.message);
+    }
+    if (JSON.stringify(existingEvidence) !== JSON.stringify(evidence)) {
+      fail("Existing Run88 evidence does not match the current source snapshot and patched files");
+    }
+  } else {
+    atomicWrite(evidencePath, JSON.stringify(evidence, null, 2) + "\\n", 0o644);
   }
-  atomicWrite(evidencePath, JSON.stringify(evidence, null, 2) + "\n", 0o644);
   process.stdout.write(JSON.stringify({ status: evidence.status, counts: evidence.counts, source_manifest_sha256: manifestSha256, evidence_path: "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json", patched_files: targets }, null, 2) + "\n");
 }
 
