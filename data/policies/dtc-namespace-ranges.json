@@ -38,10 +38,10 @@
   },
   "notes": [
     "A manufacturer-controlled allocation range is not proof of Volkswagen Group authorship.",
-    "P34xxx-P39xxx, U3xxx, B3xxx and C3xxx are unresolved for normalized product namespaces until exact current-standard assignments are independently verified; source-pack labels alone do not promote them.",
+    "P34xx-P39xx, U3xxx, B3xxx and C3xxx are unresolved for normalized product namespaces until exact current-standard assignments are independently verified; source-pack labels alone do not promote them.",
     "The current SAE digital annex is licensed. No standard text, DTC definition table or allocation spreadsheet is copied into this repository.",
-    "P3xxx is a mixed manufacturer-controlled / ISO-SAE-reserved family; an upstream generic label does not establish the exact current allocation of a P34xxx code.",
-    "All P34xxx identifiers remain in the unknown research quarantine until the exact current SAE J2012/J2012DA assignment is independently verified; the current J2012DA_202607 annex has not been acquired under a reuse licence.",
-    "The pinned OBDex CC0 snapshot contains 155 upstream-labelled P34xxx rows. The CC0 grant applies to the upstream data files, not to SAE allocation status; none of these rows is promoted to the normalized generic or VAG-specific DTC index."
+    "P3xxx is a mixed manufacturer-controlled / ISO-SAE-reserved family; an upstream generic label does not establish the exact current allocation of a P34xx code.",
+    "All P34xx identifiers remain in the unknown research quarantine until the exact current SAE J2012/J2012DA assignment is independently verified; the current J2012DA_202607 annex has not been acquired under a reuse licence.",
+    "The pinned OBDex CC0 snapshot contains 155 upstream-labelled P34xx rows. The CC0 grant applies to the upstream data files, not to SAE allocation status; none of these rows is promoted to the normalized generic or VAG-specific DTC index."
   ]
 }
