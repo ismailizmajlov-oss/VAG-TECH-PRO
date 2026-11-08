@@ -73,5 +73,29 @@
     ]
   },
   "release_ready": false,
-  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle. The tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77 includes the run85 technical-step ordering guard, run86/run87 DTC namespace validation and quarantine, run88 OBDb source-count binding, run89 VehiclesDB revision binding, KBA DE stock research-pack integration, and the current pinned research-pack assembly. Desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification passed. It built NSIS x64 installers 0.2.3 and 0.2.4 and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The separate Windows Server 2022 lifecycle also passed. Main has subsequent documentation-only commits; no application-source changes were made after the tested revision. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers."
+  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle. The tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77 includes the run85 technical-step ordering guard, run86/run87 DTC namespace validation and quarantine, run88 OBDb source-count binding, run89 VehiclesDB revision binding, KBA DE stock research-pack integration, and the current pinned research-pack assembly. Desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification passed. It built NSIS x64 installers 0.2.3 and 0.2.4 and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The separate Windows Server 2022 lifecycle also passed. Main has subsequent documentation-only commits; no application-source changes were made after the tested revision. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers.",
+  "related_validation_workflows": [
+    {
+      "name": "Russian EAEU and VAG OEM source contracts",
+      "run_id": 42457919746,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457919746"
+    },
+    {
+      "name": "VAG source-rights register validation",
+      "run_id": 42457978043,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978043"
+    },
+    {
+      "name": "VAG open engine-candidate acquisition",
+      "run_id": 42457978016,
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978016",
+      "reason": "Explicit repository approval flag for written reuse permission was not enabled; no candidate data were downloaded."
+    }
+  ]
 }
