@@ -1,24 +1,24 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-08T06:21:34Z",
+  "recorded_at_utc": "2026-11-08T07:40:54Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run87",
-  "run_id": 42452480288,
-  "run_number": 832,
+  "run_id": 42457978012,
+  "run_number": 841,
   "run_attempt": 1,
   "status": "completed",
   "conclusion": "success",
-  "head_sha": "9018936f45ced620dd484561b88b39b37d11d337",
+  "head_sha": "05205ce11a103f1dd36b54aae81ff6d073550f77",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42452480288",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978012",
   "jobs": [
     {
-      "id": 128644511297,
+      "id": 128661005444,
       "name": "build-and-lifecycle",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 128649516961,
+      "id": 128665665140,
       "name": "Windows Server 2022 installer compatibility lifecycle",
       "status": "completed",
       "conclusion": "success"
@@ -26,40 +26,40 @@
   ],
   "artifacts": [
     {
-      "id": 13606204183,
+      "id": 13609525130,
       "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 1369426528,
+      "size_in_bytes": 1369442807,
       "expired": false,
-      "created_at": "2026-11-08T06:17:53Z",
-      "expires_at": "2026-11-22T06:16:58Z",
-      "digest": "sha256:b33c80af32f62061cd51a2f0e3daf6512eb0fac1d2f7ea34e8c3b8ecb29136e9"
+      "created_at": "2026-11-08T07:37:15Z",
+      "expires_at": "2026-11-22T07:36:20Z",
+      "digest": "sha256:92a228462da82c1bd31d371f90734b0954b1cd804e3e8d663d6f1e7315af1316"
     },
     {
-      "id": 13606757652,
-      "name": "vag-tech-pro-desktop-source-audit-42452480288",
-      "size_in_bytes": 2728286,
+      "id": 13609321613,
+      "name": "vag-tech-pro-desktop-source-audit-42457978012",
+      "size_in_bytes": 2728287,
       "expired": false,
-      "created_at": "2026-11-08T06:16:57Z",
-      "expires_at": "2026-12-08T06:16:55Z",
-      "digest": "sha256:f98143f79dda312e7204829d58e386998d78ed1a410f36ff3025c7ef2cd26dc8"
+      "created_at": "2026-11-08T07:36:19Z",
+      "expires_at": "2026-12-08T07:36:18Z",
+      "digest": "sha256:83d398f61438fee3a814ae3c2de99bde1d62f266c0d5723909e95fdcaf046767"
     },
     {
-      "id": 13607017600,
+      "id": 13608704180,
       "name": "vag-tech-pro-windows-2022-lifecycle-run71",
-      "size_in_bytes": 6903,
+      "size_in_bytes": 6900,
       "expired": false,
-      "created_at": "2026-11-08T06:21:31Z",
-      "expires_at": "2026-12-08T06:21:31Z",
-      "digest": "sha256:92e6f02b6dfc17371bb58841a6f8cced5c477d45518a1c24eb795df985b11e72"
+      "created_at": "2026-11-08T07:40:51Z",
+      "expires_at": "2026-12-08T07:40:49Z",
+      "digest": "sha256:92d052652bb662260289d0d0cd4166a8a18164697a7d6d760abab03131c5fb73"
     },
     {
-      "id": 13606092624,
+      "id": 13608990126,
       "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
       "size_in_bytes": 24882,
       "expired": false,
-      "created_at": "2026-11-08T05:56:18Z",
-      "expires_at": "2026-11-15T05:56:17Z",
-      "digest": "sha256:e99809c9028f174c12f5fc03abdd15aafc1a740e4e4e15ae112e24940cad15c5"
+      "created_at": "2026-11-08T07:16:40Z",
+      "expires_at": "2026-11-15T07:16:40Z",
+      "digest": "sha256:1e071d2ebb3b5f528e947dae28544b2fa33697b42bb195220c21963e5cf362ca"
     }
   ],
   "native_windows_10_11": {
@@ -73,5 +73,5 @@
     ]
   },
   "release_ready": false,
-  "release_readiness_note": "Run832 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle on main commit 9018936. It covers run85-run89, current research-pack integration, desktop tests, ESLint, TypeScript, two NSIS x64 builds, clean install, offline launch, backup/restore, in-place upgrade and uninstall-preservation checks. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers."
+  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle. The tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77 includes the run85 technical-step ordering guard, run86/run87 DTC namespace validation and quarantine, run88 OBDb source-count binding, run89 VehiclesDB revision binding, KBA DE stock research-pack integration, and the current pinned research-pack assembly. Desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification passed. It built NSIS x64 installers 0.2.3 and 0.2.4 and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The separate Windows Server 2022 lifecycle also passed. Main has subsequent documentation-only commits; no application-source changes were made after the tested revision. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers."
 }
