@@ -62,6 +62,17 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIn('policy.namespaces.manufacturer_controlled.pattern',self.audit)
         self.assertIn('policy.namespaces.unresolved_reserved.pattern',self.audit)
 
+    def test_eaeu_nsi_api_is_discovery_only(self):
+        register=json.loads(REGISTER_PATH.read_text(encoding="utf-8"))
+        rows=[s for s in register["sources"] if s["source_id"]=="eaeu-nsi-rest-api"]
+        self.assertEqual(len(rows),1)
+        source=rows[0]
+        self.assertEqual(source["market_scope"],["EAEU"])
+        self.assertIs(source["data_ingested"],False)
+        self.assertIs(source["product_import_allowed"],False)
+        self.assertIs(source["rights"]["access_authentication_required"],False)
+        self.assertEqual(source["rights"]["permission_status"],"not_obtained")
+
     def test_obdex_u3_rows_remain_research_only(self):
         lock=json.loads((ROOT/"data/source-manifests/obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         self.assertIn("U3xxx",lock["scope"]["generic_code_ranges"])
