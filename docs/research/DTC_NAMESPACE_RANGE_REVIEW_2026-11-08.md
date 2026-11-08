@@ -6,6 +6,8 @@ The run86 namespace guard was too broad in two places: it treated P35xx–P39xx 
 
 ## Evidence
 
+The standard metadata and rights decision are registered as source `sae-j2012-dtc-standard` in `data/source-manifests/vag-factory-source-register.json`; no standard text or allocation table is ingested.
+
 The publicly accessible SAE J2012 MAR2013 document states in Figure 3 that P3000–P3399 is manufacturer-controlled and P3400–P3999 is SAE-reserved. Sections 5.4–5.7 separately identify B3xxx and C3xxx as reserved and describe U3xxx as manufacturer-controlled and ISO/SAE-reserved. The document is copyrighted; VAG TECH PRO stores no copy or extracted definition text. Only the range-policy facts needed for validation are recorded.
 
 - SAE J2012 MAR2013 PDF: https://files.infocentre.io/files/docs_clients/126_2007751625_1263573_J2012_201303.pdf (Figure 3; sections 5.4–5.7).
