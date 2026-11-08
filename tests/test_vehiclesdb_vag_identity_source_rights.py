@@ -58,18 +58,18 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         for key in ("artifact_sha256", "database_sha256", "manifest_sha256"):
             self.assertRegex(research[key], r"^[0-9a-f]{64}$")
-        self.assertEqual(research["workflow_run_id"], 42440575346)
+        self.assertEqual(research["workflow_run_id"], 42443454970)
         self.assertGreater(research["artifact_size_bytes"], 0)
         bundle = source["offline_bundle"]
         self.assertEqual(bundle["status"], "verified_offline_research_bundle_not_installer")
         self.assertEqual(bundle["target_platform"], "windows-x64")
         self.assertEqual(bundle["separate_database_count"], 3)
-        self.assertEqual(bundle["vehiclesdb_database_sha256"], "cf8c9973465ee2d9437ba3d78e13a321728012dd6a5059eb14d6bfb4d811a1e1")
-        self.assertEqual(bundle["vehiclesdb_manifest_sha256"], "aee1143ef0176a16a231cb94abc694b1cdf010f400fd0b052c17a84657e74477")
+        self.assertEqual(bundle["vehiclesdb_database_sha256"], "13d55243c9ca48216eda467df06971dd85362e7499b6a40715448f99705e2463")
+        self.assertEqual(bundle["vehiclesdb_manifest_sha256"], "a3fc7c970748e0155759b015825d31b5ad9d28af977ee4f1ee0a820c17f3aafd")
         self.assertEqual(bundle["obdb_database_sha256"], "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14")
-        self.assertEqual(bundle["obdb_manifest_sha256"], "cd792345fd9c7c0c4c3cb3eb695f84a8a9af044ddb85624947f7e019122481ea")
-        self.assertEqual(bundle["obdex_database_sha256"], "97a2bf5c0cfaeedd89ed1759dc82221ec8dda5a31052cf2459aad862273f3ec9")
-        self.assertEqual(bundle["obdex_manifest_sha256"], "f8578b32d8e32b895a3d2262755929c09a9a097a96abc336ea007bf061cd0aea")
+        self.assertEqual(bundle["obdb_manifest_sha256"], "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105")
+        self.assertEqual(bundle["obdex_database_sha256"], "a26760aa58170d379f913770650945b8268fac6e453bb52f8d8a58426a930704")
+        self.assertEqual(bundle["obdex_manifest_sha256"], "5d99fc0f0811bd5cdf6119252fbacfebc74a1eeaee357a8eeb5b81cb42b03913")
         for key in ("artifact_sha256", "bundle_index_sha256", "vehiclesdb_database_sha256",
                     "vehiclesdb_manifest_sha256", "vehiclesdb_source_snapshot_sha256"):
             self.assertRegex(bundle[key], r"^[0-9a-f]{64}$")

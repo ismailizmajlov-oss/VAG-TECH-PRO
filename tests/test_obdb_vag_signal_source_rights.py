@@ -87,13 +87,13 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
     def test_verified_pack_artifact_is_recorded_but_not_imported_or_integrated(self):
         source = SOURCES["obdb-vag-signalsets-cc-by-sa"]
         build = source["research_pack_build_evidence"]
-        self.assertEqual(build["workflow_run_number"], 242)
-        self.assertEqual(build["workflow_run_id"], 42440575346)
-        self.assertEqual(build["artifact_id"], 13601766655)
-        self.assertEqual(build["artifact_sha256"], "d15b109695ae918f3445385888e18ad00021d35dd1f4c23377a74c55fb477e40")
-        self.assertEqual(build["artifact_size_bytes"], 2715794)
+        self.assertEqual(build["workflow_run_number"], 253)
+        self.assertEqual(build["workflow_run_id"], 42443454970)
+        self.assertEqual(build["artifact_id"], 13603020392)
+        self.assertEqual(build["artifact_sha256"], "cc52fb5fefee9da9aa732dee6dd9202ec6a832e7d3da73b8f96e4714d6a60c78")
+        self.assertEqual(build["artifact_size_bytes"], 2715793)
         self.assertEqual(build["database_sha256"], "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14")
-        self.assertEqual(build["manifest_sha256"], "cd792345fd9c7c0c4c3cb3eb695f84a8a9af044ddb85624947f7e019122481ea")
+        self.assertEqual(build["manifest_sha256"], "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105")
         self.assertEqual(build["attribution_sha256"], "999d59e300e2e8ca53598231675e896863e2f4f04a23635e14dee894cd3a11fc")
         self.assertEqual(build["license_id"], "CC-BY-SA-4.0")
         self.assertIs(build["share_alike_required"], True)
