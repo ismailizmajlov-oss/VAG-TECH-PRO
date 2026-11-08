@@ -142,6 +142,18 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         self.assertEqual(eaeu["rights"]["bulk_reuse_allowed"], "not_established")
         self.assertEqual(eaeu["rights"]["offline_cache_allowed"], "not_established")
         self.assertEqual(eaeu["rights"]["display_and_redistribution_allowed"], "not_established")
+    def test_alternative_elpts_page_shell_does_not_claim_records_or_rights(self):
+        registry = json.loads(REGISTER.read_text(encoding="utf-8"))
+        source = next(item for item in registry["sources"] if item["source_id"] == "elpts-national-otts-register-public-query")
+        observation = source["access"]["alternative_public_page_shell_observation_2026_11_09"]
+        self.assertEqual(observation["url"], "https://docs.elpts.ru/ncher/otts")
+        self.assertTrue(observation["page_shell_accessible"])
+        self.assertTrue(observation["dynamic_result_placeholders_unresolved"])
+        self.assertFalse(observation["record_rows_observed"])
+        self.assertFalse(observation["api_or_export_endpoint_verified"])
+        self.assertIsNone(observation["source_snapshot_sha256"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(source["rights"]["offline_cache_allowed"], "not_established")
 
 if __name__ == "__main__":
     unittest.main()
