@@ -51,8 +51,8 @@ export default function DesktopHome() {
   return <div className="app" data-theme="dark">
     <header className="top">
       <div className="brand">◢ VAG TECH <em>PRO</em></div>
-      <span className="desktop-status">АВТОНОМНЫЙ РЕЖИМ · ЛОКАЛЬНАЯ SQLITE</span>
-      <span className="desktop-status">WINDOWS x64</span>
+      <span className="muted" style={{ marginLeft: "auto", letterSpacing: ".08em", whiteSpace: "nowrap" }}>АВТОНОМНЫЙ РЕЖИМ · ЛОКАЛЬНАЯ SQLITE</span>
+      <span className="muted" style={{ whiteSpace: "nowrap" }}>WINDOWS x64</span>
     </header>
     <aside className="sidebar" aria-label="Навигация VAG TECH PRO">
       <button type="button" className={"nav " + (view === "workspace" ? "active" : "")} aria-pressed={view === "workspace"} onClick={() => setView("workspace")}>⌂　Рабочее место</button>
