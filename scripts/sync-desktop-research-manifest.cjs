@@ -145,6 +145,8 @@ function sync(packRootArg, researchRootArg) {
   }
 
   const ob = byId["obdex-generic-cc0"];
+  if (ob.product_eligibility !== "generic_obd2_source_labelled_research_only" ||
+      JSON.stringify(ob.normalized_product_namespace_exclusions) !== JSON.stringify(["U3xxx"])) fail("OBDex offline index does not preserve U3 research-only exclusion");
   const obdb = byId["obdb-vag-signals-cc-by-sa"];
   const vehicles = byId["vehiclesdb-vag-identity"];
   const obVerified = verifyObdex(packRoot, ob);
@@ -194,6 +196,9 @@ function sync(packRootArg, researchRootArg) {
     counts: { generic_dtcs: obVerified.report.generic_dtcs, pids: obVerified.report.pids },
     market_scope: obSource.scope.market_scope,
     applicability_precision: "generic_code_only_no_vehicle_fitment",
+    product_eligibility: "generic_obd2_source_labelled_research_only",
+    normalized_product_namespace_exclusions: obSource.import_policy.normalized_product_namespace_exclusions,
+    unverified_current_standard_ranges: obSource.import_policy.unverified_current_standard_ranges,
     review_status: "research_only",
     fitment_claim: false,
     execution_allowed: false,
