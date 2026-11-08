@@ -30,7 +30,7 @@ class WikipediaVagEngineListGateTests(unittest.TestCase):
                 self.assertTrue(rights[field])
         self.assertTrue(rights["attribution_required"])
         self.assertTrue(rights["share_alike_required"])
-        self.assertIn("article text only", rights["scope_note"])
+        self.assertIn("article text only", rights["scope_note"].casefold())
 
     def test_quality_warnings_keep_source_out_of_product_database(self):
         source = self.source
