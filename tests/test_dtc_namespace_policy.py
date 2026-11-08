@@ -130,8 +130,10 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIn("generic_ranges=P0xxx,P2xxx,B0xxx,C0xxx,U0xxx",workflow)
         self.assertIn("unresolved_reserved=P34xx-P39xx,U3xxx,B3xxx,C3xxx",workflow)
         self.assertNotIn("generic_ranges=P0xxx,P2xxx,P34xx",workflow)
-        self.assertIn("ensureOemSchema",patch)
-        self.assertIn("path.join(__dirname,rel)",patch)
+        self.assertIn("syncCanonical",patch)
+        self.assertIn("syncCanonical(root,files.policy)",patch)
+        self.assertIn("syncCanonical(root,files.oemSchema)",patch)
+        self.assertLess(patch.index("syncCanonical(root,files.policy)"),patch.index("const policy=JSON.parse(read(root,files.policy))"))
 
     def test_dtc_range_documents_match_the_machine_policy(self):
         review=(ROOT/"docs/research/DTC_NAMESPACE_RANGE_REVIEW_2026-11-08.md").read_text(encoding="utf-8")
