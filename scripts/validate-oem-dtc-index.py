@@ -109,6 +109,7 @@ def main() -> None:
     expect_integrity_error(lambda: db.execute("UPDATE oem_dtc_index SET dtc_code='P1125' WHERE oem_dtc_id=?", (generic_record,)),
         "generic SAE/ISO DTC code is outside allowed generic OBD-II ranges")
     expect_integrity_error(lambda: db.execute("INSERT INTO oem_dtc_index (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,evidence_locator,applicability_level,source_claim_hash,created_at_utc) VALUES ('U3ABC','generic_sae_iso','UNKNOWN','UNKNOWN',?,'unresolved U3 range','generic_only',?,'2026-11-03T00:00:00Z')",(cc0_source,"f"*64)), "generic SAE/ISO DTC code is outside allowed generic OBD-II ranges")
+    expect_integrity_error(lambda: db.execute("UPDATE oem_dtc_index SET dtc_code='U3ABC' WHERE oem_dtc_id=?",(generic_record,)), "generic SAE/ISO DTC code is outside allowed generic OBD-II ranges")
 
     # A VAG-specific namespace must name an actual VAG Group make.
     expect_integrity_error(
@@ -168,6 +169,11 @@ def main() -> None:
               'page 9, ECU table','exact_ecu_hw_sw',?,'2026-11-03T00:00:00Z')""",
       (vag_source, "c" * 64))
     publishable_record = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+    for reserved_code in ("P35A6", "P39A6", "U3ABC"):
+        expect_integrity_error(lambda code=reserved_code: db.execute(
+            "UPDATE oem_dtc_index SET dtc_code=? WHERE oem_dtc_id=?",
+            (code, publishable_record)
+        ), "manufacturer-controlled DTC code is outside allowed OBD-II ranges")
     db.execute(
         "UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?",
         (publishable_record,)
