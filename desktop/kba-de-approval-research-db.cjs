@@ -164,11 +164,17 @@ function getKbaApprovalSummary(explicitRoot) {
     pack.applicability?.ru_eaeu_applicability === false &&
     pack.source_manifest_sha256 === entry.source_manifest_sha256 &&
     pack.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
+    pack.commercial_use_allowed === true && pack.display_allowed === true && pack.offline_cache_allowed === true &&
+    pack.bulk_reuse_allowed === true && pack.redistribution_allowed === true && pack.attribution_required === true && pack.share_alike_required === false &&
+    pack.source_row_hash_method === entry.source_record_hash_method &&
     pack.database_sha256 === entry.database_sha256 &&
     pack.source_file_sha256 === entry.source_file_sha256 &&
     pack.source_file_bytes === entry.source_file_bytes &&
     entry.source_revision === pack.source_revision &&
     source.source_id === SOURCE_ID &&
+    JSON.stringify(source.market_scope) === JSON.stringify(["DE"]) &&
+    source.source_revision === entry.source_revision &&
+    source.snapshot.file_sha256 === entry.source_snapshot_sha256 &&
     source.data_ingested === false &&
     source.product_import_allowed === false &&
     snapshot.status === "resource_acquired_schema_available" &&
@@ -200,8 +206,12 @@ function getKbaApprovalSummary(explicitRoot) {
     integrationReport.artifact_sha256 === entry.source_artifact_sha256 &&
     rightsEvidence.license_id === LICENSE_ID &&
     rightsEvidence.rights_status === "approved_by_published_DL_DE_BY_2_0" &&
+    rightsEvidence.commercial_use_allowed === true &&
+    rightsEvidence.display_allowed === true &&
     rightsEvidence.offline_cache_allowed === true &&
-    rightsEvidence.redistribution_allowed === true,
+    rightsEvidence.bulk_reuse_allowed === true &&
+    rightsEvidence.redistribution_allowed === true &&
+    rightsEvidence.attribution_required === true,
     "KBA approval source manifest, rights, source snapshot or applicability policy failed"
   );
 
