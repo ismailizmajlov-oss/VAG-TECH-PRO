@@ -82,8 +82,8 @@ class KbaGermanyOpenDataSourceRightsTests(unittest.TestCase):
         self.assertFalse(policy["exact_engine_gearbox_pair"])
         self.assertFalse(policy["production_fitment"])
         self.assertFalse(policy["ru_eaeu_applicability"])
-        self.assertEqual(manifest["field_status"]["engine_code"], "not_provided_or_not_verified")
-        self.assertEqual(manifest["field_status"]["gearbox_code"], "not_provided_or_not_verified")
+        self.assertEqual(manifest["field_status"]["engine_code"], "not_provided")
+        self.assertEqual(manifest["field_status"]["gearbox_code"], "not_provided")
 
     def test_downloaded_kba_stock_snapshot_is_germany_only_identity_evidence(self):
         source_id = "kba-de-fz-hersteller-handelsnamen-pkw"
