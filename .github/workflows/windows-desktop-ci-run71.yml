@@ -1344,7 +1344,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run74 ASTRA CH research-pack verification patch failed" }
           $researchManifestPath = "desktop-source/data/research/manifest.json"
           if (-not (Test-Path -LiteralPath $researchManifestPath -PathType Leaf)) { throw "Current desktop research manifest is missing after pack synchronization." }
-          $researchManifest = Get-Content -LiteralPath $researchManifestPath -Raw | ConvertFrom-Json
+          $researchManifest = Get-Content -LiteralPath $researchManifestPath -Raw | ConvertFrom-Json -AsHashtable
           $researchPackIds = @($researchManifest.packs | ForEach-Object { [string]$_.id })
           $uniqueResearchPackIds = @($researchPackIds | Sort-Object -Unique)
           if ($researchPackIds.Count -lt 1 -or $researchPackIds.Count -ne $uniqueResearchPackIds.Count) { throw "Research manifest pack IDs are empty or duplicated." }
@@ -2507,8 +2507,8 @@ jobs:
             if (-not (Test-Path -LiteralPath $file.path -PathType Leaf)) { throw "Packaged KBA research resource is missing: $($file.path)" }
             if ((Get-FileHash -LiteralPath $file.path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $file.hash) { throw "Packaged KBA research resource SHA-256 mismatch: $($file.path)" }
           }
-          $kbaPackManifest = Get-Content -LiteralPath (Join-Path $kbaResearchRoot $kbaEntry.pack_manifest_file) -Raw | ConvertFrom-Json
-          $kbaSourceManifest = Get-Content -LiteralPath (Join-Path $kbaResearchRoot $kbaEntry.source_manifest_file) -Raw | ConvertFrom-Json
+          $kbaPackManifest = Get-Content -LiteralPath (Join-Path $kbaResearchRoot $kbaEntry.pack_manifest_file) -Raw | ConvertFrom-Json -AsHashtable
+          $kbaSourceManifest = Get-Content -LiteralPath (Join-Path $kbaResearchRoot $kbaEntry.source_manifest_file) -Raw | ConvertFrom-Json -AsHashtable
           if ($kbaPackManifest.source_snapshot_sha256 -ne $kbaEntry.source_snapshot_sha256 -or $kbaSourceManifest.snapshot.source_snapshot_sha256 -ne $kbaEntry.source_snapshot_sha256 -or $kbaPackManifest.database.sha256 -ne $kbaEntry.database_sha256) { throw "Packaged KBA source/DB provenance chain mismatch." }
           foreach ($required in @("data/research/manifest.json", "data/research/kba-de-vag-stock-research/manifest.json", "data/research/kba-de-vag-stock-research/kba-de-vag-stock-research.sqlite", "data/research/kba-de-vag-stock-research/source-manifest.json", "data/research/kba-de-vag-stock-research/LICENSE.txt", "data/research/kba-de-vag-stock-research/ATTRIBUTION.md", "data/research/kba-de-vag-stock-research/desktop-integration-report.json", "lib/kba-de-stock-research-db.cjs", "scripts/verify-kba-de-stock-research-pack.cjs", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/schemas/oem-dtc-index.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
             if (-not (Test-Path (Join-Path $desktopRoot $required))) { throw "Offline lifecycle evidence file is missing: $required" }
