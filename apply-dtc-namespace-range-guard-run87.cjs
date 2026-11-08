@@ -89,7 +89,7 @@ function apply(root) {
     "const MANUFACTURER_CONTROLLED_OBD_DTC_CODE_RE = /" + MANUFACTURER_PATTERN + "/;";
   core = replaceOnce(core, oldGenericDeclaration, newDeclarations, "run87 generic DTC range");
   core = replaceOnce(core, oldManufacturerDeclaration, "", "run87 manufacturer DTC range");
-  if (core.includes("U3[0-9A-F]{3})$/") || core.includes("[5-9][0-9A-F]{2}")) {
+  if (core.includes(OLD_GENERIC) || core.includes(OLD_MANUFACTURER)) {
     throw new Error("run87 obsolete DTC range fragments remain in local core");
   }
 
