@@ -123,6 +123,8 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIn("P3400",patch)
         self.assertIn("P34C8",patch)
         self.assertIn("P39AB",patch)
+        self.assertIn('const validPayload = { code: "P34C8", title: "Generic P34 range"',patch)
+        self.assertIn('const validPayload = { code: "P2ABC", title: "Generic SAE/ISO boundary fixture"',patch)
         self.assertIn("P3[4-9]",patch)
         self.assertIn("ensureOemSchema",patch)
         self.assertIn("path.join(__dirname,rel)",patch)
