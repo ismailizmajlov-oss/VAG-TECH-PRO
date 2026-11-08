@@ -73,7 +73,7 @@
     ]
   },
   "release_ready": false,
-  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle. The tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77 includes the run85 technical-step ordering guard, run86/run87 DTC namespace validation and quarantine, run88 OBDb source-count binding, run89 VehiclesDB revision binding, KBA DE stock research-pack integration, and the current pinned research-pack assembly. Desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification passed. It built NSIS x64 installers 0.2.3 and 0.2.4 and passed clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The separate Windows Server 2022 lifecycle also passed. Main has subsequent documentation-only commits; no application-source changes were made after the tested revision. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers.",
+  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle on tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77. It passed desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification, both NSIS x64 builds, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The Windows Server 2022 lifecycle also passed. Main now contains post-run metadata-only additions to the central and Russian/EAEU source registers for an Armenian national OTTS public listing; no desktop application code changed, but these source-register changes have not yet been validated by a newer Windows/source-rights CI run. Regression coverage is proposed in PR #56, with no PR-triggered workflow run observed yet. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers.",
   "related_validation_workflows": [
     {
       "name": "Russian EAEU and VAG OEM source contracts",
@@ -97,5 +97,38 @@
       "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978016",
       "reason": "Explicit repository approval flag for written reuse permission was not enabled; no candidate data were downloaded."
     }
-  ]
+  ],
+  "current_main_head": "4fc262343564a9962295314b9d68fb21f709ddb8",
+  "post_run_source_register_changes": [
+    {
+      "commit": "b1157d68c1fe729a3a4b392140794c38399de18c",
+      "source_id": "armstandard-am-otts-public-register",
+      "registry": "data/source-manifests/vag-factory-source-register.json",
+      "change": "Added Armenian official national OTTS listing as metadata-only, AM/EAEU TR CU 018/2011 scope.",
+      "rights_status": "not_obtained",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "windows_ci_validation": "not_yet_run"
+    },
+    {
+      "commit": "c7dae449c5e222f630dea2b000a4485d0ca3884d",
+      "source_id": "armstandard-am-otts-public-register",
+      "registry": "data/source-manifests/russian-eaeu-otts-sources.json",
+      "change": "Added the same Armenian listing to the dedicated regional source register; count is now 14.",
+      "rights_status": "permission_required",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "windows_ci_validation": "not_yet_run"
+    }
+  ],
+  "armstandard_regression_test_pr": {
+    "number": 56,
+    "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/pull/56",
+    "head_sha": "b89832a0d6ef887ac0572eb19c1ad12e282dc4f1",
+    "state": "open",
+    "ci_run_observed": false,
+    "validation_status": "pending"
+  }
 }
