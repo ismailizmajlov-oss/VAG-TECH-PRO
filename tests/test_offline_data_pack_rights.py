@@ -103,7 +103,6 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIs(lock["normalization_policy"]["research_pack_only"], True)
         self.assertIs(lock["normalization_policy"]["normalized_product_dtc_import_allowed"], False)
         self.assertIn("U3xxx", lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
-        self.assertIn("(sourceManifest.sources || []).length !== 16", sync_source)
         self.assertEqual(lock["source_reference_policy"], {
             "validation": "syntax_only",
             "external_fetch": False,
@@ -129,6 +128,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertNotIn("pull_request:", trigger_block)
         self.assertNotIn("push:", trigger_block)
         pack_workflow = (ROOT / ".github" / "workflows" / "build-windows-offline-data-packs.yml").read_text(encoding="utf-8")
+        self.assertNotIn("scripts/sync-desktop-research-manifest.cjs", pack_workflow.split("permissions:", 1)[0])
         self.assertIn("obdex-generic-cc0.lock.json", pack_workflow)
 
     def test_obdex_refresh_lock_and_artifact_are_revision_pinned(self):
@@ -164,6 +164,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
     def test_desktop_research_sync_guard_matches_obdex_locked_ranges(self):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         sync_source = (ROOT / "scripts" / "sync-desktop-research-manifest.cjs").read_text(encoding="utf-8")
+        self.assertIn("(sourceManifest.sources || []).length !== 16", sync_source)
         allowed = json.dumps(lock["scope"]["generic_code_ranges"])
         excluded = json.dumps(lock["scope"]["excluded_manufacturer_controlled_ranges"])
         self.assertIn(f"JSON.stringify(scope.generic_code_ranges) !== JSON.stringify({allowed})", sync_source)
