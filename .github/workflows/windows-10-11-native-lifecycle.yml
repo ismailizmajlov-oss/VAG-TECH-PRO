@@ -9,7 +9,7 @@ name: VAG TECH PRO native Windows 10/11 x64 lifecycle validation
 on:
   workflow_run:
     workflows:
-      - VAG TECH PRO Windows x64 desktop validation run71
+      - VAG TECH PRO Windows x64 desktop validation run87
     branches:
       - main
     types:
