@@ -270,6 +270,9 @@ permissions:
 concurrency:
   group: vag-tech-pro-windows-x64-v3-${{ github.ref }}
   cancel-in-progress: true
+      - ".github/workflows/build-wikipedia-vag-engine-candidates.yml"
+      - "scripts/build_wikipedia_vag_engine_candidates.py"
+      - "tests/test_wikipedia_vag_engine_candidates.py"
 
 jobs:
   build-and-lifecycle:
