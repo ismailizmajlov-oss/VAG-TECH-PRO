@@ -148,7 +148,9 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(observation["observed_at"], "2026-11-08")
         history = source["public_page_observations"]["history"]
         self.assertEqual(history[0]["ot_ts_page"]["observed_at"], "2026-11-07")
-        self.assertEqual(history[0]["ot_ts_page"]["visible_date_filters"], ["06.11.2026", "07.11.2026"])
+        self.assertEqual(history[0]["ot_ts_page"]["visible_date_filters"], ["05.11.2026", "06.11.2026"])
+        self.assertEqual(history[1]["source_document"], "docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-07.md")
+        self.assertEqual(history[1]["ot_ts_page"]["visible_date_filters"], ["06.11.2026", "07.11.2026"])
         self.assertFalse(observation["raw_page_bytes_captured"])
         self.assertIsNone(observation["raw_page_sha256"])
         self.assertEqual(observation["manufacturer_filter_options_observed"], ["AUDI AG", "Volkswagen AG"])
