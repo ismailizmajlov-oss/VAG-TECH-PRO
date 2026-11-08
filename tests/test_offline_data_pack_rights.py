@@ -80,6 +80,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("manufacturer-controlled or malformed DTC ranges", source)
         self.assertIn("raw_references_preserved_not_fetched_not_linked", source)
         self.assertIn("normalized_product_namespace_exclusions", source)
+        self.assertIn("unverified_range_counts", source)
         self.assertIn("U3xxx", source)
 
     def test_autoevolution_derived_identity_dataset_is_excluded(self):
@@ -174,6 +175,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("generic_obd2_source_labelled_research_only", sync_source)
         self.assertIn("normalized_product_namespace_exclusions", sync_source)
         self.assertIn("U3xxx", sync_source)
+        self.assertIn("source_label_is_not_standard_allocation_proof", sync_source)
         self.assertIn("P34xx", allowed)
         self.assertNotIn("P34xx-P39xx", allowed)
 
