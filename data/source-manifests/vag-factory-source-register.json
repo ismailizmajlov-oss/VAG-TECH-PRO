@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T07:13:00Z",
+  "updated_at": "2026-11-08T07:14:30Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -6052,7 +6052,7 @@
         "redistribution_allowed": "not_established",
         "permission_status": "not_obtained",
         "permission_required_before_product_import_or_distribution": true,
-        "rights_evidence": "No dataset-specific reuse licence was located. The published ELPTS offer is a paid software-use agreement, not a licence for these reference-file contents."
+        "rights_evidence": "No dataset-specific reuse licence was located. The published ELPTS offer is a paid software-use agreement and is not a data-reuse licence for these reference-file contents."
       },
       "limitations": [
         "The official ELPTS homepage links this XLSX under the «Справочники АС СЭП» section; public linking does not grant a dataset licence.",
@@ -6113,7 +6113,7 @@
         "redistribution_allowed": "not_established",
         "permission_status": "not_obtained",
         "permission_required_before_product_import_or_distribution": true,
-        "rights_evidence": "No dataset-specific reuse licence was located. The published ELPTS offer is a paid software-use agreement, not a licence for these reference-file contents."
+        "rights_evidence": "No dataset-specific reuse licence was located. The published ELPTS offer is a paid software-use agreement and is not a data-reuse licence for these reference-file contents."
       },
       "limitations": [
         "The official ELPTS homepage links to a public Yandex Disk listing titled «Справочник технических характеристик».",
