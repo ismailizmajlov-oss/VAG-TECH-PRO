@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T20:26:00Z",
+  "updated_at": "2026-11-08T00:43:46.534Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5380,6 +5380,75 @@
       "product_import_allowed": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_downloaded_no_snapshot_hash_claimed"
+    },
+    {
+      "source_id": "sae-j2012-dtc-standard",
+      "publisher": "SAE International",
+      "url": "https://saemobilus.sae.org/standards/j2012_202509-diagnostic-trouble-code-definitions",
+      "related_current_annex_url": "https://saemobilus.sae.org/standards/j2012da_012013-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions",
+      "historical_public_reference_url": "https://files.infocentre.io/files/docs_clients/126_2007751625_1263573_J2012_201303.pdf",
+      "source_kind": "copyrighted_obd_dtc_namespace_standard_and_digital_annex",
+      "current_revision": {
+        "base_standard": "J2012_202509",
+        "base_standard_revision_date": "2025-09-01",
+        "digital_annex": "J2012DA_202607",
+        "digital_annex_revision_date": "2026-07-29",
+        "historical_range_reference": "J2012_201303"
+      },
+      "market_scope": [
+        "GLOBAL"
+      ],
+      "applicability_precision": "DTC_namespace_allocation_only_no_vehicle_fitment",
+      "verification_status": "metadata_verified_historical_range_reference_reviewed_current_annex_not_acquired",
+      "display_status": "not_displayed_no_standard_content",
+      "rights": {
+        "data_license_status": "copyrighted_SAE_standard_and_digital_annex; no product reuse licence obtained",
+        "commercial_use_allowed": "not_confirmed",
+        "display_allowed": "not_confirmed",
+        "offline_cache_allowed": "not_confirmed",
+        "bulk_reuse_allowed": "not_confirmed",
+        "redistribution_allowed": "not_confirmed",
+        "permission_status": "not_cleared",
+        "permission_required_before_any_standard_text_or_table_import": true
+      },
+      "evidence": {
+        "current_catalogue_pages_reviewed_at": "2026-11-08",
+        "historical_public_reference_revision": "J2012_201303",
+        "historical_public_reference_quality": "publicly accessible secondary mirror; not treated as current standard",
+        "current_digital_annex_full_allocation_table_acquired": false,
+        "current_digital_annex_content_sha256": null,
+        "no_standard_definition_text_copied": true
+      },
+      "data_counts_as_published": {
+        "generic_dtc_rows": 0,
+        "manufacturer_specific_dtc_rows": 0,
+        "vag_specific_dtc_rows": 0,
+        "exact_vehicle_fitment_rows": 0
+      },
+      "applicability": {
+        "manufacturer": "UNKNOWN",
+        "vag_specific": false,
+        "exact_vehicle_fitment": false,
+        "model_generation_year_mapping": false,
+        "engine_gearbox_mapping": false,
+        "ecu_mapping": false,
+        "market_scope": "GLOBAL",
+        "applicability_precision": "namespace_policy_only"
+      },
+      "quality_limits": [
+        "The current SAE J2012DA 202607 digital annex is not acquired under a product reuse licence; no current code-level assignment table is imported.",
+        "The publicly accessible J2012 2013 reference identifies P3000-P3399 as manufacturer-controlled, P3400-P3999 as SAE-reserved and U3xxx as manufacturer-controlled/ISO-SAE-reserved; it is historical and is not treated as the current annex.",
+        "P35xx-P39xx and U3xxx remain unresolved in the normalized product DTC namespaces until current code-level allocation is verified under an appropriate licence.",
+        "A manufacturer-controlled code range does not prove Volkswagen Group authorship or ECU/vehicle applicability.",
+        "No SAE DTC descriptions, failure-type tables or copyrighted standard content are copied or distributed."
+      ],
+      "project_decision": "metadata_and_range_policy_reference_only; no standard text import, no DTC definitions, no product display, no offline caching or redistribution until rights and current code-level allocation are confirmed",
+      "data_ingested": false,
+      "research_pack_ingested": false,
+      "product_database_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "metadata_only_no_standard_content_downloaded"
     }
   ],
   "minimum_fitment_evidence_fields": [
