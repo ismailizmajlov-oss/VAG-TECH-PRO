@@ -126,6 +126,35 @@ test('preserves supported VAG make labels while sanitizing control characters', 
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
+test('keeps public Annex 2 resumption fields 23/24 separate from internal Annex 1 fields 86/87', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-resumption-fields-'));
+  try {
+    const f = fixture(dir);
+    const record = {
+      ...f.input.records[0],
+      resumption_date: '2024-03-01',
+      resumption_reason: 'Approval reinstated after corrective action',
+      source_field_numbers: {
+        ...f.input.records[0].source_field_numbers,
+        resumption_date: 23,
+        resumption_reason: 24
+      }
+    };
+    const normalized = normalizeRecord(record, 0, f.manifest).normalized;
+    assert.equal(normalized.resumption_date, '2024-03-01');
+    assert.equal(normalized.resumption_reason, 'Approval reinstated after corrective action');
+
+    const wrongNamespace = {
+      ...record,
+      source_field_numbers: {
+        ...record.source_field_numbers,
+        resumption_date: 87
+      }
+    };
+    assert.throws(() => normalizeRecord(wrongNamespace, 0, f.manifest), /does not match Annex 2/);
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
 test('imports a rights-cleared Annex 2 export into a review-only SQLite staging database', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vag-fgis-authorized-'));
   try {
