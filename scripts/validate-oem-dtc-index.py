@@ -40,7 +40,7 @@ def main() -> None:
     patterns = {rule["if"]["properties"]["dtc_namespace"]["const"]: rule["then"]["properties"]["dtc"]["pattern"] for rule in namespace_rules}
     if patterns.get("generic_sae_iso") != GENERIC_DTC_PATTERN.pattern or patterns.get("manufacturer_specific_vag") != MANUFACTURER_DTC_PATTERN.pattern or patterns.get("manufacturer_specific_other") != MANUFACTURER_DTC_PATTERN.pattern:
         raise AssertionError("DTC JSON schema namespace code-range patterns are inconsistent")
-    for code in ("P0001","P2ABC","P34C8","B0ABC","C0ABC","U0ABC"):
+    for code in ("P0001","P2ABC","P34C8","B0ABC","C0ABC","U0ABC","U3ABC"):
         if not GENERIC_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Generic boundary code rejected: {code}")
     for code in ("P1ABC","P30AB","P33AB","B1ABC","B2ABC","C1ABC","C2ABC","U1ABC","U2ABC"):
         if not MANUFACTURER_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Manufacturer boundary code rejected: {code}")
@@ -48,7 +48,7 @@ def main() -> None:
         if GENERIC_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Manufacturer code accepted as generic: {code}")
     for code in ("P0300","P2ABC","P34C8","B0ABC","C0ABC","U0ABC"):
         if MANUFACTURER_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Generic code accepted as manufacturer-specific: {code}")
-    for code in ("P35AB", "P39AB", "U3ABC", "B3ABC", "C3ABC"):
+    for code in ("P35AB", "P39AB", "B3ABC", "C3ABC"):
         if not UNRESOLVED_RESERVED_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Unresolved/reserved code was not quarantined: {code}")
         if GENERIC_DTC_PATTERN.fullmatch(code) or MANUFACTURER_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Unresolved/reserved code entered a normalized namespace: {code}")
     for name in ("ecu", "source_document", "applicability", "provenance", "rights", "review"):
