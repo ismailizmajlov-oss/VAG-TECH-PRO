@@ -1,0 +1,1 @@
+Run the full Windows x64 desktop validation workflow for the current main revision after the EAEU NSI metadata-only classifier review and importer regression test. This is a CI trigger marker only; it contains no data payload and grants no source rights.
