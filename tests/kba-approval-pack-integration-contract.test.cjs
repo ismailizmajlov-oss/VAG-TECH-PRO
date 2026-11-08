@@ -98,7 +98,8 @@ test("KBA approval pack builder publishes a reusable, attributed DE-only researc
   const workflow = read(".github/workflows/build-kba-de-vag-approval-research-pack.yml");
   assert.match(workflow, /runs-on: windows-2025/);
   assert.match(workflow, /build_kba_de_vag_approval_research_pack\.py/);
-  assert.match(workflow, /kba-de-vag-approvals\.sqlite/);
+  const builder = read("scripts/build_kba_de_vag_approval_research_pack.py");
+  assert.match(builder, /kba-de-vag-approvals\.sqlite/);
   assert.match(workflow, /RIGHTS-EVIDENCE\.json/);
   assert.match(workflow, /retention-days: 90/);
 });
