@@ -1,3 +1,4 @@
+import hashlib
 import json
 import unittest
 from pathlib import Path
@@ -17,7 +18,7 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
     def test_cc_by_4_rights_and_attribution_are_explicit(self):
         source = SOURCES["vehiclesdb-vag-identity-cc-by-4.0"]
         rights = source["rights"]
-        self.assertEqual(source["release_tag"], "v2026.10.3")
+        self.assertEqual(source["release_tag"], "v2026.10.4")
         self.assertEqual(rights["data_license"], "CC-BY-4.0")
         for key in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed",
                     "redistribution_allowed", "attribution_required", "unconditional_upstream_source_notices_required"):
@@ -40,6 +41,23 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
         self.assertEqual(pinned["LICENSE"]["sha256"], source["license_file_sha256"])
         self.assertTrue(all(item["byte_size"] > 0 for item in pinned.values()))
         self.assertEqual(source["upstream_source_files"], pinned)
+        self.assertEqual(
+            source["source_snapshot_sha256"],
+            hashlib.sha256(json.dumps(pinned, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest(),
+        )
+        self.assertIn("canonical UTF-8 JSON", source["source_snapshot_digest_method"])
+        research = source["research_pack"]
+        self.assertEqual(research["status"], "built_and_verified")
+        self.assertEqual(research["upstream_tag"], LOCK["upstream_tag"])
+        self.assertEqual(research["counts"], {
+            "approved_source_registers": 14,
+            "model_name_candidates": 260,
+            "market_presence_evidence_rows": 1524,
+        })
+        self.assertEqual(research["market_scope"], source["market_scope"])
+        self.assertFalse(source["data_ingested"])
+        for key in ("artifact_sha256", "database_sha256", "manifest_sha256"):
+            self.assertRegex(research[key], r"^[0-9a-f]{64}$")
 
     def test_foreign_market_scope_is_not_misrepresented_as_ru_eaeu(self):
         source = SOURCES["vehiclesdb-vag-identity-cc-by-4.0"]
@@ -69,7 +87,7 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
     def test_locked_upstream_manifest_matches_scope_and_licence(self):
         self.assertEqual(LOCK["dataset_id"], "vehiclesdb-vag-identity-cc-by-4.0")
         self.assertEqual(LOCK["data_license"], "CC-BY-4.0")
-        self.assertEqual(LOCK["upstream_tag"], "v2026.10.3")
+        self.assertEqual(LOCK["upstream_tag"], "v2026.10.4")
         self.assertIs(LOCK["scope"]["fitment_claim"], False)
         self.assertIs(LOCK["scope"]["ru_eaeu_market_evidence_expected"], False)
         self.assertEqual(LOCK["expected_counts"]["models"], 260)
