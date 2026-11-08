@@ -183,6 +183,24 @@ def main() -> None:
         raise SystemExit("Windows build is missing desktop tests or the NSIS installer build")
     if not (text.index(sync_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker)):
         raise SystemExit("Source-rights register must be synchronized before desktop tests and NSIS packaging")
+    metadata_step_marker = "      - name: Write build metadata"
+    metadata_upload_marker = "      - name: Upload standalone build metadata for independent installer hash verification"
+    inventory_step_marker = "      - name: Create desktop source inventory for technical-section audit"
+    if metadata_step_marker not in text or metadata_upload_marker not in text or inventory_step_marker not in text:
+        raise SystemExit("Windows CI must generate and publish standalone build metadata before source inventory packaging")
+    metadata_upload_step = text.split(metadata_upload_marker, 1)[1].split("\\n      - name:", 1)[0]
+    metadata_upload_required = (
+        "hashFiles('build-metadata.json') != ''",
+        "vag-tech-pro-build-metadata-${{ github.run_id }}",
+        "path: build-metadata.json",
+        "if-no-files-found: error",
+        "retention-days: 30",
+    )
+    missing_metadata_upload = [marker for marker in metadata_upload_required if marker not in metadata_upload_step]
+    if missing_metadata_upload:
+        raise SystemExit(f"Standalone build metadata artifact contract is incomplete: {missing_metadata_upload}")
+    if not (text.index(metadata_step_marker) < text.index(metadata_upload_marker) < text.index(inventory_step_marker)):
+        raise SystemExit("Standalone build metadata must be uploaded immediately after it is generated")
 
     required_evidence = (
         'vag_source_register_sha256',
