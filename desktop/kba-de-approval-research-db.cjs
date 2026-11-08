@@ -166,6 +166,8 @@ function getKbaApprovalSummary(explicitRoot) {
     pack.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
     pack.database_sha256 === entry.database_sha256 &&
     pack.source_file_sha256 === entry.source_file_sha256 &&
+    pack.source_file_bytes === entry.source_file_bytes &&
+    entry.source_revision === pack.source_revision &&
     source.source_id === SOURCE_ID &&
     source.data_ingested === false &&
     source.product_import_allowed === false &&
@@ -204,6 +206,7 @@ function getKbaApprovalSummary(explicitRoot) {
   );
 
   assert(hashFile(sourceSnapshotFile) === entry.source_snapshot_sha256, "KBA source XLSX SHA-256 mismatch");
+  assert(fs.statSync(sourceSnapshotFile).size === entry.source_file_bytes, "KBA source XLSX byte-size mismatch");
   assert(attributionText.includes("Kraftfahrt-Bundesamt (KBA)") && attributionText.includes("DL-DE BY 2.0") && attributionText.includes(SOURCE_URL) && attributionText.includes("Modified data"), "KBA approval attribution/modified-data notice missing");
   assert(licenseText.includes("DL-DE BY 2.0") && licenseText.includes(LICENSE_URL), "KBA approval licence reference missing");
 
@@ -257,8 +260,8 @@ function getKbaApprovalSummary(explicitRoot) {
     );
 
     const invalid = db.prepare(
-      "SELECT count(*) AS n FROM v_approval_records WHERE market_scope!='DE' OR applicability_precision!='type_approval_document_metadata_only' OR review_status!='research_only' OR exact_vehicle_fitment!=0 OR model_year IS NOT NULL OR generation IS NOT NULL OR engine_code IS NOT NULL OR gearbox_code IS NOT NULL OR exact_engine_gearbox_pair!=0 OR ru_eaeu_applicability!=0 OR ecu_fitment!=0 OR dtc_fitment!=0 OR repair_applicability!=0"
-    ).get().n;
+      "SELECT count(*) AS n FROM v_approval_records WHERE market_scope!='DE' OR applicability_precision!='type_approval_document_metadata_only' OR review_status!='research_only' OR exact_vehicle_fitment!=0 OR model_year IS NOT NULL OR generation IS NOT NULL OR engine_code IS NOT NULL OR gearbox_code IS NOT NULL OR exact_engine_gearbox_pair!=0 OR ru_eaeu_applicability!=0 OR ecu_fitment!=0 OR dtc_fitment!=0 OR repair_applicability!=0 OR source_revision<>? OR source_snapshot_sha256<>?"
+    ).get(entry.source_revision, entry.source_snapshot_sha256).n;
     const pairTables = db.prepare("SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND lower(name) LIKE '%pair%'").get().n;
     assert(invalid === 0 && pairTables === 0, "KBA approval market/applicability/pair boundary failed");
 
@@ -267,12 +270,14 @@ function getKbaApprovalSummary(explicitRoot) {
       approvalRecords: db.prepare("SELECT count(*) AS n FROM approval_records").get().n,
       manufacturerLabels: db.prepare("SELECT count(DISTINCT manufacturer_label) AS n FROM approval_records").get().n,
       distinctApprovalNumbers: db.prepare("SELECT count(DISTINCT type_approval_number_raw) AS n FROM approval_records").get().n,
+      distinctRowHashes: db.prepare("SELECT count(DISTINCT source_record_sha256) AS n FROM approval_records").get().n,
       sourceLabelPolicyRows: db.prepare("SELECT count(*) AS n FROM source_label_policy").get().n
     };
     assert(counts.sourceRows === 3782, "KBA source row count changed");
     assert(counts.approvalRecords === 918, "KBA approval record count changed");
     assert(counts.manufacturerLabels === 8, "KBA exact manufacturer-label count changed");
     assert(counts.distinctApprovalNumbers === 918, "KBA approval-number count changed");
+    assert(counts.distinctRowHashes === 918, "KBA row-hash uniqueness changed");
     assert(counts.sourceLabelPolicyRows === 9, "KBA label-policy row count changed");
   } finally {
     db.close();
