@@ -78,5 +78,17 @@
       "http"
     ],
     "display_policy": "external_reference_link_only"
+  },
+  "normalization_policy": {
+    "research_pack_only": true,
+    "normalized_product_dtc_import_allowed": false,
+    "unverified_ranges_for_normalized_import": [
+      "U3xxx",
+      "P35xx-P39xx",
+      "B3xxx",
+      "C3xxx"
+    ],
+    "promotion_requires": "exact_current_J2012DA_assignment_and_independent_rights_review",
+    "note": "Upstream OBDex labels U3xxx rows generic; these 174 rows remain isolated research-only and are not promoted into the normalized product DTC index."
   }
 }
