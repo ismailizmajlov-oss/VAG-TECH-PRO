@@ -26,6 +26,7 @@ on:
       - tests/vehiclesdb-revision-manifest-run89.test.cjs
       - data/source-manifests/obdex-generic-cc0.lock.json
       - data/source-manifests/obdb-vag-signalsets.json
+      - data/source-manifests/vag-factory-source-register.json
       - data/source-manifests/vehiclesdb-vag-identity.lock.json
   pull_request:
     paths:
@@ -48,6 +49,7 @@ on:
       - tests/vehiclesdb-revision-manifest-run89.test.cjs
       - data/source-manifests/obdex-generic-cc0.lock.json
       - data/source-manifests/obdb-vag-signalsets.json
+      - data/source-manifests/vag-factory-source-register.json
       - data/source-manifests/vehiclesdb-vag-identity.lock.json
   workflow_dispatch:
 
