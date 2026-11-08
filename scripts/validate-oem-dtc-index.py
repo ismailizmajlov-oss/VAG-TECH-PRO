@@ -170,6 +170,22 @@ def main() -> None:
         (publishable_record,)
     )
 
+    # Unresolved/reserved identifiers may be retained as unknown research rows,
+    # but cannot be promoted to a published repair record.
+    quarantined_ids = []
+    for code in ("P35AB", "P39AB", "U3ABC", "B3ABC", "C3ABC"):
+        db.execute("""INSERT INTO oem_dtc_index
+          (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+           evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+          VALUES (?,'unknown','UNKNOWN','UNKNOWN',?,'quarantine:unverified-allocation',
+                  'unknown',?,'2026-11-08T00:00:00Z')""", (code, cc0_source, hashlib.sha256(code.encode()).hexdigest()))
+        quarantined_ids.append(db.execute("SELECT last_insert_rowid()").fetchone()[0])
+    for record_id in quarantined_ids:
+        expect_integrity_error(
+            lambda record_id=record_id: db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (record_id,)),
+            "publication blocked: insufficient exact applicability evidence"
+        )
+
     if db.execute("PRAGMA foreign_key_check").fetchall():
         raise AssertionError("Foreign key violations detected")
     print("OEM DTC index validation passed: canonical DTC shape, disjoint generic/manufacturer ranges, namespace/manufacturer and rights gates.")
