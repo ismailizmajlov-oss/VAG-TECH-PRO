@@ -163,7 +163,10 @@ function main() {
     execution_allowed: false,
     counts: manifest.counts,
     source_ids: manifest.sources.map((source) => source.source_id).sort(),
-    patched_files: targets.map(({ path: relativePath, sha256: fileSha256 }) => ({ path: relativePath, sha256: fileSha256 })),
+    patched_files: [...new Set(targets.map(({ path: relativePath }) => relativePath))].map((relativePath) => {
+      const item = regularFile(desktopRoot, relativePath, false);
+      return { path: relativePath, sha256: sha256(fs.readFileSync(item.file)) };
+    }),
   };
   const evidencePath = path.join(desktopRoot, "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json");
   if (fs.existsSync(evidencePath)) {
@@ -181,7 +184,7 @@ function main() {
   } else {
     atomicWrite(evidencePath, JSON.stringify(evidence, null, 2) + "\n", 0o644);
   }
-  process.stdout.write(JSON.stringify({ status: evidence.status, counts: evidence.counts, source_manifest_sha256: manifestSha256, evidence_path: "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json", patched_files: targets }, null, 2) + "\n");
+  process.stdout.write(JSON.stringify({ status: evidence.status, counts: evidence.counts, source_manifest_sha256: manifestSha256, evidence_path: "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json", patched_files: evidence.patched_files }, null, 2) + "\n");
 }
 
 try {
