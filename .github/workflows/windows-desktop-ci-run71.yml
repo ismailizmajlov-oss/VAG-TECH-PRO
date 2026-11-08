@@ -1696,6 +1696,8 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          $caseDistinctLabels = '{"AUDI AG":28,"Audi AG":353}' | ConvertFrom-Json -AsHashtable
+          if ($caseDistinctLabels.Count -ne 2) { throw "PowerShell must preserve case-distinct KBA manufacturer labels." }
           $downloadDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-kba-approval-pack"
           $rebuiltDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-kba-approval-pack-rebuilt"
           if (Test-Path -LiteralPath $rebuiltDir) { Remove-Item -LiteralPath $rebuiltDir -Recurse -Force }
