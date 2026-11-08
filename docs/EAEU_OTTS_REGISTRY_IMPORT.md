@@ -36,6 +36,10 @@ The tool checks the permission file's SHA-256 against the source register, refus
 
 The root must use the exact R.TR.TS.07.001 namespace. Each recognized field is checked against its field-specific imported namespace prefix from Decision No. 88, tables 12–13 (for example, trcdo for complex vehicle records and trsdo for vehicle component codes). Foreign or unqualified lookalike fields are rejected; unrelated extension elements such as XMLDSig signatures are ignored; every observed element namespace is recorded. The field map is based on the published structure description, not a retrieved XSD, so full XSD validation is still not claimed. It also rejects DTD/entity declarations after removing interleaved NUL bytes so UTF-16/UTF-32 encoded declarations cannot bypass the pre-parse guard. These checks are structural safeguards; they do not validate a real registry export against an official XSD, which has not yet been retrieved.
 
+## FGIS field-number namespaces
+
+The current Russian FGIS source manifest is pinned to Order 2038 as amended by Order 2335. Internal Annex 1 field 86 is the resumption reason and field 87 is the resumption date. Public Annex 2 uses field 23 for resumption date and field 24 for resumption reason. These field numbers belong to different namespaces and must not be joined by number. The importer in this document accepts only the public Annex 2 namespace; it does not ingest internal FGIS Annex 1 fields.
+
 ## Data semantics
 
 - Only document kinds 30 (OTTS) and 35 (OTSH) are staged. Code 40 (SBKTS) is skipped.
