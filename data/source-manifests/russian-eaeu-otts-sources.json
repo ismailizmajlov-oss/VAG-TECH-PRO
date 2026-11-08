@@ -818,7 +818,28 @@
         "PDF_redistribution": "not_established",
         "public_table_powertrain_fields": "not_exposed_in_observed_table",
         "public_table_ecu_fields": "not_exposed_in_observed_table",
-        "export_controls_last_observed_at": "2026-11-07"
+        "export_controls_last_observed_at": "2026-11-07",
+        "alternative_public_page_shell": {
+          "observation_type": "rendered_page_shell_only",
+          "url": "https://docs.elpts.ru/ncher/otts",
+          "observed_at": "2026-11-09",
+          "page_title": "РЕЕСТР ОДОБРЕНИЙ ТИПА ТРАНСПОРТНОГО СРЕДСТВА, ОФОРМЛЕННЫХ В ЭЛЕКТРОННОМ ВИДЕ",
+          "document_class_navigation": [
+            "OTSH",
+            "ESBKTS",
+            "ZOETS"
+          ],
+          "dynamic_result_placeholders": [
+            "{{ totalFiltered }}",
+            "{{ totalNotFiltered }}"
+          ],
+          "dynamic_result_placeholders_unresolved": true,
+          "record_rows_observed": false,
+          "api_or_export_endpoint_verified": false,
+          "raw_page_bytes_retrieved": false,
+          "source_snapshot_sha256": null,
+          "interpretation": "The retrieved page is only a dynamic client-side shell. No approval records, API/export contract or reusable data artifact were observed."
+        }
       },
       "legal_basis": {
         "official_listing": "https://elpts.ru/",
