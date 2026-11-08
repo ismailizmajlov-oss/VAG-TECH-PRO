@@ -5733,7 +5733,7 @@
         "metadata_reference_only": true
       },
       "project_decision": "discovery_only; public unauthenticated API access is not treated as a reuse, offline caching, bulk extraction or redistribution licence; no endpoint data or OTTS/OTSH records imported",
-      "evidence_status": "official API documentation and official NSI object pages 2001, 2030 and 2024 reviewed 2026-11-08; the reviewed objects provide document/passport/transport-type classification only, not OTTS/OTSH records or VAG powertrain fitment; no dataset-level reuse terms or endpoint catalogue verified",
+      "evidence_status": "official API documentation and official NSI object pages 2001, 2030 and 2024 reviewed 2026-11-08; object 2001 includes code 30 for EAEU vehicle type approval, but the reviewed object is a document-type classifier, not the OTTS record corpus or VAG powertrain fitment; no dataset-level reuse terms or endpoint catalogue verified",
       "api_limit_per_request": 1500,
       "pagination_parameters": [
         "limit",
@@ -5779,6 +5779,10 @@
             "observed_record_count": 10,
             "source_last_updated": "2023-01-19",
             "visible_codes": [
+              {
+                "code": "30",
+                "label": "одобрение типа транспортного средства ЕАЭС"
+              },
               {
                 "code": "35",
                 "label": "одобрение типа шасси ЕАЭС"
@@ -5826,7 +5830,9 @@
           "engine_gearbox_pairs": false,
           "ecu_or_dtc_content": false,
           "repair_content": false,
-          "dataset_specific_reuse_license_found": false
+          "dataset_specific_reuse_license_found": false,
+          "otts_document_type_code_observed": true,
+          "otts_records_present": false
         },
         "decision": "metadata_only; do not download, cache, import or redistribute records until an exact relevant endpoint and dataset-level reuse rights are verified"
       }
