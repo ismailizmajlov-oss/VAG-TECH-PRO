@@ -4,12 +4,12 @@
 
 A separate, verifiable German-market research pack was built from the official KBA whole-vehicle type-approval XLSX under the published GovData **Datenlizenz Deutschland – Namensnennung – Version 2.0 (DL-DE BY 2.0)**. The pack is deliberately isolated from the production vehicle/repair catalog.
 
-- Pack workflow: [run 4](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42483260589)
+- Pack workflow: [run 5](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42483553713) (previous successful build: [run 4](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42483260589))
 - Source probe: [run 13](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42481409966)
-- Workflow artifact: `kba-de-vag-approval-research-pack-42483260589`
-- Artifact ID: `13617954986`
-- Artifact size: 564,619 bytes
-- Artifact ZIP SHA-256: `c94046ee4d8bf7a1047753db21b4e4e0aa7b6d2a829f72970ecbfa339536b4a7`
+- Workflow artifact: `kba-de-vag-approval-research-pack-42483553713`
+- Artifact ID: `13618179210`
+- Artifact size: 564,668 bytes
+- Artifact ZIP SHA-256: `4658837938dffe3ee46abd2ac29f99c7e719adad93537edad21617ff4141251d`
 - Artifact retention: 14 days from 2026-11-08; this CI artifact is not a permanent product distribution.
 
 ## Source provenance
@@ -21,8 +21,8 @@ A separate, verifiable German-market research pack was built from the official K
 - Source revision: `last-modified:2026-08-17T04:28:44Z;etag:70d6df0340b32bbd12e01b41e42ba210`
 - Source XLSX size: 909,912 bytes
 - Source XLSX SHA-256: `127ae4a1beb236b35c1983f897b7bd234d9f8809e888920a155e4b7d72ff43b4`
-- Source manifest SHA-256 in the pack: `3cc08b5392683a4243c95c05f5d67319a3d84c5b0e9654722711a1a0846e93f7`
-- SQLite SHA-256: `dff939d4db69573d481bdd3a2513688ae930461ee4b63c7bc8349397caf697a2`
+- Source manifest SHA-256 in the pack: `4303ad532e1f96238d60a957b90b2753e9a35d2e1cda2bc58fdc29c8de1d9561`
+- SQLite SHA-256: `328306d68902eb837a2d60aa69e47e6524d52b88f2976167a97e53ec0ee2e23c`
 
 The probe verifier initially failed because the KBA server's HTTP `Last-Modified` value was RFC 7231 text while the pinned manifest stored the same instant in ISO-8601 UTC. The verifier now canonicalizes both representations to UTC before comparison and retains strict hash, ETag, byte-size, official-host, schema and market checks. Regression tests cover equivalent and mismatching timestamps.
 
