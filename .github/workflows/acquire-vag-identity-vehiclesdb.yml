@@ -1,6 +1,9 @@
 name: Acquire licensed VAG identity candidates from VehiclesDB
 
 on:
+  push:
+    paths:
+      - data/source-manifests/vehiclesdb-vag-identity.lock.json
   workflow_call:
   workflow_dispatch:
 
