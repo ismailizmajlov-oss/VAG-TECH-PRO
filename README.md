@@ -19,7 +19,7 @@ The technical schema and desktop workflows exist, but the presence of a table or
 ## Evidence and safety rules
 
 - Generic SAE/ISO OBD-II records are never represented as VAG-specific.
-- SAE J2012/J2012DA is copyrighted: only bibliographic metadata and conservative namespace-boundary facts are recorded, not standard text, definition tables or the current licensed digital-annex allocation. The normalized importer rejects unresolved/reserved P35xx–P39xx, B3xxx, C3xxx and U3xxx ranges; the upstream OBDex U3xxx family remains isolated in its research-only snapshot.
+- SAE J2012/J2012DA is copyrighted: only bibliographic metadata and conservative namespace-boundary facts are recorded, not standard text, definition tables or the current licensed digital-annex allocation. The normalized importer applies a conservative family-range gate and rejects unresolved/reserved P35xx–P39xx, B3xxx, C3xxx and U3xxx before import. This is not a current code-allocation list: the J2012DA_202607 content is not licensed or copied, and every admitted code still needs an exact pinned-source record. The upstream OBDex U3xxx family remains isolated in its research-only snapshot.
 - Community signals, model labels, generation links and manufacturer-labelled DTC candidates remain research candidates until their provenance and applicability are independently verified.
 - Engine codes, gearbox codes, ECU identities and exact pairings are never inferred from descriptive engine labels or model-year overlap.
 - Critical repair and diagnostic records require source revision, rights evidence, market, model/generation/year, exact engine/transmission/ECU relationships, applicability precision and technical review.
