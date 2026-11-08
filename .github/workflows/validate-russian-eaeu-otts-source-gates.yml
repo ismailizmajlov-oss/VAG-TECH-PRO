@@ -7,6 +7,8 @@ on:
       - "automation/**"
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
+      - docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md
+      - tests/test_elpts_reference_rights_gate.py
       - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
       - tests/test_kazakhstan_eokno_source_rights.py
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
@@ -30,6 +32,8 @@ on:
   pull_request:
     paths:
       - data/source-manifests/russian-eaeu-otts-sources.json
+      - docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md
+      - tests/test_elpts_reference_rights_gate.py
       - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
       - tests/test_kazakhstan_eokno_source_rights.py
       - docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-05.md
@@ -84,6 +88,8 @@ jobs:
           python -m unittest discover -s tests -p "test_eaeu_otts_registry_import.py" -v
       - name: Validate Kazakhstan EOKNO rights and document-type boundary
         run: python -m unittest discover -s tests -p "test_kazakhstan_eokno_source_rights.py" -v
+      - name: Validate ELPTS public OTTS and reference-file rights gate
+        run: python tests/test_elpts_reference_rights_gate.py
       - name: Syntax-check the authorized FGIS importer
         run: node --check scripts/import-authorized-fgis-otts-export.cjs
       - name: Run transactional SQLite importer tests on Windows
