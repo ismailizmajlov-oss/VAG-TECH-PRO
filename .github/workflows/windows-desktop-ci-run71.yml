@@ -80,6 +80,7 @@ on:
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
+      - "tests/test_rosstandart_recall_source_rights.py"
       - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
       - "tests/test_wikipedia_vag_engine_list_rights_gate.py"
       - "tests/test_openvag_source_rights.py"
@@ -196,6 +197,7 @@ on:
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
+      - "tests/test_rosstandart_recall_source_rights.py"
       - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
       - "tests/test_wikipedia_vag_engine_list_rights_gate.py"
       - "tests/test_openvag_source_rights.py"
@@ -312,6 +314,8 @@ jobs:
           python tests/test_cars_base_source_rights.py
           python tests/test_elpts_reference_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "ELPTS reference-file and OTTS rights gate failed." }
+          python tests/test_rosstandart_recall_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "Rosstandart recall-source provenance and rights gate failed." }
           python tests/test_wikipedia_vag_engine_list_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed." }
           python tests/test_openvag_source_rights.py
@@ -1109,6 +1113,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Armenian OTTS source-rights quarantine tests failed" }
           python tests/test_elpts_reference_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "ELPTS reference-file and OTTS rights gate failed" }
+          python tests/test_rosstandart_recall_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "Rosstandart recall-source provenance and rights gate failed" }
           python tests/test_wikipedia_vag_engine_list_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed" }
           $syncOutput = python scripts/sync_vag_source_register.py --source "data/source-manifests/vag-factory-source-register.json" --desktop-root "desktop-source"
@@ -2260,6 +2266,7 @@ jobs:
             tests/test_sync_vag_source_register_source_rights.py
             tests/test_cars_base_source_rights.py
             tests/test_elpts_reference_rights_gate.py
+            tests/test_rosstandart_recall_source_rights.py
             docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md
             tests/test_wikipedia_vag_engine_list_rights_gate.py
             docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md
