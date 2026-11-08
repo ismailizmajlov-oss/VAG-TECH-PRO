@@ -216,7 +216,7 @@ function patchUi(desktopRoot) {
   }
   text = replaceOnce(text, datasetAnchor, newDataset, "KBA approval dataset type");
   const stockTab = '  { id: "kba-de", label: "KBA · DE", hint: "KBA · DL-DE BY 2.0 · статистика парка, не применяемость" },';
-  text = replaceOnce(text, stockTab, stockTab + '\n  { id: "kba-de-approvals", label: "KBA · ОТТС DE", hint: "KBA · DL-DE BY 2.0 · метаданные одобрений, не применяемость" },', "KBA approval tab");
+  text = replaceOnce(text, stockTab, stockTab + '\n  { id: "kba-de-approvals", label: "KBA · DE approvals", hint: "KBA · DL-DE BY 2.0 · немецкие одобрения типа, не применяемость" },', "KBA approval tab");
   const stockState = '  const [kbaDeSummary, setKbaDeSummary] = useState<KbaDeSummary | null>(null);';
   text = replaceOnce(text, stockState, stockState + '\n  const [kbaApprovalSummary, setKbaApprovalSummary] = useState<KbaApprovalSummary | null>(null);', "KBA approval state");
   const stockEffect = '  useEffect(() => {\n    let active = true;\n    fetch("/api/local-research?dataset=kba-de-summary", { cache: "no-store" })\n      .then(async (response) => { const payload = await response.json(); if (!response.ok) throw new Error(payload.error || "KBA DE справочник недоступен."); return payload; })\n      .then((payload) => { if (active && payload?.ok) setKbaDeSummary(payload.summary as KbaDeSummary); })\n      .catch(() => { if (active) setKbaDeSummary(null); });\n    return () => { active = false; };\n  }, []);';
