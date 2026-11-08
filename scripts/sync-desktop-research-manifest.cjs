@@ -207,8 +207,6 @@ function sync(packRootArg, researchRootArg) {
     cache_allowed: true,
     redistribution_allowed: true,
     source_reference_policy: obSource.source_reference_policy,
-    normalized_product_namespace_exclusions: obSource.import_policy.normalized_product_namespace_exclusions,
-    unverified_current_standard_ranges: obSource.import_policy.unverified_current_standard_ranges,
     source_label_is_not_standard_allocation_proof: obSource.import_policy.source_label_is_not_standard_allocation_proof,
     limitations: [
       "Generic SAE/ISO OBD-II only; never VAG-specific.",
