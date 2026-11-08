@@ -212,6 +212,8 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
                 insert_dtc(code, "manufacturer_specific_vag", "AUDI")
         with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
             insert_dtc("B0ABC", "manufacturer_specific_other", "OTHER")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
+            insert_dtc("P35A6", "manufacturer_specific_other", "OTHER")
 
         self.assertEqual(self.db.execute("SELECT count(*) FROM oem_dtc_index").fetchone()[0], 3)
         self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
