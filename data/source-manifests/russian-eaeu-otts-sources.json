@@ -1559,7 +1559,79 @@
       },
       "evidence_status": "Official Armenian registry page and linked public document listing observed 2026-11-08; visible 40-item listing only; no PDF bytes or SHA-256 retrieved; no VAG record or reuse rights verified.",
       "project_decision": "discovery_only_no_download_no_automation_no_import_until_dataset_specific_reuse_rights_are_confirmed_in_writing"
+    },
+    {
+      "source_id": "eaeu-temporary-otts-electronic-register",
+      "publisher": "Евразийская экономическая комиссия; linked register route hosted on portal.elpts.ru",
+      "source_type": "official_navigation_to_temporary_electronic_vehicle_type_approval_register",
+      "source_url": "https://eec.eaeunion.org/comission/department/deptexreg/tr/temprorary_otts.php",
+      "linked_otts_register_url": "https://portal.elpts.ru/ncher/otts",
+      "market_scope": [
+        "EAEU"
+      ],
+      "document_types": [
+        "OTTS"
+      ],
+      "access": {
+        "official_page_accessible": true,
+        "official_otts_link_label": "Реестр одобрений типа транспортного средства, оформленных в электронном виде",
+        "linked_destination_fetch_status": "502_bad_gateway_on_2026_11_09",
+        "linked_destination_content_verified": false,
+        "public_query_rows_observed": false,
+        "machine_readable_api": "not_verified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "offline_cache": "not_established",
+        "end_user_display": "not_established",
+        "installer_redistribution": "not_established"
+      },
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "redistribution": "not_confirmed",
+        "permission_status": "not_obtained",
+        "written_permission_obtained": false
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "official_register_route_only_no_record_or_vehicle_fitment_verified",
+      "technical_scope": {
+        "ot_ts_record_observed": false,
+        "vag_record_observed": false,
+        "exact_model_generation_year": false,
+        "exact_engine_code": false,
+        "exact_gearbox_code": false,
+        "exact_engine_gearbox_pair": false,
+        "ecu_dtc_repair_applicability": false
+      },
+      "observations": {
+        "reviewed_at": "2026-11-09",
+        "official_eec_page_title": "Временный реестр документов об оценке соответствия требованиям технического регламента Таможенного союза «О безопасности колесных транспортных средств» (ТР ТС 018/2011) (одобрений типа транспортного средства, одобрений типа шасси, свидетельств о безопасности конструкции транспортного средства) в электронном виде в рамках пилотного проекта",
+        "distinct_document_links": [
+          "OTTS",
+          "OTSH",
+          "SBKTS"
+        ],
+        "linked_otts_destination_status": "502_bad_gateway",
+        "raw_page_bytes_captured": false,
+        "source_snapshot_sha256": null,
+        "rights_effect": "none; official navigation does not grant reuse rights"
+      },
+      "notes": [
+        "The EEC official page confirms a distinct electronic OTTS navigation link, separate from OTSH and SBKTS.",
+        "The linked OTTS destination returned 502 during the 2026-11-09 review; no records, attachments, API, export or raw bytes were inspected.",
+        "Public navigation does not establish bulk extraction, persistent SQLite storage, offline display, commercial use or installer redistribution.",
+        "No VAG approval record or VAG coverage count was observed.",
+        "Do not infer engine/gearbox codes or pairings from approval dates, manufacturer filter options or unrelated document classes.",
+        "Recheck the official endpoint and obtain dataset-specific written permission before any acquisition or product import."
+      ]
     }
   ],
-  "updated_at": "2026-11-08"
+  "updated_at": "2026-11-09"
 }
