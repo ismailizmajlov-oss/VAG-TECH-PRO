@@ -41,7 +41,10 @@ function fixture(root, counts = { sources: 16, generations: 82, ecus: 44, comman
   write(root, "data/research/obdb-vag-signals-cc-by-sa/vag-obdb-research.sqlite", "fixture-db");
   write(root, "data/research/obdb-vag-signals-cc-by-sa/manifest.json", JSON.stringify(manifest));
   write(root, "lib/local-research-db.cjs", "if (obdbSources !== 6 || obdbGenerations !== 32 || obdbEcus !== 15 || obdbCommands !== 2315 || obdbSignals !== 2480) fail();\n");
-  write(root, "scripts/verify-local-research-packs.cjs", 'assert((obdbSnapshot.sources || []).length === 6, "OBDb source registry does not contain six pinned repositories");\n');
+  write(root, "scripts/verify-local-research-packs.cjs", [
+    'assert((obdbSnapshot.sources || []).length === 6, "OBDb source registry does not contain six pinned repositories");',
+    'assert(obdbCounts.sources === 6 && obdbCounts.generations === 32 && obdbCounts.ecus === 15 && obdbCounts.commands === 2315 && obdbCounts.signals === 2480 && !obdbCounts.unsafeCommands && !obdbCounts.invalidSignals, `OBDb candidate/non-execution gate failed: ${JSON.stringify(obdbCounts)}`);',
+  ].join("\\n") + "\\n");
   write(root, "tests/local-research-db.test.cjs", "assert.deepEqual(obdb.counts, { sources: 6, generations: 32, ecus: 15, commands: 2315, signals: 2480 });\n");
   write(root, "tests/local-research-packs.test.cjs", [
     "assert.equal(result.obdb_vag_signals.sources, 6);",
@@ -59,6 +62,7 @@ test("run88 synchronizes all desktop OBDb count gates from the pinned 16-source 
     const expected = [
       ["lib/local-research-db.cjs", "obdbSources !== 16 || obdbGenerations !== 82 || obdbEcus !== 44 || obdbCommands !== 7890 || obdbSignals !== 8446"],
       ["scripts/verify-local-research-packs.cjs", 'assert((obdbSnapshot.sources || []).length === 16, "OBDb source registry does not contain sixteen pinned repositories");'],
+      ["scripts/verify-local-research-packs.cjs", "obdbCounts.sources === 16 && obdbCounts.generations === 82 && obdbCounts.ecus === 44 && obdbCounts.commands === 7890 && obdbCounts.signals === 8446"],
       ["tests/local-research-db.test.cjs", "sources: 16, generations: 82, ecus: 44, commands: 7890, signals: 8446"],
       ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.sources, 16"],
       ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.commands, 7890"],
@@ -70,6 +74,7 @@ test("run88 synchronizes all desktop OBDb count gates from the pinned 16-source 
     assert.deepEqual(evidence.counts, { sources: 16, generations: 82, ecus: 44, commands: 7890, signals: 8446 });
     assert.equal(new Set(evidence.patched_files.map((item) => item.path)).size, evidence.patched_files.length);
     assert.ok(evidence.patched_files.some((item) => item.path === "lib/local-research-db.cjs" && /^[a-f0-9]{64}$/.test(item.sha256)));
+    assert.ok(evidence.patched_files.some((item) => item.path === "scripts/verify-local-research-packs.cjs" && /^[a-f0-9]{64}$/.test(item.sha256)));
     const second = spawnSync(process.execPath, [PATCH, "--desktop-root", root], { encoding: "utf8" });
     assert.equal(second.status, 0, second.stderr);
     const secondOutput = JSON.parse(second.stdout);
