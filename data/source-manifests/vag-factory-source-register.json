@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T01:43:54Z",
+  "updated_at": "2026-11-08T02:02:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5456,6 +5456,46 @@
       "data_ingested": false,
       "product_import_allowed": false,
       "verification_status": "metadata_only_discovery"
+    },
+    {
+      "source_id": "openvag-dtc-api-project",
+      "publisher": "riz4d / OpenVAG",
+      "url": "https://github.com/riz4d/OpenVAG",
+      "source_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+      "source_kind": "open_source_project_metadata_only",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "claimed_dataset_counts": {
+        "dtc_codes": 995,
+        "dtc_variants": 1103,
+        "components": 341,
+        "dtc_components": 712,
+        "related_codes": 276
+      },
+      "code_license": {
+        "license": "MIT",
+        "status": "verified_for_repository_code"
+      },
+      "database_data_license_status": "not_stated",
+      "provenance_status": "not_documented",
+      "evidence_status": "README and db/README describe 995 DTC codes and 1103 variants; LICENSE is MIT for repository software. db/openvag.db is excluded by .gitignore, no database binary or seed dataset is tracked, scripts/init_db.py is referenced by app/main.py but absent, and no INSERT seed records or source attribution were found in the inspected default-branch files.",
+      "rights": {
+        "code_reuse_allowed": true,
+        "database_data_license_status": "not_stated",
+        "permission_status": "not_obtained_for_database_content",
+        "commercial_use_allowed": false,
+        "display_allowed": false,
+        "offline_cache_allowed": false,
+        "bulk_reuse_allowed": false,
+        "redistribution_allowed": false,
+        "metadata_reference_only": true
+      },
+      "project_decision": "metadata_only_candidate; MIT covers repository code but not automatically absent/generated database content; require actual database snapshot, per-record provenance, data licence and written permission before any ingestion",
+      "source_snapshot_sha256": null,
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "verification_status": "database_unavailable_and_data_rights_unverified"
     }
   ],
   "minimum_fitment_evidence_fields": [
