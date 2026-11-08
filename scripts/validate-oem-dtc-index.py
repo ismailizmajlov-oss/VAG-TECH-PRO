@@ -155,7 +155,7 @@ def main() -> None:
     db.execute("""INSERT INTO oem_dtc_index
       (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
        evidence_locator,applicability_level,source_claim_hash,created_at_utc)
-      VALUES ('P35A6','manufacturer_specific_vag','VOLKSWAGEN','RU',?,
+      VALUES ('P30A6','manufacturer_specific_vag','VOLKSWAGEN','RU',?,
               'page 9, ECU table','exact_ecu_hw_sw',?,'2026-11-03T00:00:00Z')""",
       (vag_source, "c" * 64))
     publishable_record = db.execute("SELECT last_insert_rowid()").fetchone()[0]
