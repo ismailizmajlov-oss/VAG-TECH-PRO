@@ -202,19 +202,18 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
                "synthetic DTC range fixture", applicability, self.h("e"), UTC))
 
         insert_dtc("P34C8", "generic_sae_iso", "UNKNOWN")
-        insert_dtc("U3ABC", "generic_sae_iso", "UNKNOWN")
         insert_dtc("P1A00", "manufacturer_specific_vag", "AUDI")
         insert_dtc("B1A00", "manufacturer_specific_other", "OTHER")
-        for code in ("P1125", "P35A6", "P39AB", "B1ABC", "C2ABC", "U2ABC", "B3ABC", "C3ABC"):
+        for code in ("P1125", "P35A6", "P39AB", "U3ABC", "B1ABC", "C2ABC", "U2ABC", "B3ABC", "C3ABC"):
             with self.assertRaisesRegex(sqlite3.IntegrityError, "generic SAE/ISO DTC code"):
                 insert_dtc(code, "generic_sae_iso", "UNKNOWN")
-        for code in ("P0300", "P2ABC", "P34C8", "B0ABC", "C0ABC", "U0ABC", "U3ABC", "P35A6", "P39AB", "B3ABC", "C3ABC"):
+        for code in ("P0300", "P2ABC", "P34C8", "B0ABC", "C0ABC", "U0ABC", "P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC"):
             with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
                 insert_dtc(code, "manufacturer_specific_vag", "AUDI")
         with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
             insert_dtc("B0ABC", "manufacturer_specific_other", "OTHER")
 
-        self.assertEqual(self.db.execute("SELECT count(*) FROM oem_dtc_index").fetchone()[0], 4)
+        self.assertEqual(self.db.execute("SELECT count(*) FROM oem_dtc_index").fetchone()[0], 3)
         self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
 
     def test_permission_required_source_cannot_store_technical_content(self) -> None:
