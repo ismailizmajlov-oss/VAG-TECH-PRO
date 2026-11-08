@@ -204,10 +204,10 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         insert_dtc("P34C8", "generic_sae_iso", "UNKNOWN")
         insert_dtc("P1A00", "manufacturer_specific_vag", "AUDI")
         insert_dtc("B1A00", "manufacturer_specific_other", "OTHER")
-        for code in ("P1125", "P35A6", "B1ABC", "C2ABC", "U2ABC"):
+        for code in ("P1125", "P35A6", "P39AB", "B1ABC", "C2ABC", "U2ABC", "U3ABC"):
             with self.assertRaisesRegex(sqlite3.IntegrityError, "generic SAE/ISO DTC code"):
                 insert_dtc(code, "generic_sae_iso", "UNKNOWN")
-        for code in ("P0300", "P2ABC", "P34C8", "B0ABC", "C0ABC", "U3ABC"):
+        for code in ("P0300", "P2ABC", "P34C8", "P35A6", "P39AB", "B0ABC", "C0ABC", "U3ABC"):
             with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
                 insert_dtc(code, "manufacturer_specific_vag", "AUDI")
         with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
