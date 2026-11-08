@@ -46,10 +46,10 @@ function apply(root){
  '  const validPayload = { code: "P34C8", title: "Exact pinned generic P34 fixture", namespace: "SAE/ISO" };',
  '  const valid = { ...genericDtc(), natural_key: "run87:generic:P34C8", source_record_key: "run87:generic:P34C8", title: "P34C8", payload: validPayload, record_sha256: core.sha256(validPayload) };',
  '  const result = core.importPackage(dbPath, packageOf([valid], { package_id: "run87-generic-p34-valid" }));',
- '  assert.equal(result.inserted, 1);
-  const u3Payload = { code: "U3ABC", title: "Exact pinned generic U3 fixture", namespace: "SAE/ISO" };
-  const u3Record = { ...genericDtc(), natural_key: "run87:generic:U3ABC", source_record_key: "run87:generic:U3ABC", title: "U3ABC", payload: u3Payload, record_sha256: core.sha256(u3Payload) };
-  assert.equal(core.importPackage(dbPath, packageOf([u3Record], { package_id: "run87-generic-u3-valid" })).inserted, 1);',
+ '  assert.equal(result.inserted, 1);',
+ '  const u3Payload = { code: "U3ABC", title: "Exact pinned generic U3 fixture", namespace: "SAE/ISO" };',
+ '  const u3Record = { ...genericDtc(), natural_key: "run87:generic:U3ABC", source_record_key: "run87:generic:U3ABC", title: "U3ABC", payload: u3Payload, record_sha256: core.sha256(u3Payload) };',
+ '  assert.equal(core.importPackage(dbPath, packageOf([u3Record], { package_id: "run87-generic-u3-valid" })).inserted, 1);',
  '  for (const code of ["P35A6", "P39AB", "B3ABC", "C3ABC"]) {',
  '    const payload = { code, title: "Unresolved/reserved range", namespace: "SAE/ISO" };',
  '    const invalid = { ...valid, natural_key: "run87:generic:" + code, source_record_key: "run87:generic:" + code, title: code, payload, record_sha256: core.sha256(payload) };',
