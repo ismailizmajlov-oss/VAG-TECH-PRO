@@ -122,8 +122,8 @@ function main() {
     replaceExact(
       desktopRoot,
       "scripts/verify-local-research-packs.cjs",
-      "obdbCounts.sources === 6 && obdbCounts.generations === 32 && obdbCounts.ecus === 15 && obdbCounts.commands === 2315 && obdbCounts.signals === 2480",
-      "obdbCounts.sources === 16 && obdbCounts.generations === 82 && obdbCounts.ecus === 44 && obdbCounts.commands === 7890 && obdbCounts.signals === 8446"
+      'assert((obdbSnapshot.sources || []).length === 6, "OBDb source registry does not contain six pinned repositories");',
+      'assert((obdbSnapshot.sources || []).length === 16, "OBDb source registry does not contain sixteen pinned repositories");'
     ),
     replaceExact(
       desktopRoot,
