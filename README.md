@@ -54,7 +54,7 @@ Each pack remains in its own namespace with its own manifest, attribution/licens
 
 Windows desktop CI run 701 completed successfully on application commit `34c699ed1e1be0e2a467541d66bcf68f14a3e044`: [run 701](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42420697350). Both jobs passed. The run applied and checked the current offline research packs, run78–run85 evidence gates, desktop tests, ESLint, TypeScript, two Windows x64 NSIS installers, packaged source/schema verification, clean install, offline launch, backup/restore, upgrade-over-install and uninstall while preserving the user database; the Windows Server 2022 compatibility lifecycle also passed. The run produced source-audit, Windows installer and Server 2022 lifecycle artifacts.
 
-This does **not** replace the separate native Windows 10/11 x64 acceptance run: no owner-provided isolated Windows 10/11 client runner was available. The latest follow-up commits in this section are documentation-only; they do not alter the application binaries tested by run 701.
+This does **not** replace the separate native Windows 10/11 x64 acceptance run: no owner-provided isolated Windows 10/11 client runner was available. Subsequent main-branch commits change DTC namespace validation and offline research-pack policy; they are not covered by run 701 and require a new full Windows CI run.
 
 ### DTC namespace and research-pack quarantine — 2026-11-08
 
