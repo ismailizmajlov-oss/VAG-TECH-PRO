@@ -189,6 +189,33 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         with self.assertRaisesRegex(sqlite3.IntegrityError,"unknown DTC namespace"):
             self.db.execute("UPDATE technical_records SET review_status='publication_approved' WHERE technical_record_id=?",(unknown_id,))
 
+    def test_dtc_code_ranges_are_disjoint_between_generic_and_manufacturer_namespaces(self) -> None:
+        source_document_id = self.insert_source_document("test-dtc-ranges", "TEST-DTC-RANGES", market_scope="EU")
+
+        def insert_dtc(code: str, namespace: str, manufacturer: str) -> None:
+            applicability = "generic_only" if namespace == "generic_sae_iso" else "unknown"
+            self.db.execute("""INSERT INTO oem_dtc_index
+              (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+               evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+              VALUES (?,?,?,?,?,?,?,?,?)""",
+              (code, namespace, manufacturer, "EU", source_document_id,
+               "synthetic DTC range fixture", applicability, self.h("e"), UTC))
+
+        insert_dtc("P34C8", "generic_sae_iso", "UNKNOWN")
+        insert_dtc("P1A00", "manufacturer_specific_vag", "AUDI")
+        insert_dtc("B1A00", "manufacturer_specific_other", "OTHER")
+        for code in ("P1125", "P35A6", "B1ABC", "C2ABC", "U2ABC"):
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "generic SAE/ISO DTC code"):
+                insert_dtc(code, "generic_sae_iso", "UNKNOWN")
+        for code in ("P0300", "P2ABC", "P34C8", "B0ABC", "C0ABC", "U3ABC"):
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
+                insert_dtc(code, "manufacturer_specific_vag", "AUDI")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
+            insert_dtc("B0ABC", "manufacturer_specific_other", "OTHER")
+
+        self.assertEqual(self.db.execute("SELECT count(*) FROM oem_dtc_index").fetchone()[0], 3)
+        self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+
     def test_permission_required_source_cannot_store_technical_content(self) -> None:
         source_document_id=self.insert_source_document("restricted-source","RESTRICTED-1",license_status="permission_required",redistribution_allowed=0,source_sha256=None)
         self.db.execute("INSERT INTO technical_source_rights (source_document_id,rights_status,rights_revision,reviewed_at_utc) VALUES (?,'permission_required','r1',?)",(source_document_id,UTC))

@@ -7,12 +7,18 @@ on:
       - data/schemas/oem-dtc-index.schema.json
       - data/sql/oem-dtc-index.sql
       - scripts/validate-oem-dtc-index.py
+      - scripts/audit-dtc-overlap.cjs
+      - tests/dtc-overlap-audit.test.cjs
+      - tests/test_technical_library_schema.py
       - .github/workflows/validate-oem-dtc-index.yml
   pull_request:
     paths:
       - data/schemas/oem-dtc-index.schema.json
       - data/sql/oem-dtc-index.sql
       - scripts/validate-oem-dtc-index.py
+      - scripts/audit-dtc-overlap.cjs
+      - tests/dtc-overlap-audit.test.cjs
+      - tests/test_technical_library_schema.py
       - .github/workflows/validate-oem-dtc-index.yml
   workflow_dispatch:
 
@@ -27,5 +33,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate JSON contract and SQLite guards
-        run: python scripts/validate-oem-dtc-index.py
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22.x"
+      - name: Validate JSON contract, SQLite range guards and technical-library regressions
+        run: |
+          python scripts/validate-oem-dtc-index.py
+          python -m unittest discover -s tests -p "test_technical_library_schema.py"
+          node --check scripts/audit-dtc-overlap.cjs
+          node --test tests/dtc-overlap-audit.test.cjs
