@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T00:56:00Z",
+  "updated_at": "2026-11-08T01:01:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5423,13 +5423,14 @@
       "publisher": "SAE International",
       "url": "https://saemobilus.sae.org/standards/j2012_202509-diagnostic-trouble-code-definitions",
       "related_urls": [
+        "https://saemobilus.sae.org/standards/j2012da_202510-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions",
         "https://saemobilus.sae.org/standards/j2012da_012013-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions"
       ],
       "source_kind": "copyrighted_diagnostic_trouble_code_standard_metadata_and_namespace_reference",
       "market_scope": [
         "UNKNOWN"
       ],
-      "source_revision": "SAE J2012_202509 (2025-09-01); SAE J2012DA_202607 (2026-07-29); historical boundary evidence SAE J2012 MAR2013",
+      "source_revision": "SAE J2012_202509 (2025-09-01); current digital-annex revision J2012DA_202607 (verified on SAE catalogue record J2012DA_202510, 2026-07-29); historical boundary evidence SAE J2012 MAR2013",
       "evidence_scope": [
         "bibliographic_standard_revision_metadata",
         "conservative_dtc_namespace_range_policy_only"
@@ -5455,10 +5456,10 @@
         "permission_status": "not_obtained"
       },
       "project_decision": "metadata_and_conservative_namespace_policy_only; do not ingest copyrighted standard text, definition tables or current digital-annex allocation data; unresolved ranges remain quarantined",
-      "evidence_status": "SAE official catalogue revisions reviewed 2026-11-08; historical public MAR2013 material used only to record conservative code-family boundaries; current digital annex not acquired under a reuse license",
+      "evidence_status": "SAE official catalogue reviewed 2026-11-08: J2012_202509 is the current standard revision and the J2012DA_202510 catalogue record lists J2012DA_202607 as its verified 2026-07-29 revision; historical public MAR2013 material is used only for a conservative namespace import gate; current annex content not licensed or acquired",
       "limitations": [
         "SAE J2012 and its digital annex are copyrighted standards; no standard text or definition table is stored in VAG TECH PRO.",
-        "The current J2012DA_202607 allocation table has not been acquired under a reuse license; no code-level changes from that annex are inferred.",
+        "The current J2012DA_202607 allocation table has not been acquired under a reuse license; no code definitions or current annex allocation data are stored or inferred.",
         "A manufacturer-controlled code range does not identify Volkswagen Group authorship.",
         "A code-range classification does not establish ECU, model, generation, year, market or repair applicability."
       ],
