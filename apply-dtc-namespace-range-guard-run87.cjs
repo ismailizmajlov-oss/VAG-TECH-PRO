@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 const fs=require("node:fs"),path=require("node:path");
-const GENERIC_PATTERN="^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$";
+const GENERIC_PATTERN="^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$";
 const MANUFACTURER_PATTERN="^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$";
-const UNRESOLVED_PATTERN="^(?:P3[5-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$";
+const UNRESOLVED_PATTERN="^(?:P3[4-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$";
 function replaceOnce(s,a,b,label){const n=s.split(a).length-1;if(n!==1)throw new Error(label+": expected one patch anchor, found "+n);return s.replace(a,b);}
 function read(root,rel){const f=path.join(root,rel);if(!fs.existsSync(f))throw new Error("run87 required file is missing: "+rel);return fs.readFileSync(f,"utf8");}
 function apply(root){
@@ -19,7 +19,7 @@ function apply(root){
   const schemaOk=["code","dtc_code"].every(k=>schema.$defs?.dtc_generic?.properties?.[k]?.pattern===GENERIC_PATTERN&&schema.$defs?.dtc_vag_specific?.properties?.[k]?.pattern===MANUFACTURER_PATTERN);
   const oemRules=oemSchema.allOf||[];
   const oemOk=oemRules.every(r=>{const ns=r.if?.properties?.dtc_namespace?.const;const p=r.then?.properties?.dtc?.pattern;return ns==="generic_sae_iso"?p===GENERIC_PATTERN:(ns==="manufacturer_specific_vag"||ns==="manufacturer_specific_other")?p===MANUFACTURER_PATTERN:true;});
-  if(!patternsOk||!schemaOk||!oemOk||!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces")||!docs.includes("## DTC namespace code-range boundary (run87)")||!ui.includes("allocationUnverified")||!uiTests.includes("unverified U3 allocation"))throw new Error("run87 marker exists but companion contracts are incomplete");
+  if(!patternsOk||!schemaOk||!oemOk||!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces")||!docs.includes("## DTC namespace code-range boundary (run87)")||!ui.includes("allocationUnverified")||!uiTests.includes("unverified mixed P3 and U3 allocations"))throw new Error("run87 marker exists but companion contracts are incomplete");
   return {status:"already_applied",files:Object.values(files)};
  }
  if(!core.includes("// run86: separate generic SAE/ISO code ranges from manufacturer-controlled OBD-II ranges"))throw new Error("run87 requires the run86 DTC namespace guard first");
@@ -43,19 +43,19 @@ function apply(root){
  'test("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces", (t) => {',
  '  const { dbPath } = fixture(t);',
  '  core.registerSource(dbPath, source());',
- '  const validPayload = { code: "P34C8", title: "Exact pinned generic P34 fixture", namespace: "SAE/ISO" };',
- '  const valid = { ...genericDtc(), natural_key: "run87:generic:P34C8", source_record_key: "run87:generic:P34C8", title: "P34C8", payload: validPayload, record_sha256: core.sha256(validPayload) };',
+ '  const validPayload = { code: "P2ABC", title: "Generic SAE/ISO boundary fixture", namespace: "SAE/ISO" };',
+ '  const valid = { ...genericDtc(), natural_key: "run87:generic:P2ABC", source_record_key: "run87:generic:P2ABC", title: "P2ABC", payload: validPayload, record_sha256: core.sha256(validPayload) };',
  '  const result = core.importPackage(dbPath, packageOf([valid], { package_id: "run87-generic-p34-valid" }));',
  '  assert.equal(result.inserted, 1);',
  '',
  '',
  '',
- '  for (const code of ["P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC"]) {',
+ '  for (const code of ["P3400", "P3497", "P34C8", "P3500", "P39AB", "U3ABC", "B3ABC", "C3ABC"]) {',
  '    const payload = { code, title: "Unresolved/reserved range", namespace: "SAE/ISO" };',
  '    const invalid = { ...valid, natural_key: "run87:generic:" + code, source_record_key: "run87:generic:" + code, title: code, payload, record_sha256: core.sha256(payload) };',
  '    assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run87-generic-invalid-" + code })), /outside generic SAE\\/ISO OBD-II ranges/);',
  '  }',
- '  for (const code of ["P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC"]) {',
+ '  for (const code of ["P3400", "P3497", "P34C8", "P3500", "P39AB", "U3ABC", "B3ABC", "C3ABC"]) {',
  '    const payload = { code, description: "Unresolved/reserved range" };',
  '    const invalid = { record_type: "dtc_vag_specific", namespace: "vag_oem_specific", natural_key: "run87:vag:" + code, source_record_key: "run87:vag:" + code, title: code, market_scope: "ALL", applicability_precision: "exact_configuration", configuration_id: 1, ecu_id: 1, payload, record_sha256: core.sha256(payload) };',
  '    assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run87-vag-invalid-" + code })), /outside manufacturer-controlled OBD-II ranges/);',
@@ -68,20 +68,20 @@ function apply(root){
  ''].join("\n");
  if(!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces"))tests += "\n"+run87Test;
  if(!ui.includes("allocationUnverified")){
-  ui=replaceOnce(ui,'      {dtcResults.map((row) => <article className="diagnostic-dtc-result" key={`${row.code}-${row.sourceRecordSha256}`}>','      {dtcResults.map((row) => {\n        const allocationUnverified = /^(?:P3[5-9]|U3|B3|C3)/.test(row.code.toUpperCase());\n        return <article className="diagnostic-dtc-result" key={`${row.code}-${row.sourceRecordSha256}`}>',"DTC UI map");
+  ui=replaceOnce(ui,'      {dtcResults.map((row) => <article className="diagnostic-dtc-result" key={`${row.code}-${row.sourceRecordSha256}`}>','      {dtcResults.map((row) => {\n        const allocationUnverified = /^(?:P3[4-9]|U3|B3|C3)/.test(row.code.toUpperCase());\n        return <article className="diagnostic-dtc-result" key={`${row.code}-${row.sourceRecordSha256}`}>',"DTC UI map");
   ui=replaceOnce(ui,'<small>GENERIC SAE/ISO · {row.category || "без категории"}</small>','<small>{allocationUnverified ? "КЛАССИФИКАЦИЯ НЕ ПРОВЕРЕНА" : "GENERIC SAE/ISO"} · {row.category || "без категории"}</small>',"DTC UI label");
   ui=replaceOnce(ui,'<span>RESEARCH ONLY</span>','<span>{allocationUnverified ? "UNVERIFIED" : "RESEARCH ONLY"}</span>',"DTC UI badge");
   ui=replaceOnce(ui,'<div className="diagnostic-dtc-warning">Не VAG-specific. Не подтверждает наличие неисправности в выбранном автомобиле, конкретном ECU или применимость тест-плана. Не является указанием на замену детали.</div>','{allocationUnverified ? <div className="diagnostic-dtc-warning">Источник OBDex помечает запись как общий код, но точная классификация диапазона по актуальному SAE J2012DA не подтверждена. Запись остаётся исследовательской и не считается нормализованным generic или VAG-specific DTC.</div> : <div className="diagnostic-dtc-warning">Не VAG-specific. Не подтверждает наличие неисправности в выбранном автомобиле, конкретном ECU или применимость тест-плана. Не является указанием на замену детали.</div>}',"DTC UI warning");
   ui=replaceOnce(ui,'generic_sae_iso_obd2 · fitment claim: {String(row.fitmentClaim)}','source namespace: {row.namespace} · upstream label: generic_sae_iso_obd2 · normalized namespace: {allocationUnverified ? "unknown/quarantined" : "generic_sae_iso"} · fitment claim: {String(row.fitmentClaim)}',"DTC UI provenance");
   ui=replaceOnce(ui,'      </article>)}','      </article>})}',"DTC UI map close");
  }
- const uiTest='\ntest("unverified U3 allocation is visibly quarantined in generic research results", () => {\n  assert.match(component, /allocationUnverified/);\n  assert.match(component, /U3/);\n  assert.match(component, /КЛАССИФИКАЦИЯ НЕ ПРОВЕРЕНА/);\n  assert.match(component, /unknown\\/quarantined/);\n  assert.match(component, /SAE J2012DA/);\n});\n';
- if(!uiTests.includes("unverified U3 allocation"))uiTests+=uiTest;
+ const uiTest='\ntest("unverified mixed P3 and U3 allocations are visibly quarantined in generic research results", () => {\n  assert.match(component, /allocationUnverified/);\n  assert.match(component, /P3\\[4-9\\]/);\n  assert.match(component, /U3/);\n  assert.match(component, /КЛАССИФИКАЦИЯ НЕ ПРОВЕРЕНА/);\n  assert.match(component, /unknown\\/quarantined/);\n  assert.match(component, /SAE J2012DA/);\n});\n';
+ if(!uiTests.includes("unverified mixed P3 and U3 allocations"))uiTests+=uiTest;
  const oldHeading="## DTC namespace code-range boundary (run86)";
  const newSection=[
  "## DTC namespace code-range boundary (run87)",
  "",
- "The importer uses the machine-readable policy in `data/policies/dtc-namespace-ranges.json`. Generic SAE/ISO records are limited to P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx. P34xx is accepted only when the exact identifier exists in a pinned source snapshot. Manufacturer-controlled ranges are limited to P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx. P35xx–P39xx, U3xxx, B3xxx and C3xxx are unresolved/unverified for this importer and are rejected from both normalized generic and manufacturer-specific namespaces until exact current-standard assignments are verified. A manufacturer-controlled range does not prove VAG authorship, exact ECU fitment or repair applicability."
+ "The importer uses the machine-readable policy in `data/policies/dtc-namespace-ranges.json`. Generic SAE/ISO records are limited to P0xxx, P2xxx, B0xxx, C0xxx and U0xxx. The P3xxx family is mixed: P30xx-P33xx are manufacturer-controlled, while P34xxx-P39xxx remain unresolved/quarantined until exact current SAE J2012/J2012DA assignments are independently verified. The current licensed J2012DA_202607 annex has not been acquired. Upstream OBDex labels 155 P34xxx rows generic, but that CC0 data label does not establish current standards allocation; all P34xxx rows stay in the isolated research pack and are rejected from normalized generic and VAG-specific namespaces. U3xxx, B3xxx and C3xxx remain quarantined as well. A manufacturer-controlled range never proves VAG authorship, ECU fitment or repair applicability."
  ].join("\n");
  if(docs.includes(oldHeading))docs=docs.slice(0,docs.indexOf(oldHeading))+newSection+"\n";
  else if(!docs.includes("## DTC namespace code-range boundary (run87)"))throw new Error("run87 documentation anchor is missing");
