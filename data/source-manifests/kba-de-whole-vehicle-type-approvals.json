@@ -97,5 +97,19 @@
   "source_revision": "GovData metadata last modified 2024-04-11; actual file revision unknown",
   "source_snapshot_sha256": null,
   "hash_status": "No source bytes retrieved; file and snapshot SHA-256 intentionally null.",
-  "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The XLSX resource returned HTTP 503 on 2026-11-07; no bytes, rows or hash were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. This source cannot establish engine/gearbox pairing, model year, generation, RU/EAEU applicability or repair data."
+  "project_decision": "The published DL-DE BY 2.0 licence clears commercial use, display, offline caching and redistribution with attribution. The XLSX resource returned HTTP 503 on 2026-11-07; no bytes, rows or hash were acquired. Do not import until the official file is retrieved and its exact columns and VAG filter are verified. This source cannot establish engine/gearbox pairing, model year, generation, RU/EAEU applicability or repair data.",
+  "probe_request": {
+    "requested_at_utc": "2026-11-08T12:38:32Z",
+    "reason": "Recheck the official KBA XLSX after the 2026-11-07 HTTP 503 observation; the published DL-DE BY 2.0 licence already clears research-pack display, caching and redistribution subject to attribution.",
+    "scope": "DE-only whole-vehicle type-approval metadata research; no individual-vehicle or VAG factory powertrain claim.",
+    "probe_only": true,
+    "import_allowed": false,
+    "required_review_after_acquisition": [
+      "Verify workbook bytes, ZIP integrity, SHA-256 and revision headers.",
+      "Inspect exact workbook sheet and column schema before extraction.",
+      "Filter Volkswagen Group manufacturers by exact source values only.",
+      "Keep type approval, variant and version scope distinct; do not infer model year, generation, engine code, gearbox code or ECU.",
+      "Create only a separate DE research pack after independent source-row provenance and field semantics review."
+    ]
+  }
 }
