@@ -21,7 +21,7 @@ function apply(root){
   const schemaOk=["code","dtc_code"].every(k=>schema.$defs?.dtc_generic?.properties?.[k]?.pattern===GENERIC_PATTERN&&schema.$defs?.dtc_vag_specific?.properties?.[k]?.pattern===MANUFACTURER_PATTERN);
   const oemRules=oemSchema.allOf||[];
   const oemOk=oemRules.every(r=>{const ns=r.if?.properties?.dtc_namespace?.const;const p=r.then?.properties?.dtc?.pattern;return ns==="generic_sae_iso"?p===GENERIC_PATTERN:(ns==="manufacturer_specific_vag"||ns==="manufacturer_specific_other")?p===MANUFACTURER_PATTERN:true;});
-  if(!patternsOk||!schemaOk||!oemOk||!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces")||!docs.includes("## DTC namespace code-range boundary (run87)")||!ui.includes("allocationUnverified")||!uiTests.includes("unverified mixed P3 and U3 allocations"))throw new Error("run87 marker exists but companion contracts are incomplete");
+  if(!patternsOk||!schemaOk||!oemOk||!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces")||tests.includes('const validPayload = { code: "P34C8", title: "Generic P34 range"')||!docs.includes("## DTC namespace code-range boundary (run87)")||!ui.includes("allocationUnverified")||!uiTests.includes("unverified mixed P3 and U3 allocations"))throw new Error("run87 marker exists but companion contracts are incomplete");
   return {status:"already_applied",files:Object.values(files)};
  }
  if(!core.includes("// run86: separate generic SAE/ISO code ranges from manufacturer-controlled OBD-II ranges"))throw new Error("run87 requires the run86 DTC namespace guard first");
@@ -40,6 +40,10 @@ function apply(root){
   const ns=rule.if?.properties?.dtc_namespace?.const;
   if(ns==="generic_sae_iso")rule.then.properties.dtc.pattern=GENERIC_PATTERN;
   else if(ns==="manufacturer_specific_vag"||ns==="manufacturer_specific_other")rule.then.properties.dtc.pattern=MANUFACTURER_PATTERN;
+ }
+ if(tests.includes("run86 rejects manufacturer-controlled DTC ranges in generic records")){
+  tests=replaceOnce(tests,'const validPayload = { code: "P34C8", title: "Generic P34 range", namespace: "SAE/ISO" };','const validPayload = { code: "P2ABC", title: "Generic SAE/ISO boundary fixture", namespace: "SAE/ISO" };',"run86 generic fixture correction");
+  tests=replaceOnce(tests,'natural_key: "generic:P34C8", source_record_key: "obd:P34C8", title: "P34C8"','natural_key: "generic:P2ABC", source_record_key: "obd:P2ABC", title: "P2ABC"',"run86 generic fixture key correction");
  }
  const run87Test=[
  'test("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces", (t) => {',
