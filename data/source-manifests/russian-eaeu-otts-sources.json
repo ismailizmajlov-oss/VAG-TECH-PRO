@@ -472,21 +472,25 @@
         "schema_document": "Решение Коллегии ЕЭК от 26.07.2016 № 88",
         "schema_document_url": "https://www.alta.ru/tamdoc/16kr0088/",
         "schema_rule": "Decision No. 88 approves technical documents for intergovernmental information exchange and the R.TR.TS.07.001 schema. It is not the public-access legal basis and does not grant bulk reuse, offline caching, display or redistribution rights.",
-        "reuse_boundary": "Public query and official publication are distinct from bulk reuse, commercial display, offline caching and redistribution. Dataset-specific rights must be established before product import."
+        "reuse_boundary": "Public query and official publication are distinct from bulk reuse, commercial display, offline caching and redistribution. Dataset-specific rights must be established before product import.",
+        "pilot_project_report_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+        "pilot_project_status": "completed_per_eec_2023_report"
       },
       "current_portal_observation": {
         "checked_at": "2026-11-09",
         "root_url": "https://portal.eaeunion.org/",
         "observed_redirect": "https://opendata.eaeunion.org/opendata/",
         "ot_ts_specific_endpoint_resolved": false,
-        "note": "The official catalogue page returned by public search indexing lists 117 resources and 7 under Technical Regulation and advertises OData reuse. The search index reports an approximately nine-month-old crawl; direct page opening returned no readable lines. No OTTS-specific resource or dataset-level licence was identified. This is a discovery observation, not a live count or proof that no related resource exists.",
+        "note": "The official catalogue page returned by public search indexing lists 117 resources and 7 under Technical Regulation and advertises OData reuse. The search index reports an approximately nine-month-old crawl; direct page opening returned no readable lines. No OTTS-specific resource or dataset-level licence was identified. This is a discovery observation, not a live count or proof that no related resource exists. The EEC report dated 2023-04-18 records that the Order No. 18 pilot ran through 2022-12-31, offered machine-readable information only on request during the pilot, and was deemed completed after AM/KZ/KG did not join. The 2026 EEC page still links to the electronic OTTS route, but this does not establish that the historical pilot service remains operational.",
         "schema_registry": {
           "url": "https://rseds.eaeunion.org/ru/",
           "batch_export_menu_observed": true,
           "xml_validation_menu_observed": true,
           "direct_fetch_status": "timeout_2026-11-06",
           "target_xsd_retrieved": false
-        }
+        },
+        "pilot_status": "historical_pilot_completed_per_eec_2023_report",
+        "pilot_report_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf"
       },
       "access_and_reuse": {
         "individual_public_query": "Decision No. 225 establishes public access to national parts from official websites and requests to authorized bodies; the central open-data catalogue is not itself the OTTS register and the exact national query endpoint must be resolved.",
@@ -496,7 +500,8 @@
         "third_party_display": "not_confirmed",
         "offline_cache": "not_confirmed",
         "redistribution": "not_confirmed",
-        "registry_schema_field_exposure": "not_verified_in_current_public_query_or_catalogue"
+        "registry_schema_field_exposure": "not_verified_in_current_public_query_or_catalogue",
+        "temporary_pilot_export": "request_based_machine_readable_export_was_available_during_2022_pilot_only; pilot_deemed_completed_in_2023; current_availability_not_verified"
       },
       "related_vehicle_approval_registry_schema": {
         "schema_id": "R.TR.TS.07.001",
@@ -629,6 +634,46 @@
           "relevance": "Auxiliary accreditation-body cross-check only; this is not an OTTS/OTSH or vehicle type-approval dataset.",
           "ingestion_decision": "not_imported_dataset_specific_reuse_terms_not_confirmed"
         }
+      },
+      "pilot_project_2023_report": {
+        "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+        "meeting_date": "2023-04-18",
+        "agenda_item": 12,
+        "pilot_order": "EEC Collegium Order No. 18 of 2022-02-08",
+        "pilot_period": {
+          "start": "2022-02-14",
+          "end": "2022-12-31"
+        },
+        "participants": [
+          "RU",
+          "BY",
+          "EEC administrator JSC Electronic Passport"
+        ],
+        "potential_joining_member_states": [
+          "AM",
+          "KZ",
+          "KG"
+        ],
+        "potential_joining_member_states_joined_during_pilot": false,
+        "historical_counts": {
+          "ot_ts_approvals_and_revisions": 2491,
+          "ot_ts_issued_in_belarus": 74,
+          "ot_sh_approvals": 111,
+          "ot_sh_issued_in_belarus": 11,
+          "sbkts_certificates": 313123,
+          "sbkts_issued_in_belarus": 14640
+        },
+        "machine_readable_export_during_pilot": {
+          "available": true,
+          "access_method": "request_by_interested_person",
+          "current_availability": "not_verified_after_pilot_completion"
+        },
+        "conclusion": "pilot_project_deemed_completed",
+        "rights_effect": "none; historical request-based access does not grant bulk reuse, offline cache, commercial display or redistribution rights",
+        "raw_report_downloaded": false,
+        "raw_report_sha256": null,
+        "vehicle_records_downloaded": false,
+        "vehicle_records_ingested": false
       }
     },
     {
