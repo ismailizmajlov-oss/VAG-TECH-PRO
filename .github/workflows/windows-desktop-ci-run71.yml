@@ -2098,7 +2098,12 @@ jobs:
           $ErrorActionPreference = "Stop"
           $sourceRoot = Join-Path $env:GITHUB_WORKSPACE "desktop-source"
           if (-not (Test-Path -LiteralPath $sourceRoot -PathType Container)) { throw "Extracted desktop source is missing." }
-          $files = @(Get-ChildItem -LiteralPath $sourceRoot -Recurse -File | Where-Object { $_.FullName -notmatch '[\\\\](node_modules|\\.next|release|out|coverage)[\\\\]' })
+          $excludedSegments = @("node_modules", ".next", "release", "out", "coverage", "dist", "build", ".turbo", ".cache")
+          $files = @(Get-ChildItem -LiteralPath $sourceRoot -Recurse -File | Where-Object {
+            $relative = $_.FullName.Substring($sourceRoot.Length + 1)
+            $segments = $relative -split '[\\/]+
+            -not ($segments | Where-Object { $excludedSegments -contains $_ })
+          })
           $relativeFiles = @($files | ForEach-Object { $_.FullName.Substring($sourceRoot.Length + 1) } | Sort-Object)
           $relativeFiles | Set-Content -LiteralPath (Join-Path $env:GITHUB_WORKSPACE "desktop-source-inventory.txt") -Encoding utf8
           $patterns = @(
