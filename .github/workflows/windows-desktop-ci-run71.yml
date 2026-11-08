@@ -355,6 +355,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA SQLite research-pack tests failed." }
           python tests/test_kba_germany_open_data_source_rights.py
           python tests/test_kba_approval_desktop_workflow_contract.py
+          if ($LASTEXITCODE -ne 0) { throw "KBA approval Windows workflow contract test failed." }
           node --test tests/kba-approval-pack-integration-contract.test.cjs tests/kba-approval-verifier-patch.test.cjs
           if ($LASTEXITCODE -ne 0) { throw "KBA approval desktop integration contract tests failed." }
           if ($LASTEXITCODE -ne 0) { throw "KBA published licence/source-rights tests failed." }
