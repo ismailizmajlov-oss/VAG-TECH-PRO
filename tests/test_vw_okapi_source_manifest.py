@@ -23,14 +23,14 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
 
     def test_company_only_access_and_non_sublicensable_offline_distribution_gate(self):
         source = self.source
-        self.assertEqual(source["reviewed_at"], "2026-11-06")
+        self.assertEqual(source["reviewed_at"], "2026-11-09")
         self.assertTrue(source["access"]["requires_company_access_request"])
         self.assertTrue(source["access"]["requires_volkswagen_approval"])
         self.assertTrue(source["access"]["approval_is_discretionary"])
         self.assertEqual(source["contract"]["offline_distribution_of_cached_database"], "not_confirmed_requires_written_clarification")
         self.assertFalse(source["cache_contract"]["redistributable_offline_pack_rights_confirmed"])
         self.assertEqual(source["data_scope"]["market_scope"], "unknown_until_authenticated_country_list_is_observed")
-        self.assertEqual(len(source["evidence_reviewed"]), 4)
+        self.assertEqual(len(source["evidence_reviewed"]), 5)
     def test_canonical_okapi_source_is_registered_with_offline_distribution_blocked(self):
         register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
         entries = [item for item in register["sources"] if item["source_id"] == "volkswagen-okapi-product-data-api"]
@@ -90,7 +90,7 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
         self.assertEqual(contract["grant"], "non_exclusive_non_transferable_revocable_non_sublicensable")
         self.assertEqual(contract["display_and_evaluate_in_registered_application"], "permitted_subject_to_terms")
         self.assertEqual(contract["disclose_product_data_to_third_parties"], "permitted_subject_to_terms")
-        self.assertEqual(contract["offline_cache"], "documented_by_official_caching_guide_for_the_users_application")
+        self.assertEqual(contract["offline_cache"], "official_guide_documents_etag_and_catalog_timestamp_cache_refresh_for_registered_application")
         self.assertEqual(contract["offline_distribution_of_cached_database"], "not_confirmed_requires_written_clarification")
         self.assertFalse(contract["paid_terms_accepted"])
 
