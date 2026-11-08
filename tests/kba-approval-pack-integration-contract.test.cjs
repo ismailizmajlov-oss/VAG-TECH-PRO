@@ -43,6 +43,8 @@ test("KBA approval integration pins the published licence, source revision, XLSX
   assert.match(integration, /source_snapshot_sha256/);
   assert.match(integration, /database_sha256/);
   assert.match(integration, /source_record_sha256/);
+  assert.match(integration, /build_script_sha256/);
+  assert.match(integration, /builder_script_sha256/);
   assert.match(integration, /source-snapshot\.xlsx/);
   assert.match(integration, /research_pack_ingested: true/);
   assert.match(integration, /product_database_ingested: false/);
@@ -101,5 +103,7 @@ test("KBA approval pack builder publishes a reusable, attributed DE-only researc
   const builder = read("scripts/build_kba_de_vag_approval_research_pack.py");
   assert.match(builder, /kba-de-vag-approvals\.sqlite/);
   assert.match(builder, /RIGHTS-EVIDENCE\.json/);
+  assert.match(builder, /builder_sha256/);
+  assert.match(builder, /build_script_sha256/);
   assert.match(workflow, /retention-days: 90/);
 });
