@@ -171,6 +171,9 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("P34xx", allowed)
         self.assertNotIn("P34xx-P39xx", allowed)
         self.assertIn("normalization.normalized_product_dtc_import_allowed", sync_source)
+        builder_source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
+        self.assertIn("OBDEX_LOCK_PATH", builder_source)
+        self.assertIn("normalization_policy", builder_source)
         self.assertIn("U3xxx", lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
 
 
