@@ -33,7 +33,7 @@ The current research snapshots contain useful public data, but none of the follo
 
 | Pack | Snapshot contents | License and boundary |
 |---|---:|---|
-| OBDex generic reference | 9,533 generic DTC identifiers and 132 generic OBD-II PIDs | CC0-1.0 for upstream data files; generic SAE/ISO only, no VAG fitment |
+| OBDex generic reference | 9,533 upstream-labelled generic DTC identifiers and 132 generic OBD-II PIDs; 174 U3xxx rows remain unverified for normalized import | CC0-1.0 for upstream data files; separate research pack only, no VAG fitment or normalized U3xxx promotion |
 | VehiclesDB identity | 260 model candidates and 1,524 market-evidence rows | CC BY 4.0; model identity candidates, not factory engine/gearbox codes |
 | OBDb signal research | 2,315 command candidates, 2,480 signal candidates, 15 ECU candidates and 32 generation candidates | CC BY-SA 4.0; community signal research, not OEM-confirmed fitment |
 | Wikidata model taxonomy | 521 candidate entities (490 car-model class; 40 model-series class), 285 Russian labels, 530 source bindings | CC0-1.0; candidate identity only, market UNKNOWN |
