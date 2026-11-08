@@ -43,7 +43,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          python -m unittest tests.test_wikipedia_vag_engine_candidates -v
+          python -m unittest discover -s tests -p test_wikipedia_vag_engine_candidates.py -v
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia candidate pack unit tests failed" }
 
       - name: Download pinned Wikipedia revisions and build separate research SQLite
