@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
+      - "tests/test_elpts_reference_rights_gate.py"
+      - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
+      - "tests/test_wikipedia_vag_engine_list_rights_gate.py"
       - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
       - "data/source-manifests/obdb-vag-signalsets.json"
       - "tests/test_obdb_vag_signal_source_rights.py"
@@ -84,6 +88,10 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
+      - "tests/test_elpts_reference_rights_gate.py"
+      - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
+      - "tests/test_wikipedia_vag_engine_list_rights_gate.py"
       - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
       - "data/source-manifests/obdb-vag-signalsets.json"
       - "tests/test_obdb_vag_signal_source_rights.py"
@@ -150,3 +158,7 @@ jobs:
           python-version: "3.12"
       - name: Validate DTC and RU/EAEU source-rights boundaries
         run: python -m unittest discover -s tests -p "test_*source_rights.py" -v
+      - name: Validate ELPTS public reference and tariff rights gate
+        run: python tests/test_elpts_reference_rights_gate.py
+      - name: Validate CC BY-SA Wikipedia engine-list quarantine
+        run: python tests/test_wikipedia_vag_engine_list_rights_gate.py
