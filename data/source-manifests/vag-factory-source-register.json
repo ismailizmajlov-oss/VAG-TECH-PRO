@@ -85,7 +85,7 @@
       ],
       "access": {
         "legal_access_basis": "EEC Collegium Decision No. 225 of 2014-12-02, paragraphs 2-5 and 11-13: the unified register consists of national parts, national parts must be accessible from official websites of authorized bodies and the EEC, specified registry fields must be published within five working days, and interested-person requests are handled by authorized bodies. Decision No. 88 of 2016-07-26 defines the technical information-exchange schema R.TR.TS.07.001; it is not the public-access legal basis.",
-        "current_portal_observation": "On 2026-11-06 the central portal root redirected to the EAEU open-data catalogue. This does not mean the unified vehicle-approval register is absent: Decision No. 225 requires national parts to be accessible through official websites. Russia's national part is identified as the FGIS Reestr KTS maintained by Interstandart; the exact public search endpoint and any machine-readable export remain unresolved. On 2026-11-09 the EEC's official temporary-register page was found and opened; it links to a distinct electronic OTTS register at https://portal.elpts.ru/ncher/otts (separate OTSH and SBKTS links are also present). The linked OTTS destination returned HTTP 502 during this review, so no records or export were inspected. This is an official navigation route, not evidence of bulk/API access or reuse rights.",
+        "current_portal_observation": "On 2026-11-06 the central portal root redirected to the EAEU open-data catalogue. This does not mean the unified vehicle-approval register is absent: Decision No. 225 requires national parts to be accessible through official websites. Russia's national part is identified as the FGIS Reestr KTS maintained by Interstandart; the exact public search endpoint remains unresolved. On 2026-11-09 the EEC's official temporary-register page was opened and linked to the electronic OTTS route at https://portal.elpts.ru/ncher/otts; the destination returned HTTP 502. The EEC's 2023-04-18 report on Order No. 18 records that the temporary electronic-register pilot ran through 2022-12-31, provided machine-readable export only on request during the pilot, and was deemed completed after AM/KZ/KG did not join. The 2026 page link is therefore a historical navigation route, not evidence that the pilot service remains operational. No current records/export, bulk API or reuse rights were verified.",
         "machine_readable_api": "Portal-level OData/REST reuse is advertised for published open-data resources; an OTTS-specific resource, endpoint, schema and export method remain unverified.",
         "individual_query_access": "national_parts_on_official_websites_and_requests_to_authorized_bodies_under_decision_225",
         "bulk_export": "not_established",
@@ -159,8 +159,10 @@
         },
         "historical_machine_readable_export_limitation": {
           "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
-          "observation": "The EEC report describes the earlier XML submission pilot as not providing machine-readable export from the unified register.",
-          "implication": "Do not infer an unrestricted current bulk-export API from the existence of the XML exchange schema."
+          "pre_pilot_unified_register": "The EEC report states that the earlier XML-submission mechanism for the unified register did not permit machine-readable export from that register.",
+          "temporary_pilot_service": "During the 2022 pilot, an interested person could request machine-readable information from the separate temporary registry.",
+          "pilot_completion": "The EEC report dated 2023-04-18 says the pilot was deemed completed; no current continuation or equivalent export service was verified.",
+          "implication": "Do not infer a currently available public API, unrestricted bulk export, offline cache permission or redistribution right from the old pilot route or Decision No. 88 XML schema."
         },
         "national_parts": [
           {
@@ -192,7 +194,55 @@
           "data_downloaded": false,
           "data_ingested": false,
           "product_import_allowed": false,
-          "source_snapshot_sha256": null
+          "source_snapshot_sha256": null,
+          "pilot_status": "historical_pilot_completed_per_eec_2023_report",
+          "pilot_report_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "current_machine_readable_export_verified": false
+        },
+        "pilot_project_2023_report": {
+          "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "publisher": "Eurasian Economic Commission",
+          "document_type": "official EEC committee meeting materials; agenda item 12; explanatory report on pilot results",
+          "meeting_date": "2023-04-18",
+          "agenda_item": 12,
+          "pilot_order": "EEC Collegium Order No. 18 of 2022-02-08",
+          "pilot_period": {
+            "start": "2022-02-14",
+            "end": "2022-12-31"
+          },
+          "participants": [
+            "RU",
+            "BY",
+            "EEC administrator JSC Electronic Passport"
+          ],
+          "potential_joining_member_states": [
+            "AM",
+            "KZ",
+            "KG"
+          ],
+          "potential_joining_member_states_joined_during_pilot": false,
+          "historical_counts": {
+            "ot_ts_approvals_and_revisions": 2491,
+            "ot_ts_issued_in_belarus": 74,
+            "ot_sh_approvals": 111,
+            "ot_sh_issued_in_belarus": 11,
+            "sbkts_certificates": 313123,
+            "sbkts_issued_in_belarus": 14640
+          },
+          "machine_readable_export_during_pilot": {
+            "available": true,
+            "access_method": "request_by_interested_person",
+            "scope": "information contained in conformity-assessment documents in the temporary registry",
+            "public_bulk_api_established": false
+          },
+          "conclusion": "pilot_project_deemed_completed",
+          "continuation_context": "The EEC report states that continuation was considered appropriate only if Armenia, Kazakhstan and Kyrgyzstan joined; the report records that their authorized bodies did not express a wish to join at the 2023-01-27 meeting.",
+          "current_availability": "not_verified_after_pilot_completion",
+          "rights_effect": "none; the historical request-based pilot service does not grant VAG TECH PRO bulk extraction, persistent offline caching, commercial display, redistribution or derivative-database rights",
+          "raw_report_downloaded": false,
+          "raw_report_sha256": null,
+          "vehicle_records_downloaded": false,
+          "vehicle_records_ingested": false
         }
       },
       "rights": {
@@ -221,7 +271,7 @@
         "The current consolidated EEC Decision No. 232 OTTS/OTSH Annex 1 form lists engine make/type, ECU marking, transmission type, gearbox make/type, gear count and ratios at attachment level. This is a normative blank-form schema, not proof that the current public summary query exposes these fields or that filled documents may be bulk cached, displayed or redistributed."
       ],
       "project_decision": "schema_only_importer_prepared; no data caching or product import until the current official query route, field exposure and written reuse rights are established",
-      "evidence_status": "Decision No. 225 public-access rules, Decision No. 88 exchange schema and current consolidated Decision No. 232 OTTS/OTSH Annex 1 form fields reviewed 2026-11-07; engine/gearbox fields are attachment-level form fields; current public summary exposure, filled attachment access and reuse rights remain unresolved. Official EEC temporary-register page and its electronic OTTS link rechecked 2026-11-09; destination returned 502, no records or export inspected, no rights upgrade.",
+      "evidence_status": "Decision No. 225 public-access rules, Decision No. 88 exchange schema and Decision No. 232 OTTS/OTSH form reviewed; EEC temporary-register page and electronic OTTS link rechecked 2026-11-09, destination returned 502. The EEC 2023-04-18 report records the 2022 pilot's historical counts and request-based machine-readable export, and concludes that the pilot was completed. No current service, records, export or reuse rights were verified; no data imported.",
       "registry_schema": {
         "schema_id": "R.TR.TS.07.001",
         "schema_version": "1.0.0",
@@ -299,7 +349,7 @@
         "target_xsd_retrieved": false
       },
       "data_ingested": false,
-      "source_revision": "EEC Decision No. 225 public-access basis; EEC Decision No. 232 current consolidated OTTS/OTSH form (amended by Decision No. 52 of 2026-05-12; relevant form changes effective 2026-10-08); Decision No. 88 / R.TR.TS.07.001 v1.0.0",
+      "source_revision": "EEC Decision No. 225 public-access basis; EEC Decision No. 232 current consolidated OTTS/OTSH form (amended by Decision No. 52 of 2026-05-12; relevant form changes effective 2026-10-08); Decision No. 88 / R.TR.TS.07.001 v1.0.0; EEC 2023-04-18 report on completion of the 2022 electronic OTTS/OTSH/SBKTS pilot",
       "schema_basis_url": "https://www.alta.ru/tamdoc/16kr0088/",
       "normative_attachment_schema": {
         "legal_act": "EEC Collegium Decision No. 232 of 2014-12-09, current consolidated text amended by Decision No. 52 of 2026-05-12",
