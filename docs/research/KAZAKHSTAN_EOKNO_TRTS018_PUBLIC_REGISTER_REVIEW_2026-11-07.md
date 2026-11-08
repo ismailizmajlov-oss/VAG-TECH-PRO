@@ -28,3 +28,10 @@ The official Kazakhstan State Revenue Committee release dated 2023-05-12 confirm
 ## Re-entry criteria
 
 Reconsider product import only after (a) the current register's operational status and record completeness are verified and (b) the portal operator or data rightsholder provides an explicit licence or written permission covering the intended bulk retrieval, offline cache, display and redistribution. Any future data intake must be field-allowlisted, exclude personal identifiers, preserve original-file and row hashes, and keep document types separate.
+
+
+## 2026-11-09 indexed recheck of the TechReg OTTS/OTSH lists
+
+The current search-indexed text for the [legacy OTTS/OTSH list](https://techreg.kezekte.kz/ru/cert/ot-registry/old/list) shows a page label of **1–30 of 273**. Its visible columns include registration number, issue/registry dates, validity dates, make, commercial name, certification body and applicant/address. The [new list](https://techreg.kezekte.kz/ru/cert/ot-registry/list) shows **1–1 of 0** and fields for document type, manufacturer/certification-body BIN and names, make, type and category.
+
+This is search-indexed page text, not a direct verified download or a complete current snapshot. No records were downloaded, no applicant/address data were copied, no VAG-specific count was established, and no API/export or reuse licence was identified. Both records remain metadata-only with product import disabled and no source SHA-256.
