@@ -78,5 +78,48 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         self.assertIn("exact OTTS query coverage and completeness not established", source["access"]["individual_query_access"])
 
 
+    def test_elpts_sep_reference_files_are_quarantined_until_data_rights_are_confirmed(self):
+        manifest = json.loads(REGISTER.read_text(encoding="utf-8"))
+        sources = {item["source_id"]: item for item in manifest["sources"]}
+        expected = {
+            "elpts-sep-make-directory": {
+                "url": "https://elpts.ru/wp-content/uploads/2023/06/spravochnik-marok.xlsx",
+                "file_name": "spravochnik-marok.xlsx",
+                "market_scope": ["RU"],
+            },
+            "elpts-sep-technical-characteristics-reference": {
+                "url": "https://disk.yandex.ru/d/VeYxsi3IcnmK2w",
+                "file_name": "Справочник технических характеристик_202601106_1645.xlsx",
+                "market_scope": ["RU"],
+            },
+        }
+        for source_id, contract in expected.items():
+            source = sources[source_id]
+            self.assertEqual(source["url"], contract["url"])
+            self.assertEqual(source["market_scope"], contract["market_scope"])
+            self.assertFalse(source["data_ingested"])
+            self.assertIsNone(source["source_snapshot_sha256"])
+            self.assertEqual(source["hash_status"], "not_downloaded_no_ingestion")
+            self.assertFalse(source["file_metadata"]["file_bytes_retrieved"])
+            self.assertIsNone(source["file_metadata"]["source_snapshot_sha256"])
+            self.assertFalse(source["access"]["file_downloaded"])
+            self.assertFalse(source["access"]["raw_file_bytes_retrieved"])
+            self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+            self.assertTrue(source["rights"]["permission_required_before_product_import_or_distribution"])
+            for key in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed", "bulk_reuse_allowed", "redistribution_allowed"):
+                self.assertEqual(source["rights"][key], "not_established")
+            self.assertIn("written permission", source["project_decision"])
+            self.assertIn("not a data-reuse licence", source["rights"]["rights_evidence"])
+            self.assertIn(contract["file_name"], json.dumps(source["file_metadata"], ensure_ascii=False))
+
+        technical = sources["elpts-sep-technical-characteristics-reference"]
+        self.assertEqual(technical["file_metadata"]["size_display"], "16.9 МБ")
+        self.assertEqual(technical["file_metadata"]["modified_at_display"], "06.11.2026 16:52")
+        self.assertEqual(technical["applicability_precision"], "unknown_until_rights_cleared_and_workbook_reviewed")
+        make = sources["elpts-sep-make-directory"]
+        self.assertEqual(make["applicability_precision"], "make_name_taxonomy_candidate_only; no model_or_powertrain_fitment_verified")
+
+
+
 if __name__ == "__main__":
     unittest.main()

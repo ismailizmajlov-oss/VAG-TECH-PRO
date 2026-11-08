@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T07:03:58Z",
+  "updated_at": "2026-11-08T07:13:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -6007,6 +6007,128 @@
       "data_ingested": false,
       "product_import_allowed": false,
       "verification_status": "database_unavailable_and_data_rights_unverified"
+    },
+    {
+      "source_id": "elpts-sep-make-directory",
+      "publisher": "АО «Электронный паспорт»",
+      "url": "https://elpts.ru/wp-content/uploads/2023/06/spravochnik-marok.xlsx",
+      "access_details_url": "https://elpts.ru/",
+      "source_kind": "publicly_linked_reference_xlsx",
+      "market_scope": [
+        "RU"
+      ],
+      "evidence_scope": [
+        "vehicle_make_name_taxonomy_candidate",
+        "manufacturer_label_normalization_candidate"
+      ],
+      "file_metadata": {
+        "display_name": "Справочник марок",
+        "file_name": "spravochnik-marok.xlsx",
+        "format": "XLSX",
+        "public_page_section": "Справочники АС СЭП",
+        "linked_from": "https://elpts.ru/",
+        "file_bytes_retrieved": false,
+        "source_snapshot_sha256": null
+      },
+      "access": {
+        "public_link_observed": true,
+        "link_type": "direct_static_xlsx",
+        "public_page_linked": true,
+        "file_downloaded": false,
+        "raw_file_bytes_retrieved": false,
+        "machine_readable_api": "not_verified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "offline_cache": "not_established",
+        "third_party_display": "not_established",
+        "redistribution": "not_established"
+      },
+      "rights": {
+        "data_license_status": "not_established",
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true,
+        "rights_evidence": "No dataset-specific reuse licence was located. The published ELPTS offer is a paid software-use agreement, not a licence for these reference-file contents."
+      },
+      "limitations": [
+        "The official ELPTS homepage links this XLSX under the «Справочники АС СЭП» section; public linking does not grant a dataset licence.",
+        "The workbook was not downloaded or inspected; revision, columns, completeness and contents remain unknown.",
+        "No VAG-specific make aliases, model names, generations, model years, engine codes or gearbox codes are verified.",
+        "No EAEU-wide coverage is established; market scope is RU only as a source-discovery classification.",
+        "The software-use offer is not a data-reuse licence for this workbook."
+      ],
+      "project_decision": "metadata_only_candidate; do not download, ingest, cache, display or redistribute until written permission or a dataset-specific licence confirms the exact permitted uses",
+      "evidence_status": "ELPTS homepage link to the make-directory XLSX observed 2026-11-08; file bytes and SHA-256 not retrieved; rights and contents not verified.",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "make_name_taxonomy_candidate_only; no model_or_powertrain_fitment_verified"
+    },
+    {
+      "source_id": "elpts-sep-technical-characteristics-reference",
+      "publisher": "АО «Электронный паспорт»",
+      "url": "https://disk.yandex.ru/d/VeYxsi3IcnmK2w",
+      "access_details_url": "https://elpts.ru/",
+      "source_kind": "publicly_linked_reference_file_listing",
+      "market_scope": [
+        "RU"
+      ],
+      "evidence_scope": [
+        "vehicle_technical_characteristic_reference_candidate",
+        "possible_vehicle_identity_fields_candidate"
+      ],
+      "file_metadata": {
+        "page_title": "Справочник технических характеристик",
+        "file_name": "Справочник технических характеристик_202601106_1645.xlsx",
+        "format": "XLSX",
+        "size_display": "16.9 МБ",
+        "modified_at_display": "06.11.2026 16:52",
+        "public_page_section": "Справочники АС СЭП",
+        "linked_from": "https://elpts.ru/",
+        "file_bytes_retrieved": false,
+        "source_snapshot_sha256": null
+      },
+      "access": {
+        "public_share_page_observed": true,
+        "public_page_linked": true,
+        "file_downloaded": false,
+        "raw_file_bytes_retrieved": false,
+        "machine_readable_api": "not_verified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "offline_cache": "not_established",
+        "third_party_display": "not_established",
+        "redistribution": "not_established"
+      },
+      "rights": {
+        "data_license_status": "not_established",
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true,
+        "rights_evidence": "No dataset-specific reuse licence was located. The published ELPTS offer is a paid software-use agreement, not a licence for these reference-file contents."
+      },
+      "limitations": [
+        "The official ELPTS homepage links to a public Yandex Disk listing titled «Справочник технических характеристик».",
+        "The listing exposes a 16.9 MB XLSX file with display modification time 06.11.2026 16:52; the workbook itself was not downloaded or inspected.",
+        "No column names, manufacturer coverage, VAG rows, engine codes, gearbox codes, exact engine/gearbox pairs, model years, generations or ECU applicability are verified.",
+        "No EAEU-wide coverage is established; market scope is RU only as a source-discovery classification.",
+        "A public file listing is not a dataset-specific licence for commercial use, local SQLite caching, offline display or redistribution.",
+        "The published ELPTS software-use offer is not a data-reuse licence for this reference workbook."
+      ],
+      "project_decision": "high_priority_metadata_candidate; request written permission for download, inspection, local caching, offline display and redistribution before retrieving workbook bytes or importing any rows",
+      "evidence_status": "Public ELPTS-linked Yandex Disk file listing observed 2026-11-08; XLSX filename, displayed modification time and size recorded; no file bytes or SHA-256 retrieved; rights and technical contents not verified.",
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "unknown_until_rights_cleared_and_workbook_reviewed"
     }
   ],
   "minimum_fitment_evidence_fields": [
