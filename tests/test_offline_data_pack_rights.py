@@ -103,6 +103,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIs(lock["normalization_policy"]["research_pack_only"], True)
         self.assertIs(lock["normalization_policy"]["normalized_product_dtc_import_allowed"], False)
         self.assertIn("U3xxx", lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
+        self.assertIn("(sourceManifest.sources || []).length !== 16", sync_source)
         self.assertEqual(lock["source_reference_policy"], {
             "validation": "syntax_only",
             "external_fetch": False,
