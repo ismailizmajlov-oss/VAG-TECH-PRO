@@ -139,9 +139,9 @@ function apply(root) {
   const replacement = [
     "## DTC namespace code-range boundary (run87)",
     "",
-    "The normalized importer admits generic SAE/ISO records only in source-backed P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx ranges. It admits manufacturer-controlled candidates only in P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx ranges.",
+    "The normalized importer applies a conservative namespace gate: generic SAE/ISO records may use P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx; manufacturer-controlled candidates may use P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx. These family boundaries are not a current DTC allocation list, and a code is imported only when it exists in the pinned source snapshot.",
     "",
-    "P35xx–P39xx, B3xxx, C3xxx and U3xxx are unresolved or reserved for this importer and are rejected before transaction commit in both normalized namespaces. A range classification is not evidence of Volkswagen Group authorship: VAG-specific records still require an identified VAG manufacturer, source-document revision and evidence locator, SHA-256, explicit storage/display/redistribution rights, exact ECU/configuration applicability and independent technical review.",
+    "P35xx–P39xx, B3xxx, C3xxx and U3xxx are unresolved or reserved for this importer and are rejected before transaction commit in both normalized namespaces. The current J2012DA_202607 allocation table has not been acquired under a reuse licence, so the gate does not claim that every code in an allowed family is currently assigned. A range classification is not evidence of Volkswagen Group authorship: VAG-specific records still require an identified VAG manufacturer, source-document revision and evidence locator, SHA-256, explicit storage/display/redistribution rights, exact ECU/configuration applicability and independent technical review.",
     "",
     "The upstream OBDex CC0 snapshot preserves its publisher's original family classification in a separate read-only research namespace. In particular, upstream U3xxx rows are not promoted into the normalized generic DTC index. No copyrighted SAE standard text or current digital-annex allocation table is copied into the application.",
     ""
