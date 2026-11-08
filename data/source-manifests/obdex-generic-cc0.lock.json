@@ -83,12 +83,23 @@
     "research_pack_only": true,
     "normalized_product_dtc_import_allowed": false,
     "unverified_ranges_for_normalized_import": [
+      "P34xxx-P39xxx",
       "U3xxx",
-      "P35xx-P39xx",
       "B3xxx",
       "C3xxx"
     ],
     "promotion_requires": "exact_current_J2012DA_assignment_and_independent_rights_review",
-    "note": "Upstream OBDex labels U3xxx rows generic; these 174 rows remain isolated research-only and are not promoted into the normalized product DTC index."
+    "note": "The source projection retains upstream-labelled P34xxx and U3xxx rows only in the isolated research pack. P3xxx is a mixed manufacturer-controlled / ISO-SAE-reserved family; exact current J2012DA assignments have not been acquired, so no P3xxx row is promoted to a normalized generic or VAG-specific namespace.",
+    "p3_family_review": {
+      "upstream_file": "data/generic/P3xxx_enriched.yaml",
+      "pinned_revision": "9ba1ffa095f3140d9e21b985b322ddea3134bb60",
+      "upstream_p3_record_count": 155,
+      "upstream_label": "generic_sae_iso_obd2",
+      "normalized_product_import_allowed": false,
+      "reason": "P3xxx allocation is mixed and the current licensed SAE J2012DA allocation table has not been acquired; upstream labels alone are insufficient.",
+      "current_standard_revision": "J2012DA_202607",
+      "current_standard_rights_status": "not_acquired",
+      "review_status": "research_only_quarantine"
+    }
   }
 }
