@@ -1,65 +1,86 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-08T09:56:00Z",
+  "recorded_at_utc": "2026-11-08T12:38:32Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run87",
-  "run_id": 42457978012,
-  "run_number": 841,
+  "run_id": 42478935380,
+  "run_number": 886,
   "run_attempt": 1,
   "status": "completed",
   "conclusion": "success",
-  "head_sha": "05205ce11a103f1dd36b54aae81ff6d073550f77",
+  "head_sha": "74866341380c7be1303171cc348e616c87b3d051",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978012",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42478935380",
   "jobs": [
     {
-      "id": 128661005444,
+      "id": 128726410650,
       "name": "build-and-lifecycle",
+      "runner": "windows-2025",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 128665665140,
+      "id": 128732534372,
       "name": "Windows Server 2022 installer compatibility lifecycle",
+      "runner": "windows-2022",
       "status": "completed",
       "conclusion": "success"
     }
   ],
+  "build": {
+    "desktop_version": "0.2.4",
+    "installers": [
+      {
+        "name": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
+        "bytes": 568519708,
+        "sha256": "49feb062372b62788654b019253807ccabe22384db5c9a2bf3b69ea8a020746b"
+      },
+      {
+        "name": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
+        "bytes": 568519565,
+        "sha256": "4ba95a6a2a70f4261461a3b5886f278a42aa73711f48b09285a5722a31f2d957"
+      }
+    ],
+    "source_archive_sha256": "e041ce167f083192a11f4b86b19e7bbc51fe8a1bb8e732a0d2944229af713216",
+    "offline_data_pack_run_id": 42475599130,
+    "offline_data_pack_sha256": "e9d68cf98ba7a00768dfc758a01e507137b39ba0aa8a51da77fa120f0ff74502",
+    "source_manifest_count": 19,
+    "central_source_register_count": 61,
+    "russian_eaeu_source_count": 14,
+    "research_manifest_entries": 10,
+    "research_manifest_sha256": "593240180d69a36bf7e26c54e70013ba7a206ae290ffb17490127ee8be51c83d",
+    "typed_technical_sections": 14,
+    "engine_transmission_pairing_requires_same_variant_primary_evidence": true,
+    "generic_and_vag_dtc_namespaces_separate": true,
+    "unresolved_dtc_ranges_quarantined": true
+  },
   "artifacts": [
     {
-      "id": 13609525130,
+      "id": 13617750491,
       "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 1369442807,
+      "size_in_bytes": 1369259151,
       "expired": false,
-      "created_at": "2026-11-08T07:37:15Z",
-      "expires_at": "2026-11-22T07:36:20Z",
-      "digest": "sha256:92a228462da82c1bd31d371f90734b0954b1cd804e3e8d663d6f1e7315af1316"
+      "digest": "sha256:1600676f36ebd8628dd4b6aa09c9f69e837274d32bbcdb9287851278d6ce581e"
     },
     {
-      "id": 13609321613,
-      "name": "vag-tech-pro-desktop-source-audit-42457978012",
-      "size_in_bytes": 2728287,
+      "id": 13617038975,
+      "name": "vag-tech-pro-desktop-source-audit-42478935380",
+      "size_in_bytes": 2496576,
       "expired": false,
-      "created_at": "2026-11-08T07:36:19Z",
-      "expires_at": "2026-12-08T07:36:18Z",
-      "digest": "sha256:83d398f61438fee3a814ae3c2de99bde1d62f266c0d5723909e95fdcaf046767"
+      "digest": "sha256:1742b8660cf060e93c3d27062833fd22f705034769c005d99622786c32ee0c7f"
     },
     {
-      "id": 13608704180,
+      "id": 13616953313,
       "name": "vag-tech-pro-windows-2022-lifecycle-run71",
-      "size_in_bytes": 6900,
+      "size_in_bytes": 7009,
       "expired": false,
-      "created_at": "2026-11-08T07:40:51Z",
-      "expires_at": "2026-12-08T07:40:49Z",
-      "digest": "sha256:92d052652bb662260289d0d0cd4166a8a18164697a7d6d760abab03131c5fb73"
+      "digest": "sha256:f31e4fc27c5ba9aaecbaeee7836fe7ee374a62fd7f1dbb1df70057d1400412d7"
     },
     {
-      "id": 13608990126,
+      "id": 13616901854,
       "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
       "size_in_bytes": 24882,
       "expired": false,
-      "created_at": "2026-11-08T07:16:40Z",
-      "expires_at": "2026-11-15T07:16:40Z",
-      "digest": "sha256:1e071d2ebb3b5f528e947dae28544b2fa33697b42bb195220c21963e5cf362ca"
+      "digest": "sha256:6d12c7a49a381c04d30e325f8678c5ceed97aa41657a4a3b4ac246fc3891e9e9"
     }
   ],
   "native_windows_10_11": {
@@ -72,128 +93,18 @@
       "vag-tech-pro-win10-11"
     ]
   },
+  "signing": {
+    "status": "unsigned",
+    "reason": "No owner-supplied code-signing certificate is configured."
+  },
   "release_ready": false,
-  "release_readiness_note": "Run841 is the latest fully successful GitHub-hosted Windows x64 and Windows Server 2022 lifecycle on tested source revision 05205ce11a103f1dd36b54aae81ff6d073550f77. It passed desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema verification, both NSIS x64 builds, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. The Windows Server 2022 lifecycle also passed. Main now contains post-run metadata-only additions to the central and Russian/EAEU source registers for an Armenian national OTTS public listing; no desktop application code changed, but these source-register changes have not yet been validated by a newer Windows/source-rights CI run. PR #56 was merged as b7f267662fbe1764c549ebaecaf8f0f693b37e3d. Thirteen cross-file contract assertions passed against the current central/regional manifests and Armenian rights review; no GitHub Actions run is exposed for the merge commit, so the merged Python regression test remains pending CI revalidation. Native Windows 10/11 x64 lifecycle remains skipped because the owner-provided isolated runner gate is disabled. Installers are unsigned because no owner-supplied code-signing certificate is configured. Rights-cleared Russian/EAEU OTTS, exact factory engine/gearbox/ECU applicability and licensed VAG repair content remain release blockers. Workflow audit follow-up: the Armenian rights test is now wired into the Windows validation workflow; stale hardcoded research/Wikidata audit counts were replaced with manifest/evidence-derived values. Thirteen cross-file contract assertions passed after the final workflow changes. The source audit now excludes generated build trees and derives research/Wikidata counts from current manifests/evidence. No new Windows CI result has been observed; run841 remains the latest fully confirmed installer lifecycle.",
-  "related_validation_workflows": [
-    {
-      "name": "Russian EAEU and VAG OEM source contracts",
-      "run_id": 42457919746,
-      "status": "completed",
-      "conclusion": "success",
-      "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457919746"
-    },
-    {
-      "name": "VAG source-rights register validation",
-      "run_id": 42457978043,
-      "status": "completed",
-      "conclusion": "success",
-      "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978043"
-    },
-    {
-      "name": "VAG open engine-candidate acquisition",
-      "run_id": 42457978016,
-      "status": "completed",
-      "conclusion": "skipped",
-      "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978016",
-      "reason": "Explicit repository approval flag for written reuse permission was not enabled; no candidate data were downloaded."
-    }
-  ],
-  "post_run_source_register_changes": [
-    {
-      "commit": "b1157d68c1fe729a3a4b392140794c38399de18c",
-      "source_id": "armstandard-am-otts-public-register",
-      "registry": "data/source-manifests/vag-factory-source-register.json",
-      "change": "Added Armenian official national OTTS listing as metadata-only, AM/EAEU TR CU 018/2011 scope.",
-      "rights_status": "not_obtained",
-      "data_ingested": false,
-      "product_import_allowed": false,
-      "source_snapshot_sha256": null,
-      "windows_ci_validation": "not_yet_run"
-    },
-    {
-      "commit": "c7dae449c5e222f630dea2b000a4485d0ca3884d",
-      "source_id": "armstandard-am-otts-public-register",
-      "registry": "data/source-manifests/russian-eaeu-otts-sources.json",
-      "change": "Added the same Armenian listing to the dedicated regional source register; count is now 14.",
-      "rights_status": "permission_required",
-      "data_ingested": false,
-      "product_import_allowed": false,
-      "source_snapshot_sha256": null,
-      "windows_ci_validation": "not_yet_run"
-    }
-  ],
-  "armstandard_regression_test_pr": {
-    "number": 56,
-    "url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/pull/56",
-    "head_sha": "e4332adbd76974da94581551718707bae071144e",
-    "state": "merged",
-    "merge_commit_sha": "b7f267662fbe1764c549ebaecaf8f0f693b37e3d",
-    "ci_run_observed": false,
-    "validation_status": "merged; 13/13 cross-file contract assertions passed; Windows/source-rights CI revalidation pending"
+  "release_readiness_note": "Run886 passed GitHub-hosted Windows x64 build-and-lifecycle and Windows Server 2022 compatibility lifecycle on source commit 74866341380c7be1303171cc348e616c87b3d051. It passed desktop/local-core/research tests, ESLint, TypeScript, packaged source-manifest and technical-schema checks, both NSIS x64 builds, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall while preserving the user database. Native Windows 10/11 x64 acceptance remains skipped because the owner-provided runner gate is disabled. Installers are unsigned. Russian/EAEU OTTS reuse rights and licensed OEM VAG DTC/ECU/repair corpus remain unresolved; no production release is authorized.",
+  "previous_successful_run": {
+    "run_id": 42457978012,
+    "run_number": 841,
+    "head_sha": "05205ce11a103f1dd36b54aae81ff6d073550f77",
+    "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978012"
   },
-  "source_registry_state_head": "4fc262343564a9962295314b9d68fb21f709ddb8",
-  "source_registry_state_note": "The central and regional source-register metadata changes were present through this main revision; subsequent commits update documentation and CI status only.",
-  "post_run_test_changes": [
-    {
-      "commit": "b7f267662fbe1764c549ebaecaf8f0f693b37e3d",
-      "pull_request": 56,
-      "path": "tests/test_armstandard_registry_rights_gate.py",
-      "change": "Adds three regression tests that keep the Armenian national OTTS public listing AM/EAEU metadata-only, without claiming PDF hashes, reuse rights or VAG/RU fitment; review-text assertions are case-insensitive.",
-      "manual_validation": {
-        "checks_passed": 13,
-        "checks_total": 13,
-        "scope": "current central source register, regional OTTS source register and Armenian rights review document",
-        "python_unittest_executed": false,
-        "github_actions_run_observed": false
-      },
-      "windows_ci_validation": "pending"
-    }
-  ],
-  "workflow_audit_fixes": [
-    {
-      "commit": "4b905b62f5763e4ab1e35dd470eb476a2919d82a",
-      "path": ".github/workflows/windows-desktop-ci-run71.yml",
-      "change": "Wired the Armenian OTTS rights regression test into both push and pull-request path filters and the source-rights execution step. Replaced stale hardcoded research-manifest count with the current manifest's unique pack count and SHA-256. Replaced stale Wikidata generation counts with values read from integration evidence."
-    },
-    {
-      "commit": "ad8f3ccc8d16ad72c7a1472292db21982b37de7e",
-      "path": ".github/workflows/windows-desktop-ci-run71.yml",
-      "change": "Made duplicate-pack detection explicit by comparing the current pack ID list with its unique set."
-    },
-    {
-      "commit": "105ba92bc3730c415dce8afce7508ce1e2c606f0",
-      "path": "tests/test_windows_desktop_workflow_contract.py",
-      "change": "Added regression assertions for Armenian rights-test wiring, current research manifest count/hash derivation, duplicate pack IDs, and dynamic Wikidata generation counts."
-    },
-    {
-      "commit": "aa7a121fb2e9769e51b26e7daaab4fea732f63ea",
-      "path": ".github/workflows/windows-desktop-ci-run71.yml",
-      "change": "Replaced the over-escaped source-inventory regex with explicit path-segment filtering for node_modules, .next, release, out, coverage, dist, build, .turbo and .cache."
-    },
-    {
-      "commit": "cd76e8c95e69fcd6d8bb1536b4e79649a812ea7f",
-      "path": "tests/test_windows_desktop_workflow_contract.py",
-      "change": "Added a regression contract requiring the Windows source audit to exclude generated directory trees by path segment."
-    },
-    {
-      "commit": "aa7a121fb2e9769e51b26e7daaab4fea732f63ea",
-      "path": ".github/workflows/windows-desktop-ci-run71.yml",
-      "change": "Finalized the source-audit path-segment filter to exclude node_modules, .next, release, out, coverage, dist, build, .turbo and .cache from the source inventory."
-    },
-    {
-      "commit": "cd76e8c95e69fcd6d8bb1536b4e79649a812ea7f",
-      "path": "tests/test_windows_desktop_workflow_contract.py",
-      "change": "Added regression coverage for the generated-directory exclusion in the Windows source-audit step."
-    }
-  ],
-  "workflow_audit_validation": {
-    "checks_passed": 13,
-    "checks_total": 13,
-    "scope": "final Windows workflow source, workflow-contract test, Armenian rights test, central/regional source manifests and Armenian rights review",
-    "method": "cross-file contract assertions through GitHub source reads",
-    "python_unittest_executed": false,
-    "windows_ci_validation": "pending",
-    "latest_confirmed_windows_run": 841
-  },
-  "code_changes_head_sha": "cd76e8c95e69fcd6d8bb1536b4e79649a812ea7f"
+  "current_main_head_before_status_update": "74866341380c7be1303171cc348e616c87b3d051",
+  "documentation_update_only": true
 }
