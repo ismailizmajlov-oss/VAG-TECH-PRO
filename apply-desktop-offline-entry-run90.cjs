@@ -7,7 +7,6 @@ const mainPath = path.join(root, "electron", "main.cjs");
 const packagePath = path.join(root, "package.json");
 const routePath = path.join(root, "app", "desktop", "page.tsx");
 const desktopTestPath = path.join(root, "tests", "desktop-offline-entry-run90.test.cjs");
-const cssPath = path.join(root, "app", "globals.css");
 
 function readLf(file) {
   return fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
@@ -81,19 +80,6 @@ writeLf(mainPath, main);
 
 ensureExactFile(routePath, route, "Dedicated offline desktop route");
 ensureExactFile(desktopTestPath, desktopTest, "Dedicated offline desktop route tests");
-let css = readLf(cssPath);
-const statusCss = [
-  ".desktop-status{font-size:10px;font-weight:750;letter-spacing:.08em;color:var(--muted);white-space:nowrap}",
-  ".desktop-status:first-of-type{margin-left:auto}",
-  "@media(max-width:700px){.desktop-status{display:none}}",
-].join("\n") + "\n";
-if (!css.includes(".desktop-status{")) {
-  css = css.replace(/\s*$/, "\n") + statusCss;
-  writeLf(cssPath, css);
-} else if (!css.includes("letter-spacing:.08em") || !css.includes("desktop-status:first-of-type")) {
-  throw new Error("Existing desktop-status CSS is unexpected; refusing to overwrite it.");
-}
-
 const packageJson = JSON.parse(readLf(packagePath));
 if (!packageJson.scripts || typeof packageJson.scripts["test:desktop"] !== "string") throw new Error("Desktop test script is missing.");
 const testName = "tests/desktop-offline-entry-run90.test.cjs";
