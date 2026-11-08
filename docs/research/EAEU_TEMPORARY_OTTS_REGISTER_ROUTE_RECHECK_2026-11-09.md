@@ -53,3 +53,7 @@ Any approved future import must retain the original document identifier, documen
 - ELPTS public OTTS page previously reviewed: https://docs.elpts.ru/ncher/otts
 
 Review date: 2026-11-09.
+
+## Additional public page-shell observation — 2026-11-09
+
+The separate `https://docs.elpts.ru/ncher/otts` page was opened successfully. The rendered page shell displayed the title «РЕЕСТР ОДОБРЕНИЙ ТИПА ТРАНСПОРТНОГО СРЕДСТВА, ОФОРМЛЕННЫХ В ЭЛЕКТРОННОМ ВИДЕ», document-class navigation (`ОТШ`, `ЭСБКТС`, `ЗОЕТС`) and unresolved dynamic placeholders `{{ totalFiltered }}` / `{{ totalNotFiltered }}`. No record rows, API endpoint, export endpoint, raw page bytes or document attachments were exposed in the retrieved rendering. This page is recorded as a separate observation; it is not assumed to be the same host/endpoint as the EEC-linked `portal.elpts.ru/ncher/otts` URL, which returned HTTP 502. No rights changed and no source hash is claimed.
