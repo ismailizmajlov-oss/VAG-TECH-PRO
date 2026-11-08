@@ -6,6 +6,7 @@ const MANUFACTURER_PATTERN="^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3
 const UNRESOLVED_PATTERN="^(?:P3[4-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$";
 function replaceOnce(s,a,b,label){const n=s.split(a).length-1;if(n!==1)throw new Error(label+": expected one patch anchor, found "+n);return s.replace(a,b);}
 function read(root,rel){const f=path.join(root,rel);if(!fs.existsSync(f))throw new Error("run87 required file is missing: "+rel);return fs.readFileSync(f,"utf8");}
+function ensureOemSchema(root,rel){const target=path.join(root,rel);if(fs.existsSync(target))return;const canonical=path.join(__dirname,rel);if(!fs.existsSync(canonical))throw new Error("canonical OEM DTC index schema is missing from repository: "+rel);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(canonical,target);}
 function apply(root){
  const files={core:"lib/local-core-db.cjs",tests:"tests/local-core-db.test.cjs",schema:"data/schemas/technical-record-payloads.schema.json",oemSchema:"data/schemas/oem-dtc-index.schema.json",docs:"docs/LOCAL_VEHICLE_CATALOG_IMPORT.md",policy:"data/policies/dtc-namespace-ranges.json",ui:"components/diagnostic-worksheet.tsx",uiTests:"tests/diagnostic-worksheet.test.cjs"};
  let core=read(root,files.core),tests=read(root,files.tests),docs=read(root,files.docs),ui=read(root,files.ui),uiTests=read(root,files.uiTests);
@@ -13,6 +14,7 @@ function apply(root){
  if(policy.namespaces?.generic_sae_iso?.pattern!==GENERIC_PATTERN||policy.namespaces?.manufacturer_controlled?.pattern!==MANUFACTURER_PATTERN||policy.namespaces?.unresolved_reserved?.pattern!==UNRESOLVED_PATTERN)throw new Error("run87 machine-readable DTC policy differs from the pinned patch contract");
  const marker="// run87: quarantine unresolved/reserved DTC ranges";
  const schema=JSON.parse(read(root,files.schema));
+ ensureOemSchema(root,files.oemSchema);
  const oemSchema=JSON.parse(read(root,files.oemSchema));
  if(core.includes(marker)){
   const patternsOk=core.includes("const GENERIC_OBD_DTC_CODE_RE = /"+GENERIC_PATTERN+"/;")&&core.includes("const MANUFACTURER_CONTROLLED_OBD_DTC_CODE_RE = /"+MANUFACTURER_PATTERN+"/;");
