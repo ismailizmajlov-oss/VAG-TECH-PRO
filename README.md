@@ -82,7 +82,7 @@ The packaged offline research bundle remains explicitly separated from verified 
 - Two manufacturer-labelled MechanicDB DTC candidates remain unverified; **zero VAG-specific DTC rows are verified**.
 - Fourteen typed technical sections are represented in the desktop schema, but **zero production fitment rows and zero Russian/EAEU OTTS rows were added** by this run. The presence of a section or candidate pack does not mean it contains approved repair data.
 
-The current main head was tested directly by run 950; no later source-only commits are being represented as covered by that run. The workflow recorder writes the exact run evidence to [`ci-status/latest-windows-run.json`](ci-status/latest-windows-run.json).
+Run 950 tested desktop/source commit `3bf5c4e514269849c5f466c1a4249e82d92cb4ef`. Subsequent commits `dd5a60868d2da1c80ab44741e6fcdc252cd1ab68`, `53b64a8e8e60c15743806603c1102661ec153c04` and `27d11103a18aa20f2acdedc10b4c4c3db2fe6881` update only CI evidence and documentation; they do not change desktop source or data packs and are not represented as a new full Windows build. The workflow recorder writes the exact run evidence to [`ci-status/latest-windows-run.json`](ci-status/latest-windows-run.json).
 
 Run 950 does **not** clear the remaining release gates:
 - Native Windows 10/11 x64 lifecycle remains skipped because the owner-controlled runner gate is disabled. Required labels: `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`.
