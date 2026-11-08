@@ -1759,6 +1759,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run87 local SQLite core syntax check failed." }
           node --test desktop-source/tests/local-core-db.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/dtc-namespace-run87-tests.log"
           if ($LASTEXITCODE -ne 0) { throw "Run87 DTC namespace tests failed." }
+          node --test desktop-source/tests/diagnostic-worksheet.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/dtc-namespace-run87-ui-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run87 diagnostic worksheet quarantine UI tests failed." }
           "dtc_namespace_code_ranges=run87; generic_ranges=P0xxx,P2xxx,P34xx,B0xxx,C0xxx,U0xxx; manufacturer_controlled_ranges=P1xxx,P30xx-P33xx,B1xxx-B2xxx,C1xxx-C2xxx,U1xxx-U2xxx; unresolved_reserved=P35xx-P39xx,U3xxx,B3xxx,C3xxx; p34xx_exact_pinned_record_required=true; cross_namespace_import_rejected=true; validation_before_transaction=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           $patchInSource = Join-Path $env:GITHUB_WORKSPACE "desktop-source/scripts/patches/apply-dtc-namespace-range-guard-run87.cjs"
           New-Item -ItemType Directory -Force -Path (Split-Path -Parent $patchInSource) | Out-Null
@@ -2089,6 +2091,8 @@ jobs:
             windows-lifecycle-staging/desktop-source/scripts/patches/apply-dtc-namespace-range-guard-run86.cjs
             windows-lifecycle-staging/desktop-source/scripts/patches/apply-dtc-namespace-range-guard-run87.cjs
             windows-lifecycle-staging/desktop-source/data/policies/dtc-namespace-ranges.json
+            windows-lifecycle-staging/desktop-source/components/diagnostic-worksheet.tsx
+            windows-lifecycle-staging/desktop-source/tests/diagnostic-worksheet.test.cjs
             windows-lifecycle-staging/desktop-source/scripts/verify-local-core.cjs
             windows-lifecycle-staging/desktop-source/scripts/windows-installer-lifecycle.ps1
           if-no-files-found: warn
