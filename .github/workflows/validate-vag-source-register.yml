@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
+      - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
+      - "tests/test_kba_germany_open_data_source_rights.py"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
       - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
@@ -88,6 +91,9 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
+      - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
+      - "tests/test_kba_germany_open_data_source_rights.py"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
       - "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
