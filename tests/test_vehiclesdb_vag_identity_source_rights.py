@@ -58,6 +58,17 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         for key in ("artifact_sha256", "database_sha256", "manifest_sha256"):
             self.assertRegex(research[key], r"^[0-9a-f]{64}$")
+        self.assertEqual(research["workflow_run_id"], 42439864538)
+        self.assertGreater(research["artifact_size_bytes"], 0)
+        bundle = source["offline_bundle"]
+        self.assertEqual(bundle["status"], "verified_offline_research_bundle_not_installer")
+        self.assertEqual(bundle["target_platform"], "windows-x64")
+        self.assertEqual(bundle["separate_database_count"], 3)
+        self.assertEqual(bundle["vehiclesdb_database_sha256"], "318e345c6a0624574f292e3fafe4a4b68c3e1ac154f1e69dae2a550a6d2d6f58")
+        for key in ("artifact_sha256", "bundle_index_sha256", "vehiclesdb_database_sha256",
+                    "vehiclesdb_manifest_sha256", "vehiclesdb_source_snapshot_sha256"):
+            self.assertRegex(bundle[key], r"^[0-9a-f]{64}$")
+        self.assertGreater(bundle["artifact_size_bytes"], 0)
 
     def test_foreign_market_scope_is_not_misrepresented_as_ru_eaeu(self):
         source = SOURCES["vehiclesdb-vag-identity-cc-by-4.0"]
