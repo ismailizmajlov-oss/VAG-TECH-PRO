@@ -80,11 +80,14 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
     def test_elpts_dynamic_otts_shell_is_not_a_record_dataset(self):
         source = self.sources["elpts-national-otts-register"]
         observation = source["access"]["alternative_public_page_shell"]
+        self.assertEqual(observation["observation_type"], "rendered_page_shell_only")
         self.assertEqual(observation["url"], "https://docs.elpts.ru/ncher/otts")
-        self.assertTrue(observation["page_shell_accessible"])
+        self.assertEqual(observation["observed_at"], "2026-11-09")
         self.assertTrue(observation["dynamic_result_placeholders_unresolved"])
+        self.assertEqual(observation["dynamic_result_placeholders"], ["{{ totalFiltered }}", "{{ totalNotFiltered }}"])
         self.assertFalse(observation["record_rows_observed"])
         self.assertFalse(observation["api_or_export_endpoint_verified"])
+        self.assertFalse(observation["raw_page_bytes_retrieved"])
         self.assertIsNone(observation["source_snapshot_sha256"])
         self.assertEqual(source["status"], "permission_required")
         self.assertFalse(source["data_ingested"])
