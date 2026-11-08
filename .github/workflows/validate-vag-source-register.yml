@@ -5,6 +5,14 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+      - "tests/test_vehiclesdb_vag_identity_source_rights.py"
+      - ".github/workflows/acquire-vag-identity-vehiclesdb.yml"
+      - ".github/workflows/build-windows-offline-data-packs.yml"
+      - "scripts/build_vag_identity_vehiclesdb.py"
+      - "scripts/vag_identity_vehiclesdb_common.py"
+      - "scripts/verify_vag_identity_vehiclesdb.py"
+      - "scripts/test_vag_identity_vehiclesdb.py"
       - "docs/research/CARS_BASE_RUSSIAN_CATALOG_RIGHTS_REVIEW_2026-11-08.md"
       - "tests/test_cars_base_source_rights.py"
       - "docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md"
@@ -71,6 +79,14 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+      - "tests/test_vehiclesdb_vag_identity_source_rights.py"
+      - ".github/workflows/acquire-vag-identity-vehiclesdb.yml"
+      - ".github/workflows/build-windows-offline-data-packs.yml"
+      - "scripts/build_vag_identity_vehiclesdb.py"
+      - "scripts/vag_identity_vehiclesdb_common.py"
+      - "scripts/verify_vag_identity_vehiclesdb.py"
+      - "scripts/test_vag_identity_vehiclesdb.py"
       - "docs/research/CARS_BASE_RUSSIAN_CATALOG_RIGHTS_REVIEW_2026-11-08.md"
       - "tests/test_cars_base_source_rights.py"
       - "docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md"
