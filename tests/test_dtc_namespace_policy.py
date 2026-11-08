@@ -62,6 +62,18 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIn('policy.namespaces.manufacturer_controlled.pattern',self.audit)
         self.assertIn('policy.namespaces.unresolved_reserved.pattern',self.audit)
 
+    def test_openvag_database_candidate_is_not_ingested(self):
+        register=json.loads(REGISTER_PATH.read_text(encoding="utf-8"))
+        rows=[s for s in register["sources"] if s["source_id"]=="openvag-dtc-api-project"]
+        self.assertEqual(len(rows),1)
+        source=rows[0]
+        self.assertEqual(source["code_license"]["license"],"MIT")
+        self.assertEqual(source["database_data_license_status"],"not_stated")
+        self.assertEqual(source["provenance_status"],"not_documented")
+        self.assertIs(source["data_ingested"],False)
+        self.assertIs(source["product_import_allowed"],False)
+        self.assertIsNone(source["source_snapshot_sha256"])
+
     def test_eaeu_nsi_api_is_discovery_only(self):
         register=json.loads(REGISTER_PATH.read_text(encoding="utf-8"))
         rows=[s for s in register["sources"] if s["source_id"]=="eaeu-nsi-rest-api"]
