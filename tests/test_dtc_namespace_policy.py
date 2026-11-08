@@ -91,7 +91,7 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIs(lock["normalization_policy"]["research_pack_only"],True)
         self.assertIs(lock["normalization_policy"]["normalized_product_dtc_import_allowed"],False)
         self.assertIn("U3xxx",lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
-        self.assertIn("P34xxx-P39xxx",lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
+        self.assertIn("P34xx-P39xx",lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
         self.assertEqual(lock["normalization_policy"]["p3_family_review"]["upstream_p3_record_count"],155)
         self.assertFalse(lock["normalization_policy"]["p3_family_review"]["normalized_product_import_allowed"])
 
@@ -130,9 +130,9 @@ class DtcNamespacePolicyTests(unittest.TestCase):
     def test_dtc_range_documents_match_the_machine_policy(self):
         review=(ROOT/"docs/research/DTC_NAMESPACE_RANGE_REVIEW_2026-11-08.md").read_text(encoding="utf-8")
         policy=(ROOT/"docs/research/DTC_NAMESPACE_CODE_RANGE_POLICY_2026-11-08.md").read_text(encoding="utf-8")
-        self.assertIn("P34xxx",review)
-        self.assertIn("P34xxx-P39xxx",review)
-        self.assertIn("P34xxx-P39xxx",policy)
+        self.assertIn("P34xx",review)
+        self.assertIn("P34xx-P39xx",review)
+        self.assertIn("P34xx-P39xx",policy)
         self.assertNotIn("P34xx is accepted as generic",review)
 
 if __name__=="__main__":
