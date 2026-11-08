@@ -239,9 +239,9 @@ def main() -> None:
         raise SystemExit("Wikidata generation candidate snapshot counts or revision changed without integration review")
     if f"snapshotId: \"{generation_pack['snapshot_id']}\"" not in generation_script or f"sourceSnapshotSha256: \"{generation_pack['source_snapshot_sha256']}\"" not in generation_script or f"sourceQuerySha256: \"{generation_pack['source_query_sha256']}\"" not in generation_script or f"databaseSha256: \"{generation_pack['database_sha256']}\"" not in generation_script:
         raise SystemExit("Wikidata generation integration hashes do not match the immutable snapshot")
-    if f"run-id: {model_artifact['workflow_run_id']}" not in text or f"/runs/{model_artifact['workflow_run_id']}/artifacts" not in text or f"$artifact.id -eq {model_artifact['artifact_id']}" not in text or f"sha256:{model_artifact['artifact_sha256']}" not in text:
+    if f"run-id: {model_artifact['workflow_run_id']}" not in text or f"/runs/{model_artifact['workflow_run_id']}/artifacts" not in text or f"$_.id -eq {model_artifact['artifact_id']}" not in text or f"sha256:{model_artifact['artifact_sha256']}" not in text:
         raise SystemExit("Windows workflow is not downloading the current Wikidata model artifact")
-    if f"run-id: {generation_workflow_run}" not in text or f"/runs/{generation_workflow_run}/artifacts" not in text or f"$artifact.id -eq {generation_artifact_id}" not in text or f"sha256:{generation_artifact_sha}" not in text:
+    if f"run-id: {generation_workflow_run}" not in text or f"/runs/{generation_workflow_run}/artifacts" not in text or f"$_.id -eq {generation_artifact_id}" not in text or f"sha256:{generation_artifact_sha}" not in text:
         raise SystemExit("Windows workflow is not downloading the current Wikidata generation artifact")
     if generation_pack["parent_model_pack"]["snapshot_id"] != model_pack["snapshot_id"]:
         raise SystemExit("Wikidata generation pack parent snapshot does not match the installed model taxonomy")
