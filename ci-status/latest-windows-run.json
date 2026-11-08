@@ -1,27 +1,27 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-08T22:41:08Z",
+  "recorded_at_utc": "2026-11-08T23:42:43Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run87",
-  "run_id": 42529748216,
-  "run_number": 950,
+  "run_id": 42532208535,
+  "run_number": 953,
   "run_attempt": 1,
   "status": "completed",
   "conclusion": "success",
-  "head_sha": "3bf5c4e514269849c5f466c1a4249e82d92cb4ef",
+  "head_sha": "6af565a73d2b667e591c86a87f05e707c3a41cfd",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42529748216",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532208535",
   "jobs": [
     {
-      "id": 128881103749,
+      "id": 128888665033,
       "name": "build-and-lifecycle",
-      "runner": "windows-2025",
+      "runner": "GitHub-hosted Windows x64",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 128885344049,
+      "id": 128894562965,
       "name": "Windows Server 2022 installer compatibility lifecycle",
-      "runner": "windows-2022",
+      "runner": "Windows Server 2022",
       "status": "completed",
       "conclusion": "success"
     }
@@ -32,37 +32,37 @@
       {
         "name": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
         "sha256_recorded_in_build_metadata": true,
-        "sha256_location": "build-metadata.json inside Windows artifact 13637546171"
+        "sha256_location": "build-metadata.json inside Windows artifact 13638393596"
       },
       {
         "name": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
         "sha256_recorded_in_build_metadata": true,
-        "sha256_location": "build-metadata.json inside Windows artifact 13637546171"
+        "sha256_location": "build-metadata.json inside Windows artifact 13638393596"
       }
     ],
     "windows_artifact": {
-      "id": 13637546171,
+      "id": 13638393596,
       "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 1369309007,
-      "digest": "sha256:9bc82f5e65cfe589965f851f927b77addbfc51141c1fa2d5a8282ee809a6ad49"
+      "size_in_bytes": 1369317429,
+      "digest": "sha256:21c0220b893832a0e2f866565219d598d1cadd6780c60ca13fdc8f7424595461"
     },
     "source_audit_artifact": {
-      "id": 13637411597,
-      "name": "vag-tech-pro-desktop-source-audit-42529748216",
-      "size_in_bytes": 2496565,
-      "digest": "sha256:d18650407454610e3320496c930e096204a7c3cc26dd7ef057200025745e44c7"
+      "id": 13638004717,
+      "name": "vag-tech-pro-desktop-source-audit-42532208535",
+      "size_in_bytes": 2496564,
+      "digest": "sha256:b64a15fd072965abd2373b01d916f4a416b3b05baeea905c973e14eb97998ac0"
     },
     "windows_2022_artifact": {
-      "id": 13637438089,
+      "id": 13638762240,
       "name": "vag-tech-pro-windows-2022-lifecycle-run71",
-      "size_in_bytes": 6988,
-      "digest": "sha256:682790a9382ef363dd46396c91ec708cd5454a9969bf1a8a0feed5dbe0d87dcd"
+      "size_in_bytes": 6995,
+      "digest": "sha256:b1db36a1274b8258d7b0e1c0afbe2228d24a37a4ae3e9d65c807e64a71907621"
     },
     "vehiclesdb_schema_diagnostic_artifact": {
-      "id": 13636741857,
+      "id": 13638195403,
       "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
       "size_in_bytes": 24882,
-      "digest": "sha256:06030bd77c0f711c3311d67fe476295c15e92382125c7a952c2d48f481c40ed5"
+      "digest": "sha256:99e2586ce3a77274402553d45091d1e5c9742df246f43f57bfd93fdb88b45482"
     },
     "offline_data_pack_run_id": 42483416447,
     "offline_data_pack_sha256": "710cdd57c59a192441c1fbdecc5654267fa04e2ff7d69b789fedad0b1b890e3d",
@@ -98,7 +98,9 @@
     "vag_specific_dtc_verified_rows": 0,
     "production_fitment_rows_added": 0,
     "russian_eaeu_otts_rows_added": 0,
-    "vehiclesdb_status": "candidate_research_only_no_ru_eaeu_fitment"
+    "vehiclesdb_status": "candidate_research_only_no_ru_eaeu_fitment",
+    "source_revision": "6af565a73d2b667e591c86a87f05e707c3a41cfd",
+    "release_readiness": "CI_validated_not_release_ready"
   },
   "native_windows_10_11": {
     "runner_gate_enabled": false,
@@ -115,7 +117,7 @@
     "reason": "No owner-supplied code-signing certificate is configured."
   },
   "release_ready": false,
-  "release_readiness_note": "Run950 passed the full GitHub-hosted Windows x64 desktop build and lifecycle plus Windows Server 2022 compatibility lifecycle on the current main head. Both NSIS x64 installers were built; desktop/local-core/research tests, ESLint, TypeScript, source-manifest and technical-schema checks, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation passed. Individual installer SHA-256 values are retained in build-metadata.json inside the Windows artifact. Native Windows 10/11 acceptance remains skipped because the owner-provided runner gate is disabled. Installers are unsigned. No Russian/EAEU OTTS or production fitment rows and no verified VAG-specific DTC rows were added; licensed OEM repair corpus remains unresolved. No production release is authorized.",
+  "release_readiness_note": "Run953 completed successfully on 2026-11-08 for desktop/source revision 6af565a73d2b667e591c86a87f05e707c3a41cfd. Both GitHub-hosted Windows x64 build-and-lifecycle and Windows Server 2022 compatibility lifecycle jobs passed. Two NSIS x64 installers 0.2.3 and 0.2.4 were built; desktop/local-core/research tests, ESLint, TypeScript, source-rights and research-pack checks, typed technical payload/schema validation, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation passed. Installer SHA-256 values are inside build-metadata.json in Windows artifact 13638393596; a separate metadata artifact upload was added in later workflow commits and has not yet been exercised. Native Windows 10/11 acceptance remains skipped because the owner-provided runner gate is disabled. Installers are unsigned. No Russian/EAEU OTTS or production fitment rows and no verified VAG-specific DTC rows were added; licensed OEM repair corpus remains unresolved. No production release is authorized.",
   "latest_source_register_validation": {
     "workflow": "Validate VAG source-rights register",
     "run_id": 42532177992,
@@ -147,10 +149,16 @@
   "current_windows_validation": {
     "run_id": 42532208535,
     "run_number": 953,
-    "status": "in_progress",
+    "status": "completed",
+    "conclusion": "success",
     "head_sha": "6af565a73d2b667e591c86a87f05e707c3a41cfd",
     "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532208535",
-    "last_observed_step": "Build first Windows x64 NSIS installer",
-    "last_observed_at_utc": "2026-11-08T23:00:50Z"
+    "completed_at_utc": "2026-11-08T23:13:26Z"
+  },
+  "pending_ci_observability_change": {
+    "workflow_commit": "8a6331a3b93ffc404749b784729a1be6cc35f6b0",
+    "test_commit": "88aa3de7db0b3fc8311f26d9c762f8185acac443",
+    "purpose": "publish build-metadata.json as a separate small artifact so installer hashes can be independently inspected without downloading the 1.37 GB Windows bundle",
+    "validation_status": "not_yet_observed_in_a_new_workflow_run"
   }
 }
