@@ -319,7 +319,7 @@ def inspect_obdb(root: Path) -> dict[str, Any]:
         "signals": count(db, "signal_candidates"),
     }
     if counts != manifest.get("counts") or counts != {
-        "sources": 13, "generations": 67, "ecus": 44, "commands": 7890, "signals": 8446
+        "sources": 16, "generations": 82, "ecus": 44, "commands": 7890, "signals": 8446
     }:
         raise ValueError("OBDb research counts mismatch")
     if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC-BY-SA-4.0' OR market_scope<>'UNKNOWN' OR verification_status<>'unverified_community_candidate' OR execution_allowed<>0").fetchone()[0]:
