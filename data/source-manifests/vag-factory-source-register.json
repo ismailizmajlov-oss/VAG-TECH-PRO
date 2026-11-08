@@ -2121,7 +2121,7 @@
         "Per-record market evidence is presence-only and must not be converted into exact technical applicability.",
         "Keep the database separate and preserve the CC BY 4.0 VehiclesDB credit plus all unconditional upstream source notices."
       ],
-      "evidence_status": "pinned_v2026.10.4_manifest_LICENSE_ATTRIBUTION_and_all_four_upstream_file_hashes_and_sizes_reviewed_2026-11-08; independent Windows x64 build, SQLite integrity and foreign-key checks passed",
+      "evidence_status": "pinned_v2026.10.4_manifest_LICENSE_ATTRIBUTION_and_all_four_upstream_file_hashes_and_sizes_reviewed_2026-11-08; standalone Windows x64 pack and three-database offline bundle independently verified; SQLite integrity and foreign-key checks passed",
       "upstream_source_files": {
         "catalog.sqlite": {
           "byte_size": 9773056,
@@ -2170,7 +2170,27 @@
           "US"
         ],
         "verification": "SQLite integrity_check=ok; foreign_key_check=empty; no RU/EAEU evidence; no generations, model years, engine codes, gearbox codes or ECU fitment",
-        "built_at_utc": "2026-11-08T02:46:00Z"
+        "built_at_utc": "2026-11-08T02:46:00Z",
+        "workflow_run_id": 42439864538,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42439864538",
+        "artifact_id": 13601655801,
+        "artifact_size_bytes": 2633295
+      },
+      "offline_bundle": {
+        "status": "verified_offline_research_bundle_not_installer",
+        "workflow_run_id": 42439864463,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42439864463",
+        "artifact_id": 13601111537,
+        "artifact_size_bytes": 37222752,
+        "artifact_sha256": "f08073395a767b95f6e0de4df6abfed2ad932019d8326ee008fe638bb8c24d3b",
+        "bundle_index_sha256": "ff6073ffc61aeca42d455f096ef8c804ebcba55e22a605ca5f98290849c2d5fa",
+        "target_platform": "windows-x64",
+        "separate_database_count": 3,
+        "vehiclesdb_database_sha256": "318e345c6a0624574f292e3fafe4a4b68c3e1ac154f1e69dae2a550a6d2d6f58",
+        "vehiclesdb_manifest_sha256": "32c5347ad9dc0f1acc4518dbe08ef533fd71412fde5e13d3dc3b44dcc299e39d",
+        "vehiclesdb_source_snapshot_sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704",
+        "built_at_utc": "2026-11-08T02:48:24Z",
+        "verification": "all three packaged research databases and VehiclesDB raw source snapshot passed read-only SQLite integrity_check; foreign_key_check empty; independent bundle-index hashes matched"
       }
     },
     {
