@@ -106,5 +106,21 @@
     "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42457978012"
   },
   "current_main_head_before_status_update": "74866341380c7be1303171cc348e616c87b3d051",
-  "documentation_update_only": true
+  "documentation_update_only": true,
+  "post_run_updates": {
+    "latest_main_commit": "e1ec15f01641ab0815c2ce50469aa556d0e7757c",
+    "source_register_commit": "62e537e54bff005103d9ace5b8f9eaf1be49d6f2",
+    "source_regression_test_commits": [
+      "de224396b05fa2171488bf453946c0f76d9cee33",
+      "90e2ba4307e2d0e94ceb14423a650c6543c84951"
+    ],
+    "research_document_commits": [
+      "fd827f5390ebe6045aba137ed8a4154fecc9151a",
+      "e1ec15f01641ab0815c2ce50469aa556d0e7757c"
+    ],
+    "scope": "Source metadata, rights-gate regression tests and research documentation only; no desktop application code, production technical rows, installer payload or user database changed.",
+    "validation_status": "manual manifest/contract assertions passed in this run; GitHub Actions result for these commits was not available at status check time; run886 remains the latest confirmed Windows x64 lifecycle.",
+    "release_readiness": "not_ready",
+    "note": "The EEC temporary OTTS page is now recorded as an official navigation route. Its linked portal returned HTTP 502; no record or data file was downloaded and no reuse rights were upgraded."
+  }
 }
