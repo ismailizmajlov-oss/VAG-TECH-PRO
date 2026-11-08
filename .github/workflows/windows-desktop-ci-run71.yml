@@ -942,20 +942,6 @@ jobs:
           node --check desktop-source/scripts/prepare-electron-runtime.cjs
           node --check desktop-source/electron/main.cjs
 
-      - name: Apply dedicated offline-only desktop entry (run90)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Stop"
-          node --check apply-desktop-offline-entry-run90.cjs
-          if ($LASTEXITCODE -ne 0) { throw "Run90 offline desktop entry patch syntax check failed." }
-          node apply-desktop-offline-entry-run90.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-offline-entry-run90.log"
-          if ($LASTEXITCODE -ne 0) { throw "Run90 offline desktop entry patch failed." }
-          node --check desktop-source/electron/main.cjs
-          if ($LASTEXITCODE -ne 0) { throw "Run90 patched Electron main process failed syntax validation." }
-          if (-not (Test-Path "desktop-source/app/desktop/page.tsx")) { throw "Run90 dedicated offline desktop route is missing." }
-          if (-not (Test-Path "desktop-source/tests/desktop-offline-entry-run90.test.cjs")) { throw "Run90 desktop route regression tests are missing." }
-          "desktop_entry=dedicated_local_sqlite_route; cloud_auth=not_loaded; supabase_runtime_credentials=removed; offline_only=1" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
-
       - name: Generate, pin and install the Windows dependency lock
         working-directory: desktop-source
         timeout-minutes: 15
@@ -1856,6 +1842,20 @@ jobs:
           $patchInSource = Join-Path $env:GITHUB_WORKSPACE "desktop-source/scripts/patches/apply-dtc-namespace-range-guard-run87.cjs"
           New-Item -ItemType Directory -Force -Path (Split-Path -Parent $patchInSource) | Out-Null
           Copy-Item -LiteralPath "apply-dtc-namespace-range-guard-run87.cjs" -Destination $patchInSource -Force
+
+      - name: Apply dedicated offline-only desktop entry (run90)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-offline-entry-run90.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run90 offline desktop entry patch syntax check failed." }
+          node apply-desktop-offline-entry-run90.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-offline-entry-run90.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run90 offline desktop entry patch failed." }
+          node --check desktop-source/electron/main.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run90 patched Electron main process failed syntax validation." }
+          if (-not (Test-Path "desktop-source/app/desktop/page.tsx")) { throw "Run90 dedicated offline desktop route is missing." }
+          if (-not (Test-Path "desktop-source/tests/desktop-offline-entry-run90.test.cjs")) { throw "Run90 desktop route regression tests are missing." }
+          "desktop_entry=dedicated_local_sqlite_route; cloud_auth=not_loaded; supabase_runtime_credentials=removed; offline_only=1" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
