@@ -2543,7 +2543,7 @@
         "document_metadata_only"
       ],
       "access": {
-        "public_query_route": "The distinct public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. Its visible 07.11.2026–08.11.2026 date-filtered result set was empty; the UI total label was 14822. AUDI AG and Volkswagen AG are manufacturer filter options only, not returned records. Separate OTSH and SBKTS pages remain distinct.",
+        "public_query_route": "The distinct public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. Its visible 07.11.2026–08.11.2026 date-filtered result set was empty; the UI total label was 14822. AUDI AG and Volkswagen AG are manufacturer filter options only, not returned records. Separate OTSH and SBKTS pages remain distinct. On 2026-11-09 the docs.elpts.ru OTTS page shell was accessible and displayed the OTTS register title, document-class navigation and unresolved dynamic result-count placeholders; no record rows or API/export endpoint were exposed in the rendered page.",
         "machine_readable_api": "not_verified",
         "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
         "bulk_export": "CSV, PDF and XML export controls observed on the public OTTS page; export endpoint, scope, completeness, file download and reuse rights not verified",
@@ -2557,7 +2557,24 @@
         ],
         "export_file_downloaded": false,
         "export_endpoint_verified": false,
-        "export_controls_last_observed_at": "2026-11-07"
+        "export_controls_last_observed_at": "2026-11-07",
+        "alternative_public_page_shell_observation_2026_11_09": {
+          "url": "https://docs.elpts.ru/ncher/otts",
+          "observed_at": "2026-11-09",
+          "page_title": "ОТТС",
+          "rendered_shell_text": [
+            "РЕЕСТР ОДОБРЕНИЙ ТИПА ТРАНСПОРТНОГО СРЕДСТВА, ОФОРМЛЕННЫХ В ЭЛЕКТРОННОМ ВИДЕ",
+            "ОТШ ЭСБКТС ЗОЕТС",
+            "Поиск Найдено: {{ totalFiltered }} Всего оформлено: {{ totalNotFiltered }}"
+          ],
+          "page_shell_accessible": true,
+          "dynamic_result_placeholders_unresolved": true,
+          "record_rows_observed": false,
+          "raw_page_bytes_captured": false,
+          "source_snapshot_sha256": null,
+          "api_or_export_endpoint_verified": false,
+          "rights_effect": "none; accessible search shell does not grant bulk extraction, persistent caching, offline display or redistribution"
+        }
       },
       "rights": {
         "data_license_status": "not_established",
@@ -2584,7 +2601,7 @@
         "The 2026-11-08 public page observation used the active 07.11.2026–08.11.2026 date filter and returned no rows. The 14822 label remains a UI observation, not a verified complete-corpus count. No raw page bytes or source hash were captured."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "ELPTS public OTTS page rechecked 2026-11-08; total UI label 14822; active 07.11.2026–08.11.2026 filter returned no rows; VAG manufacturer filter options are not approval records; no VAG OTTS record count verified. Export controls last observed 2026-11-07. No raw page bytes, export, PDF or record downloaded; reuse rights and powertrain applicability remain unestablished.",
+      "evidence_status": "ELPTS public OTTS page rechecked 2026-11-08; total UI label 14822; active 07.11.2026–08.11.2026 filter returned no rows; VAG manufacturer filter options are not approval records; no VAG OTTS record count verified. Export controls last observed 2026-11-07. No raw page bytes, export, PDF or record downloaded; reuse rights and powertrain applicability remain unestablished. The docs.elpts.ru OTTS page shell was re-opened 2026-11-09; dynamic result placeholders remained unresolved and no records, API or export endpoint were retrieved. Rights remain unchanged.",
       "public_page_observations": {
         "observed_at": "2026-11-08",
         "ot_ts": {
