@@ -349,8 +349,8 @@ def main() -> int:
         ecus, commands, signals = validate_signalset(signalset, source_id)
         generations_text = files["generations.yaml"].decode("utf-8-sig")
         generations = parse_generation_candidates(generations_text, source.get("generation_reference_url", source["repository_url"]))
-        if not commands:
-            raise ValueError(f"{source_id}: no signal commands in pinned snapshot")
+        if not commands and not generations:
+            raise ValueError(f"{source_id}: no signal commands or generation candidates in pinned snapshot")
         source_files = {}
         source_root = upstream_root / source_id
         for relative_path, payload in files.items():
