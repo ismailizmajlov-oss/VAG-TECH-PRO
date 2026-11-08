@@ -6,13 +6,13 @@ The run86 namespace guard was too broad in two places: it treated P35xx–P39xx 
 
 ## Evidence and limits
 
-The publicly accessible SAE J2012 MAR2013 document's Figure 3 distinguishes P3000–P3399 (manufacturer-controlled) from P3400–P3999 (SAE-reserved). Therefore P35xx–P39xx must not be classified as manufacturer-specific. The same edition says that only a portion of the U3 range is reserved for uniform codes assigned by the standard; the figure does not establish that every U3xxx value is a currently assigned generic DTC. Exact current assignments are contained in the licensed J2012DA digital annex.
+The publicly accessible SAE J2012 MAR2013 document's Figure 3 distinguishes P3000–P3399 (manufacturer-controlled) from P3400–P3999 (SAE-reserved). Therefore P35xx–P39xx must not be classified as manufacturer-specific. The same edition says that only a portion of the U3 range is reserved for uniform codes assigned by the standard; the public figure does not identify the exact assigned U3 codes. Exact current assignments are contained in the licensed J2012DA digital annex.
 
 - SAE J2012 MAR2013 PDF: https://files.infocentre.io/files/docs_clients/126_2007751625_1263573_J2012_201303.pdf (Figure 3 and sections 5.2–5.7).
 - SAE official catalogue, current J2012_202509 revision dated 2025-09-01: https://saemobilus.sae.org/standards/j2012_202509-diagnostic-trouble-code-definitions
 - SAE official catalogue, current J2012DA_202607 revision dated 2026-07-29: https://saemobilus.sae.org/standards/j2012da_012013-digital-annex-diagnostic-trouble-code-definitions-failure-type-byte-definitions
 
-The current J2012DA is licensed and has not been acquired under a reuse licence. No current allocation table or DTC definition text is stored. Consequently, U3xxx is not promoted to a normalized generic or VAG-specific namespace from a prefix or third-party dataset label alone. B3xxx and C3xxx also remain quarantined until exact current-standard assignments are established.
+The current J2012DA is licensed and has not been acquired under a reuse licence. No current allocation table or DTC definition text is stored. Consequently, U3xxx is not promoted to a normalized generic or VAG-specific namespace from a prefix or third-party dataset label alone. B3xxx and C3xxx also remain quarantined until exact current assignments are established.
 
 The pinned OBDex CC0 research pack contains 174 U3xxx rows and upstream labels them generic. Those rows remain in the separate research pack only; they are not merged into the normalized product DTC index. The upstream CC0 grant covers its data files, not the copyrighted SAE annex or third-party references embedded in those rows.
 
