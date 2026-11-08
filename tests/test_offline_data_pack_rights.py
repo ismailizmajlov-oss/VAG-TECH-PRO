@@ -79,6 +79,8 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("generic_sae_iso_obd2", source)
         self.assertIn("manufacturer-controlled or malformed DTC ranges", source)
         self.assertIn("raw_references_preserved_not_fetched_not_linked", source)
+        self.assertIn("normalized_product_namespace_exclusions", source)
+        self.assertIn("U3xxx", source)
 
     def test_autoevolution_derived_identity_dataset_is_excluded(self):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
@@ -100,6 +102,10 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         self.assertEqual(lock["scope"]["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])
         self.assertEqual(lock["scope"]["excluded_manufacturer_controlled_ranges"], ["P1xxx", "P30xx-P33xx", "P35xx-P39xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])
+        self.assertEqual(lock["import_policy"]["normalized_product_namespace_exclusions"], ["U3xxx"])
+        self.assertEqual(lock["import_policy"]["unverified_current_standard_ranges"], ["U3xxx"])
+        self.assertTrue(lock["import_policy"]["source_label_is_not_standard_allocation_proof"])
+        self.assertFalse(lock["import_policy"]["production_catalog_ingestion"])
         self.assertEqual(lock["source_reference_policy"], {
             "validation": "syntax_only",
             "external_fetch": False,
@@ -165,6 +171,8 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn(f"JSON.stringify(scope.generic_code_ranges) !== JSON.stringify({allowed})", sync_source)
         self.assertIn(f"JSON.stringify(scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify({excluded})", sync_source)
         self.assertIn("P35xx-P39xx", excluded)
+        self.assertIn("normalized_product_namespace_exclusions", sync_source)
+        self.assertIn("U3xxx", sync_source)
         self.assertIn("P34xx", allowed)
         self.assertNotIn("P34xx-P39xx", allowed)
 
