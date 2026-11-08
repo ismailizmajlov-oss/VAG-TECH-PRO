@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T11:16:00Z",
+  "updated_at": "2026-11-08T11:19:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -6364,6 +6364,135 @@
       "hash_status": "not_downloaded_no_ingestion",
       "data_ingested": false,
       "product_import_allowed": false
+    },
+    {
+      "source_id": "wikipedia-vag-engine-code-lists-cc-by-sa-4-0",
+      "publisher": "Wikipedia contributors",
+      "url": "https://en.wikipedia.org/wiki/List_of_Volkswagen_Group_petrol_engines",
+      "source_kind": "community_reference_articles_cc_by_sa_4_0",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "pages": [
+        {
+          "title": "List of Volkswagen Group petrol engines",
+          "url": "https://en.wikipedia.org/w/index.php?title=List_of_Volkswagen_Group_petrol_engines&oldid=1383476161",
+          "revision_id": 1383476161,
+          "last_edited_utc": "2026-11-02T22:06:00Z",
+          "license": "CC-BY-SA-4.0",
+          "quality_warnings": [
+            "original_research_warning",
+            "insufficient_inline_citations",
+            "incomplete_list"
+          ]
+        },
+        {
+          "title": "List of Volkswagen Group diesel engines",
+          "url": "https://en.wikipedia.org/w/index.php?title=List_of_Volkswagen_Group_diesel_engines&oldid=1383504097",
+          "revision_id": 1383504097,
+          "last_edited_utc": "2026-11-03T01:27:00Z",
+          "license": "CC-BY-SA-4.0",
+          "quality_warnings": [
+            "more_citations_needed",
+            "incomplete_list"
+          ]
+        },
+        {
+          "title": "List of discontinued Volkswagen Group petrol engines",
+          "url": "https://en.wikipedia.org/w/index.php?title=List_of_discontinued_Volkswagen_Group_petrol_engines&oldid=1381198237",
+          "revision_id": 1381198237,
+          "last_edited_utc": "2026-10-20T16:46:00Z",
+          "license": "CC-BY-SA-4.0",
+          "quality_warnings": [
+            "unsourced_statements",
+            "lacking_reliable_references",
+            "incomplete_list"
+          ]
+        },
+        {
+          "title": "List of discontinued Volkswagen Group diesel engines",
+          "url": "https://en.wikipedia.org/w/index.php?title=List_of_discontinued_Volkswagen_Group_diesel_engines&oldid=1375791889",
+          "revision_id": 1375791889,
+          "last_edited_utc": "2026-09-20T02:37:00Z",
+          "license": "CC-BY-SA-4.0",
+          "quality_warnings": [
+            "unsourced_statements",
+            "accuracy_disputes",
+            "lacking_reliable_references",
+            "incomplete_list"
+          ]
+        }
+      ],
+      "evidence_scope": [
+        "engine_family_candidate",
+        "engine_code_candidate",
+        "displacement_candidate",
+        "power_output_candidate",
+        "community_application_text_candidate"
+      ],
+      "not_confirmed": [
+        "factory engine-code authority",
+        "RU or EAEU market coverage",
+        "exact model generation and year applicability",
+        "engine-to-gearbox pairing",
+        "ECU applicability",
+        "OEM DTC",
+        "repair procedure",
+        "wiring diagram",
+        "pinout",
+        "adaptation",
+        "tightening specification"
+      ],
+      "rights": {
+        "data_license_status": "CC-BY-SA-4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "evidence_url": "https://wikimediafoundation.org/what-we-do/wikimedia-projects/wikipedia/",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "attribution": "Wikipedia contributors; identify each article and pinned revision; provide CC BY-SA 4.0 link and mark changes",
+        "scope_note": "Article text only. Excludes images, logos, third-party linked pages, referenced OEM documents and any material whose separate rights do not permit reuse."
+      },
+      "quality_review": {
+        "status": "not_approved_for_technical_use",
+        "blocking_warnings": [
+          "Current petrol article carries an original-research warning and insufficient-inline-citation warning.",
+          "Current diesel article requests more citations.",
+          "Both discontinued-engine articles contain unsourced-statement and incomplete-list warnings.",
+          "The discontinued diesel article also carries accuracy-dispute warnings.",
+          "No row-level independent primary-source verification has been completed."
+        ],
+        "permitted_use": "discovery_only",
+        "promotion_requirements": [
+          "pinned raw revision bytes",
+          "per-page SHA-256",
+          "section-level extraction provenance",
+          "parser QA",
+          "independent primary-source verification for every engine code and any application claim",
+          "CC BY-SA attribution and ShareAlike packaging review"
+        ]
+      },
+      "access": {
+        "raw_revision_bytes_retrieved": false,
+        "mediawiki_api_snapshot_retrieved": false,
+        "source_snapshot_sha256": null,
+        "page_revisions_pinned": true,
+        "web_rendering_observed": true,
+        "article_text_license_observed": true
+      },
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "applicability_precision": "community_engine_code_candidate_only; no model_year_market_or_fitment_confirmation",
+      "project_decision": "licensed_discovery_only; no technical or vehicle-fitment import until pinned snapshots, extraction QA and independent primary-source verification are complete",
+      "evidence_status": "Four article revision IDs and page-footer CC BY-SA 4.0 statements observed 2026-11-08. Raw page/API bytes were not retrieved; no source SHA-256 is claimed. All four pages carry quality warnings that block technical promotion.",
+      "review_document": "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
     }
   ],
   "minimum_fitment_evidence_fields": [
