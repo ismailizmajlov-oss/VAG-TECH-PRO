@@ -94,6 +94,7 @@ on:
       - "tests/test_eaeu_otts_registry_import.py"
       - "tests/test_eaeu_otts_registry_manifest.py"
       - "tests/test_russian_eaeu_otts_manifest.py"
+      - "tests/test_armstandard_registry_rights_gate.py"
       - "docs/EAEU_OTTS_REGISTRY_IMPORT.md"
       - "docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md"
       - "docs/research/KYRGYZ_SINGLE_WINDOW_PUBLIC_REGISTRY_REVIEW_2026-11-07.md"
@@ -215,6 +216,7 @@ on:
       - "tests/test_eaeu_otts_registry_import.py"
       - "tests/test_eaeu_otts_registry_manifest.py"
       - "tests/test_russian_eaeu_otts_manifest.py"
+      - "tests/test_armstandard_registry_rights_gate.py"
       - "docs/EAEU_OTTS_REGISTRY_IMPORT.md"
       - "docs/research/EAEU_OTTS_SCHEMA_DISCOVERY_2026-11-06.md"
       - "docs/research/KYRGYZ_SINGLE_WINDOW_PUBLIC_REGISTRY_REVIEW_2026-11-07.md"
@@ -1065,7 +1067,7 @@ jobs:
           if (-not (Test-Path $evidencePath)) { throw "Run70 generation candidate integration evidence is missing" }
           $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
           if ($evidence.status -ne "integrated_verified_series_member_candidates_only" -or $evidence.counts.member_entities -ne 109 -or $evidence.counts.model_member_links -ne 125 -or $evidence.counts.source_bindings -ne 187 -or $evidence.market_scope -ne "UNKNOWN" -or $evidence.applicability_precision -ne "series_member_candidate" -or $evidence.generation_verified -ne $false -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.diagnostic_execution_allowed -ne $false) { throw "Run71 generation evidence failed candidate-only applicability gate" }
-          "wikidata_generation_pack=CC0-1.0; members=9; model_member_links=10; source_bindings=14; market=UNKNOWN; generation=unverified; exact_fitment=none; engine_gearbox_ECU_DTC_repair=none; database_sha256=$($evidence.database_sha256); snapshot_sha256=$($evidence.source_snapshot_sha256); query_sha256=$($evidence.source_query_sha256); manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "wikidata_generation_pack=CC0-1.0; members=$($evidence.counts.member_entities); model_member_links=$($evidence.counts.model_member_links); source_bindings=$($evidence.counts.source_bindings); models_with_members=$($evidence.counts.models_with_members); manufacturers=$($evidence.counts.manufacturers); russian_labels=$($evidence.counts.russian_labels); date_statements=$($evidence.counts.date_statements); market=$($evidence.market_scope); applicability=$($evidence.applicability_precision); generation_verified=$($evidence.generation_verified); exact_vehicle_fitment=$($evidence.exact_vehicle_fitment); engine_gearbox_ECU_DTC_repair=none; database_sha256=$($evidence.database_sha256); snapshot_sha256=$($evidence.source_snapshot_sha256); query_sha256=$($evidence.source_query_sha256); manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           Get-Content -LiteralPath $evidencePath -Raw | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Print local-core API test source around failing assertion
@@ -1091,6 +1093,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA source-rights contract tests failed" }
           python tests/test_cars_base_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "Cars Base source-rights contract tests failed" }
+          python tests/test_armstandard_registry_rights_gate.py
+          if ($LASTEXITCODE -ne 0) { throw "Armenian OTTS source-rights quarantine tests failed" }
           $syncOutput = python scripts/sync_vag_source_register.py --source "data/source-manifests/vag-factory-source-register.json" --desktop-root "desktop-source"
           if ($LASTEXITCODE -ne 0) { throw "Could not synchronize central source-rights register into desktop payload" }
           $syncOutput | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vag-source-register-sync.log"
@@ -1295,7 +1299,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run74 ASTRA verifier patch syntax check failed" }
           node apply-research-pack-astra-verification-run74.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/astra-research-pack-verifier-run74.log"
           if ($LASTEXITCODE -ne 0) { throw "Run74 ASTRA CH research-pack verification patch failed" }
-          "research_manifest_entries=10; ASTRA_CH=verified_research_only; production_import=false; RU_EAEU_applicability=false; exact_fitment=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          $researchManifestPath = "desktop-source/data/research/manifest.json"
+          if (-not (Test-Path -LiteralPath $researchManifestPath -PathType Leaf)) { throw "Current desktop research manifest is missing after pack synchronization." }
+          $researchManifest = Get-Content -LiteralPath $researchManifestPath -Raw | ConvertFrom-Json
+          $researchPackIds = @($researchManifest.packs | ForEach-Object { [string]$_.id })
+          if ($researchPackIds.Count -lt 1 -or $researchPackIds.Count -ne @($researchPackIds | Sort-Object -Unique).Count) { throw "Research manifest pack IDs are empty or duplicated." }
+          $researchManifestEntries = $researchPackIds.Count
+          $researchManifestSha = (Get-FileHash -LiteralPath $researchManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          "research_manifest_entries=$researchManifestEntries; research_manifest_sha256=$researchManifestSha; ASTRA_CH=verified_research_only; production_import=false; RU_EAEU_applicability=false; exact_fitment=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Repair generated desktop TypeScript contracts (run76)
         shell: pwsh
