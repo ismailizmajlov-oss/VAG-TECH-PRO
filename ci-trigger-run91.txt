@@ -1,0 +1,1 @@
+run90: dedicated offline-only Electron entry route and local SQLite workspace validation
