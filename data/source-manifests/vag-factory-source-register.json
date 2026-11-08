@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T11:19:00Z",
+  "updated_at": "2026-11-08T11:23:30Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4286,8 +4286,8 @@
         "official_dataset_page": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
         "official_archive_page": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/archive/",
         "public_machine_readable_route_reported": true,
-        "current_page_fetch": "timeout_2026-11-07",
-        "current_archive_fetch": "timeout_2026-11-07",
+        "current_page_fetch": "timeout_2026-11-08",
+        "current_archive_fetch": "timeout_2026-11-08",
         "current_file_url": null,
         "current_schema_downloaded": false,
         "current_snapshot_downloaded": false,
@@ -4324,7 +4324,7 @@
         "repair_completion_and_dealer_location_fields_excluded": true
       },
       "project_decision": "priority_ru_recall_source_candidate_only; do_not_download_or_import until the current official page, dataset-linked terms, file schema and snapshot are retrieved and hashed; if rights are confirmed, evaluate campaign-level metadata only, exclude VIN-level rows and repair-completion/dealer fields, and label remedy text as recall-campaign information rather than an OEM repair procedure.",
-      "evidence_status": "official dataset route identified; metadata-only Windows probe run30 on 2026-11-07 timed out on both official landing and archive pages; no source file, schema or dataset-specific terms retrieved",
+      "evidence_status": "official dataset route identified; metadata-only Windows probe run65 on 2026-11-08 timed out on both official landing and archive pages (WinError 10060); no source file, schema, terms links or dataset-specific terms retrieved",
       "evidence": [
         {
           "url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
@@ -4366,24 +4366,31 @@
           "source_type": "typical_open_data_terms_reference",
           "status": "conditional_general_terms_not_linked_to_dataset_page",
           "note": "General Open Government Commission terms; do not apply to this dataset until the official dataset page's link is verified."
+        },
+        {
+          "url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
+          "source_type": "official_dataset_landing_page",
+          "status": "metadata_probe_timeout_2026-11-08",
+          "reviewed_at": "2026-11-08",
+          "note": "Windows CI run65 (artifact SHA-256 f67877c55dc3e55cbc1de6ee7012604e62bd433989ec58a3b270988817d50223) timed out with WinError 10060; no current file or terms links were obtained."
         }
       ],
       "data_ingested": false,
       "source_revision": "current_official_revision_not_retrieved; third_party_snapshot_observed_2026-08-30",
       "source_snapshot_sha256": null,
       "source_snapshot_bytes": null,
-      "hash_status": "not_downloaded_official_page_and_archive_timeout_2026-11-07",
+      "hash_status": "not_downloaded_official_page_and_archive_timeout_2026-11-08",
       "latest_metadata_probe": {
-        "workflow_run_number": 30,
-        "workflow_run_id": 42388349245,
-        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349245",
-        "source_commit": "d228c5158fc2056abf3d016a55ead952d1973c19",
-        "observed_at_utc": "2026-11-07T15:51:05Z",
+        "workflow_run_number": 65,
+        "workflow_run_id": 42475295774,
+        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42475295774",
+        "source_commit": "6eb256c6172a17d64bbe5185642f837e84f377ab",
+        "observed_at_utc": "2026-11-08T11:20:30Z",
         "status": "metadata_probe_only_official_endpoints_unreachable",
-        "artifact_id": 13580796001,
+        "artifact_id": 13615715224,
         "artifact_name": "rosstandart-recall-open-data-probe",
-        "artifact_sha256": "8f75859e11caec06854615ffba0f3c2b43e68d8f2beffdf871add9d944f76f2a",
-        "report_sha256": "20299026879c3849fc0a8f64b34436e13fe5473c33f02cce9043b37ea114f0e6",
+        "artifact_sha256": "f67877c55dc3e55cbc1de6ee7012604e62bd433989ec58a3b270988817d50223",
+        "report_sha256": "3990cb88d2acb041910b46e4f3b5c3bd808238252f8e08c5347f169630d8980b",
         "report_bytes": 1689,
         "pages": [
           {
@@ -4403,7 +4410,71 @@
         "source_snapshot_sha256": null,
         "vin_level_rows_downloaded": false,
         "decision": "metadata_probe_only; no data file is downloaded by this script"
-      }
+      },
+      "metadata_probe_history": [
+        {
+          "workflow_run_number": 30,
+          "workflow_run_id": 42388349245,
+          "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42388349245",
+          "source_commit": "d228c5158fc2056abf3d016a55ead952d1973c19",
+          "observed_at_utc": "2026-11-07T15:51:05Z",
+          "status": "metadata_probe_only_official_endpoints_unreachable",
+          "artifact_id": 13580796001,
+          "artifact_name": "rosstandart-recall-open-data-probe",
+          "artifact_sha256": "8f75859e11caec06854615ffba0f3c2b43e68d8f2beffdf871add9d944f76f2a",
+          "report_sha256": "20299026879c3849fc0a8f64b34436e13fe5473c33f02cce9043b37ea114f0e6",
+          "report_bytes": 1689,
+          "pages": [
+            {
+              "requested_url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
+              "retrieved": false,
+              "error": "WinError 10060 connection timeout"
+            },
+            {
+              "requested_url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/archive/",
+              "retrieved": false,
+              "error": "WinError 10060 connection timeout"
+            }
+          ],
+          "candidate_file_links": [],
+          "terms_links": [],
+          "data_file_downloaded": false,
+          "source_snapshot_sha256": null,
+          "vin_level_rows_downloaded": false,
+          "decision": "metadata_probe_only; no data file is downloaded by this script"
+        },
+        {
+          "workflow_run_number": 65,
+          "workflow_run_id": 42475295774,
+          "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42475295774",
+          "source_commit": "6eb256c6172a17d64bbe5185642f837e84f377ab",
+          "observed_at_utc": "2026-11-08T11:20:30Z",
+          "status": "metadata_probe_only_official_endpoints_unreachable",
+          "artifact_id": 13615715224,
+          "artifact_name": "rosstandart-recall-open-data-probe",
+          "artifact_sha256": "f67877c55dc3e55cbc1de6ee7012604e62bd433989ec58a3b270988817d50223",
+          "report_sha256": "3990cb88d2acb041910b46e4f3b5c3bd808238252f8e08c5347f169630d8980b",
+          "report_bytes": 1689,
+          "pages": [
+            {
+              "requested_url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/",
+              "retrieved": false,
+              "error": "WinError 10060 connection timeout"
+            },
+            {
+              "requested_url": "https://easy.gost.ru/opendata/7706406291-recallcampaigns/archive/",
+              "retrieved": false,
+              "error": "WinError 10060 connection timeout"
+            }
+          ],
+          "candidate_file_links": [],
+          "terms_links": [],
+          "data_file_downloaded": false,
+          "source_snapshot_sha256": null,
+          "vin_level_rows_downloaded": false,
+          "decision": "metadata_probe_only; no data file is downloaded by this script"
+        }
+      ]
     },
     {
       "source_id": "open-vehicle-schema-reference-dataset",
