@@ -16,6 +16,7 @@ class KbaApprovalDesktopWorkflowContractTests(unittest.TestCase):
         self.assertIn("artifact_sha256=$digest", workflow)
         self.assertIn("Download verified KBA DE whole-vehicle approval SQLite research pack", workflow)
         self.assertIn("Rebuild downloaded KBA approval pack with the current pinned builder", workflow)
+        self.assertIn("openpyxl==3.1.5", workflow)
         self.assertIn("--verify --xlsx $xlsx --source-manifest $sourceManifest --out $rebuiltDir", workflow)
         self.assertIn("kba_approval_builder_sha256", workflow)
         self.assertIn("Integrate KBA DE whole-vehicle approval metadata into offline desktop", workflow)
