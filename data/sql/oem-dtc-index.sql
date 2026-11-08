@@ -143,7 +143,7 @@ WHEN NEW.dtc_namespace='generic_sae_iso' AND NOT (
 BEGIN SELECT RAISE(ABORT, 'generic SAE/ISO DTC code is outside allowed generic OBD-II ranges'); END;
 
 -- Manufacturer-controlled ranges: P1xxx, P30xx-P33xx, B1xxx-B2xxx,
--- C1xxx-C2xxx and U1xxx-U2xxx. P35xx-P39xx, U3xxx and B3xxx/C3xxx are quarantined.
+-- C1xxx-C2xxx and U1xxx-U2xxx. P34xxx-P39xxx, U3xxx and B3xxx/C3xxx are quarantined.
 CREATE TRIGGER IF NOT EXISTS validate_manufacturer_dtc_code_range_insert
 BEFORE INSERT ON oem_dtc_index
 WHEN NEW.dtc_namespace IN ('manufacturer_specific_vag','manufacturer_specific_other') AND NOT (
