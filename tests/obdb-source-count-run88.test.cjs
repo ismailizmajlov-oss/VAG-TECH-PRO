@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const crypto = require("node:crypto");
 const { spawnSync } = require("node:child_process");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -34,8 +35,10 @@ function fixture(root, counts = { sources: 16, generations: 82, ecus: 44, comman
     redistribution_allowed: true,
     counts,
     sources,
-    database_sha256: "a".repeat(64),
+    database_file: "vag-obdb-research.sqlite",
+    database_sha256: crypto.createHash("sha256").update("fixture-db").digest("hex"),
   };
+  write(root, "data/research/obdb-vag-signals-cc-by-sa/vag-obdb-research.sqlite", "fixture-db");
   write(root, "data/research/obdb-vag-signals-cc-by-sa/manifest.json", JSON.stringify(manifest));
   write(root, "lib/local-research-db.cjs", "if (obdbSources !== 6 || obdbGenerations !== 32 || obdbEcus !== 15 || obdbCommands !== 2315 || obdbSignals !== 2480) fail();\n");
   write(root, "scripts/verify-local-research-packs.cjs", "assert(obdbCounts.sources === 6 && obdbCounts.generations === 32 && obdbCounts.ecus === 15 && obdbCounts.commands === 2315 && obdbCounts.signals === 2480);\n");
