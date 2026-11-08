@@ -31,6 +31,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
             <tr><th>Engine ID codes</th><td>CAXA, CAVD, AEE, EA211, TDI, 2G, 3F</td></tr>
             <tr><th>Applications</th><td>Volkswagen Golf 1.8</td></tr>
             <tr><th>Gearbox</th><td>02A, 02J</td></tr>
+            <tr><th>Engine ID codes (see note)</th><td>AGB, AZB</td></tr>
           </table>
           <h3>Another engine</h3>
           <table>
@@ -42,7 +43,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
         rows, rows_seen = parse_engine_code_candidates(html)
         codes = [code for row in rows for code in row["candidate_codes"]]
         self.assertGreaterEqual(rows_seen, 5)
-        self.assertEqual(codes, ["CAXA", "CAVD", "AEE", "2G", "3F", "AGB", "AZB"])
+        self.assertEqual(codes, ["CAXA", "CAVD", "AEE", "2G", "3F", "AGB", "AZB", "AGB", "AZB"])
         self.assertEqual(rows[0]["section_heading"], "1.8 litre petrol engine")
         self.assertEqual(rows[1]["section_heading"], "Another engine")
         self.assertTrue(all("Gearbox" not in row["source_row_text"] for row in rows))
