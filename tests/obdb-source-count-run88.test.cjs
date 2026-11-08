@@ -44,7 +44,7 @@ function fixture(root, counts = { sources: 16, generations: 82, ecus: 44, comman
   write(root, "scripts/verify-local-research-packs.cjs", [
     'assert((obdbSnapshot.sources || []).length === 6, "OBDb source registry does not contain six pinned repositories");',
     'assert(obdbCounts.sources === 6 && obdbCounts.generations === 32 && obdbCounts.ecus === 15 && obdbCounts.commands === 2315 && obdbCounts.signals === 2480 && !obdbCounts.unsafeCommands && !obdbCounts.invalidSignals, `OBDb candidate/non-execution gate failed: ${JSON.stringify(obdbCounts)}`);',
-  ].join("\\n") + "\\n");
+  ].join("\n") + "\n");
   write(root, "tests/local-research-db.test.cjs", "assert.deepEqual(obdb.counts, { sources: 6, generations: 32, ecus: 15, commands: 2315, signals: 2480 });\n");
   write(root, "tests/local-research-packs.test.cjs", [
     "assert.equal(result.obdb_vag_signals.sources, 6);",
