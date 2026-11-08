@@ -1451,6 +1451,114 @@
       ],
       "evidence_status": "Official State Enterprise portal, public-registry project page, vehicle-approval system page and 2026-08-24 announcement reviewed 2026-11-07. The public registry is a pilot with no-login search; no record bytes or dataset snapshot were downloaded, and reuse rights remain unresolved.",
       "project_decision": "discovery_only_no_automation_no_import_until_documented_record_schema_and_written_reuse_rights_are_confirmed"
+    },
+    {
+      "source_id": "armstandard-am-otts-public-register",
+      "publisher": "Ministry of Economy of the Republic of Armenia / National Body for Standards and Metrology (НОСМ)",
+      "source_type": "official_armenia_national_eaeu_vehicle_type_approval_public_listing",
+      "source_url": "https://www.armstandard.am/ru/measTransApproves/1",
+      "linked_document_listing_url": "https://disk.yandex.ru/d/OT62kqPGuH6TyA",
+      "market_scope": [
+        "AM",
+        "EAEU_TR_TS_018_2011"
+      ],
+      "legal_basis": {
+        "document": "Приказ Министра экономики Республики Армения № 982-А от 07.08.2020",
+        "source_url": "https://www.armstandard.am/ru/measTransApproves/1",
+        "note": "The official registry page cites this order and describes the National Body's type-approval role under the EAEU agreement and TR CU 018/2011. This is authority context, not a data-reuse licence."
+      },
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "redistribution": "not_confirmed",
+        "pdf_redistribution": "not_confirmed"
+      },
+      "status": "permission_required",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "applicability_precision": "type_approval_document_listing_only",
+      "observed_public_listing": {
+        "observed_at": "2026-11-08",
+        "listing_title": "Сведения об одобрениях типа транспортного средства",
+        "visible_pdf_entries": 40,
+        "count_interpretation": "visible items in the linked Yandex Disk listing rendering only; not a complete-corpus count",
+        "visible_file_date": "2026-03-31",
+        "sample_file_names": [
+          "00009.pdf",
+          "OTTC 021S.00003.pdf",
+          "OTTC 021S.00004.pdf",
+          "OTTC 021S.00007.pdf",
+          "OTTC 021S.00010.pdf",
+          "OTTC 021S.00011.pdf",
+          "OTTC 021S.00012.pdf",
+          "OTTC 021S.00014.pdf",
+          "OTTC 021S.00015.pdf",
+          "OTTC 021S.00018.pdf",
+          "OTTC 021S.00019.pdf",
+          "OTTC 021S.00020.pdf",
+          "OTTC 021S.00021.pdf"
+        ],
+        "files_downloaded": false,
+        "pdf_contents_inspected": false,
+        "vag_records_verified": false
+      },
+      "access_and_reuse": {
+        "public_registry_page": "observed",
+        "public_linked_file_listing": "observed",
+        "documented_api": "not_identified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "commercial_use": "not_confirmed",
+        "third_party_display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "redistribution": "not_confirmed"
+      },
+      "technical_scope": {
+        "exact_vag_vehicle_fitment": false,
+        "exact_engine_code_fitment": false,
+        "exact_gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_dtc_or_repair_applicability": false,
+        "russian_market_scope": false,
+        "precision": "approval_document_listing_only; PDF content not inspected"
+      },
+      "limitations": [
+        "This is an Armenian national registry in the EAEU TR CU 018/2011 context, not a Russian national OTTS register.",
+        "The 40 PDF items are only the visible entries in the linked public listing; no complete corpus count is established.",
+        "No PDF was downloaded or inspected; no document content or source-file SHA-256 is claimed.",
+        "Visible filenames do not establish VAG make/model, generation, production year, factory engine code, gearbox code or exact powertrain pair.",
+        "No dataset-specific licence or written permission for bulk extraction, local SQLite storage, offline display, third-party use or redistribution was found.",
+        "Do not infer Russian-market applicability from Armenian national approval documents without explicit primary-document scope."
+      ],
+      "evidence_reviewed": [
+        {
+          "url": "https://www.armstandard.am/ru/measTransApproves/1",
+          "reviewed_at": "2026-11-08",
+          "evidence": "Official National Body for Standards and Metrology page for vehicle type approvals; cites Ministerial Order No. 982-A dated 2020-08-07 and links the public document listing."
+        },
+        {
+          "url": "https://disk.yandex.ru/d/OT62kqPGuH6TyA",
+          "reviewed_at": "2026-11-08",
+          "evidence": "Public linked listing rendered 40 PDF items with visible file dates 2026-03-31; no file bytes were downloaded."
+        },
+        {
+          "url": "https://www.armstandard.am/ru/page/Texekatvutryan_azatutyun",
+          "reviewed_at": "2026-11-08",
+          "evidence": "Official information-freedom page reviewed; no dataset reuse licence was exposed in the rendered page."
+        }
+      ],
+      "contact": {
+        "email": "info@armstandard.am",
+        "phone": "+374 10 232600",
+        "permission_request_sent": false
+      },
+      "evidence_status": "Official Armenian registry page and linked public document listing observed 2026-11-08; visible 40-item listing only; no PDF bytes or SHA-256 retrieved; no VAG record or reuse rights verified.",
+      "project_decision": "discovery_only_no_download_no_automation_no_import_until_dataset_specific_reuse_rights_are_confirmed_in_writing"
     }
   ],
   "updated_at": "2026-11-08"
