@@ -79,6 +79,9 @@ test("KBA approval desktop integration exposes a separate metadata-only tab and 
   assert.match(integration, /exactEngineGearboxPair/);
   assert.match(integration, /ruEaeuApplicability/);
   assert.match(integration, /KBA DE type-approval metadata search passed/);
+  assert.match(integration, /KBA · DE approvals/);
+  assert.match(integration, /manufacturerLabelMappingStatus/);
+  assert.doesNotMatch(integration, /KBA · ОТТС DE/);
 });
 
 test("KBA approval verifier patch is included as a separate idempotent run", () => {
