@@ -1040,7 +1040,8 @@
           "product_decision": "retain_as_access_and_schema_discovery_evidence_only; no import or fitment claim"
         }
       ],
-      "evidence_status": "Public ELPTS OTTS page rechecked 2026-11-08; UI total label 14822; active date filter 07.11.2026–08.11.2026 returned no rows; AUDI AG and Volkswagen AG are filter options only; no VAG OTTS record or count verified. Export controls were last observed 2026-11-07. No raw page bytes, export, PDF, attachment or record downloaded; no dataset-specific reuse rights, bulk API or powertrain fields established; no rights change."
+      "evidence_status": "Public ELPTS OTTS page rechecked 2026-11-08; UI total label 14822; active date filter 07.11.2026–08.11.2026 returned no rows; AUDI AG and Volkswagen AG are filter options only; no VAG OTTS record or count verified. Export controls were last observed 2026-11-07. No raw page bytes, export, PDF, attachment or record downloaded; no dataset-specific reuse rights, bulk API or powertrain fields established; no rights change.",
+      "product_import_allowed": false
     },
     {
       "source_id": "eaeu-rseds-schema-registry",
