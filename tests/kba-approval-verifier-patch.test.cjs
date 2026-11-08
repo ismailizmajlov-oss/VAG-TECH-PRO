@@ -55,9 +55,11 @@ test("KBA approval verifier patch adds the fourteenth isolated pack and is idemp
     assert.match(patchedVerifier, /kba-de-vag-type-approval-research/);
     assert.match(patchedVerifier, /getKbaApprovalSummary/);
     assert.match(patchedVerifier, /approvalRecords === 918/);
+    assert.match(patchedVerifier, /distinctRowHashes === 918/);
     assert.match(patchedVerifier, /kba_de_vag_approvals:/);
     assert.match(patchedTests, /result\.kba_de_vag_approvals/);
     assert.match(patchedTests, /approvalRecords: 918/);
+    assert.match(patchedTests, /distinctRowHashes: 918/);
 
     const second = patch(root);
     assert.equal(second.manifestPackCount, 14);
