@@ -1,0 +1,105 @@
+name: VAG TECH PRO Wikipedia VAG engine-code research pack (Windows x64)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-wikipedia-vag-engine-candidates.yml"
+      - "scripts/build_wikipedia_vag_engine_candidates.py"
+      - "tests/test_wikipedia_vag_engine_candidates.py"
+      - "data/source-manifests/vag-factory-source-register.json"
+  pull_request:
+    paths:
+      - ".github/workflows/build-wikipedia-vag-engine-candidates.yml"
+      - "scripts/build_wikipedia_vag_engine_candidates.py"
+      - "tests/test_wikipedia_vag_engine_candidates.py"
+      - "data/source-manifests/vag-factory-source-register.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wikipedia-vag-engine-candidates-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build pinned CC BY-SA candidate pack on Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: false
+
+      - name: Run offline parser, rights and SQLite tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m unittest tests.test_wikipedia_vag_engine_candidates -v
+          if ($LASTEXITCODE -ne 0) { throw "Wikipedia candidate pack unit tests failed" }
+
+      - name: Download pinned Wikipedia revisions and build separate research SQLite
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "wikipedia-vag-engine-candidates"
+          New-Item -ItemType Directory -Force -Path $packDir | Out-Null
+          python scripts/build_wikipedia_vag_engine_candidates.py --output-dir "$packDir" 2>&1 | Tee-Object -FilePath (Join-Path $env:RUNNER_TEMP "wikipedia-vag-engine-candidate-build.log")
+          if ($LASTEXITCODE -ne 0) { throw "Pinned Wikipedia candidate pack build failed" }
+          $manifest = Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json
+          if ($manifest.pack_id -ne "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0" -or
+              $manifest.data_license -ne "CC-BY-SA-4.0" -or
+              $manifest.market_scope -ne "UNKNOWN" -or
+              $manifest.product_import_allowed -ne $false -or
+              $manifest.quality_review_status -ne "not_approved_for_technical_use" -or
+              $manifest.counts.unique_candidate_codes -lt 10) {
+            throw "Wikipedia candidate pack manifest failed rights or candidate-only gates"
+          }
+          $db = Join-Path $packDir $manifest.database_file
+          if ((Get-FileHash -LiteralPath $db -Algorithm SHA256).Hash.ToLowerInvariant() -ne $manifest.database_sha256) {
+            throw "Wikipedia candidate SQLite SHA-256 mismatch"
+          }
+          "pack_id=$($manifest.pack_id)" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+          "source_snapshot_sha256=$($manifest.source_snapshot_sha256)" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+          "database_sha256=$($manifest.database_sha256)" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+          "candidate_rows=$($manifest.counts.candidate_rows); unique_codes=$($manifest.counts.unique_candidate_codes); market=UNKNOWN; product_import=false; repair_use=false" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+
+      - name: Package research pack and record archive digest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "wikipedia-vag-engine-candidates"
+          $zip = Join-Path $env:RUNNER_TEMP "wikipedia-vag-engine-candidates.zip"
+          Compress-Archive -Path (Join-Path $packDir "*") -DestinationPath $zip -CompressionLevel Optimal -Force
+          $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          $size = (Get-Item -LiteralPath $zip).Length
+          $evidence = [ordered]@{
+            workflow_run_id = [long]$env:GITHUB_RUN_ID
+            source_commit = "$env:GITHUB_SHA"
+            artifact_file = "wikipedia-vag-engine-candidates.zip"
+            artifact_size_bytes = $size
+            artifact_sha256 = $hash
+            manifest = (Get-Content -LiteralPath (Join-Path $packDir "manifest.json") -Raw | ConvertFrom-Json)
+          }
+          $evidence | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packDir "build-evidence.json") -Encoding utf8
+          "artifact_sha256=$hash" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+          "artifact_size_bytes=$size" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+
+      - name: Upload separately licensed candidate research pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: wikipedia-vag-engine-candidates-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/wikipedia-vag-engine-candidates.zip
+            ${{ runner.temp }}/wikipedia-vag-engine-candidates/build-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
