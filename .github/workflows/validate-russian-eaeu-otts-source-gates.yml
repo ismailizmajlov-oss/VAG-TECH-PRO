@@ -9,6 +9,8 @@ on:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md
       - tests/test_elpts_reference_rights_gate.py
+      - tests/test_elpts_otts_source_rights.py
+      - docs/research/EAEU_TEMPORARY_OTTS_REGISTER_ROUTE_RECHECK_2026-11-09.md
       - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
       - tests/test_kazakhstan_eokno_source_rights.py
       - tests/test_kazakhstan_techreg_source_rights.py
@@ -35,6 +37,8 @@ on:
       - data/source-manifests/russian-eaeu-otts-sources.json
       - docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md
       - tests/test_elpts_reference_rights_gate.py
+      - tests/test_elpts_otts_source_rights.py
+      - docs/research/EAEU_TEMPORARY_OTTS_REGISTER_ROUTE_RECHECK_2026-11-09.md
       - docs/research/KAZAKHSTAN_EOKNO_TRTS018_PUBLIC_REGISTER_REVIEW_2026-11-07.md
       - tests/test_kazakhstan_eokno_source_rights.py
       - tests/test_kazakhstan_techreg_source_rights.py
