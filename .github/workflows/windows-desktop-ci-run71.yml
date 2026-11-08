@@ -2101,7 +2101,7 @@ jobs:
           $excludedSegments = @("node_modules", ".next", "release", "out", "coverage", "dist", "build", ".turbo", ".cache")
           $files = @(Get-ChildItem -LiteralPath $sourceRoot -Recurse -File | Where-Object {
             $relative = $_.FullName.Substring($sourceRoot.Length + 1)
-            $segments = $relative -split '[\\/]+
+            $segments = $relative -split '[\\/]+'
             -not ($segments | Where-Object { $excludedSegments -contains $_ })
           })
           $relativeFiles = @($files | ForEach-Object { $_.FullName.Substring($sourceRoot.Length + 1) } | Sort-Object)
