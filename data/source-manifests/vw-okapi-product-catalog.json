@@ -3,7 +3,7 @@
   "source_id": "volkswagen-okapi-product-data-api",
   "publisher": "Volkswagen AG",
   "source_type": "official_oem_product_configuration_api",
-  "reviewed_at": "2026-11-06",
+  "reviewed_at": "2026-11-09",
   "source_urls": {
     "api_base": "https://api.productdata.volkswagenag.com/v3",
     "developer_portal": "https://okapi-ddp.productdata.volkswagenag.com/dev-portal/",
@@ -11,7 +11,9 @@
     "caching_guide": "https://productdata.volkswagenag.com/data-update.html",
     "tutorial": "https://productdata.volkswagenag.com/tutorial.html",
     "quick_start": "https://productdata.volkswagenag.com/quick-start.html",
-    "sign_up": "https://productdata.volkswagenag.com/sign-up.html"
+    "sign_up": "https://productdata.volkswagenag.com/sign-up.html",
+    "overview": "https://productdata.volkswagenag.com/overview.html",
+    "product_catalog": "https://productdata.volkswagenag.com/product-catalog.html"
   },
   "access": {
     "requires_company_access_request": true,
@@ -23,7 +25,7 @@
     "owner_action_required": true
   },
   "contract": {
-    "terms_revision": "published_terms_copyright_2019_reviewed_2026-11-06",
+    "terms_revision": "published_terms_copyright_2019_rechecked_2026-11-09",
     "data_owner": "Volkswagen AG",
     "grant": "non_exclusive_non_transferable_revocable_non_sublicensable",
     "registered_application_required": true,
@@ -33,9 +35,18 @@
     "credentials_must_remain_confidential": true,
     "current_price": "currently_free_subject_to_change",
     "paid_terms_accepted": false,
-    "offline_cache": "documented_by_official_caching_guide_for_the_users_application",
+    "offline_cache": "official_guide_documents_etag_and_catalog_timestamp_cache_refresh_for_registered_application",
     "offline_distribution_of_cached_database": "not_confirmed_requires_written_clarification",
-    "sublicensing": "not_permitted"
+    "sublicensing": "not_permitted",
+    "permitted_purpose": [
+      "create_vehicle_configurations",
+      "check_configuration_buildability",
+      "determine_wltp_values"
+    ],
+    "data_owner_retains_ownership": true,
+    "third_party_disclosure": "expressly_permitted_subject_to_contract_after_access_approval",
+    "non_binding_customer_information": true,
+    "actual_production_availability_guaranteed": false
   },
   "data_scope": {
     "documented_endpoints": [
@@ -59,7 +70,80 @@
     "repair_documentation": "not_provided",
     "oem_parts_catalog": "not_provided",
     "repair_fitment_claim": false,
-    "non_binding_customer_information": true
+    "non_binding_customer_information": true,
+    "public_overview_markets": {
+      "observed_at": "2026-11-09",
+      "url": "https://productdata.volkswagenag.com/overview.html",
+      "identifiers": [
+        "AR",
+        "AU",
+        "BH",
+        "BE",
+        "BR",
+        "IC",
+        "CN",
+        "CY",
+        "CZ",
+        "DK",
+        "EE",
+        "FI",
+        "FR",
+        "DE",
+        "GR",
+        "IS",
+        "IE",
+        "IT",
+        "JP",
+        "JO",
+        "KW",
+        "LV",
+        "LB",
+        "LT",
+        "LU",
+        "MT",
+        "MX",
+        "MD",
+        "NL",
+        "NO",
+        "OM",
+        "PL",
+        "PT",
+        "QA",
+        "RS",
+        "ZA",
+        "ES",
+        "SE",
+        "CH",
+        "TW",
+        "TR",
+        "UA",
+        "AE",
+        "GB"
+      ],
+      "eaeu_member_markets_not_listed": [
+        "AM",
+        "BY",
+        "KZ",
+        "KG",
+        "RU"
+      ],
+      "list_is_declared_incomplete": true,
+      "authenticated_country_list_obtained": false,
+      "interpretation": "The public overview does not list EAEU member markets, but explicitly says its list is not complete; this is not proof that those markets are unsupported."
+    },
+    "public_api_type_fields_observed": [
+      "base_type",
+      "model_year",
+      "version",
+      "type_code",
+      "sales_class"
+    ],
+    "type_description_may_contain_engine_or_transmission_text": true,
+    "type_description_is_not_factory_engine_or_gearbox_code": true,
+    "type_description_is_not_exact_powertrain_pair_evidence": true,
+    "only_officially_type_approved_data_available": true,
+    "contractual_purpose_restricted_to_configuration_buildability_and_wltp": true,
+    "repair_advice_or_repair_fitment": false
   },
   "cache_contract": {
     "etag_documented": true,
@@ -84,7 +168,11 @@
     "Do not ship a cached product-data database until Volkswagen confirms offline distribution and retention rights for this exact application.",
     "Do not infer engine codes, gearbox codes, ECU, PR-code, repair procedure, or OEM parts applicability from a model/type label.",
     "Do not treat a buildable new-car configuration as proof of an existing vehicle's factory configuration.",
-    "Do not claim RU or EAEU coverage until the authenticated country list explicitly confirms it."
+    "Do not claim RU or EAEU coverage until the authenticated country list explicitly confirms it.",
+    "Use only for the contractual configurator purpose: creating vehicle configurations, checking buildability and determining WLTP values; do not repurpose the data as a repair database without written Volkswagen approval.",
+    "The public market list is expressly non-exhaustive. Do not infer that an unlisted EAEU market is unsupported or supported; verify the authenticated countries endpoint after approval.",
+    "Do not normalize engine/transmission text inside a vehicle-type description into factory codes or an exact engine/gearbox pair.",
+    "The public overview states that only officially type-approved data is available, but the terms still describe the data as non-binding customer information and do not guarantee actual production availability."
   ],
   "evidence_reviewed": [
     {
@@ -106,6 +194,16 @@
       "url": "https://productdata.volkswagenag.com/tutorial.html",
       "reviewed_at": "2026-11-06",
       "evidence": "Country-specific endpoints expose brands, models, types and options; type/order responses may contain market-specific technical data, but public docs do not establish factory engine/gearbox codes or repair fitment."
+    },
+    {
+      "url": "https://productdata.volkswagenag.com/overview.html",
+      "reviewed_at": "2026-11-09",
+      "evidence": "Official overview lists supported VW Group brands and a non-exhaustive public market list. The displayed list includes AR, AU, BH, BE, BR, IC, CN, CY, CZ, DK, EE, FI, FR, DE, GR, IS, IE, IT, JP, JO, KW, LV, LB, LT, LU, MT, MX, MD, NL, NO, OM, PL, PT, QA, RS, ZA, ES, SE, CH, TW, TR, UA, AE and GB; AM, BY, KZ, KG and RU are not shown. The page explicitly says the list is not complete, so the authenticated country endpoint remains necessary."
+    },
+    {
+      "url": "https://productdata.volkswagenag.com/product-catalog.html",
+      "reviewed_at": "2026-11-09",
+      "evidence": "Official catalog documentation exposes country-specific brands, models, vehicle types and options. Its example type payload contains base_type, model_year, version and type code; type descriptions may contain engine/transmission wording but do not establish factory engine/gearbox codes or exact repair fitment."
     }
   ]
 }
