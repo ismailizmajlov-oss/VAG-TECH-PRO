@@ -20,7 +20,7 @@ The API page reviewed does not provide a verified endpoint catalogue/OpenAPI des
 | Object code | Official classifier | Observed records | Last update shown | Relevance to VAG TECH PRO |
 |---|---|---:|---|---|
 | 2030 | Classifier of vehicle/passport types | 3 | 2016-10-30 | PTS/chassis/self-propelled machinery passport type only; visible codes 1–3 |
-| 2001 | Classifier of conformity-assessment document types | 10 | 2023-01-19 | Document type only; visible entries include code 35 (EAEU chassis type approval), 40 (SBKTS) and 45 (modified-vehicle conformity document) |
+| 2001 | Classifier of conformity-assessment document types | 10 | 2023-01-19 | Document type only; code 30 is EAEU vehicle type approval (OTTS), 35 is chassis type approval, 40 is SBKTS and 45 is modified-vehicle conformity document; these are document-type codes, not approval records |
 | 2024 | Classifier of international-transport vehicle types | 41 | 2015-06-12 | Broad transport category only; visible codes 301 (general-purpose passenger car) and 302 (special passenger car) |
 
 Official pages:
@@ -29,7 +29,7 @@ Official pages:
 - https://nsi.eaeunion.org/portal/2001
 - https://nsi.eaeunion.org/portal/2024
 
-These are classification objects, not the national or Union OTTS/OTSH registry itself. In particular, code 35 is described as chassis type approval; it must not be relabelled as a complete-vehicle OTTS record. The classifiers contain no exact VAG model/generation/year, factory engine code, gearbox code, engine/gearbox pair, ECU, DTC, wiring, repair procedure or parts applicability.
+These are classification objects, not the national or Union OTTS/OTSH registry itself. Code 30 identifies the document type «одобрение типа транспортного средства ЕАЭС» (OTTS); it is not an OTTS record or a downloadable approval corpus. Code 35 is a separate chassis type-approval document type and must not be relabelled as a complete-vehicle OTTS record. The classifiers contain no exact VAG model/generation/year, factory engine code, gearbox code, engine/gearbox pair, ECU, DTC, wiring, repair procedure or parts applicability.
 
 The counts and update dates above are observations from the official object pages, not counts of OTTS records. They are not evidence of current completeness of the wider EAEU approval registers.
 
