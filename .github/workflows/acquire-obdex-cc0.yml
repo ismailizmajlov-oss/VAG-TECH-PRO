@@ -100,6 +100,7 @@ jobs:
             license_url = $lock.license_url
             license_sha256 = (Get-FileHash -Path (Join-Path $generatedRoot "UPSTREAM-LICENSE.txt") -Algorithm SHA256).Hash.ToLowerInvariant()
             scope = $lock.scope
+            import_policy = $lock.import_policy
             source_reference_policy = $lock.source_reference_policy
             source_files = $sourceFiles
             build = $lock.build
@@ -131,6 +132,13 @@ jobs:
           const license = readBytes("UPSTREAM-LICENSE.txt").toString("utf8");
           const expectedGenericRanges = ["P0xxx","P2xxx","P34xx","B0xxx","C0xxx","U0xxx","U3xxx"];
           const expectedExcludedRanges = ["P1xxx","P30xx-P33xx","P35xx-P39xx","B1xxx-B2xxx","C1xxx-C2xxx","U1xxx-U2xxx"];
+          const importPolicy = sourceManifest.import_policy || {};
+          if (!Array.isArray(importPolicy.normalized_product_namespace_exclusions) ||
+              !importPolicy.normalized_product_namespace_exclusions.includes("U3xxx") ||
+              importPolicy.source_label_is_not_standard_allocation_proof !== true ||
+              importPolicy.production_catalog_ingestion !== false) {
+            throw new Error("OBDex unresolved U3 family must remain research-only and excluded from normalized generic DTC");
+          }
           if (
             JSON.stringify(sourceManifest.scope.generic_code_ranges) !== JSON.stringify(expectedGenericRanges) ||
             JSON.stringify(sourceManifest.scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(expectedExcludedRanges)
