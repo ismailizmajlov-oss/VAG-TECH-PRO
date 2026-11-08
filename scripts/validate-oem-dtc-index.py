@@ -10,8 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = ROOT / "data/schemas/oem-dtc-index.schema.json"
 SQL_PATH = ROOT / "data/sql/oem-dtc-index.sql"
-GENERIC_DTC_PATTERN = re.compile(r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$")
-MANUFACTURER_DTC_PATTERN = re.compile(r"^(?:P1[0-9A-F]{3}|P3(?:[0-3]|[5-9])[0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$")
+GENERIC_DTC_PATTERN = re.compile(r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$")
+MANUFACTURER_DTC_PATTERN = re.compile(r"^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$")
 
 
 def expect_integrity_error(fn, expected: str) -> None:
@@ -37,13 +37,13 @@ def main() -> None:
     patterns = {rule["if"]["properties"]["dtc_namespace"]["const"]: rule["then"]["properties"]["dtc"]["pattern"] for rule in namespace_rules}
     if patterns.get("generic_sae_iso") != GENERIC_DTC_PATTERN.pattern or patterns.get("manufacturer_specific_vag") != MANUFACTURER_DTC_PATTERN.pattern or patterns.get("manufacturer_specific_other") != MANUFACTURER_DTC_PATTERN.pattern:
         raise AssertionError("DTC JSON schema namespace code-range patterns are inconsistent")
-    for code in ("P0001","P2ABC","P34C8","B0ABC","C0ABC","U0ABC","U3ABC"):
+    for code in ("P0001","P2ABC","P34C8","B0ABC","C0ABC","U0ABC"):
         if not GENERIC_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Generic boundary code rejected: {code}")
-    for code in ("P1ABC","P30AB","P33AB","P35AB","P39AB","B1ABC","B2ABC","C1ABC","C2ABC","U1ABC","U2ABC"):
+    for code in ("P1ABC","P30AB","P33AB","B1ABC","B2ABC","C1ABC","C2ABC","U1ABC","U2ABC"):
         if not MANUFACTURER_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Manufacturer boundary code rejected: {code}")
-    for code in ("P1A00","P3000","B1ABC","C2ABC","U1ABC"):
+    for code in ("P1A00","P3000","B1ABC","C2ABC","U1ABC","P35A6","P39AB","U3ABC"):
         if GENERIC_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Manufacturer code accepted as generic: {code}")
-    for code in ("P0300","P2ABC","P34C8","B0ABC","C0ABC","U3ABC"):
+    for code in ("P0300","P2ABC","P34C8","B0ABC","C0ABC","U0ABC"):
         if MANUFACTURER_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Generic code accepted as manufacturer-specific: {code}")
     for name in ("ecu", "source_document", "applicability", "provenance", "rights", "review"):
         if name not in props:
