@@ -6,6 +6,8 @@ Non-commercial VAG repair-workflow and technical-data project, Russian market fi
 
 The desktop application uses Electron with a local Next.js runtime and a per-user SQLite database. Manual vehicle selection does not require a VIN. The local workspace includes a garage, query history, bookmarks, and local source/import administration.
 
+The packaged Electron entry is isolated from the cloud preview: it opens a dedicated `/desktop` route composed only of the local SQLite workspace, research catalog and source/import administration. The desktop child process sets `VAG_TECH_PRO_DESKTOP_OFFLINE=1` and strips Supabase credentials before launching the local server. This keeps the Windows desktop workflow independent of cloud login and remote catalog availability; the general web preview remains a separate route. The new entry is gated by Windows CI before it can be treated as release-validated.
+
 The SQLite catalog schema covers:
 
 - VAG brands, models, generations, factory engine and transmission identities, explicit engine/transmission pairs, ECU identities and vehicle configurations;
