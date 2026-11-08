@@ -31,13 +31,13 @@
     "installers": [
       {
         "name": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
-        "sha256": "stored_in_build-metadata.json_inside_windows_artifact",
-        "bytes": "stored_in_build-metadata.json_inside_windows_artifact"
+        "sha256_recorded_in_build_metadata": true,
+        "sha256_location": "build-metadata.json inside Windows artifact 13637546171"
       },
       {
         "name": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
-        "sha256": "stored_in_build-metadata.json_inside_windows_artifact",
-        "bytes": "stored_in_build-metadata.json_inside_windows_artifact"
+        "sha256_recorded_in_build_metadata": true,
+        "sha256_location": "build-metadata.json inside Windows artifact 13637546171"
       }
     ],
     "windows_artifact": {
