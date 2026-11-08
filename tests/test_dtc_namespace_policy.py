@@ -119,6 +119,7 @@ class DtcNamespacePolicyTests(unittest.TestCase):
 
     def test_run87_desktop_patch_quarantines_the_mixed_p3_family(self):
         patch=(ROOT/"apply-dtc-namespace-range-guard-run87.cjs").read_text(encoding="utf-8")
+        workflow=(ROOT/".github/workflows/windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
         self.assertIn("P3[4-9][0-9A-F]{2}",patch)
         self.assertIn("P3400",patch)
         self.assertIn("P34C8",patch)
@@ -126,6 +127,9 @@ class DtcNamespacePolicyTests(unittest.TestCase):
         self.assertIn('const validPayload = { code: "P34C8", title: "Generic P34 range"',patch)
         self.assertIn('const validPayload = { code: "P2ABC", title: "Generic SAE/ISO boundary fixture"',patch)
         self.assertIn("P3[4-9]",patch)
+        self.assertIn("generic_ranges=P0xxx,P2xxx,B0xxx,C0xxx,U0xxx",workflow)
+        self.assertIn("unresolved_reserved=P34xx-P39xx,U3xxx,B3xxx,C3xxx",workflow)
+        self.assertNotIn("generic_ranges=P0xxx,P2xxx,P34xx",workflow)
         self.assertIn("ensureOemSchema",patch)
         self.assertIn("path.join(__dirname,rel)",patch)
 
