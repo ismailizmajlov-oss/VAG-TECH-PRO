@@ -61,7 +61,6 @@ function apply(root) {
     }
   }
 
-  tests = tests.replace(/P35A6/g, "P35A6");
   const testAnchor = 'test("rejects a generic DTC record that tries to claim VAG or ECU applicability", (t) => {';
   if (!tests.includes("run87 rejects unresolved U3 range in generic DTC records")) {
     const additions = [
@@ -70,7 +69,7 @@ function apply(root) {
       '  core.registerSource(dbPath, source());',
       '  const payload = { code: "U3000", title: "Unresolved U3 family", namespace: "SAE/ISO" };',
       '  const invalid = { ...genericDtc(), natural_key: "generic:U3000", source_record_key: "obd:U3000", title: "U3000", payload, record_sha256: core.sha256(payload) };',
-      '  assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run87-generic-u3-invalid" })), /outside generic SAE\\\\/ISO OBD-II ranges/);',
+      '  assert.throws(() => core.importPackage(dbPath, packageOf([invalid], { package_id: "run87-generic-u3-invalid" })), /outside generic SAE\\/ISO OBD-II ranges/);',
       '  const db = new DatabaseSync(dbPath, { readOnly: true });',
       '  assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 0);',
       '  assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 0);',
