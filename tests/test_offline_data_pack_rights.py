@@ -100,6 +100,9 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         self.assertEqual(lock["scope"]["generic_code_ranges"], ["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])
         self.assertEqual(lock["scope"]["excluded_manufacturer_controlled_ranges"], ["P1xxx", "P30xx-P33xx", "P35xx-P39xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])
+        self.assertIs(lock["normalization_policy"]["research_pack_only"], True)
+        self.assertIs(lock["normalization_policy"]["normalized_product_dtc_import_allowed"], False)
+        self.assertIn("U3xxx", lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
         self.assertEqual(lock["source_reference_policy"], {
             "validation": "syntax_only",
             "external_fetch": False,
