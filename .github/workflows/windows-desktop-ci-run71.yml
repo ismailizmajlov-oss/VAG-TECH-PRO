@@ -166,6 +166,7 @@ on:
       - "tests/kba-approval-pack-integration-contract.test.cjs"
       - "tests/kba-approval-verifier-patch.test.cjs"
       - "tests/test_kba_approval_desktop_workflow_contract.py"
+      - "tests/test_kba_de_vag_approval_pack.py"
       - "docs/research/KBA_DE_VAG_APPROVAL_DESKTOP_INTEGRATION_2026-11-08.md"
       - ".github/workflows/probe-kba-open-data.yml"
       - "scripts/build_kba_de_vag_stock_research_pack.py"
@@ -349,7 +350,7 @@ jobs:
           python -m unittest discover -s tests -p "test_rdw_vag_research_pack.py" -v
           node --test tests/rdw-pack-integration-contract.test.cjs
           node --test tests/rdw-ui-contract-patch.test.cjs
-          python -m py_compile scripts/probe_kba_open_data.py scripts/build_kba_de_vag_stock_research_pack.py
+          python -m py_compile scripts/probe_kba_open_data.py scripts/build_kba_de_vag_stock_research_pack.py scripts/build_kba_de_vag_approval_research_pack.py
           if ($LASTEXITCODE -ne 0) { throw "KBA Python compilation failed." }
           python -m unittest discover -s tests -p "test_kba_open_data_probe.py" -v
           if ($LASTEXITCODE -ne 0) { throw "KBA source-probe tests failed." }
@@ -357,6 +358,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA SQLite research-pack tests failed." }
           python tests/test_kba_germany_open_data_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "KBA published licence/source-rights tests failed." }
+          python -m unittest discover -s tests -p "test_kba_de_vag_approval_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "KBA approval research-pack builder tests failed." }
           python tests/test_kba_approval_desktop_workflow_contract.py
           if ($LASTEXITCODE -ne 0) { throw "KBA approval Windows workflow contract test failed." }
           node --test tests/kba-approval-pack-integration-contract.test.cjs tests/kba-approval-verifier-patch.test.cjs
