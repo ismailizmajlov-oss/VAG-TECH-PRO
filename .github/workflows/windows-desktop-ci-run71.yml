@@ -2084,6 +2084,10 @@ jobs:
             windows-lifecycle-staging/desktop-source/electron/**
             windows-lifecycle-staging/desktop-source/tests/**
             windows-lifecycle-staging/desktop-source/lib/local-core-db.cjs
+            windows-lifecycle-staging/desktop-source/lib/local-research-db.cjs
+            windows-lifecycle-staging/desktop-source/data/research/manifest.json
+            windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/manifest.json
+            windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/vag-obdb-research.sqlite
             windows-lifecycle-staging/desktop-source/data/sql/local-core-v1.sql
             windows-lifecycle-staging/desktop-source/data/sql/local-core-v2.sql
             windows-lifecycle-staging/desktop-source/docs/LOCAL_VEHICLE_CATALOG_IMPORT.md
