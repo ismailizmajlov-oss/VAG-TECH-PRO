@@ -174,5 +174,14 @@ class KbaApprovalResearchPackTests(unittest.TestCase):
                 VERIFIER.verify(probe_path, manifest_path)
 
 
+    def test_builder_source_hash_is_recorded_and_reverified(self):
+        expected = hashlib.sha256(SCRIPT.resolve().read_bytes()).hexdigest()
+        self.assertEqual(BUILDER.builder_sha256(), expected)
+        self.assertEqual(BUILDER.builder_sha256(), BUILDER.fsha(SCRIPT.resolve()))
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('"build_script_sha256":builder_sha256()', source)
+        self.assertIn('m.get("build_script_sha256")!=builder_sha256()', source)
+
+
 if __name__ == "__main__":
     unittest.main()
