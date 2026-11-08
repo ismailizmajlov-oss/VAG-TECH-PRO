@@ -2062,8 +2062,9 @@ jobs:
           $vehiclesDbRevision = if ($vehiclesDbRevisionEvidence) { $vehiclesDbRevisionEvidence.source_revision } else { $null }
           $dtcNamespacePolicyPath = "data/policies/dtc-namespace-ranges.json"
           $dtcNamespacePolicyHash = if (Test-Path $dtcNamespacePolicyPath) { (Get-FileHash -LiteralPath $dtcNamespacePolicyPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
-          $oemDtcIndexSchemaPath = "data/schemas/oem-dtc-index.schema.json"
+          $oemDtcIndexSchemaPath = "desktop-source/data/schemas/oem-dtc-index.schema.json"
           $oemDtcIndexSchemaHash = if (Test-Path $oemDtcIndexSchemaPath) { (Get-FileHash -LiteralPath $oemDtcIndexSchemaPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          if (-not $oemDtcIndexSchemaHash) { throw "OEM DTC index schema is missing from the staged desktop source." }
 
           foreach ($file in @(
             (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe"),
