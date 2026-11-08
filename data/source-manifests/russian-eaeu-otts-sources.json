@@ -964,6 +964,39 @@
               "pdf_column_visible": true,
               "pdf_downloaded": false
             }
+          },
+          {
+            "observed_at": "2026-11-07",
+            "source_document": "docs/research/ELPTS_OTTS_PUBLIC_REGISTRY_RIGHTS_REVIEW_2026-11-07.md",
+            "ot_ts_page": {
+              "url": "https://docs.elpts.ru/ncher/otts",
+              "page_title": "ОТТС",
+              "observed_at": "2026-11-07",
+              "visible_total_label": "Всего оформлено: 14822",
+              "visible_date_filters": [
+                "06.11.2026",
+                "07.11.2026"
+              ],
+              "search_result_label": "Найдено: []",
+              "filtered_result_count": 0,
+              "manufacturer_filter_options_observed": [
+                "AUDI AG",
+                "Volkswagen AG"
+              ],
+              "manufacturer_filter_values_are_options_only": true,
+              "visible_export_controls": [
+                "CSV",
+                "PDF",
+                "XML"
+              ],
+              "export_controls_observed": true,
+              "export_file_downloaded": false,
+              "export_endpoint_verified": false,
+              "export_scope": "not_established",
+              "raw_page_bytes_captured": false,
+              "raw_page_sha256": null,
+              "observation_note": "Snapshot transcribed from the dated 2026-11-07 review document; preserved separately from the prior Russian manifest snapshot."
+            }
           }
         ]
       },
