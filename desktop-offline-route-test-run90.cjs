@@ -24,6 +24,12 @@ test("dedicated desktop route has no cloud authentication or Supabase dependency
   assert.match(route, /LocalResearchCatalog/);
   assert.match(route, /локальн.*SQLite/i);
   assert.doesNotMatch(route, /createClient|supabase|signIn|signOut|https?:\/\//i);
+  for (const component of ["components/local-offline-workspace.tsx", "components/local-data-admin.tsx", "components/local-research-catalog.tsx"]) {
+    assert.doesNotMatch(read(component), /createClient|supabase\.from|supabase\.auth/i, component + " must remain local-only");
+  }
+  assert.match(read("components/local-offline-workspace.tsx"), /\/api\/local-core/);
+  assert.match(read("components/local-data-admin.tsx"), /\/api\/local-core/);
+  assert.match(read("components/local-research-catalog.tsx"), /\/api\/local-research/);
   const css = read("app/globals.css");
   assert.match(css, /\.desktop-status\{/);
 });
