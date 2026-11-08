@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T08:16:16Z",
+  "updated_at": "2026-11-08T08:34:30Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -2099,7 +2099,7 @@
         }
       ],
       "source_manifest_path": "data/source-manifests/obdb-vag-signalsets.json",
-      "source_snapshot_sha256": null,
+      "source_snapshot_sha256": "ea16188e65ba3e69f43c6c6ddf70c412e466726c35bbad5f82d2f29bf219cd2c",
       "source_file_count": 104,
       "source_repository_count": 26,
       "market_scope": [
@@ -2160,29 +2160,66 @@
         "All market scopes remain UNKNOWN; model/generation labels are community candidates and are not exact engine, gearbox, ECU or vehicle fitment.",
         "Skoda Octavia, Superb and Fabia remain generation-only sources with no ECU, command or signal rows."
       ],
-      "evidence_status": "26 pinned OBDb repositories and 104 upstream files preflighted; 13,579 read-only UDS 0x22 command candidates and 14,512 signal candidates are awaiting a new reproducible SQLite build and independent verification.",
+      "evidence_status": "Run 262 built and independently verified the 26-repository CC BY-SA research pack and the separate three-database Windows x64 offline bundle. Desktop count-gate integration is awaiting the corrected run90 patch and full Windows lifecycle validation.",
       "data_ingested": false,
       "product_import_allowed": false,
       "research_pack_build_evidence": {
-        "status": "pending_rebuild",
-        "source_repository_count": 26,
-        "source_file_count": 104,
+        "workflow_run_number": 262,
+        "workflow_run_id": 42463291302,
+        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42463291302",
+        "source_commit": "cc39bad3afa841091c2fd2d008a9ca0f7ce346a8",
+        "artifact_id": 13610297552,
+        "artifact_name": "obdb-vag-research-cc-by-sa",
+        "artifact_sha256": "e42a5028b4edfe568f0ce2c6ce9dccf237feaaf9996d950da0419cbb27443bc7",
+        "artifact_size_bytes": 4594656,
+        "database_sha256": "ea16188e65ba3e69f43c6c6ddf70c412e466726c35bbad5f82d2f29bf219cd2c",
+        "manifest_sha256": "3d395c8b1a0c48ce2673fc6517cc0cde4bef7cfb365ece7c79fca606c170d408",
+        "attribution_sha256": "25a76cd15ed3edc8d83bc9d02fbe4159cfada8825ba93a4b79741cdd86642836",
+        "built_at_utc": "2026-11-08T08:31:45Z",
         "counts": {
+          "source_repositories": 26,
+          "upstream_files": 104,
           "generation_candidates": 115,
           "ecu_candidates": 61,
           "uds_command_candidates": 13579,
           "signal_candidates": 14512,
           "dtc_definitions": 0,
+          "repair_procedures": 0,
           "approved_test_plans": 0,
           "exact_vehicle_fitment": 0,
-          "execution_allowed": false
+          "exact_ecu_fitment": 0,
+          "exact_engine_gearbox_pairs": 0,
+          "generation_only_sources": 3
+        },
+        "generation_only_source_counts": {
+          "OBDb/Skoda-Octavia": {
+            "generations": 4,
+            "ecus": 0,
+            "commands": 0,
+            "signals": 0
+          },
+          "OBDb/Skoda-Superb": {
+            "generations": 7,
+            "ecus": 0,
+            "commands": 0,
+            "signals": 0
+          },
+          "OBDb/Skoda-Fabia": {
+            "generations": 4,
+            "ecus": 0,
+            "commands": 0,
+            "signals": 0
+          }
         },
         "license_id": "CC-BY-SA-4.0",
         "share_alike_required": true,
         "separate_pack_required": true,
         "market_scope": "UNKNOWN",
         "verification_status": "unverified_community_candidate",
-        "product_database_import": false
+        "execution_allowed": false,
+        "product_database_import": false,
+        "desktop_integration_status": "pending_corrected_run90_and_full_windows_lifecycle",
+        "status": "verified_research_pack_build_only"
       },
       "generation_only_repositories": [
         "OBDb/Skoda-Octavia",
@@ -2210,13 +2247,25 @@
         }
       },
       "offline_bundle": {
-        "status": "pending_rebuild",
+        "status": "verified_offline_research_bundle_not_installer",
+        "workflow_run_number": 262,
+        "workflow_run_id": 42463291302,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42463291302",
+        "artifact_id": 13611085181,
+        "artifact_size_bytes": 40986848,
+        "artifact_sha256": "5908c820146172f2af398a557b16d875f111c372f3114953f6ef79169e39c4ab",
+        "bundle_index_sha256": "440d74e13ba3cd1eef3d65212669578853ba650906c505575e3c9185423c444a",
         "target_platform": "windows-x64",
         "separate_database_count": 3,
-        "obdb_source_repository_count": 26,
-        "obdb_database_sha256": null,
-        "obdb_manifest_sha256": null,
-        "verification": "Awaiting a new 26-repository OBDb artifact and independent offline-bundle verification."
+        "vehiclesdb_database_sha256": "4e8b48b3d5a5135fae4670c8a9acfc74b13bda812b602502b2f2b5a152064fe2",
+        "vehiclesdb_manifest_sha256": "31c293a01293f4f5ddca022d00698db31e7ab5cecd5be7f363c3b0b034635425",
+        "vehiclesdb_source_snapshot_sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704",
+        "obdex_database_sha256": "57d1c78fa324004ccce57bed16f88ef65b981ad7395ef6d4f1b39724eb1e1992",
+        "obdex_manifest_sha256": "ed21c5bd6ab351ff9833d67e7909f2a31a5e4a72a0101b903fd0817aaab40f95",
+        "obdb_database_sha256": "ea16188e65ba3e69f43c6c6ddf70c412e466726c35bbad5f82d2f29bf219cd2c",
+        "obdb_manifest_sha256": "3d395c8b1a0c48ce2673fc6517cc0cde4bef7cfb365ece7c79fca606c170d408",
+        "built_at_utc": "2026-11-08T08:33:14.673844+00:00",
+        "verification": "All three research databases and the VehiclesDB source-snapshot SQLite passed independent SHA-256 verification, integrity_check=ok and foreign_key_check=0."
       },
       "previous_verified_snapshot_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
       "previous_verified_build_evidence": {

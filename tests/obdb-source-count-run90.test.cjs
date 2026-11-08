@@ -60,13 +60,13 @@ test("run90 synchronizes all desktop OBDb count gates from the pinned 26-source 
     const result = spawnSync(process.execPath, [PATCH, "--desktop-root", root], { encoding: "utf8" });
     assert.equal(result.status, 0, result.stderr);
     const expected = [
-      ["lib/local-research-db.cjs", "obdbSources !== 16 || obdbGenerations !== 82 || obdbEcus !== 44 || obdbCommands !== 7890 || obdbSignals !== 8446"],
-      ["scripts/verify-local-research-packs.cjs", 'assert((obdbSnapshot.sources || []).length === 16, "OBDb source registry does not contain twenty-six pinned repositories");'],
-      ["scripts/verify-local-research-packs.cjs", "obdbCounts.sources === 16 && obdbCounts.generations === 82 && obdbCounts.ecus === 44 && obdbCounts.commands === 7890 && obdbCounts.signals === 8446"],
+      ["lib/local-research-db.cjs", "obdbSources !== 26 || obdbGenerations !== 115 || obdbEcus !== 61 || obdbCommands !== 13579 || obdbSignals !== 14512"],
+      ["scripts/verify-local-research-packs.cjs", 'assert((obdbSnapshot.sources || []).length === 26, "OBDb source registry does not contain twenty-six pinned repositories");'],
+      ["scripts/verify-local-research-packs.cjs", "obdbCounts.sources === 26 && obdbCounts.generations === 115 && obdbCounts.ecus === 61 && obdbCounts.commands === 13579 && obdbCounts.signals === 14512"],
       ["tests/local-research-db.test.cjs", "sources: 26, generations: 115, ecus: 61, commands: 13579, signals: 14512"],
-      ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.sources, 16"],
-      ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.commands, 7890"],
-      ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.signals, 8446"],
+      ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.sources, 26"],
+      ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.commands, 13579"],
+      ["tests/local-research-packs.test.cjs", "result.obdb_vag_signals.signals, 14512"],
     ];
     for (const [file, text] of expected) assert.ok(fs.readFileSync(path.join(root, file), "utf8").includes(text), file + " was not updated");
     const evidence = JSON.parse(fs.readFileSync(path.join(root, "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json"), "utf8"));

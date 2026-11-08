@@ -54,7 +54,7 @@ function replaceExact(root, relativePath, oldText, newText) {
   if (oldCount === 0 && newCount === 1) {
     return { path: relativePath, status: "already_current", sha256: sha256(Buffer.from(item.text, "utf8")) };
   }
-  fail("Run88 exact-count patch target is stale or ambiguous in " + relativePath + " (old=" + oldCount + ", new=" + newCount + ")");
+  fail("Run90 exact-count patch target is stale or ambiguous in " + relativePath + " (old=" + oldCount + ", new=" + newCount + ")");
 }
 
 function validatePack(root) {
@@ -141,19 +141,19 @@ function main() {
       desktopRoot,
       "tests/local-research-packs.test.cjs",
       "assert.equal(result.obdb_vag_signals.sources, 6);",
-      "assert.equal(result.obdb_vag_signals.sources, 16);"
+      "assert.equal(result.obdb_vag_signals.sources, 26);"
     ),
     replaceExact(
       desktopRoot,
       "tests/local-research-packs.test.cjs",
       "assert.equal(result.obdb_vag_signals.commands, 2315);",
-      "assert.equal(result.obdb_vag_signals.commands, 7890);"
+      "assert.equal(result.obdb_vag_signals.commands, 13579);"
     ),
     replaceExact(
       desktopRoot,
       "tests/local-research-packs.test.cjs",
       "assert.equal(result.obdb_vag_signals.signals, 2480);",
-      "assert.equal(result.obdb_vag_signals.signals, 8446);"
+      "assert.equal(result.obdb_vag_signals.signals, 14512);"
     ),
   ];
   const evidence = {
@@ -177,15 +177,15 @@ function main() {
   const evidencePath = path.join(desktopRoot, "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json");
   if (fs.existsSync(evidencePath)) {
     const existing = fs.lstatSync(evidencePath);
-    if (!existing.isFile() || existing.isSymbolicLink()) fail("Run88 evidence path is not a regular file");
+    if (!existing.isFile() || existing.isSymbolicLink()) fail("Run90 evidence path is not a regular file");
     let existingEvidence;
     try {
       existingEvidence = JSON.parse(fs.readFileSync(evidencePath, "utf8"));
     } catch (error) {
-      fail("Existing Run88 evidence is not valid JSON: " + error.message);
+      fail("Existing Run90 evidence is not valid JSON: " + error.message);
     }
     if (JSON.stringify(existingEvidence) !== JSON.stringify(evidence)) {
-      fail("Existing Run88 evidence does not match the current source snapshot and patched files");
+      fail("Existing Run90 evidence does not match the current source snapshot and patched files");
     }
   } else {
     atomicWrite(evidencePath, JSON.stringify(evidence, null, 2) + "\n", 0o644);
