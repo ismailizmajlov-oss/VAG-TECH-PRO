@@ -30,7 +30,10 @@ class VolkswagenOkapiSourceManifestTests(unittest.TestCase):
         self.assertEqual(source["contract"]["offline_distribution_of_cached_database"], "not_confirmed_requires_written_clarification")
         self.assertFalse(source["cache_contract"]["redistributable_offline_pack_rights_confirmed"])
         self.assertEqual(source["data_scope"]["market_scope"], "unknown_until_authenticated_country_list_is_observed")
-        self.assertEqual(len(source["evidence_reviewed"]), 5)
+        self.assertGreaterEqual(len(source["evidence_reviewed"]), 5)
+        evidence_urls = {item["url"] for item in source["evidence_reviewed"]}
+        self.assertIn("https://productdata.volkswagenag.com/overview.html", evidence_urls)
+        self.assertIn("https://productdata.volkswagenag.com/product-catalog.html", evidence_urls)
     def test_canonical_okapi_source_is_registered_with_offline_distribution_blocked(self):
         register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
         entries = [item for item in register["sources"] if item["source_id"] == "volkswagen-okapi-product-data-api"]
