@@ -7,8 +7,8 @@ const UNRESOLVED_PATTERN="^(?:P3[5-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[
 function replaceOnce(s,a,b,label){const n=s.split(a).length-1;if(n!==1)throw new Error(label+": expected one patch anchor, found "+n);return s.replace(a,b);}
 function read(root,rel){const f=path.join(root,rel);if(!fs.existsSync(f))throw new Error("run87 required file is missing: "+rel);return fs.readFileSync(f,"utf8");}
 function apply(root){
- const files={core:"lib/local-core-db.cjs",tests:"tests/local-core-db.test.cjs",schema:"data/schemas/technical-record-payloads.schema.json",oemSchema:"data/schemas/oem-dtc-index.schema.json",docs:"docs/LOCAL_VEHICLE_CATALOG_IMPORT.md",policy:"data/policies/dtc-namespace-ranges.json"};
- let core=read(root,files.core),tests=read(root,files.tests),docs=read(root,files.docs);
+ const files={core:"lib/local-core-db.cjs",tests:"tests/local-core-db.test.cjs",schema:"data/schemas/technical-record-payloads.schema.json",oemSchema:"data/schemas/oem-dtc-index.schema.json",docs:"docs/LOCAL_VEHICLE_CATALOG_IMPORT.md",policy:"data/policies/dtc-namespace-ranges.json",ui:"components/diagnostic-worksheet.tsx",uiTests:"tests/diagnostic-worksheet.test.cjs"};
+ let core=read(root,files.core),tests=read(root,files.tests),docs=read(root,files.docs),ui=read(root,files.ui),uiTests=read(root,files.uiTests);
  const policy=JSON.parse(read(root,files.policy));
  if(policy.namespaces?.generic_sae_iso?.pattern!==GENERIC_PATTERN||policy.namespaces?.manufacturer_controlled?.pattern!==MANUFACTURER_PATTERN||policy.namespaces?.unresolved_reserved?.pattern!==UNRESOLVED_PATTERN)throw new Error("run87 machine-readable DTC policy differs from the pinned patch contract");
  const marker="// run87: quarantine unresolved/reserved DTC ranges";
@@ -19,7 +19,7 @@ function apply(root){
   const schemaOk=["code","dtc_code"].every(k=>schema.$defs?.dtc_generic?.properties?.[k]?.pattern===GENERIC_PATTERN&&schema.$defs?.dtc_vag_specific?.properties?.[k]?.pattern===MANUFACTURER_PATTERN);
   const oemRules=oemSchema.allOf||[];
   const oemOk=oemRules.every(r=>{const ns=r.if?.properties?.dtc_namespace?.const;const p=r.then?.properties?.dtc?.pattern;return ns==="generic_sae_iso"?p===GENERIC_PATTERN:(ns==="manufacturer_specific_vag"||ns==="manufacturer_specific_other")?p===MANUFACTURER_PATTERN:true;});
-  if(!patternsOk||!schemaOk||!oemOk||!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces")||!docs.includes("## DTC namespace code-range boundary (run87)"))throw new Error("run87 marker exists but companion contracts are incomplete");
+  if(!patternsOk||!schemaOk||!oemOk||!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces")||!docs.includes("## DTC namespace code-range boundary (run87)")||!ui.includes("allocationUnverified")||!uiTests.includes("unverified U3 allocation"))throw new Error("run87 marker exists but companion contracts are incomplete");
   return {status:"already_applied",files:Object.values(files)};
  }
  if(!core.includes("// run86: separate generic SAE/ISO code ranges from manufacturer-controlled OBD-II ranges"))throw new Error("run87 requires the run86 DTC namespace guard first");
@@ -67,6 +67,16 @@ function apply(root){
  '});',
  ''].join("\n");
  if(!tests.includes("run87 quarantines unresolved/reserved DTC ranges from normalized namespaces"))tests += "\n"+run87Test;
+ if(!ui.includes("allocationUnverified")){
+  ui=replaceOnce(ui,'      {dtcResults.map((row) => <article className="diagnostic-dtc-result" key={`${row.code}-${row.sourceRecordSha256}`}>','      {dtcResults.map((row) => {\n        const allocationUnverified = /^(?:P3[5-9]|U3|B3|C3)/.test(row.code);\n        return <article className="diagnostic-dtc-result" key={`${row.code}-${row.sourceRecordSha256}`}>',"DTC UI map");
+  ui=replaceOnce(ui,'<small>GENERIC SAE/ISO · {row.category || "без категории"}</small>','<small>{allocationUnverified ? "КЛАССИФИКАЦИЯ НЕ ПРОВЕРЕНА" : "GENERIC SAE/ISO"} · {row.category || "без категории"}</small>',"DTC UI label");
+  ui=replaceOnce(ui,'<span>RESEARCH ONLY</span>','<span>{allocationUnverified ? "UNVERIFIED" : "RESEARCH ONLY"}</span>',"DTC UI badge");
+  ui=replaceOnce(ui,'<div className="diagnostic-dtc-warning">Не VAG-specific. Не подтверждает наличие неисправности в выбранном автомобиле, конкретном ECU или применимость тест-плана. Не является указанием на замену детали.</div>','{allocationUnverified ? <div className="diagnostic-dtc-warning">Источник OBDex помечает запись как общий код, но точная классификация диапазона по актуальному SAE J2012DA не подтверждена. Запись остаётся исследовательской и не считается нормализованным generic или VAG-specific DTC.</div> : <div className="diagnostic-dtc-warning">Не VAG-specific. Не подтверждает наличие неисправности в выбранном автомобиле, конкретном ECU или применимость тест-плана. Не является указанием на замену детали.</div>}',"DTC UI warning");
+  ui=replaceOnce(ui,'generic_sae_iso_obd2 · fitment claim: {String(row.fitmentClaim)}','source namespace: {row.namespace} · normalized namespace: {allocationUnverified ? "unknown/quarantined" : "generic_sae_iso"} · fitment claim: {String(row.fitmentClaim)}',"DTC UI provenance");
+  ui=replaceOnce(ui,'      </article>)}','      </article>})}',"DTC UI map close");
+ }
+ const uiTest='\ntest("unverified U3 allocation is visibly quarantined in generic research results", () => {\n  assert.match(component, /allocationUnverified/);\n  assert.match(component, /U3/);\n  assert.match(component, /КЛАССИФИКАЦИЯ НЕ ПРОВЕРЕНА/);\n  assert.match(component, /unknown\\/quarantined/);\n  assert.match(component, /SAE J2012DA/);\n});\n';
+ if(!uiTests.includes("unverified U3 allocation"))uiTests+=uiTest;
  const oldHeading="## DTC namespace code-range boundary (run86)";
  const newSection=[
  "## DTC namespace code-range boundary (run87)",
@@ -80,6 +90,8 @@ function apply(root){
  fs.writeFileSync(path.join(root,files.schema),JSON.stringify(schema,null,2)+"\n","utf8");
  fs.writeFileSync(path.join(root,files.oemSchema),JSON.stringify(oemSchema,null,2)+"\n","utf8");
  fs.writeFileSync(path.join(root,files.docs),docs,"utf8");
+ fs.writeFileSync(path.join(root,files.ui),ui,"utf8");
+ fs.writeFileSync(path.join(root,files.uiTests),uiTests,"utf8");
  return {status:"applied",files:Object.values(files),genericPattern:GENERIC_PATTERN,manufacturerPattern:MANUFACTURER_PATTERN,unresolvedPattern:UNRESOLVED_PATTERN};
 }
 const i=process.argv.indexOf("--desktop-root"),root=path.resolve(i>=0&&process.argv[i+1]?process.argv[i+1]:"desktop-source");
