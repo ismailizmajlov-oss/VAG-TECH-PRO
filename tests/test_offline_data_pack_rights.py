@@ -170,6 +170,8 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("P35xx-P39xx", excluded)
         self.assertIn("P34xx", allowed)
         self.assertNotIn("P34xx-P39xx", allowed)
+        self.assertIn("normalized.normalized_product_dtc_import_allowed", sync_source)
+        self.assertIn("U3xxx", lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
 
 
 if __name__ == "__main__":
