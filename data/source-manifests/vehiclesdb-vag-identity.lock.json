@@ -3,8 +3,8 @@
   "dataset_id": "vehiclesdb-vag-identity-cc-by-4.0",
   "publisher": "VehiclesDB",
   "repository": "https://github.com/vehiclesdb/vehiclesdb",
-  "upstream_tag": "v2026.10.3",
-  "expected_version": "2026.10.3",
+  "upstream_tag": "v2026.10.4",
+  "expected_version": "2026.10.4",
   "data_license": "CC-BY-4.0",
   "license_url": "https://creativecommons.org/licenses/by/4.0/",
   "attribution": {
@@ -78,16 +78,16 @@
     "do_not_promote_to_exact_fitment": true
   },
   "not_in_release_sources": {
-    "ro_drpciv": "Not present in the pinned VehiclesDB v2026.10.3 manifest; record as absent, not as an excluded source in this release."
+    "ro_drpciv": "Not present in the pinned VehiclesDB v2026.10.4 manifest; record as absent, not as an excluded source in this release."
   },
   "expected_source_files": {
     "catalog.sqlite": {
-      "byte_size": 9781248,
-      "sha256": "5889bb4b3ca35cf933d83f030a04120ccf4c86e25a5a050c5ff218068720bd62"
+      "byte_size": 9773056,
+      "sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704"
     },
     "manifest.json": {
       "byte_size": 11249,
-      "sha256": "859d1173d674728b0616a17af2e1d67e3481328d1064c148f0a52af9c882d8b0"
+      "sha256": "a401b7bd9bb58ea581fffaf1cccfb79a28b4592d4674c36b10e419f6c30b8fa8"
     },
     "ATTRIBUTION.md": {
       "byte_size": 9615,
