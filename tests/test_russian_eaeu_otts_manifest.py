@@ -56,6 +56,11 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(by_number[27], "early_termination_date_based_on_cancellation_notice")
         self.assertEqual(by_number[28], "early_termination_reason_based_on_cancellation_notice")
         self.assertEqual(source["ot_ts_attribute_map_scope"], "annex_1_internal_database_fields")
+        internal_fields = {item["field"]: item["name"] for item in source["ot_ts_attribute_map"]}
+        self.assertEqual(internal_fields[86], "resumption_reason")
+        self.assertEqual(internal_fields[87], "resumption_date")
+        self.assertEqual(by_number[23], "resumption_date")
+        self.assertEqual(by_number[24], "resumption_reason")
         self.assertIn(
             "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
             source["important_limitations"],
