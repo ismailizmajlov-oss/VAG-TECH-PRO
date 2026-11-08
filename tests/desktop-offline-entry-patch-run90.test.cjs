@@ -6,9 +6,9 @@ const os = require("node:os");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
-const patchSource = path.resolve(__dirname, "apply-desktop-offline-entry-run90.cjs");
-const routeSource = path.resolve(__dirname, "desktop-offline-route-run90.tsx");
-const desktopTestSource = path.resolve(__dirname, "desktop-offline-route-test-run90.cjs");
+const patchSource = path.resolve(__dirname, "..", "apply-desktop-offline-entry-run90.cjs");
+const routeSource = path.resolve(__dirname, "..", "desktop-offline-route-run90.tsx");
+const desktopTestSource = path.resolve(__dirname, "..", "desktop-offline-route-test-run90.cjs");
 
 function createFixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "vag-offline-entry-run90-"));
