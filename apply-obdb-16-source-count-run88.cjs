@@ -24,11 +24,11 @@ function sha256(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
-function regularFile(root, relativePath) {
+function regularFile(root, relativePath, readText = true) {
   const file = path.join(root, relativePath);
   const stat = fs.lstatSync(file);
   if (!stat.isFile() || stat.isSymbolicLink()) fail("Expected a regular non-symlink file: " + relativePath);
-  return { file, stat, text: fs.readFileSync(file, "utf8") };
+  return { file, stat, text: readText ? fs.readFileSync(file, "utf8") : undefined };
 }
 
 function atomicWrite(file, content, mode) {
@@ -100,7 +100,7 @@ function validatePack(root) {
       !/^[a-f0-9]{64}$/.test(manifest.database_sha256 || "")) {
     fail("OBDb database path or SHA-256 declaration is invalid");
   }
-  const database = regularFile(root, path.relative(root, databasePath));
+  const database = regularFile(root, path.relative(root, databasePath), false);
   if (sha256(fs.readFileSync(database.file)) !== manifest.database_sha256) {
     fail("OBDb database SHA-256 does not match the pinned manifest");
   }
@@ -179,7 +179,7 @@ function main() {
       fail("Existing Run88 evidence does not match the current source snapshot and patched files");
     }
   } else {
-    atomicWrite(evidencePath, JSON.stringify(evidence, null, 2) + "\\n", 0o644);
+    atomicWrite(evidencePath, JSON.stringify(evidence, null, 2) + "\n", 0o644);
   }
   process.stdout.write(JSON.stringify({ status: evidence.status, counts: evidence.counts, source_manifest_sha256: manifestSha256, evidence_path: "data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json", patched_files: targets }, null, 2) + "\n");
 }
