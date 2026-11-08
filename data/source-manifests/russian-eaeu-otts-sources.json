@@ -447,9 +447,13 @@
         "total_resources": 117,
         "technical_regulation_resources": 7,
         "dedicated_bulk_otts_dataset_confirmed": false,
-        "observation_note": "The searchable catalog did not identify a dedicated bulk OTTS dataset during this review. This is not proof that no related resource exists."
+        "observation_note": "The indexed catalogue page lists 117 resources overall and 7 under Technical Regulation. The portal advertises OData reuse of published machine-readable datasets with minimal organizational access restrictions. No OTTS-specific resource was identified in the targeted search; this is not proof of absence and the indexed counts are not verified live counts.",
+        "observed_at": "2026-11-09",
+        "observation_method": "Official portal catalogue page returned by public search index; the index reported an approximately nine-month-old crawl, and direct page opening returned no readable lines.",
+        "odata_reuse_statement_observed": true,
+        "dataset_specific_license_confirmed": false
       },
-      "reuse_terms": "The portal describes OData reuse with minimal organizational and other access restrictions; each selected dataset's own metadata and license still require review.",
+      "reuse_terms": "The portal advertises OData reuse of published machine-readable resources with minimal organizational access restrictions. This portal-level statement does not identify an OTTS-specific dataset or establish that dataset's licence, commercial reuse, third-party display, offline caching or redistribution rights.",
       "license": {
         "identifier": null,
         "dataset_specific_terms_confirmed": false,
@@ -471,11 +475,11 @@
         "reuse_boundary": "Public query and official publication are distinct from bulk reuse, commercial display, offline caching and redistribution. Dataset-specific rights must be established before product import."
       },
       "current_portal_observation": {
-        "checked_at": "2026-11-06",
+        "checked_at": "2026-11-09",
         "root_url": "https://portal.eaeunion.org/",
         "observed_redirect": "https://opendata.eaeunion.org/opendata/",
         "ot_ts_specific_endpoint_resolved": false,
-        "note": "The open-data portal catalog exposes OData/REST resources, but a dedicated OTTS resource or dataset-specific reuse grant was not identified.",
+        "note": "The official catalogue page returned by public search indexing lists 117 resources and 7 under Technical Regulation and advertises OData reuse. The search index reports an approximately nine-month-old crawl; direct page opening returned no readable lines. No OTTS-specific resource or dataset-level licence was identified. This is a discovery observation, not a live count or proof that no related resource exists.",
         "schema_registry": {
           "url": "https://rseds.eaeunion.org/ru/",
           "batch_export_menu_observed": true,
@@ -486,7 +490,7 @@
       },
       "access_and_reuse": {
         "individual_public_query": "Decision No. 225 establishes public access to national parts from official websites and requests to authorized bodies; the central open-data catalogue is not itself the OTTS register and the exact national query endpoint must be resolved.",
-        "ot_ts_odata_or_rest_api": "not_verified",
+        "ot_ts_odata_or_rest_api": "portal_level_odata_rest_advertised; OTTS_specific_resource_and_endpoint_not_verified",
         "bulk_export": "not_established",
         "commercial_use": "not_confirmed_for_an_otts_dataset",
         "third_party_display": "not_confirmed",

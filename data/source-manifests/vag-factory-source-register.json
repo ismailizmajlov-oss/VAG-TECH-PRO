@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08T20:11:48Z",
+  "updated_at": "2026-11-09",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -86,14 +86,14 @@
       "access": {
         "legal_access_basis": "EEC Collegium Decision No. 225 of 2014-12-02, paragraphs 2-5 and 11-13: the unified register consists of national parts, national parts must be accessible from official websites of authorized bodies and the EEC, specified registry fields must be published within five working days, and interested-person requests are handled by authorized bodies. Decision No. 88 of 2016-07-26 defines the technical information-exchange schema R.TR.TS.07.001; it is not the public-access legal basis.",
         "current_portal_observation": "On 2026-11-06 the central portal root redirected to the EAEU open-data catalogue. This does not mean the unified vehicle-approval register is absent: Decision No. 225 requires national parts to be accessible through official websites. Russia's national part is identified as the FGIS Reestr KTS maintained by Interstandart; the exact public search endpoint and any machine-readable export remain unresolved. On 2026-11-09 the EEC's official temporary-register page was found and opened; it links to a distinct electronic OTTS register at https://portal.elpts.ru/ncher/otts (separate OTSH and SBKTS links are also present). The linked OTTS destination returned HTTP 502 during this review, so no records or export were inspected. This is an official navigation route, not evidence of bulk/API access or reuse rights.",
-        "machine_readable_api": "Generic OData/REST interfaces are advertised for published EAEU open-data resources; an OTTS-specific resource, endpoint, schema and export method remain unverified.",
+        "machine_readable_api": "Portal-level OData/REST reuse is advertised for published open-data resources; an OTTS-specific resource, endpoint, schema and export method remain unverified.",
         "individual_query_access": "national_parts_on_official_websites_and_requests_to_authorized_bodies_under_decision_225",
         "bulk_export": "not_established",
         "offline_cache": "not_established",
         "automated_extraction": "not_established",
         "eaeu_open_data_catalog_observation": {
           "url": "https://opendata.eaeunion.org/opendata/ru/resourses",
-          "observed_at": "2026-11-05",
+          "observed_at": "2026-11-09",
           "catalogue_resource_count": 117,
           "technical_regulation_resource_count": 7,
           "generic_api_formats": [
@@ -101,7 +101,7 @@
             "REST"
           ],
           "otts_specific_resource_identified": false,
-          "limitation": "Catalogue search did not identify an OTTS resource; this does not establish that no restricted or separately exposed official route exists.",
+          "limitation": "The indexed catalogue page lists 117 resources overall and 7 under Technical Regulation and advertises OData reuse for published datasets. No OTTS-specific resource was identified in targeted search. The crawl is approximately nine months old and is not a verified live count; this does not prove that no restricted or separately exposed official OTTS route exists.",
           "open_data_policy_evidence": {
             "evidence_url": "https://eec.eaeunion.org/upload/iblock/aad/K_1026.pdf",
             "portal_api_url": "https://opendata.eaeunion.org/opendata/ru/api/restapi",
@@ -125,7 +125,10 @@
               "relevance": "Auxiliary accreditation-body cross-check only; this is not an OTTS/OTSH or vehicle type-approval dataset.",
               "ingestion_decision": "not_imported_dataset_specific_reuse_terms_not_confirmed"
             }
-          }
+          },
+          "observation_method": "Official catalogue page returned by public search indexing; approximately nine-month-old crawl; direct page opening returned no readable lines.",
+          "odata_reuse_statement_observed": true,
+          "dataset_specific_license_confirmed": false
         },
         "public_access_basis": {
           "legal_act": "EEC Collegium Decision No. 225 of 2014-12-02",

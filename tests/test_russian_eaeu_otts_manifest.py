@@ -217,7 +217,17 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
     def test_other_otts_sources_keep_their_separate_rights_gates(self):
         eaeu = self.sources["eaeu-open-data-portal"]
         self.assertEqual(eaeu["status"], "discovery_only")
+        self.assertEqual(eaeu["catalog_observation"]["observed_at"], "2026-11-09")
+        self.assertEqual(eaeu["catalog_observation"]["total_resources"], 117)
+        self.assertEqual(eaeu["catalog_observation"]["technical_regulation_resources"], 7)
+        self.assertTrue(eaeu["catalog_observation"]["odata_reuse_statement_observed"])
+        self.assertFalse(eaeu["catalog_observation"]["dedicated_bulk_otts_dataset_confirmed"])
+        self.assertFalse(eaeu["catalog_observation"]["dataset_specific_license_confirmed"])
         self.assertFalse(eaeu["data_ingested"])
+        self.assertIsNone(eaeu["source_snapshot_sha256"])
+        self.assertEqual(eaeu["access_and_reuse"]["ot_ts_odata_or_rest_api"], "portal_level_odata_rest_advertised; OTTS_specific_resource_and_endpoint_not_verified")
+        self.assertEqual(eaeu["license"]["offline_cache"], "not_confirmed_for_an_otts_dataset")
+        self.assertEqual(eaeu["license"]["display"], "not_confirmed_for_an_otts_dataset")
         hpt = self.sources["hpt-su-otts-api"]
         self.assertEqual(hpt["status"], "restricted_for_product_distribution")
         self.assertFalse(hpt["paid_terms_accepted"])
