@@ -298,6 +298,8 @@ jobs:
           $ErrorActionPreference = "Stop"
           python --version
           python tests/test_windows_desktop_workflow_contract.py
+          node --test tests/desktop-offline-entry-patch-run90.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run90 offline desktop entry patch tests failed." }
           python tests/test_source_manifest_bundle.py -v
           python tests/test_technical_library_schema.py -v
           python tests/test_dtc_namespace_policy.py -v
@@ -939,6 +941,20 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Electron runtime packaging patch failed" }
           node --check desktop-source/scripts/prepare-electron-runtime.cjs
           node --check desktop-source/electron/main.cjs
+
+      - name: Apply dedicated offline-only desktop entry (run90)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-desktop-offline-entry-run90.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run90 offline desktop entry patch syntax check failed." }
+          node apply-desktop-offline-entry-run90.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/desktop-offline-entry-run90.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run90 offline desktop entry patch failed." }
+          node --check desktop-source/electron/main.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run90 patched Electron main process failed syntax validation." }
+          if (-not (Test-Path "desktop-source/app/desktop/page.tsx")) { throw "Run90 dedicated offline desktop route is missing." }
+          if (-not (Test-Path "desktop-source/tests/desktop-offline-entry-run90.test.cjs")) { throw "Run90 desktop route regression tests are missing." }
+          "desktop_entry=dedicated_local_sqlite_route; cloud_auth=not_loaded; supabase_runtime_credentials=removed; offline_only=1" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Generate, pin and install the Windows dependency lock
         working-directory: desktop-source
