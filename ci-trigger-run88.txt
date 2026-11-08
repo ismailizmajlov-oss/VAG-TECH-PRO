@@ -1,0 +1,1 @@
+Trigger Windows x64 desktop validation against current main after the latest source-rights, provenance, and offline research-pack updates. No product data, installer, or application code is changed by this trigger.
