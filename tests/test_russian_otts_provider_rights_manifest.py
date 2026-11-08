@@ -77,6 +77,19 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
             self.assertEqual(source["license"][field], "not_confirmed")
         self.assertFalse(source["technical_scope"]["exact_engine_gearbox_pair"])
         self.assertFalse(source["technical_scope"]["vag_record_observed"])
+    def test_elpts_dynamic_otts_shell_is_not_a_record_dataset(self):
+        source = self.sources["elpts-national-otts-register"]
+        observation = source["access"]["alternative_public_page_shell"]
+        self.assertEqual(observation["url"], "https://docs.elpts.ru/ncher/otts")
+        self.assertTrue(observation["page_shell_accessible"])
+        self.assertTrue(observation["dynamic_result_placeholders_unresolved"])
+        self.assertFalse(observation["record_rows_observed"])
+        self.assertFalse(observation["api_or_export_endpoint_verified"])
+        self.assertIsNone(observation["source_snapshot_sha256"])
+        self.assertEqual(source["status"], "permission_required")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
 
 if __name__ == "__main__":
     unittest.main()
