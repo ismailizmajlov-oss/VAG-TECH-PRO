@@ -130,7 +130,7 @@ function validatePack(repoRoot, packRoot) {
   assert(rightsEvidence.license_id === LICENSE_ID && rightsEvidence.rights_status === rights.rights_status && rightsEvidence.commercial_use_allowed === true && rightsEvidence.display_allowed === true && rightsEvidence.offline_cache_allowed === true && rightsEvidence.bulk_reuse_allowed === true && rightsEvidence.redistribution_allowed === true && rightsEvidence.attribution_required === true, "KBA approval independent rights evidence mismatch");
   for (const key of ["individual_vehicle_fitment","exact_vehicle_fitment","model_year","generation","engine_code","gearbox_code","exact_engine_gearbox_pair","ecu_fitment","dtc_fitment","repair_applicability","diagnostic_execution_allowed","ru_eaeu_applicability"]) assert(pack.applicability?.[key] === false, "KBA approval applicability boundary failed: " + key);
   assert(pack.counts?.source_rows === 3782 && pack.counts?.approval_records === 918 && pack.counts?.manufacturer_labels === 8 && pack.counts?.distinct_approval_numbers === 918, "KBA approval pack counts changed");
-  assert(buildReport.status === "verified_research_only" && buildReport.database_sha256 === databaseHash && buildReport.source_snapshot_sha256 === sourceSnapshotHash && buildReport.exact_engine_gearbox_pair_claim === false, "KBA approval build report provenance/boundary mismatch");
+  assert(buildReport.status === "verified_research_only" && buildReport.database_sha256 === databaseHash && buildReport.source_snapshot_sha256 === sourceSnapshotHash && buildReport.builder_script_sha256 === builderHash && buildReport.exact_engine_gearbox_pair_claim === false, "KBA approval build report provenance/boundary mismatch");
   assert(licenseText.includes("DL-DE BY 2.0") && licenseText.includes(LICENSE_URL), "KBA approval licence text missing");
   assert(attributionText.includes("Kraftfahrt-Bundesamt (KBA)") && attributionText.includes("DL-DE BY 2.0") && attributionText.includes(SOURCE_URL) && attributionText.includes("Modified data"), "KBA approval attribution/modified-data notice missing");
 
@@ -325,6 +325,7 @@ function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNu
     source_run_id: Number(sourceRunId),
     source_run_number: Number(sourceRunNumber),
     artifact_sha256: artifactSha,
+    builder_script_sha256: validated.pack.build_script_sha256,
     market_scope: "DE",
     rights_status: "approved_by_published_DL_DE_BY_2_0",
     source_manifest_sha256: validated.sourceHash,
@@ -410,6 +411,7 @@ function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNu
     desktop_integration_report_file: rel(integrationReportFile),
     desktop_integration_report_sha256: shaFile(integrationReportFile),
     source_revision: validated.sourceRevision,
+    builder_script_sha256: validated.pack.build_script_sha256,
     source_snapshot_sha256: validated.snapshotHash,
     source_run_id: Number(sourceRunId),
     source_run_number: Number(sourceRunNumber),
@@ -458,6 +460,7 @@ function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNu
     artifact_sha256: artifactSha,
     market_scope: ["DE"],
     source_manifest_sha256: entry.source_manifest_sha256,
+    builder_script_sha256: entry.builder_script_sha256,
     source_snapshot_sha256: entry.source_snapshot_sha256,
     database_sha256: entry.database_sha256,
     counts: { source_rows: validated.pack.counts.source_rows, approval_records: validated.pack.counts.approval_records },
