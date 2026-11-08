@@ -35,7 +35,7 @@ EXCLUDED = {
 }
 CODE_RE = re.compile(r"(?<![A-Z0-9])[A-Z0-9]{2,5}(?![A-Z0-9])")
 LABEL_RE = re.compile(
-    r"^(?:engine\s+)?(?:id|identification)\s+codes?$|^engine\s+codes?$|^engine\s+identifiers?$",
+    r"\b(?:engine\s+(?:id|identification)\s+codes?|engine\s+codes?|(?:id|identification)\s+codes?)\b",
     re.IGNORECASE,
 )
 PAGES = {
@@ -66,7 +66,7 @@ def clean_text(value: str) -> str:
 
 
 def is_engine_code_label(value: str) -> bool:
-    return bool(LABEL_RE.fullmatch(clean_text(value)))
+    return bool(LABEL_RE.search(clean_text(value)))
 
 
 def extract_codes(value: str) -> list[str]:
@@ -93,6 +93,7 @@ class EngineCodeHTMLParser(HTMLParser):
         self.cell_tag: str | None = None
         self.rows_seen = 0
         self.candidates: list[dict[str, object]] = []
+        self.debug_rows: list[dict[str, object]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         tag = tag.lower()
@@ -136,6 +137,8 @@ class EngineCodeHTMLParser(HTMLParser):
         if not cells:
             return
         texts = [cell["text"] for cell in cells]
+        if len(self.debug_rows) < 120 and any("engine" in text.lower() or "code" in text.lower() for text in texts):
+            self.debug_rows.append({"heading": self.heading, "row_number": row_number, "cells": texts})
         labels = [index for index, text in enumerate(texts) if is_engine_code_label(text)]
         if labels:
             value_indexes = [index for index in range(len(texts)) if index not in labels]
@@ -171,11 +174,16 @@ class EngineCodeHTMLParser(HTMLParser):
         })
 
 
-def parse_engine_code_candidates(rendered_html: str) -> tuple[list[dict[str, object]], int]:
+def parse_engine_code_candidates_detailed(rendered_html: str) -> tuple[list[dict[str, object]], int, list[dict[str, object]]]:
     parser = EngineCodeHTMLParser()
     parser.feed(rendered_html)
     parser.close()
-    return parser.candidates, parser.rows_seen
+    return parser.candidates, parser.rows_seen, parser.debug_rows
+
+
+def parse_engine_code_candidates(rendered_html: str) -> tuple[list[dict[str, object]], int]:
+    candidates, rows_seen, _ = parse_engine_code_candidates_detailed(rendered_html)
+    return candidates, rows_seen
 
 
 def fetch_json(url: str, attempts: int = 4) -> dict[str, object]:
@@ -444,7 +452,14 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
         rendered_sha = sha256_bytes(rendered_html_bytes)
         (snapshot_dir / f"{revision_id}.wikitext").write_bytes(wikitext_bytes)
         (snapshot_dir / f"{revision_id}.html").write_bytes(rendered_html_bytes)
-        candidates, rows_seen = parse_engine_code_candidates(rendered_html)
+        candidates, rows_seen, debug_rows = parse_engine_code_candidates_detailed(rendered_html)
+        if not candidates:
+            print(json.dumps({
+                "page": title,
+                "revision_id": revision_id,
+                "rows_seen": rows_seen,
+                "engine_or_code_rows": debug_rows[:40],
+            }, ensure_ascii=False), file=sys.stderr)
         pages.append({
             "title": title,
             "revision_id": revision_id,
