@@ -35,6 +35,7 @@ class DtcNamespacePolicyTests(unittest.TestCase):
             self.assertFalse(generic.fullmatch(code),code)
             self.assertFalse(manufacturer.fullmatch(code),code)
         self.assertTrue(self.policy["quarantine_policy"]["require_exact_pinned_source_record_for_p34xx"])
+        self.assertEqual(self.policy["namespaces"]["generic_sae_iso"]["exact_source_record_required_for"],["P34xx","U3xxx"])
         self.assertFalse(self.policy["quarantine_policy"]["manufacturer_controlled_range_proves_vag_authorship"])
 
     def test_json_schema_matches_policy(self):
