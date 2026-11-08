@@ -72,7 +72,9 @@ test("run88 synchronizes all desktop OBDb count gates from the pinned 16-source 
     assert.ok(evidence.patched_files.some((item) => item.path === "lib/local-research-db.cjs" && /^[a-f0-9]{64}$/.test(item.sha256)));
     const second = spawnSync(process.execPath, [PATCH, "--desktop-root", root], { encoding: "utf8" });
     assert.equal(second.status, 0, second.stderr);
-    assert.ok(second.stdout.includes("already_current") || second.stdout.includes("updated"));
+    const secondOutput = JSON.parse(second.stdout);
+    assert.equal(secondOutput.status, "desktop_count_gates_synchronized");
+    assert.deepEqual(secondOutput.counts, { sources: 16, generations: 82, ecus: 44, commands: 7890, signals: 8446 });
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
