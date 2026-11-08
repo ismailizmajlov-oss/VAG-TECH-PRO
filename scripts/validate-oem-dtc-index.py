@@ -10,8 +10,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = ROOT / "data/schemas/oem-dtc-index.schema.json"
 SQL_PATH = ROOT / "data/sql/oem-dtc-index.sql"
-GENERIC_DTC_PATTERN = re.compile(r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$")
-MANUFACTURER_DTC_PATTERN = re.compile(r"^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$")
+POLICY_PATH = ROOT / "data/policies/dtc-namespace-ranges.json"
+DTC_POLICY = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+GENERIC_DTC_PATTERN = re.compile(DTC_POLICY["namespaces"]["generic_sae_iso"]["pattern"])
+MANUFACTURER_DTC_PATTERN = re.compile(DTC_POLICY["namespaces"]["manufacturer_controlled"]["pattern"])
+UNRESOLVED_RESERVED_DTC_PATTERN = re.compile(DTC_POLICY["namespaces"]["unresolved_reserved"]["pattern"])
 
 
 def expect_integrity_error(fn, expected: str) -> None:
@@ -45,9 +48,8 @@ def main() -> None:
         if GENERIC_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Manufacturer code accepted as generic: {code}")
     for code in ("P0300","P2ABC","P34C8","B0ABC","C0ABC","U0ABC"):
         if MANUFACTURER_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Generic code accepted as manufacturer-specific: {code}")
-    unresolved = re.compile(r"^(?:P3[5-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$")
     for code in ("P35AB", "P39AB", "U3ABC", "B3ABC", "C3ABC"):
-        if not unresolved.fullmatch(code): raise AssertionError(f"Unresolved/reserved code was not quarantined: {code}")
+        if not UNRESOLVED_RESERVED_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Unresolved/reserved code was not quarantined: {code}")
         if GENERIC_DTC_PATTERN.fullmatch(code) or MANUFACTURER_DTC_PATTERN.fullmatch(code): raise AssertionError(f"Unresolved/reserved code entered a normalized namespace: {code}")
     for name in ("ecu", "source_document", "applicability", "provenance", "rights", "review"):
         if name not in props:
