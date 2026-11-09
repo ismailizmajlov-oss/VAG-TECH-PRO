@@ -363,7 +363,7 @@ def build_database(
     try:
         with db:
             db.execute(
-                """INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                """INSERT INTO source_registry VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (
                     SOURCE_ID, PUBLISHER, source["source_url"], LICENSE_ID, LICENSE_URL, revision, MARKET_SCOPE,
                     attribution, rights["permission_status"], 1, 1, 1, 1, 1, 1, source_manifest_sha, snapshot_sha,
@@ -414,7 +414,7 @@ def build_database(
                               raw_json,source_record_sha256,market_scope,model_year,engine_code,gearbox_code,
                               exact_vehicle_fitment,engine_gearbox_pairing,ecu_dtc_fitment,repair_applicability,
                               review_status,applicability_precision
-                            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                             (
                                 table["table_id"], table["revision"], page_number, row_in_page, table["year"], table["status"],
                                 str(row_value(raw_row, "MS")) if row_value(raw_row, "MS") is not None else None,
