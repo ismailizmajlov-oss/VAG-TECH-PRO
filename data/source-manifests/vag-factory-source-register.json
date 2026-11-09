@@ -7270,21 +7270,46 @@
         ]
       },
       "access": {
-        "raw_revision_bytes_retrieved": false,
-        "mediawiki_api_snapshot_retrieved": false,
+        "raw_revision_bytes_retrieved": true,
+        "mediawiki_api_snapshot_retrieved": true,
         "source_snapshot_sha256": null,
         "page_revisions_pinned": true,
         "web_rendering_observed": true,
         "article_text_license_observed": true
       },
-      "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion",
+      "source_snapshot_sha256": "fd0be1562899f7dd7b46e33ecf5297b6bab551668f83d5bcf60bb32ce0dd130c",
+      "hash_status": "pinned_source_snapshots_and_research_sqlite_sha256_verified",
       "data_ingested": false,
       "product_import_allowed": false,
       "applicability_precision": "community_engine_code_candidate_only; no model_year_market_or_fitment_confirmation",
-      "project_decision": "licensed_discovery_only; no technical or vehicle-fitment import until pinned snapshots, extraction QA and independent primary-source verification are complete",
-      "evidence_status": "Four article revision IDs and page-footer CC BY-SA 4.0 statements observed 2026-11-08. Raw page/API bytes were not retrieved; no source SHA-256 is claimed. All four pages carry quality warnings that block technical promotion.",
-      "review_document": "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
+      "project_decision": "licensed_discovery_only; separate CC BY-SA research pack integrated; no technical, repair, diagnostic or vehicle-fitment import until every candidate is independently confirmed against authorized primary sources",
+      "evidence_status": "Pinned MediaWiki revision bytes and rendered HTML were downloaded and SHA-256 verified on 2026-11-09. The separate CC BY-SA 4.0 research SQLite contains 241 candidate code tokens from 64 source rows across four pinned article revisions. All rows remain market UNKNOWN and candidate-only. No factory primary-source verification or exact vehicle applicability is claimed.",
+      "review_document": "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md",
+      "research_pack_ingested": true,
+      "research_pack": {
+        "pack_id": "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0",
+        "license": "CC-BY-SA-4.0",
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "community_engine_code_candidate_only",
+        "database_sha256": "d44629eaf26f1fc3a54acff8b985a84e207b85d7cac7abd975dac16474585788",
+        "source_manifest_sha256": "e24ad006a3025860e01b3a0bd8395da4da9156ba7d0cb0c3e32b3516ccaae024",
+        "attribution_sha256": "1bfa85c4c0c7e5182cfc122148958096a17167e7242d48e7c035f4332ee62090",
+        "license_notice_sha256": "7ea86ece96546c760f170b0db7b6007d5238307dacca9f1203ce52355eb6500e",
+        "counts": {
+          "source_documents": 4,
+          "candidate_rows": 241,
+          "unique_candidate_codes": 241,
+          "source_rows_with_codes": 64
+        },
+        "product_import_allowed": false,
+        "exact_vehicle_fitment": false,
+        "generation_year_fitment": false,
+        "engine_gearbox_fitment": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_use_allowed": false,
+        "diagnostic_execution_allowed": false
+      }
     },
     {
       "source_id": "openvag-github-dtc-api-schema-only",
