@@ -274,7 +274,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
     def test_kyrgyz_public_registry_recheck_2026_11_09_is_metadata_only(self):
         source = self.sources["kyrgyz-single-window-public-registry"]
         observed = source["observed_public_query"]
-        latest = observed["latest_official_recheck"]
+        latest = observed["previous_official_recheck"]
         self.assertEqual(latest["observed_at"], "2026-11-09")
         self.assertEqual(latest["official_portal_url"], "https://trade.kg/")
         self.assertEqual(latest["official_registry_landing_url"], "https://trade.kg/registry?tab=OTTS.otts")
@@ -310,6 +310,37 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertNotIn("exact_vag_vehicle_fitment", latest)
         self.assertNotIn("engine_gearbox_pairing", latest)
         self.assertNotIn("ecu_dtc_repair_applicability", latest)
+
+
+    def test_otts_baza_current_terms_block_bulk_competing_catalogue_reuse(self):
+        manifest_path = ROOT / "data" / "source-manifests" / "russian-eaeu-otts-sources.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        source = next(item for item in manifest["sources"] if item["source_id"] == "otts-baza-ru")
+        latest = source["latest_terms_review"]
+
+        self.assertEqual(source["market_scope"], ["RU", "EAEU"])
+        self.assertEqual(source["terms_revision"], "2026-10-14")
+        self.assertEqual(source["status"], "restricted_no_bulk_reuse_or_redistribution_without_written_permission")
+        self.assertEqual(source["project_decision"], "discovery_only_no_automation_no_import_without_separate_written_agreement")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["hash_status"], "terms_review_only")
+        self.assertEqual(source["license"]["bulk_export"], "prohibited_without_separate_agreement")
+        self.assertEqual(source["license"]["redistribution"], "prohibited_without_separate_agreement")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        self.assertEqual(source["access_and_reuse"]["systematic_extraction_of_substantial_part_for_publication_resale_or_competing_catalog"], "prohibited_without_separate_agreement")
+        self.assertEqual(latest["observed_at"], "2026-11-10")
+        self.assertEqual(latest["ui_card_count"], 42050)
+        self.assertFalse(latest["record_or_pdf_downloaded"])
+        self.assertFalse(latest["source_bytes_downloaded"])
+        self.assertFalse(latest["account_created"])
+        self.assertFalse(latest["subscription_or_payment_made"])
+        self.assertFalse(latest["search_query_submitted"])
+        self.assertIsNone(latest["source_snapshot_sha256"])
+        self.assertEqual(latest["pricing_page_fetch_status"], "502 during review; no price relied upon")
+        self.assertIn("competing catalogue", latest["reuse_restriction"])
+
 
 
 if __name__ == "__main__":

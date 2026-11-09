@@ -6055,7 +6055,7 @@
       "vehicle_approval_project_url": "https://trade.kg/projects/vehicles",
       "announcement_url": "https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema",
       "source_kind": "kyrgyz_national_vehicle_type_approval_public_register",
-      "source_revision": "official_portal_project_pages_rechecked_2026-11-09; no dataset release, record schema or API revision identified",
+      "source_revision": "official_portal_project_pages_and_privacy_policy_rechecked_2026-11-10; no dataset release, record schema or API revision identified",
       "market_scope": [
         "KG",
         "EAEU_TR_TS_018_2011"
@@ -6079,6 +6079,43 @@
           "record_schema_retrieved": false,
           "result_retrieval_independently_tested": false,
           "latest_official_recheck": {
+            "observed_at": "2026-11-10",
+            "official_homepage_url": "https://trade.kg/",
+            "homepage_observation": "The operator's homepage says public registers are open without registration and lists OTTS/OTSH lookup by approval number, make and model.",
+            "official_registry_landing_url": "https://trade.kg/registry",
+            "registry_landing_observation": "The registry landing page links to https://smart.trade.kg/registry?lng=ru; the landing page itself contains no record rows.",
+            "public_registry_project_url": "https://trade.kg/projects/public-registry",
+            "public_registry_project_observation": "The operator continues to label the public registry a pilot; no login is required; issued documents can be checked by VIN or document number; the operator says personal data are not displayed.",
+            "vehicle_approval_project_url": "https://trade.kg/projects/vehicles",
+            "vehicle_approval_project_observation": "The separate car.trade.kg application workflow is intended for certification bodies and experts. Its application form collects engine and other vehicle characteristics, but those input fields are not evidence of the public record schema.",
+            "smart_registry_url": "https://smart.trade.kg/registry?lng=ru",
+            "smart_registry_page_observation": "The JavaScript application returned no readable record rows in the reviewed page extraction; no record schema or individual OTTS record was verified.",
+            "privacy_policy_review": {
+              "url": "https://trade.kg/privacy",
+              "reviewed_at": "2026-11-10",
+              "no_login_for_information_site": true,
+              "cookies_set_by_site": false,
+              "third_party_analytics": false,
+              "anonymized_operator_analytics": true,
+              "analytics_excludes_search_text_document_number_and_vin": true,
+              "search_request_sent_to_server": true,
+              "query_document_number_and_vin_not_linked_to_visitor": true,
+              "reuse_license_granted": false,
+              "interpretation": "Privacy handling description only; not a dataset licence or permission for automated acquisition, bulk export, offline caching, third-party display or redistribution."
+            },
+            "record_rows_observed": false,
+            "record_schema_retrieved": false,
+            "result_retrieval_independently_tested": false,
+            "documented_api_identified": false,
+            "bulk_export_documented": false,
+            "source_bytes_downloaded": false,
+            "vin_or_document_query_submitted": false,
+            "personal_values_collected": false,
+            "source_snapshot_sha256": null,
+            "count_treatment": "No corpus count was established; previous cert.trade.kg UI counters remain unverified landing-page observations only.",
+            "rights_effect": "none; public no-login lookup and the privacy policy do not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights."
+          },
+          "previous_official_recheck": {
             "observed_at": "2026-11-09",
             "official_portal_url": "https://trade.kg/",
             "public_registry_landing_url": "https://trade.kg/registry?tab=OTTS.otts",
@@ -6184,7 +6221,7 @@
         "russian_market_scope": false,
         "engine_characteristics_in_public_record_schema": "not_established"
       },
-      "verification_status": "official_public_registry_pilot_and_no_login_route_rechecked_2026-11-09; record_schema_and_product_reuse_rights_unresolved",
+      "verification_status": "official_public_registry_pilot_and_privacy_policy_rechecked_2026-11-10; record_schema_and_reuse_rights_unresolved",
       "product_import_allowed": false,
       "data_ingested": false,
       "source_snapshot_sha256": null,
@@ -6204,7 +6241,9 @@
         "Article 1(39) defines open data as machine-readable data without reuse restrictions. The observed registry is a JavaScript public-lookup page; no machine-readable bulk dataset, API, export schema or no-reuse-restrictions statement was retrieved.",
         "Articles 25, 26 and 60 preserve digital-record/resource-owner rights and access terms; Articles 59 and 62 are not treated as an automatic licence for automated extraction, offline caching, third-party display or redistribution.",
         "No record-level metadata was retrieved, so record-owner identity and any attribution condition under Article 59(3) remain unknown.",
-        "The 2026-11-09 recheck confirmed the official no-login pilot route and the portal's one-OTTS/zero-OTSH summary counters, but the linked JavaScript registry yielded no readable record rows or schema; the counters are not a verified corpus count."
+        "The 2026-11-09 recheck confirmed the official no-login pilot route and the portal's one-OTTS/zero-OTSH summary counters, but the linked JavaScript registry yielded no readable record rows or schema; the counters are not a verified corpus count.",
+        "The 2026-11-10 privacy policy describes analytics exclusions and server-side document-check handling; it is not a licence for reuse, offline caching or redistribution.",
+        "The public registry landing page links to a JavaScript application that returned no readable rows or schema; no record was queried or copied."
       ],
       "evidence_reviewed": [
         {
@@ -6272,6 +6311,36 @@
           "url": "https://cert.trade.kg/",
           "reviewed_at": "2026-11-09",
           "evidence": "Separate official system landing page displays one OTTS and zero OTSH summary counters; these are not treated as verified corpus counts."
+        },
+        {
+          "url": "https://trade.kg/",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official homepage states public registers are open without registration and lists OTTS/OTSH lookup by approval number, make and model."
+        },
+        {
+          "url": "https://trade.kg/registry",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official register landing page links to smart.trade.kg; no record rows are embedded in the landing page."
+        },
+        {
+          "url": "https://trade.kg/projects/public-registry",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official project page labels the service a pilot, no-login, lookup by VIN/document number, and says personal data are not displayed."
+        },
+        {
+          "url": "https://trade.kg/projects/vehicles",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official application workflow for certification bodies and experts includes engine fields as application inputs, not public record schema."
+        },
+        {
+          "url": "https://trade.kg/privacy",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official privacy policy says search/document-check requests are server-side, while search text, document number and VIN are excluded from analytics and not linked to the visitor; this does not grant reuse rights."
+        },
+        {
+          "url": "https://smart.trade.kg/registry?lng=ru",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Public JavaScript registry route yielded no readable record rows or schema; no query was submitted."
         }
       ],
       "legal_basis_review": {
