@@ -32,6 +32,9 @@ on:
   pull_request:
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/build-wikipedia-vag-engine-candidates.yml
+      - scripts/build_wikipedia_vag_engine_candidates.py
+      - tests/test_wikipedia_vag_engine_candidates.py
       - .github/workflows/windows-desktop-ci-run71.yml
       - .github/workflows/acquire-obdex-cc0.yml
       - .github/workflows/acquire-obdb-vag-signalsets.yml
