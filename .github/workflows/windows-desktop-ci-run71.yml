@@ -1,4 +1,4 @@
-name: VAG TECH PRO Windows x64 desktop validation run87
+name: VAG TECH PRO Windows x64 desktop validation run91
 # Run52 fix: bind same-origin validation to the actual loopback Host header, not Next.js reconstructed request.url.
 
 on:
@@ -51,6 +51,7 @@ on:
       - "apply-exact-vehicle-config-match-run64.py.gz.b64"
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
+      - "apply-dtc-research-range-quarantine-run91.cjs"
       - "apply-desktop-offline-entry-run90.cjs"
       - "desktop-offline-route-run90.tsx"
       - "desktop-offline-route-test-run90.cjs"
@@ -82,6 +83,7 @@ on:
       - ".github/workflows/rdw-vag-research-pack-windows.yml"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "docs/research/OBDEX_REFRESH_2026-11-07.md"
+      - "docs/research/OBDEX_DTC_NAMESPACE_QUARANTINE_RUN91.md"
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
@@ -185,6 +187,7 @@ on:
       - "apply-exact-vehicle-config-match-run64.py.gz.b64"
       - "apply-exact-vehicle-config-match-run64.sha256"
       - "apply-*-run*.cjs"
+      - "apply-dtc-research-range-quarantine-run91.cjs"
       - "scripts/sync-desktop-research-manifest.cjs"
       - "scripts/build_offline_data_pack_index.py"
       - "tests/test_offline_data_pack_rights.py"
@@ -203,6 +206,7 @@ on:
       - "scripts/probe_rdw_vag_type_approvals.py"
       - "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
       - "docs/research/OBDEX_REFRESH_2026-11-07.md"
+      - "docs/research/OBDEX_DTC_NAMESPACE_QUARANTINE_RUN91.md"
       - "docs/research/OPEN_VEHICLE_SCHEMA_SOURCE_REVIEW_2026-11-06.md"
       - "docs/research/ELPTS_PUBLIC_REFERENCE_AND_TARIFF_RECHECK_2026-11-08.md"
       - "tests/test_elpts_reference_rights_gate.py"
@@ -1911,6 +1915,25 @@ jobs:
           Copy-Item -LiteralPath "apply-desktop-offline-entry-run90.cjs" -Destination $patchInSource -Force
           "desktop_entry=/desktop; offline_sqlite=enabled; cloud_credentials_forwarded=false; route_contract=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Quarantine unresolved OBDex DTC namespace ranges in research UI (run91)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-dtc-research-range-quarantine-run91.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run91 OBDex DTC namespace patch syntax check failed." }
+          node apply-dtc-research-range-quarantine-run91.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/dtc-research-range-quarantine-run91.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run91 OBDex DTC namespace quarantine patch failed." }
+          node --check desktop-source/lib/local-research-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run91 patched local research database module failed syntax validation." }
+          node --check desktop-source/tests/dtc-research-range-quarantine.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run91 DTC namespace regression test failed syntax validation." }
+          node --test desktop-source/tests/dtc-research-range-quarantine.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/dtc-research-range-quarantine-run91-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run91 OBDex namespace classification and quarantine tests failed." }
+          $patchInSource = Join-Path $env:GITHUB_WORKSPACE "desktop-source/scripts/patches/apply-dtc-research-range-quarantine-run91.cjs"
+          New-Item -ItemType Directory -Force -Path (Split-Path -Parent $patchInSource) | Out-Null
+          Copy-Item -LiteralPath "apply-dtc-research-range-quarantine-run91.cjs" -Destination $patchInSource -Force
+          "dtc_research_namespace_quarantine=run91; policy_revision=run87-2026-11-08; source_pack=obdex-generic-cc0; unresolved_ranges_quarantined=true; generic_rows_research_only=true; policy_resource=app-runtime/data/policies; VAG_fitment=false; diagnostic_execution=false; production_import=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
         shell: pwsh
@@ -2172,6 +2195,8 @@ jobs:
           $vehiclesDbRevision = if ($vehiclesDbRevisionEvidence) { $vehiclesDbRevisionEvidence.source_revision } else { $null }
           $dtcNamespacePolicyPath = "data/policies/dtc-namespace-ranges.json"
           $dtcNamespacePolicyHash = if (Test-Path $dtcNamespacePolicyPath) { (Get-FileHash -LiteralPath $dtcNamespacePolicyPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $dtcResearchQuarantinePatchPath = "apply-dtc-research-range-quarantine-run91.cjs"
+          $dtcResearchQuarantinePatchHash = if (Test-Path $dtcResearchQuarantinePatchPath) { (Get-FileHash -LiteralPath $dtcResearchQuarantinePatchPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $oemDtcIndexSchemaPath = "desktop-source/data/schemas/oem-dtc-index.schema.json"
           $oemDtcIndexSchemaHash = if (Test-Path $oemDtcIndexSchemaPath) { (Get-FileHash -LiteralPath $oemDtcIndexSchemaPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           if (-not $oemDtcIndexSchemaHash) { throw "OEM DTC index schema is missing from the staged desktop source." }
@@ -2184,7 +2209,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; vehicle_catalog_package_schema_sha256 = $vehicleCatalogPackageSchemaHash; engine_transmission_pair_evidence_patch_sha256 = $pairEvidencePatchHash; engine_transmission_pair_code_binding_patch_sha256 = $pairCodeBindingPatchHash; technical_payload_step_order_patch_sha256 = $technicalStepOrderPatchHash; dtc_namespace_range_patch_sha256 = $dtcNamespaceRangePatchHash; dtc_namespace_range_correction_patch_sha256 = $dtcNamespaceRangeCorrectionPatchHash; obdb_source_count_patch_sha256 = $obdbSourceCountPatchHash; obdb_manifest_sha256 = $obdbManifestHash; obdb_database_sha256 = $obdbDatabaseHash; obdb_source_count = $obdbSourceCount; obdb_generation_candidate_count = $obdbGenerationCount; obdb_ecu_candidate_count = $obdbEcuCount; obdb_uds_command_candidate_count = $obdbCommandCount; obdb_signal_candidate_count = $obdbSignalCount; vehiclesdb_revision_patch_sha256 = $vehiclesDbRevisionPatchHash; vehiclesdb_revision_evidence_sha256 = $vehiclesDbRevisionEvidenceHash; vehiclesdb_revision = $vehiclesDbRevision; dtc_namespace_policy_sha256 = $dtcNamespacePolicyHash; oem_dtc_index_schema_sha256 = $oemDtcIndexSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; desktop_offline_entry = 'app/desktop'; desktop_supabase_env_forwarded = $false; desktop_offline_entry_patch_sha256 = (Get-FileHash -LiteralPath 'apply-desktop-offline-entry-run90.cjs' -Algorithm SHA256).Hash.ToLowerInvariant(); patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-normalize-windows-sql-migration-line-endings+run74-astra-ch-research-pack-verification+run75-close-test-database-on-error+run76-desktop-row-types-fix+run77-lifecycle-session-output+run78-rdw-ui-contract+run79-typed-technical-payload-renderer+run80-technical-payload-schema-validation+run81-strict-dtc-oem-supersession-validation+run82-engine-transmission-pair-evidence-guard+run83-engine-transmission-pair-source-manifest-binding+run84-engine-transmission-pair-code-binding+run85-technical-step-order-validation+run86-dtc-namespace-code-range-validation+run87-conservative-dtc-namespace-quarantine+run88-obdb-16-source-count-sync+run89-vehiclesdb-revision-manifest-binding+run90-offline-desktop-entry+run77-unique-exact-configuration-ui-guard'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; vehicle_catalog_package_schema_sha256 = $vehicleCatalogPackageSchemaHash; engine_transmission_pair_evidence_patch_sha256 = $pairEvidencePatchHash; engine_transmission_pair_code_binding_patch_sha256 = $pairCodeBindingPatchHash; technical_payload_step_order_patch_sha256 = $technicalStepOrderPatchHash; dtc_namespace_range_patch_sha256 = $dtcNamespaceRangePatchHash; dtc_namespace_range_correction_patch_sha256 = $dtcNamespaceRangeCorrectionPatchHash; obdb_source_count_patch_sha256 = $obdbSourceCountPatchHash; obdb_manifest_sha256 = $obdbManifestHash; obdb_database_sha256 = $obdbDatabaseHash; obdb_source_count = $obdbSourceCount; obdb_generation_candidate_count = $obdbGenerationCount; obdb_ecu_candidate_count = $obdbEcuCount; obdb_uds_command_candidate_count = $obdbCommandCount; obdb_signal_candidate_count = $obdbSignalCount; vehiclesdb_revision_patch_sha256 = $vehiclesDbRevisionPatchHash; vehiclesdb_revision_evidence_sha256 = $vehiclesDbRevisionEvidenceHash; vehiclesdb_revision = $vehiclesDbRevision; dtc_namespace_policy_sha256 = $dtcNamespacePolicyHash; dtc_research_range_quarantine_patch_sha256 = $dtcResearchQuarantinePatchHash; oem_dtc_index_schema_sha256 = $oemDtcIndexSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; desktop_offline_entry = 'app/desktop'; desktop_supabase_env_forwarded = $false; desktop_offline_entry_patch_sha256 = (Get-FileHash -LiteralPath 'apply-desktop-offline-entry-run90.cjs' -Algorithm SHA256).Hash.ToLowerInvariant(); patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-normalize-windows-sql-migration-line-endings+run74-astra-ch-research-pack-verification+run75-close-test-database-on-error+run76-desktop-row-types-fix+run77-lifecycle-session-output+run78-rdw-ui-contract+run79-typed-technical-payload-renderer+run80-technical-payload-schema-validation+run81-strict-dtc-oem-supersession-validation+run82-engine-transmission-pair-evidence-guard+run83-engine-transmission-pair-source-manifest-binding+run84-engine-transmission-pair-code-binding+run85-technical-step-order-validation+run86-dtc-namespace-code-range-validation+run87-conservative-dtc-namespace-quarantine+run88-obdb-16-source-count-sync+run89-vehiclesdb-revision-manifest-binding+run90-offline-desktop-entry+run77-unique-exact-configuration-ui-guard+run91-obdex-dtc-research-range-quarantine'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Upload standalone build metadata for independent installer hash verification
         if: always() && hashFiles('build-metadata.json') != ''
@@ -2261,6 +2286,9 @@ jobs:
           path: |
             desktop-source-inventory.txt
             apply-vehicle-config-ui-guard-run77.cjs
+            apply-dtc-research-range-quarantine-run91.cjs
+            dtc-research-range-quarantine-run91.log
+            dtc-research-range-quarantine-run91-tests.log
             vehicle-config-ui-guard-run77.log
             vehicle-config-ui-guard-run77-tests.log
             desktop-source-technical-surface.txt
@@ -2268,6 +2296,7 @@ jobs:
             windows-lifecycle-staging/desktop-source/package.json
             windows-lifecycle-staging/desktop-source/package-lock.json
             windows-lifecycle-staging/desktop-source/scripts/prepare-electron-runtime.cjs
+            windows-lifecycle-staging/desktop-source/scripts/patches/apply-dtc-research-range-quarantine-run91.cjs
             windows-lifecycle-staging/desktop-source/components/**
             windows-lifecycle-staging/desktop-source/electron/**
             windows-lifecycle-staging/desktop-source/tests/**

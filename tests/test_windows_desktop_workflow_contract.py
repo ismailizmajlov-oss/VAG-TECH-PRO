@@ -361,6 +361,7 @@ def main() -> None:
         "run79-typed-technical-payload-renderer",
         "run80-technical-payload-schema-validation",
         "run81-strict-dtc-oem-supersession-validation",
+        "run91-obdex-dtc-research-range-quarantine",
     )
     missing_patch_set = [marker for marker in required_patch_set if marker not in patch_set_line]
     if missing_patch_set:
@@ -390,6 +391,43 @@ def main() -> None:
             raise SystemExit(f"Dedicated offline desktop entry step is incomplete: {required_offline_entry_step}")
     if not text.index(offline_entry_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker):
         raise SystemExit("Dedicated offline desktop entry must be applied and tested before desktop tests and NSIS packaging")
+
+    run91_paths = (
+        "apply-dtc-research-range-quarantine-run91.cjs",
+        "tests/dtc-research-range-quarantine.test.cjs",
+        "docs/research/OBDEX_DTC_NAMESPACE_QUARANTINE_RUN91.md",
+    )
+    missing_run91_paths = [marker for marker in run91_paths if text.count(marker) < 2]
+    if missing_run91_paths:
+        raise SystemExit(f"Run91 DTC quarantine changes must trigger push and pull-request validation: {missing_run91_paths}")
+    run91_marker = "      - name: Quarantine unresolved OBDex DTC namespace ranges in research UI (run91)"
+    if run91_marker not in text:
+        raise SystemExit("Windows workflow does not apply the run91 OBDex DTC namespace quarantine patch")
+    run91_step = text.split(run91_marker, 1)[1].split("\n      - name:", 1)[0]
+    for required_run91_step in (
+        "node --check apply-dtc-research-range-quarantine-run91.cjs",
+        "node apply-dtc-research-range-quarantine-run91.cjs --desktop-root desktop-source",
+        "node --test desktop-source/tests/dtc-research-range-quarantine.test.cjs",
+        "scripts/patches/apply-dtc-research-range-quarantine-run91.cjs",
+        "unresolved_ranges_quarantined=true",
+        "production_import=false",
+        "policy_resource=app-runtime/data/policies",
+    ):
+        if required_run91_step not in run91_step:
+            raise SystemExit(f"Run91 DTC quarantine workflow step is incomplete: {required_run91_step}")
+    if not text.index(run91_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker):
+        raise SystemExit("Run91 DTC quarantine patch and tests must run before the full desktop suite and NSIS packaging")
+    metadata_run91 = text.split("      - name: Write build metadata", 1)[1].split("\n      - name:", 1)[0]
+    if "dtc_research_range_quarantine_patch_sha256 = $dtcResearchQuarantinePatchHash;" not in metadata_run91 or 'Get-FileHash -LiteralPath $dtcResearchQuarantinePatchPath' not in metadata_run91:
+        raise SystemExit("Build metadata must bind the run91 DTC quarantine patch SHA-256")
+    for artifact_marker in (
+        "apply-dtc-research-range-quarantine-run91.cjs",
+        "dtc-research-range-quarantine-run91.log",
+        "dtc-research-range-quarantine-run91-tests.log",
+        "windows-lifecycle-staging/desktop-source/scripts/patches/apply-dtc-research-range-quarantine-run91.cjs",
+    ):
+        if artifact_marker not in text:
+            raise SystemExit(f"Run91 DTC quarantine evidence artifact is missing: {artifact_marker}")
     cleanup_patch = (ROOT / "apply-local-core-test-cleanup-run75.cjs").read_text(encoding="utf-8")
     rights_fixture = 'generation_name:"Golf VII",market_scope:"RU",model_year:2017,engine_code_declared:"CZEA",transmission_code_declared:"DQ200",nickname:"Rights test"'
     if rights_fixture not in cleanup_patch or "rights-revocation fixture exact generation" not in cleanup_patch:

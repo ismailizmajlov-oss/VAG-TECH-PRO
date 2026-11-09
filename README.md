@@ -48,9 +48,29 @@ The current research snapshots contain useful public data, but none of the follo
 
 Each pack remains in its own namespace with its own manifest, attribution/license material, source revision and hashes. Share-Alike obligations are retained. Generic DTC and generic repair guidance are not linked to a VAG configuration or ECU.
 
+The OBDex research view applies the local DTC range policy rather than trusting the upstream namespace label alone. Rows in generic SAE/ISO ranges remain unreviewed research references; P34xx-P39xx, U3xxx, B3xxx and C3xxx are shown as namespace quarantine when they conflict with the local policy. No OBDex row is promoted into the production DTC index, linked to a VAG configuration or allowed to execute a diagnostic action.
+
 ## Production-data status — 2026-11-09
 
-### Windows CI verification — 2026-11-09
+### Latest Windows CI verification — run1007 (2026-11-09)
+
+[Windows desktop CI run 1007](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42616568018) completed successfully on 2026-11-09 for tested desktop/source revision cea2e2d3ee3d717989c4edbb185056ebb1924cc8. Both jobs passed: Windows x64 build-and-lifecycle and the separate Windows Server 2022 installer-compatibility lifecycle. The later main-branch commit dd2f843b97d86634b485c65a8b46d4917fd78be0 only records this CI evidence; it does not change the tested desktop source.
+
+Run 1007 checked the 62-entry central source register, 15-entry Russian/EAEU source register, 19 non-empty source manifests and 13-pack offline research manifest. It completed the Windows x64 build/lifecycle and Windows Server 2022 compatibility lifecycle. NSIS x64 installers 0.2.3 and 0.2.4 were built; the lifecycle covered clean installation, offline launch with external networking blocked, SQLite backup/restore, in-place upgrade, database integrity and uninstall while preserving the user database.
+
+Run 1007 does not establish native Windows 10/11 client acceptance. The dedicated job was skipped because native_windows_10_11.runner_gate_enabled=false; it requires the owner-controlled self-hosted runner labels self-hosted, windows, x64, vag-tech-pro-win10-11. The workflow recorder reports release_ready=false. Installers remain unsigned because no owner-supplied code-signing certificate is configured.
+
+Run 1007 artifact evidence:
+- Windows x64 installer/lifecycle artifact ID 13675940067, 1,369,403,910 bytes.
+- Desktop source-audit artifact ID 13675491195, 2,511,335 bytes, ZIP SHA-256 edd05cb0fd817843e36705982a1aaf12a165339375f0f47afaecddd92385f426; independently recomputed from the downloaded artifact.
+- Build-metadata artifact ID 13673413985, 2,977 bytes, ZIP SHA-256 b8191d7a0464dd0a061a29a38441f59df742d3a2931c2cea485267f147cc1c80; independently recomputed from the downloaded artifact.
+- Windows Server 2022 lifecycle artifact ID 13675512044, 7,367 bytes.
+- Installer VAG-TECH-PRO-Setup-0.2.3-x64.exe: 568,569,651 bytes, SHA-256 afb3197641940a9541079a613d2a1da67bcefa8e658b7000993fd801a0f1c0aa.
+- Installer VAG-TECH-PRO-Setup-0.2.4-x64.exe: 568,569,569 bytes, SHA-256 88457f9fddd0e4dfdc4fd795b698411d372e872d20f181814c05f6fae7d6a2b9.
+
+Build metadata pins source archive SHA-256 e041ce167f083192a11f4b86b19e7bbc51fe8a1bb8e732a0d2944229af713216, central source-register SHA-256 98406a1ae7ed260b566e22dd0e16de96304fff387a66c3280b64c71b86ec05f2, Russian/EAEU manifest SHA-256 a101ac1441998ad0e70a808e829b43d8146710d04029fd06eb19496e296a6de8, and source-manifest-index SHA-256 2e728fd2d7a2b8a6c71cc049418d8f798cb4085f8729aeb1745a02f51fd23936. Individual installer hashes are not substituted with the enclosing artifact ZIP digest.
+
+### Historical Windows CI verification — run981 (superseded)
 
 Windows desktop CI run87 (GitHub Actions run **981**, run ID `42566152309`) completed successfully on 2026-11-09 for main revision `bfe57d2a41fca0f647e24923706d37f97027abb7`: [run 981](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42566152309). Both jobs passed: `build-and-lifecycle` on GitHub-hosted Windows x64 and the separate Windows Server 2022 installer-compatibility lifecycle.
 
