@@ -31,7 +31,7 @@ test("Wikipedia engine-code candidate pack is licensed, pinned and non-actionabl
   assert.equal(summary.dtcFitment, false);
   assert.equal(summary.repairUseAllowed, false);
   assert.equal(summary.diagnosticExecutionAllowed, false);
-  assert.match(summary.attributionText, /CC BY-SA 4\.0/);
+  assert.match(summary.packManifestSha256, /^[a-f0-9]{64}$/);\n  assert.match(summary.attributionText, /CC BY-SA 4\\.0/);
   assert.match(summary.licenseNoticeText, /CC BY-SA 4\.0/);
   assert.equal(summary.qualityWarnings.length >= 4, true);
 });
@@ -45,7 +45,7 @@ test("Wikipedia candidate search returns row-level provenance and never fitment 
   assert.equal(row.applicabilityPrecision, "community_engine_code_candidate_only");
   assert.equal(row.reviewStatus, "candidate");
   assert.match(row.sourceUrl, /^https:\/\/en\.wikipedia\.org\/w\/index\.php\?oldid=\d+$/);
-  assert.match(row.sourceRowSha256, /^[a-f0-9]{64}$/);
+  assert.match(row.sourceRowSha256, /^[a-f0-9]{64}$/);\n  assert.match(row.packManifestSha256, /^[a-f0-9]{64}$/);
   assert.match(row.sourceSnapshotSha256, /^[a-f0-9]{64}$/);
   assert.match(row.sourceManifestSha256, /^[a-f0-9]{64}$/);
   for (const field of [
