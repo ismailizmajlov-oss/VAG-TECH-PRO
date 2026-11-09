@@ -128,7 +128,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
         self.assertTrue(source["research_pack_ingested"])
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["product_import_allowed"])
-        self.assertEqual(source["source_snapshot_sha256"], source["research_pack"]["counts"] and source["source_snapshot_sha256"])
+        self.assertEqual(source["source_snapshot_sha256"], source["research_pack"]["source_snapshot_sha256"])
         self.assertEqual(source["research_pack"]["pack_id"], "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0")
         self.assertEqual(source["research_pack"]["license"], "CC-BY-SA-4.0")
         self.assertEqual(source["research_pack"]["counts"]["candidate_rows"], 241)
