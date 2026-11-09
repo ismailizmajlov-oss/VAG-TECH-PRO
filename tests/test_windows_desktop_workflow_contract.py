@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Regression checks for Windows packaging and pinned research-pack alignment."""
 
+import base64
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -388,6 +390,11 @@ def main() -> None:
             raise SystemExit(f"Dedicated offline desktop entry step is incomplete: {required_offline_entry_step}")
     if not text.index(offline_entry_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker):
         raise SystemExit("Dedicated offline desktop entry must be applied and tested before desktop tests and NSIS packaging")
+    cleanup_patch = (ROOT / "apply-local-core-test-cleanup-run75.cjs").read_text(encoding="utf-8")
+    rights_fixture = 'generation_name:"Golf VII",market_scope:"RU",model_year:2017,engine_code_declared:"CZEA",transmission_code_declared:"DQ200",nickname:"Rights test"'
+    if rights_fixture not in cleanup_patch or "rights-revocation fixture exact generation" not in cleanup_patch:
+        raise SystemExit("Rights-revocation regression fixture must declare the exact generation required by the manual vehicle identity gate")
+
     metadata_marker = "      - name: Write build metadata"
     metadata_step_for_offline = text.split(metadata_marker, 1)[1].split("\n      - name:", 1)[0]
     if "desktop_offline_entry = 'app/desktop'" not in metadata_step_for_offline or "desktop_offline_entry_patch_sha256" not in metadata_step_for_offline:
@@ -498,6 +505,75 @@ def main() -> None:
         raise SystemExit("Windows metadata generation must fail closed when the OEM DTC schema is absent")
     if "Upload standalone build metadata for independent installer hash verification" in metadata_step:
         raise SystemExit("Build metadata step boundary extends into the following workflow step")
+
+    run76_path = ".github/patches/desktop-source-run76/**"
+    if text.count(run76_path) < 2:
+        raise SystemExit("Run76 source patch must trigger both push and pull-request Windows validation")
+    run76_dir = ROOT / ".github" / "patches" / "desktop-source-run76"
+    run76_parts = sorted(run76_dir.glob("part-*.b64"))
+    if len(run76_parts) != 4:
+        raise SystemExit(f"Run76 source patch must have four immutable chunks, found {len(run76_parts)}")
+    run76_encoded = "".join(part.read_text(encoding="ascii").strip() for part in run76_parts)
+    if len(run76_encoded) != 6088 or hashlib.sha256(run76_encoded.encode("ascii")).hexdigest() != "5279408a9793c3c09dc941bae651961348b9a86d703f31a0dbf6a2f89e67d0be":
+        raise SystemExit("Run76 source patch base64 length or SHA-256 is invalid")
+    try:
+        run76_compressed = base64.b64decode(run76_encoded, validate=True)
+    except Exception as error:
+        raise SystemExit(f"Run76 source patch base64 cannot be decoded: {error}") from error
+    if hashlib.sha256(run76_compressed).hexdigest() != "ad757edb4ec08c990b27593fe771b2c37565e07c521ed5b89a90c41386adeac3":
+        raise SystemExit("Run76 Brotli patch SHA-256 is invalid")
+    run76_marker = '$patchPartsDir76 = Join-Path $env:GITHUB_WORKSPACE ".github/patches/desktop-source-run76"'
+    if run76_marker not in text:
+        raise SystemExit("Windows workflow does not apply the run76 exact vehicle-identity patch")
+    run76_required = (
+        '$parts76.Count -ne 4',
+        '$encoded76.Length -ne 6088',
+        '$encodedHash76 -ne "5279408a9793c3c09dc941bae651961348b9a86d703f31a0dbf6a2f89e67d0be"',
+        '$compressedHash76 -ne "ad757edb4ec08c990b27593fe771b2c37565e07c521ed5b89a90c41386adeac3"',
+        '$patchHash76 -ne "f90613c8baa29c3197e2af2bf73523efd4d7956e90e185820d8d841a75500017"',
+        'git apply --check --unsafe-paths --directory=desktop-source $patchPath76',
+        'vehicle_identity_match_requires_generation_market_year=true',
+        'ambiguous_configuration_blocks_lookup=true',
+    )
+    missing_run76 = [marker for marker in run76_required if marker not in text]
+    if missing_run76:
+        raise SystemExit(f"Run76 exact vehicle-identity guard patch contract is incomplete: {missing_run76}")
+    run76_index = text.index(run76_marker)
+    run75_index = text.index("node apply-local-core-test-cleanup-run75.cjs")
+    desktop_tests_index = text.index("      - name: Run desktop, local core and research tests")
+    installer_index = text.index("      - name: Build first Windows x64 NSIS installer")
+    if not (run75_index < run76_index < desktop_tests_index < installer_index):
+        raise SystemExit("Run76 identity guard must apply after run75 cleanup and before desktop tests and NSIS packaging")
+
+    ui_guard_script = ROOT / "apply-vehicle-config-ui-guard-run77.cjs"
+    if not ui_guard_script.is_file():
+        raise SystemExit("Run77 exact-configuration UI guard patch script is missing")
+    ui_guard_text = ui_guard_script.read_text(encoding="utf-8")
+    ui_guard_required = (
+        "hasRequiredVehicleIdentity = Boolean",
+        "selectedVehicle.generation_name?.trim()",
+        'selectedVehicle.market_scope !== "UNKNOWN"',
+        "Number.isInteger(selectedVehicle.model_year)",
+        "selectedVehicle.engine_code_declared?.trim()",
+        "selectedVehicle.transmission_code_declared?.trim()",
+        "matchingConfigurations.length === 1",
+        "matchingConfigurations[0]?.id !== configurationId",
+    )
+    missing_ui_guard = [item for item in ui_guard_required if item not in ui_guard_text]
+    if missing_ui_guard:
+        raise SystemExit(f"Run77 UI guard does not enforce complete exact vehicle identity: {missing_ui_guard}")
+    ui_guard_apply_marker = "node apply-vehicle-config-ui-guard-run77.cjs --desktop-root desktop-source"
+    ui_guard_test_marker = "node --test desktop-source/tests/local-offline-workspace.test.cjs"
+    if ui_guard_apply_marker not in text or ui_guard_test_marker not in text:
+        raise SystemExit("Windows workflow must apply and test the run77 exact-configuration UI guard")
+    run76_apply_marker = "git apply --unsafe-paths --directory=desktop-source $patchPath76"
+    if not (text.index(run76_apply_marker) < text.index(ui_guard_apply_marker) < text.index(ui_guard_test_marker) < text.index(desktop_tests_marker)):
+        raise SystemExit("Run77 UI guard must apply after the run76 backend guard and pass its UI tests before the full desktop suite")
+    metadata_step = text.split("      - name: Write build metadata", 1)[1].split("\n      - name:", 1)[0]
+    if "vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash;" not in metadata_step or 'Get-FileHash -LiteralPath "apply-vehicle-config-ui-guard-run77.cjs"' not in metadata_step:
+        raise SystemExit("Windows build metadata must record the exact run77 UI guard patch SHA-256")
+    if text.count("apply-vehicle-config-ui-guard-run77.cjs") < 4:
+        raise SystemExit("Run77 UI guard script and its logs must be retained in Windows CI evidence artifacts")
 
 if __name__ == "__main__":
     main()
