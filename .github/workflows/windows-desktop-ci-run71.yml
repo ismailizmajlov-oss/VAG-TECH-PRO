@@ -1888,6 +1888,27 @@ jobs:
           New-Item -ItemType Directory -Force -Path (Split-Path -Parent $patchInSource) | Out-Null
           Copy-Item -LiteralPath "apply-dtc-namespace-range-guard-run87.cjs" -Destination $patchInSource -Force
 
+      - name: Apply OBDex generic DTC namespace display guard (run91)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-obdex-generic-dtc-policy-run91.cjs
+          node --check tests/dtc-namespace-research-patch-run91.test.cjs
+          node --test tests/dtc-namespace-research-patch-run91.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run91 generic DTC patch regression failed" }
+          node apply-obdex-generic-dtc-policy-run91.cjs --desktop-root desktop-source
+          if ($LASTEXITCODE -ne 0) { throw "Run91 generic DTC namespace policy patch failed" }
+          node --check desktop-source/lib/local-research-db.cjs
+          node --check desktop-source/tests/local-research-db.test.cjs
+          node --test desktop-source/tests/local-research-dtc-namespace-policy-run91.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run91 desktop generic DTC namespace contract failed" }
+          node --test desktop-source/tests/local-research-db.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run91 desktop research database tests failed" }
+          node --test desktop-source/tests/local-research-ui-contract.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run91 desktop research UI contract failed" }
+          $policyHash = (Get-FileHash -Path "desktop-source/data/policies/dtc-namespace-ranges.json" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "obdex_generic_dtc_policy=run91; policy_sha256=$policyHash; searchable=9204; quarantined=329; allowed=P0xxx,P2xxx,B0xxx,C0xxx,U0xxx; quarantined_ranges=P34xx-P39xx,U3xxx,B3xxx,C3xxx" | Add-Content -Path desktop-source/source-verification.txt
+
       - name: Apply dedicated offline desktop entry and isolate cloud credentials (run90)
         shell: pwsh
         run: |
