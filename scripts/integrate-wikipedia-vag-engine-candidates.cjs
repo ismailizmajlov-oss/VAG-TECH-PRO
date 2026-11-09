@@ -13,8 +13,8 @@ const EXPECTED = {
   license: "CC-BY-SA-4.0",
   attributionSha256: "1bfa85c4c0c7e5182cfc122148958096a17167e7242d48e7c035f4332ee62090",
   licenseNoticeSha256: "7ea86ece96546c760f170b0db7b6007d5238307dacca9f1203ce52355eb6500e",
-  wikitextSnapshotSha256: "91eda1c3cc72f2a70a5c64ef35a4f39a0d8dd4bfa98b6b090e4b37a1f0b50c64",
-  candidateContentSha256: "3b8fea5b4e9b7f1c3e6b1b9a9b4d8c2c1e3f3f6f9d0d7e8c1a2b3c4d5e6f7081",
+  wikitextSnapshotSha256: "91eda1afd5c65fd5ea1f756d6c1620a02c9457975780a5f6001c19c9e409a787",
+  candidateContentSha256: "3b8fea2cdbbfb5e42694d8316face591b61996b4e5bae7887df544da776387b5",
   wikitextPageHashes: {
     "1375791889": "3ba3cec7a350b70e179c9921bfb55c6665fdd0412ee0969bb3b63b2b29eff3bb",
     "1381198237": "d359d16ea4cac498e9039ef6cd0e2bfa91d38ee5c01fd8eae3fffa1360f2e85c",
@@ -113,6 +113,11 @@ function verifyPack(packDir, evidenceFile, args) {
     if (db.prepare("PRAGMA integrity_check").all()[0]?.integrity_check !== "ok" ||
         db.prepare("PRAGMA foreign_key_check").all().length) fail("Wikipedia candidate SQLite integrity check failed");
     const source = db.prepare("SELECT * FROM source_registry WHERE source_id=?").get(SOURCE_ID);
+    const candidateRows = db.prepare("SELECT candidate_code,source_revision_id,source_row_kind,source_row_number,source_row_sha256,candidate_value_text FROM engine_code_candidates ORDER BY candidate_code,source_revision_id,source_row_number").all().map((row) => [row.candidate_code,row.source_revision_id,row.source_row_kind,row.source_row_number,row.source_row_sha256,row.candidate_value_text]);
+    const candidateContentSha256 = sha256(Buffer.from(JSON.stringify(candidateRows), "utf8"));
+    const wikitextRows = manifest.pages.map((page) => [page.revision_id, page.wikitext_sha256]).sort((a, b) => a[0] - b[0]);
+    const wikitextSnapshotSha256 = sha256(Buffer.from(JSON.stringify(wikitextRows), "utf8"));
+    if (candidateContentSha256 !== EXPECTED.candidateContentSha256 || wikitextSnapshotSha256 !== EXPECTED.wikitextSnapshotSha256) fail("Wikipedia stable candidate content/Wikitext fingerprint mismatch");
     const counts = {
       sourceDocuments: db.prepare("SELECT count(*) AS n FROM source_documents").get().n,
       candidateRows: db.prepare("SELECT count(*) AS n FROM engine_code_candidates").get().n,
@@ -129,7 +134,7 @@ function verifyPack(packDir, evidenceFile, args) {
         counts.candidateRows !== EXPECTED.candidateRows || counts.uniqueCandidateCodes !== EXPECTED.uniqueCandidateCodes ||
         counts.invalidCandidates !== 0) fail("Wikipedia SQLite rights/count/applicability gate failed");
   } finally { db.close(); }
-  return { evidence, manifest, sourceManifest, files };
+  return { evidence, manifest, sourceManifest, files, candidateContentSha256: EXPECTED.candidateContentSha256, wikitextSnapshotSha256: EXPECTED.wikitextSnapshotSha256 };
 }
 
 function patchDesktop(desktopRoot) {
