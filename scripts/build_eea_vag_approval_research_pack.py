@@ -146,9 +146,14 @@ def make_filter_sql(raw_labels: list[str], table: dict[str, Any], query_kind: st
     raise ValueError("Unknown query kind")
 
 def api_request(sql: str, page: int = 1, page_size: int = PAGE_SIZE) -> tuple[bytes, dict[str, Any]]:
-    query = urllib.parse.urlencode({"query": sql, "p": page, "nrOfHits": page_size})
+    query = urllib.parse.urlencode({"query": sql, "p": page, "nrOfHits": page_size}, quote_via=urllib.parse.quote)
     url = API_URL + "?" + query
-    request = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": USER_AGENT})
+    request = urllib.request.Request(url, headers={
+        "Accept": "application/json, text/plain, */*",
+        "User-Agent": USER_AGENT,
+        "Referer": "https://discodata.eea.europa.eu/",
+        "Origin": "https://discodata.eea.europa.eu",
+    })
     last_error: Exception | None = None
     for attempt in range(4):
         try:
@@ -166,9 +171,12 @@ def api_request(sql: str, page: int = 1, page_size: int = PAGE_SIZE) -> tuple[by
                     raise ValueError("EEA SQL API response has no results array")
                 return raw, parsed
         except urllib.error.HTTPError as exc:
-            last_error = exc
+            body = exc.read(4096).decode("utf-8", "replace").strip()
+            last_error = RuntimeError(f"HTTP {exc.code} {exc.reason}; response={body[:1200]}")
+            if exc.code == 403:
+                raise RuntimeError(f"EEA Discodata refused the documented public SQL request (HTTP 403); response={body[:1200]}") from exc
             if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
-                raise
+                raise last_error from exc
         except (TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             if attempt == 3:
