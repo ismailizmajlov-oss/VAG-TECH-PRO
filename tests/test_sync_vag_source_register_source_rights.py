@@ -158,5 +158,35 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
                 sync(source, desktop)
 
 
+    def test_bolidenforum_vag_reference_remains_metadata_only_until_written_rights(self):
+        manifest_path = ROOT / "data" / "source-manifests" / "bolidenforum-vag-code-databases.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["source_id"], "bolidenforum-vag-engine-transmission-pr")
+        self.assertEqual(manifest["observed_public_metadata"]["engine_code_entries_claimed"], 966)
+        self.assertEqual(manifest["observed_public_metadata"]["transmission_entries_claimed"], 19)
+        self.assertEqual(manifest["observed_public_metadata"]["pr_code_entries_claimed"], 138)
+        self.assertIn("Alle Rechte vorbehalten", manifest["observed_public_metadata"]["copyright_notice"])
+        self.assertEqual(manifest["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(manifest["rights"]["data_license_status"], "all_rights_reserved_no_open_license_found")
+        for field in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed", "bulk_reuse_allowed", "derived_fact_export_allowed"):
+            self.assertEqual(manifest["rights"][field], "not_established")
+        self.assertIs(manifest["rights"]["redistribution_allowed"], False)
+        self.assertIs(manifest["data_ingested"], False)
+        self.assertIs(manifest["product_import_allowed"], False)
+        self.assertIsNone(manifest["snapshot"]["source_snapshot_sha256"])
+        self.assertEqual(manifest["snapshot"]["hash_status"], "not_downloaded_no_snapshot")
+        self.assertIs(manifest["applicability"]["exact_engine_transmission_pairs"], False)
+        self.assertIs(manifest["applicability"]["ru_eaeu_applicability"], False)
+
+        register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+        matches = [item for item in register["sources"] if item["source_id"] == manifest["source_id"]]
+        self.assertEqual(len(matches), 1)
+        source = matches[0]
+        self.assertIs(source["data_ingested"], False)
+        self.assertIs(source["product_import_allowed"], False)
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertIsNone(source["source_snapshot_sha256")
+
+
 if __name__ == "__main__":
     unittest.main()
