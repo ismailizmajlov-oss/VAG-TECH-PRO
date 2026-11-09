@@ -155,5 +155,31 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
         self.assertEqual(source["rights"]["offline_cache_allowed"], "not_established")
 
+
+    def test_2026_11_09_otts_and_sbkts_evidence_remains_separate(self):
+        source = self.source
+        reconciliation = source["access"]["cross_register_reconciliation_2026_11_09"]
+        self.assertEqual(reconciliation["ot_ts_search_index_date_filters"], ["08.11.2026", "09.11.2026"])
+        self.assertEqual(reconciliation["ot_ts_filter_options_observed"], ["Volkswagen AG"])
+        self.assertFalse(reconciliation["audi_ag_found_in_otts_indexed_page"])
+        self.assertEqual(reconciliation["esbkts_search_result_count"], 155)
+        self.assertEqual(reconciliation["esbkts_filter_options_observed"], ["AUDI AG", "Volkswagen AG"])
+        rows = reconciliation["sample_sbkt_records"]
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({row["document_type"] for row in rows}, {"SBKTS"})
+        self.assertEqual({row["brand"] for row in rows}, {"VOLKSWAGEN"})
+        self.assertEqual({row["vehicle_type"] for row in rows}, {"FV6462HADCG", "SVW71421GT"})
+        self.assertTrue(all(row["type_value_role"] == "vehicle_type_identifier_not_engine_or_gearbox_code" for row in rows))
+        self.assertTrue(all(row["issue_date"] == "2026-11-04" for row in rows))
+        self.assertFalse(reconciliation["raw_page_bytes_captured"])
+        self.assertIsNone(reconciliation["source_snapshot_sha256"])
+        self.assertFalse(reconciliation["pdf_downloaded"])
+        self.assertFalse(reconciliation["data_ingested"])
+        self.assertFalse(reconciliation["product_import_allowed"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(source["rights"]["offline_cache_allowed"], "not_established")
+        self.assertEqual(source["rights"]["bulk_reuse_allowed"], "not_established")
+
+
 if __name__ == "__main__":
     unittest.main()
