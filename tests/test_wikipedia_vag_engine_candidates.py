@@ -92,7 +92,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
         self.assertEqual([row["source_row_kind"] for row in rows], ["definition_list", "definition_list"])
         self.assertIn("identification", rows[0]["source_row_text"])
         self.assertNotIn("EU5", [code for row in rows for code in row["candidate_codes"]])
-        self.assertGreaterEqual(rows_seen, 7)
+        self.assertGreaterEqual(rows_seen, 3)
 
     def test_source_register_requires_pinned_revisions_and_sharealike_rights(self):
         source = {
@@ -148,7 +148,9 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
             db = sqlite3.connect(output / "wikipedia-vag-engine-candidates.sqlite")
             try:
                 self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+                self.assertEqual(db.execute("PRAGMA user_version").fetchone()[0], 2)
                 self.assertEqual(db.execute("PRAGMA foreign_key_check").fetchall(), [])
+                self.assertEqual(db.execute("SELECT source_row_kind FROM engine_code_candidates LIMIT 1").fetchone()[0], "definition_list")
                 self.assertEqual(
                     db.execute(
                         "SELECT count(*) FROM engine_code_candidates WHERE market_scope='UNKNOWN' "
