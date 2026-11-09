@@ -181,5 +181,42 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         self.assertEqual(source["rights"]["bulk_reuse_allowed"], "not_established")
 
 
+    def test_2026_11_09_paid_report_forms_are_participant_scoped_and_not_reuse_rights(self):
+        source = self.source
+        observation = source["access"]["official_paid_report_forms_observation_2026_11_09"]
+        self.assertEqual(observation["forms_page_url"], "https://elpts.ru/formy-platnyh-otchetov-2/")
+        self.assertEqual(observation["appendix_title"], "Приложение к приказу АО «Электронный паспорт» от 02.10.2026 № 10/81-26")
+        self.assertEqual(observation["appendix_pages"], 20)
+        self.assertTrue(observation["homepage_access_terms"]["sep_paid_reports_require_separate_additional_agreement"])
+        self.assertIn("help.elpts.ru", observation["homepage_access_terms"]["sep_request_channel"])
+        forms = {item["form"]: item for item in observation["report_forms"]}
+        self.assertEqual(forms["R3"]["delivery_frequency"], "weekly")
+        self.assertEqual(forms["R3"]["price_rub_per_row_including_vat"], 180)
+        self.assertTrue(forms["R3"]["vin_field"])
+        self.assertTrue(forms["R3"]["otts_number_field"])
+        self.assertFalse(forms["R3"]["engine_code_field"])
+        self.assertFalse(forms["R3"]["gearbox_code_field"])
+        self.assertFalse(forms["R3"]["general_registry_corpus"])
+        self.assertEqual(forms["R4"]["price_rub_per_row_including_vat"], 120)
+        self.assertFalse(forms["R4"]["vin_field"])
+        self.assertTrue(forms["R4"]["otts_number_field"])
+        self.assertFalse(forms["R4"]["engine_code_field"])
+        self.assertFalse(forms["R4"]["gearbox_code_field"])
+        self.assertEqual(forms["R"]["price_rub_per_row_including_vat"], 15)
+        self.assertIn("gearbox make/type", forms["R"]["selected_fields"])
+        self.assertFalse(forms["R"]["exact_vag_gearbox_code_field"])
+        self.assertFalse(observation["raw_pdf_bytes_downloaded"])
+        self.assertFalse(observation["report_data_downloaded"])
+        self.assertFalse(observation["data_ingested"])
+        self.assertFalse(observation["product_import_allowed"])
+        self.assertIsNone(observation["source_snapshot_sha256"])
+        self.assertEqual(observation["rights_effect"], "none; contract and report fees are access conditions only; separate written reuse/redistribution permission remains required")
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(source["rights"]["offline_cache_allowed"], "not_established")
+        self.assertEqual(source["rights"]["bulk_reuse_allowed"], "not_established")
+        self.assertEqual(source["rights"]["redistribution_allowed"], "not_established")
+
+
+
 if __name__ == "__main__":
     unittest.main()
