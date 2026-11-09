@@ -577,13 +577,19 @@ def verify_pack(out_dir: Path) -> dict[str, Any]:
         raise ValueError("EEA research pack identity mismatch")
     if manifest.get("license", {}).get("id") != LICENSE_ID or manifest.get("applicability", {}).get("product_import_allowed") is not False:
         raise ValueError("EEA research pack rights/applicability gate failed")
+    if manifest.get("market_scope") != ["EU-27", "IS", "NO"] or manifest.get("attribution") != ATTRIBUTION_TEXT:
+        raise ValueError("EEA market scope or attribution text mismatch")
+    if len(manifest.get("source_manifest_sha256", "")) != 64 or len(manifest.get("filtered_snapshot_sha256", "")) != 64:
+        raise ValueError("EEA source manifest or filtered snapshot hash is missing")
     db_path = out_dir / manifest["database_file"]
     if sha256_file(db_path) != manifest["database_sha256"]:
         raise ValueError("EEA SQLite SHA-256 mismatch")
+    raw_file_map = {}
     for item in manifest["raw_response_files"]:
         path = out_dir / item["file"]
-        if not path.is_file() or sha256_file(path) != item["sha256"]:
-            raise ValueError(f"EEA raw page SHA-256 mismatch: {item['file']}")
+        if not path.is_file() or sha256_file(path) != item["sha256"] or path.stat().st_size != item["size_bytes"]:
+            raise ValueError(f"EEA raw page SHA-256/size mismatch: {item['file']}")
+        raw_file_map[item["file"]] = item["sha256"]
     db = sqlite3.connect(db_path)
     db.row_factory = sqlite3.Row
     try:
@@ -592,8 +598,60 @@ def verify_pack(out_dir: Path) -> dict[str, Any]:
         if db.execute("PRAGMA foreign_key_check").fetchall():
             raise ValueError("EEA SQLite foreign_key_check failed")
         registry = db.execute("SELECT * FROM source_registry").fetchone()
-        if not registry or registry["product_import_allowed"] != 0 or registry["exact_vehicle_fitment"] != 0:
-            raise ValueError("EEA source registry was promoted beyond research-only")
+        if not registry:
+            raise ValueError("EEA source registry row is missing")
+        if registry["source_id"] != SOURCE_ID or registry["publisher"] != PUBLISHER or registry["source_url"] != manifest["source_url"]:
+            raise ValueError("EEA source registry identity mismatch")
+        if registry["license_id"] != LICENSE_ID or registry["license_url"] != LICENSE_URL:
+            raise ValueError("EEA source registry licence mismatch")
+        if registry["permission_status"] != "approved_by_published_license_for_reuse_with_attribution":
+            raise ValueError("EEA source registry published-licence status mismatch")
+        for field in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed", "bulk_reuse_allowed", "redistribution_allowed", "attribution_required"):
+            if registry[field] != 1:
+                raise ValueError(f"EEA source registry rights gate failed: {field}")
+        for field in ("product_import_allowed", "exact_vehicle_fitment", "exact_factory_engine_code", "exact_factory_gearbox_code", "engine_gearbox_pairing", "ecu_dtc_fitment", "repair_applicability", "model_generation_verified"):
+            if registry[field] != 0:
+                raise ValueError(f"EEA source registry was promoted beyond research-only: {field}")
+        if registry["source_manifest_sha256"] != manifest["source_manifest_sha256"] or registry["filtered_snapshot_sha256"] != manifest["filtered_snapshot_sha256"]:
+            raise ValueError("EEA source registry hashes do not match pack manifest")
+        if registry["market_scope"] != MARKET_SCOPE or registry["applicability_precision"] != APPLICABILITY or registry["attribution_text"] != ATTRIBUTION_TEXT:
+            raise ValueError("EEA source registry market/applicability/attribution mismatch")
+
+        db_tables = db.execute("SELECT * FROM source_tables ORDER BY table_id").fetchall()
+        manifest_tables = sorted(manifest["source_tables"], key=lambda item: item["table_id"])
+        if len(db_tables) != len(manifest_tables):
+            raise ValueError("EEA source table count mismatch")
+        for actual, expected in zip(db_tables, manifest_tables):
+            actual_values = (
+                actual["table_id"], actual["sql_table"], actual["metadata_url"], actual["source_revision"],
+                actual["registration_year"], actual["data_status"], actual["row_count"], actual["query_sha256"],
+            )
+            expected_values = (
+                expected["table_id"], expected["sql_name"], expected["metadata_url"], expected["source_revision"],
+                expected["registration_year"], expected["data_status"], expected["rows"], expected["query_sha256"],
+            )
+            if actual_values != expected_values:
+                raise ValueError(f"EEA source table provenance mismatch: {expected['table_id']}")
+
+        db_pages = db.execute("SELECT * FROM source_pages ORDER BY table_id,page_number").fetchall()
+        if len(db_pages) != len(raw_file_map):
+            raise ValueError("EEA raw page manifest count mismatch")
+        page_payload = []
+        for page in db_pages:
+            if raw_file_map.get(page["relative_file"]) != page["response_sha256"]:
+                raise ValueError(f"EEA page database/manifest hash mismatch: {page['relative_file']}")
+            page_payload.append({
+                "table_id": page["table_id"], "page": page["page_number"],
+                "sha256": page["response_sha256"], "query_sha256": page["query_sha256"],
+            })
+        table_payload = [
+            {"table_id": item["table_id"], "revision": item["source_revision"], "query_sha256": item["query_sha256"], "rows": item["rows"]}
+            for item in manifest["source_tables"]
+        ]
+        calculated_snapshot = sha256_bytes(canonical_json({"source_id": SOURCE_ID, "tables": table_payload, "pages": page_payload}))
+        if calculated_snapshot != manifest["filtered_snapshot_sha256"]:
+            raise ValueError("EEA filtered source snapshot hash mismatch")
+
         rows = db.execute("SELECT * FROM approval_variants ORDER BY id").fetchall()
         if len(rows) != manifest["counts"]["total_rows"]:
             raise ValueError("EEA SQLite row count does not match pack manifest")
@@ -604,13 +662,17 @@ def verify_pack(out_dir: Path) -> dict[str, Any]:
             reject_personal_fields(raw)
             if sha256_bytes(canonical_json(raw)) != row["source_record_sha256"]:
                 raise ValueError(f"EEA row hash mismatch at id={row['id']}")
+            if map_vag_make(row_value(raw, "Mk")) != row["brand_key"] or str(row_value(raw, "Mk")) != row["make_raw"]:
+                raise ValueError(f"EEA raw make/brand mapping mismatch at id={row['id']}")
+            if int(row_value(raw, "Year")) != row["registration_year"] or str(row_value(raw, "Status")).upper() != row["data_status"]:
+                raise ValueError(f"EEA raw year/status mismatch at id={row['id']}")
             if row["model_year"] is not None or row["engine_code"] is not None or row["gearbox_code"] is not None:
                 raise ValueError("EEA candidate contains inferred model year or factory powertrain code")
             for field in ("exact_vehicle_fitment", "engine_gearbox_pairing", "ecu_dtc_fitment", "repair_applicability"):
                 if row[field] != 0:
                     raise ValueError(f"EEA candidate unexpectedly enables {field}")
-            if row["review_status"] != "candidate_only" or row["applicability_precision"] != APPLICABILITY:
-                raise ValueError("EEA candidate review/applicability precision mismatch")
+            if row["review_status"] != "candidate_only" or row["applicability_precision"] != APPLICABILITY or row["market_scope"] != MARKET_SCOPE:
+                raise ValueError("EEA candidate review/applicability/market precision mismatch")
             brand_counts[row["brand_key"]] = brand_counts.get(row["brand_key"], 0) + 1
             key = (row["registration_year"], row["data_status"])
             year_status[key] = year_status.get(key, 0) + 1
