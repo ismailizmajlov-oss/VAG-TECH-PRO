@@ -372,6 +372,13 @@ def main() -> None:
         raise SystemExit(f"Desktop source audit must exclude generated directory trees by path segment: {missing_source_inventory_contract}")
     if "Upload desktop source audit evidence" not in text or "vag-tech-pro-desktop-source-audit-" not in text:
         raise SystemExit("Small desktop source audit artifact is not uploaded independently")
+    audit_copy_marker = "      - name: Mirror patched desktop source and ASTRA integration into audit staging"
+    if audit_copy_marker not in text:
+        raise SystemExit("Desktop source audit mirror step is missing")
+    audit_copy_step = text.split(audit_copy_marker, 1)[1].split("\\n      - name:", 1)[0]
+    for required_audit_file in ('"package.json"', '"package-lock.json"', '"scripts/prepare-electron-runtime.cjs"'):
+        if required_audit_file not in audit_copy_step:
+            raise SystemExit(f"Desktop source audit artifact omits runtime packaging evidence: {required_audit_file}")
     if 'foreach ($folder in @("scripts", "lib", "app", "components", "electron", "tests"' not in text:
         raise SystemExit("Windows lifecycle artifact does not preserve the desktop app, UI and test sources")
 
