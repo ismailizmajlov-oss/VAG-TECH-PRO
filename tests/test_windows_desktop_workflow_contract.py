@@ -390,6 +390,11 @@ def main() -> None:
             raise SystemExit(f"Dedicated offline desktop entry step is incomplete: {required_offline_entry_step}")
     if not text.index(offline_entry_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker):
         raise SystemExit("Dedicated offline desktop entry must be applied and tested before desktop tests and NSIS packaging")
+    cleanup_patch = (ROOT / "apply-local-core-test-cleanup-run75.cjs").read_text(encoding="utf-8")
+    rights_fixture = 'generation_name:"Golf VII",market_scope:"RU",model_year:2017,engine_code_declared:"CZEA",transmission_code_declared:"DQ200",nickname:"Rights test"'
+    if rights_fixture not in cleanup_patch or "rights-revocation fixture exact generation" not in cleanup_patch:
+        raise SystemExit("Rights-revocation regression fixture must declare the exact generation required by the manual vehicle identity gate")
+
     metadata_marker = "      - name: Write build metadata"
     metadata_step_for_offline = text.split(metadata_marker, 1)[1].split("\n      - name:", 1)[0]
     if "desktop_offline_entry = 'app/desktop'" not in metadata_step_for_offline or "desktop_offline_entry_patch_sha256" not in metadata_step_for_offline:
