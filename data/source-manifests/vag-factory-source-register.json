@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-09",
+  "updated_at": "2026-11-10",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1224,6 +1224,57 @@
         "evidence_summary": "Interstandart states that FGIS Reestr KTS collects, stores, maintains and provides information on OTTS, OTSH, cancellation notices and SBKTS. It also states that accredited bodies/laboratories use specialized software to submit records to the Rosstandart server.",
         "data_downloaded": false,
         "source_snapshot_sha256": null
+      },
+      "rosstandart_order_2038_schema_review": {
+        "reviewed_at": "2026-11-10",
+        "evidence_url": "https://law.tks.ru/document/779154",
+        "evidence_quality": "secondary_republication_of_Rosstandart_Order_2038_current_text; primary_official_signed_copy_not_retrieved",
+        "order": "Rosstandart Order No. 2038 dated 2025-09-24, as amended by Order No. 2335 dated 2025-10-30",
+        "effective_from": "2025-10-01",
+        "ot_ts_internal_fgis_fields": {
+          "engine_descriptor_fields": [
+            50,
+            51,
+            52,
+            53,
+            54
+          ],
+          "engine_make_type_field": 50,
+          "structured_gearbox_field_present": false,
+          "gearbox_detail_route": "Annex 1 PDF field 49 and/or full OTTS/OTSH PDF field 80; actual public PDF access and reuse rights remain unverified",
+          "model_year_field_present": false,
+          "approval_dates_are_not_model_year": true
+        },
+        "sbkts_internal_fgis_fields": {
+          "transmission_field": 63,
+          "clutch_make_type_field": 67,
+          "gearbox_make_type_field": 68,
+          "vin_field": 15,
+          "production_year_field": 16,
+          "personal_data_fields": [
+            21,
+            28
+          ],
+          "document_kind": "SBKTS/ESBKTS",
+          "allowed_as_otts_fitment_evidence": false,
+          "exclusion_reason": "SBKTS is an individual-vehicle certificate and includes VIN/PII; it is not an OTTS type-approval record"
+        },
+        "public_annex_2": {
+          "field_count": 28,
+          "document_scope": [
+            "OTTS",
+            "EOTTS",
+            "OTSH",
+            "EOTSH"
+          ],
+          "annex_1_pdf_field": 19,
+          "structured_engine_fields_present": false,
+          "structured_gearbox_fields_present": false,
+          "engine_or_gearbox_values_may_appear_in_pdf": true,
+          "public_search_scope": "electronically_issued_records_only",
+          "official_endpoint_status": "not_resolved"
+        },
+        "rights_effect": "none; Order 2038 establishes a publication/search obligation for specified electronic-record fields, not bulk extraction, offline caching, commercial display, derivative-database creation or PDF redistribution rights"
       }
     },
     {
