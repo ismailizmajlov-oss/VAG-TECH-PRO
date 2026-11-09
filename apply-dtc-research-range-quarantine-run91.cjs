@@ -194,18 +194,34 @@ function classifyDtcNamespace(code) {
   );
 
   let nextUi = ui;
-  nextUi = replaceOnce(
-    nextUi,
-    "  sourceSha256?: string;\n",
-    "  sourceSha256?: string;\n  sourceRecordSha256?: string;\n",
-    "OBDex per-record hash type",
-  );
-  nextUi = replaceOnce(
-    nextUi,
-    "  namespace?: string;\n  definition?: string;",
-    "  namespace?: string;\n  sourceNamespaceLabel?: string;\n  allocationStatus?: string;\n  allocationWarning?: string;\n  namespacePolicyRevision?: string;\n  diagnosticExecutionAllowed?: boolean;\n  definition?: string;",
-    "research row type",
-  );
+  let researchRowBlock = nextUi.match(/type ResearchRow = \{([\s\S]*?)\n\};/);
+  if (!researchRowBlock) throw new Error("ResearchRow type block is missing");
+  if (!/^\s*sourceRecordSha256\?: string;\s*$/m.test(researchRowBlock[1])) {
+    nextUi = replaceOnce(
+      nextUi,
+      "  sourceSha256?: string;\n",
+      "  sourceSha256?: string;\n  sourceRecordSha256?: string;\n",
+      "OBDex per-record hash type",
+    );
+  }
+  researchRowBlock = nextUi.match(/type ResearchRow = \{([\s\S]*?)\n\};/);
+  if (!/^\s*sourceNamespaceLabel\?: string;\s*$/m.test(researchRowBlock[1])) {
+    nextUi = replaceOnce(
+      nextUi,
+      "  namespace?: string;\n",
+      "  namespace?: string;\n  sourceNamespaceLabel?: string;\n  allocationStatus?: string;\n  allocationWarning?: string;\n  namespacePolicyRevision?: string;\n",
+      "research row namespace fields",
+    );
+  }
+  researchRowBlock = nextUi.match(/type ResearchRow = \{([\s\S]*?)\n\};/);
+  if (!/^\s*diagnosticExecutionAllowed\?: boolean;\s*$/m.test(researchRowBlock[1])) {
+    nextUi = replaceOnce(
+      nextUi,
+      "  namespacePolicyRevision?: string;\n",
+      "  namespacePolicyRevision?: string;\n  diagnosticExecutionAllowed?: boolean;\n",
+      "research row diagnostic safety field",
+    );
+  }
 
   nextUi = replaceOnce(
     nextUi,
@@ -373,6 +389,10 @@ test("run91 DTC research UI distinguishes generic rows from unresolved namespace
   assert.ok(source.includes('row.allocationStatus === "generic_range_unreviewed" ? "RESEARCH ONLY" : "QUARANTINE"'));
   assert.match(source, /row\.allocationWarning/);
   assert.ok(source.includes("sourceRecordSha256?: string;"));
+  const researchRow = source.match(/type ResearchRow = \{([\s\S]*?)\n\};/);
+  assert.ok(researchRow, "ResearchRow type must remain explicit");
+  assert.equal((researchRow[1].match(/^\s*sourceRecordSha256\?: string;\s*$/gm) || []).length, 1);
+  assert.equal((researchRow[1].match(/^\s*diagnosticExecutionAllowed\?: boolean;\s*$/gm) || []).length, 1);
   assert.match(source, /row\.sourceNamespaceLabel/);
   assert.ok(source.includes("Описание OBDex (не проверено)"));
   assert.ok(source.includes("Непроверенные возможные причины из OBDex"));
