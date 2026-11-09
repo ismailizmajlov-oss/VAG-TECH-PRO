@@ -404,7 +404,7 @@ def main() -> None:
     wikipedia_candidate_marker = "      - name: Integrate Wikipedia VAG engine-code candidates as a separate read-only research pack (run91)"
     if wikipedia_candidate_marker not in text:
         raise SystemExit("Windows workflow does not integrate the separately licensed Wikipedia candidate pack")
-    wikipedia_candidate_step = text.split(wikipedia_candidate_marker, 1)[1].split("\\n      - name:", 1)[0]
+    wikipedia_candidate_step = text.split(wikipedia_candidate_marker, 1)[1].split("\n      - name:", 1)[0]
     for required_wikipedia_step in (
         "node --test tests/wikipedia-engine-candidate-pack-run91.test.cjs",
         "node apply-wikipedia-engine-candidate-ui-run91.cjs --desktop-root desktop-source",
