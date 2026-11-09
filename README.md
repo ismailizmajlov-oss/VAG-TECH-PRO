@@ -279,6 +279,14 @@ No account, credentials, access request, API call, paid terms or data download w
 
 Until the data and native-platform blockers are cleared, the application must not be described as a ready professional repair database. The generic and candidate research packs are supplementary references only.
 
+## ELPTS paid-report scope and eligibility recheck — 2026-11-09
+
+The official ELPTS homepage states that paid AS SEP reports are provided to participants under service agreements and require a separate additional agreement after a request through the Help Center. For AS EOTTS, reports for certification bodies or applicant organizations are provided under an invoice-contract after a request and prior approval; the operator may decline a request. The official [paid-report forms page](https://elpts.ru/formy-platnyh-otchetov-2/) links a 20-page appendix to AO «Электронный паспорт» Order No. 10/81-26 dated 2026-10-02.
+
+The appendix defines weekly R3/R4 report forms for vehicles where the participant is the manufacturer, foreign-manufacturer representative, or acts under that organization's authorization. R3 costs 180 RUB per row including VAT and contains an OTTS number/date plus vehicle descriptors and VIN; R4 costs 120 RUB per row and contains an OTTS number/date plus vehicle descriptors. Neither form exposes an engine code, gearbox code, ECU or exact engine/gearbox pair. The separate daily R report costs 15 RUB per row and includes gearbox make/type wording, but not an exact VAG factory gearbox code or a general OTTS corpus.
+
+This is a potentially useful access route only for an eligible manufacturer/representative and only for its participant-scoped report population. Fees and a report contract do **not** grant VAG TECH PRO rights to copy the reports into SQLite, cache them offline, display them to third parties or redistribute them. No report was requested or acquired, no paid terms were accepted, no account was created, and no report bytes or source SHA-256 are claimed. All ELPTS reuse flags remain not established / permission required. See [the detailed report-form review](docs/research/ELPTS_PAID_REPORT_FORMS_SCOPE_REVIEW_2026-11-09.md).
+
 ## Historical research and schemas
 
 - [OBDex generic acquisition report](docs/research/OBDEX_RUN_2026-11-02.md)
