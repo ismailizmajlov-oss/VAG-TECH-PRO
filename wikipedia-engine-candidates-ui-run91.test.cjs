@@ -20,7 +20,7 @@ test("Wikipedia candidate UI labels the data as candidate-only and disclaims rep
   assert.match(component, /qualityWarnings/);
   assert.match(component, /sourceRowSha256/);
   assert.match(component, /sourceSnapshotSha256/);
-  assert.match(component, /sourceManifestSha256/);
+  assert.match(component, /sourceManifestSha256/);\n  assert.match(component, /packManifestSha256/);
   assert.doesNotMatch(component, /Импортировать|Добавить в каталог|Применить к автомобилю/);
 });
 
