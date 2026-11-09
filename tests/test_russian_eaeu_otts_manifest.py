@@ -271,5 +271,46 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
 
+    def test_kyrgyz_public_registry_recheck_2026_11_09_is_metadata_only(self):
+        source = self.sources["kyrgyz-single-window-public-registry"]
+        observed = source["observed_public_query"]
+        latest = observed["latest_official_recheck"]
+        self.assertEqual(latest["observed_at"], "2026-11-09")
+        self.assertEqual(latest["official_portal_url"], "https://trade.kg/")
+        self.assertEqual(latest["official_registry_landing_url"], "https://trade.kg/registry?tab=OTTS.otts")
+        self.assertEqual(latest["smart_registry_url"], "https://smart.trade.kg/registry?lng=ru")
+        self.assertEqual(observed["registry_status"], "pilot")
+        self.assertFalse(observed["login_required"])
+        self.assertEqual(observed["search_fields"], ["approval_number", "make", "model"])
+        self.assertEqual(observed["general_public_verification_fields"], ["document_number", "VIN"])
+        self.assertEqual(latest["summary_source_url"], "https://cert.trade.kg/")
+        self.assertEqual(latest["ot_ts_summary_count"], 1)
+        self.assertEqual(latest["otsh_summary_count"], 0)
+        self.assertEqual(
+            latest["count_treatment"],
+            "portal_summary_counters_only_not_a_verified_complete_or_stable_public_register_count",
+        )
+        self.assertFalse(latest["record_rows_observed"])
+        self.assertFalse(latest["record_schema_retrieved"])
+        self.assertFalse(latest["documented_api_identified"])
+        self.assertFalse(latest["bulk_export_documented"])
+        self.assertFalse(latest["source_bytes_downloaded"])
+        self.assertIsNone(latest["source_snapshot_sha256"])
+        self.assertIn("no readable record rows", latest["smart_registry_page_observation"])
+        self.assertEqual(latest["rights_effect"].split(";")[0], "none")
+        self.assertEqual(source["status"], "permission_required")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        self.assertEqual(source["license"]["bulk_export"], "not_confirmed")
+        self.assertEqual(source["access_and_reuse"]["automated_extraction"], "not_established")
+        self.assertEqual(source["market_scope"], ["KG", "EAEU_TR_TS_018_2011"])
+        self.assertEqual(source["applicability_precision"], "type_approval_document_metadata_only")
+        self.assertNotIn("exact_vag_vehicle_fitment", latest)
+        self.assertNotIn("engine_gearbox_pairing", latest)
+        self.assertNotIn("ecu_dtc_repair_applicability", latest)
+
+
 if __name__ == "__main__":
     unittest.main()
