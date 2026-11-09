@@ -52,6 +52,7 @@ function apply(root) {
     if (!ui.includes("DTC RANGE QUARANTINE") || !ui.includes("row.allocationWarning") || !ui.includes("generic_range_unreviewed")) throw new Error("run91 marker exists without quarantine UI");
     if (!ui.includes("sourceNamespaceLabel") || !ui.includes("sourceRecordSha256?: string;")) throw new Error("run91 marker exists without source-record provenance types");
     if (!packageJson.scripts?.["test:research"]?.includes(libTestPath)) throw new Error("run91 test is not wired into npm test");
+    if (!packageJson.build?.extraResources?.some((item) => item.from === "data/policies" && item.to === "app-runtime/data/policies")) throw new Error("run91 namespace policy is not bundled into the offline app runtime");
     if (!fs.existsSync(path.join(root, libTestPath))) throw new Error("run91 marker exists without regression tests");
     return { status: "already_applied", files: [libPath, uiPath, packagePath, libTestPath] };
   }
@@ -256,6 +257,15 @@ function classifyDtcNamespace(code) {
   );
   nextUi = nextUi.slice(0, dtcSectionStart) + dtcSection + nextUi.slice(pidsSectionStart);
 
+  if (!Array.isArray(packageJson.build?.extraResources)) throw new Error("package.json build.extraResources is missing");
+  const policyResource = packageJson.build.extraResources.find((item) => item.from === "data/policies");
+  if (policyResource && policyResource.to !== "app-runtime/data/policies") {
+    throw new Error("Existing data/policies extraResource has an unexpected destination");
+  }
+  if (!policyResource) {
+    packageJson.build.extraResources.push({ from: "data/policies", to: "app-runtime/data/policies", filter: ["**/*"] });
+  }
+
   const researchTestCommand = packageJson.scripts?.["test:research"];
   if (typeof researchTestCommand !== "string") throw new Error("package.json test:research script is missing");
   if (!researchTestCommand.includes(libTestPath)) {
@@ -348,6 +358,13 @@ test("run91 OBDex research snapshot counts remain isolated and hash-verified", (
   } finally {
     db.close();
   }
+});
+
+test("run91 namespace policy is included in the packaged offline runtime", () => {
+  const packageJson = JSON.parse(require("node:fs").readFileSync(path.resolve(__dirname, "../package.json"), "utf8"));
+  const resource = packageJson.build.extraResources.find((item) => item.from === "data/policies");
+  assert.equal(resource?.to, "app-runtime/data/policies");
+  assert.ok(resource?.filter?.includes("**/*"));
 });
 
 test("run91 DTC research UI distinguishes generic rows from unresolved namespace quarantine", () => {
