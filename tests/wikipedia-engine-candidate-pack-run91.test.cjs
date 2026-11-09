@@ -44,6 +44,7 @@ test("Candidate-only UI does not offer import or technical execution", () => {
   assert.match(ui, /CC BY-SA 4\.0/);
   assert.doesNotMatch(ui, /Импортировать|Добавить в каталог|Применить к автомобилю/);
   assert.match(patch, /getSummary\(researchRoot\)/);
+  assert.match(patch, /showWikipediaCandidates/);
   assert.match(patch, /productImportAllowed !== false/);
   assert.match(patch, /repairUseAllowed !== false/);
   assert.match(patch, /diagnosticExecutionAllowed !== false/);
