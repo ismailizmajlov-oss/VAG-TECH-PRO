@@ -129,9 +129,8 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(access["automated_extraction"], "not_established")
         self.assertEqual(access["offline_cache"], "not_confirmed")
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
-        self.assertIn("discovery_only", source["project_decision"])
-        self.assertIn("Do not automate", source["project_decision"])
-        self.assertIn("record_schema_and_product_reuse_rights_unresolved", source["verification_status"])
+        self.assertEqual(source["project_decision"], "discovery_only_no_automation_no_import_until_documented_record_schema_and_written_reuse_rights_are_confirmed")
+        self.assertIn("record_schema_and_reuse_rights_unresolved", source["verification_status"])
         self.assertTrue(any("must not be assumed to appear in public records" in item for item in source["limitations"]))
 
     def test_elpts_otts_public_table_is_metadata_only_and_not_ingested(self):
