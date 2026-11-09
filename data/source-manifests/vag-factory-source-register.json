@@ -741,7 +741,10 @@
         "exact_vehicle_fitment_rows": 0,
         "production_rows": 0,
         "p34_generic_rows": 155,
-        "u3_quarantined_research_rows": 174
+        "u3_quarantined_research_rows": 174,
+        "pre_policy_searchable_query_rows": 9533,
+        "expected_searchable_generic_dtc_rows_after_namespace_policy": 9204,
+        "expected_unresolved_reserved_quarantined_rows": 329
       },
       "evidence_scope": [
         "generic_sae_iso_obd2_dtc_identifiers",
@@ -785,10 +788,11 @@
         "No VAG-specific DTC definitions, manufacturer subcodes or ECU-specific fault descriptions.",
         "No exact vehicle, generation, year, engine, gearbox, ECU or RU/EAEU applicability.",
         "External source documents are not included; source URLs are preserved only in raw source records, never fetched or displayed.",
-        "Repair estimates, costs and generic repair text are not promoted as OEM repair advice."
+        "Repair estimates, costs and generic repair text are not promoted as OEM repair advice.",
+        "The run1007 source snapshot has 9,533 upstream-labelled generic rows, but 329 rows (155 P34xx plus 174 U3xxx) are unresolved/reserved and must not be displayed as searchable generic DTC definitions. The policy-enforced desktop search/rebuild is pending."
       ],
-      "project_decision": "allow_separate_generic_CC0_reference_pack_only; keep separate from VAG-specific data and exact vehicle fitment",
-      "evidence_status": "Pinned OBDex commit and CC0 data license; run257 source artifact and three-pack offline bundle independently re-hashed; SQLite integrity_check=ok and foreign_key_check=0; 174 U3xxx rows remain quarantined research-only; generic namespace remains separate from VAG-specific DTC and product fitment.",
+      "project_decision": "allow separate CC0 generic reference pack only; enforce canonical DTC namespace display policy so only P0xxx/P2xxx/B0xxx/C0xxx/U0xxx are searchable as generic; keep unresolved/reserved rows quarantined; never relabel as VAG-specific or import into production vehicle fitment",
+      "evidence_status": "Pinned OBDex commit and CC0 data license; run1007 source artifact and three-pack bundle independently downloaded and SHA-256 checked. The 9,533-row source snapshot contains 155 upstream-labelled P34xx and 174 U3xxx rows; the canonical namespace policy requires all 329 P34xx-P39xx/U3xxx/B3xxx/C3xxx rows to be quarantined from generic search. The run1007 desktop search path still returned the full upstream namespace before the run91 correction; a policy-enforced rebuild is required. No VAG-specific or exact-fitment rows.",
       "data_ingested": false,
       "research_pack_ingested": true,
       "product_database_ingested": false,
@@ -866,6 +870,31 @@
         "obdb_manifest_sha256": "e44add8f05da764f659f22b8b3ec5b8fc791d6d89169d378521af3b17911e727",
         "built_at_utc": "2026-11-08T05:13:53.739814+00:00",
         "verification": "Independently re-downloaded and SHA-256 matched the artifact ZIP and bundle index; all three SQLite databases passed integrity_check=ok and foreign_key_check=0. OBDex remains generic research only; 174 U3xxx rows are quarantined from normalized DTC import."
+      },
+      "latest_pack_observation": {
+        "workflow_run_id": 42616568015,
+        "source_generated_at_utc": "2026-11-09T12:24:19.568Z",
+        "offline_bundle_built_at_utc": "2026-11-09T12:24:47.820435+00:00",
+        "source_artifact_id": 13673640228,
+        "source_artifact_sha256": "ef51a325751edf7d0c5873bedb4832a4850de869f8be857dd476eafb7a7e8647",
+        "source_artifact_size_bytes": 33741186,
+        "offline_bundle_artifact_id": 13673575635,
+        "offline_bundle_sha256": "2b6bb780dd284defb39e028499cd1a70c972d753a9718afc2d7c49bb489b81bf",
+        "offline_bundle_size_bytes": 39103448,
+        "offline_bundle_index_sha256": "262a99e9e4d0bbcbbe274886b0aa4f6a5e1db82c7702015e9e825fdb09761912",
+        "database_sha256": "4195b3ebc3301e117de5c21729f448c8dce4345bc2554548f906fab95850b3a8",
+        "source_manifest_sha256": "ef116c6f453b222083ed88b7ecd2e5a641934420b7f1b3c4ac9c250406e154c6",
+        "source_snapshot_sha256": "300c85cbfdb8ecb626a878b70517d9ca11e8245fa7d8630092b7527c05bf13d0",
+        "counts": {
+          "upstream_generic_rows": 9533,
+          "upstream_p34_rows": 155,
+          "upstream_u3_rows": 174,
+          "expected_searchable_generic_rows_after_policy": 9204,
+          "expected_quarantined_unresolved_rows": 329
+        },
+        "display_policy_status": "run1007_pre_policy_fix; policy-enforced rebuild pending",
+        "integrity_check": "ok",
+        "foreign_key_violations": 0
       }
     },
     {
