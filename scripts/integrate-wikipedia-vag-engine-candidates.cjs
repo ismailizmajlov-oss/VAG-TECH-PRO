@@ -44,7 +44,7 @@ function parseArgs(argv) {
   if (!/^\d+$/.test(out["artifact-run-id"]) || !/^\d+$/.test(out["artifact-id"])) fail("Artifact run/id must be numeric");
   if (!/^[a-f0-9]{64}$/.test(out["artifact-sha256"])) fail("Outer artifact SHA-256 is invalid");
   if (!/^[a-f0-9]{40}$/.test(out["source-commit"]) || !/^[a-f0-9]{40}$/.test(out["source-head-sha"])) fail("Source commit/head SHA is invalid");
-  if (!["pull_request", "push"].includes(out["source-event"])) fail("Source event must be pull_request or push");
+  if (!["pull_request", "push", "workflow_dispatch"].includes(out["source-event"])) fail("Unsupported source event");
   if (!/^refs\/(?:heads|pull)\//.test(out["source-ref"])) fail("Source ref is invalid");
   return out;
 }
@@ -160,8 +160,8 @@ function patchDesktop(desktopRoot) {
       '"astra-targa" | "rdw" | "kba-de" | "wikipedia-engine-candidates";',
       "Wikipedia dataset type");
     ui = replaceOnce(ui,
-      'sourceManifestSha256?: string; sourceQuerySha256?: string;',
-      'sourceManifestSha256?: string; sourceQuerySha256?: string; sourceRevision?: string; sourceSnapshotSha256?: string; qualityWarnings?: string[]; productImportAllowed?: boolean; repairUseAllowed?: boolean; diagnosticExecutionAllowed?: boolean; attributionText?: string; attributionSha256?: string; licenseNoticeSha256?: string; sourceArtifactSha256?: string; sourceArchiveSha256?: string;',
+      'shareAlikeRequired?: boolean; attributionRequired?: boolean };',
+      'shareAlikeRequired?: boolean; attributionRequired?: boolean; sourceRevision?: string; qualityWarnings?: string[]; productImportAllowed?: boolean; repairUseAllowed?: boolean; diagnosticExecutionAllowed?: boolean; attributionText?: string; licenseNoticeSha256?: string; sourceArtifactSha256?: string; sourceArchiveSha256?: string };',
       "Wikipedia summary type");
     ui = replaceOnce(ui,
       '  sourceLineNo?: number; sourceLineSha256?: string; sourceFileSha256?: string;',
