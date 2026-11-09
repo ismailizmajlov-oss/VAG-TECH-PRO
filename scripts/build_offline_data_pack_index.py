@@ -16,6 +16,8 @@ import sqlite3
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+from pathlib import PurePosixPath
+from zipfile import BadZipFile, ZipFile
 from typing import Any
 
 OBDEX_LOCK_PATH = Path(__file__).resolve().parents[1] / "data/source-manifests/obdex-generic-cc0.lock.json"
@@ -24,6 +26,7 @@ ARTIFACTS = {
     "obdex": ("vag-tech-pro-obdex-cc0-2026-11-07", "obdex-generic-cc0"),
     "vehiclesdb": ("vag-identity-vehiclesdb-cc-by-4.0", "vehiclesdb-vag-identity"),
     "obdb": ("obdb-vag-research-cc-by-sa", "obdb-vag-signals-cc-by-sa"),
+    "wikipedia": ("wikipedia-vag-engine-candidates", "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0"),
 }
 
 GENERIC_OBD_CODE_RE = re.compile(
@@ -363,6 +366,164 @@ def inspect_obdb(root: Path) -> dict[str, Any]:
 
 
 
+def safe_extract_zip(archive: Path, target: Path) -> None:
+    """Extract a pinned source artifact without accepting traversal or symlink entries."""
+    target = target.resolve()
+    target.mkdir(parents=True, exist_ok=True)
+    try:
+        with ZipFile(archive) as bundle:
+            for info in bundle.infolist():
+                name = info.filename
+                if not name or "\\" in name:
+                    raise ValueError(f"Unsafe Wikipedia pack path: {name!r}")
+                relative_path = PurePosixPath(name)
+                if relative_path.is_absolute() or any(part in {"", ".", ".."} for part in relative_path.parts):
+                    raise ValueError(f"Unsafe Wikipedia pack path: {name!r}")
+                destination = (target / Path(*relative_path.parts)).resolve()
+                if destination != target and target not in destination.parents:
+                    raise ValueError(f"Wikipedia pack path escaped extraction root: {name}")
+                mode = (info.external_attr >> 16) & 0o170000
+                if mode == 0o120000:
+                    raise ValueError(f"Wikipedia pack symlink is not allowed: {name}")
+                if info.is_dir():
+                    destination.mkdir(parents=True, exist_ok=True)
+                    continue
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                with bundle.open(info, "r") as source, destination.open("xb") as output:
+                    shutil.copyfileobj(source, output)
+    except BadZipFile as exc:
+        raise ValueError("Wikipedia source artifact is not a valid ZIP") from exc
+
+
+def inspect_wikipedia(root: Path) -> dict[str, Any]:
+    manifest_path = find_one(root, "manifest.json")
+    source_manifest_path = find_one(root, "source-manifest.json")
+    database_path = find_one(root, "wikipedia-vag-engine-candidates.sqlite")
+    attribution_path = find_one(root, "ATTRIBUTION.md")
+    license_notice_path = find_one(root, "LICENSE-NOTICE.txt")
+    evidence_path = find_one(root, "build-evidence.json")
+    artifact_path = find_one(root, "source-artifact.zip")
+    manifest = read_json(manifest_path)
+    source_manifest = read_json(source_manifest_path)
+    evidence = read_json(evidence_path)
+
+    if manifest.get("pack_id") != "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0":
+        raise ValueError("Wikipedia candidate pack identity mismatch")
+    if manifest.get("data_license") != "CC-BY-SA-4.0" or manifest.get("rights_status") != "approved_by_published_license":
+        raise ValueError("Wikipedia CC BY-SA rights status mismatch")
+    for field in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed", "bulk_reuse_allowed", "redistribution_allowed", "attribution_required", "share_alike_required", "separate_pack_required"):
+        if manifest.get(field) is not True:
+            raise ValueError(f"Wikipedia CC BY-SA permission/obligation missing: {field}")
+    if manifest.get("market_scope") != "UNKNOWN" or manifest.get("applicability_precision") != "community_engine_code_candidate_only":
+        raise ValueError("Wikipedia candidate market/applicability boundary mismatch")
+    if manifest.get("verification_status") != "community_reference_unverified" or manifest.get("quality_review_status") != "not_approved_for_technical_use":
+        raise ValueError("Wikipedia quality-review boundary mismatch")
+    for field in ("candidate_only",):
+        if manifest.get(field) is not True:
+            raise ValueError(f"Wikipedia candidate-only flag missing: {field}")
+    for field in ("product_import_allowed", "exact_vehicle_fitment", "generation_year_fitment", "engine_gearbox_fitment", "ecu_fitment", "dtc_fitment", "repair_use_allowed", "diagnostic_execution_allowed"):
+        if manifest.get(field) is not False:
+            raise ValueError(f"Wikipedia technical-use prohibition missing: {field}")
+    if source_manifest.get("source_id") != "wikipedia-vag-engine-code-lists-cc-by-sa-4-0" or source_manifest.get("data_license") != "CC-BY-SA-4.0":
+        raise ValueError("Wikipedia source manifest identity/license mismatch")
+    if source_manifest.get("rights_status") != "approved_by_published_license" or source_manifest.get("quality_review_status") != "not_approved_for_technical_use":
+        raise ValueError("Wikipedia source manifest rights/quality boundary mismatch")
+    if source_manifest.get("market_scope") != "UNKNOWN" or source_manifest.get("applicability_precision") != "community_engine_code_candidate_only":
+        raise ValueError("Wikipedia source manifest applicability mismatch")
+    if source_manifest.get("candidate_only", {}).get("product_import_allowed") is not False:
+        raise ValueError("Wikipedia source manifest permits product import")
+    if source_manifest.get("candidate_only", {}).get("repair_use_allowed") is not False or source_manifest.get("candidate_only", {}).get("diagnostic_execution_allowed") is not False:
+        raise ValueError("Wikipedia source manifest permits technical use")
+    if sha256_file(source_manifest_path) != manifest.get("source_manifest_sha256"):
+        raise ValueError("Wikipedia source manifest SHA-256 mismatch")
+    if sha256_file(database_path) != manifest.get("database_sha256"):
+        raise ValueError("Wikipedia SQLite SHA-256 mismatch")
+    if sha256_file(attribution_path) != manifest.get("attribution_sha256"):
+        raise ValueError("Wikipedia attribution SHA-256 mismatch")
+    if sha256_file(license_notice_path) != manifest.get("license_notice_sha256"):
+        raise ValueError("Wikipedia license notice SHA-256 mismatch")
+    if sha256_file(artifact_path) != evidence.get("artifact_sha256"):
+        raise ValueError("Wikipedia source artifact SHA-256 mismatch")
+    if evidence.get("artifact_file") != "wikipedia-vag-engine-candidates.zip":
+        raise ValueError("Wikipedia build evidence artifact filename mismatch")
+    evidence_manifest = evidence.get("manifest", {})
+    if evidence_manifest.get("database_sha256") != manifest.get("database_sha256") or evidence_manifest.get("source_manifest_sha256") != manifest.get("source_manifest_sha256"):
+        raise ValueError("Wikipedia build evidence manifest mismatch")
+    if source_manifest.get("source_snapshot_sha256") != manifest.get("source_snapshot_sha256"):
+        raise ValueError("Wikipedia source snapshot SHA-256 mismatch")
+
+    pages = source_manifest.get("pages", [])
+    if len(pages) != 4 or len(manifest.get("pages", [])) != 4:
+        raise ValueError("Wikipedia pinned revision count mismatch")
+    revisions = {}
+    for page in pages:
+        revision = str(page.get("revision_id", ""))
+        if not revision.isdigit():
+            raise ValueError("Wikipedia revision ID is invalid")
+        revisions[page["title"]] = revision
+        for suffix, size_field, hash_field in (
+            ("wikitext", "wikitext_bytes", "wikitext_sha256"),
+            ("html", "rendered_html_bytes", "rendered_html_sha256"),
+        ):
+            snapshot = root / "source-snapshots" / f"{revision}.{suffix}"
+            if not snapshot.is_file() or snapshot.stat().st_size != page[size_field] or sha256_file(snapshot) != page[hash_field]:
+                raise ValueError(f"Wikipedia pinned source snapshot mismatch: {revision}.{suffix}")
+
+    db = sqlite_readonly(database_path)
+    tables = table_names(db)
+    if "engine_code_candidates" not in tables:
+        raise ValueError("Wikipedia SQLite candidate table is missing")
+    if {"dtc_codes", "repair_procedures", "wiring_diagrams", "pinouts", "ecu_fitment"} & tables:
+        raise ValueError("Wikipedia engine-code candidate pack must not masquerade as repair data")
+    counts = {
+        "source_documents": int(db.execute("SELECT count(DISTINCT source_revision_id) FROM engine_code_candidates").fetchone()[0]),
+        "candidate_rows": count(db, "engine_code_candidates"),
+        "unique_candidate_codes": int(db.execute("SELECT count(DISTINCT candidate_code) FROM engine_code_candidates").fetchone()[0]),
+        "source_rows_with_codes": int(db.execute("SELECT count(*) FROM (SELECT DISTINCT source_revision_id, source_row_number FROM engine_code_candidates)").fetchone()[0]),
+    }
+    if counts != manifest.get("counts") or counts != {"source_documents": 4, "candidate_rows": 241, "unique_candidate_codes": 241, "source_rows_with_codes": 64}:
+        raise ValueError(f"Wikipedia candidate row counts mismatch: {counts}")
+    unsafe = db.execute("""SELECT count(*) FROM engine_code_candidates
+        WHERE market_scope<>'UNKNOWN'
+           OR applicability_precision<>'community_engine_code_candidate_only'
+           OR review_status<>'candidate'
+           OR product_import_allowed<>0 OR exact_vehicle_fitment<>0
+           OR generation_year_fitment<>0 OR engine_gearbox_fitment<>0
+           OR ecu_fitment<>0 OR dtc_fitment<>0
+           OR repair_use_allowed<>0 OR diagnostic_execution_allowed<>0""").fetchone()[0]
+    if unsafe:
+        raise ValueError("Wikipedia candidate SQLite contains a promoted or actionable row")
+    if db.execute("SELECT count(*) FROM engine_code_candidates WHERE source_revision_id NOT IN (1383476161,1383504097,1381198237,1375791889)").fetchone()[0]:
+        raise ValueError("Wikipedia SQLite references an unpinned source revision")
+    db.close()
+    return {
+        "pack_id": manifest["pack_id"],
+        "artifact_name": ARTIFACTS["wikipedia"][0],
+        "relative_dir": relative(root.parent, root),
+        "database_path": relative(root.parent, database_path),
+        "database_sha256": sha256_file(database_path),
+        "manifest_path": relative(root.parent, manifest_path),
+        "manifest_sha256": sha256_file(manifest_path),
+        "license": "CC-BY-SA-4.0",
+        "license_files": [relative(root.parent, license_notice_path)],
+        "attribution_files": [relative(root.parent, attribution_path), relative(root.parent, source_manifest_path), relative(root.parent, evidence_path)],
+        "status": "verified_research_only",
+        "product_eligibility": "community_engine_code_discovery_only_no_technical_use",
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "community_engine_code_candidate_only",
+        "counts": counts,
+        "source_revision": "four_pinned_article_revisions",
+        "source_revisions": revisions,
+        "source_snapshot_sha256": manifest["source_snapshot_sha256"],
+        "source_manifest_sha256": manifest["source_manifest_sha256"],
+        "attribution_sha256": manifest["attribution_sha256"],
+        "license_notice_sha256": manifest["license_notice_sha256"],
+        "source_artifact_sha256": evidence["artifact_sha256"],
+        "source_workflow_run_id": evidence.get("workflow_run_id"),
+        "warnings": manifest.get("quality_warnings", []),
+    }
+
+
 def validate_required_exclusions(excluded: Any) -> None:
     """Fail closed unless every restricted source is explicitly absent from the bundle."""
     if not isinstance(excluded, list):
@@ -383,7 +544,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     index = read_json(index_path)
     if index.get("bundle_status") != "verified_offline_data_packs_not_installer":
         raise ValueError("Offline bundle status is invalid")
-    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 3:
+    if index.get("target_platform") != "windows-x64" or index.get("database_count") != 4:
         raise ValueError("Offline bundle target/database count mismatch")
     if index.get("license_separation_policy", {}).get("merged_databases") is not False:
         raise ValueError("The separate licensed SQLite databases must not be merged")
@@ -394,7 +555,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         relative(root, p): p for p in root.rglob("*")
         if p.is_file() and p.name != "offline-data-pack-index.json"
     }
-    if any("vag-engine-candidates" in path.lower() for path in actual):
+    if any("vag-engine-candidates" in path.lower() and not path.lower().startswith("wikipedia-vag-engine-code-candidates-cc-by-sa-4-0/") for path in actual):
         raise ValueError("Autoevolution-derived VAG identity data must not be present in the Windows bundle")
     if set(listed) != set(actual):
         raise ValueError("Bundle file list does not match actual files")
@@ -407,6 +568,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         "obdex-generic-cc0",
         "vehiclesdb-vag-identity",
         "obdb-vag-signals-cc-by-sa",
+        "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0",
     }
     packs = {pack["pack_id"]: pack for pack in index.get("packs", [])}
     if set(packs) != expected_ids:
@@ -415,6 +577,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         "obdex-generic-cc0": inspect_obdex,
         "vehiclesdb-vag-identity": inspect_vehiclesdb,
         "obdb-vag-signals-cc-by-sa": inspect_obdb,
+        "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0": inspect_wikipedia,
     }
     for pack_id, pack in packs.items():
         db_path = root / pack["database_path"]
@@ -434,7 +597,8 @@ def verify_bundle(root: Path) -> dict[str, Any]:
             "manifest_path", "manifest_sha256", "license", "license_files",
             "attribution_files", "status", "product_eligibility", "market_scope",
             "applicability_precision", "counts", "source_revision", "source_revisions",
-            "make_counts", "warnings",
+            "make_counts", "warnings", "source_snapshot_sha256", "source_manifest_sha256",
+            "attribution_sha256", "license_notice_sha256", "source_artifact_sha256", "source_workflow_run_id",
         ):
             if fresh.get(key) != pack.get(key):
                 raise ValueError(f"Pack index metadata drift for {pack_id}.{key}")
@@ -466,12 +630,21 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
             if not source_dir.is_dir():
                 raise FileNotFoundError(f"Required upstream artifact is missing: {artifact_name}")
             target_dir = temp_dir / target_name
-            shutil.copytree(source_dir, target_dir)
-            inspector = {
-                "obdex": inspect_obdex,
-                "vehiclesdb": inspect_vehiclesdb,
-                "obdb": inspect_obdb,
-            }[key]
+            if key == "wikipedia":
+                target_dir.mkdir(parents=True)
+                archive = find_one(source_dir, "wikipedia-vag-engine-candidates.zip")
+                evidence = find_one(source_dir, "build-evidence.json")
+                shutil.copy2(archive, target_dir / "source-artifact.zip")
+                shutil.copy2(evidence, target_dir / "build-evidence.json")
+                safe_extract_zip(target_dir / "source-artifact.zip", target_dir)
+                inspector = inspect_wikipedia
+            else:
+                shutil.copytree(source_dir, target_dir)
+                inspector = {
+                    "obdex": inspect_obdex,
+                    "vehiclesdb": inspect_vehiclesdb,
+                    "obdb": inspect_obdb,
+                }[key]
             pack_descriptors.append(inspector(target_dir))
 
         index = {
@@ -479,7 +652,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
             "bundle_id": "vag-tech-pro-windows-offline-data-packs",
             "bundle_status": "verified_offline_data_packs_not_installer",
             "target_platform": "windows-x64",
-"database_count": 3,
+"database_count": 4,
             "built_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_commit_sha": os.environ.get("GITHUB_SHA"),
             "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
@@ -515,6 +688,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                 "Autoevolution-derived ODbL generation/engine candidate data is quarantined and excluded pending written upstream permission.",
                 "VAG-Wiki independent reference data is quarantined; no automated extraction or product bundle without prior written permission and per-record provenance.",
                 "Community UDS 0x22 signal data is read-only reference material; command execution is disabled.",
+                "Wikipedia CC BY-SA engine-code strings remain a separate candidate-only research pack; no market, generation, vehicle fitment or repair applicability is claimed.",
                 "No manufacturer-specific DTC pack is included until data-specific reuse, display, cache and redistribution rights are confirmed.",
                 "No pack in this bundle supplies verified VAG repair procedures, factory wiring diagrams, pinouts, torque values, adaptations or service schedules.",
             ],
