@@ -7308,7 +7308,8 @@
         "ecu_fitment": false,
         "dtc_fitment": false,
         "repair_use_allowed": false,
-        "diagnostic_execution_allowed": false
+        "diagnostic_execution_allowed": false,
+        "source_snapshot_sha256": "fd0be1562899f7dd7b46e33ecf5297b6bab551668f83d5bcf60bb32ce0dd130c"
       }
     },
     {
