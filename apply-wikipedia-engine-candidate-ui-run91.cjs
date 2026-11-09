@@ -54,10 +54,16 @@ function main() {
     "Wikipedia candidate component import",
   );
   catalog = replaceExactly(
+    catalog,
+    '  const [dataset, setDataset] = useState<Dataset>("dtc");',
+    '  const [dataset, setDataset] = useState<Dataset>("dtc");\n  const [showWikipediaCandidates, setShowWikipediaCandidates] = useState(false);',
+    "Wikipedia candidate lazy-mount state",
+  );
+  catalog = replaceExactly(
     '    <div className="research-tabs" role="tablist" aria-label="Локальные наборы данных">',
-    '    <details className="research-details research-wikipedia-candidates">\n' +
+    '    <details className="research-details research-wikipedia-candidates" onToggle={(event) => setShowWikipediaCandidates(event.currentTarget.open)}>\n' +
       '      <summary>Открытая таксономия кодов двигателей VAG · Wikipedia · 241 кандидат · CC BY-SA 4.0</summary>\n' +
-      '      <WikipediaEngineCandidates />\n' +
+      '      {showWikipediaCandidates && <WikipediaEngineCandidates />}\n' +
       '    </details>\n\n' +
       '    <div className="research-tabs" role="tablist" aria-label="Локальные наборы данных">',
     "Wikipedia candidate research section",
