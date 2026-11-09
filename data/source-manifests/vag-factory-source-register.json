@@ -3674,13 +3674,30 @@
         "The SQLite database is excluded by .gitignore and is not present in the repository snapshot; no reproducible seed/import script was found on the reviewed main branch.",
         "The schema mixes five-digit legacy VAG-looking identifiers with combined, generic P-code, body, chassis and network-shaped strings; namespace and provenance must be established per row before any use.",
         "No exact model, generation, model year, Russian/EAEU market, engine, gearbox, ECU part number or HW/SW applicability is supplied by the reviewed database documentation.",
-        "The published solutions and special notes are not traceable to a primary technical document or revision and are not approved repair instructions."
+        "The published solutions and special notes are not traceable to a primary technical document or revision and are not approved repair instructions.",
+        "2026-11-10 recheck: GitHub Contents API returned 404 for db/openvag.db; .gitignore explicitly excludes that path; app/main.py references scripts/init_db.py but that path is absent. No database bytes were received and no database SHA-256 can be claimed."
       ],
       "project_decision": "quarantined_no_import_no_display_no_cache_no_redistribution_until_dataset_origin_row_level_provenance_and_explicit_data_reuse_rights_are_verified; require maintainer evidence for each upstream source and a reproducible snapshot",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "README_db_README_schema_LICENSE_gitignore_and_main_branch_commit_history_reviewed_2026-11-05",
-      "rights_review_document": "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      "evidence_status": "ROOT_LICENSE_GITIGNORE_DATABASE_FILE_AND_SEED_PATH_RECHECKED_2026-11-10",
+      "rights_review_document": "docs/research/OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md",
+      "latest_review": {
+        "observed_at": "2026-11-10",
+        "repository_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+        "license_file_git_blob_sha1": "e4d04cc8ef5aaf11907d50758fc397fe05215391",
+        "database_file_present": false,
+        "database_fetch_result": "HTTP_404_NOT_FOUND",
+        "database_path_gitignored": true,
+        "referenced_generation_script_present": false,
+        "database_bytes_received": false,
+        "database_sha256": null,
+        "record_level_provenance_observed": false,
+        "data_import_allowed": false,
+        "display_allowed": false,
+        "offline_cache_allowed": false,
+        "redistribution_allowed": false
+      }
     },
     {
       "source_id": "autotools-brightcoding-public-api-candidate",
