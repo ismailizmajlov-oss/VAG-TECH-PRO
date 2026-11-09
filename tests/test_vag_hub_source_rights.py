@@ -56,7 +56,7 @@ class VagHubSourceRightsTests(unittest.TestCase):
             with self.subTest(category=category):
                 self.assertIn(category, claims["content_categories"])
         self.assertIn("delete downloaded files after reading", claims["dataflash_page"].lower())
-        self.assertIn("purchase original", claims["elsawin_page"].lower())
+        self.assertIn("purchasing original catalogues", claims["elsawin_page"].lower())
         self.assertTrue(claims["about_page"].startswith("The publisher says materials are compiled from publicly available sources"))
 
     def test_evidence_urls_and_review_revision_are_pinned(self):
