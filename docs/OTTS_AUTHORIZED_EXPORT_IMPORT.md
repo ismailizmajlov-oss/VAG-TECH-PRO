@@ -2,6 +2,10 @@
 
 This importer is a **local, offline, fail-closed staging tool** for a source export that the owner has already obtained lawfully. It does not scrape FGIS, imitate browser sessions, call an undocumented API, download PDFs, or infer VAG engine/gearbox/ECU fitment.
 
+## Owner request template
+
+Before asking the authority for a machine-readable export or reuse permission, use the owner-prepared draft at [OWNER_OTTS_DATA_ACCESS_REQUEST_TEMPLATE_RU.md](OWNER_OTTS_DATA_ACCESS_REQUEST_TEMPLATE_RU.md). It is a draft only and has not been sent. It requests explicit rights and excludes SBKTS, VIN lists and personal data; it does not request the restricted FGIS software or a paid IBM/HCL Domino licence.
+
 ## Current source status
 
 The FGIS source remains `permission_required` in the source register. Public-site search requirements under Rosstandart Orders 2038/2335 do not themselves authorize commercial reuse, third-party display, persistent SQLite caching, bulk export, or PDF redistribution. No real FGIS export is currently available or imported. The test suite uses explicitly synthetic fixtures only.
