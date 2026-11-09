@@ -182,7 +182,7 @@ function patchResearchDb(file) {
   source = replaceOnce(
     source,
     "        AND vehicle_fitment_claim=0 AND namespace='generic_sae_iso_obd2'\n        AND (code LIKE ? ESCAPE '\\\\'",
-    "        AND vehicle_fitment_claim=0 AND namespace='generic_sae_iso_obd2'\n        AND (\" + dtcPredicates.allowedSql + \")\n        AND (code LIKE ? ESCAPE '\\\\'",
+    "        AND vehicle_fitment_claim=0 AND namespace='generic_sae_iso_obd2'\n        AND (${dtcPredicates.allowedSql})\n        AND (code LIKE ? ESCAPE '\\\\'",
     "filter unresolved DTC ranges from generic search"
   );
   source = replaceOnce(
@@ -219,12 +219,15 @@ function patchUi(file) {
 function patchTests(root) {
   const dbTest = path.join(root, "tests", "local-research-db.test.cjs");
   let source = read(dbTest);
-  source = replaceOnce(
-    source,
-    "  assert.deepEqual(obdex.counts, { dtcs: 9533, pids: 132 });",
-    "  assert.deepEqual(obdex.counts, { dtcs: 9204, dtcsSourceRows: 9533, dtcsQuarantined: 329, pids: 132 });",
-    "update OBDex summary count assertion"
-  );
+  const updatedCountsAssertion = "  assert.deepEqual(obdex.counts, { dtcs: 9204, dtcsSourceRows: 9533, dtcsQuarantined: 329, pids: 132 });";
+  if (!source.includes(updatedCountsAssertion)) {
+    source = replaceOnce(
+      source,
+      "  assert.deepEqual(obdex.counts, { dtcs: 9533, pids: 132 });",
+      updatedCountsAssertion,
+      "update OBDex summary count assertion"
+    );
+  }
   const insertion = [
     'test("MechanicDB manufacturer-labelled candidates are visible only in their separate research namespace", () => {'
   ].join("\n");
