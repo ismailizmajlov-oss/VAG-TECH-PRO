@@ -123,12 +123,12 @@ CREATE INDEX IF NOT EXISTS idx_oem_dtc_review
 
 
 -- OBD-II code ranges are part of the namespace contract, not a manufacturer-name heuristic.
--- Generic SAE/ISO ranges: P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx. P34xx requires an exact pinned source record.
+-- Generic SAE/ISO ranges: P0xxx, P2xxx, B0xxx, C0xxx and U0xxx. P34xx-P39xx remain quarantined until exact current-standard assignments are verified.
 CREATE TRIGGER IF NOT EXISTS validate_generic_dtc_code_range_insert
 BEFORE INSERT ON oem_dtc_index
 WHEN NEW.dtc_namespace='generic_sae_iso' AND NOT (
  NEW.dtc_code GLOB 'P0[0-9A-F][0-9A-F][0-9A-F]' OR NEW.dtc_code GLOB 'P2[0-9A-F][0-9A-F][0-9A-F]'
- OR NEW.dtc_code GLOB 'P34[0-9A-F][0-9A-F]' OR NEW.dtc_code GLOB 'B0[0-9A-F][0-9A-F][0-9A-F]'
+ OR NEW.dtc_code GLOB 'B0[0-9A-F][0-9A-F][0-9A-F]'
  OR NEW.dtc_code GLOB 'C0[0-9A-F][0-9A-F][0-9A-F]' OR NEW.dtc_code GLOB 'U0[0-9A-F][0-9A-F][0-9A-F]'
 
 )
@@ -138,14 +138,14 @@ CREATE TRIGGER IF NOT EXISTS validate_generic_dtc_code_range_update
 BEFORE UPDATE OF dtc_code, dtc_namespace ON oem_dtc_index
 WHEN NEW.dtc_namespace='generic_sae_iso' AND NOT (
  NEW.dtc_code GLOB 'P0[0-9A-F][0-9A-F][0-9A-F]' OR NEW.dtc_code GLOB 'P2[0-9A-F][0-9A-F][0-9A-F]'
- OR NEW.dtc_code GLOB 'P34[0-9A-F][0-9A-F]' OR NEW.dtc_code GLOB 'B0[0-9A-F][0-9A-F][0-9A-F]'
+ OR NEW.dtc_code GLOB 'B0[0-9A-F][0-9A-F][0-9A-F]'
  OR NEW.dtc_code GLOB 'C0[0-9A-F][0-9A-F][0-9A-F]' OR NEW.dtc_code GLOB 'U0[0-9A-F][0-9A-F][0-9A-F]'
 
 )
 BEGIN SELECT RAISE(ABORT, 'generic SAE/ISO DTC code is outside allowed generic OBD-II ranges'); END;
 
 -- Manufacturer-controlled ranges: P1xxx, P30xx-P33xx, B1xxx-B2xxx,
--- C1xxx-C2xxx and U1xxx-U2xxx. P35xx-P39xx, U3xxx and B3xxx/C3xxx are quarantined.
+-- C1xxx-C2xxx and U1xxx-U2xxx. P34xx-P39xx, U3xxx and B3xxx/C3xxx are quarantined.
 CREATE TRIGGER IF NOT EXISTS validate_manufacturer_dtc_code_range_insert
 BEFORE INSERT ON oem_dtc_index
 WHEN NEW.dtc_namespace IN ('manufacturer_specific_vag','manufacturer_specific_other') AND NOT (

@@ -201,13 +201,13 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
               (code, namespace, manufacturer, "EU", source_document_id,
                "synthetic DTC range fixture", applicability, self.h("e"), UTC))
 
-        insert_dtc("P34C8", "generic_sae_iso", "UNKNOWN")
+        insert_dtc("P2ABC", "generic_sae_iso", "UNKNOWN")
         insert_dtc("P1A00", "manufacturer_specific_vag", "AUDI")
         insert_dtc("B1A00", "manufacturer_specific_other", "OTHER")
-        for code in ("P1125", "P35A6", "P39AB", "U3ABC", "B1ABC", "C2ABC", "U2ABC", "B3ABC", "C3ABC"):
+        for code in ("P1125", "P3400", "P34C8", "P35A6", "P39AB", "U3ABC", "B1ABC", "C2ABC", "U2ABC", "B3ABC", "C3ABC"):
             with self.assertRaisesRegex(sqlite3.IntegrityError, "generic SAE/ISO DTC code"):
                 insert_dtc(code, "generic_sae_iso", "UNKNOWN")
-        for code in ("P0300", "P2ABC", "P34C8", "B0ABC", "C0ABC", "U0ABC", "P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC"):
+        for code in ("P0300", "P2ABC", "P3400", "P34C8", "B0ABC", "C0ABC", "U0ABC", "P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC"):
             with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
                 insert_dtc(code, "manufacturer_specific_vag", "AUDI")
         with self.assertRaisesRegex(sqlite3.IntegrityError, "manufacturer-controlled DTC code"):
@@ -326,7 +326,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
 
     def test_unresolved_reserved_dtc_ranges_remain_unknown_and_unpublishable(self) -> None:
         source_document_id = self.insert_source_document("test-dtc-quarantine", "TEST-DTC-QUARANTINE", market_scope="UNKNOWN")
-        codes = ("P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC")
+        codes = ("P3400", "P3497", "P34C8", "P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC")
         for code in codes:
             self.db.execute("""INSERT INTO oem_dtc_index
               (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,

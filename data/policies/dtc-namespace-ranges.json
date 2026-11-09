@@ -19,29 +19,29 @@
   ],
   "namespaces": {
     "generic_sae_iso": {
-      "pattern": "^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$",
-      "exact_source_record_required_for": [
-        "P34xx"
-      ]
+      "pattern": "^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$",
+      "exact_source_record_required_for": []
     },
     "manufacturer_controlled": {
       "pattern": "^(?:P1[0-9A-F]{3}|P3[0-3][0-9A-F]{2}|B[12][0-9A-F]{3}|C[12][0-9A-F]{3}|U[12][0-9A-F]{3})$"
     },
     "unresolved_reserved": {
-      "pattern": "^(?:P3[5-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$",
+      "pattern": "^(?:P3[4-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$",
       "allowed_normalized_namespaces": []
     }
   },
   "quarantine_policy": {
     "unresolved_codes_may_be_retained_only_in": "unknown",
     "may_be_promoted_to_generic_or_manufacturer_specific": false,
-    "require_exact_pinned_source_record_for_p34xx": true,
-    "manufacturer_controlled_range_proves_vag_authorship": false
+    "manufacturer_controlled_range_proves_vag_authorship": false,
+    "quarantine_p34xx_until_current_standard_assignment": true
   },
   "notes": [
     "A manufacturer-controlled allocation range is not proof of Volkswagen Group authorship.",
-    "P34xx is admitted as generic only when the exact identifier exists in a pinned source snapshot; a prefix alone is insufficient.",
-    "P35xx-P39xx, U3xxx, B3xxx and C3xxx are unresolved for normalized product namespaces until exact current-standard assignments are independently verified; source-pack labels alone do not promote them.",
-    "The current SAE digital annex is licensed. No standard text, DTC definition table or allocation spreadsheet is copied into this repository."
+    "P34xx-P39xx, U3xxx, B3xxx and C3xxx are unresolved for normalized product namespaces until exact current-standard assignments are independently verified; source-pack labels alone do not promote them.",
+    "The current SAE digital annex is licensed. No standard text, DTC definition table or allocation spreadsheet is copied into this repository.",
+    "P3xxx is a mixed manufacturer-controlled / ISO-SAE-reserved family; an upstream generic label does not establish the exact current allocation of a P34xx code.",
+    "All P34xx identifiers remain in the unknown research quarantine until the exact current SAE J2012/J2012DA assignment is independently verified; the current J2012DA_202607 annex has not been acquired under a reuse licence.",
+    "The pinned OBDex CC0 snapshot contains 155 upstream-labelled P34xx rows. The CC0 grant applies to the upstream data files, not to SAE allocation status; none of these rows is promoted to the normalized generic or VAG-specific DTC index."
   ]
 }
