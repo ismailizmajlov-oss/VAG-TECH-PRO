@@ -14,9 +14,9 @@
 This is a **generic SAE/ISO OBD-II reference layer**, not a VAG factory diagnostic corpus.
 
 - Expected upstream projection: 9,533 generic DTC records.
-- Expected upstream PID projection: 132 records across Mode 01 and Mode 09.\n- Accepted generic DTC ranges: P0xxx, P2xxx, P34xx, B0xxx, C0xxx, U0xxx and U3xxx.
+- Expected upstream PID projection: 132 records across Mode 01 and Mode 09.\n- Upstream-labelled research ranges: P0xxx, P2xxx, P34xx, B0xxx, C0xxx, U0xxx and U3xxx. P34xx and U3xxx remain quarantined from normalized product namespaces.
 - DTC namespace: `generic_sae_iso_obd2`.
-- Manufacturer-controlled DTC families are excluded by validation. The mixed P3 family is admitted only for P34xx (155 entries in the pinned snapshot); P35xx–P39xx remain excluded until individually supported as generic standardized codes.
+- Manufacturer-controlled DTC families are excluded by validation. P3xxx is a mixed family; all 155 upstream-labelled P34xx rows remain research-only until exact current SAE J2012DA allocation is independently verified. P35xx-P39xx also remain quarantined.
 - No exact VAG model, generation, engine, gearbox, ECU, PR-code or Russian-market fitment is asserted.
 - No repair procedure, wiring diagram, pinout, torque value or adaptation is created from these records.
 - Records are imported as `source_imported_unreviewed`; they remain research/reference data until independently reviewed.
@@ -51,4 +51,4 @@ The dataset can populate the generic OBD-II layer only. A separate, independentl
 
 ## Current Windows offline bundle evidence — 2026-11-07
 
-The pinned revision was acquired and packaged successfully in [Windows offline data-pack workflow run 214](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42391816422). The verified bundle artifact is ID `13581812389`, SHA-256 `3e83523699cf60f0aaf355e3ae760527378d6346bf46d1f85bc3f0522681c23e`. Its OBDex SQLite database SHA-256 is `1a6e98bb99495e584aa3606848acd8aac86f7959f1609a577d5ff43e816adb5a`; the source manifest SHA-256 is `d8bd107da550e826e4199311e54d993cfdef736ed31749c29e94961ea3d90fa2`. Independent read-only validation returned `integrity_check=ok`, zero foreign-key violations, 9,533 generic DTCs, 132 generic PIDs, zero VAG-specific DTC rows and zero fitment claims. Only P34xx (155 entries) is admitted from the mixed P3 family; P35xx–P39xx remain excluded.
+The pinned revision was acquired and packaged successfully in [Windows offline data-pack workflow run 214](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42391816422). The verified bundle artifact is ID `13581812389`, SHA-256 `3e83523699cf60f0aaf355e3ae760527378d6346bf46d1f85bc3f0522681c23e`. Its OBDex SQLite database SHA-256 is `1a6e98bb99495e584aa3606848acd8aac86f7959f1609a577d5ff43e816adb5a`; the source manifest SHA-256 is `d8bd107da550e826e4199311e54d993cfdef736ed31749c29e94961ea3d90fa2`. Independent read-only validation returned `integrity_check=ok`, zero foreign-key violations, 9,533 generic DTCs, 132 generic PIDs, zero VAG-specific DTC rows and zero fitment claims. All 155 upstream-labelled P34xx rows remain in the separate research pack and are excluded from normalized generic and VAG-specific namespaces pending exact current SAE J2012DA assignment evidence.
