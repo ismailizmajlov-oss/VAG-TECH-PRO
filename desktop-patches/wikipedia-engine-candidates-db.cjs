@@ -104,6 +104,22 @@ function verify(root) {
       !Array.isArray(sourceManifest.pages) || sourceManifest.pages.length !== 4) {
     throw new Error("Wikipedia candidate pack source revision list is incomplete");
   }
+  const provenance = readJson(files.build_provenance_file);
+  if (provenance.pack_id !== PACK_ID || provenance.source_artifact_sha256 !== entry.source_artifact_sha256 ||
+      provenance.source_archive_sha256 !== entry.source_archive_sha256 || provenance.source_commit !== entry.source_commit ||
+      provenance.source_head_sha !== entry.source_head_sha || provenance.source_event !== entry.source_event ||
+      provenance.source_ref !== entry.source_ref || provenance.source_workflow_run_id !== entry.source_workflow_run_id ||
+      provenance.source_artifact_id !== entry.source_artifact_id) {
+    throw new Error("Wikipedia candidate build provenance does not match the root research manifest");
+  }
+  for (const page of manifest.pages) {
+    const stem = String(page.revision_id);
+    const html = fileInside(base, "wikipedia-vag-engine-candidates/source-snapshots/" + stem + ".html");
+    const wikitext = fileInside(base, "wikipedia-vag-engine-candidates/source-snapshots/" + stem + ".wikitext");
+    if (hash(html) !== page.rendered_html_sha256 || hash(wikitext) !== page.wikitext_sha256) {
+      throw new Error("Wikipedia source snapshot SHA-256 mismatch for revision " + stem);
+    }
+  }
 
   const db = new DatabaseSync(files.database, { readOnly: true });
   try {
@@ -140,7 +156,7 @@ function verify(root) {
         throw new Error("Wikipedia SQLite source revision mismatch: " + page.revision_id);
       }
     }
-    return { base, entry, manifest, sourceManifest, files, counts };
+    return { base, entry, manifest, sourceManifest, provenance, files, counts };
   } finally {
     db.close();
   }
@@ -183,6 +199,10 @@ function getSummary(root) {
     databaseSha256: pack.manifest.database_sha256,
     sourceArtifactSha256: pack.entry.source_artifact_sha256,
     sourceArchiveSha256: pack.entry.source_archive_sha256,
+    sourceCommit: pack.entry.source_commit,
+    sourceHeadSha: pack.entry.source_head_sha,
+    sourceEvent: pack.entry.source_event,
+    sourceRef: pack.entry.source_ref,
     attributionSha256: pack.manifest.attribution_sha256,
     licenseNoticeSha256: pack.manifest.license_notice_sha256,
     attributionText,
