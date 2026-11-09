@@ -1,0 +1,54 @@
+name: Build EEA VAG type-approval variant research pack
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-eea-vag-approval-research-pack.yml"
+      - "scripts/build_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_vag_approval_research_pack.py"
+      - "data/source-manifests/vag-factory-source-register.json"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-eea-vag-approval-research-pack.yml"
+      - "scripts/build_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_vag_approval_research_pack.py"
+      - "data/source-manifests/vag-factory-source-register.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eea-vag-approval-research-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-research-pack:
+    name: Acquire and verify EEA VAG variant research SQLite (Windows x64)
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - name: Checkout pinned source
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+      - name: Run EEA rights, SQL and candidate-only regression tests
+        run: python -m unittest discover -s tests -p "test_eea_vag_approval_research_pack.py" -v
+      - name: Verify source-register rights gate
+        run: python -m unittest discover -s tests -p "test_sync_vag_source_register_source_rights.py" -v
+      - name: Acquire exact core VAG makes from pinned EEA 2024F and 2025P tables
+        run: python scripts/build_eea_vag_approval_research_pack.py --source-manifest data/source-manifests/vag-factory-source-register.json --out eea-vag-approval-pack
+      - name: Re-open SQLite and verify every page, row hash and non-fitment gate
+        run: python scripts/build_eea_vag_approval_research_pack.py --verify --out eea-vag-approval-pack
+      - name: Upload separately licensed EEA research pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: eea-vag-type-approval-variants-${{ github.run_id }}
+          path: eea-vag-approval-pack/**
+          if-no-files-found: error
+          retention-days: 30
