@@ -186,14 +186,19 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
     pid_count = count(db, "generic_pid_research")
     if dtc_count != 9533 or pid_count != 132:
         raise ValueError("OBDex SQLite row counts mismatch")
-    if db.execute("SELECT count(*) FROM generic_dtc_research WHERE namespace<>'generic_sae_iso_obd2' OR vehicle_fitment_claim<>0").fetchone()[0]:
-        raise ValueError("OBDex contains non-generic or fitment-claim DTC rows")
-    generic_codes = [row["code"] for row in db.execute("SELECT code FROM generic_dtc_research")]
+    if db.execute("SELECT count(*) FROM generic_dtc_research WHERE namespace NOT IN ('generic_sae_iso_obd2','unknown') OR vehicle_fitment_claim<>0").fetchone()[0]:
+        raise ValueError("OBDex contains an unsupported namespace or a vehicle-fitment claim")
+    dtc_rows = list(db.execute("SELECT code, namespace FROM generic_dtc_research"))
+    generic_codes = [row["code"] for row in dtc_rows]
     if len(set(generic_codes)) != dtc_count or any(not UPSTREAM_OBDEX_LABELLED_CODE_RE.fullmatch(code) for code in generic_codes):
         raise ValueError("OBDex source snapshot contains a code outside its pinned upstream-labelled ranges")
-    searchable_codes = [code for code in generic_codes if GENERIC_OBD_CODE_RE.fullmatch(code)]
-    quarantined_codes = [code for code in generic_codes if UNRESOLVED_RESERVED_DTC_RE.fullmatch(code)]
-    unclassified_codes = [code for code in generic_codes if not GENERIC_OBD_CODE_RE.fullmatch(code) and not UNRESOLVED_RESERVED_DTC_RE.fullmatch(code)]
+    searchable_codes = [row["code"] for row in dtc_rows if row["namespace"] == "generic_sae_iso_obd2"]
+    quarantined_codes = [row["code"] for row in dtc_rows if row["namespace"] == "unknown"]
+    unclassified_codes = [
+        row["code"] for row in dtc_rows
+        if (row["namespace"] == "generic_sae_iso_obd2" and not GENERIC_OBD_CODE_RE.fullmatch(row["code"]))
+        or (row["namespace"] == "unknown" and not UNRESOLVED_RESERVED_DTC_RE.fullmatch(row["code"]))
+    ]
     expected_counts = local_lock.get("expected_counts", {})
     if unclassified_codes:
         raise ValueError(f"OBDex contains DTCs outside both the searchable and quarantined policy ranges: {unclassified_codes[:10]}")
@@ -202,6 +207,8 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
     upstream_expected_counts = source_manifest.get("expected_counts", {})
     if upstream_expected_counts.get("generic_dtcs") != dtc_count or upstream_expected_counts.get("searchable_generic_dtcs") != len(searchable_codes) or upstream_expected_counts.get("quarantined_unresolved_namespace_rows") != len(quarantined_codes) or upstream_expected_counts.get("pids_total") != pid_count:
         raise ValueError("OBDex source manifest expected counts differ from the pinned source and display policy")
+    if source_manifest.get("normalization_policy") != normalization_policy:
+        raise ValueError("OBDex source manifest normalization policy differs from the locked policy")
     if db.execute("SELECT count(*) FROM generic_pid_research WHERE vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex PID rows contain vehicle-fitment claims")
     if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC0-1.0' OR verification_status<>'license_verified_research_only'").fetchone()[0]:
