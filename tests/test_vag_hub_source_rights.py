@@ -55,7 +55,7 @@ class VagHubSourceRightsTests(unittest.TestCase):
         for category in ("ELSAWin service-information software", "ETKA/ETOS parts-catalogue material", "TPI reports", "Dataflash/firmware downloads"):
             with self.subTest(category=category):
                 self.assertIn(category, claims["content_categories"])
-        self.assertIn("delete downloaded file after reading", claims["dataflash_page"].lower())
+        self.assertIn("delete downloaded files after reading", claims["dataflash_page"].lower())
         self.assertIn("purchase original", claims["elsawin_page"].lower())
         self.assertTrue(claims["about_page"].startswith("The publisher says materials are compiled from publicly available sources"))
 
