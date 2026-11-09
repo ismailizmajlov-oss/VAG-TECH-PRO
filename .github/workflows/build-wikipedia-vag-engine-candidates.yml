@@ -22,7 +22,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: wikipedia-vag-engine-candidates-${{ github.ref }}
+  group: wikipedia-vag-engine-candidates-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
