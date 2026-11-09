@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-11-08",
+  "reviewed_at": "2026-11-09",
   "product_market": [
     "RU",
     "EAEU"
@@ -1553,7 +1553,30 @@
         "note": "The no-login public search route is documented by trade.kg. The separate cert.trade.kg landing page shows one OTTS and zero OTSH UI counters; these are not verified corpus counts. Neither observation grants automated extraction, bulk export, offline caching, display or redistribution rights.",
         "summary_source_url": "https://cert.trade.kg/",
         "otts_summary_count": 1,
-        "otsh_summary_count": 0
+        "otsh_summary_count": 0,
+        "latest_official_recheck": {
+          "observed_at": "2026-11-09",
+          "official_portal_url": "https://trade.kg/",
+          "official_portal_observation": "The State Enterprise homepage says public registers are open without registration and lists OTTS/OTSH search by approval number, make and model.",
+          "official_registry_landing_url": "https://trade.kg/registry?tab=OTTS.otts",
+          "official_registry_landing_observation": "The official OTTS/OTSH register page links to the smart.trade.kg public-registry application.",
+          "public_registry_project_url": "https://trade.kg/projects/public-registry",
+          "public_registry_project_observation": "The operator still describes the public registry as a pilot, says login is not required, and says issued documents are published for public lookup by VIN or document number without displaying personal data.",
+          "smart_registry_url": "https://smart.trade.kg/registry?lng=ru",
+          "smart_registry_page_observation": "The JavaScript application returned no readable record rows in the reviewed page extraction; no record schema or individual OTTS record was verified.",
+          "summary_source_url": "https://cert.trade.kg/",
+          "ot_ts_summary_count": 1,
+          "otsh_summary_count": 0,
+          "count_treatment": "portal_summary_counters_only_not_a_verified_complete_or_stable_public_register_count",
+          "record_rows_observed": false,
+          "record_schema_retrieved": false,
+          "result_retrieval_independently_tested": false,
+          "documented_api_identified": false,
+          "bulk_export_documented": false,
+          "source_bytes_downloaded": false,
+          "source_snapshot_sha256": null,
+          "rights_effect": "none; no-login public lookup does not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights"
+        }
       },
       "access_and_reuse": {
         "public_query": "observed_without_login",
@@ -1576,7 +1599,7 @@
         "No exact VAG engine code, gearbox code, engine/gearbox pairing, ECU, DTC or repair applicability was established.",
         "The older sbkts.trade.kg/otts route was previously observed with a CAPTCHA gate; it is retained as a separate legacy interface and no CAPTCHA was bypassed."
       ],
-      "evidence_status": "Official State Enterprise portal, public-registry project page, vehicle-approval system page and 2026-08-24 announcement reviewed 2026-11-07. The public registry is a pilot with no-login search; no record bytes or dataset snapshot were downloaded, and reuse rights remain unresolved.",
+      "evidence_status": "Official State Enterprise homepage, public-registry landing page, public-registry project page, cert.trade.kg summary and smart.trade.kg route rechecked 2026-11-09. The public lookup remains a pilot/no-login route, but no record rows or schema were retrieved; one OTTS and zero OTSH are portal summary counters only. No source bytes were downloaded and reuse rights remain unresolved.",
       "project_decision": "discovery_only_no_automation_no_import_until_documented_record_schema_and_written_reuse_rights_are_confirmed"
     },
     {
