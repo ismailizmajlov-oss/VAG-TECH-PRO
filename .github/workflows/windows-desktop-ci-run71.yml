@@ -2192,6 +2192,9 @@ jobs:
             desktop-source-inventory.txt
             desktop-source-technical-surface.txt
             windows-lifecycle-staging/desktop-source/app/**
+            windows-lifecycle-staging/desktop-source/package.json
+            windows-lifecycle-staging/desktop-source/package-lock.json
+            windows-lifecycle-staging/desktop-source/scripts/prepare-electron-runtime.cjs
             windows-lifecycle-staging/desktop-source/components/**
             windows-lifecycle-staging/desktop-source/electron/**
             windows-lifecycle-staging/desktop-source/tests/**
