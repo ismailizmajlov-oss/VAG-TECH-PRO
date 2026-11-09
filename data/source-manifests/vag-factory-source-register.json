@@ -5680,7 +5680,7 @@
       "vehicle_approval_project_url": "https://trade.kg/projects/vehicles",
       "announcement_url": "https://trade.kg/news/24-avgusta-2026-goda-v-promyshlennoj-srede-zapuskaetsya-informaczionnaya-sistema",
       "source_kind": "kyrgyz_national_vehicle_type_approval_public_register",
-      "source_revision": "official_portal_project_pages_and_digital_code_legal_review_2026-11-07; no dataset release, record schema or API revision identified",
+      "source_revision": "official_portal_project_pages_rechecked_2026-11-09; no dataset release, record schema or API revision identified",
       "market_scope": [
         "KG",
         "EAEU_TR_TS_018_2011"
@@ -5702,7 +5702,37 @@
           ],
           "personal_data_display_claim": "official project page says personal data are not displayed",
           "record_schema_retrieved": false,
-          "result_retrieval_independently_tested": false
+          "result_retrieval_independently_tested": false,
+          "latest_official_recheck": {
+            "observed_at": "2026-11-09",
+            "official_portal_url": "https://trade.kg/",
+            "public_registry_landing_url": "https://trade.kg/registry?tab=OTTS.otts",
+            "smart_registry_url": "https://smart.trade.kg/registry?lng=ru",
+            "operator_stated_status": "pilot",
+            "login_required": false,
+            "search_fields": [
+              "approval_number",
+              "make",
+              "model"
+            ],
+            "general_public_verification_fields": [
+              "document_number",
+              "VIN"
+            ],
+            "personal_data_display_claim": "official project page says personal data are not displayed",
+            "cert_trade_summary_url": "https://cert.trade.kg/",
+            "ot_ts_summary_count": 1,
+            "otsh_summary_count": 0,
+            "count_treatment": "portal_summary_counters_only_not_a_verified_complete_or_stable_public_register_count",
+            "smart_registry_page_observation": "JavaScript application returned no readable record rows in the reviewed page extraction; no record schema or individual OTTS record was verified.",
+            "record_rows_observed": false,
+            "record_schema_retrieved": false,
+            "documented_api_identified": false,
+            "bulk_export_documented": false,
+            "source_bytes_downloaded": false,
+            "source_snapshot_sha256": null,
+            "rights_effect": "none; public no-login lookup does not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights"
+          }
         },
         "homepage_summary": {
           "url": "https://cert.trade.kg/",
@@ -5779,7 +5809,7 @@
         "russian_market_scope": false,
         "engine_characteristics_in_public_record_schema": "not_established"
       },
-      "verification_status": "official_public_registry_pilot_and_no_login_route_observed; statutory_access_and_reuse_law_reviewed; record_schema_and_product_reuse_rights_unresolved",
+      "verification_status": "official_public_registry_pilot_and_no_login_route_rechecked_2026-11-09; record_schema_and_product_reuse_rights_unresolved",
       "product_import_allowed": false,
       "data_ingested": false,
       "source_snapshot_sha256": null,
@@ -5798,7 +5828,8 @@
         "Article 1(14) defines a state/municipal digital resource by its state-service purpose; the official portal identifies a state enterprise under the State Customs Service, but formal classification of this specific register under Article 1(14) was not found.",
         "Article 1(39) defines open data as machine-readable data without reuse restrictions. The observed registry is a JavaScript public-lookup page; no machine-readable bulk dataset, API, export schema or no-reuse-restrictions statement was retrieved.",
         "Articles 25, 26 and 60 preserve digital-record/resource-owner rights and access terms; Articles 59 and 62 are not treated as an automatic licence for automated extraction, offline caching, third-party display or redistribution.",
-        "No record-level metadata was retrieved, so record-owner identity and any attribution condition under Article 59(3) remain unknown."
+        "No record-level metadata was retrieved, so record-owner identity and any attribution condition under Article 59(3) remain unknown.",
+        "The 2026-11-09 recheck confirmed the official no-login pilot route and the portal's one-OTTS/zero-OTSH summary counters, but the linked JavaScript registry yielded no readable record rows or schema; the counters are not a verified corpus count."
       ],
       "evidence_reviewed": [
         {
@@ -5841,6 +5872,31 @@
           "url": "https://reestr.dpa.gov.kg/ru/npa/60",
           "reviewed_at": "2026-11-07",
           "evidence": "Official publication of Law No. 179 of 2025-07-31. It states that the Digital Code enters into force six months after official publication and records publication in Erkin-Too on 2025-08-05, No. 58 (3714), yielding an effective date of 2026-02-05."
+        },
+        {
+          "url": "https://trade.kg/",
+          "reviewed_at": "2026-11-09",
+          "evidence": "Official State Enterprise homepage states that public registers are open without registration and lists OTTS/OTSH search by approval number, make and model."
+        },
+        {
+          "url": "https://trade.kg/registry?tab=OTTS.otts",
+          "reviewed_at": "2026-11-09",
+          "evidence": "Official register landing page links to the smart.trade.kg public registry; no record data are embedded in the landing page."
+        },
+        {
+          "url": "https://trade.kg/projects/public-registry",
+          "reviewed_at": "2026-11-09",
+          "evidence": "Official project page continues to describe the public registry as a pilot, no-login lookup by VIN or document number, and non-display of personal data."
+        },
+        {
+          "url": "https://smart.trade.kg/registry?lng=ru",
+          "reviewed_at": "2026-11-09",
+          "evidence": "Official JavaScript registry route opened but returned no readable record rows or schema in the reviewed page extraction."
+        },
+        {
+          "url": "https://cert.trade.kg/",
+          "reviewed_at": "2026-11-09",
+          "evidence": "Separate official system landing page displays one OTTS and zero OTSH summary counters; these are not treated as verified corpus counts."
         }
       ],
       "legal_basis_review": {
