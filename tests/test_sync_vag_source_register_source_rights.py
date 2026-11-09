@@ -215,10 +215,10 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
         review = review_path.read_text(encoding="utf-8").casefold()
         for phrase in (
             "no vin or document query was submitted",
-            "no registry row or source bytes were downloaded",
+            "no source bytes or records were downloaded",
             "not a data-reuse licence",
-            "no dataset-specific reuse rights",
-            "application input fields are not the public record schema",
+            "not a data-reuse licence",
+            "not evidence that engine fields appear in the public record schema",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, review)
