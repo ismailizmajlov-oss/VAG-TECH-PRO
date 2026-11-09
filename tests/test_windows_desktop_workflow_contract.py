@@ -13,6 +13,22 @@ NATIVE_WORKFLOW = ROOT / ".github" / "workflows" / "windows-10-11-native-lifecyc
 def main() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     native_text = NATIVE_WORKFLOW.read_text(encoding="utf-8")
+    desktop_workflow_name = re.search(r"(?m)^name:\\s*(.+?)\\s*$", text)
+    native_trigger = re.search(
+        r"(?ms)^on:\\s*\\n\\s+workflow_run:\\s*\\n\\s+workflows:\\s*\\n(?P<items>(?:\\s+-\\s+.*\\n)+)",
+        native_text,
+    )
+    if not desktop_workflow_name or not native_trigger:
+        raise SystemExit("Native Windows 10/11 workflow must listen to the desktop workflow_run event")
+    upstream_names = re.findall(r"(?m)^\\s+-\\s+(.+?)\\s*$", native_trigger.group("items"))
+    if desktop_workflow_name.group(1) not in upstream_names:
+        raise SystemExit(
+            "Native Windows 10/11 lifecycle trigger does not match the current desktop workflow name: "
+            + desktop_workflow_name.group(1)
+        )
+    status_workflow = re.search(r'(?m)^\\s+upstream_workflow:\\s*"([^"]+)"', native_text)
+    if not status_workflow or status_workflow.group(1) != desktop_workflow_name.group(1):
+        raise SystemExit("Native Windows status record must identify the exact upstream desktop workflow")
     if "windows-lifecycle-staging/desktop-source/lib/local-research-db.cjs" not in text:
         raise SystemExit("Windows audit artifact must include the local research verifier source")
     if "windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/manifest.json" not in text:
