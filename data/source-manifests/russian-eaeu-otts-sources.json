@@ -1665,7 +1665,7 @@
       "hash_status": "not_downloaded_no_ingestion",
       "applicability_precision": "type_approval_document_metadata_only",
       "observed_public_query": {
-        "observed_at": "2026-11-10",
+        "observed_at": "2026-11-07",
         "registry_status": "pilot",
         "login_required": false,
         "search_route": "https://smart.trade.kg/registry?lng=ru",
@@ -1724,6 +1724,29 @@
           "source_snapshot_sha256": null,
           "count_treatment": "No corpus count was established; previous cert.trade.kg UI counters remain unverified landing-page observations only.",
           "rights_effect": "none; public no-login lookup and the privacy policy do not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights."
+        },
+        "previous_official_recheck": {
+          "observed_at": "2026-11-09",
+          "official_portal_url": "https://trade.kg/",
+          "official_portal_observation": "The State Enterprise homepage says public registers are open without registration and lists OTTS/OTSH search by approval number, make and model.",
+          "official_registry_landing_url": "https://trade.kg/registry?tab=OTTS.otts",
+          "official_registry_landing_observation": "The official OTTS/OTSH register page links to the smart.trade.kg public-registry application.",
+          "public_registry_project_url": "https://trade.kg/projects/public-registry",
+          "public_registry_project_observation": "The operator still describes the public registry as a pilot, says login is not required, and says issued documents are published for public lookup by VIN or document number without displaying personal data.",
+          "smart_registry_url": "https://smart.trade.kg/registry?lng=ru",
+          "smart_registry_page_observation": "The JavaScript application returned no readable record rows in the reviewed page extraction; no record schema or individual OTTS record was verified.",
+          "summary_source_url": "https://cert.trade.kg/",
+          "ot_ts_summary_count": 1,
+          "otsh_summary_count": 0,
+          "count_treatment": "portal_summary_counters_only_not_a_verified_complete_or_stable_public_register_count",
+          "record_rows_observed": false,
+          "record_schema_retrieved": false,
+          "result_retrieval_independently_tested": false,
+          "documented_api_identified": false,
+          "bulk_export_documented": false,
+          "source_bytes_downloaded": false,
+          "source_snapshot_sha256": null,
+          "rights_effect": "none; no-login public lookup does not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights"
         }
       },
       "access_and_reuse": {
