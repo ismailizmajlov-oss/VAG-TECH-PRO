@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/patches/desktop-source-run76/**"
       - ".github/workflows/build-windows-offline-data-packs.yml"
       - ".github/workflows/windows-10-11-native-lifecycle.yml"
       - "desktop-source-run*.zip.b64"
@@ -147,6 +148,7 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/patches/desktop-source-run76/**"
       - ".github/workflows/build-windows-offline-data-packs.yml"
       - ".github/workflows/windows-10-11-native-lifecycle.yml"
       - "desktop-source-run*.zip.b64"
@@ -1228,6 +1230,31 @@ jobs:
           node apply-local-core-test-cleanup-run75.cjs --desktop-root desktop-source
           if ($LASTEXITCODE -ne 0) { throw "Run75 local-core test SQLite cleanup patch failed" }
           "local_core_test_fixture_handles=closed_in_finally; windows_file_lock_regression=covered" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+          $patchPartsDir76 = Join-Path $env:GITHUB_WORKSPACE ".github/patches/desktop-source-run76"
+          $parts76 = @(Get-ChildItem -LiteralPath $patchPartsDir76 -Filter "part-*.b64" -File | Sort-Object Name)
+          if ($parts76.Count -ne 4) { throw "Expected 4 immutable run76 patch chunks, found $($parts76.Count)" }
+          $encoded76 = ($parts76 | ForEach-Object { [IO.File]::ReadAllText($_.FullName).Trim() }) -join ""
+          if ($encoded76.Length -ne 6088) { throw "Run76 patch base64 length mismatch: $($encoded76.Length)" }
+          $encodedHash76 = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($encoded76))).ToLowerInvariant()
+          if ($encodedHash76 -ne "5279408a9793c3c09dc941bae651961348b9a86d703f31a0dbf6a2f89e67d0be") { throw "Run76 patch base64 SHA-256 mismatch" }
+          $compressed76 = [Convert]::FromBase64String($encoded76)
+          $compressedHash76 = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($compressed76)).ToLowerInvariant()
+          if ($compressedHash76 -ne "ad757edb4ec08c990b27593fe771b2c37565e07c521ed5b89a90c41386adeac3") { throw "Run76 Brotli patch SHA-256 mismatch" }
+          $inputStream76 = [IO.MemoryStream]::new($compressed76)
+          $brotli76 = [IO.Compression.BrotliStream]::new($inputStream76, [IO.Compression.CompressionMode]::Decompress)
+          $outputStream76 = [IO.MemoryStream]::new()
+          $brotli76.CopyTo($outputStream76)
+          $patchBytes76 = $outputStream76.ToArray()
+          $patchHash76 = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($patchBytes76)).ToLowerInvariant()
+          if ($patchHash76 -ne "f90613c8baa29c3197e2af2bf73523efd4d7956e90e185820d8d841a75500017") { throw "Run76 decoded patch SHA-256 mismatch" }
+          $patchPath76 = Join-Path $env:RUNNER_TEMP "vag-tech-pro-run76.patch"
+          [IO.File]::WriteAllBytes($patchPath76, $patchBytes76)
+          git apply --check --unsafe-paths --directory=desktop-source $patchPath76
+          if ($LASTEXITCODE -ne 0) { throw "Run76 unique vehicle-configuration guard patch check failed" }
+          git apply --unsafe-paths --directory=desktop-source $patchPath76
+          if ($LASTEXITCODE -ne 0) { throw "Run76 unique vehicle-configuration guard patch application failed" }
+          "vehicle_identity_match_requires_generation_market_year=true; ambiguous_configuration_blocks_lookup=true; market_scope_all_supported=true" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
           Push-Location (Join-Path $env:GITHUB_WORKSPACE "desktop-source")
           try {
