@@ -15,6 +15,7 @@ type CandidateRow = {
   sourceRowText: string;
   candidateValueText: string;
   sourceRowSha256: string;
+  packManifestSha256: string;
   sourceSnapshotSha256: string;
   sourceManifestSha256: string;
   marketScope: "UNKNOWN";
@@ -56,6 +57,7 @@ type CandidateSummary = {
   sourceRevisions: Record<string, string>;
   qualityWarnings: string[];
   databaseSha256: string;
+  packManifestSha256: string;
   sourceManifestSha256: string;
   sourceSnapshotSha256: string;
   attributionSha256: string;
@@ -143,6 +145,7 @@ export default function WikipediaEngineCandidates() {
       <p>{summary.attributionText}</p>
       <p>Редакции: {Object.entries(summary.sourceRevisions).map(([title, revision]) => title + " [" + revision + "]").join(" · ")}</p>
       <p>SQLite SHA-256: {summary.databaseSha256}</p>
+      <p>Pack manifest SHA-256: {summary.packManifestSha256}</p>
       <p>Source manifest SHA-256: {summary.sourceManifestSha256} · snapshot SHA-256: {summary.sourceSnapshotSha256}</p>
       <p>Attribution SHA-256: {summary.attributionSha256} · license notice SHA-256: {summary.licenseNoticeSha256} · source artifact SHA-256: {summary.sourceArtifactSha256}</p>
       <details className="research-details">
@@ -193,6 +196,7 @@ export default function WikipediaEngineCandidates() {
           <ul>
             <li>Кандидат извлечён из строки: {row.candidateValueText}</li>
             <li>SHA-256 строки: {row.sourceRowSha256}</li>
+            <li>SHA-256 манифеста пакета: {row.packManifestSha256}</li>
             <li>SHA-256 снимка: {row.sourceSnapshotSha256}</li>
             <li>SHA-256 манифеста: {row.sourceManifestSha256}</li>
             <li>Статус: {row.reviewStatus}; применимость: {row.applicabilityPrecision}</li>
