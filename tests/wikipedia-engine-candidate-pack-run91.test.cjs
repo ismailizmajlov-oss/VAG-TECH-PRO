@@ -33,6 +33,7 @@ test("Desktop build verifies and copies the fourth research pack without merging
   assert.match(workflow, /wikipedia-engine-candidates-db\.test\.cjs/);
   assert.match(workflow, /apply-wikipedia-engine-candidate-ui-run91\.cjs/);
   assert.match(sync, /index\.database_count !== 4/);
+  assert.match(sync, /packs: index\.packs\.map/);
   assert.match(sync, /required = \["obdex-generic-cc0", "obdb-vag-signals-cc-by-sa", "vehiclesdb-vag-identity"\]/);
 });
 
