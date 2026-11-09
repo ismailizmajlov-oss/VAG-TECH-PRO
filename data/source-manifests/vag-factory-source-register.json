@@ -6038,6 +6038,36 @@
             "source_snapshot_sha256": null,
             "count_treatment": "No corpus count was established; previous cert.trade.kg UI counters remain unverified landing-page observations only.",
             "rights_effect": "none; public no-login lookup and the privacy policy do not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights."
+          },
+          "previous_official_recheck": {
+            "observed_at": "2026-11-09",
+            "official_portal_url": "https://trade.kg/",
+            "public_registry_landing_url": "https://trade.kg/registry?tab=OTTS.otts",
+            "smart_registry_url": "https://smart.trade.kg/registry?lng=ru",
+            "operator_stated_status": "pilot",
+            "login_required": false,
+            "search_fields": [
+              "approval_number",
+              "make",
+              "model"
+            ],
+            "general_public_verification_fields": [
+              "document_number",
+              "VIN"
+            ],
+            "personal_data_display_claim": "official project page says personal data are not displayed",
+            "cert_trade_summary_url": "https://cert.trade.kg/",
+            "ot_ts_summary_count": 1,
+            "otsh_summary_count": 0,
+            "count_treatment": "portal_summary_counters_only_not_a_verified_complete_or_stable_public_register_count",
+            "smart_registry_page_observation": "JavaScript application returned no readable record rows in the reviewed page extraction; no record schema or individual OTTS record was verified.",
+            "record_rows_observed": false,
+            "record_schema_retrieved": false,
+            "documented_api_identified": false,
+            "bulk_export_documented": false,
+            "source_bytes_downloaded": false,
+            "source_snapshot_sha256": null,
+            "rights_effect": "none; public no-login lookup does not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights"
           }
         },
         "homepage_summary": {
