@@ -3,8 +3,28 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { buildRuntimeEnvironment } = require("../electron/main.cjs");
 const root = path.resolve(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
+
+test("Electron child runtime strips cloud credentials and forces local SQLite mode", () => {
+  const source = {
+    PATH: "C:\\Windows\\System32",
+    SUPABASE_URL: "https://cloud.invalid",
+    SUPABASE_ANON_KEY: "anon-placeholder",
+    SUPABASE_SERVICE_ROLE_KEY: "service-placeholder",
+    NEXT_PUBLIC_SUPABASE_URL: "https://cloud.invalid",
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: "public-placeholder",
+  };
+  const env = buildRuntimeEnvironment(source, 43127, "C:\\Users\\Test\\AppData\\VAG TECH PRO\\data", "C:\\Users\\Test\\AppData\\VAG TECH PRO\\data\\vag-tech-pro.sqlite", "C:\\Program Files\\VAG TECH PRO\\resources\\research-data");
+  assert.equal(env.PORT, "43127");
+  assert.equal(env.HOSTNAME, "127.0.0.1");
+  assert.equal(env.VAG_TECH_PRO_DESKTOP_OFFLINE, "1");
+  assert.equal(env.PATH, source.PATH);
+  for (const key of ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]) {
+    assert.equal(env[key], undefined, key + " must not reach the packaged local server");
+  }
+});
 
 test("Electron opens the dedicated local SQLite desktop route", () => {
   const main = read("electron/main.cjs");
