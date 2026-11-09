@@ -71,6 +71,15 @@ def is_engine_code_label(value: str) -> bool:
     return bool(LABEL_RE.search(clean_text(value)))
 
 
+def is_explicit_engine_code_column(value: str) -> bool:
+    text = clean_text(value)
+    return bool(re.fullmatch(
+        r"(?:(?:engine\\s+)?(?:id|identification)\\s+codes?|engine\\s+codes?)(?:\\s*\\([^)]*\\))?",
+        text,
+        re.IGNORECASE,
+    ))
+
+
 def extract_codes(value: str) -> list[str]:
     result: list[str] = []
     for match in CODE_RE.findall(clean_text(value).upper()):
@@ -158,7 +167,9 @@ class EngineCodeHTMLParser(HTMLParser):
             if has_data_cell and values and any(extract_codes(value) for value in values):
                 self._emit(cells, values, row_number)
             else:
-                self.engine_code_columns = set(labels)
+                self.engine_code_columns = {
+                    index for index in labels if is_explicit_engine_code_column(texts[index])
+                }
             return
         if self.table_has_id_code_header:
             code_values = []
