@@ -38,16 +38,27 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
             <tr><th>Engine ID codes</th><th>Power</th></tr>
             <tr><td>AGB, AZB</td><td>195 kW</td></tr>
           </table>
+          <h3>VR6 timeline</h3>
+          <table>
+            <tr><th>cylinders &amp; valves</th><th>displacement &amp; ID code(s)</th><td>1990s</td><td>2000s</td><td>2010s</td></tr>
+            <tr><td>2.8 : AAA</td><td></td><td>Passat B3</td><td></td><td></td></tr>
+            <tr><td>2.9 : ABV</td><td></td><td>Corrado</td><td></td><td></td></tr>
+          </table>
         </body></html>
         """
         rows, rows_seen = parse_engine_code_candidates(html)
         codes = [code for row in rows for code in row["candidate_codes"]]
         self.assertGreaterEqual(rows_seen, 5)
-        self.assertEqual(codes, ["CAXA", "CAVD", "AEE", "2G", "3F", "AGB", "AZB", "AGB", "AZB"])
+        self.assertEqual(codes, ["CAXA", "CAVD", "AEE", "2G", "3F", "AGB", "AZB", "AGB", "AZB", "AAA", "ABV"])
         self.assertEqual(rows[0]["section_heading"], "1.8 litre petrol engine")
         self.assertEqual(rows[1]["section_heading"], "1.8 litre petrol engine")
         self.assertEqual(rows[2]["section_heading"], "Another engine")
+        self.assertEqual(rows[3]["section_heading"], "VR6 timeline")
+        self.assertEqual(rows[4]["section_heading"], "VR6 timeline")
         self.assertTrue(all("Gearbox" not in row["source_row_text"] for row in rows))
+        self.assertNotIn("1990S", codes)
+        self.assertNotIn("2000S", codes)
+        self.assertNotIn("2010S", codes)
 
     def test_source_register_requires_pinned_revisions_and_sharealike_rights(self):
         source = {
