@@ -7640,6 +7640,172 @@
       "data_ingested": false,
       "product_import_allowed": false,
       "source_snapshot_sha256": null
+    },
+    {
+      "source_id": "eea-co2-passenger-cars-2019-2025",
+      "title": "Monitoring of CO2 emissions from passenger cars — EEA 2019–2025",
+      "publisher": "European Environment Agency (EEA), Directorate-General for Climate Action (DG CLIMA)",
+      "source_kind": "official_eu_new_passenger_car_type_approval_variant_aggregate",
+      "source_url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
+      "source_metadata_urls": [
+        "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
+        "https://sdi.eea.europa.eu/catalogue/datahub/api/records/b4044b06-2e6b-4f8e-a6e6-66e0e98bb0dd?language=eng"
+      ],
+      "source_revision": "2024F_co2cars_2024Fv30_metadata_revised_2026-08-19;2025P_co2cars_2025Pv31_metadata_revised_2026-08-19",
+      "market_scope": [
+        "EU-27",
+        "IS",
+        "NO"
+      ],
+      "rights": {
+        "data_license": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "license_status": "official_eea_metadata_declares_CC_BY_4_0",
+        "permission_status": "approved_by_published_license_for_reuse_with_attribution",
+        "commercial_use_allowed": true,
+        "third_party_display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": false,
+        "additional_restrictions": "Do not imply EEA endorsement; retain attribution and identify modifications; do not impose additional legal or technological restrictions on the CC BY 4.0 data.",
+        "rights_evidence_urls": [
+          "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
+          "https://sdi.eea.europa.eu/catalogue/datahub/api/records/b4044b06-2e6b-4f8e-a6e6-66e0e98bb0dd?language=eng",
+          "https://creativecommons.org/licenses/by/4.0/"
+        ],
+        "rights_evidence_reviewed_at": "2026-11-10",
+        "license_sha256": null,
+        "rights_evidence_sha256": null
+      },
+      "acquisition": {
+        "access_method": "public EEA Discodata SQL Server REST endpoint",
+        "endpoint": "https://discodata.eea.europa.eu/sql",
+        "authentication_required": false,
+        "paid_access_required": false,
+        "tables": [
+          {
+            "year_scope": "2019-2024",
+            "data_status": "F",
+            "table": "CO2Emission.latest.co2cars",
+            "metadata_url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
+            "note": "Use Year and Status filters; the combined table contains the final annual records for 2019-2024."
+          },
+          {
+            "year_scope": "2025",
+            "data_status": "P",
+            "table": "CO2Emission.latest.co2cars_2025Pv31",
+            "metadata_url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/b4044b06-2e6b-4f8e-a6e6-66e0e98bb0dd?language=eng",
+            "note": "Provisional 2025 edition; keep separate from final years."
+          }
+        ],
+        "query_scope": "M1 passenger cars; VAG make filtering pending live source-data discovery; preserve reporting Member State, registration year, final/provisional status, type approval number, type, variant, version and selected technical fields.",
+        "source_snapshot_sha256": null,
+        "sample_response_sha256": null,
+        "data_ingested": false,
+        "snapshot_status": "not_downloaded",
+        "full_snapshot_downloaded": false,
+        "product_import_allowed": false,
+        "research_pack_import_allowed": true,
+        "last_acquisition_attempt_at": null
+      },
+      "data_scope": {
+        "vehicle_category": "M1 passenger cars",
+        "data_type": "new passenger car registration aggregates grouped by reporting Member State, registration year, make, commercial name, type, variant, version, type approval number and technical fields",
+        "published_years": [
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "year_status": {
+          "2025": "P_provisional",
+          "2019-2024": "F_final"
+        },
+        "market_scope": "EU-27 plus Iceland and Norway",
+        "fields": [
+          "MS reporting Member State",
+          "Year registration year",
+          "Status final/provisional",
+          "Mk make",
+          "Cn commercial name",
+          "T type",
+          "Va variant",
+          "Ve version",
+          "TAN type approval number",
+          "Ft fuel type",
+          "Fm fuel mode",
+          "Ec (cm3) engine capacity",
+          "Ep (KW) engine power",
+          "M (kg) mass",
+          "W (mm) wheelbase",
+          "At1 (mm) track width",
+          "Ewltp (g/km) WLTP CO2",
+          "COUNT(*) grouped registration count"
+        ],
+        "no_vin": true,
+        "no_owner_or_applicant_data": true,
+        "no_personal_identifiers_expected": true,
+        "registration_year_is_not_model_year": true,
+        "manufacturer_reported_or_member_state_submitted": true,
+        "2025_provisional_may_change": true,
+        "vag_make_filter_status": "pending_raw_make_discovery"
+      },
+      "applicability": {
+        "official_type_approval_variant_reference": true,
+        "exact_vehicle_fitment": false,
+        "exact_factory_engine_code": false,
+        "exact_factory_gearbox_code": false,
+        "engine_gearbox_pairing": false,
+        "exact_ecu_dtc_fitment": false,
+        "exact_repair_procedure_applicability": false,
+        "model_generation_verified": false,
+        "applicability_precision": "official_eea_type_approval_variant_aggregate_not_oem_powertrain_fitment",
+        "market_scope": "EU-27+IS+NO",
+        "years": "2019-2025 registration years only"
+      },
+      "limitations": [
+        "The dataset concerns newly registered M1 passenger cars, not every vehicle in service or all model years.",
+        "Registration year is not model year and must never be presented as a generation or production boundary.",
+        "Type approval number, type, variant and version are source identifiers; they do not establish a VAG factory engine code or gearbox code.",
+        "The source does not provide exact factory engine codes, gearbox codes, engine/gearbox pairings, ECU mappings, DTCs, wiring diagrams, pinouts, torque values, adaptations, repair procedures or service intervals.",
+        "2025 is provisional and must remain separate from final 2019-2024 data.",
+        "The dataset is manufacturer/member-state reported and EEA quality checked; it is not an OEM repair manual or proof of individual-vehicle applicability.",
+        "VAG make values have not yet been enumerated from the live source data; no VAG row count is claimed.",
+        "No source data bytes have been downloaded yet; no dataset SHA-256 is claimed."
+      ],
+      "project_decision": "Reuse rights are confirmed under CC BY 4.0 for offline research display/cache and redistribution with attribution. Build a separate EEA type-approval variant research pack only after a pinned raw snapshot is downloaded, hashed, validated and filtered. Never use this source alone to confirm VAG model generation, factory engine code, gearbox code, engine/gearbox pairing or repair applicability.",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "metadata_and_license_reviewed_no_dataset_snapshot",
+      "evidence_status": "official_eea_metadata_declares_CC_BY_4_0_and_no_public_access_limitations_reviewed_2026-11-10; dataset_bytes_not_downloaded; VAG_rows_not_enumerated",
+      "evidence_reviewed": [
+        {
+          "url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
+          "reviewed_at": "2026-11-10",
+          "observation": "Official EEA metadata for the 2024 final passenger-car CO2 dataset; describes 2019-2024 final data, EU-27 plus Iceland and Norway, manufacturer/type approval/type/variant/version and engine/vehicle technical fields; declares CC-BY 4.0 and no limitations to public access."
+        },
+        {
+          "url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/b4044b06-2e6b-4f8e-a6e6-66e0e98bb0dd?language=eng",
+          "reviewed_at": "2026-11-10",
+          "observation": "Official EEA metadata for the 2025 provisional passenger-car CO2 dataset; identifies the 2025 provisional table and declares CC-BY 4.0 and no limitations to public access."
+        },
+        {
+          "url": "https://creativecommons.org/licenses/by/4.0/",
+          "reviewed_at": "2026-11-10",
+          "observation": "CC BY 4.0 permits sharing and adaptation, including commercial use, subject to attribution, licence notice, indication of changes and no additional restrictions."
+        },
+        {
+          "url": "https://www.volkswagen-group.com/en/brands-and-brand-groups-15811",
+          "reviewed_at": "2026-11-10",
+          "observation": "Official Volkswagen Group brand portfolio reference for a future VAG make filter. This page does not establish which raw EEA make strings occur in the dataset; that mapping remains pending source-data discovery."
+        }
+      ]
     }
   ],
   "minimum_fitment_evidence_fields": [
