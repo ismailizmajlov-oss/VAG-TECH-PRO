@@ -74,7 +74,7 @@ def is_engine_code_label(value: str) -> bool:
 def is_explicit_engine_code_column(value: str) -> bool:
     text = clean_text(value)
     return bool(re.fullmatch(
-        r"(?:(?:engine\\s+)?(?:id|identification)\\s+codes?|engine\\s+codes?)(?:\\s*\\([^)]*\\))?",
+        r"(?:(?:engine\s+)?(?:id|identification)\s+codes?|engine\s+codes?)(?:\s*\([^)]*\))?",
         text,
         re.IGNORECASE,
     ))
