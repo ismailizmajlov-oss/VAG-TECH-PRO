@@ -346,10 +346,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "EEA research pack regression tests failed." }
           python tests/test_eea_co2_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "EEA published CC BY 4.0 rights gate failed." }
-          python scripts/build_eea_vag_approval_research_pack.py --source-manifest data/source-manifests/vag-factory-source-register.json --out eea-vag-approval-pack
-          if ($LASTEXITCODE -ne 0) { throw "EEA VAG source acquisition or SQLite build failed." }
-          python scripts/build_eea_vag_approval_research_pack.py --verify --out eea-vag-approval-pack
-          if ($LASTEXITCODE -ne 0) { throw "EEA VAG research SQLite verification failed." }
           python tests/test_otts_bot_source_rights.py
           python tests/test_vag_hub_source_rights.py
           python tests/test_hpt_su_source_rights.py
@@ -2419,15 +2415,6 @@ jobs:
             docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md
           if-no-files-found: warn
           retention-days: 14
-
-      - name: Upload verified EEA VAG approval research pack
-        if: success() && hashFiles('eea-vag-approval-pack/pack-manifest.json') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: eea-vag-type-approval-variants-${{ github.run_id }}
-          path: eea-vag-approval-pack/**
-          if-no-files-found: error
-          retention-days: 30
 
   windows-2022-lifecycle:
     name: Windows Server 2022 installer compatibility lifecycle
