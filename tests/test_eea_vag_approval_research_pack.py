@@ -120,6 +120,7 @@ class EeaVagApprovalResearchPackTests(unittest.TestCase):
             table = {
                 "table_id": "2024F",
                 "sql_name": "[CO2Emission].[latest].[co2cars_2024Fv30]",
+                "metadata_url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
                 "year": 2024,
                 "status": "F",
                 "revision": "2024F_co2cars_2024Fv30_metadata_revised_2026-08-19",
