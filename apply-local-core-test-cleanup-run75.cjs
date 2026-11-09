@@ -45,6 +45,11 @@ function main() {
     '  assert.throws(() => seedExactConfiguration(isolatedPath, "test-open-source", true), /approved rights-cleared source/);\n  assert.equal(core.listVerifiedConfigurations(isolatedPath).length, 0);\n  assert.equal(core.listSources(isolatedPath)[0].verified_record_count, 0);\n  assert.doesNotThrow(() => fs.rmSync(isolatedPath, { force: true }), "failed seed must close its SQLite handle before cleanup");\n',
     "Windows file-lock regression assertion");
 
+  source = replaceExactly(source,
+    '  const vehicle = core.saveUserVehicle(dbPath,{brand_name:"Volkswagen",model_name:"Golf",market_scope:"RU",model_year:2017,engine_code_declared:"CZEA",transmission_code_declared:"DQ200",nickname:"Rights test"});',
+    '  const vehicle = core.saveUserVehicle(dbPath,{brand_name:"Volkswagen",model_name:"Golf",generation_name:"Golf VII",market_scope:"RU",model_year:2017,engine_code_declared:"CZEA",transmission_code_declared:"DQ200",nickname:"Rights test"});',
+    "rights-revocation fixture exact generation");
+
   fs.writeFileSync(target, source.replace(/\n/g, newline), "utf8");
   console.log(JSON.stringify({ status: "patched", patch: "run75-close-test-database-on-error", target: "tests/local-core-db.test.cjs", preservesOriginalLineEndings: true }));
 }
