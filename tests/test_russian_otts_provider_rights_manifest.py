@@ -96,5 +96,27 @@ class RussianOttsProviderRightsManifestTests(unittest.TestCase):
         self.assertFalse(source["product_import_allowed"])
         self.assertIsNone(source["source_snapshot_sha256"])
 
+    def test_kazakhstan_eokno_preview_is_sbkts_pii_and_not_importable(self):
+        source = self.sources["kazakhstan-eokno-trts018-conformity-register"]
+        observation = source["observed_public_query"]["latest_search_index_recheck"]
+        self.assertEqual(source["status"], "permission_required")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(observation["preview_rows_document_type"], "SBKTS")
+        self.assertIn("VIN", observation["pii_fields_observed"])
+        self.assertIn("applicant name", observation["pii_fields_observed"])
+        self.assertFalse(observation["record_rows_downloaded"])
+        self.assertFalse(observation["source_bytes_downloaded"])
+        self.assertIsNone(observation["source_snapshot_sha256"])
+        self.assertFalse(observation["exact_vag_otts_record_identified"])
+        self.assertTrue(source["technical_scope"]["pii_present_in_indexed_preview"])
+        self.assertEqual(source["technical_scope"]["exact_vag_engine_code"], "not_established")
+        self.assertEqual(source["technical_scope"]["exact_vag_gearbox_code"], "not_established")
+        legal = source["legal_schema_review"]
+        self.assertIn("gearbox make/type", legal["sbkts_section_9_explicit_powertrain_fields"])
+        self.assertNotIn("gearbox make/type", legal["otts_otsh_section_8_explicit_fields"])
+        self.assertIn("Do not treat SBKTS", legal["interpretation"])
+
 if __name__ == "__main__":
     unittest.main()
