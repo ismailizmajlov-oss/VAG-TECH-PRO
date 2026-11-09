@@ -81,9 +81,18 @@ jobs:
           Compress-Archive -Path (Join-Path $packDir "*") -DestinationPath $zip -CompressionLevel Optimal -Force
           $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
           $size = (Get-Item -LiteralPath $zip).Length
+          $event = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+          $sourceHeadSha = if ($event.pull_request.head.sha) { [string]$event.pull_request.head.sha } else { [string]$env:GITHUB_SHA }
+          $sourceHeadBranch = if ($event.pull_request.head.ref) { [string]$event.pull_request.head.ref } else { [string]$env:GITHUB_REF_NAME }
+          $sourceBaseSha = if ($event.pull_request.base.sha) { [string]$event.pull_request.base.sha } else { $null }
           $evidence = [ordered]@{
             workflow_run_id = [long]$env:GITHUB_RUN_ID
             source_commit = "$env:GITHUB_SHA"
+            source_head_sha = $sourceHeadSha
+            source_head_branch = $sourceHeadBranch
+            source_base_sha = $sourceBaseSha
+            source_event = "$env:GITHUB_EVENT_NAME"
+            source_ref = "$env:GITHUB_REF"
             artifact_file = "wikipedia-vag-engine-candidates.zip"
             artifact_size_bytes = $size
             artifact_sha256 = $hash
