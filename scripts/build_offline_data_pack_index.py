@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 OBDEX_LOCK_PATH = Path(__file__).resolve().parents[1] / "data/source-manifests/obdex-generic-cc0.lock.json"
+DTC_NAMESPACE_POLICY_PATH = Path(__file__).resolve().parents[1] / "data/policies/dtc-namespace-ranges.json"
 
 ARTIFACTS = {
     "obdex": ("vag-tech-pro-obdex-cc0-2026-11-07", "obdex-generic-cc0"),
@@ -26,7 +27,16 @@ ARTIFACTS = {
     "obdb": ("obdb-vag-research-cc-by-sa", "obdb-vag-signals-cc-by-sa"),
 }
 
+# Searchable generic SAE/ISO ranges are deliberately narrower than the upstream
+# OBDex labels. Mixed/reserved ranges remain in the source snapshot but are not
+# exposed as generic DTC definitions until exact current standard allocation is verified.
 GENERIC_OBD_CODE_RE = re.compile(
+    r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$"
+)
+UNRESOLVED_RESERVED_DTC_RE = re.compile(
+    r"^(?:P3[4-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$"
+)
+UPSTREAM_OBDEX_LABELLED_CODE_RE = re.compile(
     r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|P34[0-9A-F]{2}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3}|U3[0-9A-F]{3})$"
 )
 
@@ -107,10 +117,28 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
     source_manifest = read_json(source_manifest_path)
     local_lock = read_json(OBDEX_LOCK_PATH)
     normalization_policy = local_lock.get("normalization_policy", {})
+    display_policy = normalization_policy.get("display_policy", {})
+    dtc_namespace_policy = read_json(DTC_NAMESPACE_POLICY_PATH)
+    expected_allowed_ranges = ["P0xxx", "P2xxx", "B0xxx", "C0xxx", "U0xxx"]
+    expected_quarantined_ranges = ["P34xx-P39xx", "U3xxx", "B3xxx", "C3xxx"]
     if normalization_policy.get("research_pack_only") is not True or normalization_policy.get("normalized_product_dtc_import_allowed") is not False:
-        raise ValueError("OBDex U3 research rows must remain isolated from normalized product DTC import")
-    if "U3xxx" not in normalization_policy.get("unverified_ranges_for_normalized_import", []):
-        raise ValueError("OBDex unverified U3 range is not quarantined for normalized import")
+        raise ValueError("OBDex research rows must remain isolated from normalized product DTC import")
+    if normalization_policy.get("unverified_ranges_for_normalized_import") != expected_quarantined_ranges:
+        raise ValueError("OBDex unresolved/reserved ranges are not fully quarantined for normalized import")
+    if display_policy.get("policy_id") != dtc_namespace_policy.get("policy_id") or display_policy.get("policy_revision") != dtc_namespace_policy.get("policy_revision"):
+        raise ValueError("OBDex display policy does not match the canonical DTC namespace policy")
+    if display_policy.get("allowed_generic_ranges") != expected_allowed_ranges or display_policy.get("quarantined_unresolved_ranges") != expected_quarantined_ranges:
+        raise ValueError("OBDex searchable/quarantined generic DTC ranges mismatch")
+    if display_policy.get("upstream_generic_label_is_not_authoritative") is not True or display_policy.get("searchable_generic_only") is not True:
+        raise ValueError("OBDex upstream labels must not override the product generic-DTC display policy")
+    if display_policy.get("expected_searchable_generic_dtcs") != local_lock.get("expected_counts", {}).get("searchable_generic_dtcs"):
+        raise ValueError("OBDex searchable generic DTC count is not pinned")
+    if display_policy.get("expected_quarantined_unresolved_namespace_rows") != local_lock.get("expected_counts", {}).get("quarantined_unresolved_namespace_rows"):
+        raise ValueError("OBDex quarantined DTC count is not pinned")
+    if dtc_namespace_policy.get("namespaces", {}).get("generic_sae_iso", {}).get("pattern") != r"^(?:P0[0-9A-F]{3}|P2[0-9A-F]{3}|B0[0-9A-F]{3}|C0[0-9A-F]{3}|U0[0-9A-F]{3})$":
+        raise ValueError("Canonical generic SAE/ISO DTC pattern changed without review")
+    if dtc_namespace_policy.get("namespaces", {}).get("unresolved_reserved", {}).get("pattern") != r"^(?:P3[4-9][0-9A-F]{2}|U3[0-9A-F]{3}|B3[0-9A-F]{3}|C3[0-9A-F]{3})$":
+        raise ValueError("Canonical unresolved/reserved DTC pattern changed without review")
     license_text = " ".join(license_path.read_text(encoding="utf-8-sig").split()).lower()
     if "cc0 1.0 universal" not in license_text or "applies to the data files" not in license_text:
         raise ValueError("OBDex CC0 data-license scope check failed")
@@ -161,8 +189,16 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
     if db.execute("SELECT count(*) FROM generic_dtc_research WHERE namespace<>'generic_sae_iso_obd2' OR vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex contains non-generic or fitment-claim DTC rows")
     generic_codes = [row["code"] for row in db.execute("SELECT code FROM generic_dtc_research")]
-    if len(set(generic_codes)) != dtc_count or any(not GENERIC_OBD_CODE_RE.fullmatch(code) for code in generic_codes):
-        raise ValueError("OBDex generic pack contains manufacturer-controlled or malformed DTC ranges")
+    if len(set(generic_codes)) != dtc_count or any(not UPSTREAM_OBDEX_LABELLED_CODE_RE.fullmatch(code) for code in generic_codes):
+        raise ValueError("OBDex source snapshot contains a code outside its pinned upstream-labelled ranges")
+    searchable_codes = [code for code in generic_codes if GENERIC_OBD_CODE_RE.fullmatch(code)]
+    quarantined_codes = [code for code in generic_codes if UNRESOLVED_RESERVED_DTC_RE.fullmatch(code)]
+    unclassified_codes = [code for code in generic_codes if not GENERIC_OBD_CODE_RE.fullmatch(code) and not UNRESOLVED_RESERVED_DTC_RE.fullmatch(code)]
+    expected_counts = local_lock.get("expected_counts", {})
+    if unclassified_codes:
+        raise ValueError(f"OBDex contains DTCs outside both the searchable and quarantined policy ranges: {unclassified_codes[:10]}")
+    if len(searchable_codes) != expected_counts.get("searchable_generic_dtcs") or len(quarantined_codes) != expected_counts.get("quarantined_unresolved_namespace_rows"):
+        raise ValueError("OBDex searchable/quarantined DTC counts differ from the pinned policy")
     if db.execute("SELECT count(*) FROM generic_pid_research WHERE vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex PID rows contain vehicle-fitment claims")
     if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC0-1.0' OR verification_status<>'license_verified_research_only'").fetchone()[0]:
@@ -185,9 +221,25 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         "normalization_policy": normalization_policy,
         "market_scope": "global_generic_not_market_specific",
         "applicability_precision": "generic_code_only_no_vehicle_fitment",
-        "counts": {"generic_dtcs": dtc_count, "pids": pid_count},
+        "counts": {
+            "generic_dtcs": dtc_count,
+            "searchable_generic_dtcs": len(searchable_codes),
+            "quarantined_unresolved_namespace_rows": len(quarantined_codes),
+            "pids": pid_count,
+        },
+        "namespace_policy": {
+            "policy_id": dtc_namespace_policy["policy_id"],
+            "policy_revision": dtc_namespace_policy["policy_revision"],
+            "allowed_generic_ranges": expected_allowed_ranges,
+            "quarantined_unresolved_ranges": expected_quarantined_ranges,
+            "searchable_generic_dtcs": len(searchable_codes),
+            "quarantined_unresolved_namespace_rows": len(quarantined_codes),
+            "unclassified_rows": len(unclassified_codes),
+        },
         "source_revision": source_manifest.get("commit_sha"),
         "warnings": [
+            "Only P0xxx, P2xxx, B0xxx, C0xxx and U0xxx are searchable as generic SAE/ISO DTCs.",
+            "Upstream-labelled P34xx-P39xx, U3xxx, B3xxx and C3xxx rows remain quarantined and are not returned as generic DTC definitions.",
             "Generic SAE/ISO OBD-II only; never map these records to a VAG ECU or exact vehicle without independent evidence.",
             "Source descriptions and cause/repair suggestions are unreviewed and are not verified repair procedures.",
             "No vehicle-fitment or exact diagnostic test-plan claim is made.",
@@ -433,7 +485,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
             "artifact_name", "relative_dir", "database_path", "database_sha256",
             "manifest_path", "manifest_sha256", "license", "license_files",
             "attribution_files", "status", "product_eligibility", "market_scope",
-            "applicability_precision", "counts", "source_revision", "source_revisions",
+            "applicability_precision", "counts", "namespace_policy", "source_revision", "source_revisions",
             "make_counts", "warnings",
         ):
             if fresh.get(key) != pack.get(key):
@@ -510,7 +562,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
                 }
             ],
             "product_import_policy": [
-                "Generic OBD-II DTCs remain in the generic_sae_iso_obd2 namespace and are never relabeled VAG-specific.",
+                "Generic OBD-II DTCs remain in the generic_sae_iso_obd2 namespace and are never relabeled VAG-specific; only policy-allowed ranges are searchable, while unresolved/reserved ranges stay quarantined.",
                 "Identity and community records remain candidates unless exact applicability is independently confirmed.",
                 "Autoevolution-derived ODbL generation/engine candidate data is quarantined and excluded pending written upstream permission.",
                 "VAG-Wiki independent reference data is quarantined; no automated extraction or product bundle without prior written permission and per-record provenance.",
