@@ -7,6 +7,9 @@ on:
       - automation/windows-desktop-build-run57
     paths:
       - .github/workflows/build-windows-offline-data-packs.yml
+      - .github/workflows/build-wikipedia-vag-engine-candidates.yml
+      - scripts/build_wikipedia_vag_engine_candidates.py
+      - tests/test_wikipedia_vag_engine_candidates.py
       - .github/workflows/windows-desktop-ci-run71.yml
       - .github/workflows/acquire-obdex-cc0.yml
       - .github/workflows/acquire-obdb-vag-signalsets.yml
@@ -77,12 +80,19 @@ jobs:
       contents: read
     uses: ./.github/workflows/acquire-vag-identity-vehiclesdb.yml
 
+  wikipedia-vag-engine-candidates:
+    name: Acquire CC BY-SA VAG engine-code research candidates
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-wikipedia-vag-engine-candidates.yml
+
   package:
     name: Assemble and independently verify Windows offline SQLite packs
     needs:
       - obdex-generic
       - obdb-vag-signals
       - vag-identity
+      - wikipedia-vag-engine-candidates
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
