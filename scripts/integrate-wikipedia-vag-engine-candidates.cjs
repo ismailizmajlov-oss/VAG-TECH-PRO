@@ -17,7 +17,6 @@ const EXPECTED = {
   attributionSha256: "1bfa85c4c0c7e5182cfc122148958096a17167e7242d48e7c035f4332ee62090",
   licenseNoticeSha256: "7ea86ece96546c760f170b0db7b6007d5238307dacca9f1203ce52355eb6500e",
   innerArchiveSha256: "1ff0abb749e29ef6b3e5e235c333f21c7e47c23966749a2204e48c51747cda8c",
-  sourceCommit: "6afad3cb8208c04294fa7e9636f4076ad0df81ff",
   candidateRows: 241,
   uniqueCandidateCodes: 241,
   sourceDocuments: 4,
@@ -39,12 +38,14 @@ function parseArgs(argv) {
     if (!key.startsWith("--") || !argv[i + 1]) fail("Invalid argument near " + key);
     out[key.slice(2)] = argv[i + 1];
   }
-  for (const key of ["desktop-root", "pack-dir", "build-evidence", "artifact-run-id", "artifact-id", "artifact-sha256", "source-commit"]) {
+  for (const key of ["desktop-root", "pack-dir", "build-evidence", "inner-archive", "artifact-run-id", "artifact-id", "artifact-sha256", "source-commit", "source-head-sha", "source-event", "source-ref"]) {
     if (!out[key]) fail("Missing --" + key);
   }
   if (!/^\d+$/.test(out["artifact-run-id"]) || !/^\d+$/.test(out["artifact-id"])) fail("Artifact run/id must be numeric");
   if (!/^[a-f0-9]{64}$/.test(out["artifact-sha256"])) fail("Outer artifact SHA-256 is invalid");
-  if (!/^[a-f0-9]{40}$/.test(out["source-commit"])) fail("Source commit SHA is invalid");
+  if (!/^[a-f0-9]{40}$/.test(out["source-commit"]) || !/^[a-f0-9]{40}$/.test(out["source-head-sha"])) fail("Source commit/head SHA is invalid");
+  if (!["pull_request", "push"].includes(out["source-event"])) fail("Source event must be pull_request or push");
+  if (!/^refs\/(?:heads|pull)\//.test(out["source-ref"])) fail("Source ref is invalid");
   return out;
 }
 function verifyPack(packDir, evidenceFile, args) {
@@ -61,9 +62,11 @@ function verifyPack(packDir, evidenceFile, args) {
   const evidence = readJson(evidenceFile);
   const manifest = readJson(files.manifest);
   const sourceManifest = readJson(files.sourceManifest);
-  const innerArchive = path.join(path.dirname(evidenceFile), "wikipedia-vag-engine-candidates.zip");
+  const innerArchive = path.resolve(args["inner-archive"]);
   if (String(evidence.workflow_run_id) !== args["artifact-run-id"]) fail("Wikipedia build-evidence run ID mismatch");
-  if (evidence.source_commit !== args["source-commit"] || evidence.source_commit !== EXPECTED.sourceCommit) fail("Wikipedia source commit mismatch");
+  if (evidence.source_commit !== args["source-commit"] || !/^[a-f0-9]{40}$/.test(evidence.source_commit || "")) fail("Wikipedia source commit mismatch");
+  if (evidence.source_head_sha !== args["source-head-sha"] || evidence.source_event !== args["source-event"] || evidence.source_ref !== args["source-ref"]) fail("Wikipedia source branch/event provenance mismatch");
+  if (evidence.manifest?.pack_id !== PACK_ID || evidence.manifest?.database_sha256 !== EXPECTED.databaseSha256 || evidence.manifest?.source_snapshot_sha256 !== EXPECTED.sourceSnapshotSha256 || evidence.manifest?.source_manifest_sha256 !== EXPECTED.sourceManifestSha256) fail("Wikipedia build-evidence manifest mismatch");
   if (evidence.artifact_sha256 !== EXPECTED.innerArchiveSha256 || sha256File(innerArchive) !== EXPECTED.innerArchiveSha256) fail("Wikipedia inner archive SHA-256 mismatch");
   if (manifest.pack_id !== PACK_ID || manifest.source_id !== SOURCE_ID || manifest.data_license !== EXPECTED.license ||
       manifest.rights_status !== "approved_by_published_license" || manifest.commercial_use_allowed !== true ||
@@ -274,7 +277,7 @@ function patchDesktop(desktopRoot) {
     ' assert.match(route,/wikipediaEngineResearch\\.getSummary/);',
     '});',
     'test("Wikipedia engine candidates are never promoted to production applicability",()=>{',
-    ' assert.match(component,/не OEM-подтверждён/); assert.match(component,/не является применимостью/);',
+    ' assert.match(component,/не OEM-подтверждён/i); assert.match(component,/не является применимостью/i);',
     ' assert.match(component,/repairUseAllowed/); assert.match(component,/engineGearboxFitment/);',
     '});',
     ''
@@ -308,6 +311,9 @@ function main() {
     source_artifact_sha256: args["artifact-sha256"],
     source_archive_sha256: EXPECTED.innerArchiveSha256,
     source_commit: args["source-commit"],
+    source_head_sha: args["source-head-sha"],
+    source_event: args["source-event"],
+    source_ref: args["source-ref"],
     source_snapshot_sha256: verified.manifest.source_snapshot_sha256,
     database_sha256: verified.manifest.database_sha256,
     source_manifest_sha256: verified.manifest.source_manifest_sha256,
@@ -358,6 +364,9 @@ function main() {
     source_workflow_run_id: Number(args["artifact-run-id"]),
     source_artifact_id: Number(args["artifact-id"]),
     source_commit: args["source-commit"],
+    source_head_sha: args["source-head-sha"],
+    source_event: args["source-event"],
+    source_ref: args["source-ref"],
     counts: verified.manifest.counts,
     market_scope: "UNKNOWN",
     applicability_precision: "community_engine_code_candidate_only",
