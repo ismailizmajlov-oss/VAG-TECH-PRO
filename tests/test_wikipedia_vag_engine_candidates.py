@@ -119,6 +119,25 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
             register.write_text(json.dumps({"sources": [source]}), encoding="utf-8")
             self.assertEqual(validate_source_register(register)["source_id"], SOURCE_ID)
 
+    def test_repository_source_register_records_research_pack_without_product_import(self):
+        source = validate_source_register(
+            Path(__file__).resolve().parents[1] / "data" / "source-manifests" / "vag-factory-source-register.json"
+        )
+        self.assertTrue(source["access"]["raw_revision_bytes_retrieved"])
+        self.assertTrue(source["access"]["mediawiki_api_snapshot_retrieved"])
+        self.assertTrue(source["research_pack_ingested"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertEqual(source["source_snapshot_sha256"], source["research_pack"]["counts"] and source["source_snapshot_sha256"])
+        self.assertEqual(source["research_pack"]["pack_id"], "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0")
+        self.assertEqual(source["research_pack"]["license"], "CC-BY-SA-4.0")
+        self.assertEqual(source["research_pack"]["counts"]["candidate_rows"], 241)
+        self.assertEqual(source["research_pack"]["counts"]["unique_candidate_codes"], 241)
+        self.assertFalse(source["research_pack"]["exact_vehicle_fitment"])
+        self.assertFalse(source["research_pack"]["engine_gearbox_fitment"])
+        self.assertFalse(source["research_pack"]["repair_use_allowed"])
+        self.assertFalse(source["research_pack"]["diagnostic_execution_allowed"])
+
     def test_sqlite_rows_are_research_only_and_provenance_bound(self):
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp)
