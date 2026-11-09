@@ -1932,7 +1932,7 @@ jobs:
           $patchInSource = Join-Path $env:GITHUB_WORKSPACE "desktop-source/scripts/patches/apply-dtc-research-range-quarantine-run91.cjs"
           New-Item -ItemType Directory -Force -Path (Split-Path -Parent $patchInSource) | Out-Null
           Copy-Item -LiteralPath "apply-dtc-research-range-quarantine-run91.cjs" -Destination $patchInSource -Force
-          "dtc_research_namespace_quarantine=run91; policy_revision=run87-2026-11-08; source_pack=obdex-generic-cc0; unresolved_ranges_quarantined=true; generic_rows_research_only=true; VAG_fitment=false; diagnostic_execution=false; production_import=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "dtc_research_namespace_quarantine=run91; policy_revision=run87-2026-11-08; source_pack=obdex-generic-cc0; unresolved_ranges_quarantined=true; generic_rows_research_only=true; policy_resource=app-runtime/data/policies; VAG_fitment=false; diagnostic_execution=false; production_import=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Run desktop, local core and research tests
         working-directory: desktop-source
