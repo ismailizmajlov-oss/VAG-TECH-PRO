@@ -364,6 +364,35 @@ def main() -> None:
     if missing_patch_set:
         raise SystemExit(f"Windows build metadata patch_set omits applied desktop changes: {missing_patch_set}")
 
+    offline_entry_paths = (
+        "apply-desktop-offline-entry-run90.cjs",
+        "desktop-offline-route-run90.tsx",
+        "desktop-offline-route-test-run90.cjs",
+        "tests/desktop-offline-entry-patch-run90.test.cjs",
+    )
+    missing_offline_entry_paths = [marker for marker in offline_entry_paths if text.count(marker) < 2]
+    if missing_offline_entry_paths:
+        raise SystemExit(f"Offline desktop entry changes must trigger both push and pull-request validation: {missing_offline_entry_paths}")
+    offline_entry_marker = "      - name: Apply dedicated offline desktop entry and isolate cloud credentials (run90)"
+    if offline_entry_marker not in text:
+        raise SystemExit("Windows workflow does not apply the dedicated offline SQLite desktop entry")
+    offline_entry_step = text.split(offline_entry_marker, 1)[1].split("\n      - name:", 1)[0]
+    for required_offline_entry_step in (
+        "node --test tests/desktop-offline-entry-patch-run90.test.cjs",
+        "node apply-desktop-offline-entry-run90.cjs",
+        "node --test desktop-source/tests/desktop-offline-entry-run90.test.cjs",
+        "cloud_credentials_forwarded=false",
+        "scripts/patches/apply-desktop-offline-entry-run90.cjs",
+    ):
+        if required_offline_entry_step not in offline_entry_step:
+            raise SystemExit(f"Dedicated offline desktop entry step is incomplete: {required_offline_entry_step}")
+    if not text.index(offline_entry_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker):
+        raise SystemExit("Dedicated offline desktop entry must be applied and tested before desktop tests and NSIS packaging")
+    metadata_marker = "      - name: Write build metadata"
+    metadata_step_for_offline = text.split(metadata_marker, 1)[1].split("\n      - name:", 1)[0]
+    if "desktop_offline_entry = 'app/desktop'" not in metadata_step_for_offline or "desktop_offline_entry_patch_sha256" not in metadata_step_for_offline:
+        raise SystemExit("Build metadata does not bind the dedicated offline entry and its patch hash")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
