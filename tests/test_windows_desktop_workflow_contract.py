@@ -545,5 +545,35 @@ def main() -> None:
     if not (run75_index < run76_index < desktop_tests_index < installer_index):
         raise SystemExit("Run76 identity guard must apply after run75 cleanup and before desktop tests and NSIS packaging")
 
+    ui_guard_script = ROOT / "apply-vehicle-config-ui-guard-run77.cjs"
+    if not ui_guard_script.is_file():
+        raise SystemExit("Run77 exact-configuration UI guard patch script is missing")
+    ui_guard_text = ui_guard_script.read_text(encoding="utf-8")
+    ui_guard_required = (
+        "hasRequiredVehicleIdentity = Boolean",
+        "selectedVehicle.generation_name?.trim()",
+        'selectedVehicle.market_scope !== "UNKNOWN"',
+        "Number.isInteger(selectedVehicle.model_year)",
+        "selectedVehicle.engine_code_declared?.trim()",
+        "selectedVehicle.transmission_code_declared?.trim()",
+        "matchingConfigurations.length === 1",
+        "matchingConfigurations[0]?.id !== configurationId",
+    )
+    missing_ui_guard = [item for item in ui_guard_required if item not in ui_guard_text]
+    if missing_ui_guard:
+        raise SystemExit(f"Run77 UI guard does not enforce complete exact vehicle identity: {missing_ui_guard}")
+    ui_guard_apply_marker = "node apply-vehicle-config-ui-guard-run77.cjs --desktop-root desktop-source"
+    ui_guard_test_marker = "node --test desktop-source/tests/local-offline-workspace.test.cjs"
+    if ui_guard_apply_marker not in text or ui_guard_test_marker not in text:
+        raise SystemExit("Windows workflow must apply and test the run77 exact-configuration UI guard")
+    run76_apply_marker = "git apply --unsafe-paths --directory=desktop-source $patchPath76"
+    if not (text.index(run76_apply_marker) < text.index(ui_guard_apply_marker) < text.index(ui_guard_test_marker) < text.index(desktop_tests_marker)):
+        raise SystemExit("Run77 UI guard must apply after the run76 backend guard and pass its UI tests before the full desktop suite")
+    metadata_step = text.split("      - name: Write build metadata", 1)[1].split("\n      - name:", 1)[0]
+    if "vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash;" not in metadata_step or 'Get-FileHash -LiteralPath "apply-vehicle-config-ui-guard-run77.cjs"' not in metadata_step:
+        raise SystemExit("Windows build metadata must record the exact run77 UI guard patch SHA-256")
+    if text.count("apply-vehicle-config-ui-guard-run77.cjs") < 4:
+        raise SystemExit("Run77 UI guard script and its logs must be retained in Windows CI evidence artifacts")
+
 if __name__ == "__main__":
     main()
