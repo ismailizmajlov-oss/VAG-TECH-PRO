@@ -841,7 +841,7 @@
         "RU",
         "EAEU"
       ],
-      "terms_revision": "2026-10-04",
+      "terms_revision": "2026-10-14",
       "license": {
         "identifier": null,
         "commercial_use": "internal_professional_use_only",
@@ -857,12 +857,55 @@
       "source_snapshot_sha256": null,
       "hash_status": "terms_review_only",
       "notes": [
-        "Published access terms dated 2026-10-04 permit personal tasks and internal professional work.",
-        "The terms prohibit systematic extraction of a substantial part of the database for publication, resale or creation of a competing catalogue without a separate agreement.",
-        "Public search and paid PDF access are not a licence to reproduce the database in a third-party offline application.",
-        "No account, subscription, payment, automated request, download or import was used.",
-        "Require written permission for automated/bulk extraction, persistent SQLite caching, offline third-party display and redistribution."
-      ]
+        "Current access terms were reviewed on 2026-11-10; the terms page is dated 2026-10-14 (superseding the 2026-10-04 review).",
+        "The terms allow personal tasks and internal professional work with vehicles, but prohibit systematic extraction of a substantial part of the database for publication, resale or creation of a competing catalogue without a separate agreement.",
+        "One free new PDF every 24 hours still requires login and email confirmation; paid access has limits of 25 new PDFs/day and 600/month. No account, subscription or payment was used.",
+        "The public homepage displayed 42,050 cards on 2026-11-10. This is a UI counter, not an independently verified complete corpus count.",
+        "The pricing page returned HTTP 502 during this review; no current price is asserted.",
+        "No search query, account creation, subscription, payment, PDF download, source-byte download or import was performed.",
+        "Do not use this aggregator for VAG TECH PRO product data unless a separate written agreement explicitly permits systematic extraction, persistent local storage, offline third-party display and redistribution."
+      ],
+      "reviewed_at": "2026-11-10",
+      "product_import_allowed": false,
+      "project_decision": "discovery_only_no_automation_no_import_without_separate_written_agreement",
+      "access_and_reuse": {
+        "search_access": "public_metadata_search",
+        "full_pdf_access": "registered_user; paid subscription or one free new document per 24 hours after login and email confirmation",
+        "internal_professional_use": "allowed_for_user_internal_vehicle_work",
+        "systematic_extraction_of_substantial_part_for_publication_resale_or_competing_catalog": "prohibited_without_separate_agreement",
+        "bulk_export": "prohibited_without_separate_agreement",
+        "third_party_offline_display": "not_confirmed",
+        "persistent_sqlite_cache": "not_confirmed",
+        "redistribution": "prohibited_without_separate_agreement",
+        "licence_status": "no_open_reuse_licence_identified; access terms are not a product redistribution licence"
+      },
+      "latest_terms_review": {
+        "observed_at": "2026-11-10",
+        "terms_url": "https://otts-baza.ru/offer/",
+        "terms_revision": "2026-10-14",
+        "terms_scope": "access to otts-baza.ru and its paid/free PDF retrieval service",
+        "service_model": "public search cards; full PDF access requires a registered account and either a paid subscription or the limited free retrieval route",
+        "free_retrieval_rule": "one new available OTTS document every 24 hours after login and email confirmation; account and confirmed email scoped",
+        "paid_retrieval_limits": {
+          "new_full_pdfs_per_day": 25,
+          "new_full_pdfs_per_month": 600,
+          "scope": "per account; terms dated 2026-10-14"
+        },
+        "internal_professional_use_claim": "terms allow personal tasks and internal professional work; commercial repair work itself is not prohibited",
+        "reuse_restriction": "without separate agreement, systematic extraction of a substantial part of the database for publication, resale or creation of a competing catalogue is prohibited",
+        "ui_card_count": 42050,
+        "ui_card_count_treatment": "homepage search-result counter observed 2026-11-10; not a verified complete corpus count or a licence to reuse card metadata",
+        "pricing_page_url": "https://otts-baza.ru/pricing/",
+        "pricing_page_fetch_status": "502 during review; no price relied upon",
+        "public_claimed_data_source": "site labels the content as EAEU OTTS registry data; this source claim was not independently verified against an official bulk dataset",
+        "record_or_pdf_downloaded": false,
+        "source_bytes_downloaded": false,
+        "account_created": false,
+        "subscription_or_payment_made": false,
+        "search_query_submitted": false,
+        "source_snapshot_sha256": null,
+        "rights_effect": "no automated/bulk extraction, competing-catalogue use, persistent offline caching, third-party display or redistribution permission; separate written agreement would be required"
+      }
     },
     {
       "source_id": "elpts-national-otts-register",
