@@ -2113,7 +2113,7 @@ jobs:
           $pairCodeBindingPatchHash = if (Test-Path $pairCodeBindingPatchPath) { (Get-FileHash -LiteralPath $pairCodeBindingPatchPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $technicalStepOrderPatchPath = "apply-technical-step-order-run85.cjs"
           $technicalStepOrderPatchHash = if (Test-Path $technicalStepOrderPatchPath) { (Get-FileHash -LiteralPath $technicalStepOrderPatchPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
-          $dtcNamespaceRangePatchPath = "apply-dtc-namespace-range-guard-run87.cjs"
+          $dtcNamespaceRangePatchPath = "apply-dtc-namespace-range-guard-run86.cjs"
           $dtcNamespaceRangePatchHash = if (Test-Path $dtcNamespaceRangePatchPath) { (Get-FileHash -LiteralPath $dtcNamespaceRangePatchPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $dtcNamespaceRangeCorrectionPatchPath = "apply-dtc-namespace-range-guard-run87.cjs"
           $dtcNamespaceRangeCorrectionPatchHash = if (Test-Path $dtcNamespaceRangeCorrectionPatchPath) { (Get-FileHash -LiteralPath $dtcNamespaceRangeCorrectionPatchPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
