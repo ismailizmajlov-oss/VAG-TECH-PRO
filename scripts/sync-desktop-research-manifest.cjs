@@ -89,7 +89,14 @@ function verifyObdex(packRoot, descriptor) {
   const scope = sourceManifest.scope || {};
   if (scope.dtc_namespace !== "generic_sae_iso_obd2" || scope.manufacturer_specific_codes_included !== false || scope.exact_vag_fitment !== false || scope.repair_procedures_or_pinouts_included !== false) fail("OBDex generic-only scope failed");
   const normalization = descriptor.normalization_policy || {};
-  if (normalization.research_pack_only !== true || normalization.normalized_product_dtc_import_allowed !== false || !(normalization.unverified_ranges_for_normalized_import || []).includes("U3xxx")) fail("OBDex U3 rows must remain isolated from normalized product DTC import");
+  const displayPolicy = normalization.display_policy || {};
+  const namespacePolicy = descriptor.namespace_policy || {};
+  const allowedRanges = ["P0xxx", "P2xxx", "B0xxx", "C0xxx", "U0xxx"];
+  const quarantinedRanges = ["P34xx-P39xx", "U3xxx", "B3xxx", "C3xxx"];
+  if (normalization.research_pack_only !== true || normalization.normalized_product_dtc_import_allowed !== false || JSON.stringify(normalization.unverified_ranges_for_normalized_import) !== JSON.stringify(quarantinedRanges)) fail("OBDex unresolved/reserved ranges must remain excluded from normalized product DTC import");
+  if (displayPolicy.policy_id !== "vag-tech-pro-dtc-namespace-ranges" || displayPolicy.policy_revision !== "run87-2026-11-08" || JSON.stringify(displayPolicy.allowed_generic_ranges) !== JSON.stringify(allowedRanges) || JSON.stringify(displayPolicy.quarantined_unresolved_ranges) !== JSON.stringify(quarantinedRanges) || displayPolicy.upstream_generic_label_is_not_authoritative !== true || displayPolicy.searchable_generic_only !== true) fail("OBDex display policy does not match the canonical DTC namespace policy");
+  if (namespacePolicy.policy_id !== displayPolicy.policy_id || namespacePolicy.policy_revision !== displayPolicy.policy_revision || JSON.stringify(namespacePolicy.allowed_generic_ranges) !== JSON.stringify(allowedRanges) || JSON.stringify(namespacePolicy.quarantined_unresolved_ranges) !== JSON.stringify(quarantinedRanges) || namespacePolicy.searchable_generic_dtcs !== 9204 || namespacePolicy.quarantined_unresolved_namespace_rows !== 329 || namespacePolicy.unclassified_rows !== 0) fail("OBDex bundle namespace policy/counts are incomplete");
+  if (descriptor.counts?.generic_dtcs !== 9533 || descriptor.counts?.searchable_generic_dtcs !== 9204 || descriptor.counts?.quarantined_unresolved_namespace_rows !== 329 || descriptor.counts?.pids !== 132) fail("OBDex source/searchable/quarantined counts mismatch");
   if (JSON.stringify(scope.generic_code_ranges) !== JSON.stringify(["P0xxx", "P2xxx", "P34xx", "B0xxx", "C0xxx", "U0xxx", "U3xxx"])) fail("OBDex generic code ranges are not constrained");
   if (JSON.stringify(scope.excluded_manufacturer_controlled_ranges) !== JSON.stringify(["P1xxx", "P30xx-P33xx", "P35xx-P39xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])) fail("OBDex manufacturer-controlled ranges are not excluded");
   if (report.database_sha256 !== descriptor.database_sha256 || report.integrity_check !== "ok" || report.vag_specific_dtc_rows !== 0 || report.fitment_claims !== 0 || report.production_rows !== 0 || report.generic_dtcs !== 9533 || report.pids !== 132) fail("OBDex SQLite report failed its generic-only boundary");
@@ -188,7 +195,13 @@ function sync(packRootArg, researchRootArg) {
     upstream_revision: obSource.commit_sha,
     snapshot_generated_at_utc: obSource.generated_at_utc,
     source_file_sha256: Object.fromEntries(obSource.source_files.map((item) => [item.path, item.sha256])),
-    counts: { generic_dtcs: obVerified.report.generic_dtcs, pids: obVerified.report.pids },
+    counts: {
+      generic_dtcs: obVerified.report.generic_dtcs,
+      searchable_generic_dtcs: obdex.counts.searchable_generic_dtcs,
+      quarantined_unresolved_namespace_rows: obdex.counts.quarantined_unresolved_namespace_rows,
+      pids: obVerified.report.pids
+    },
+    namespace_policy: obdex.namespace_policy,
     market_scope: obSource.scope.market_scope,
     applicability_precision: "generic_code_only_no_vehicle_fitment",
     review_status: "research_only",
@@ -203,7 +216,8 @@ function sync(packRootArg, researchRootArg) {
       "Generic SAE/ISO OBD-II only; never VAG-specific.",
       "No exact vehicle/ECU fitment or vehicle-specific test plan.",
       "No repair procedure, pinout, torque value or adaptation is provided.",
-      "External references are syntax-validated only; they are not fetched, displayed or re-licensed by the CC0 data grant."
+      "External references are syntax-validated only; they are not fetched, displayed or re-licensed by the CC0 data grant.",
+      "Upstream-labelled P34xx-P39xx, U3xxx, B3xxx and C3xxx rows remain in the source snapshot but are quarantined from the searchable generic DTC catalog."
     ]
   });
 
