@@ -185,7 +185,7 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
         self.assertIs(source["data_ingested"], False)
         self.assertIs(source["product_import_allowed"], False)
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
-        self.assertIsNone(source["source_snapshot_sha256")
+        self.assertIsNone(source.get("source_snapshot_sha256"))
 
 
 if __name__ == "__main__":
