@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "source_id": "bolidenforum-vag-engine-transmission-pr",
+  "publisher": "Bolidenforum.de",
+  "source_kind": "secondary_vag_engine_transmission_and_pr_reference",
+  "market_scope": [
+    "UNKNOWN"
+  ],
+  "source_revision": "page_observation_2026-11-09",
+  "urls": {
+    "engine_codes": "https://www.bolidenforum.de/portal/en/vag/engine/",
+    "transmission_codes": "https://www.bolidenforum.de/portal/en/vag/transmission/",
+    "pr_codes": "https://www.bolidenforum.de/portal/en/vag/pr-code/"
+  },
+  "observed_public_metadata": {
+    "engine_code_entries_claimed": 966,
+    "transmission_entries_claimed": 19,
+    "pr_code_entries_claimed": 138,
+    "engine_fields": [
+      "code",
+      "name_or_engine_description",
+      "power",
+      "years",
+      "vehicle_models"
+    ],
+    "transmission_fields": [
+      "code_or_family",
+      "transmission_type",
+      "gear_count",
+      "clutch_type",
+      "vehicle_models",
+      "years"
+    ],
+    "pr_fields": [
+      "code",
+      "plain_text_description"
+    ],
+    "copyright_notice": "Urheberrecht © 2026 Alle Rechte vorbehalten."
+  },
+  "source_quality": {
+    "source_class": "secondary_reference",
+    "row_level_citations_observed": false,
+    "primary_oem_provenance_established": false,
+    "official_vag_affiliation": false,
+    "api_or_bulk_export_observed": false,
+    "automated_extraction_performed": false
+  },
+  "applicability": {
+    "precision": "secondary_reference_candidate_only",
+    "market_scope": "UNKNOWN",
+    "engine_code_candidates_only": true,
+    "transmission_family_candidates_only": true,
+    "exact_factory_gearbox_codes_verified": false,
+    "pr_code_descriptions_only": true,
+    "exact_engine_transmission_pairs": false,
+    "model_generation_fitment_verified": false,
+    "ru_eaeu_applicability": false,
+    "ecu_dtc_or_repair_applicability": false
+  },
+  "rights": {
+    "data_license_status": "all_rights_reserved_no_open_license_found",
+    "license_identifier": null,
+    "license_url": null,
+    "copyright_notice_observed": true,
+    "commercial_use_allowed": "not_established",
+    "display_allowed": "not_established",
+    "offline_cache_allowed": "not_established",
+    "bulk_reuse_allowed": "not_established",
+    "derived_fact_export_allowed": "not_established",
+    "redistribution_allowed": false,
+    "permission_required_for_local_cache_and_derived_fact_export": true,
+    "permission_status": "not_obtained"
+  },
+  "snapshot": {
+    "downloaded": false,
+    "source_snapshot_sha256": null,
+    "hash_status": "not_downloaded_no_snapshot"
+  },
+  "data_ingested": false,
+  "product_import_allowed": false,
+  "verification_status": "quarantined_rights_unresolved",
+  "project_decision": "metadata_only_candidate; obtain written permission covering bulk extraction, persistent local caching, offline display, derived facts, installer/update redistribution and commercial/non-commercial use before any data acquisition or display; no scraping or import",
+  "limitations": [
+    "The 966 engine-code count is a publisher page claim; no source snapshot or row-level reconciliation was acquired.",
+    "The engine index is secondary reference material and does not establish primary OEM provenance, market, exact model generation or exact production applicability.",
+    "The 19 transmission entries are transmission type/family records, not a comprehensive list of exact factory gearbox codes or engine/gearbox pairings.",
+    "The 138 PR entries are plain-text descriptions and do not establish a vehicle-specific factory build sheet or PR-code applicability.",
+    "No row-level source citations, primary document locators, API, bulk export contract or open data license were observed.",
+    "The visible copyright notice states all rights reserved; public visibility is not a reuse license."
+  ],
+  "reviewed_at": "2026-11-09"
+}
