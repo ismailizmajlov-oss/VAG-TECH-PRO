@@ -82,7 +82,8 @@
         "The existing ot_ts_attribute_map uses Annex 1 internal FGIS field numbers. Public-site search fields are a separate Annex 2 namespace; never join or interpret them by field number without the namespace.",
         "The 28 public Annex 2 search fields contain approval identifiers/status and vehicle identity descriptors (make, commercial name, type, base vehicle/chassis, modifications, category and environmental class), but no engine or gearbox technical designation/code, ECU, DTC, repair or wiring fields. The Annex 1 PDF reference is not a grant to cache or redistribute the PDF. Never infer an engine/gearbox pair from Annex 2 metadata.",
         "The Annex 2 public-site search obligation reviewed in Order 2038 applies to electronically issued records; a metadata export using this public-search namespace must retain field 20 and must not silently treat a missing/false electronic-issuance flag as a publicly searchable record.",
-        "Interstandart's registry-software FAQ describes a formal application for accredited certification bodies or testing laboratories and requires licensed IBM/HCL Domino. The main FAQ lists TR TS 018/2011, while consolidated page text also lists GOST 33670; eligibility wording is inconsistent and requires written clarification. This software-access procedure is not a data-reuse license."
+        "Interstandart's registry-software FAQ describes a formal application for accredited certification bodies or testing laboratories and requires licensed IBM/HCL Domino. The main FAQ lists TR TS 018/2011, while consolidated page text also lists GOST 33670; eligibility wording is inconsistent and requires written clarification. This software-access procedure is not a data-reuse license.",
+        "Order 2038 Annex 1 OTTS/OTSH structured fields 50–54 describe engine attributes, but the OTTS/OTSH internal field list has no structured gearbox field; gearbox detail must be sought in the Annex 1/full PDF (fields 49/80). The separate SBKTS field 68 is gearbox make/type, but SBKTS is VIN/PII-bearing individual-vehicle data and is not an OTTS fitment source."
       ],
       "ot_ts_attribute_map": [
         {
@@ -432,6 +433,40 @@
           "project_license_obtained": false
         },
         "rights_boundary": "Receiving the registry software or being eligible to use it does not grant VAG TECH PRO a license to bulk export, persistently cache, display, redistribute or create a derivative database from registry records."
+      },
+      "schema_recheck_2026_11_10": {
+        "reviewed_at": "2026-11-10",
+        "evidence_url": "https://law.tks.ru/document/779154",
+        "evidence_quality": "secondary_republication_of_current_Order_2038_text; official_signed_copy_not_retrieved",
+        "confirmed_distinction": {
+          "ot_ts_internal_engine_fields": [
+            50,
+            51,
+            52,
+            53,
+            54
+          ],
+          "ot_ts_internal_gearbox_field_present": false,
+          "ot_ts_internal_gearbox_pdf_fields": [
+            49,
+            80
+          ],
+          "public_annex2_field_count": 28,
+          "public_annex2_pdf_field": 19,
+          "public_annex2_structured_engine_fields_present": false,
+          "public_annex2_structured_gearbox_fields_present": false,
+          "sbkts_gearbox_field": 68,
+          "sbkts_vin_field": 15,
+          "sbkts_personal_data_fields": [
+            21,
+            28
+          ]
+        },
+        "interpretation": "The OTTS/OTSH internal field list has engine descriptors but no structured gearbox field; a gearbox description can only be sought in the filled Annex 1/full PDF. The separate SBKTS schema has transmission/clutch/gearbox fields, but it is individual-vehicle data with VIN/PII and must not be repurposed as OTTS fitment. Public Annex 2 contains 28 metadata/status fields and a PDF reference at field 19, not structured engine/gearbox fields.",
+        "rights_effect": "No reuse permission is created by the publication/search obligation. Bulk export, offline caching, commercial display, derivative-database creation and PDF redistribution remain unconfirmed.",
+        "record_rows_downloaded": false,
+        "data_ingested": false,
+        "source_snapshot_sha256": null
       }
     },
     {
@@ -2131,5 +2166,5 @@
       ]
     }
   ],
-  "updated_at": "2026-11-09"
+  "updated_at": "2026-11-10"
 }
