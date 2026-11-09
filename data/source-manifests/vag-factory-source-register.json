@@ -2652,7 +2652,7 @@
         "document_metadata_only"
       ],
       "access": {
-        "public_query_route": "The distinct public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. Its visible 07.11.2026–08.11.2026 date-filtered result set was empty; the UI total label was 14822. AUDI AG and Volkswagen AG are manufacturer filter options only, not returned records. Separate OTSH and SBKTS pages remain distinct. On 2026-11-09 the docs.elpts.ru OTTS page shell was accessible and displayed the OTTS register title, document-class navigation and unresolved dynamic result-count placeholders; no record rows or API/export endpoint were exposed in the rendered page. A fresh search-indexed rendering observed on 2026-11-09 again displayed UI total 14822 and manufacturer filter options AUDI AG and Volkswagen AG, while the active 07.11.2026–08.11.2026 date filter returned no rows; these are UI/filter observations only, not VAG approval records or a verified complete-corpus count. The opened page still exposed unresolved dynamic placeholders, so record rows, API and export remain unverified.",
+        "public_query_route": "The distinct public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. Its visible 07.11.2026–08.11.2026 date-filtered result set was empty; the UI total label was 14822. AUDI AG and Volkswagen AG are manufacturer filter options only, not returned records. Separate OTSH and SBKTS pages remain distinct. On 2026-11-09 the docs.elpts.ru OTTS page shell was accessible and displayed the OTTS register title, document-class navigation and unresolved dynamic result-count placeholders; no record rows or API/export endpoint were exposed in the rendered page. A fresh search-indexed rendering observed on 2026-11-09 again displayed UI total 14822 and manufacturer filter options AUDI AG and Volkswagen AG, while the active 07.11.2026–08.11.2026 date filter returned no rows; these are UI/filter observations only, not VAG approval records or a verified complete-corpus count. The opened page still exposed unresolved dynamic placeholders, so record rows, API and export remain unverified. Fresh 2026-11-09 cross-register recheck: the OTTS indexed page shows only the Volkswagen AG filter option (AUDI AG was not reproduced); the separate ESBKTS indexed page shows AUDI AG/Volkswagen AG filter options and two VOLKSWAGEN SBKTS metadata rows dated 04.11.2026. No SBKTS item is reclassified as OTTS; no documents or raw bytes were downloaded.",
         "machine_readable_api": "not_verified",
         "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
         "bulk_export": "CSV, PDF and XML export controls observed on the public OTTS page; export endpoint, scope, completeness, file download and reuse rights not verified",
@@ -2690,13 +2690,12 @@
           "capture_method": "fresh public search-indexed rendering plus separately opened page",
           "visible_total_label": "Всего оформлено: 14822",
           "visible_date_filters": [
-            "07.11.2026",
-            "08.11.2026"
+            "08.11.2026",
+            "09.11.2026"
           ],
           "search_result_label": "Найдено: []",
           "filtered_result_count": 0,
           "manufacturer_filter_options_observed": [
-            "AUDI AG",
             "Volkswagen AG"
           ],
           "manufacturer_filter_values_are_options_only": true,
@@ -2726,8 +2725,69 @@
           "pdf_downloaded": false,
           "raw_page_bytes_captured": false,
           "source_snapshot_sha256": null,
-          "interpretation": "Search-indexed UI metadata only. The 14822 value is not a verified complete-corpus count; manufacturer options are not returned OTTS records; the empty date-filtered result does not establish absence of older VAG approvals.",
-          "rights_effect": "none; public search visibility and indexed UI metadata do not establish bulk extraction, persistent SQLite caching, offline display, commercial reuse or redistribution"
+          "interpretation": "Fresh indexed OTTS-page snapshot: Volkswagen AG is a manufacturer filter option only; AUDI AG was not reproduced in the OTTS page result and appears in the separately indexed ESBKTS page. The UI total 14822 and empty 08.11.2026-09.11.2026 filter are metadata only, not a verified corpus count or proof of VAG OTTS records.",
+          "rights_effect": "none; public search visibility and indexed UI metadata do not establish bulk extraction, persistent SQLite caching, offline display, commercial reuse or redistribution",
+          "audi_ag_option_reproduced_on_otts_page": false,
+          "audi_ag_option_cross_page_reconciliation": "AUDI AG appears in the separate ESBKTS indexed page; do not transfer this option to OTTS."
+        },
+        "cross_register_reconciliation_2026_11_09": {
+          "observed_at": "2026-11-09",
+          "ot_ts_page_url": "https://docs.elpts.ru/ncher/otts",
+          "esbkts_page_url": "https://docs.elpts.ru/ncher/esbkts",
+          "ot_ts_search_index_date_filters": [
+            "08.11.2026",
+            "09.11.2026"
+          ],
+          "ot_ts_search_result_label": "Найдено: []",
+          "ot_ts_filter_options_observed": [
+            "Volkswagen AG"
+          ],
+          "audi_ag_found_in_otts_indexed_page": false,
+          "esbkts_search_index_date_filters": [
+            "04.11.2026",
+            "05.11.2026"
+          ],
+          "esbkts_search_result_count": 155,
+          "esbkts_filter_options_observed": [
+            "AUDI AG",
+            "Volkswagen AG"
+          ],
+          "esbkts_filter_options_are_records": false,
+          "sample_sbkt_records": [
+            {
+              "document_type": "SBKTS",
+              "registration_number": "ТС RU А-CN.ОО14.59210",
+              "brand": "VOLKSWAGEN",
+              "vehicle_type": "FV6462HADCG",
+              "status": "Действует",
+              "issue_date": "2026-11-04",
+              "applicant": "Физическое лицо",
+              "manufacturer": "FAW-Volkswagen Automotive Co Ltd.",
+              "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+              "environmental_class": "пятый",
+              "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+            },
+            {
+              "document_type": "SBKTS",
+              "registration_number": "ТС RU А-CN.ОО14.59209",
+              "brand": "VOLKSWAGEN",
+              "vehicle_type": "SVW71421GT",
+              "status": "Действует",
+              "issue_date": "2026-11-04",
+              "applicant": "Физическое лицо",
+              "manufacturer": "SAIC Volkswagen Automotive Co., Ltd.",
+              "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+              "environmental_class": "четвертый",
+              "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+            }
+          ],
+          "interpretation": "The earlier AUDI AG option recorded against OTTS is not reproduced in the fresh OTTS search-index snapshot; AUDI AG is visible in the separate ESBKTS page snapshot. Keep the document registers separate. Two VOLKSWAGEN SBKTS metadata rows are visible, but they are not OTTS, do not expose engine/gearbox/ECU codes, and do not establish repair fitment.",
+          "raw_page_bytes_captured": false,
+          "source_snapshot_sha256": null,
+          "pdf_downloaded": false,
+          "data_ingested": false,
+          "product_import_allowed": false,
+          "rights_effect": "none; search-index metadata and SBKTS records do not grant bulk extraction, persistent cache, offline display, commercial reuse or redistribution"
         }
       },
       "rights": {
@@ -2749,13 +2809,13 @@
         "The 2026-11-06 public OTTS page snapshot exposed only document identity/status and applicant/manufacturer/certification metadata in its visible table; it did not expose engine code, gearbox code, an engine/gearbox pair or ECU fields. Underlying approval attachments were not downloaded or inspected.",
         "An ELPTS operator notice dated 2026-08-21 confirms that an internal AS EOTTS data-entry issue involving additional-reduction and hydraulic transmissions was fixed. It does not identify a public gearbox field, internal schema, factory gearbox code, reuse rights or exact fitment.",
         "The current consolidated EEC Decision No. 232 Annex 1 form defines engine and gearbox make/type fields in OTTS/OTSH attachments, but the 2026-11-06 visible ELPTS summary table did not expose them. The printed-form column is not evidence that a filled attachment was retrieved or that its contents may be cached or redistributed.",
-        "On 2026-11-07 the OTTS manufacturer filter showed AUDI AG and Volkswagen AG as option labels only; the indexed active date range returned no rows. This does not establish any VAG OTTS record or coverage count.",
+        "A prior indexed snapshot was transcribed as showing AUDI AG and Volkswagen AG on OTTS; a fresh 2026-11-09 OTTS search-index check reproduced only Volkswagen AG. AUDI AG is visible on the separate ESBKTS page and must not be carried over to OTTS without page-specific evidence.",
         "The separate SBKTS search snapshot showed a Volkswagen/FAW-Volkswagen metadata row for 04.11.2026–05.11.2026; it remains SBKTS, not OTTS, and is not fitment evidence.",
         "The 2026-11-07 page showed CSV/PDF/XML export controls, but no export was activated or downloaded; endpoint, export scope, completeness and reuse rights remain unverified.",
         "The 2026-11-08 public page observation used the active 07.11.2026–08.11.2026 date filter and returned no rows. The 14822 label remains a UI observation, not a verified complete-corpus count. No raw page bytes or source hash were captured."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "ELPTS public OTTS page rechecked 2026-11-08; total UI label 14822; active 07.11.2026–08.11.2026 filter returned no rows; VAG manufacturer filter options are not approval records; no VAG OTTS record count verified. Export controls last observed 2026-11-07. No raw page bytes, export, PDF or record downloaded; reuse rights and powertrain applicability remain unestablished. The docs.elpts.ru OTTS page shell was re-opened 2026-11-09; dynamic result placeholders remained unresolved and no records, API or export endpoint were retrieved. Rights remain unchanged. Fresh search-indexed OTTS page rendering rechecked 2026-11-09: UI total 14822 and AUDI AG/Volkswagen AG manufacturer filter options were visible, but the date-filtered result remained empty and no VAG approval row was observed; the opened page still returned unresolved dynamic placeholders. The official ELPTS homepage's «Реестры» section links the Russian national part to an RST.gov.ru page, which timed out in this review. No records, documents or raw bytes were retrieved; no rights changed.",
+      "evidence_status": "ELPTS national OTTS page shell rechecked 2026-11-09. Fresh indexed OTTS rendering shows UI total 14822, date filter 08.11.2026-09.11.2026 with no rows, and Volkswagen AG as a filter option only; AUDI AG was not reproduced on the OTTS page. A separate ESBKTS indexed rendering for 04.11.2026-05.11.2026 shows 155 results and two VOLKSWAGEN SBKTS metadata rows (FAW-Volkswagen type FV6462HADCG; SAIC Volkswagen type SVW71421GT). These are SBKTS, not OTTS, and the type strings are not engine/gearbox codes. No documents or raw bytes were downloaded; no data imported; no reuse rights changed.",
       "public_page_observations": {
         "observed_at": "2026-11-08",
         "ot_ts": {
@@ -2820,7 +2880,40 @@
           "observed_at": "2026-11-07",
           "search_snapshot": "Search-indexed results showed 155 SBKTS rows for 04.11.2026–05.11.2026 and included a Volkswagen/FAW-Volkswagen metadata row. This remains SBKTS, not OTTS; no record or PDF was downloaded.",
           "vag_metadata_row_observed": true,
-          "rights_effect": "none; this observation is not OTTS fitment evidence and grants no reuse rights"
+          "rights_effect": "none; this observation is not OTTS fitment evidence and grants no reuse rights",
+          "sample_metadata_rows_observed": [
+            {
+              "document_type": "SBKTS",
+              "registration_number": "ТС RU А-CN.ОО14.59210",
+              "brand": "VOLKSWAGEN",
+              "vehicle_type": "FV6462HADCG",
+              "status": "Действует",
+              "issue_date": "2026-11-04",
+              "applicant": "Физическое лицо",
+              "manufacturer": "FAW-Volkswagen Automotive Co Ltd.",
+              "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+              "environmental_class": "пятый",
+              "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+            },
+            {
+              "document_type": "SBKTS",
+              "registration_number": "ТС RU А-CN.ОО14.59209",
+              "brand": "VOLKSWAGEN",
+              "vehicle_type": "SVW71421GT",
+              "status": "Действует",
+              "issue_date": "2026-11-04",
+              "applicant": "Физическое лицо",
+              "manufacturer": "SAIC Volkswagen Automotive Co., Ltd.",
+              "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+              "environmental_class": "четвертый",
+              "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+            }
+          ],
+          "manufacturer_filter_options_observed": [
+            "AUDI AG",
+            "Volkswagen AG"
+          ],
+          "manufacturer_filter_values_are_options_only": true
         },
         "history": [
           {
@@ -2879,6 +2972,85 @@
               "export_endpoint_verified": false,
               "export_scope": "not_established",
               "visible_total_interpretation": "UI label observed while date filter was 06.11.2026–07.11.2026; not verified as a complete-corpus count and not a VAG count"
+            }
+          },
+          {
+            "observed_at": "2026-11-09",
+            "ot_ts": {
+              "url": "https://docs.elpts.ru/ncher/otts",
+              "page_title": "ОТТС",
+              "visible_total_label": "Всего оформлено: 14822",
+              "visible_date_filters": [
+                "08.11.2026",
+                "09.11.2026"
+              ],
+              "search_result_label": "Найдено: []",
+              "filtered_result_count": 0,
+              "manufacturer_filter_options_observed": [
+                "Volkswagen AG"
+              ],
+              "manufacturer_filter_values_are_options_only": true,
+              "audi_ag_option_reproduced": false,
+              "audi_ag_cross_page_note": "AUDI AG is visible on the separate ESBKTS indexed page; it was not found in the OTTS indexed snapshot.",
+              "vag_records_observed": false,
+              "vag_record_count_verified": false,
+              "raw_page_bytes_captured": false,
+              "raw_page_sha256": null,
+              "rights_effect": "none"
+            },
+            "sbkts": {
+              "url": "https://docs.elpts.ru/ncher/esbkts",
+              "page_title": "ЭСБКТС",
+              "visible_date_filters": [
+                "04.11.2026",
+                "05.11.2026"
+              ],
+              "search_result_count": 155,
+              "visible_total_label": "Всего оформлено: 2799410",
+              "manufacturer_filter_options_observed": [
+                "AUDI AG",
+                "Volkswagen AG"
+              ],
+              "manufacturer_filter_values_are_options_only": true,
+              "sample_metadata_rows_observed": [
+                {
+                  "document_type": "SBKTS",
+                  "registration_number": "ТС RU А-CN.ОО14.59210",
+                  "brand": "VOLKSWAGEN",
+                  "vehicle_type": "FV6462HADCG",
+                  "status": "Действует",
+                  "issue_date": "2026-11-04",
+                  "applicant": "Физическое лицо",
+                  "manufacturer": "FAW-Volkswagen Automotive Co Ltd.",
+                  "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+                  "environmental_class": "пятый",
+                  "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+                },
+                {
+                  "document_type": "SBKTS",
+                  "registration_number": "ТС RU А-CN.ОО14.59209",
+                  "brand": "VOLKSWAGEN",
+                  "vehicle_type": "SVW71421GT",
+                  "status": "Действует",
+                  "issue_date": "2026-11-04",
+                  "applicant": "Физическое лицо",
+                  "manufacturer": "SAIC Volkswagen Automotive Co., Ltd.",
+                  "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+                  "environmental_class": "четвертый",
+                  "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+                }
+              ],
+              "document_type": "SBKTS",
+              "engine_code_exposed": false,
+              "gearbox_code_exposed": false,
+              "exact_engine_gearbox_pair_exposed": false,
+              "ecu_exposed": false,
+              "pdf_downloaded": false,
+              "raw_page_bytes_captured": false,
+              "raw_page_sha256": null,
+              "data_ingested": false,
+              "product_import_allowed": false,
+              "rights_effect": "none; public indexed metadata only; no bulk/offline/redistribution rights"
             }
           }
         ]
@@ -7016,6 +7188,92 @@
       "project_decision": "licensed_discovery_only; no technical or vehicle-fitment import until pinned snapshots, extraction QA and independent primary-source verification are complete",
       "evidence_status": "Four article revision IDs and page-footer CC BY-SA 4.0 statements observed 2026-11-08. Raw page/API bytes were not retrieved; no source SHA-256 is claimed. All four pages carry quality warnings that block technical promotion.",
       "review_document": "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
+    },
+    {
+      "source_id": "openvag-github-dtc-api-schema-only",
+      "publisher": "riz4d / OpenVAG community repository",
+      "url": "https://github.com/riz4d/OpenVAG",
+      "pinned_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+      "source_kind": "community_vag_dtc_api_schema_with_unavailable_local_database",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "data_counts_as_published": {
+        "dtc_codes_claimed": 995,
+        "dtc_variants_claimed": 1103,
+        "components_claimed": 341,
+        "dtc_component_links_claimed": 712,
+        "related_code_links_claimed": 276,
+        "tracked_database_rows_available": 0
+      },
+      "evidence_scope": [
+        "repository_code_and_api_schema_only",
+        "README_database_count_claims_metadata_only"
+      ],
+      "access": {
+        "repository_public": true,
+        "repository_last_pushed_at": "2026-06-27T09:50:28Z",
+        "tracked_database_file": "db/openvag.db",
+        "tracked_database_file_present": false,
+        "gitignore_excludes_database": true,
+        "database_regeneration_script_present": false,
+        "database_release_artifacts": [],
+        "database_schema_file_present": true,
+        "api_base_url_documented": "http://localhost:8000",
+        "hosted_api_endpoint_present": false,
+        "source_database_bytes_retrieved": false,
+        "source_database_sha256": null
+      },
+      "rights": {
+        "tracked_repository_code_license": "MIT",
+        "code_license_file_present": true,
+        "database_data_license_status": "not_established",
+        "data_provenance_status": "not_documented",
+        "commercial_use_of_database_data": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true,
+        "scope_note": "The MIT LICENSE file applies to the tracked repository code and accompanying files to the extent the author can license them; it does not establish provenance or third-party rights for a database that is not present in the repository."
+      },
+      "provenance": {
+        "repository_commit": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+        "source_data_citations_present": false,
+        "per_record_source_urls_present": false,
+        "source_revision_per_record_present": false,
+        "row_hashes_present": false,
+        "upstream_data_origin": "not_documented",
+        "database_bytes_available": false
+      },
+      "applicability": {
+        "precision": "unverified_vag_dtc_claim_only",
+        "market_scope": "UNKNOWN",
+        "vag_specific_claimed": true,
+        "exact_vehicle_fitment": false,
+        "generation_year_fitment": false,
+        "engine_gearbox_fitment": false,
+        "ecu_fitment": false,
+        "repair_procedure_fitment": false,
+        "test_plan_approval": false,
+        "diagnostic_execution_allowed": false
+      },
+      "project_decision": "schema_and_api_contract_reference_only; reject DTC data import until database bytes, row-level provenance and data rights are independently established",
+      "limitations": [
+        "The repository tracks db/schema.sql and db/README.md but does not track db/openvag.db; .gitignore explicitly excludes db/openvag.db.",
+        "The README claims 995 DTC codes, 1103 variants and 341 components, but these counts cannot be independently verified from tracked data bytes.",
+        "No database regeneration script or release artifact is present in the tracked repository or GitHub Releases.",
+        "No per-record source URLs, source revisions, provenance, source hashes or data-specific licence are documented.",
+        "The MIT licence file is not evidence that the repository author owns or can relicense third-party DTC descriptions and repair text."
+      ],
+      "evidence_status": "Repository/API/schema inspected at pinned commit 407d5e042cf46d55087ed4ae4e056605f2b04f08 on 2026-11-09. GitHub reports MIT for tracked repository files; db/openvag.db is ignored and absent, no releases or data-generation scripts were found, and README counts remain unverified claims. No data downloaded or imported; no source SHA-256 can be claimed.",
+      "data_ingested": false,
+      "research_pack_ingested": false,
+      "product_database_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_available_no_database_bytes"
     }
   ],
   "minimum_fitment_evidence_fields": [
