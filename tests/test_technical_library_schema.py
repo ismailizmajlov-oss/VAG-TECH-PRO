@@ -326,7 +326,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
 
     def test_unresolved_reserved_dtc_ranges_remain_unknown_and_unpublishable(self) -> None:
         source_document_id = self.insert_source_document("test-dtc-quarantine", "TEST-DTC-QUARANTINE", market_scope="UNKNOWN")
-        codes = ("P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC")
+        codes = ("P3400", "P3497", "P34C8", "P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC")
         for code in codes:
             self.db.execute("""INSERT INTO oem_dtc_index
               (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
