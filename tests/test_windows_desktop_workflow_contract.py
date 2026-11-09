@@ -188,7 +188,7 @@ def main() -> None:
     inventory_step_marker = "      - name: Create desktop source inventory for technical-section audit"
     if metadata_step_marker not in text or metadata_upload_marker not in text or inventory_step_marker not in text:
         raise SystemExit("Windows CI must generate and publish standalone build metadata before source inventory packaging")
-    metadata_upload_step = text.split(metadata_upload_marker, 1)[1].split("\\n      - name:", 1)[0]
+    metadata_upload_step = text.split(metadata_upload_marker, 1)[1].split("\n      - name:", 1)[0]
     metadata_upload_required = (
         "hashFiles('build-metadata.json') != ''",
         "vag-tech-pro-build-metadata-${{ github.run_id }}",
@@ -199,6 +199,8 @@ def main() -> None:
     missing_metadata_upload = [marker for marker in metadata_upload_required if marker not in metadata_upload_step]
     if missing_metadata_upload:
         raise SystemExit(f"Standalone build metadata artifact contract is incomplete: {missing_metadata_upload}")
+    if "Create desktop source inventory for technical-section audit" in metadata_upload_step:
+        raise SystemExit("Standalone build metadata upload step boundary extends into the following workflow step")
     if not (text.index(metadata_step_marker) < text.index(metadata_upload_marker) < text.index(inventory_step_marker)):
         raise SystemExit("Standalone build metadata must be uploaded immediately after it is generated")
 
@@ -382,6 +384,20 @@ def main() -> None:
     for required_audit_file in ('"package.json"', '"package-lock.json"', '"scripts/prepare-electron-runtime.cjs"'):
         if required_audit_file not in audit_copy_step:
             raise SystemExit(f"Desktop source audit artifact omits runtime packaging evidence: {required_audit_file}")
+
+    audit_upload_marker = "      - name: Upload desktop source audit evidence"
+    if audit_upload_marker not in text:
+        raise SystemExit("Desktop source audit artifact upload step is missing")
+    audit_upload_step = text.split(audit_upload_marker, 1)[1].split("\n      - name:", 1)[0]
+    for required_audit_path in (
+        "windows-lifecycle-staging/desktop-source/package.json",
+        "windows-lifecycle-staging/desktop-source/package-lock.json",
+        "windows-lifecycle-staging/desktop-source/scripts/prepare-electron-runtime.cjs",
+    ):
+        if required_audit_path not in audit_upload_step:
+            raise SystemExit(f"Desktop source audit artifact does not publish runtime packaging evidence: {required_audit_path}")
+    if "Create desktop source inventory for technical-section audit" in audit_upload_step:
+        raise SystemExit("Desktop source audit upload step boundary extends into the following workflow step")
     if 'foreach ($folder in @("scripts", "lib", "app", "components", "electron", "tests"' not in text:
         raise SystemExit("Windows lifecycle artifact does not preserve the desktop app, UI and test sources")
 
@@ -427,7 +443,7 @@ def main() -> None:
     metadata_marker = "      - name: Write build metadata"
     if metadata_marker not in text:
         raise SystemExit("Windows build metadata step is missing")
-    metadata_step = text.split(metadata_marker, 1)[1].split("\\n      - name:", 1)[0]
+    metadata_step = text.split(metadata_marker, 1)[1].split("\n      - name:", 1)[0]
     expected_oem_schema_path = '$oemDtcIndexSchemaPath = "desktop-source/data/schemas/oem-dtc-index.schema.json"'
     if expected_oem_schema_path not in metadata_step:
         raise SystemExit("OEM DTC schema SHA-256 must be computed from the staged desktop source tree")
@@ -435,6 +451,8 @@ def main() -> None:
         raise SystemExit("OEM DTC schema hash path incorrectly points to the repository root")
     if 'if (-not $oemDtcIndexSchemaHash) { throw "OEM DTC index schema is missing from the staged desktop source." }' not in metadata_step:
         raise SystemExit("Windows metadata generation must fail closed when the OEM DTC schema is absent")
+    if "Upload standalone build metadata for independent installer hash verification" in metadata_step:
+        raise SystemExit("Build metadata step boundary extends into the following workflow step")
 
 if __name__ == "__main__":
     main()
