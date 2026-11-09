@@ -1759,7 +1759,7 @@
         "offline_cache": "not_confirmed",
         "redistribution": "not_confirmed"
       },
-      "verification_status": "official_public_registry_pilot_no_login_and_privacy_policy_rechecked_2026-11-10; record_schema_and_product_reuse_rights_unresolved",
+      "verification_status": "official_public_registry_pilot_and_privacy_policy_rechecked_2026-11-10; record_schema_and_reuse_rights_unresolved",
       "limitations": [
         "The public registry is described by the operator as a pilot; no complete corpus count or coverage statement is established.",
         "The homepage's one-OTTS summary is a portal counter only and is not treated as a current, complete or independently verified corpus count.",
@@ -1774,7 +1774,7 @@
         "The public registry landing page links to a JavaScript application that yielded no readable record rows in this review; no documented machine-readable API or bulk export was identified."
       ],
       "evidence_status": "Official homepage, registry landing page, public-registry project page, vehicle-approval workflow page, privacy policy and smart registry route reviewed 2026-11-10. No records, schema, API, export or source bytes retrieved; rights remain unresolved.",
-      "project_decision": "discovery_only. The official public pilot and privacy handling are documented, but no record schema, machine-readable API, bulk export or product reuse rights are established. Do not automate, cache, bundle, display or redistribute records until the operator confirms the resource classification, record owner/metadata terms and reuse scope in writing or a formal legal review clears those points.",
+      "project_decision": "discovery_only_no_automation_no_import_until_documented_record_schema_and_written_reuse_rights_are_confirmed",
       "evidence_reviewed": [
         {
           "url": "https://trade.kg/",
