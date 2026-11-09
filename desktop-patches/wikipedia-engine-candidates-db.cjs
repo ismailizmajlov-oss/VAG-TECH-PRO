@@ -107,6 +107,8 @@ function verify(root) {
   const provenance = readJson(files.build_provenance_file);
   if (provenance.pack_id !== PACK_ID || provenance.source_artifact_sha256 !== entry.source_artifact_sha256 ||
       provenance.source_archive_sha256 !== entry.source_archive_sha256 || provenance.source_commit !== entry.source_commit ||
+      provenance.source_snapshot_sha256 !== entry.source_snapshot_sha256 || provenance.source_manifest_sha256 !== entry.source_manifest_sha256 ||
+      provenance.database_sha256 !== entry.database_sha256 ||
       provenance.source_head_sha !== entry.source_head_sha || provenance.source_event !== entry.source_event ||
       provenance.source_ref !== entry.source_ref || provenance.wikitext_snapshot_sha256 !== entry.wikitext_snapshot_sha256 ||
       provenance.candidate_content_sha256 !== entry.candidate_content_sha256 || provenance.source_workflow_run_id !== entry.source_workflow_run_id ||
