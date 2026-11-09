@@ -50,7 +50,7 @@ function apply(root) {
   if (lib.includes(MARKER)) {
     if (!lib.includes("function classifyDtcNamespace(code)")) throw new Error("run91 marker exists without classifier");
     if (!ui.includes("DTC RANGE QUARANTINE") || !ui.includes("row.allocationWarning") || !ui.includes("generic_range_unreviewed")) throw new Error("run91 marker exists without quarantine UI");
-    if (!ui.includes("sourceNamespaceLabel")) throw new Error("run91 marker exists without upstream-label provenance");
+    if (!ui.includes("sourceNamespaceLabel") || !ui.includes("sourceRecordSha256?: string;")) throw new Error("run91 marker exists without source-record provenance types");
     if (!packageJson.scripts?.["test:research"]?.includes(libTestPath)) throw new Error("run91 test is not wired into npm test");
     if (!fs.existsSync(path.join(root, libTestPath))) throw new Error("run91 marker exists without regression tests");
     return { status: "already_applied", files: [libPath, uiPath, packagePath, libTestPath] };
@@ -193,6 +193,12 @@ function classifyDtcNamespace(code) {
   );
 
   let nextUi = ui;
+  nextUi = replaceOnce(
+    nextUi,
+    "  sourceSha256?: string;\n",
+    "  sourceSha256?: string;\n  sourceRecordSha256?: string;\n",
+    "OBDex per-record hash type",
+  );
   nextUi = replaceOnce(
     nextUi,
     "  namespace?: string;\n  definition?: string;",
@@ -349,6 +355,7 @@ test("run91 DTC research UI distinguishes generic rows from unresolved namespace
   assert.ok(source.includes('row.namespace === "generic_sae_iso_obd2" ? "GENERIC SAE/ISO RANGE" : "DTC RANGE QUARANTINE"'));
   assert.ok(source.includes('row.allocationStatus === "generic_range_unreviewed" ? "RESEARCH ONLY" : "QUARANTINE"'));
   assert.match(source, /row\.allocationWarning/);
+  assert.ok(source.includes("sourceRecordSha256?: string;"));
   assert.match(source, /row\.sourceNamespaceLabel/);
   assert.ok(source.includes("Описание OBDex (не проверено)"));
   assert.ok(source.includes("Непроверенные возможные причины из OBDex"));
