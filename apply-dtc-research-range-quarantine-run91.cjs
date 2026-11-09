@@ -288,7 +288,7 @@ function classifyDtcNamespace(code) {
     packageJson.scripts["test:research"] = researchTestCommand + " " + libTestPath;
   }
 
-  const regression = `"use strict";
+  const regression = String.raw`"use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
