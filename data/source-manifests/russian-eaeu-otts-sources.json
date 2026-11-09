@@ -858,7 +858,7 @@
         "cancellation_notices"
       ],
       "access": {
-        "public_query": "The public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. The visible date filter was 07.11.2026–08.11.2026 and returned no rows; the UI total label remained 14822. AUDI AG and Volkswagen AG remain filter options only, not returned approval records. No VAG OTTS record count or completeness is established.",
+        "public_query": "The public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. The visible date filter was 07.11.2026–08.11.2026 and returned no rows; the UI total label remained 14822. AUDI AG and Volkswagen AG remain filter options only, not returned approval records. No VAG OTTS record count or completeness is established. Fresh 2026-11-09 indexed-page reconciliation: the OTTS page filter list reproduced Volkswagen AG only; AUDI AG was not found in the OTTS page snapshot. The separate ESBKTS page has AUDI AG/Volkswagen AG filter options and two VOLKSWAGEN SBKTS metadata rows dated 04.11.2026; these remain SBKTS and not OTTS.",
         "machine_readable_api": "not_verified",
         "exact_OTTS_coverage": "not_established",
         "bulk_export": "not_established",
@@ -984,7 +984,40 @@
           "sample_document_type": "SBKTS",
           "vag_metadata_row_observed": true,
           "pdf_downloaded": false,
-          "rights_effect": "none; this observation is not OTTS fitment evidence and grants no reuse rights"
+          "rights_effect": "none; this observation is not OTTS fitment evidence and grants no reuse rights",
+          "sample_metadata_rows_observed": [
+            {
+              "document_type": "SBKTS",
+              "registration_number": "ТС RU А-CN.ОО14.59210",
+              "brand": "VOLKSWAGEN",
+              "vehicle_type": "FV6462HADCG",
+              "status": "Действует",
+              "issue_date": "2026-11-04",
+              "applicant": "Физическое лицо",
+              "manufacturer": "FAW-Volkswagen Automotive Co Ltd.",
+              "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+              "environmental_class": "пятый",
+              "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+            },
+            {
+              "document_type": "SBKTS",
+              "registration_number": "ТС RU А-CN.ОО14.59209",
+              "brand": "VOLKSWAGEN",
+              "vehicle_type": "SVW71421GT",
+              "status": "Действует",
+              "issue_date": "2026-11-04",
+              "applicant": "Физическое лицо",
+              "manufacturer": "SAIC Volkswagen Automotive Co., Ltd.",
+              "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+              "environmental_class": "четвертый",
+              "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+            }
+          ],
+          "manufacturer_filter_options_observed": [
+            "AUDI AG",
+            "Volkswagen AG"
+          ],
+          "manufacturer_filter_values_are_options_only": true
         },
         "history": [
           {
@@ -1067,6 +1100,83 @@
               "raw_page_sha256": null,
               "observation_note": "Snapshot transcribed from the dated 2026-11-07 review document; preserved separately from the prior Russian manifest snapshot."
             }
+          },
+          {
+            "observed_at": "2026-11-09",
+            "ot_ts_page": {
+              "url": "https://docs.elpts.ru/ncher/otts",
+              "page_title": "ОТТС",
+              "visible_total_label": "Всего оформлено: 14822",
+              "visible_date_filters": [
+                "08.11.2026",
+                "09.11.2026"
+              ],
+              "search_result_label": "Найдено: []",
+              "filtered_result_count": 0,
+              "manufacturer_filter_options_observed": [
+                "Volkswagen AG"
+              ],
+              "manufacturer_filter_values_are_options_only": true,
+              "audi_ag_option_reproduced": false,
+              "vag_records_observed": false,
+              "vag_record_count_verified": false,
+              "raw_page_bytes_captured": false,
+              "raw_page_sha256": null
+            },
+            "sbkts_page": {
+              "url": "https://docs.elpts.ru/ncher/esbkts",
+              "page_title": "ЭСБКТС",
+              "visible_date_filters": [
+                "04.11.2026",
+                "05.11.2026"
+              ],
+              "search_result_count": 155,
+              "visible_total_label": "Всего оформлено: 2799410",
+              "manufacturer_filter_options_observed": [
+                "AUDI AG",
+                "Volkswagen AG"
+              ],
+              "manufacturer_filter_values_are_options_only": true,
+              "sample_metadata_rows_observed": [
+                {
+                  "document_type": "SBKTS",
+                  "registration_number": "ТС RU А-CN.ОО14.59210",
+                  "brand": "VOLKSWAGEN",
+                  "vehicle_type": "FV6462HADCG",
+                  "status": "Действует",
+                  "issue_date": "2026-11-04",
+                  "applicant": "Физическое лицо",
+                  "manufacturer": "FAW-Volkswagen Automotive Co Ltd.",
+                  "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+                  "environmental_class": "пятый",
+                  "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+                },
+                {
+                  "document_type": "SBKTS",
+                  "registration_number": "ТС RU А-CN.ОО14.59209",
+                  "brand": "VOLKSWAGEN",
+                  "vehicle_type": "SVW71421GT",
+                  "status": "Действует",
+                  "issue_date": "2026-11-04",
+                  "applicant": "Физическое лицо",
+                  "manufacturer": "SAIC Volkswagen Automotive Co., Ltd.",
+                  "testing_laboratory": "Общество с ограниченной ответственностью «Авенсис-Плюс»",
+                  "environmental_class": "четвертый",
+                  "type_value_role": "vehicle_type_identifier_not_engine_or_gearbox_code"
+                }
+              ],
+              "document_type": "SBKTS",
+              "engine_code_exposed": false,
+              "gearbox_code_exposed": false,
+              "exact_engine_gearbox_pair_exposed": false,
+              "ecu_exposed": false,
+              "pdf_downloaded": false,
+              "raw_page_bytes_captured": false,
+              "raw_page_sha256": null,
+              "data_ingested": false,
+              "product_import_allowed": false
+            },
+            "cross_page_note": "AUDI AG is not reproduced on the OTTS indexed page but is visible on the separate ESBKTS indexed page; do not mix document types or filter observations."
           }
         ]
       },
@@ -1089,7 +1199,7 @@
           "product_decision": "retain_as_access_and_schema_discovery_evidence_only; no import or fitment claim"
         }
       ],
-      "evidence_status": "Public ELPTS OTTS page rechecked 2026-11-08; UI total label 14822; active date filter 07.11.2026–08.11.2026 returned no rows; AUDI AG and Volkswagen AG are filter options only; no VAG OTTS record or count verified. Export controls were last observed 2026-11-07. No raw page bytes, export, PDF, attachment or record downloaded; no dataset-specific reuse rights, bulk API or powertrain fields established; no rights change.",
+      "evidence_status": "Fresh 2026-11-09 search-index reconciliation: OTTS page shows only Volkswagen AG as a manufacturer filter option and no rows for 08.11.2026-09.11.2026. AUDI AG is visible on the separate ESBKTS page. Two VOLKSWAGEN SBKTS metadata rows were visible for 04.11.2026 (FAW-Volkswagen FV6462HADCG; SAIC Volkswagen SVW71421GT); they are not OTTS, expose no engine/gearbox/ECU codes, and were not downloaded or imported. Rights remain not established.",
       "product_import_allowed": false
     },
     {
