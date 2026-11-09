@@ -138,6 +138,9 @@ on:
       - "run*-*.patch.gz.b64"
       - "catalog-import-v2-run*.patch.gz.b64"
       - "ci-trigger-run*.txt"
+      - ".github/workflows/build-wikipedia-vag-engine-candidates.yml"
+      - "scripts/build_wikipedia_vag_engine_candidates.py"
+      - "tests/test_wikipedia_vag_engine_candidates.py"
   pull_request:
     branches:
       - main
@@ -265,6 +268,9 @@ on:
       - "run*-*.patch.gz.b64"
       - "catalog-import-v2-run*.patch.gz.b64"
       - "ci-trigger-run*.txt"
+      - ".github/workflows/build-wikipedia-vag-engine-candidates.yml"
+      - "scripts/build_wikipedia_vag_engine_candidates.py"
+      - "tests/test_wikipedia_vag_engine_candidates.py"
   workflow_dispatch:
 
 permissions:
