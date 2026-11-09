@@ -41,6 +41,11 @@ class EeaCo2SourceRightsTests(unittest.TestCase):
         self.assertFalse(self.source["data_ingested"])
         self.assertFalse(self.source["product_import_allowed"])
         self.assertIsNone(self.source["source_snapshot_sha256"])
+        attempt = acquisition["last_acquisition_attempt"]
+        self.assertEqual(attempt["http_status"], 403)
+        self.assertFalse(attempt["dataset_bytes_received"])
+        self.assertIsNone(attempt["response_body_sha256"])
+        self.assertEqual(acquisition["last_acquisition_attempt_status"], "http_403_forbidden_from_github_hosted_windows_2025_runner; reason_not_returned")
 
     def test_type_approval_variant_is_not_engine_gearbox_fitment(self):
         applicability = self.source["applicability"]
