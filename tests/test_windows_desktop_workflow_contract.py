@@ -359,6 +359,7 @@ def main() -> None:
         "run79-typed-technical-payload-renderer",
         "run80-technical-payload-schema-validation",
         "run81-strict-dtc-oem-supersession-validation",
+        "run91-wikipedia-candidate-pack",
     )
     missing_patch_set = [marker for marker in required_patch_set if marker not in patch_set_line]
     if missing_patch_set:
@@ -388,6 +389,37 @@ def main() -> None:
             raise SystemExit(f"Dedicated offline desktop entry step is incomplete: {required_offline_entry_step}")
     if not text.index(offline_entry_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker):
         raise SystemExit("Dedicated offline desktop entry must be applied and tested before desktop tests and NSIS packaging")
+
+    wikipedia_candidate_paths = (
+        "wikipedia-engine-candidates-db-run91.cjs",
+        "wikipedia-engine-candidates-route-run91.ts",
+        "wikipedia-engine-candidates-ui-run91.tsx",
+        "wikipedia-engine-candidates-db-run91.test.cjs",
+        "wikipedia-engine-candidates-ui-run91.test.cjs",
+        "tests/wikipedia-engine-candidate-pack-run91.test.cjs",
+    )
+    missing_wikipedia_candidate_paths = [marker for marker in wikipedia_candidate_paths if text.count(marker) < 2]
+    if missing_wikipedia_candidate_paths:
+        raise SystemExit(f"Wikipedia candidate pack code/tests must trigger both push and pull-request validation: {missing_wikipedia_candidate_paths}")
+    wikipedia_candidate_marker = "      - name: Integrate Wikipedia VAG engine-code candidates as a separate read-only research pack (run91)"
+    if wikipedia_candidate_marker not in text:
+        raise SystemExit("Windows workflow does not integrate the separately licensed Wikipedia candidate pack")
+    wikipedia_candidate_step = text.split(wikipedia_candidate_marker, 1)[1].split("\\n      - name:", 1)[0]
+    for required_wikipedia_step in (
+        "node --test tests/wikipedia-engine-candidate-pack-run91.test.cjs",
+        "node apply-wikipedia-engine-candidate-ui-run91.cjs --desktop-root desktop-source",
+        "node --test desktop-source/tests/wikipedia-engine-candidates-db.test.cjs desktop-source/tests/wikipedia-engine-candidates-ui.test.cjs",
+        "scripts/patches/apply-wikipedia-engine-candidate-ui-run91.cjs",
+        "wikipedia_engine_candidates=241",
+        "product_import=false",
+        "diagnostic_execution=false",
+    ):
+        if required_wikipedia_step not in wikipedia_candidate_step:
+            raise SystemExit(f"Wikipedia candidate pack integration step is incomplete: {required_wikipedia_step}")
+    if not text.index(wikipedia_candidate_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker):
+        raise SystemExit("Wikipedia candidate pack must be integrated and tested before desktop tests and NSIS packaging")
+    if "wikipedia_engine_candidate_database_sha256" not in text or "wikipedia_engine_candidate_source_artifact_sha256" not in text:
+        raise SystemExit("Windows build metadata does not bind the Wikipedia candidate database and source artifact hashes")
     metadata_marker = "      - name: Write build metadata"
     metadata_step_for_offline = text.split(metadata_marker, 1)[1].split("\n      - name:", 1)[0]
     if "desktop_offline_entry = 'app/desktop'" not in metadata_step_for_offline or "desktop_offline_entry_patch_sha256" not in metadata_step_for_offline:
