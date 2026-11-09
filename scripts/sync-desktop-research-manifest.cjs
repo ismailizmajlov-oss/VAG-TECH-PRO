@@ -84,6 +84,8 @@ function verifyObdex(packRoot, descriptor) {
   const report = readJson(safeJoin(packRoot, descriptor.report_path));
   if (sourceManifest.source_id !== "obdex-generic-cc0" || sourceManifest.data_license !== "CC0-1.0") fail("OBDex source manifest identity/license mismatch");
   if (sourceManifest.commit_sha !== descriptor.source_revision || sourceManifest.license_sha256 !== hashRelative(packRoot, "obdex-generic-cc0/source/LICENSE-DATA")) fail("OBDex source revision/license hash mismatch");
+  const upstreamExpected = sourceManifest.expected_counts || {};
+  if (upstreamExpected.generic_dtcs !== 9533 || upstreamExpected.pids_total !== 132 || upstreamExpected.searchable_generic_dtcs !== 9204 || upstreamExpected.quarantined_unresolved_namespace_rows !== 329) fail("OBDex source manifest expected counts mismatch");
   const policy = sourceManifest.source_reference_policy || {};
   if (policy.validation !== "syntax_only" || policy.external_fetch !== false || policy.rights_review !== "not_inherited_from_cc0_dataset" || policy.display_policy !== "external_reference_link_only") fail("OBDex external source-reference policy is incomplete");
   const scope = sourceManifest.scope || {};
