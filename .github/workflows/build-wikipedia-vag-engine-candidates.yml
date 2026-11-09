@@ -59,7 +59,8 @@ jobs:
               $manifest.market_scope -ne "UNKNOWN" -or
               $manifest.product_import_allowed -ne $false -or
               $manifest.quality_review_status -ne "not_approved_for_technical_use" -or
-              $manifest.counts.unique_candidate_codes -lt 10) {
+              $manifest.counts.candidate_rows -lt 30 -or
+              $manifest.counts.unique_candidate_codes -lt 30) {
             throw "Wikipedia candidate pack manifest failed rights or candidate-only gates"
           }
           $db = Join-Path $packDir $manifest.database_file

@@ -32,10 +32,12 @@ EXCLUDED = {
     "ID", "CC", "PS", "KW", "NM", "BHP", "HP", "RPM", "DIN", "EGR", "ECU",
     "OBD", "EEC", "SI", "RON", "ROZ", "AKI", "PDI", "DSG", "CVT", "AT", "MT",
     "FWD", "RWD", "AWD", "4WD", "4MOTION", "QUATTRO", "VVT",
+    "EU0", "EU1", "EU2", "EU3", "EU4", "EU5", "EU6", "EU7", "EU8", "EU9", "USA", "US", "CAN", "BRA",
 }
 CODE_RE = re.compile(r"(?<![A-Z0-9])[A-Z0-9]{2,5}(?![A-Z0-9])")
 DECADE_RE = re.compile(r"^(?:19|20)\d{2}S$", re.IGNORECASE)
 DISPLACEMENT_CODE_RE = re.compile(r"^\s*\d+(?:[.,]\d+)?(?:\s+[A-Za-z0-9]+){0,3}\s*:\s*(.+)$")
+ID_CODE_VALUE_RE = re.compile(r"\b(?:engine\s+)?ID\s+codes?\s*:\s*(.+)$", re.IGNORECASE)
 LABEL_RE = re.compile(
     r"\b(?:engine\s+(?:id|identification)\s+codes?|engine\s+codes?|(?:id|identification)\s+codes?)\b",
     re.IGNORECASE,
@@ -98,7 +100,12 @@ class EngineCodeHTMLParser(HTMLParser):
         self.heading = ""
         self.heading_buffer: list[str] | None = None
         self.table_depth = 0
+        self.table_skip_stack: list[bool] = []
+        self.table_skip_depth = 0
         self.engine_code_columns: set[int] = set()
+        self.dt_buffer: list[str] | None = None
+        self.dd_buffer: list[str] | None = None
+        self.current_dt_label = ""
         self.table_has_id_code_header = False
         self.row: list[dict[str, str]] | None = None
         self.cell_buffer: list[str] | None = None
@@ -110,23 +117,38 @@ class EngineCodeHTMLParser(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         tag = tag.lower()
+        attrs_map = dict(attrs)
         if tag in {"h2", "h3", "h4", "h5"}:
             self.heading_buffer = []
         elif tag == "table":
+            classes = set(str(attrs_map.get("class") or "").split())
+            skip = self.table_skip_depth > 0 or bool(classes & {"navbox", "navbox-inner", "wraplinks"})
+            self.table_skip_stack.append(skip)
             self.table_depth += 1
-            self.engine_code_columns = set()
-            self.table_has_id_code_header = False
-        elif tag == "tr" and self.table_depth:
+            if skip:
+                self.table_skip_depth += 1
+            elif self.table_skip_depth == 0:
+                self.engine_code_columns = set()
+                self.table_has_id_code_header = False
+        elif tag == "tr" and self.table_depth and self.table_skip_depth == 0:
             self.row = []
-        elif tag in {"th", "td"} and self.row is not None:
+        elif tag in {"th", "td"} and self.row is not None and self.table_skip_depth == 0:
             self.cell_tag = tag
             self.cell_buffer = []
+        elif tag == "dt":
+            self.dt_buffer = []
+        elif tag == "dd":
+            self.dd_buffer = []
 
     def handle_data(self, data: str) -> None:
         if self.heading_buffer is not None:
             self.heading_buffer.append(data)
         if self.cell_buffer is not None:
             self.cell_buffer.append(data)
+        if self.dt_buffer is not None:
+            self.dt_buffer.append(data)
+        if self.dd_buffer is not None:
+            self.dd_buffer.append(data)
 
     def handle_endtag(self, tag: str) -> None:
         tag = tag.lower()
@@ -143,13 +165,50 @@ class EngineCodeHTMLParser(HTMLParser):
             self.rows_seen += 1
             self._process_row(self.row, self.rows_seen)
             self.row = None
+        elif tag == "dt" and self.dt_buffer is not None:
+            self.current_dt_label = clean_text(" ".join(self.dt_buffer))
+            self.dt_buffer = None
+        elif tag == "dd" and self.dd_buffer is not None:
+            self.rows_seen += 1
+            self._process_definition_list_row(clean_text(" ".join(self.dd_buffer)), self.rows_seen)
+            self.dd_buffer = None
         elif tag == "table" and self.table_depth:
+            skipped = self.table_skip_stack.pop() if self.table_skip_stack else False
+            if skipped:
+                self.table_skip_depth = max(0, self.table_skip_depth - 1)
             self.table_depth -= 1
-            self.engine_code_columns = set()
-            self.table_has_id_code_header = False
+            if self.table_depth == 0:
+                self.engine_code_columns = set()
+                self.table_has_id_code_header = False
+
+    def _process_definition_list_row(self, text: str, row_number: int) -> None:
+        match = ID_CODE_VALUE_RE.search(text)
+        if not match:
+            return
+        value_text = clean_text(match.group(1))
+        codes = extract_codes(value_text)
+        if not codes:
+            return
+        row_text = " | ".join(part for part in (self.current_dt_label, text) if part)
+        self.candidates.append({
+            "source_row_kind": "definition_list",
+            "section_heading": self.heading,
+            "source_row_number": row_number,
+            "source_row_text": row_text,
+            "candidate_value_text": value_text,
+            "candidate_codes": codes,
+        })
+        if len(self.debug_rows) < 120:
+            self.debug_rows.append({
+                "heading": self.heading,
+                "row_number": row_number,
+                "definition_term": self.current_dt_label,
+                "definition_text": text,
+                "candidate_codes": codes,
+            })
 
     def _process_row(self, cells: list[dict[str, str]], row_number: int) -> None:
-        if not cells:
+        if not cells or self.table_skip_depth:
             return
         texts = [cell["text"] for cell in cells]
         if len(self.all_rows) < 120:
@@ -194,6 +253,7 @@ class EngineCodeHTMLParser(HTMLParser):
         if not codes:
             return
         self.candidates.append({
+            "source_row_kind": "table_row",
             "section_heading": self.heading,
             "source_row_number": row_number,
             "source_row_text": row_text,
@@ -317,6 +377,7 @@ def build_database(output: Path, pages: list[dict[str, object]], source_manifest
     db_path = output / "wikipedia-vag-engine-candidates.sqlite"
     connection = sqlite3.connect(db_path)
     try:
+        connection.execute("PRAGMA user_version=2")
         connection.execute("PRAGMA foreign_keys=ON")
         connection.execute("PRAGMA journal_mode=DELETE")
         connection.execute("PRAGMA synchronous=FULL")
@@ -361,6 +422,7 @@ def build_database(output: Path, pages: list[dict[str, object]], source_manifest
                 source_title TEXT NOT NULL,
                 source_url TEXT NOT NULL,
                 section_heading TEXT,
+                source_row_kind TEXT NOT NULL CHECK (source_row_kind IN ('definition_list','table_row')),
                 source_row_number INTEGER NOT NULL CHECK (source_row_number>0),
                 source_row_text TEXT NOT NULL,
                 candidate_value_text TEXT NOT NULL,
@@ -409,6 +471,7 @@ def build_database(output: Path, pages: list[dict[str, object]], source_manifest
                     canonical_json({
                         "title": page["title"],
                         "revision_id": page["revision_id"],
+                        "source_row_kind": row.get("source_row_kind", "table_row"),
                         "section_heading": row["section_heading"],
                         "source_row_number": row["source_row_number"],
                         "source_row_text": row["source_row_text"],
@@ -421,16 +484,17 @@ def build_database(output: Path, pages: list[dict[str, object]], source_manifest
                     connection.execute(
                         """INSERT INTO engine_code_candidates (
                             candidate_id,candidate_code,source_revision_id,source_title,source_url,
-                            section_heading,source_row_number,source_row_text,candidate_value_text,
+                            section_heading,source_row_kind,source_row_number,source_row_text,candidate_value_text,
                             source_row_sha256,source_snapshot_sha256,source_manifest_sha256,
                             market_scope,applicability_precision,review_status,product_import_allowed,
                             exact_vehicle_fitment,generation_year_fitment,engine_gearbox_fitment,
                             ecu_fitment,dtc_fitment,repair_use_allowed,diagnostic_execution_allowed
-                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                         (
                             candidate_id, code, page["revision_id"], page["title"], page["source_url"],
-                            row["section_heading"], row["source_row_number"], row["source_row_text"],
-                            row["candidate_value_text"], row_hash, snapshot_sha, source_manifest_sha,
+                            row["section_heading"], row.get("source_row_kind", "table_row"),
+                            row["source_row_number"], row["source_row_text"], row["candidate_value_text"],
+                            row_hash, snapshot_sha, source_manifest_sha,
                             "UNKNOWN", "community_engine_code_candidate_only", "candidate", 0,
                             0, 0, 0, 0, 0, 0, 0,
                         ),
@@ -517,11 +581,11 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
     snapshot_sha = sha256_bytes(canonical_json(snapshot_payload))
     total_candidates = sum(sum(len(row["candidate_codes"]) for row in page["candidate_rows"]) for page in pages)
     unique_codes = sorted({code for page in pages for row in page["candidate_rows"] for code in row["candidate_codes"]})
-    if total_candidates < 10 or len(unique_codes) < 10:
+    if total_candidates < 30 or len(unique_codes) < 30:
         raise RuntimeError(f"Unexpectedly small Wikipedia candidate extraction: rows={total_candidates}, unique_codes={len(unique_codes)}")
 
     source_manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "source_id": SOURCE_ID,
         "publisher": "Wikipedia contributors",
         "source_repository": "https://en.wikipedia.org/",
@@ -541,6 +605,13 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
         "review_status": "candidate",
         "quality_review_status": "not_approved_for_technical_use",
         "quality_warnings": source["quality_review"]["blocking_warnings"],
+        "extraction_policy": {
+            "definition_list_rule": "Extract only dd values containing an explicit ID code: or engine ID code: label.",
+            "table_rule": "Extract only table cells under explicit engine ID/code headers.",
+            "excluded_table_classes": ["navbox", "navbox-inner", "wraplinks"],
+            "candidate_normalization": "Uppercase alphanumeric tokens of 2-5 characters; known engine-family, transmission, market and emissions annotation tokens are excluded.",
+            "candidate_only": True,
+        },
         "source_snapshot_sha256": snapshot_sha,
         "pages": [
             {
@@ -596,7 +667,7 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
     attribution_lines += [
         "",
         f"License: [Creative Commons Attribution-ShareAlike 4.0 International]({LICENSE_URL}).",
-        "Changes made by VAG TECH PRO: extraction of rows explicitly labelled as engine ID/code fields, token normalization, source-row hashing and SQLite packaging.",
+        "Changes made by VAG TECH PRO: extraction of explicit ID-code values from article definition lists and explicit engine-ID table columns; navigation-box tables are excluded; token normalization, source-row hashing and SQLite packaging.",
         "Market scope is UNKNOWN. All values are unverified community candidates. No model, generation, year, engine/gearbox pair, ECU, DTC, repair procedure or diagnostic applicability is established.",
         "The candidate database is kept separate and must remain under CC BY-SA 4.0 with attribution and ShareAlike notices.",
     ]
@@ -610,7 +681,7 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
         encoding="utf-8",
     )
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "pack_id": PACK_ID,
         "publisher": "Wikipedia contributors",
         "source_id": SOURCE_ID,
@@ -652,6 +723,13 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
         "counts": counts,
         "pages": source_manifest["pages"],
         "quality_warnings": source_manifest["quality_warnings"],
+        "extraction_policy": {
+            "definition_list_rule": "Extract only dd values containing an explicit ID code: or engine ID code: label.",
+            "table_rule": "Extract only table cells under explicit engine ID/code headers.",
+            "excluded_table_classes": ["navbox", "navbox-inner", "wraplinks"],
+            "candidate_normalization": "Uppercase alphanumeric tokens of 2-5 characters; known engine-family, transmission, market and emissions annotation tokens are excluded.",
+            "candidate_only": True,
+        },
     }
     manifest_path = output / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
