@@ -373,7 +373,7 @@ def main() -> None:
     if "Upload desktop source audit evidence" not in text or "vag-tech-pro-desktop-source-audit-" not in text:
         raise SystemExit("Small desktop source audit artifact is not uploaded independently")
     audit_copy_match = re.search(
-        r"(?ms)^      - name: Mirror patched desktop source and ASTRA integration into audit staging\\n(?P<step>.*?)(?=^      - name:|\\Z)",
+        r"(?ms)^      - name: Mirror patched desktop source and ASTRA integration into audit staging\n(?P<step>.*?)(?=^      - name:|\Z)",
         text,
     )
     if not audit_copy_match:
