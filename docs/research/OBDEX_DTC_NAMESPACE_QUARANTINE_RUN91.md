@@ -46,4 +46,4 @@ The 9,204 generic-range count is derived from the pinned SQLite: P0xxx 3,705; P2
 - Include the policy revision, market scope UNKNOWN, applicability precision generic_code_only, source snapshot, source-record SHA-256 and source-manifest SHA-256 in the result.
 - Keep fitmentClaim=false and diagnosticExecutionAllowed=false for every row.
 
-The local regression suite was run against the actual pinned OBDex SQLite: 4/4 tests passed. The patch script also passed a clean-apply and second-run idempotence check. The Windows CI integration is pending; no production import or installer release is claimed by this research note.
+The local regression suite was run against the actual pinned OBDex SQLite: 5/5 tests passed. The run91 patch also adds data/policies to the packaged app runtime at app-runtime/data/policies so offline namespace classification does not depend on the development checkout. The patch script also passed a clean-apply and second-run idempotence check. The Windows CI integration is pending; no production import or installer release is claimed by this research note.
