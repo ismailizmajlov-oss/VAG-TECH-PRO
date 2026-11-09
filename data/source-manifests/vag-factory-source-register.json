@@ -7371,6 +7371,77 @@
       "product_import_allowed": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_available_no_database_bytes"
+    },
+    {
+      "source_id": "bolidenforum-vag-engine-transmission-pr",
+      "publisher": "Bolidenforum.de",
+      "url": "https://www.bolidenforum.de/portal/en/vag/engine/",
+      "related_urls": [
+        "https://www.bolidenforum.de/portal/en/vag/transmission/",
+        "https://www.bolidenforum.de/portal/en/vag/pr-code/"
+      ],
+      "source_kind": "secondary_vag_engine_transmission_and_pr_reference",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "observed_counts": {
+        "engine_code_entries_claimed": 966,
+        "transmission_entries_claimed": 19,
+        "pr_code_entries_claimed": 138,
+        "engine_fields": [
+          "code",
+          "name_or_engine_description",
+          "power",
+          "years",
+          "vehicle_models"
+        ],
+        "transmission_fields": [
+          "code_or_family",
+          "transmission_type",
+          "gear_count",
+          "clutch_type",
+          "vehicle_models",
+          "years"
+        ],
+        "pr_fields": [
+          "code",
+          "plain_text_description"
+        ],
+        "copyright_notice": "Urheberrecht © 2026 Alle Rechte vorbehalten."
+      },
+      "applicability": {
+        "precision": "secondary_reference_candidate_only",
+        "market_scope": "UNKNOWN",
+        "engine_code_candidates_only": true,
+        "transmission_family_candidates_only": true,
+        "exact_factory_gearbox_codes_verified": false,
+        "pr_code_descriptions_only": true,
+        "exact_engine_transmission_pairs": false,
+        "model_generation_fitment_verified": false,
+        "ru_eaeu_applicability": false,
+        "ecu_dtc_or_repair_applicability": false
+      },
+      "rights": {
+        "data_license_status": "all_rights_reserved_no_open_license_found",
+        "license_identifier": null,
+        "license_url": null,
+        "copyright_notice_observed": true,
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "derived_fact_export_allowed": "not_established",
+        "redistribution_allowed": false,
+        "permission_required_for_local_cache_and_derived_fact_export": true,
+        "permission_status": "not_obtained"
+      },
+      "verification_status": "quarantined_rights_unresolved",
+      "evidence_status": "public index pages and copyright footer reviewed 2026-11-09; no open license or row-level primary provenance identified",
+      "project_decision": "metadata_only_candidate; obtain written permission covering bulk extraction, persistent local caching, offline display, derived facts, installer/update redistribution and commercial/non-commercial use before any data acquisition or display; no scraping or import",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_snapshot"
     }
   ],
   "minimum_fitment_evidence_fields": [
