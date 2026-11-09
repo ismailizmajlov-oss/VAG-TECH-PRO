@@ -34,6 +34,8 @@ EXCLUDED = {
     "FWD", "RWD", "AWD", "4WD", "4MOTION", "QUATTRO", "VVT",
 }
 CODE_RE = re.compile(r"(?<![A-Z0-9])[A-Z0-9]{2,5}(?![A-Z0-9])")
+DECADE_RE = re.compile(r"^(?:19|20)\\d{2}S$", re.IGNORECASE)
+DISPLACEMENT_CODE_RE = re.compile(r"^\\s*\\d+(?:[.,]\\d+)?(?:\\s+[A-Za-z0-9]+){0,3}\\s*:\\s*(.+)$")
 LABEL_RE = re.compile(
     r"\b(?:engine\s+(?:id|identification)\s+codes?|engine\s+codes?|(?:id|identification)\s+codes?)\b",
     re.IGNORECASE,
@@ -72,7 +74,7 @@ def is_engine_code_label(value: str) -> bool:
 def extract_codes(value: str) -> list[str]:
     result: list[str] = []
     for match in CODE_RE.findall(clean_text(value).upper()):
-        if match in EXCLUDED or match.isdigit():
+        if match in EXCLUDED or match.isdigit() or DECADE_RE.fullmatch(match):
             continue
         if match not in result:
             result.append(match)
@@ -88,6 +90,7 @@ class EngineCodeHTMLParser(HTMLParser):
         self.heading_buffer: list[str] | None = None
         self.table_depth = 0
         self.engine_code_columns: set[int] = set()
+        self.table_has_id_code_header = False
         self.row: list[dict[str, str]] | None = None
         self.cell_buffer: list[str] | None = None
         self.cell_tag: str | None = None
@@ -103,6 +106,7 @@ class EngineCodeHTMLParser(HTMLParser):
         elif tag == "table":
             self.table_depth += 1
             self.engine_code_columns = set()
+            self.table_has_id_code_header = False
         elif tag == "tr" and self.table_depth:
             self.row = []
         elif tag in {"th", "td"} and self.row is not None:
@@ -133,6 +137,7 @@ class EngineCodeHTMLParser(HTMLParser):
         elif tag == "table" and self.table_depth:
             self.table_depth -= 1
             self.engine_code_columns = set()
+            self.table_has_id_code_header = False
 
     def _process_row(self, cells: list[dict[str, str]], row_number: int) -> None:
         if not cells:
@@ -144,17 +149,26 @@ class EngineCodeHTMLParser(HTMLParser):
             self.debug_rows.append({"heading": self.heading, "row_number": row_number, "cells": texts})
         labels = [index for index, text in enumerate(texts) if is_engine_code_label(text)]
         if labels:
+            self.table_has_id_code_header = True
             value_indexes = [index for index in range(len(texts)) if index not in labels]
             values = [texts[index] for index in value_indexes]
             value_cells = [cells[index] for index in value_indexes]
-            # A header row has only TH cells; do not misread words such as "Power"
-            # as codes. A labelled TH/TD data row can still emit its TD value.
+            # A header row can contain decade labels in TD cells; those are not engine codes.
             has_data_cell = any(cell["tag"] == "td" for cell in value_cells)
             if has_data_cell and values and any(extract_codes(value) for value in values):
                 self._emit(cells, values, row_number)
             else:
                 self.engine_code_columns = set(labels)
             return
+        if self.table_has_id_code_header:
+            code_values = []
+            for text in texts:
+                match = DISPLACEMENT_CODE_RE.match(text)
+                if match and extract_codes(match.group(1)):
+                    code_values.append(match.group(1))
+            if code_values:
+                self._emit(cells, code_values, row_number)
+                return
         if self.engine_code_columns:
             values = [texts[index] for index in sorted(self.engine_code_columns) if index < len(texts)]
             if values and any(extract_codes(value) for value in values):
