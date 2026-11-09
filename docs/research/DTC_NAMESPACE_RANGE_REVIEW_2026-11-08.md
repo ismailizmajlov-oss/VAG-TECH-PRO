@@ -2,7 +2,7 @@
 
 ## Decision
 
-The run86 namespace guard was too broad in two places: it treated P35xx–P39xx as manufacturer-controlled and treated every U3xxx identifier as generic. The run87 correction removes both assumptions from the normalized product DTC namespaces.
+The run86 namespace guard was too broad in two places: it treated P35xx–P39xx as manufacturer-controlled and treated every U3xxx identifier as generic. The run87 correction removes both assumptions from the normalized product DTC namespaces. A further review quarantines the entire mixed P34xx-P39xx family because the current SAE J2012DA allocation table has not been acquired.
 
 ## Evidence and limits
 
@@ -14,13 +14,15 @@ The publicly accessible SAE J2012 MAR2013 document's Figure 3 distinguishes P300
 
 The current J2012DA is licensed and has not been acquired under a reuse licence. No current allocation table or DTC definition text is stored. Consequently, U3xxx is not promoted to a normalized generic or VAG-specific namespace from a prefix or third-party dataset label alone. B3xxx and C3xxx also remain quarantined until exact current assignments are established.
 
-The pinned OBDex CC0 research pack contains 174 U3xxx rows and upstream labels them generic. Those rows remain in the separate research pack only; they are not merged into the normalized product DTC index. The upstream CC0 grant covers its data files, not the copyrighted SAE annex or third-party references embedded in those rows.
+The pinned OBDex CC0 research pack contains 155 upstream-labelled P34xx rows and 174 U3xxx rows. Both groups remain in the separate research pack only; neither is merged into the normalized product DTC index. The CC0 grant applies to OBDex data files, not to SAE allocation status. The upstream CC0 grant covers its data files, not the copyrighted SAE annex or third-party references embedded in those rows.
 
 ## Normalized importer policy
 
-- Generic source-backed ranges: P0xxx, P2xxx, P34xx, B0xxx, C0xxx and U0xxx. P34xx is accepted only for an exact identifier present in a pinned source snapshot.
+- Generic normalized ranges: P0xxx, P2xxx, B0xxx, C0xxx and U0xxx.
+- Manufacturer-controlled ranges: P1xxx, P30xx-P33xx, B1xxx-B2xxx, C1xxx-C2xxx and U1xxx-U2xxx.
+- Unresolved/quarantined: P34xx-P39xx, U3xxx, B3xxx and C3xxx. These identifiers remain in `unknown` until exact current SAE J2012/J2012DA assignments are independently verified.
 - Manufacturer-controlled ranges: P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx and U1xxx–U2xxx.
-- Unresolved/reserved for this importer: P35xx–P39xx, U3xxx, B3xxx and C3xxx. These identifiers may be retained only in the `unknown` quarantine namespace; they are rejected from both normalized generic and manufacturer-specific namespaces until exact current-standard assignments are verified.
+- P34xx-P39xx, U3xxx, B3xxx and C3xxx are rejected from both normalized generic and manufacturer-specific namespaces and may be retained only in the `unknown` quarantine namespace until exact current-standard assignments are verified.
 - A manufacturer-controlled range does not prove Volkswagen Group authorship. VAG-specific records still require a named VAG manufacturer, source-document revision, evidence locator, SHA-256, explicit rights for storage/display/redistribution, exact ECU/configuration applicability and independent technical review.
 
 ## Rights
@@ -31,6 +33,11 @@ The source register contains `sae-j2012-dtc-standard` as metadata-only. `permiss
 
 - The machine-readable contract is `data/policies/dtc-namespace-ranges.json`.
 - JSON Schema patterns, SQLite insert/update triggers, the Python validator, the Node overlap auditor and the desktop pre-transaction importer must match the same allowlists.
-- Regression tests reject P35xx–P39xx, U3xxx, B3xxx and C3xxx from both normalized generic and manufacturer-specific namespaces, including pre-transaction rollback.
-- The isolated OBDex research pack may retain its upstream U3xxx classification, but the local research lock explicitly prohibits promotion into the normalized product DTC index.
+- Regression tests reject P34xx-P39xx, U3xxx, B3xxx and C3xxx from both normalized generic and manufacturer-specific namespaces, including pre-transaction rollback.
+- The isolated OBDex research pack may retain upstream P34xx/U3xxx labels, but the local research lock explicitly prohibits promotion into normalized product DTC namespaces.
 - No DTC definition text, current SAE annex spreadsheet or restricted standard content is copied into the repository.
+
+
+## Correction — 2026-11-08
+
+This correction supersedes earlier statements in this report that all 155 P34xx rows were admitted to a normalized generic range. P3xxx is a mixed manufacturer-controlled / ISO-SAE-reserved family and the current licensed J2012DA_202607 allocation table has not been acquired. The pinned OBDex CC0 data may retain upstream labels in its isolated research pack, but all 155 P34xx rows are rejected from normalized generic and VAG-specific DTC namespaces pending exact current allocation evidence.
