@@ -652,7 +652,7 @@ def build(input_dir: Path, output_dir: Path) -> dict[str, Any]:
             "bundle_id": "vag-tech-pro-windows-offline-data-packs",
             "bundle_status": "verified_offline_data_packs_not_installer",
             "target_platform": "windows-x64",
-"database_count": 4,
+            "database_count": 4,
             "built_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_commit_sha": os.environ.get("GITHUB_SHA"),
             "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
