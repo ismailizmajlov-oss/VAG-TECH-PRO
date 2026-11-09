@@ -7371,6 +7371,100 @@
       "product_import_allowed": false,
       "source_snapshot_sha256": null,
       "hash_status": "not_available_no_database_bytes"
+    },
+    {
+      "source_id": "vag-hub-workshop-document-aggregator",
+      "publisher": "VAG-Hub / Workshop (independent, unaffiliated)",
+      "url": "https://www.vag-hub.com/",
+      "source_kind": "third_party_vag_workshop_document_aggregator",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "source_revision": "public_pages_reviewed_2026-11-09; no dataset-specific licence found",
+      "observed_claims": {
+        "content_categories": [
+          "VAG DTC tables",
+          "workshop and repair manuals",
+          "wiring diagrams",
+          "fuse and relay diagrams",
+          "ELSAWin service-information software",
+          "ETKA/ETOS parts-catalogue material",
+          "TPI reports",
+          "Dataflash/firmware downloads"
+        ],
+        "about_page": "The publisher says materials are compiled from publicly available sources and acknowledges that some information may have been edited or changed without its knowledge.",
+        "elsawin_page": "Describes ELSAWin as a dealer repair/service-information system and ETKA/ETOS as VAG parts catalogues; recommends purchasing original catalogues from Volkswagen AG for intended use.",
+        "dataflash_page": "Lists VAG firmware/Dataflash and TPI downloads and instructs users to delete downloaded files after reading.",
+        "dtc_page": "Displays decimal and hexadecimal legacy identifiers, OBD-II-shaped codes and Russian descriptions; no per-record primary-source citation or data licence was observed."
+      },
+      "rights": {
+        "data_license_status": "not_found_in_reviewed_pages",
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_granted",
+        "bulk_reuse_allowed": "not_granted",
+        "redistribution_allowed": false,
+        "permission_status": "not_cleared",
+        "underlying_oem_material_rights": "not_established",
+        "record_level_provenance": "not_documented_in_reviewed_pages",
+        "permission_required_before_product_use": true,
+        "site_claim_of_public_sources_is_not_a_data_license": true
+      },
+      "project_decision": "quarantined_no_import_no_display_no_cache_no_redistribution; do not copy, scrape, package or derive VAG TECH PRO records from this site, its DTC tables, manuals, wiring diagrams, TPI, ELSAWin/ETKA material or firmware downloads; require rights-holder evidence and written permission covering commercial use, offline caching, display and redistribution before any product use",
+      "applicability": {
+        "manufacturer_scope": [
+          "Volkswagen",
+          "Audi",
+          "SEAT",
+          "Skoda",
+          "VAG"
+        ],
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "unverified_web_reference_only",
+        "exact_vehicle_fitment": false,
+        "model_generation_year_fitment": false,
+        "engine_code_fitment": false,
+        "gearbox_code_fitment": false,
+        "engine_gearbox_pairing": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_fitment": false,
+        "diagnostic_execution_allowed": false,
+        "technical_review_status": "not_independently_reviewed"
+      },
+      "evidence_reviewed": [
+        {
+          "url": "https://www.vag-hub.com/about/",
+          "reviewed_at": "2026-11-09",
+          "observation": "Publisher describes a VAG technical-document collection and states that information is compiled from public sources; it also disclaims certainty that content has not been edited. No data-specific licence or rightsholder chain was provided."
+        },
+        {
+          "url": "https://www.vag-hub.com/vag-programs/elsawin/",
+          "reviewed_at": "2026-11-09",
+          "observation": "Page describes dealer service information, repair technology, wiring and parts-catalogue content and advises users to purchase original catalogues from Volkswagen AG."
+        },
+        {
+          "url": "https://www.vag-hub.com/vag-programs/dataflash-vag/",
+          "reviewed_at": "2026-11-09",
+          "observation": "Page lists firmware/Dataflash and TPI downloads and instructs users to delete downloaded files after reading; this is not a redistribution or offline-cache licence."
+        },
+        {
+          "url": "https://www.vag-hub.com/vw-audi-seat-skoda-dtc/",
+          "reviewed_at": "2026-11-09",
+          "observation": "A VAG-labelled DTC table is publicly visible, but no row-level source citations, source revisions or dataset reuse licence were observed."
+        }
+      ],
+      "limitations": [
+        "A website statement that files came from public sources does not prove the site operator has authority to license the underlying OEM material.",
+        "No per-record source URL, document revision, evidence locator or SHA-256 provenance was documented for the reviewed DTC table.",
+        "No rights for automated extraction, persistent SQLite storage, offline third-party display, commercial use or redistribution were established.",
+        "The DTC table mixes legacy decimal/hex identifiers and OBD-II-shaped codes; code shape alone does not establish VAG-specific namespace or ECU applicability.",
+        "The site does not establish exact model, generation, production-date, market, engine, gearbox, ECU or repair applicability."
+      ],
+      "verification_status": "quarantined_rights_unresolved",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null
     }
   ],
   "minimum_fitment_evidence_fields": [
