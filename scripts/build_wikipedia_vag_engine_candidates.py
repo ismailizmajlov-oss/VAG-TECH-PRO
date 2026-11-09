@@ -34,8 +34,8 @@ EXCLUDED = {
     "FWD", "RWD", "AWD", "4WD", "4MOTION", "QUATTRO", "VVT",
 }
 CODE_RE = re.compile(r"(?<![A-Z0-9])[A-Z0-9]{2,5}(?![A-Z0-9])")
-DECADE_RE = re.compile(r"^(?:19|20)\\d{2}S$", re.IGNORECASE)
-DISPLACEMENT_CODE_RE = re.compile(r"^\\s*\\d+(?:[.,]\\d+)?(?:\\s+[A-Za-z0-9]+){0,3}\\s*:\\s*(.+)$")
+DECADE_RE = re.compile(r"^(?:19|20)\d{2}S$", re.IGNORECASE)
+DISPLACEMENT_CODE_RE = re.compile(r"^\s*\d+(?:[.,]\d+)?(?:\s+[A-Za-z0-9]+){0,3}\s*:\s*(.+)$")
 LABEL_RE = re.compile(
     r"\b(?:engine\s+(?:id|identification)\s+codes?|engine\s+codes?|(?:id|identification)\s+codes?)\b",
     re.IGNORECASE,
