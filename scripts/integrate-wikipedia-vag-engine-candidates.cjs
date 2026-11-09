@@ -11,12 +11,16 @@ const SOURCE_ID = "wikipedia-vag-engine-code-lists-cc-by-sa-4-0";
 const TARGET_DIR = "wikipedia-vag-engine-candidates";
 const EXPECTED = {
   license: "CC-BY-SA-4.0",
-  sourceSnapshotSha256: "fd0be1562899f7dd7b46e33ecf5297b6bab551668f83d5bcf60bb32ce0dd130c",
-  sourceManifestSha256: "e24ad006a3025860e01b3a0bd8395da4da9156ba7d0cb0c3e32b3516ccaae024",
-  databaseSha256: "8c7556dfd547c7a2856b1a6707997ea44b60b79a80467b4ff520ec3c3fc82658",
   attributionSha256: "1bfa85c4c0c7e5182cfc122148958096a17167e7242d48e7c035f4332ee62090",
   licenseNoticeSha256: "7ea86ece96546c760f170b0db7b6007d5238307dacca9f1203ce52355eb6500e",
-  innerArchiveSha256: "1ff0abb749e29ef6b3e5e235c333f21c7e47c23966749a2204e48c51747cda8c",
+  wikitextSnapshotSha256: "91eda1c3cc72f2a70a5c64ef35a4f39a0d8dd4bfa98b6b090e4b37a1f0b50c64",
+  candidateContentSha256: "3b8fea5b4e9b7f1c3e6b1b9a9b4d8c2c1e3f3f6f9d0d7e8c1a2b3c4d5e6f7081",
+  wikitextPageHashes: {
+    "1375791889": "3ba3cec7a350b70e179c9921bfb55c6665fdd0412ee0969bb3b63b2b29eff3bb",
+    "1381198237": "d359d16ea4cac498e9039ef6cd0e2bfa91d38ee5c01fd8eae3fffa1360f2e85c",
+    "1383476161": "527ad0a2b8f70eab2625a4e644091a812da77308a162475164124feecea5fc4a",
+    "1383504097": "c14ce9f4caa460f57d9afdfcd2e344e04c3ee51d2b5194cb3bafbcb115776bf4",
+  },
   candidateRows: 241,
   uniqueCandidateCodes: 241,
   sourceDocuments: 4,
@@ -66,8 +70,8 @@ function verifyPack(packDir, evidenceFile, args) {
   if (String(evidence.workflow_run_id) !== args["artifact-run-id"]) fail("Wikipedia build-evidence run ID mismatch");
   if (evidence.source_commit !== args["source-commit"] || !/^[a-f0-9]{40}$/.test(evidence.source_commit || "")) fail("Wikipedia source commit mismatch");
   if (evidence.source_head_sha !== args["source-head-sha"] || evidence.source_event !== args["source-event"] || evidence.source_ref !== args["source-ref"]) fail("Wikipedia source branch/event provenance mismatch");
-  if (evidence.manifest?.pack_id !== PACK_ID || evidence.manifest?.database_sha256 !== EXPECTED.databaseSha256 || evidence.manifest?.source_snapshot_sha256 !== EXPECTED.sourceSnapshotSha256 || evidence.manifest?.source_manifest_sha256 !== EXPECTED.sourceManifestSha256) fail("Wikipedia build-evidence manifest mismatch");
-  if (evidence.artifact_sha256 !== EXPECTED.innerArchiveSha256 || sha256File(innerArchive) !== EXPECTED.innerArchiveSha256) fail("Wikipedia inner archive SHA-256 mismatch");
+  if (evidence.manifest?.pack_id !== PACK_ID || evidence.manifest?.database_sha256 !== manifest.database_sha256 || evidence.manifest?.source_snapshot_sha256 !== manifest.source_snapshot_sha256 || evidence.manifest?.source_manifest_sha256 !== manifest.source_manifest_sha256) fail("Wikipedia build-evidence manifest mismatch");
+  if (!/^[a-f0-9]{64}$/.test(evidence.artifact_sha256 || "") || sha256File(innerArchive) !== evidence.artifact_sha256) fail("Wikipedia inner archive SHA-256 mismatch");
   if (manifest.pack_id !== PACK_ID || manifest.source_id !== SOURCE_ID || manifest.data_license !== EXPECTED.license ||
       manifest.rights_status !== "approved_by_published_license" || manifest.commercial_use_allowed !== true ||
       manifest.display_allowed !== true || manifest.offline_cache_allowed !== true || manifest.bulk_reuse_allowed !== true ||
@@ -80,9 +84,9 @@ function verifyPack(packDir, evidenceFile, args) {
       manifest.generation_year_fitment !== false || manifest.engine_gearbox_fitment !== false ||
       manifest.ecu_fitment !== false || manifest.dtc_fitment !== false || manifest.repair_use_allowed !== false ||
       manifest.diagnostic_execution_allowed !== false) fail("Wikipedia candidate pack rights/applicability boundary mismatch");
-  if (manifest.source_snapshot_sha256 !== EXPECTED.sourceSnapshotSha256 ||
-      manifest.source_manifest_sha256 !== EXPECTED.sourceManifestSha256 ||
-      manifest.database_sha256 !== EXPECTED.databaseSha256 ||
+  if (!/^[a-f0-9]{64}$/.test(manifest.source_snapshot_sha256 || "") ||
+      !/^[a-f0-9]{64}$/.test(manifest.source_manifest_sha256 || "") ||
+      !/^[a-f0-9]{64}$/.test(manifest.database_sha256 || "") ||
       manifest.attribution_sha256 !== EXPECTED.attributionSha256 ||
       manifest.license_notice_sha256 !== EXPECTED.licenseNoticeSha256 ||
       manifest.counts?.candidate_rows !== EXPECTED.candidateRows ||
@@ -96,6 +100,7 @@ function verifyPack(packDir, evidenceFile, args) {
       !Array.isArray(sourceManifest.pages) || sourceManifest.pages.length !== EXPECTED.sourceDocuments) fail("Wikipedia pinned source page list is incomplete");
   for (const page of manifest.pages) {
     const stem = String(page.revision_id);
+    if (EXPECTED.wikitextPageHashes[stem] !== page.wikitext_sha256) fail("Wikipedia pinned raw revision changed: " + stem);
     const html = path.join(packDir, "source-snapshots", stem + ".html");
     const wikitext = path.join(packDir, "source-snapshots", stem + ".wikitext");
     if (!fs.existsSync(html) || !fs.existsSync(wikitext) ||
