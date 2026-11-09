@@ -51,7 +51,7 @@ class OttsBotRightsBoundaryTests(unittest.TestCase):
         item = next(s for s in source["sources"] if s["source_id"] == "otts-bot")
         self.assertIn("prohibits scraping/mass requests", " ".join(item["notes"]))
         self.assertIn("prohibits resale, publication or other distribution", " ".join(item["notes"]))
-        self.assertIn("underlying document rightsholders", " ".join(item["notes"]))
+        self.assertIn("respective rightsholders", " ".join(item["notes"]))
         self.assertEqual({e["url"] for e in item["terms_evidence_reviewed"]}, {
             "https://www.otts.bot/terms",
             "https://www.otts.bot/otts",
@@ -64,7 +64,7 @@ class OttsBotRightsBoundaryTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertIsNone(source["source_snapshot_sha256"])
         self.assertEqual(source["hash_status"], "terms_review_only_no_dataset_snapshot")
-        self.assertFalse(source["observed_counts"]["provider_displayed"] is False)
+        self.assertTrue(source["observed_counts"]["provider_displayed"])
         self.assertIn("not independently audited", source["observed_counts"]["limitation"])
 
 
