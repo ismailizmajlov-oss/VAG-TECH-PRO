@@ -411,6 +411,7 @@ def main() -> None:
         "scripts/patches/apply-dtc-research-range-quarantine-run91.cjs",
         "unresolved_ranges_quarantined=true",
         "production_import=false",
+        "policy_resource=app-runtime/data/policies",
     ):
         if required_run91_step not in run91_step:
             raise SystemExit(f"Run91 DTC quarantine workflow step is incomplete: {required_run91_step}")
