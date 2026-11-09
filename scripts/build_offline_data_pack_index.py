@@ -199,6 +199,9 @@ def inspect_obdex(root: Path) -> dict[str, Any]:
         raise ValueError(f"OBDex contains DTCs outside both the searchable and quarantined policy ranges: {unclassified_codes[:10]}")
     if len(searchable_codes) != expected_counts.get("searchable_generic_dtcs") or len(quarantined_codes) != expected_counts.get("quarantined_unresolved_namespace_rows"):
         raise ValueError("OBDex searchable/quarantined DTC counts differ from the pinned policy")
+    upstream_expected_counts = source_manifest.get("expected_counts", {})
+    if upstream_expected_counts.get("generic_dtcs") != dtc_count or upstream_expected_counts.get("searchable_generic_dtcs") != len(searchable_codes) or upstream_expected_counts.get("quarantined_unresolved_namespace_rows") != len(quarantined_codes) or upstream_expected_counts.get("pids_total") != pid_count:
+        raise ValueError("OBDex source manifest expected counts differ from the pinned source and display policy")
     if db.execute("SELECT count(*) FROM generic_pid_research WHERE vehicle_fitment_claim<>0").fetchone()[0]:
         raise ValueError("OBDex PID rows contain vehicle-fitment claims")
     if db.execute("SELECT count(*) FROM source_registry WHERE license_id<>'CC0-1.0' OR verification_status<>'license_verified_research_only'").fetchone()[0]:
