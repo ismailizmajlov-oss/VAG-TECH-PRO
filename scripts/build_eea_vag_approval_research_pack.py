@@ -30,6 +30,10 @@ MAX_ROWS_PER_TABLE = 250000
 MAX_RESPONSE_BYTES = 25 * 1024 * 1024
 MAX_PAGES = math.ceil(MAX_ROWS_PER_TABLE / PAGE_SIZE)
 USER_AGENT = "VAG-TECH-PRO-EEA-Research-Pack/1.0 (rights-reviewed CC-BY-4.0 source; contact via repository)"
+ATTRIBUTION_TEXT = ("European Environment Agency (EEA), Directorate-General for Climate Action (DG-CLIMA), "
+    "Monitoring of CO2 emissions from passenger cars, 2024 Final and 2025 Provisional; "
+    "CC BY 4.0. Retrieved 2026-11-10. Modified by filtering to exact core VAG make labels, "
+    "normalizing selected fields and adding provenance/applicability metadata. No EEA endorsement implied.")
 
 TABLES = [
     {
@@ -289,6 +293,7 @@ def build_database(
     CREATE TABLE source_tables(
       table_id TEXT PRIMARY KEY,
       sql_table TEXT NOT NULL,
+      metadata_url TEXT NOT NULL,
       source_revision TEXT NOT NULL,
       registration_year INTEGER NOT NULL,
       data_status TEXT NOT NULL CHECK(data_status IN ('F','P')),
@@ -352,12 +357,7 @@ def build_database(
     CREATE INDEX idx_eea_brand_year ON approval_variants(brand_key,registration_year,data_status);
     CREATE INDEX idx_eea_approval_variant ON approval_variants(type_approval_number_raw,variant_raw,version_raw);
     """)
-    attribution = (
-        "European Environment Agency (EEA), Directorate-General for Climate Action (DG-CLIMA), "
-        "Monitoring of CO2 emissions from passenger cars, 2024 Final and 2025 Provisional; "
-        "CC BY 4.0. Retrieved 2026-11-10. Modified by filtering to exact core VAG make labels, "
-        "normalizing selected fields, and adding provenance/applicability metadata. No EEA endorsement implied."
-    )
+    attribution = ATTRIBUTION_TEXT
     revision = ";".join(result["table"]["revision"] for result in table_results)
     rights = source["rights"]
     try:
@@ -379,9 +379,9 @@ def build_database(
             for result in table_results:
                 table = result["table"]
                 db.execute(
-                    "INSERT INTO source_tables VALUES(?,?,?,?,?,?,?)",
+                    "INSERT INTO source_tables VALUES(?,?,?,?,?,?,?,?)",
                     (
-                        table["table_id"], table["sql_name"], table["revision"], table["year"], table["status"],
+                        table["table_id"], table["sql_name"], table["metadata_url"], table["revision"], table["year"], table["status"],
                         result["total_rows"], result["query_sha256"],
                     ),
                 )
@@ -499,8 +499,9 @@ def build_pack(source_manifest: Path, out_dir: Path) -> dict[str, Any]:
         "pack_id": PACK_ID,
         "source_id": SOURCE_ID,
         "publisher": PUBLISHER,
+        "source_url": source["source_url"],
         "license": {"id": LICENSE_ID, "url": LICENSE_URL, "commercial_use_allowed": True, "offline_cache_allowed": True, "redistribution_allowed": True, "attribution_required": True},
-        "attribution": "European Environment Agency (EEA), Directorate-General for Climate Action (DG-CLIMA), Monitoring of CO2 emissions from passenger cars, 2024 Final and 2025 Provisional, CC BY 4.0. Retrieved 2026-11-10. Modified: filtered to exact core VAG make labels and normalized into a separate research SQLite. No EEA endorsement implied.",
+        "attribution": ATTRIBUTION_TEXT,
         "market_scope": ["EU-27", "IS", "NO"],
         "source_manifest_sha256": source_manifest_sha,
         "filtered_snapshot_sha256": snapshot_sha,
@@ -510,7 +511,7 @@ def build_pack(source_manifest: Path, out_dir: Path) -> dict[str, Any]:
         "source_tables": [
             {
                 "table_id": r["table"]["table_id"], "sql_name": r["table"]["sql_name"],
-                "source_revision": r["table"]["revision"], "registration_year": r["table"]["year"],
+                "metadata_url": r["table"]["metadata_url"], "source_revision": r["table"]["revision"], "registration_year": r["table"]["year"],
                 "data_status": r["table"]["status"], "rows": r["total_rows"],
                 "recognized_raw_make_labels": r.get("recognized_labels", []),
                 "all_raw_make_label_count": len(make_labels[r["table"]["table_id"]]),
