@@ -3472,35 +3472,45 @@
       "url": "https://www.otts.bot/",
       "terms_url": "https://www.otts.bot/terms",
       "source_kind": "commercial_aggregated_ru_eaeu_vehicle_compliance_database",
-      "source_revision": "published_user_agreement_last_updated_2026-08-26; reviewed_2026-11-05",
+      "source_revision": "published_user_agreement_last_updated_2026-08-26; homepage_and_OTTS_page_reviewed_2026-11-09",
       "market_scope": [
         "RU",
         "EAEU"
       ],
       "provider_displayed_counts": {
-        "observed_at": "2026-11-05",
+        "observed_at": "2026-11-09",
         "ot_ts_records": 74115,
         "sbkts_records": 224744,
         "otsh_records": 1655,
-        "independently_audited": false
+        "marketing_headline": "46,000+ OTTS",
+        "count_discrepancy": "The /otts page headline says 46,000+ while its rendered result counter says 74,115; not reconciled.",
+        "independently_audited": false,
+        "limitation": "Dynamic provider-displayed UI counts only; not an audited snapshot, export, licence or evidence of VAG rows."
       },
       "access": {
-        "public_search": "free",
-        "one_document_download": "500 RUB per document",
+        "public_search": "free ordinary web search",
+        "one_document_download": "500 RUB per document advertised; own-use terms apply; no document purchased",
         "subscription_advertised": "990 RUB for 3 days to 29900 RUB per year",
         "project_access_used": false,
-        "paid_terms_accepted": false
+        "paid_terms_accepted": false,
+        "automated_queries_used": false,
+        "bulk_export_observed": false
       },
       "rights": {
         "dataset_license": "not_granted",
         "commercial_use_allowed": "not_confirmed",
         "third_party_display_allowed": false,
-        "offline_cache_allowed": "not_confirmed_for_distribution",
+        "offline_cache_allowed": false,
         "automated_collection": "prohibited_beyond_ordinary_user_scenario_without_separate_written_permission",
         "bulk_export": "not_authorized",
         "redistribution": "prohibited_under_published_user_agreement_clause_3",
-        "underlying_document_rights": "belong_to_respective_rightsholders",
-        "permission_status": "not_cleared"
+        "underlying_document_rights": "belong_to_respective_rightsholders; operator expressly does not claim ownership of document content",
+        "permission_status": "not_cleared",
+        "database_structure_and_site_text_rights": "operator_owned; use outside ordinary site viewing requires written consent under clause 5",
+        "partner_program_grant_scope": "partner grants placement/reproduction/site-delivery rights to the operator only; contributor warranty does not grant VAG TECH PRO rights",
+        "written_permission_obtained": false,
+        "review_date": "2026-11-09",
+        "agreement_last_updated": "2026-08-26"
       },
       "applicability": {
         "exact_factory_engine_code": false,
@@ -3512,18 +3522,38 @@
         "applicability_precision": "document_metadata_only_pending_primary_document_review"
       },
       "limitations": [
-        "The provider-displayed record counts are dynamic and not independently audited.",
-        "Free search does not grant a dataset licence or permission for automated collection, persistent offline caching, third-party display or redistribution.",
-        "The User Agreement prohibits automated collection/scraping and mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of database information and documents as a proprietary information product.",
-        "The operator states that rights to the underlying documents belong to their respective rightsholders.",
-        "No exact factory engine code, gearbox code, engine/gearbox pairing, ECU mapping or repair applicability was established from the public interface.",
-        "The provider advertises paid document downloads and subscriptions; the project did not create an account, subscribe, pay, query automatically or download records."
+        "The provider-displayed 74,115 OTTS counter conflicts with the same page's 46,000+ headline; the discrepancy is unresolved and neither number is independently audited.",
+        "Free search is limited to ordinary website use; clause 3 prohibits scraping/mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of documents and database information as a proprietary information product.",
+        "Clause 5 reserves the website, database structure and site text to the operator; rights to the underlying approval documents remain with their respective rightsholders.",
+        "The partner programme gives the operator document-placement and delivery rights from contributors who warrant their own rights; it does not grant VAG TECH PRO a sublicense or redistribution permission.",
+        "A paid individual document is provided for the user's own use; no right to cache it in a redistributed offline product or display it to third parties is established.",
+        "The UI exposes document metadata filters but does not establish exact factory engine codes, gearbox codes, an engine/gearbox pair, ECU mapping or repair applicability.",
+        "The technical-characteristics and engine sections are shown as not yet populated; no such dataset was inspected or acquired.",
+        "No account, subscription, payment, automated request, download, cache or import was used; no source-file SHA-256 exists."
       ],
-      "project_decision": "restricted_no_automated_collection_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_covering_bulk_reuse_display_caching_and_redistribution",
+      "project_decision": "restricted_no_automated_collection_beyond_ordinary_use_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "homepage_and_user_agreement_reviewed_2026-11-05; agreement_last_updated_2026-08-26",
-      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-05.md"
+      "evidence_status": "homepage_OTTS_page_and_user_agreement_reviewed_2026-11-09; agreement_last_updated_2026-08-26",
+      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-09.md",
+      "evidence_reviewed": [
+        {
+          "url": "https://www.otts.bot/terms",
+          "reviewed_at": "2026-11-09",
+          "observation": "Published User Agreement last updated 2026-08-26. Clause 3 allows ordinary free search but prohibits scraping/mass requests beyond ordinary user scenarios and resale, publication or other distribution of documents/database information as a proprietary information product. Clauses 4.3-4.4 place rights warranties on contributors and grant document-placement/use rights to the operator only. Clause 5 reserves site/database structure and text to the operator and states that underlying document rights belong to their respective rightsholders."
+        },
+        {
+          "url": "https://www.otts.bot/otts",
+          "reviewed_at": "2026-11-09",
+          "observation": "Public page advertises free search and one-off document delivery for 500 RUB. The page headline says 46,000+ approvals while the rendered result counter says 74,115; the discrepancy is not reconciled and neither figure is an independently audited export."
+        },
+        {
+          "url": "https://www.otts.bot/",
+          "reviewed_at": "2026-11-09",
+          "observation": "Homepage displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records, and describes technical-characteristics/engine sections as not yet populated. Counts are provider UI metadata only."
+        }
+      ],
+      "product_import_allowed": false
     },
     {
       "source_id": "openvag-riz4d-dtc-candidate",
