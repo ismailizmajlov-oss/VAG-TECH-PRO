@@ -377,6 +377,7 @@ def build_database(output: Path, pages: list[dict[str, object]], source_manifest
     db_path = output / "wikipedia-vag-engine-candidates.sqlite"
     connection = sqlite3.connect(db_path)
     try:
+        connection.execute("PRAGMA user_version=2")
         connection.execute("PRAGMA foreign_keys=ON")
         connection.execute("PRAGMA journal_mode=DELETE")
         connection.execute("PRAGMA synchronous=FULL")
@@ -604,6 +605,13 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
         "review_status": "candidate",
         "quality_review_status": "not_approved_for_technical_use",
         "quality_warnings": source["quality_review"]["blocking_warnings"],
+        "extraction_policy": {
+            "definition_list_rule": "Extract only dd values containing an explicit ID code: or engine ID code: label.",
+            "table_rule": "Extract only table cells under explicit engine ID/code headers.",
+            "excluded_table_classes": ["navbox", "navbox-inner", "wraplinks"],
+            "candidate_normalization": "Uppercase alphanumeric tokens of 2-5 characters; known engine-family, transmission, market and emissions annotation tokens are excluded.",
+            "candidate_only": True,
+        },
         "source_snapshot_sha256": snapshot_sha,
         "pages": [
             {
@@ -659,7 +667,7 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
     attribution_lines += [
         "",
         f"License: [Creative Commons Attribution-ShareAlike 4.0 International]({LICENSE_URL}).",
-        "Changes made by VAG TECH PRO: extraction of rows explicitly labelled as engine ID/code fields, token normalization, source-row hashing and SQLite packaging.",
+        "Changes made by VAG TECH PRO: extraction of explicit ID-code values from article definition lists and explicit engine-ID table columns; navigation-box tables are excluded; token normalization, source-row hashing and SQLite packaging.",
         "Market scope is UNKNOWN. All values are unverified community candidates. No model, generation, year, engine/gearbox pair, ECU, DTC, repair procedure or diagnostic applicability is established.",
         "The candidate database is kept separate and must remain under CC BY-SA 4.0 with attribution and ShareAlike notices.",
     ]
@@ -715,6 +723,13 @@ def build_pack(source: dict[str, object], output: Path) -> dict[str, object]:
         "counts": counts,
         "pages": source_manifest["pages"],
         "quality_warnings": source_manifest["quality_warnings"],
+        "extraction_policy": {
+            "definition_list_rule": "Extract only dd values containing an explicit ID code: or engine ID code: label.",
+            "table_rule": "Extract only table cells under explicit engine ID/code headers.",
+            "excluded_table_classes": ["navbox", "navbox-inner", "wraplinks"],
+            "candidate_normalization": "Uppercase alphanumeric tokens of 2-5 characters; known engine-family, transmission, market and emissions annotation tokens are excluded.",
+            "candidate_only": True,
+        },
     }
     manifest_path = output / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
