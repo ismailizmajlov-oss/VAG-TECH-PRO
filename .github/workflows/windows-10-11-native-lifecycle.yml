@@ -9,7 +9,7 @@ name: VAG TECH PRO native Windows 10/11 x64 lifecycle validation
 on:
   workflow_run:
     workflows:
-      - VAG TECH PRO Windows x64 desktop validation run71
+      - VAG TECH PRO Windows x64 desktop validation run87
     branches:
       - main
     types:
@@ -195,7 +195,7 @@ jobs:
           $record = [ordered]@{
             schema_version = 1
             recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-            upstream_workflow = "VAG TECH PRO Windows x64 desktop validation run71"
+            upstream_workflow = "VAG TECH PRO Windows x64 desktop validation run87"
             run_id = [long]$env:UPSTREAM_RUN_ID
             run_number = [int]$env:UPSTREAM_RUN_NUMBER
             run_attempt = [int]$env:UPSTREAM_RUN_ATTEMPT
