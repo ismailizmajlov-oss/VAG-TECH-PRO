@@ -38,7 +38,7 @@ The 9,204 generic-range count is derived from the pinned SQLite: P0xxx 3,705; P2
 
 - Classify each OBDex DTC against the canonical local namespace policy, not only the upstream namespace label.
 - Preserve the upstream namespace label separately as provenance.
-- Show generic-range rows as GENERIC SAE/ISO RANGE / RESEARCH ONLY.
+- Show generic-range rows as GENERIC SAE/ISO OBD-II / RESEARCH ONLY.
 - Show unresolved/reserved, manufacturer-controlled and unknown ranges as DTC RANGE QUARANTINE / QUARANTINE.
 - Label OBDex titles, categories, descriptions, components and possible causes as unverified source content.
 - Suppress source-provided component/cause lists for quarantined rows.
@@ -54,7 +54,7 @@ The Windows pull-request workflow must verify the same classification at the pol
 
 | Test input | Expected namespace | Expected UI state | Permitted use |
 |---|---|---|---|
-| P0xxx, P2xxx, B0xxx, C0xxx, U0xxx | `generic_sae_iso_obd2` | `GENERIC SAE/ISO RANGE` / `RESEARCH ONLY` | Read-only generic reference; no vehicle/ECU fitment |
+| P0xxx, P2xxx, B0xxx, C0xxx, U0xxx | `generic_sae_iso_obd2` | `GENERIC SAE/ISO OBD-II` / `RESEARCH ONLY` | Read-only generic reference; no vehicle/ECU fitment |
 | P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx, U1xxx–U2xxx | `manufacturer_controlled_candidate` | `DTC RANGE QUARANTINE` / `QUARANTINE` | Unattributed manufacturer-controlled research only; never infer VAG authorship |
 | P34xx–P39xx, U3xxx, B3xxx, C3xxx | `unknown_reserved` | `DTC RANGE QUARANTINE` / `QUARANTINE` | Retain source row for audit only; suppress source component/cause/symptom lists |
 | Malformed or unclassified identifier | `unknown` | `DTC RANGE QUARANTINE` / `QUARANTINE` | No normalized DTC lookup or diagnostic execution |
