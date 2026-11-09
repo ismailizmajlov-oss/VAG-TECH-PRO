@@ -742,46 +742,52 @@
         "RU",
         "EAEU"
       ],
-      "terms_revision": "last_updated_2026-08-26; reviewed_2026-11-05",
+      "terms_revision": "last_updated_2026-08-26; homepage_OTTS_page_and_terms_reviewed_2026-11-09",
       "license": {
         "identifier": null,
         "dataset_license": "not_granted",
         "commercial_use": "not_confirmed",
         "display": "not_authorized_as_a_third_party_proprietary_catalogue_under_published_terms",
-        "offline_cache": "not_confirmed_for_distribution",
-        "automated_extraction": "prohibited_beyond_ordinary_user_scenario_without_separate_written_permission",
+        "offline_cache": "not_authorized_for_vag_tech_pro_distribution",
+        "automated_extraction": "prohibited_for_scraping_or_mass_requests_beyond_ordinary_user_scenario_without_separate_written_permission",
         "bulk_export": "not_authorized",
         "redistribution": "prohibited_under_published_user_agreement_clause_3",
-        "underlying_document_rights": "belong_to_their_respective_rightsholders; operator_disclaims_ownership_of_document_content",
-        "permission_status": "not_cleared"
+        "underlying_document_rights": "belong_to_respective_rightsholders; operator disclaims ownership of document content",
+        "permission_status": "not_cleared",
+        "database_structure_and_site_text_rights": "operator-owned; use outside ordinary site viewing requires written consent under clause 5",
+        "partner_program_grant_scope": "partner grants rights to the operator only; no sublicense to VAG TECH PRO",
+        "written_permission_obtained": false
       },
       "status": "restricted_no_automated_collection_or_redistribution_without_written_permission",
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "hash_status": "terms_review_only_no_dataset_snapshot",
       "notes": [
-        "The homepage displayed 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records on 2026-11-05; these are provider-displayed live counts, not an independently audited dataset.",
-        "The public page advertises free search, one-off PDF delivery for 500 RUB and subscriptions from 990 RUB for 3 days to 29,900 RUB per year; no paid access or terms were accepted.",
-        "Published User Agreement, last updated 2026-08-26, clause 3 prohibits automated collection/scraping or mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of obtained documents and database information as a proprietary information product.",
-        "Clause 5 states that the database structure and website content belong to the operator while rights to the documents themselves belong to their respective rightsholders.",
-        "The partner programme grants placement/use rights to the operator from a contributor who warrants their own rights; it does not grant VAG TECH PRO any reuse rights.",
-        "The public page's engine and technical-characteristics sections are described as not yet populated; no exact factory engine code, gearbox code, pairing, ECU or repair applicability was established.",
-        "No account, subscription, payment, automated request, download, cache or import was used.",
-        "Do not scrape, bulk-query, cache, display or redistribute this aggregator's records or documents in VAG TECH PRO without separate written permission expressly covering each intended use."
+        "The 2026-11-09 /otts page renders a result counter of 74,115 OTTS while its headline says 46,000+; the homepage also displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH. These are dynamic provider UI counts, not an independently audited dataset or an authorized export.",
+        "The public page advertises free ordinary search, one-off PDF delivery for 500 RUB and subscriptions from 990 RUB for 3 days to 29,900 RUB per year; no paid access, account or terms were used.",
+        "Published User Agreement, last updated 2026-08-26, clause 3 prohibits scraping/mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of documents and database information as a proprietary information product.",
+        "Clauses 4.3-4.4 require contributors to warrant their own rights and grant document placement/reproduction/delivery rights to the operator only; they do not grant VAG TECH PRO reuse rights.",
+        "Clause 5 reserves the website, database structure and site text to the operator while rights to the underlying documents remain with their respective rightsholders.",
+        "The public UI exposes approval number, make, commercial name, vehicle type, category, environmental class, modifications, chassis, VIN, applicant and manufacturer filters, but no exact VAG engine code, gearbox code, pair, ECU or repair applicability was established.",
+        "The public technical-characteristics and engine sections are described as not yet populated; no technical-characteristics or engine dataset was inspected or acquired.",
+        "No account, subscription, payment, automated request, document download, cache or import was used; no source-file SHA-256 is claimed.",
+        "Do not scrape, bulk-query, cache, display or redistribute this aggregator's records or documents in VAG TECH PRO without separate written permission from the operator and relevant underlying document rightsholders."
       ],
       "observed_counts": {
-        "observed_at": "2026-11-05",
+        "observed_at": "2026-11-09",
         "provider_displayed": true,
         "ot_ts_records": 74115,
         "sbkts_records": 224744,
         "otsh_records": 1655,
-        "limitation": "Provider-displayed live counts only; not independently audited and not a rights-cleared export."
+        "marketing_headline": "46,000+ OTTS",
+        "count_discrepancy": "The /otts page headline says 46,000+ while its rendered result counter says 74,115; not reconciled.",
+        "limitation": "Provider-displayed live UI counts only; not independently audited and not a rights-cleared export."
       },
       "access": {
-        "search": "free public web search",
-        "one_document_download": "500 RUB per document; provider page states registration is not required for one-off download",
+        "search": "free ordinary public web search",
+        "one_document_download": "500 RUB per document advertised; own-use terms apply; no document purchased",
         "subscription": "provider page lists plans from 990 RUB for 3 days to 29900 RUB per year",
-        "regular_database_access": "paid subscription tiers advertised",
+        "regular_database_access": "paid subscription tiers advertised; no bulk export permission",
         "project_use": "no account, subscription, API key, payment, automated query or download used"
       },
       "technical_scope": {
@@ -804,7 +810,25 @@
         "ecu_dtc_or_repair_applicability": "not_established",
         "exact_vehicle_fitment": false,
         "applicability_precision": "aggregator_document_metadata_only_until_each_primary_document_is_independently_reviewed"
-      }
+      },
+      "terms_evidence_reviewed": [
+        {
+          "url": "https://www.otts.bot/terms",
+          "reviewed_at": "2026-11-09",
+          "observation": "Published User Agreement last updated 2026-08-26. Clause 3 allows ordinary free search but prohibits scraping/mass requests beyond ordinary user scenarios and resale, publication or other distribution of documents/database information as a proprietary information product. Clauses 4.3-4.4 place rights warranties on contributors and grant document-placement/use rights to the operator only. Clause 5 reserves site/database structure and text to the operator and states that underlying document rights belong to their respective rightsholders."
+        },
+        {
+          "url": "https://www.otts.bot/otts",
+          "reviewed_at": "2026-11-09",
+          "observation": "Public page advertises free search and one-off document delivery for 500 RUB. The page headline says 46,000+ approvals while the rendered result counter says 74,115; the discrepancy is not reconciled and neither figure is an independently audited export."
+        },
+        {
+          "url": "https://www.otts.bot/",
+          "reviewed_at": "2026-11-09",
+          "observation": "Homepage displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records, and describes technical-characteristics/engine sections as not yet populated. Counts are provider UI metadata only."
+        }
+      ],
+      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-09.md"
     },
     {
       "source_id": "otts-baza-ru",
