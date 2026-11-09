@@ -39,7 +39,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
             <tr><td>AGB, AZB</td><td>195 kW</td></tr>
           </table>
           <h3>VR6 timeline</h3>
-          <table>
+          <table class="navbox">
             <tr><th>cylinders &amp; valves</th><th>displacement &amp; ID code(s)</th><td>1990s</td><td>2000s</td><td>2010s</td></tr>
             <tr><td>2.8 : AAA</td><td></td><td>Passat B3</td><td></td><td></td></tr>
             <tr><td>2.9 : ABV</td><td></td><td>Corrado</td><td></td><td></td></tr>
@@ -50,17 +50,49 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
         rows, rows_seen = parse_engine_code_candidates(html)
         codes = [code for row in rows for code in row["candidate_codes"]]
         self.assertGreaterEqual(rows_seen, 5)
-        self.assertEqual(codes, ["CAXA", "CAVD", "AEE", "2G", "3F", "AGB", "AZB", "AGB", "AZB", "AAA", "ABV"])
+        self.assertEqual(codes, ["CAXA", "CAVD", "AEE", "2G", "3F", "AGB", "AZB", "AGB", "AZB"])
         self.assertEqual(rows[0]["section_heading"], "1.8 litre petrol engine")
         self.assertEqual(rows[1]["section_heading"], "1.8 litre petrol engine")
         self.assertEqual(rows[2]["section_heading"], "Another engine")
-        self.assertEqual(rows[3]["section_heading"], "VR6 timeline")
-        self.assertEqual(rows[4]["section_heading"], "VR6 timeline")
+        self.assertTrue(all(row["source_row_kind"] == "table_row" for row in rows))
         self.assertTrue(all("Gearbox" not in row["source_row_text"] for row in rows))
         self.assertNotIn("1990S", codes)
         self.assertNotIn("2000S", codes)
         self.assertNotIn("2010S", codes)
         self.assertNotIn("BORA", codes)
+
+
+    def test_parser_extracts_explicit_definition_list_codes_and_ignores_navboxes(self):
+        html = """
+        <html><body>
+          <h2>1.9 R4 TDI</h2>
+          <dl>
+            <dt>identification</dt>
+            <dd>parts code prefix: 03G; engine ID codes: CFFB, CFGB, EU5</dd>
+          </dl>
+          <h3>2.0 R4 TSI</h3>
+          <dl>
+            <dt>identification</dt>
+            <dd>parts code prefix: 06H; ID codes: CAEA, CAEB, CAWA</dd>
+            <dt>applications</dt>
+            <dd>Volkswagen Passat and Audi A4</dd>
+          </dl>
+          <table class="navbox mw-collapsible">
+            <tr><th>displacement &amp; ID code(s)</th><td>1990s</td></tr>
+            <tr><td>2.0 : CFFB</td><td>Golf</td></tr>
+          </table>
+        </body></html>
+        """
+        rows, rows_seen = parse_engine_code_candidates(html)
+        self.assertEqual(
+            [code for row in rows for code in row["candidate_codes"]],
+            ["CFFB", "CFGB", "CAEA", "CAEB", "CAWA"],
+        )
+        self.assertEqual([row["section_heading"] for row in rows], ["1.9 R4 TDI", "2.0 R4 TSI"])
+        self.assertEqual([row["source_row_kind"] for row in rows], ["definition_list", "definition_list"])
+        self.assertIn("identification", rows[0]["source_row_text"])
+        self.assertNotIn("EU5", [code for row in rows for code in row["candidate_codes"]])
+        self.assertGreaterEqual(rows_seen, 7)
 
     def test_source_register_requires_pinned_revisions_and_sharealike_rights(self):
         source = {
@@ -102,6 +134,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
                 "quality_warnings": ["community source"],
                 "candidate_rows": [{
                     "section_heading": "1.8 litre petrol engine",
+                    "source_row_kind": "definition_list",
                     "source_row_number": 12,
                     "source_row_text": "Engine ID codes | CAXA, CAVD",
                     "candidate_value_text": "CAXA, CAVD",
