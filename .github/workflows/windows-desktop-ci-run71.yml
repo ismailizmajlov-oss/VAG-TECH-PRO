@@ -2424,7 +2424,7 @@ jobs:
         if: success() && hashFiles('eea-vag-approval-pack/pack-manifest.json') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: eea-vag-type-approval-variants-${"$"}{{ github.run_id }}
+          name: eea-vag-type-approval-variants-${{ github.run_id }}
           path: eea-vag-approval-pack/**
           if-no-files-found: error
           retention-days: 30
