@@ -176,8 +176,8 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
         self.assertEqual(source["data_counts_as_published"]["vag_specific_dtc_rows"], 0)
         self.assertEqual(source["data_counts_as_published"]["production_rows"], 0)
-        self.assertEqual(source["data_counts_as_published"]["searchable_generic_dtc_rows"], 9204)
-        self.assertEqual(source["data_counts_as_published"]["unresolved_reserved_quarantined_rows"], 329)
+        self.assertEqual(source["data_counts_as_published"]["expected_searchable_generic_dtc_rows_after_namespace_policy"], 9204)
+        self.assertEqual(source["data_counts_as_published"]["expected_unresolved_reserved_quarantined_rows"], 329)
         self.assertFalse(source["rights"]["source_reference_policy"]["external_fetch"])
         self.assertTrue(source["rights"]["source_references_quarantined"])
 
