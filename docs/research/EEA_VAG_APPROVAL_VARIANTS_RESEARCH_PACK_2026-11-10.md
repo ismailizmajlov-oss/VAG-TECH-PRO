@@ -52,6 +52,8 @@ The workflow artifact's \`pack-manifest.json\` is the authoritative record of ac
 
 ## Live acquisition status
 
-The first documented SQL API probe from the GitHub-hosted Windows Server 2025 runner returned HTTP 403 while requesting distinct raw make labels from the pinned 2024 final table. The response body was not captured, no dataset bytes were received, and no dataset SHA-256 or row count is claimed. The source register records the attempt. The builder now retries with standard Discodata origin/referer headers and records any returned 403 response body for diagnosis. If access remains denied, the pipeline must stop and use only an EEA-supported export or access clarification; it must not switch to undocumented endpoints or circumvent the restriction.
+Two documented SQL API attempts from the GitHub-hosted Windows Server 2025 runner returned HTTP 403 while requesting the distinct raw make labels from the pinned 2024 final table. The second response identified a generic `Microsoft-Azure-Application-Gateway/v2` 403 page. The gateway did not return a reason code. No dataset bytes were received, and no dataset SHA-256 or VAG row count is claimed. Both attempts are recorded in the source register.
+
+The hosted-runner acquisition has therefore been removed from the normal desktop lifecycle so a source-network restriction cannot make the product build appear broken. The research-pack tests remain in Windows CI. Live acquisition is manual and requires an owner-provided Windows self-hosted runner on a network with authorized EEA access, or an EEA-supported official export. The workflow must not bypass the gateway or switch to undocumented endpoints.
 
 The resulting pack must remain in the research namespace. It must not be imported into the production vehicle catalog or used to confirm repair applicability.
