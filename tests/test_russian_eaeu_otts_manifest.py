@@ -305,10 +305,11 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
         self.assertEqual(source["license"]["bulk_export"], "not_confirmed")
         self.assertEqual(source["access_and_reuse"]["automated_extraction"], "not_established")
-        self.assertEqual(source["applicability"]["market_scope"], "Kyrgyz national register; EAEU TR TS 018/2011 context")
-        self.assertFalse(source["applicability"]["exact_vag_vehicle_fitment"])
-        self.assertFalse(source["applicability"]["engine_gearbox_pairing"])
-        self.assertFalse(source["applicability"]["ecu_dtc_repair_applicability"])
+        self.assertEqual(source["market_scope"], ["KG", "EAEU_TR_TS_018_2011"])
+        self.assertEqual(source["applicability_precision"], "type_approval_document_metadata_only")
+        self.assertNotIn("exact_vag_vehicle_fitment", latest)
+        self.assertNotIn("engine_gearbox_pairing", latest)
+        self.assertNotIn("ecu_dtc_repair_applicability", latest)
 
 
 if __name__ == "__main__":
