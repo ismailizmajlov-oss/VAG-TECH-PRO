@@ -307,7 +307,7 @@ function sync(packRootArg, researchRootArg) {
     bundle_run_id: String(index.workflow_run_id),
     source_commit_sha: index.source_commit_sha,
     database_count: index.database_count,
-    packs: required.map((id) => ({ id, database_sha256: rootManifest.packs.find((item) => item.id === id).database_sha256 }))
+    packs: index.packs.map((item) => ({ id: item.pack_id, database_sha256: item.database_sha256, license: item.license, status: item.status, market_scope: item.market_scope, applicability_precision: item.applicability_precision }))
   };
 }
 
