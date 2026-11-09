@@ -6,12 +6,16 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci-run71.yml"
       - ".github/workflows/validate-russian-eaeu-otts-source-gates.yml"
+      - ".github/workflows/windows-10-11-native-lifecycle.yml"
+      - "tests/test_native_windows_workflow_trigger.py"
       - ".github/workflows/validate-desktop-workflow-syntax-run1.yml"
       - "scripts/validate_workflow_yaml.py"
   pull_request:
     paths:
       - ".github/workflows/windows-desktop-ci-run71.yml"
       - ".github/workflows/validate-russian-eaeu-otts-source-gates.yml"
+      - ".github/workflows/windows-10-11-native-lifecycle.yml"
+      - "tests/test_native_windows_workflow_trigger.py"
       - ".github/workflows/validate-desktop-workflow-syntax-run1.yml"
       - "scripts/validate_workflow_yaml.py"
   workflow_dispatch:
@@ -32,6 +36,9 @@ jobs:
       - name: Install pinned YAML parser
         shell: pwsh
         run: python -m pip install --disable-pip-version-check PyYAML==6.0.3
-      - name: Parse Windows desktop and Russian/EAEU source workflows
+      - name: Parse Windows desktop, native client and Russian/EAEU source workflows
         shell: pwsh
-        run: python scripts/validate_workflow_yaml.py .github/workflows/windows-desktop-ci-run71.yml .github/workflows/validate-russian-eaeu-otts-source-gates.yml
+        run: python scripts/validate_workflow_yaml.py .github/workflows/windows-desktop-ci-run71.yml .github/workflows/validate-russian-eaeu-otts-source-gates.yml .github/workflows/windows-10-11-native-lifecycle.yml
+      - name: Validate native Windows 10/11 workflow trigger binding
+        shell: pwsh
+        run: python tests/test_native_windows_workflow_trigger.py
