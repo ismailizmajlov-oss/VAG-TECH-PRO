@@ -101,6 +101,7 @@ jobs:
             license_sha256 = (Get-FileHash -Path (Join-Path $generatedRoot "UPSTREAM-LICENSE.txt") -Algorithm SHA256).Hash.ToLowerInvariant()
             scope = $lock.scope
             source_reference_policy = $lock.source_reference_policy
+            normalization_policy = $lock.normalization_policy
             source_files = $sourceFiles
             build = $lock.build
             expected_counts = $lock.expected_counts
@@ -137,11 +138,22 @@ jobs:
           ) {
             throw new Error("OBDex source lock code-range policy mismatch");
           }
-          const allowedPrefixes = new Set(["P0","P2","B0","C0","U0","U3"]);
-          const p3GenericCode = /^P34[0-9A-F]{2}$/;
-          const isGenericDtc = (code) =>
+          const upstreamAllowedPrefixes = new Set(["P0","P2","B0","C0","U0","U3"]);
+          const p34UpstreamLabel = /^P34[0-9A-F]{2}$/;
+          const isUpstreamLabelledDtc = (code) =>
             /^[PBCU][0-3][0-9A-F]{3}$/.test(code) &&
-            (allowedPrefixes.has(code.slice(0,2)) || p3GenericCode.test(code));
+            (upstreamAllowedPrefixes.has(code.slice(0,2)) || p34UpstreamLabel.test(code));
+          const dtcNamespacePolicy = JSON.parse(fs.readFileSync(path.join(process.env.GITHUB_WORKSPACE,"data/policies/dtc-namespace-ranges.json"),"utf8"));
+          const displayPolicy = sourceManifest.normalization_policy?.display_policy || {};
+          if (displayPolicy.policy_id !== dtcNamespacePolicy.policy_id || displayPolicy.policy_revision !== dtcNamespacePolicy.policy_revision) {
+            throw new Error("OBDex display policy does not match the canonical DTC namespace policy");
+          }
+          const searchableGenericPattern = new RegExp(dtcNamespacePolicy.namespaces.generic_sae_iso.pattern);
+          const unresolvedReservedPattern = new RegExp(dtcNamespacePolicy.namespaces.unresolved_reserved.pattern);
+          const expectedDisplayCounts = {
+            searchable: sourceManifest.expected_counts.searchable_generic_dtcs,
+            quarantined: sourceManifest.expected_counts.quarantined_unresolved_namespace_rows
+          };
           const hashes = Object.fromEntries(
             ["generic.min.json","mode01.json","mode09.json","meta.json","UPSTREAM-LICENSE.txt"]
               .map((name) => [name, sha256(readBytes(name))])
@@ -169,9 +181,11 @@ jobs:
           const dtcs = generic.map((row) => {
             const safeSourceReferences = quarantineSourceReferences(row);
             const code = String(row?.code ?? "").trim().toUpperCase();
-            if (!isGenericDtc(code)) {
+            if (!isUpstreamLabelledDtc(code)) {
               throw new Error("Non-generic or manufacturer-controlled DTC in OBDex projection: " + code);
             }
+            const namespace = searchableGenericPattern.test(code) ? "generic_sae_iso_obd2" : unresolvedReservedPattern.test(code) ? "unknown" : null;
+            if (!namespace) throw new Error("OBDex DTC falls outside searchable and unresolved namespace policy ranges: " + code);
             if (dtcSeen.has(code)) throw new Error("Duplicate OBDex DTC: " + code);
             dtcSeen.add(code);
             if (!row.title || typeof row.title.en !== "string" || row.title.en.trim().length < 3) {
@@ -180,7 +194,7 @@ jobs:
             const rawHash = sha256(Buffer.from(JSON.stringify(row)));
             return {
               code,
-              namespace: "generic_sae_iso_obd2",
+              namespace,
               category: row.category ?? null,
               title: { en: row.title.en, de: row.title.de ?? null },
               description: { en: row.description?.en ?? null, de: row.description?.de ?? null },
@@ -198,7 +212,13 @@ jobs:
               raw_record: row
             };
           });
-          if (dtcs.length !== 9533) throw new Error("Expected 9,533 generic DTCs, received " + dtcs.length);
+          const searchableGenericDtcCount = dtcs.filter((row) => row.namespace === "generic_sae_iso_obd2").length;
+          const quarantinedUnresolvedDtcCount = dtcs.filter((row) => row.namespace === "unknown").length;
+          const unclassifiedDtcCount = dtcs.length - searchableGenericDtcCount - quarantinedUnresolvedDtcCount;
+          if (dtcs.length !== 9533) throw new Error("Expected 9,533 upstream-labelled OBDex DTC rows, received " + dtcs.length);
+          if (searchableGenericDtcCount !== expectedDisplayCounts.searchable || quarantinedUnresolvedDtcCount !== expectedDisplayCounts.quarantined || unclassifiedDtcCount !== 0) {
+            throw new Error("OBDex DTC namespace policy count mismatch: searchable=" + searchableGenericDtcCount + ", quarantined=" + quarantinedUnresolvedDtcCount + ", unclassified=" + unclassifiedDtcCount);
+          }
 
           function normalizePids(rows, mode) {
             const seen = new Set();
@@ -257,6 +277,12 @@ jobs:
             },
             scope: {
               dtc_namespace: "generic_sae_iso_obd2",
+              product_namespace_policy: {
+                policy_id: dtcNamespacePolicy.policy_id,
+                policy_revision: dtcNamespacePolicy.policy_revision,
+                searchable_generic_ranges: displayPolicy.allowed_generic_ranges,
+                quarantined_unresolved_ranges: displayPolicy.quarantined_unresolved_ranges
+              },
               pid_modes: [1,9],
               manufacturer_specific_codes_included: false,
               exact_vag_fitment: false,
@@ -264,6 +290,9 @@ jobs:
             },
             counts: {
               generic_dtcs: dtcs.length,
+              searchable_generic_dtcs: searchableGenericDtcCount,
+              quarantined_unresolved_namespace_rows: quarantinedUnresolvedDtcCount,
+              unclassified_dtc_rows: unclassifiedDtcCount,
               mode01_pids: mode01.length,
               mode09_pids: mode09.length,
               rejected_dtc_rows: 0,
@@ -271,6 +300,8 @@ jobs:
             },
             warnings: [
               "Generic SAE/ISO OBD-II reference data only; not a VAG factory diagnostic corpus.",
+              "Only policy-allowed P0xxx, P2xxx, B0xxx, C0xxx and U0xxx rows are stored in the searchable generic namespace.",
+              "Upstream-labelled P34xx-P39xx, U3xxx, B3xxx and C3xxx rows are stored as unknown and quarantined from generic search.",
               "Do not map generic code descriptions to a VAG ECU, engine, gearbox or model without separate evidence.",
               "Descriptions and causes are unreviewed source content, not verified repair instructions.",
               "No record asserts vehicle fitment or exact diagnostic procedure applicability.",
@@ -296,7 +327,7 @@ jobs:
                 "source_manifest_json TEXT NOT NULL,attribution TEXT NOT NULL,market_scope TEXT NOT NULL," +
                 "verification_status TEXT NOT NULL CHECK(verification_status='license_verified_research_only'));",
               "CREATE TABLE generic_dtc_research(" +
-                "code TEXT PRIMARY KEY,namespace TEXT NOT NULL CHECK(namespace='generic_sae_iso_obd2')," +
+                "code TEXT PRIMARY KEY,namespace TEXT NOT NULL CHECK(namespace IN ('generic_sae_iso_obd2','unknown'))," +
                 "category TEXT,title_json TEXT NOT NULL,description_json TEXT NOT NULL,raw_record_json TEXT NOT NULL," +
                 "source_record_sha256 TEXT NOT NULL,source_references_json TEXT NOT NULL," +
                 "source_id TEXT NOT NULL REFERENCES source_registry(source_id),source_version TEXT NOT NULL," +
@@ -346,8 +377,10 @@ jobs:
             const integrity=db.prepare("PRAGMA integrity_check").get().integrity_check;
             const foreignKeys=db.prepare("PRAGMA foreign_key_check").all();
             const dtcCount=db.prepare("SELECT COUNT(*) n FROM generic_dtc_research").get().n;
+            const searchableDtcCount=db.prepare("SELECT COUNT(*) n FROM generic_dtc_research WHERE namespace='generic_sae_iso_obd2'").get().n;
+            const quarantinedDtcCount=db.prepare("SELECT COUNT(*) n FROM generic_dtc_research WHERE namespace='unknown'").get().n;
             const pidCount=db.prepare("SELECT COUNT(*) n FROM generic_pid_research").get().n;
-            if(integrity!=="ok"||foreignKeys.length!==0||dtcCount!==9533||pidCount!==132) {
+            if(integrity!=="ok"||foreignKeys.length!==0||dtcCount!==9533||searchableDtcCount!==searchableGenericDtcCount||quarantinedDtcCount!==quarantinedUnresolvedDtcCount||pidCount!==132) {
               throw new Error("SQLite post-import validation failed");
             }
             const report={
@@ -360,6 +393,11 @@ jobs:
               integrity_check:integrity,
               foreign_key_violations:foreignKeys.length,
               generic_dtcs:dtcCount,
+              searchable_generic_dtcs:searchableDtcCount,
+              quarantined_unresolved_namespace_rows:quarantinedDtcCount,
+              unclassified_dtc_rows:unclassifiedDtcCount,
+              namespace_policy_id:dtcNamespacePolicy.policy_id,
+              namespace_policy_revision:dtcNamespacePolicy.policy_revision,
               pids:pidCount,
               vag_specific_dtc_rows:0,
               fitment_claims:0,
