@@ -47,3 +47,18 @@ The 9,204 generic-range count is derived from the pinned SQLite: P0xxx 3,705; P2
 - Keep fitmentClaim=false and diagnosticExecutionAllowed=false for every row.
 
 The local regression suite was run against the actual pinned OBDex SQLite: 5/5 tests passed. The run91 patch also adds data/policies to the packaged app runtime at app-runtime/data/policies so offline namespace classification does not depend on the development checkout. The patch script also passed a clean-apply and second-run idempotence check. The Windows CI integration is pending; no production import or installer release is claimed by this research note.
+
+## Cross-layer acceptance matrix
+
+The Windows pull-request workflow must verify the same classification at the policy, SQLite-reader, renderer and package-resource layers:
+
+| Test input | Expected namespace | Expected UI state | Permitted use |
+|---|---|---|---|
+| P0xxx, P2xxx, B0xxx, C0xxx, U0xxx | `generic_sae_iso_obd2` | `GENERIC SAE/ISO RANGE` / `RESEARCH ONLY` | Read-only generic reference; no vehicle/ECU fitment |
+| P1xxx, P30xx–P33xx, B1xxx–B2xxx, C1xxx–C2xxx, U1xxx–U2xxx | `manufacturer_controlled_candidate` | `DTC RANGE QUARANTINE` / `QUARANTINE` | Unattributed manufacturer-controlled research only; never infer VAG authorship |
+| P34xx–P39xx, U3xxx, B3xxx, C3xxx | `unknown_reserved` | `DTC RANGE QUARANTINE` / `QUARANTINE` | Retain source row for audit only; suppress source component/cause/symptom lists |
+| Malformed or unclassified identifier | `unknown` | `DTC RANGE QUARANTINE` / `QUARANTINE` | No normalized DTC lookup or diagnostic execution |
+
+For every returned row, acceptance also requires: the upstream namespace label is preserved separately; the source-record and source-snapshot SHA-256 values are present; the canonical policy revision is shown; market remains `UNKNOWN`; applicability remains `generic_code_only`; `fitmentClaim=false`; `diagnosticExecutionAllowed=false`; and external references are not rendered.
+
+The Windows package-resource check must open the packaged policy from the Electron runtime resource directory with external networking blocked. The OBDex SQLite snapshot must remain byte-for-byte unchanged, the production catalog and user database must remain untouched, and a failed policy/resource/test check must fail the build before NSIS packaging. This matrix is a validation contract, not a claim that the upstream descriptions are technically verified.
