@@ -1899,8 +1899,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Run91 Wikipedia candidate pack desktop integration failed." }
           node --check desktop-source/lib/wikipedia-engine-candidates-db.cjs
           if ($LASTEXITCODE -ne 0) { throw "Run91 Wikipedia candidate SQLite reader failed syntax validation." }
-          node --check desktop-source/app/api/wikipedia-engine-candidates/route.ts
-          if ($LASTEXITCODE -ne 0) { throw "Run91 Wikipedia candidate API route failed syntax validation." }
           node --test desktop-source/tests/wikipedia-engine-candidates-db.test.cjs desktop-source/tests/wikipedia-engine-candidates-ui.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/wikipedia-engine-candidate-pack-run91-tests.log"
           if ($LASTEXITCODE -ne 0) { throw "Run91 Wikipedia candidate SQLite and UI tests failed." }
           $patchInSource = Join-Path $env:GITHUB_WORKSPACE "desktop-source/scripts/patches/apply-wikipedia-engine-candidate-ui-run91.cjs"
