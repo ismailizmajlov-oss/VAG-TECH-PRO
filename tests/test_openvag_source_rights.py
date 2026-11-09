@@ -118,6 +118,24 @@ class OpenVAGSourceRightsTests(unittest.TestCase):
         for field in ("data_import_allowed", "display_allowed", "offline_cache_allowed", "redistribution_allowed"):
             self.assertFalse(latest[field])
 
+    def test_all_openvag_source_register_aliases_remain_quarantined(self):
+        entries = [
+            item for item in self.registry["sources"]
+            if item.get("url") == "https://github.com/riz4d/OpenVAG"
+        ]
+        self.assertGreaterEqual(len(entries), 1)
+        for entry in entries:
+            with self.subTest(source_id=entry.get("source_id")):
+                self.assertIs(entry.get("data_ingested"), False)
+                if "product_import_allowed" in entry:
+                    self.assertIs(entry["product_import_allowed"], False)
+                if "source_snapshot_sha256" in entry:
+                    self.assertIsNone(entry["source_snapshot_sha256"])
+                rights = entry.get("rights", {})
+                self.assertNotIn(rights.get("permission_status"), ("approved", "approved_by_published_license_for_reuse"))
+                for field in ("display_allowed", "offline_cache_allowed", "redistribution_allowed"):
+                    self.assertNotIn(rights.get(field), (True, "approved", "allowed"))
+
     def test_publisher_counts_are_not_treated_as_verified_rows(self):
         claims = self.manifest["claimed_counts_from_upstream_documentation"]
         self.assertEqual(claims["dtc_codes"], 995)
