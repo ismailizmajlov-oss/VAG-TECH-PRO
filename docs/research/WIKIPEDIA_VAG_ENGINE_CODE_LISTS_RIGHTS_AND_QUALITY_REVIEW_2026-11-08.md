@@ -52,3 +52,20 @@ The attribution above is a template only; it is not evidence that any content ha
 - Rights status: CC BY-SA 4.0 for article text, subject to attribution and ShareAlike.
 - Technical review status: not approved; source-quality warnings block data promotion.
 - Next permitted step: obtain pinned revision bytes in CI, hash each source snapshot, extract only explicit engine-code candidates with section-level provenance, and independently verify each candidate against primary factory/approval sources before any promotion.
+
+## Addendum — pinned research-pack build, 2026-11-09
+
+The four reviewed article revisions were fetched as pinned MediaWiki wikitext and rendered-HTML snapshots. Their per-file SHA-256 values, byte sizes, revision IDs, row-level extraction hashes and source URLs are preserved in the generated `source-manifest.json` and SQLite database. The separate research pack contains 241 candidate code tokens from 64 source rows across four article revisions.
+
+Verified pack evidence:
+
+- Pack ID: `wikipedia-vag-engine-code-candidates-cc-by-sa-4-0`
+- License: CC BY-SA 4.0; commercial use, offline caching, display and redistribution are permitted with attribution and ShareAlike. The database remains a separate licensed pack.
+- SQLite SHA-256: `d44629eaf26f1fc3a54acff8b985a84e207b85d7cac7abd975dac16474585788`
+- Source-manifest SHA-256: `e24ad006a3025860e01b3a0bd8395da4da9156ba7d0cb0c3e32b3516ccaae024`
+- Combined source-snapshot SHA-256: `fd0be1562899f7dd7b46e33ecf5297b6bab551668f83d5bcf60bb32ce0dd130c`
+- Counts: 4 source documents, 64 source rows, 241 candidate rows, 241 unique candidate tokens.
+
+This is research-pack ingestion only. The source register explicitly keeps `data_ingested=false` and records `research_pack_ingested=true`. All rows remain `market_scope=UNKNOWN` and `community_engine_code_candidate_only`. Product import, exact vehicle fitment, generation/year fitment, engine/gearbox pairing, ECU fitment, DTC fitment, repair use and diagnostic execution remain prohibited. No candidate has been promoted to a verified factory engine code.
+
+The source quality review remains blocking for technical use: incomplete lists, insufficient citations, unsourced statements and accuracy disputes remain attached to the affected article revisions. Primary-source verification is still required before any engine-code or application claim can be used in a repair recommendation.
