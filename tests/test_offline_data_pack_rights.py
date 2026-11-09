@@ -14,7 +14,7 @@ SPEC.loader.exec_module(MODULE)
 
 class OfflineDataPackRightsTests(unittest.TestCase):
     def test_only_explicitly_licensed_sources_enter_windows_bundle(self):
-        self.assertEqual(set(MODULE.ARTIFACTS), {"obdex", "vehiclesdb", "obdb"})
+        self.assertEqual(set(MODULE.ARTIFACTS), {"obdex", "vehiclesdb", "obdb", "wikipedia"})
         self.assertNotIn("wal33d", MODULE.ARTIFACTS)
 
     def test_manufacturer_specific_dtc_candidate_is_excluded(self):
@@ -89,11 +89,24 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn('"status": "quarantined_pending_upstream_permission"', source)
         self.assertIn("Autoevolution-derived ODbL generation/engine candidate data is quarantined and excluded", source)
 
-    def test_bundle_requires_exactly_three_separate_pack_ids(self):
+    def test_bundle_requires_exactly_four_separate_pack_ids(self):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
-        self.assertIn('index.get("database_count") != 3', source)
-        self.assertIn('"database_count": 3', source)
+        self.assertIn('index.get("database_count") != 4', source)
+        self.assertIn('"database_count": 4', source)
         self.assertIn('"obdb-vag-signals-cc-by-sa"', source)
+        self.assertIn('"wikipedia-vag-engine-code-candidates-cc-by-sa-4-0"', source)
+
+    def test_wikipedia_engine_codes_are_a_separate_candidate_only_pack(self):
+        source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
+        self.assertIn("def inspect_wikipedia(", source)
+        self.assertIn('"CC-BY-SA-4.0"', source)
+        self.assertIn('"community_engine_code_candidate_only"', source)
+        self.assertIn('"not_approved_for_technical_use"', source)
+        self.assertIn('"product_import_allowed"', source)
+        self.assertIn('"repair_use_allowed"', source)
+        self.assertIn('"diagnostic_execution_allowed"', source)
+        self.assertIn("source-artifact.zip", source)
+        self.assertIn("wikipedia-vag-engine-code-candidates-cc-by-sa-4-0/", source)
 
 
     def test_obdex_lock_pins_generic_ranges_and_external_reference_quarantine(self):
