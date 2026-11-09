@@ -52,7 +52,7 @@ test("run90 creates an isolated offline route and binds Electron to it", () => {
     assert.match(main, /VAG_TECH_PRO_DESKTOP_OFFLINE/);
     assert.match(main, /delete runtimeEnv\[key\]/);
     assert.match(main, /function buildRuntimeEnvironment/);
-    assert.match(main, /module\\.exports = \\{[^}]*buildRuntimeEnvironment/);
+        assert.match(main, /module\.exports = \{[^}]*buildRuntimeEnvironment/);
     assert.match(route, /LocalOfflineWorkspace/);
     assert.doesNotMatch(route, /createClient|supabase|https?:\/\//i);
     assert.ok(pkg.scripts["test:desktop"].includes("tests/desktop-offline-entry-run90.test.cjs"));
