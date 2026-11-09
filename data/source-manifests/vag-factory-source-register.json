@@ -6145,7 +6145,7 @@
         "russian_market_scope": false,
         "engine_characteristics_in_public_record_schema": "not_established"
       },
-      "verification_status": "official_public_registry_pilot_no_login_and_privacy_policy_rechecked_2026-11-10; record_schema_and_product_reuse_rights_unresolved",
+      "verification_status": "official_public_registry_pilot_and_privacy_policy_rechecked_2026-11-10; record_schema_and_reuse_rights_unresolved",
       "product_import_allowed": false,
       "data_ingested": false,
       "source_snapshot_sha256": null,
