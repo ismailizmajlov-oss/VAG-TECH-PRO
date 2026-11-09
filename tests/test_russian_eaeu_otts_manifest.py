@@ -279,7 +279,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(latest["official_portal_url"], "https://trade.kg/")
         self.assertEqual(latest["official_registry_landing_url"], "https://trade.kg/registry?tab=OTTS.otts")
         self.assertEqual(latest["smart_registry_url"], "https://smart.trade.kg/registry?lng=ru")
-        self.assertEqual(latest["operator_stated_status"], "pilot")
+        self.assertEqual(observed["registry_status"], "pilot")
         self.assertFalse(latest["login_required"])
         self.assertEqual(latest["search_fields"], ["approval_number", "make", "model"])
         self.assertEqual(latest["general_public_verification_fields"], ["document_number", "VIN"])
