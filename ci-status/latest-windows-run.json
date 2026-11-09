@@ -1,107 +1,36 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-08T23:42:43Z",
+  "recorded_at_utc": "2026-11-09T02:22:43.7286284Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run87",
-  "run_id": 42532208535,
-  "run_number": 953,
+  "run_id": 42550567791,
+  "run_number": 974,
   "run_attempt": 1,
   "status": "completed",
-  "conclusion": "success",
-  "head_sha": "6af565a73d2b667e591c86a87f05e707c3a41cfd",
+  "conclusion": "cancelled",
+  "head_sha": "12d59c7f94fbf62abc4ee2733a593460166eca71",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532208535",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42550567791",
   "jobs": [
     {
-      "id": 128888665033,
+      "id": 128944972508,
       "name": "build-and-lifecycle",
-      "runner": "GitHub-hosted Windows x64",
       "status": "completed",
-      "conclusion": "success"
+      "conclusion": "cancelled",
+      "runner_name": "GitHub Actions 1000003727",
+      "started_at": "2026-11-09T02:22:28Z",
+      "completed_at": "2026-11-09T02:22:30Z"
     },
     {
-      "id": 128894562965,
+      "id": 128944994459,
       "name": "Windows Server 2022 installer compatibility lifecycle",
-      "runner": "Windows Server 2022",
       "status": "completed",
-      "conclusion": "success"
+      "conclusion": "cancelled",
+      "runner_name": null,
+      "started_at": "2026-11-09T02:22:31Z",
+      "completed_at": "2026-11-09T02:22:30Z"
     }
   ],
-  "build": {
-    "desktop_version": "0.2.4",
-    "installers": [
-      {
-        "name": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
-        "sha256_recorded_in_build_metadata": true,
-        "sha256_location": "build-metadata.json inside Windows artifact 13638393596"
-      },
-      {
-        "name": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
-        "sha256_recorded_in_build_metadata": true,
-        "sha256_location": "build-metadata.json inside Windows artifact 13638393596"
-      }
-    ],
-    "windows_artifact": {
-      "id": 13638393596,
-      "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 1369317429,
-      "digest": "sha256:21c0220b893832a0e2f866565219d598d1cadd6780c60ca13fdc8f7424595461"
-    },
-    "source_audit_artifact": {
-      "id": 13638004717,
-      "name": "vag-tech-pro-desktop-source-audit-42532208535",
-      "size_in_bytes": 2496564,
-      "digest": "sha256:b64a15fd072965abd2373b01d916f4a416b3b05baeea905c973e14eb97998ac0"
-    },
-    "windows_2022_artifact": {
-      "id": 13638762240,
-      "name": "vag-tech-pro-windows-2022-lifecycle-run71",
-      "size_in_bytes": 6995,
-      "digest": "sha256:b1db36a1274b8258d7b0e1c0afbe2228d24a37a4ae3e9d65c807e64a71907621"
-    },
-    "vehiclesdb_schema_diagnostic_artifact": {
-      "id": 13638195403,
-      "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
-      "size_in_bytes": 24882,
-      "digest": "sha256:99e2586ce3a77274402553d45091d1e5c9742df246f43f57bfd93fdb88b45482"
-    },
-    "offline_data_pack_run_id": 42483416447,
-    "offline_data_pack_sha256": "710cdd57c59a192441c1fbdecc5654267fa04e2ff7d69b789fedad0b1b890e3d",
-    "source_manifest_count": 19,
-    "source_manifest_index_sha256": "8f5b6640e8fc0764a4306eabe1b40a6c9a305f51d9fbabbec0c1ab64c9cb9e08",
-    "central_source_register_count": 61,
-    "central_source_register_sha256": "65d7f635a9d993e975f41ff3595b54c2b4d000b31aa8bb5d9313a4f81ac34a80",
-    "russian_eaeu_source_count": 15,
-    "russian_eaeu_otts_manifest_sha256": "42a50ce1e5ecf27cc23414f422d02e9450ae6994423f93d432dc5d265f51c9a7",
-    "research_manifest_entries": 13,
-    "research_manifest_sha256": "f3a113fdf78aef523006e9653794c5541fb08c2f7cc4e703a5a4c132f7f9f523",
-    "typed_technical_sections": 14,
-    "engine_transmission_pairing_requires_same_variant_primary_evidence": true,
-    "generic_and_vag_dtc_namespaces_separate": true,
-    "unresolved_dtc_ranges_quarantined": true,
-    "generic_obd_dtc_rows": 9533,
-    "generic_obd_pid_rows": 132,
-    "obdb_source_count": 16,
-    "obdb_uds_command_candidates": 7890,
-    "obdb_signal_candidates": 8446,
-    "obdb_ecu_candidates": 44,
-    "obdb_generation_candidates": 82,
-    "wikidata_model_entities": 521,
-    "wikidata_generation_member_entities": 109,
-    "wikidata_generation_model_member_links": 125,
-    "wikidata_generation_source_bindings": 187,
-    "vehiclesdb_model_candidates": 260,
-    "vehiclesdb_market_evidence_rows": 1524,
-    "vehiclesdb_ru_evidence_rows": 0,
-    "generic_guidance_rows": 275,
-    "generic_sae_dtc_references": 75,
-    "manufacturer_labelled_dtc_candidates": 2,
-    "vag_specific_dtc_verified_rows": 0,
-    "production_fitment_rows_added": 0,
-    "russian_eaeu_otts_rows_added": 0,
-    "vehiclesdb_status": "candidate_research_only_no_ru_eaeu_fitment",
-    "source_revision": "6af565a73d2b667e591c86a87f05e707c3a41cfd",
-    "release_readiness": "CI_validated_not_release_ready"
-  },
+  "artifacts": [],
   "native_windows_10_11": {
     "runner_gate_enabled": false,
     "lifecycle_job_result": "skipped",
@@ -112,53 +41,6 @@
       "vag-tech-pro-win10-11"
     ]
   },
-  "signing": {
-    "status": "unsigned",
-    "reason": "No owner-supplied code-signing certificate is configured."
-  },
   "release_ready": false,
-  "release_readiness_note": "Run953 completed successfully on 2026-11-08 for desktop/source revision 6af565a73d2b667e591c86a87f05e707c3a41cfd. Both GitHub-hosted Windows x64 build-and-lifecycle and Windows Server 2022 compatibility lifecycle jobs passed. Two NSIS x64 installers 0.2.3 and 0.2.4 were built; desktop/local-core/research tests, ESLint, TypeScript, source-rights and research-pack checks, typed technical payload/schema validation, clean install, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, integrity and uninstall-preservation passed. Installer SHA-256 values are inside build-metadata.json in Windows artifact 13638393596; a separate metadata artifact upload was added in later workflow commits and has not yet been exercised. Native Windows 10/11 acceptance remains skipped because the owner-provided runner gate is disabled. Installers are unsigned. No Russian/EAEU OTTS or production fitment rows and no verified VAG-specific DTC rows were added; licensed OEM repair corpus remains unresolved. No production release is authorized.",
-  "latest_source_register_validation": {
-    "workflow": "Validate VAG source-rights register",
-    "run_id": 42532177992,
-    "run_number": 413,
-    "conclusion": "success",
-    "head_sha": "8985510b238806a5f59f9c58363bc47882736294",
-    "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532177992"
-  },
-  "latest_russian_eaeu_contract_validation": {
-    "workflow": "Validate Russian EAEU and VAG OEM source contracts",
-    "run_id": 42532248940,
-    "run_number": 227,
-    "conclusion": "success",
-    "head_sha": "dc77fcb91df487880a9b177b68f6e3d9a613a72a",
-    "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532248940",
-    "eaeu_xml_importer_tests": 22,
-    "eaeu_registry_manifest_tests": 46,
-    "checks": [
-      "DTD/entity rejection",
-      "field-specific namespace validation",
-      "SBKTS and VIN/PII exclusion",
-      "permission-evidence SHA-256 matching",
-      "atomic staging and cleanup",
-      "no-overwrite behavior",
-      "candidate-only engine/gearbox pairing",
-      "EEC 2023 pilot-completion evidence and no-rights-upgrade guard"
-    ]
-  },
-  "current_windows_validation": {
-    "run_id": 42532208535,
-    "run_number": 953,
-    "status": "completed",
-    "conclusion": "success",
-    "head_sha": "6af565a73d2b667e591c86a87f05e707c3a41cfd",
-    "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42532208535",
-    "completed_at_utc": "2026-11-08T23:13:26Z"
-  },
-  "pending_ci_observability_change": {
-    "workflow_commit": "8a6331a3b93ffc404749b784729a1be6cc35f6b0",
-    "test_commit": "88aa3de7db0b3fc8311f26d9c762f8185acac443",
-    "purpose": "publish build-metadata.json as a separate small artifact so installer hashes can be independently inspected without downloading the 1.37 GB Windows bundle",
-    "validation_status": "not_yet_observed_in_a_new_workflow_run"
-  }
+  "release_readiness_note": "CI evidence only; licensed VAG repair data, exact factory fitment, Windows 10/11 native lifecycle and owner-approved source rights must be independently satisfied."
 }
