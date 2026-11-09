@@ -7737,29 +7737,40 @@
         "paid_access_required": false,
         "tables": [
           {
-            "year_scope": "2019-2024",
+            "year_scope": "2024",
             "data_status": "F",
-            "table": "CO2Emission.latest.co2cars",
+            "table": "CO2Emission.latest.co2cars_2024Fv30",
             "metadata_url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
-            "note": "Use Year and Status filters; the combined table contains the final annual records for 2019-2024."
+            "note": "Pinned 2024 final edition explicitly listed as the SQL REST resource in the official metadata; used by the initial research-pack builder."
           },
           {
             "year_scope": "2025",
             "data_status": "P",
             "table": "CO2Emission.latest.co2cars_2025Pv31",
             "metadata_url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/b4044b06-2e6b-4f8e-a6e6-66e0e98bb0dd?language=eng",
-            "note": "Provisional 2025 edition; keep separate from final years."
+            "note": "Pinned provisional 2025 edition; kept separate from final 2024 data."
           }
         ],
-        "query_scope": "M1 passenger cars; VAG make filtering pending live source-data discovery; preserve reporting Member State, registration year, final/provisional status, type approval number, type, variant, version and selected technical fields.",
+        "query_scope": "M1 passenger cars; initial research-pack scope is pinned 2024 final plus 2025 provisional records; exact VAG make labels must be discovered from the source before filtering. 2019-2023 are not included in this initial pack.",
         "source_snapshot_sha256": null,
         "sample_response_sha256": null,
         "data_ingested": false,
-        "snapshot_status": "not_downloaded",
+        "snapshot_status": "not_downloaded; documented SQL API returned HTTP 403 from the GitHub-hosted Windows 2025 runner",
         "full_snapshot_downloaded": false,
         "product_import_allowed": false,
         "research_pack_import_allowed": true,
-        "last_acquisition_attempt_at": null
+        "last_acquisition_attempt_at": "2026-11-09T19:56:42Z",
+        "last_acquisition_attempt_status": "http_403_forbidden_from_github_hosted_windows_2025_runner; reason_not_returned",
+        "last_acquisition_attempt": {
+          "attempted_at_utc": "2026-11-09T19:56:42Z",
+          "endpoint": "https://discodata.eea.europa.eu/sql",
+          "table": "CO2Emission.latest.co2cars_2024Fv30",
+          "request_purpose": "discover exact raw manufacturer labels before VAG filtering",
+          "http_status": 403,
+          "response_body_sha256": null,
+          "dataset_bytes_received": false,
+          "next_step": "Retry once with standard documented browser-origin headers; if 403 persists, seek an EEA-supported export or access clarification. Do not use undocumented endpoints or circumvent access controls."
+        }
       },
       "data_scope": {
         "vehicle_category": "M1 passenger cars",
@@ -7834,7 +7845,7 @@
       "product_import_allowed": false,
       "source_snapshot_sha256": null,
       "hash_status": "metadata_and_license_reviewed_no_dataset_snapshot",
-      "evidence_status": "official_eea_metadata_declares_CC_BY_4_0_and_no_public_access_limitations_reviewed_2026-11-10; dataset_bytes_not_downloaded; VAG_rows_not_enumerated",
+      "evidence_status": "official_eea_metadata_declares_CC_BY_4_0_and_no_public_access_limitations_reviewed_2026-11-10; documented_SQL_API_attempt_from_GitHub_Windows_2025_returned_HTTP_403_on_2026-11-09; no_dataset_bytes_received; no_dataset_SHA256; VAG_rows_not_enumerated",
       "evidence_reviewed": [
         {
           "url": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/5018ec17-2348-4c92-8761-6f2377bbd1c0?language=eng",
