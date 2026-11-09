@@ -1569,6 +1569,38 @@
           "live_status_verified": false,
           "indexed_issuance_portal_url": "https://techreg.gov.kz/index/",
           "evidence": "The latest available indexed homepage snapshot lists the TR TS 018/2011 conformity-document register and contains a notice stating that new conformity-document issuance is handled by the KTRM Technical Regulation system at techreg.gov.kz; general EOKNO functions moved to KEDEN. A live fetch of the homepage timed out, so the notice's present-day status is not independently verified."
+        },
+        "latest_search_index_recheck": {
+          "observed_at": "2026-11-10",
+          "evidence_basis": "search_engine_indexed_page_text; direct page fetch was unavailable",
+          "url": "https://eokno.gov.kz/public-register/register-ktrm2.xhtml",
+          "page_title": "Реестр документов, подтверждающих соответствие требованиям ТР ТС 018/2011",
+          "visible_filters": [
+            "registration_number",
+            "EAEU_or_KZ_scope",
+            "VIN",
+            "document_status",
+            "issue_date",
+            "validity_dates",
+            "document_type",
+            "applicant",
+            "application_number",
+            "document_format"
+          ],
+          "preview_rows_document_type": "SBKTS",
+          "sample_rows_observed": true,
+          "record_rows_downloaded": false,
+          "source_bytes_downloaded": false,
+          "source_snapshot_sha256": null,
+          "pii_fields_observed": [
+            "VIN",
+            "applicant name",
+            "applicant identifier",
+            "applicant address/contact fields"
+          ],
+          "exact_vag_otts_record_identified": false,
+          "count_treatment": "indexed preview rows only; not a complete or current corpus count",
+          "privacy_decision": "No VIN, applicant, identifier, address or contact values were copied. Do not process or cache these fields."
         }
       },
       "access_and_reuse": {
@@ -1595,7 +1627,20 @@
         "engine_gearbox_pairing": "not_established",
         "ecu_dtc_or_repair_applicability": "not_established",
         "exact_vag_record_identified": false,
-        "issuance_portal_url_from_indexed_notice": "https://techreg.gov.kz/index/"
+        "issuance_portal_url_from_indexed_notice": "https://techreg.gov.kz/index/",
+        "public_index_fields_observed": [
+          "registration_number",
+          "EAEU_or_KZ_scope",
+          "VIN",
+          "document_status",
+          "issue_date",
+          "validity_dates",
+          "document_type",
+          "applicant",
+          "application_number",
+          "document_format"
+        ],
+        "pii_present_in_indexed_preview": true
       },
       "limitations": [
         "Official KTRM release dated 2023-12-28 confirms OTTS/OTSH records are transferred online to the EOKNO conformity-document register after registration and can be checked by QR or register search; this is historical workflow evidence, not a current completeness guarantee.",
@@ -1605,9 +1650,11 @@
         "No documented API, bulk export contract, reproducible current snapshot or dataset revision was identified.",
         "No records were downloaded; no source snapshot or SHA-256 is claimed.",
         "No VAG engine code, gearbox code, exact powertrain pair, ECU, DTC or repair applicability was established.",
-        "Do not process VIN, applicant, address, owner or other personal fields if encountered during any future authorized review."
+        "Do not process VIN, applicant, address, owner or other personal fields if encountered during any future authorized review.",
+        "The 2026-11-10 indexed preview shows SBKTS rows and exposes VIN and applicant identity/contact fields; no such values were copied. These rows are not OTTS fitment evidence.",
+        "EEC Decision No. 225 section 9 explicitly lists engine, transmission and gearbox fields for SBKTS; section 8 for OTTS/OTSH refers to annexes but does not enumerate those fields. Keep document types separate."
       ],
-      "evidence_status": "Official KTRM release confirms OTTS/OTSH records flow into the EOKNO register after registration; official KGD release confirms SBKTS publication; the latest indexed EOKNO homepage snapshot points issuance to TechReg, but live status could not be verified. Data reuse rights and current register completeness remain unresolved; no records downloaded.",
+      "evidence_status": "Official KTRM release confirms OTTS/OTSH records flow into the EOKNO register after registration; official KGD release confirms SBKTS publication; the latest indexed EOKNO homepage snapshot points issuance to TechReg, but live status could not be verified. Data reuse rights and current register completeness remain unresolved; no records downloaded. 2026-11-10 indexed preview recheck shows SBKTS sample rows with VIN/applicant fields; EEC Decision 225 section 9 powertrain fields are SBKTS-specific, while section 8 OTTS/OTSH refers to annexes. No personal data copied and no rights inferred.",
       "evidence_reviewed": [
         {
           "url": "https://eokno.gov.kz/public-register/register-ktrm2.xhtml",
@@ -1632,9 +1679,50 @@
           "crawl_age_note": "search index reported a crawl approximately two months before review",
           "live_fetch_status": "timeout",
           "evidence": "Indexed homepage lists the TR TS 018/2011 conformity-document register and shows a notice directing conformity-document issuance to techreg.gov.kz; live current status not verified."
+        },
+        {
+          "url": "https://eokno.gov.kz/public-register/register-ktrm2.xhtml",
+          "reviewed_at": "2026-11-10",
+          "evidence_basis": "search-engine indexed page text; direct fetch unavailable",
+          "evidence": "The indexed page exposes filters for registration number, EAEU/KZ scope, VIN, status, dates, document type, applicant, application number and document format. Preview rows are SBKTS and include VIN/applicant fields. No record bytes were downloaded and no personal values were copied."
+        },
+        {
+          "url": "https://old.adilet.zan.kz/rus/docs/H14EK000225",
+          "reviewed_at": "2026-11-10",
+          "evidence": "EEC Collegium Decision No. 225 sections 8-9 were reviewed. Section 9 explicitly lists engine make/type, transmission, gearbox make/type and clutch make/type for SBKTS. Section 8 covers OTTS/OTSH approval metadata and annex references. This is a schema distinction, not a reuse licence."
         }
       ],
-      "project_decision": "discovery_only; official 2023/2024 releases confirm EOKNO OTTS/OTSH/SBKTS register workflows. The latest indexed homepage snapshot points new conformity-document issuance to TechReg, but the live status of that notice could not be verified. No licence or written permission for automated extraction, bulk storage, offline caching, display or redistribution has been established. Keep product import disabled until rights are confirmed."
+      "project_decision": "discovery_only; official 2023/2024 releases confirm EOKNO OTTS/OTSH/SBKTS register workflows. The latest indexed homepage snapshot points new conformity-document issuance to TechReg, but the live status of that notice could not be verified. No licence or written permission for automated extraction, bulk storage, offline caching, display or redistribution has been established. Keep product import disabled until rights are confirmed. The latest indexed preview contains SBKTS sample rows and VIN/applicant fields; no such values may be copied. Decision 225 section 9 powertrain fields apply to SBKTS, not as proof of OTTS applicability. Keep import disabled.",
+      "legal_schema_review": {
+        "source_url": "https://old.adilet.zan.kz/rus/docs/H14EK000225",
+        "instrument": "EEC Collegium Decision No. 225 of 2014-12-02",
+        "reviewed_at": "2026-11-10",
+        "otts_otsh_section_8_explicit_fields": [
+          "approval registration number",
+          "validity",
+          "certification body",
+          "make",
+          "commercial name",
+          "vehicle type",
+          "base vehicle/chassis",
+          "modification",
+          "category",
+          "environmental class",
+          "information contained in approval annexes"
+        ],
+        "sbkts_section_9_explicit_powertrain_fields": [
+          "internal-combustion engine make/type",
+          "cylinder count and layout",
+          "displacement",
+          "maximum power",
+          "fuel",
+          "transmission",
+          "gearbox make/type",
+          "clutch make/type"
+        ],
+        "interpretation": "The explicit engine/transmission/gearbox/clutch field list is in section 9 for SBKTS. Section 8 for OTTS/OTSH lists approval metadata and refers to annex information; it does not itself enumerate those powertrain fields. Do not treat SBKTS records or section 9 fields as OTTS fitment evidence.",
+        "rights_effect": "The decision defines registry content and publication workflow; it is not a dataset licence or permission for bulk extraction, offline caching, third-party display or redistribution."
+      }
     },
     {
       "source_id": "kyrgyz-single-window-public-registry",
