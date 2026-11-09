@@ -43,6 +43,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
             <tr><th>cylinders &amp; valves</th><th>displacement &amp; ID code(s)</th><td>1990s</td><td>2000s</td><td>2010s</td></tr>
             <tr><td>2.8 : AAA</td><td></td><td>Passat B3</td><td></td><td></td></tr>
             <tr><td>2.9 : ABV</td><td></td><td>Corrado</td><td></td><td></td></tr>
+            <tr><td></td><td></td><td>Bora</td><td></td><td></td></tr>
           </table>
         </body></html>
         """
@@ -59,6 +60,7 @@ class WikipediaVagEngineCandidatePackTests(unittest.TestCase):
         self.assertNotIn("1990S", codes)
         self.assertNotIn("2000S", codes)
         self.assertNotIn("2010S", codes)
+        self.assertNotIn("BORA", codes)
 
     def test_source_register_requires_pinned_revisions_and_sharealike_rights(self):
         source = {
