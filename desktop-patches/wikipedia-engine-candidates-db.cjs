@@ -108,10 +108,14 @@ function verify(root) {
   if (provenance.pack_id !== PACK_ID || provenance.source_artifact_sha256 !== entry.source_artifact_sha256 ||
       provenance.source_archive_sha256 !== entry.source_archive_sha256 || provenance.source_commit !== entry.source_commit ||
       provenance.source_head_sha !== entry.source_head_sha || provenance.source_event !== entry.source_event ||
-      provenance.source_ref !== entry.source_ref || provenance.source_workflow_run_id !== entry.source_workflow_run_id ||
+      provenance.source_ref !== entry.source_ref || provenance.wikitext_snapshot_sha256 !== entry.wikitext_snapshot_sha256 ||
+      provenance.candidate_content_sha256 !== entry.candidate_content_sha256 || provenance.source_workflow_run_id !== entry.source_workflow_run_id ||
       provenance.source_artifact_id !== entry.source_artifact_id) {
     throw new Error("Wikipedia candidate build provenance does not match the root research manifest");
   }
+  const wikitextRows = manifest.pages.map((page) => [page.revision_id, page.wikitext_sha256]).sort((a, b) => a[0] - b[0]);
+  const wikitextSnapshotSha256 = crypto.createHash("sha256").update(Buffer.from(JSON.stringify(wikitextRows), "utf8")).digest("hex");
+  if (wikitextSnapshotSha256 !== entry.wikitext_snapshot_sha256) throw new Error("Wikipedia pinned Wikitext snapshot fingerprint mismatch");
   for (const page of manifest.pages) {
     const stem = String(page.revision_id);
     const html = fileInside(base, "wikipedia-vag-engine-candidates/source-snapshots/" + stem + ".html");
@@ -132,6 +136,8 @@ function verify(root) {
       candidateRows: db.prepare("SELECT count(*) AS n FROM engine_code_candidates").get().n,
       uniqueCandidateCodes: db.prepare("SELECT count(DISTINCT candidate_code) AS n FROM engine_code_candidates").get().n,
     };
+    const candidateRows = db.prepare("SELECT candidate_code,source_revision_id,source_row_kind,source_row_number,source_row_sha256,candidate_value_text FROM engine_code_candidates ORDER BY candidate_code,source_revision_id,source_row_number").all().map((row) => [row.candidate_code,row.source_revision_id,row.source_row_kind,row.source_row_number,row.source_row_sha256,row.candidate_value_text]);
+    const candidateContentSha256 = crypto.createHash("sha256").update(Buffer.from(JSON.stringify(candidateRows), "utf8")).digest("hex");
     const invalid = db.prepare(
       "SELECT count(*) AS n FROM engine_code_candidates WHERE market_scope!='UNKNOWN' OR applicability_precision!='community_engine_code_candidate_only' OR review_status!='candidate' OR product_import_allowed!=0 OR exact_vehicle_fitment!=0 OR generation_year_fitment!=0 OR engine_gearbox_fitment!=0 OR ecu_fitment!=0 OR dtc_fitment!=0 OR repair_use_allowed!=0 OR diagnostic_execution_allowed!=0 OR length(source_row_sha256)!=64 OR source_snapshot_sha256!=? OR source_manifest_sha256!=?"
     ).get(manifest.source_snapshot_sha256, manifest.source_manifest_sha256).n;
@@ -142,7 +148,7 @@ function verify(root) {
         source.market_scope !== "UNKNOWN" || source.applicability_precision !== "community_engine_code_candidate_only" ||
         source.review_status !== "candidate" || source.source_snapshot_sha256 !== manifest.source_snapshot_sha256 ||
         source.source_manifest_sha256 !== manifest.source_manifest_sha256 || counts.sourceDocuments !== 4 ||
-        counts.candidateRows !== 241 || counts.uniqueCandidateCodes !== 241 || invalid !== 0) {
+        counts.candidateRows !== 241 || counts.uniqueCandidateCodes !== 241 || invalid !== 0 || candidateContentSha256 !== entry.candidate_content_sha256) {
       throw new Error("Wikipedia candidate SQLite rights/count/applicability gate failed");
     }
     const pageRows = db.prepare("SELECT revision_id,source_url,wikitext_sha256,rendered_html_sha256,source_snapshot_sha256 FROM source_documents ORDER BY revision_id").all();
@@ -156,7 +162,7 @@ function verify(root) {
         throw new Error("Wikipedia SQLite source revision mismatch: " + page.revision_id);
       }
     }
-    return { base, entry, manifest, sourceManifest, provenance, files, counts };
+    return { base, entry, manifest, sourceManifest, provenance, files, counts, wikitextSnapshotSha256, candidateContentSha256 };
   } finally {
     db.close();
   }
@@ -203,6 +209,8 @@ function getSummary(root) {
     sourceHeadSha: pack.entry.source_head_sha,
     sourceEvent: pack.entry.source_event,
     sourceRef: pack.entry.source_ref,
+    wikitextSnapshotSha256: pack.wikitextSnapshotSha256,
+    candidateContentSha256: pack.candidateContentSha256,
     attributionSha256: pack.manifest.attribution_sha256,
     licenseNoticeSha256: pack.manifest.license_notice_sha256,
     attributionText,
