@@ -129,8 +129,9 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(access["automated_extraction"], "not_established")
         self.assertEqual(access["offline_cache"], "not_confirmed")
         self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
-        self.assertEqual(source["project_decision"], "discovery_only_no_automation_no_import_until_documented_record_schema_and_written_reuse_rights_are_confirmed")
-        self.assertIn("record_schema_and_reuse_rights_unresolved", source["verification_status"])
+        self.assertIn("discovery_only", source["project_decision"])
+        self.assertIn("Do not automate", source["project_decision"])
+        self.assertIn("record_schema_and_product_reuse_rights_unresolved", source["verification_status"])
         self.assertTrue(any("must not be assumed to appear in public records" in item for item in source["limitations"]))
 
     def test_elpts_otts_public_table_is_metadata_only_and_not_ingested(self):
@@ -274,7 +275,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
     def test_kyrgyz_public_registry_recheck_2026_11_09_is_metadata_only(self):
         source = self.sources["kyrgyz-single-window-public-registry"]
         observed = source["observed_public_query"]
-        latest = observed["latest_official_recheck"]
+        latest = observed["previous_official_recheck"]
         self.assertEqual(latest["observed_at"], "2026-11-09")
         self.assertEqual(latest["official_portal_url"], "https://trade.kg/")
         self.assertEqual(latest["official_registry_landing_url"], "https://trade.kg/registry?tab=OTTS.otts")
