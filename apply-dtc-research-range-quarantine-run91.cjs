@@ -210,7 +210,7 @@ function classifyDtcNamespace(code) {
   nextUi = replaceOnce(
     nextUi,
     '<small>GENERIC SAE/ISO OBD-II · {row.category || "без категории"}</small>',
-    '<small>{row.namespace === "generic_sae_iso_obd2" ? "GENERIC SAE/ISO RANGE" : "DTC RANGE QUARANTINE"} · название/категория OBDex (не проверены): {row.category || "без категории"}</small>',
+    '<small>{row.namespace === "generic_sae_iso_obd2" ? "GENERIC SAE/ISO OBD-II" : "DTC RANGE QUARANTINE"} · название/категория OBDex (не проверены): {row.category || "без категории"}</small>',
     "OBDex DTC namespace label",
   );
   nextUi = replaceOnce(
@@ -369,7 +369,7 @@ test("run91 namespace policy is included in the packaged offline runtime", () =>
 
 test("run91 DTC research UI distinguishes generic rows from unresolved namespace quarantine", () => {
   const source = require("node:fs").readFileSync(path.resolve(__dirname, "../components/local-research-catalog.tsx"), "utf8");
-  assert.ok(source.includes('row.namespace === "generic_sae_iso_obd2" ? "GENERIC SAE/ISO RANGE" : "DTC RANGE QUARANTINE"'));
+  assert.ok(source.includes('row.namespace === "generic_sae_iso_obd2" ? "GENERIC SAE/ISO OBD-II" : "DTC RANGE QUARANTINE"'));
   assert.ok(source.includes('row.allocationStatus === "generic_range_unreviewed" ? "RESEARCH ONLY" : "QUARANTINE"'));
   assert.match(source, /row\.allocationWarning/);
   assert.ok(source.includes("sourceRecordSha256?: string;"));
