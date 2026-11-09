@@ -9,6 +9,13 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/build-eea-vag-approval-research-pack.yml"
+      - "scripts/build_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_co2_source_rights.py"
+      - "docs/research/EEA_VAG_APPROVAL_VARIANTS_RESEARCH_PACK_2026-11-10.md"
+      - "docs/EAEU_OTTS_REGISTRY_IMPORT.md"
+      - "tests/test_eaeu_otts_registry_manifest.py"
       - ".github/patches/desktop-source-run76/**"
       - ".github/workflows/build-windows-offline-data-packs.yml"
       - ".github/workflows/windows-10-11-native-lifecycle.yml"
@@ -150,6 +157,13 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - ".github/workflows/build-eea-vag-approval-research-pack.yml"
+      - "scripts/build_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_co2_source_rights.py"
+      - "docs/research/EEA_VAG_APPROVAL_VARIANTS_RESEARCH_PACK_2026-11-10.md"
+      - "docs/EAEU_OTTS_REGISTRY_IMPORT.md"
+      - "tests/test_eaeu_otts_registry_manifest.py"
       - ".github/patches/desktop-source-run76/**"
       - ".github/workflows/build-windows-offline-data-packs.yml"
       - ".github/workflows/windows-10-11-native-lifecycle.yml"
@@ -325,6 +339,13 @@ jobs:
           python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "Offline data-pack rights tests failed." }
+          python -m py_compile scripts/build_eea_vag_approval_research_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "EEA research pack builder syntax check failed." }
+          python -m unittest discover -s tests -p "test_eea_vag_approval_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "EEA research pack regression tests failed." }
+          python tests/test_eea_co2_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "EEA published CC BY 4.0 rights gate failed." }
           python tests/test_otts_bot_source_rights.py
           python tests/test_vag_hub_source_rights.py
           python tests/test_hpt_su_source_rights.py

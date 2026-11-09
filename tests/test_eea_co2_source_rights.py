@@ -41,6 +41,13 @@ class EeaCo2SourceRightsTests(unittest.TestCase):
         self.assertFalse(self.source["data_ingested"])
         self.assertFalse(self.source["product_import_allowed"])
         self.assertIsNone(self.source["source_snapshot_sha256"])
+        attempt = acquisition["last_acquisition_attempt"]
+        self.assertEqual(attempt["http_status"], 403)
+        self.assertFalse(attempt["dataset_bytes_received"])
+        self.assertIsNone(attempt["response_body_sha256"])
+        self.assertEqual(acquisition["last_acquisition_attempt_status"], "http_403_forbidden_from_azure_application_gateway_v2_on_github_hosted_windows_2025_runner")
+        self.assertIn("Microsoft-Azure-Application-Gateway/v2", attempt["response_summary"])
+        self.assertIn("self-hosted runner", attempt["next_step"])
 
     def test_type_approval_variant_is_not_engine_gearbox_fitment(self):
         applicability = self.source["applicability"]

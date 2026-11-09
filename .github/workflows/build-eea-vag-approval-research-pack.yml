@@ -1,0 +1,88 @@
+name: Validate and acquire EEA VAG type-approval variant research pack
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-eea-vag-approval-research-pack.yml"
+      - "scripts/build_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_co2_source_rights.py"
+      - "data/source-manifests/vag-factory-source-register.json"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-eea-vag-approval-research-pack.yml"
+      - "scripts/build_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_vag_approval_research_pack.py"
+      - "tests/test_eea_co2_source_rights.py"
+      - "data/source-manifests/vag-factory-source-register.json"
+  workflow_dispatch:
+    inputs:
+      run_live_acquisition:
+        description: "Run the public EEA SQL acquisition from an owner-controlled Windows 10/11 x64 runner with authorized EEA network access."
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eea-vag-approval-research-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-tooling:
+    name: Validate EEA source rights and candidate-only SQLite tooling (Windows x64)
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned source
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+      - name: Compile EEA builder and run unit tests
+        run: |
+          python -m py_compile scripts/build_eea_vag_approval_research_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "EEA builder syntax check failed." }
+          python -m unittest discover -s tests -p "test_eea_vag_approval_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "EEA research pack regression tests failed." }
+      - name: Verify EEA published CC BY 4.0 rights gate
+        run: python tests/test_eea_co2_source_rights.py
+      - name: Verify full source-register rights gate
+        run: python -m unittest discover -s tests -p "test_sync_vag_source_register_source_rights.py" -v
+
+  acquire-live-data:
+    name: Acquire EEA data from owner-controlled Windows 10/11 x64 runner
+    if: github.event_name == 'workflow_dispatch' && inputs.run_live_acquisition == true
+    runs-on: [self-hosted, windows, x64, vag-tech-pro-win10-11]
+    timeout-minutes: 60
+    steps:
+      - name: Checkout pinned source
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+      - name: Re-run source and builder checks on the owner runner
+        run: |
+          python -m unittest discover -s tests -p "test_eea_vag_approval_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "EEA research pack regression tests failed." }
+          python tests/test_eea_co2_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "EEA rights gate failed." }
+      - name: Acquire exact core VAG makes from pinned EEA 2024F and 2025P tables
+        run: python scripts/build_eea_vag_approval_research_pack.py --source-manifest data/source-manifests/vag-factory-source-register.json --out eea-vag-approval-pack
+      - name: Re-open SQLite and verify every page, row hash and non-fitment gate
+        run: python scripts/build_eea_vag_approval_research_pack.py --verify --out eea-vag-approval-pack
+      - name: Upload separately licensed EEA research pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: eea-vag-type-approval-variants-${{ github.run_id }}
+          path: eea-vag-approval-pack/**
+          if-no-files-found: error
+          retention-days: 30

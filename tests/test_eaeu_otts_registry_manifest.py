@@ -250,5 +250,23 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertEqual(source["access_and_reuse"]["redistribution"], "not_confirmed")
 
 
+    def test_decision_232_annex_fields_are_not_public_query_or_vag_fitment_evidence(self):
+        source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
+        attachment = source["normative_attachment_schema"]
+        self.assertIn("Коробка передач (марка, тип)", attachment["observed_form_fields_ru"])
+        self.assertIn("Блок управления (маркировка)", attachment["observed_form_fields_ru"])
+        self.assertIn("Число передач и передаточные числа", attachment["observed_form_fields_ru"])
+        self.assertEqual(attachment["relevant_form_effective_from"], "2026-10-08")
+        self.assertEqual(attachment["public_query_exposure"], "not_established; the 2026-11-06 ELPTS visible summary table did not expose engine code, gearbox code or a powertrain pair. Its printed-form column is only a possible document route; no filled attachment was retrieved in this review.")
+        self.assertIn("not automatically a VAG three-letter engine code", attachment["raw_value_semantics"])
+        self.assertIn("unverified same-annex/same-variant candidate", attachment["pairing_rule"])
+        self.assertEqual(attachment["reuse_rights_effect"], "none; this is a normative blank-form schema reference. It does not grant bulk extraction, offline caching, product display, commercial reuse or redistribution rights for filled OTTS/OTSH documents.")
+        self.assertFalse(source["data_ingested"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        documentation = (ROOT / "docs" / "EAEU_OTTS_REGISTRY_IMPORT.md").read_text(encoding="utf-8")
+        self.assertIn("Decision No. 232", documentation)
+        self.assertIn("homologation-form fields", documentation)
+        self.assertIn("not proof that the current public summary/search endpoint exposes", documentation)
+
 if __name__ == "__main__":
     unittest.main()
