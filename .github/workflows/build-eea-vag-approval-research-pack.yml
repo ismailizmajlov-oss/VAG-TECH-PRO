@@ -39,7 +39,9 @@ jobs:
           architecture: "x64"
       - name: Run EEA rights, SQL and candidate-only regression tests
         run: python -m unittest discover -s tests -p "test_eea_vag_approval_research_pack.py" -v
-      - name: Verify source-register rights gate
+      - name: Verify EEA published CC BY 4.0 rights gate
+        run: python -m unittest discover -s tests -p "test_eea_co2_source_rights.py" -v
+      - name: Verify full source-register rights gate
         run: python -m unittest discover -s tests -p "test_sync_vag_source_register_source_rights.py" -v
       - name: Acquire exact core VAG makes from pinned EEA 2024F and 2025P tables
         run: python scripts/build_eea_vag_approval_research_pack.py --source-manifest data/source-manifests/vag-factory-source-register.json --out eea-vag-approval-pack
