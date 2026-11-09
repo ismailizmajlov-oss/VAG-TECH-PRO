@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-11-09",
+  "reviewed_at": "2026-11-10",
   "product_market": [
     "RU",
     "EAEU"
@@ -1665,7 +1665,7 @@
       "hash_status": "not_downloaded_no_ingestion",
       "applicability_precision": "type_approval_document_metadata_only",
       "observed_public_query": {
-        "observed_at": "2026-11-07",
+        "observed_at": "2026-11-10",
         "registry_status": "pilot",
         "login_required": false,
         "search_route": "https://smart.trade.kg/registry?lng=ru",
@@ -1684,32 +1684,46 @@
         "result_retrieval_independently_tested": false,
         "engine_fields_in_application_form": true,
         "engine_fields_in_public_record_schema": "not_established",
-        "note": "The no-login public search route is documented by trade.kg. The separate cert.trade.kg landing page shows one OTTS and zero OTSH UI counters; these are not verified corpus counts. Neither observation grants automated extraction, bulk export, offline caching, display or redistribution rights.",
+        "note": "Official no-login pilot and privacy policy rechecked 2026-11-10. Privacy policy says search/document-check requests are sent to the server but VIN/document number/search text are excluded from analytics and not linked to the visitor. This is not a reuse licence. No record rows/schema were retrieved.",
         "summary_source_url": "https://cert.trade.kg/",
         "otts_summary_count": 1,
         "otsh_summary_count": 0,
         "latest_official_recheck": {
-          "observed_at": "2026-11-09",
-          "official_portal_url": "https://trade.kg/",
-          "official_portal_observation": "The State Enterprise homepage says public registers are open without registration and lists OTTS/OTSH search by approval number, make and model.",
-          "official_registry_landing_url": "https://trade.kg/registry?tab=OTTS.otts",
-          "official_registry_landing_observation": "The official OTTS/OTSH register page links to the smart.trade.kg public-registry application.",
+          "observed_at": "2026-11-10",
+          "official_homepage_url": "https://trade.kg/",
+          "homepage_observation": "The operator's homepage says public registers are open without registration and lists OTTS/OTSH lookup by approval number, make and model.",
+          "official_registry_landing_url": "https://trade.kg/registry",
+          "registry_landing_observation": "The registry landing page links to https://smart.trade.kg/registry?lng=ru; the landing page itself contains no record rows.",
           "public_registry_project_url": "https://trade.kg/projects/public-registry",
-          "public_registry_project_observation": "The operator still describes the public registry as a pilot, says login is not required, and says issued documents are published for public lookup by VIN or document number without displaying personal data.",
+          "public_registry_project_observation": "The operator continues to label the public registry a pilot; no login is required; issued documents can be checked by VIN or document number; the operator says personal data are not displayed.",
+          "vehicle_approval_project_url": "https://trade.kg/projects/vehicles",
+          "vehicle_approval_project_observation": "The separate car.trade.kg application workflow is intended for certification bodies and experts. Its application form collects engine and other vehicle characteristics, but those input fields are not evidence of the public record schema.",
           "smart_registry_url": "https://smart.trade.kg/registry?lng=ru",
           "smart_registry_page_observation": "The JavaScript application returned no readable record rows in the reviewed page extraction; no record schema or individual OTTS record was verified.",
-          "summary_source_url": "https://cert.trade.kg/",
-          "ot_ts_summary_count": 1,
-          "otsh_summary_count": 0,
-          "count_treatment": "portal_summary_counters_only_not_a_verified_complete_or_stable_public_register_count",
+          "privacy_policy_review": {
+            "url": "https://trade.kg/privacy",
+            "reviewed_at": "2026-11-10",
+            "no_login_for_information_site": true,
+            "cookies_set_by_site": false,
+            "third_party_analytics": false,
+            "anonymized_operator_analytics": true,
+            "analytics_excludes_search_text_document_number_and_vin": true,
+            "search_request_sent_to_server": true,
+            "query_document_number_and_vin_not_linked_to_visitor": true,
+            "reuse_license_granted": false,
+            "interpretation": "Privacy handling description only; not a dataset licence or permission for automated acquisition, bulk export, offline caching, third-party display or redistribution."
+          },
           "record_rows_observed": false,
           "record_schema_retrieved": false,
           "result_retrieval_independently_tested": false,
           "documented_api_identified": false,
           "bulk_export_documented": false,
           "source_bytes_downloaded": false,
+          "vin_or_document_query_submitted": false,
+          "personal_values_collected": false,
           "source_snapshot_sha256": null,
-          "rights_effect": "none; no-login public lookup does not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights"
+          "count_treatment": "No corpus count was established; previous cert.trade.kg UI counters remain unverified landing-page observations only.",
+          "rights_effect": "none; public no-login lookup and the privacy policy do not establish automated extraction, bulk reuse, persistent offline caching, third-party display or redistribution rights."
         }
       },
       "access_and_reuse": {
@@ -1722,7 +1736,7 @@
         "offline_cache": "not_confirmed",
         "redistribution": "not_confirmed"
       },
-      "verification_status": "official_public_register_pilot_and_no_login_route_observed_record_schema_and_reuse_rights_unresolved",
+      "verification_status": "official_public_registry_pilot_no_login_and_privacy_policy_rechecked_2026-11-10; record_schema_and_product_reuse_rights_unresolved",
       "limitations": [
         "The public registry is described by the operator as a pilot; no complete corpus count or coverage statement is established.",
         "The homepage's one-OTTS summary is a portal counter only and is not treated as a current, complete or independently verified corpus count.",
@@ -1731,10 +1745,45 @@
         "No dataset-specific open licence or written permission for automated extraction, bulk export, offline caching, third-party display or redistribution was identified.",
         "No documented API, bulk export contract or reproducible dataset snapshot was identified.",
         "No exact VAG engine code, gearbox code, engine/gearbox pairing, ECU, DTC or repair applicability was established.",
-        "The older sbkts.trade.kg/otts route was previously observed with a CAPTCHA gate; it is retained as a separate legacy interface and no CAPTCHA was bypassed."
+        "The older sbkts.trade.kg/otts route was previously observed with a CAPTCHA gate; it is retained as a separate legacy interface and no CAPTCHA was bypassed.",
+        "The 2026-11-10 privacy policy says search/document-check requests are sent to the server, while search text, document number and VIN are excluded from analytics and not linked to the visitor; this describes privacy handling, not data reuse permission.",
+        "The operator's statement that personal data are not displayed on the public registry does not replace field-level inspection of an actual returned record; no record was retrieved.",
+        "The public registry landing page links to a JavaScript application that yielded no readable record rows in this review; no documented machine-readable API or bulk export was identified."
       ],
-      "evidence_status": "Official State Enterprise homepage, public-registry landing page, public-registry project page, cert.trade.kg summary and smart.trade.kg route rechecked 2026-11-09. The public lookup remains a pilot/no-login route, but no record rows or schema were retrieved; one OTTS and zero OTSH are portal summary counters only. No source bytes were downloaded and reuse rights remain unresolved.",
-      "project_decision": "discovery_only_no_automation_no_import_until_documented_record_schema_and_written_reuse_rights_are_confirmed"
+      "evidence_status": "Official homepage, registry landing page, public-registry project page, vehicle-approval workflow page, privacy policy and smart registry route reviewed 2026-11-10. No records, schema, API, export or source bytes retrieved; rights remain unresolved.",
+      "project_decision": "discovery_only. The official public pilot and privacy handling are documented, but no record schema, machine-readable API, bulk export or product reuse rights are established. Do not automate, cache, bundle, display or redistribute records until the operator confirms the resource classification, record owner/metadata terms and reuse scope in writing or a formal legal review clears those points.",
+      "evidence_reviewed": [
+        {
+          "url": "https://trade.kg/",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Current operator homepage states public registers are open without registration and lists OTTS/OTSH lookup by approval number, make and model."
+        },
+        {
+          "url": "https://trade.kg/registry",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official registry landing page links to the smart.trade.kg public-registry JavaScript application; no record rows are embedded in the landing page."
+        },
+        {
+          "url": "https://trade.kg/projects/public-registry",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official project page still labels the public registry a pilot, says no login is required, allows public lookup by VIN/document number, and states personal data are not displayed."
+        },
+        {
+          "url": "https://trade.kg/projects/vehicles",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Official vehicle-approval application page says the separate application workflow is for certification bodies and experts and includes engine fields in application input; these are not public record-schema evidence."
+        },
+        {
+          "url": "https://trade.kg/privacy",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Privacy policy says site has no cookies or third-party analytics; operator analytics are anonymized and exclude search text, document number and VIN; document-search requests are sent to the server but are not linked to the visitor. This is not a reuse licence."
+        },
+        {
+          "url": "https://smart.trade.kg/registry?lng=ru",
+          "reviewed_at": "2026-11-10",
+          "evidence": "Public JavaScript registry route returned no readable record rows or schema in the reviewed page extraction; no query was submitted."
+        }
+      ]
     },
     {
       "source_id": "armstandard-am-otts-public-register",
