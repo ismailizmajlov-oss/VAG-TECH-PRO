@@ -128,7 +128,7 @@ function sync(packRootArg, researchRootArg) {
   const researchRoot = safeRoot(researchRootArg);
   if (!fs.statSync(packRoot).isDirectory() || !fs.statSync(researchRoot).isDirectory()) fail("Pack and research roots must be existing directories");
   const index = readJson(safeJoin(packRoot, "offline-data-pack-index.json"));
-  if (index.schema_version !== 1 || index.bundle_status !== "verified_offline_data_packs_not_installer" || index.target_platform !== "windows-x64" || index.database_count !== 4) fail("Offline data-pack index is not a verified Windows x64 three-database bundle");
+  if (index.schema_version !== 1 || index.bundle_status !== "verified_offline_data_packs_not_installer" || index.target_platform !== "windows-x64" || index.database_count !== 4) fail("Offline data-pack index is not a verified Windows x64 four-database bundle");
   const byId = Object.fromEntries((index.packs || []).map((item) => [item.pack_id, item]));
   const required = ["obdex-generic-cc0", "obdb-vag-signals-cc-by-sa", "vehiclesdb-vag-identity"];
   for (const id of required) if (!byId[id]) fail(`Offline data-pack bundle is missing ${id}`);
