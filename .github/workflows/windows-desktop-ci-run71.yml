@@ -326,6 +326,7 @@ jobs:
           python scripts/test_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
           python tests/test_otts_bot_source_rights.py
+          python tests/test_vag_hub_source_rights.py
           python tests/test_hpt_su_source_rights.py
           python tests/test_cars_base_source_rights.py
           python tests/test_elpts_reference_rights_gate.py
