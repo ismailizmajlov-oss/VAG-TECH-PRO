@@ -23,10 +23,12 @@ function createFixture() {
     const file = path.join(desktop, relative);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, relative === "electron/main.cjs" ? [
+      'let mainWindow;',
       '    const url = `http://127.0.0.1:${port}`;',
       '    await waitForServer(url, serverProcess, 45000, () => !serverExited);',
       '    await mainWindow.loadURL(url);',
       '      env: { ...process.env, PORT: String(port), HOSTNAME: "127.0.0.1", NODE_ENV: "production", VAG_TECH_PRO_DATA_DIR: dataRoot, VAG_TECH_PRO_DB_PATH: process.env.VAG_TECH_PRO_DB_PATH, VAG_TECH_PRO_RESEARCH_DIR: researchRoot },',
+      'module.exports = { reserveLoopbackPort, resolveRuntimeDirectory, probeHttp, waitForServer };',
     ].join("\n") : "fixture\n", "utf8");
   }
   fs.mkdirSync(path.join(desktop, "tests"), { recursive: true });
@@ -49,6 +51,8 @@ test("run90 creates an isolated offline route and binds Electron to it", () => {
     assert.match(main, /loadURL\(desktopUrl\)/);
     assert.match(main, /VAG_TECH_PRO_DESKTOP_OFFLINE/);
     assert.match(main, /delete runtimeEnv\[key\]/);
+    assert.match(main, /function buildRuntimeEnvironment/);
+    assert.match(main, /module\\.exports = \\{[^}]*buildRuntimeEnvironment/);
     assert.match(route, /LocalOfflineWorkspace/);
     assert.doesNotMatch(route, /createClient|supabase|https?:\/\//i);
     assert.ok(pkg.scripts["test:desktop"].includes("tests/desktop-offline-entry-run90.test.cjs"));
