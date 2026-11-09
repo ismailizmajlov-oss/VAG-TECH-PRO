@@ -62,18 +62,26 @@ const newUrlBlock = [
 ].join("\n");
 main = replaceExactly(main, oldUrlBlock, newUrlBlock, "Electron desktop route readiness");
 main = replaceExactly(main, '    await mainWindow.loadURL(url);', '    await mainWindow.loadURL(desktopUrl);', "Electron desktop route navigation");
+const runtimeHelper = [
+  'function buildRuntimeEnvironment(baseEnv, port, dataRoot, databasePath, researchRoot) {',
+  '  const runtimeEnv = { ...baseEnv, PORT: String(port), HOSTNAME: "127.0.0.1", NODE_ENV: "production", VAG_TECH_PRO_DATA_DIR: dataRoot, VAG_TECH_PRO_DB_PATH: databasePath, VAG_TECH_PRO_RESEARCH_DIR: researchRoot, VAG_TECH_PRO_DESKTOP_OFFLINE: "1" };',
+  '  for (const key of ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]) delete runtimeEnv[key];',
+  '  return runtimeEnv;',
+  '}',
+  'let mainWindow;'
+].join("\n");
+main = replaceExactly(main, "let mainWindow;", runtimeHelper, "Electron offline-only runtime environment helper");
 const oldRuntimeEnv = [
   '      env: { ...process.env, PORT: String(port), HOSTNAME: "127.0.0.1", NODE_ENV: "production", VAG_TECH_PRO_DATA_DIR: dataRoot, VAG_TECH_PRO_DB_PATH: process.env.VAG_TECH_PRO_DB_PATH, VAG_TECH_PRO_RESEARCH_DIR: researchRoot },'
 ].join("\n");
 const newRuntimeEnv = [
-  '      env: (() => {',
-  '        const runtimeEnv = { ...process.env, PORT: String(port), HOSTNAME: "127.0.0.1", NODE_ENV: "production", VAG_TECH_PRO_DATA_DIR: dataRoot, VAG_TECH_PRO_DB_PATH: process.env.VAG_TECH_PRO_DB_PATH, VAG_TECH_PRO_RESEARCH_DIR: researchRoot, VAG_TECH_PRO_DESKTOP_OFFLINE: "1" };',
-  '        for (const key of ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]) delete runtimeEnv[key];',
-  '        return runtimeEnv;',
-  '      })(),'
+  '      env: buildRuntimeEnvironment(process.env, port, dataRoot, process.env.VAG_TECH_PRO_DB_PATH, researchRoot),'
 ].join("\n");
 main = replaceExactly(main, oldRuntimeEnv, newRuntimeEnv, "Electron offline-only runtime environment");
-if (!main.includes('const desktopUrl = `${url}/desktop`;') || !main.includes('await mainWindow.loadURL(desktopUrl);') || !main.includes('VAG_TECH_PRO_DESKTOP_OFFLINE: "1"') || !main.includes('delete runtimeEnv[key]')) {
+const oldExports = 'module.exports = { reserveLoopbackPort, resolveRuntimeDirectory, probeHttp, waitForServer };';
+const newExports = 'module.exports = { reserveLoopbackPort, resolveRuntimeDirectory, buildRuntimeEnvironment, probeHttp, waitForServer };';
+main = replaceExactly(main, oldExports, newExports, "Electron offline environment test export");
+if (!main.includes('const desktopUrl = `${url}/desktop`;') || !main.includes('await mainWindow.loadURL(desktopUrl);') || !main.includes('function buildRuntimeEnvironment(') || !main.includes('VAG_TECH_PRO_DESKTOP_OFFLINE: "1"') || !main.includes('delete runtimeEnv[key]') || !main.includes('buildRuntimeEnvironment(process.env, port, dataRoot, process.env.VAG_TECH_PRO_DB_PATH, researchRoot)')) {
   throw new Error("Electron offline-only entry verification failed.");
 }
 writeLf(mainPath, main);
