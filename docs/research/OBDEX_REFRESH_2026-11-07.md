@@ -43,7 +43,7 @@ misapplied to third-party source documents.
 - Market scope: `UNKNOWN`; no RU/EAEU, EU or North-American market claim.
 - Manufacturer-specific ranges remain excluded: P1xxx, P30xx–P33xx, B1xxx–B2xxx,
   C1xxx–C2xxx and U1xxx–U2xxx.
-- Only P34xx records are admitted from the mixed P3 family (155 records in this pinned snapshot). P35xx–P39xx remain excluded until the source and each code's standardized status are independently established.
+- All 155 P34xx records remain in the isolated research pack only. P34xx-P39xx are excluded from normalized generic and VAG-specific namespaces until exact current J2012DA allocation is independently established.
 - VAG-specific DTC rows: 0.
 - Exact vehicle, generation, model-year, engine, gearbox, ECU and PR-code fitment: none.
 - Repair-cost estimates and generic repair suggestions are not presented as VAG OEM procedures.
@@ -69,7 +69,7 @@ The Windows offline data-pack workflow completed successfully on 2026-11-07:
 - Packaged OBDex SQLite SHA-256: `1a6e98bb99495e584aa3606848acd8aac86f7959f1609a577d5ff43e816adb5a`.
 - OBDex source-manifest SHA-256: `d8bd107da550e826e4199311e54d993cfdef736ed31749c29e94961ea3d90fa2`.
 - Counts: 9,533 generic DTC identifiers and 132 generic PIDs; 0 VAG-specific DTC rows, 0 exact-vehicle fitment claims and 0 production rows.
-- The mixed P3 family contributes only 155 P34xx records in this pinned snapshot. P35xx–P39xx are explicitly excluded until their generic standardized status is independently established.
-- An independent read-only check of the database extracted from the final offline bundle returned `PRAGMA integrity_check=ok`, zero foreign-key violations, 9,533 DTC rows and 132 PID rows. All P3 rows are P34; no manufacturer-specific namespace or vehicle-fitment claim is present.
+- The mixed P3 family contributes 155 upstream-labelled P34xx records in this pinned snapshot. All P34xx-P39xx are quarantined from normalized namespaces pending exact current J2012DA allocation evidence.
+- An independent read-only check of the database extracted from the final offline bundle returned `PRAGMA integrity_check=ok`, zero foreign-key violations, 9,533 DTC rows and 132 PID rows. All 155 P34xx rows are retained only in the research pack and are not admitted to normalized generic or VAG-specific DTC namespaces.
 
 The OBDex pack remains a separate source-labelled generic SAE/ISO research reference. Its 174 U3xxx rows are retained only in that isolated research pack; the local normalization policy does not promote them into the normalized product DTC index until exact current J2012DA assignments are independently verified. Its generic descriptions, causes and repair suggestions are not VAG factory repair instructions. Source URLs embedded in raw records are not fetched or displayed. The pack is included in the offline research bundle, but not merged into the production vehicle/technical catalog.
