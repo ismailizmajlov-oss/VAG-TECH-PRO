@@ -102,7 +102,16 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertEqual(lock["scope"]["excluded_manufacturer_controlled_ranges"], ["P1xxx", "P30xx-P33xx", "P35xx-P39xx", "B1xxx-B2xxx", "C1xxx-C2xxx", "U1xxx-U2xxx"])
         self.assertIs(lock["normalization_policy"]["research_pack_only"], True)
         self.assertIs(lock["normalization_policy"]["normalized_product_dtc_import_allowed"], False)
-        self.assertIn("U3xxx", lock["normalization_policy"]["unverified_ranges_for_normalized_import"])
+        self.assertEqual(lock["normalization_policy"]["unverified_ranges_for_normalized_import"], ["P34xx-P39xx", "U3xxx", "B3xxx", "C3xxx"])
+        display = lock["normalization_policy"]["display_policy"]
+        self.assertEqual(display["policy_id"], "vag-tech-pro-dtc-namespace-ranges")
+        self.assertEqual(display["policy_revision"], "run87-2026-11-08")
+        self.assertEqual(display["allowed_generic_ranges"], ["P0xxx", "P2xxx", "B0xxx", "C0xxx", "U0xxx"])
+        self.assertEqual(display["quarantined_unresolved_ranges"], ["P34xx-P39xx", "U3xxx", "B3xxx", "C3xxx"])
+        self.assertEqual(lock["expected_counts"]["searchable_generic_dtcs"], 9204)
+        self.assertEqual(lock["expected_counts"]["quarantined_unresolved_namespace_rows"], 329)
+        self.assertIs(display["upstream_generic_label_is_not_authoritative"], True)
+        self.assertIs(display["searchable_generic_only"], True)
         self.assertEqual(lock["source_reference_policy"], {
             "validation": "syntax_only",
             "external_fetch": False,
@@ -113,9 +122,19 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "acquire-obdex-cc0.yml").read_text(encoding="utf-8")
         self.assertIn("source_reference_policy = $lock.source_reference_policy", workflow)
         self.assertIn("const p3GenericCode = /^P34[0-9A-F]{2}$/;", workflow)
-        self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P34C8"))
-        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P3500"))
-        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P33FF"))
+        for code in ("P0ABC", "P2ABC", "B0ABC", "C0ABC", "U0ABC"):
+            self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch(code))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P34C8"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("U3000"))
+        self.assertTrue(MODULE.UNRESOLVED_RESERVED_DTC_RE.fullmatch("P34C8"))
+        self.assertTrue(MODULE.UNRESOLVED_RESERVED_DTC_RE.fullmatch("P39AB"))
+        self.assertTrue(MODULE.UNRESOLVED_RESERVED_DTC_RE.fullmatch("U3ABC"))
+        self.assertTrue(MODULE.UNRESOLVED_RESERVED_DTC_RE.fullmatch("B3ABC"))
+        self.assertTrue(MODULE.UNRESOLVED_RESERVED_DTC_RE.fullmatch("C3ABC"))
+        self.assertTrue(MODULE.UPSTREAM_OBDEX_LABELLED_CODE_RE.fullmatch("P34C8"))
+        self.assertTrue(MODULE.UPSTREAM_OBDEX_LABELLED_CODE_RE.fullmatch("U3ABC"))
+        self.assertFalse(MODULE.UPSTREAM_OBDEX_LABELLED_CODE_RE.fullmatch("P3500"))
+        self.assertFalse(MODULE.UPSTREAM_OBDEX_LABELLED_CODE_RE.fullmatch("P33FF"))
         self.assertIn("sourceManifest.scope.generic_code_ranges", workflow)
         self.assertIn("Non-generic or manufacturer-controlled DTC", workflow)
 
@@ -157,6 +176,8 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
         self.assertEqual(source["data_counts_as_published"]["vag_specific_dtc_rows"], 0)
         self.assertEqual(source["data_counts_as_published"]["production_rows"], 0)
+        self.assertEqual(source["data_counts_as_published"]["searchable_generic_dtc_rows"], 9204)
+        self.assertEqual(source["data_counts_as_published"]["unresolved_reserved_quarantined_rows"], 329)
         self.assertFalse(source["rights"]["source_reference_policy"]["external_fetch"])
         self.assertTrue(source["rights"]["source_references_quarantined"])
 
@@ -173,6 +194,12 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn("P34xx", allowed)
         self.assertNotIn("P34xx-P39xx", allowed)
         self.assertIn("normalization.normalized_product_dtc_import_allowed", sync_source)
+        self.assertIn("namespacePolicy.policy_id", sync_source)
+        self.assertIn("searchable_generic_dtcs", sync_source)
+        self.assertIn("quarantined_unresolved_namespace_rows", sync_source)
+        display = lock["normalization_policy"]["display_policy"]
+        self.assertIn("P34xx-P39xx", display["quarantined_unresolved_ranges"])
+        self.assertNotIn("P34xx", display["allowed_generic_ranges"])
         builder_source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
         self.assertIn("OBDEX_LOCK_PATH", builder_source)
         self.assertIn("normalization_policy", builder_source)
@@ -233,6 +260,27 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["diagnostic_execution_allowed"])
         self.assertFalse(source["repair_advice_approved"])
+
+
+    def test_obdex_upstream_labelled_p34_and_u3_rows_are_not_searchable_generic(self):
+        lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
+        display = lock["normalization_policy"]["display_policy"]
+        self.assertEqual(display["expected_searchable_generic_dtcs"], 9204)
+        self.assertEqual(display["expected_quarantined_unresolved_namespace_rows"], 329)
+        self.assertEqual(display["expected_unclassified_rows"], 0)
+        self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P0300"))
+        self.assertTrue(MODULE.GENERIC_OBD_CODE_RE.fullmatch("U0100"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("P3400"))
+        self.assertFalse(MODULE.GENERIC_OBD_CODE_RE.fullmatch("U3000"))
+        self.assertTrue(MODULE.UNRESOLVED_RESERVED_DTC_RE.fullmatch("P3400"))
+        self.assertTrue(MODULE.UNRESOLVED_RESERVED_DTC_RE.fullmatch("U3000"))
+        builder = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
+        self.assertIn("DTC_NAMESPACE_POLICY_PATH", builder)
+        self.assertIn("unclassified_codes", builder)
+        self.assertIn("quarantined_unresolved_namespace_rows", builder)
+        sync = (ROOT / "scripts" / "sync-desktop-research-manifest.cjs").read_text(encoding="utf-8")
+        self.assertIn("namespace_policy: obdex.namespace_policy", sync)
+        self.assertIn("quarantined_unresolved_namespace_rows: obdex.counts.quarantined_unresolved_namespace_rows", sync)
 
 
 if __name__ == "__main__":
