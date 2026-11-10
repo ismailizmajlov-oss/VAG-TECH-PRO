@@ -48,7 +48,7 @@ class HptSuSourceRightsTests(unittest.TestCase):
         license_info = source["license"]
         self.assertEqual(license_info["commercial_use"], "internal_user_use_only_with_active_api_subscription")
         self.assertEqual(license_info["display_to_third_parties"],
-                         "prohibited_in_equivalent_database_form_without_written_consent")
+                         "not_authorized_as_equivalent_database_access_without_separate_written_consent")
         self.assertEqual(license_info["bulk_copy"], "prohibited")
         self.assertEqual(license_info["full_database_mirror"], "prohibited")
 
