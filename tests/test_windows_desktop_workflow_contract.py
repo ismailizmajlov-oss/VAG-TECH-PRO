@@ -529,6 +529,57 @@ def main() -> None:
     installer_build_marker = "      - name: Build first Windows x64 NSIS installer"
     if not (text.index(kba_integrate_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker)):
         raise SystemExit("KBA pack must be integrated and verified before desktop tests and NSIS packaging")
+    cardir_pipeline_paths = (
+        ".github/workflows/build-cardir-vag-open-data-pack.yml",
+        "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json",
+        "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md",
+        "scripts/build_cardir_vag_open_data_pack.py",
+        "scripts/integrate-cardir-vag-owner-manual-facts.cjs",
+        "tests/test_cardir_vag_open_data_pack.py",
+        "tests/test_cardir_vag_open_data_source_rights.py",
+        "desktop/cardir-vag-reference-facts-db.cjs",
+        "desktop/scripts/verify-cardir-vag-open-data-pack.cjs",
+        "desktop/tests/cardir-vag-reference-facts-db.test.cjs",
+        "desktop/tests/cardir-vag-reference-facts-ui-contract.test.cjs",
+    )
+    missing_cardir_pipeline_paths = [marker for marker in cardir_pipeline_paths if text.count(marker) < 2]
+    if missing_cardir_pipeline_paths:
+        raise SystemExit(f"CarDir source and desktop integration changes must trigger both push and pull-request validation: {missing_cardir_pipeline_paths}")
+    cardir_pipeline_steps = (
+        "python -m py_compile scripts/build_cardir_vag_open_data_pack.py",
+        'python -m unittest discover -s tests -p "test_cardir_vag_open_data_pack.py" -v',
+        "python tests/test_cardir_vag_open_data_source_rights.py",
+        "node --check scripts/integrate-cardir-vag-owner-manual-facts.cjs",
+        "Resolve CarDir VAG owner-manual facts pack for exact source revision",
+        "Download verified CarDir VAG owner-manual facts SQLite research pack",
+        "node scripts/integrate-cardir-vag-owner-manual-facts.cjs",
+        "node --test desktop-source/tests/cardir-vag-reference-facts-db.test.cjs desktop-source/tests/cardir-vag-reference-facts-ui-contract.test.cjs",
+        "node desktop-source/scripts/verify-cardir-vag-open-data-pack.cjs",
+        "cardir_vag_owner_manual_facts=run",
+        "facts=948; models=26; brands=5; parameters=19; market=UNKNOWN; research_only=true; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false",
+        "cardir_database_sha256",
+        "cardir_source_snapshot_sha256",
+        "cardir_vag_fact_count",
+    )
+    missing_cardir_pipeline_steps = [marker for marker in cardir_pipeline_steps if marker not in text]
+    if missing_cardir_pipeline_steps:
+        raise SystemExit(f"CarDir pack integration/NSIS verification pipeline is incomplete: {missing_cardir_pipeline_steps}")
+    cardir_script = ROOT / "scripts" / "integrate-cardir-vag-owner-manual-facts.cjs"
+    cardir_script_text = cardir_script.read_text(encoding="utf-8")
+    for required in ("snapshot.source_row_count === 44245", "snapshot.vag_row_count === 948", "sourceFile.source_row_count === 44245", "sourceFile.filtered_vag_row_count === 948", "counts.vagFacts === 948 && counts.vagBrands === 5 && counts.vagModels === 26 && counts.parameterKeys === 19"):
+        if required not in cardir_script_text:
+            raise SystemExit(f"CarDir integration script is not pinned to the reviewed source snapshot: {required}")
+    cardir_module = ROOT / "desktop" / "cardir-vag-reference-facts-db.cjs"
+    if not cardir_module.is_file() or "pack.counts.vag_facts === 948 && pack.counts.vag_models === 26 && pack.counts.vag_brands === 5" not in cardir_module.read_text(encoding="utf-8"):
+        raise SystemExit("CarDir desktop database module is missing or has stale snapshot counts")
+    cardir_verifier = ROOT / "desktop" / "scripts" / "verify-cardir-vag-open-data-pack.cjs"
+    if not cardir_verifier.is_file() or 'require("../lib/cardir-vag-reference-facts-db.cjs")' not in cardir_verifier.read_text(encoding="utf-8"):
+        raise SystemExit("CarDir verifier must resolve the database module from the staged scripts directory")
+    cardir_integrate_marker = "      - name: Integrate CarDir VAG owner-manual facts into offline desktop"
+    if not (text.index(kba_integrate_marker) < text.index(cardir_integrate_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker)):
+        raise SystemExit("CarDir pack must be integrated and verified after KBA and before desktop tests and NSIS packaging")
+    if "cardir_database_sha256=$($cardirSummary.databaseSha256)" not in text or "cardir_vag_owner_manual_facts_database_sha256 = $cardirDatabaseHash" not in text:
+        raise SystemExit("Packaged CarDir database and snapshot hashes must be retained in package verification and build metadata")
 
     metadata_marker = "      - name: Write build metadata"
     if metadata_marker not in text:
