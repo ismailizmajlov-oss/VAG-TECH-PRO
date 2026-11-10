@@ -111,7 +111,7 @@ function validatePack(repoRoot, packRoot, artifactSha) {
   assert(attribution.includes("CarDir") && attribution.includes("CC BY 4.0") && attribution.includes(SOURCE_URL), "CarDir attribution is incomplete");
   assert(license.includes("CC BY 4.0") && license.includes("creativecommons.org/licenses/by/4.0"), "CarDir license file is incomplete");
   assert(report.status === "verified_research_only" && report.database_sha256 === databaseHash && report.source_snapshot_sha256 === snapshotHash && report.exact_engine_gearbox_pair === false, "CarDir build report mismatch");
-  assert(snapshot.source_id === SOURCE_ID && snapshot.source_snapshot_sha256 === snapshotHash && snapshot.source_row_count === 44245 && snapshot.vag_row_count === 948, "CarDir snapshot evidence mismatch");
+  assert(snapshot.source_id === SOURCE_ID && snapshot.source_snapshot_sha256 === snapshotHash && snapshot.source_row_count === 44272 && snapshot.vag_row_count === 948, "CarDir snapshot evidence mismatch");
 
   const db = openReadOnly(databaseFile);
   let counts;
@@ -126,7 +126,7 @@ function validatePack(repoRoot, packRoot, artifactSha) {
     const registry = db.prepare("SELECT source_id,license_id,rights_status,market_scope,applicability_precision,research_pack_only,production_import,exact_engine_code,exact_gearbox_code,exact_engine_gearbox_pair,model_generation,model_year,ru_eaeu_applicability,ecu_fitment,dtc_fitment,repair_procedure FROM source_registry").get();
     assert(registry && registry.source_id === SOURCE_ID && registry.license_id === LICENSE_ID && registry.rights_status === rights.rights_status && registry.market_scope === "UNKNOWN" && registry.applicability_precision === "model_and_raw_qualifier_text" && registry.research_pack_only === 1 && registry.production_import === 0 && registry.exact_engine_code === 0 && registry.exact_gearbox_code === 0 && registry.exact_engine_gearbox_pair === 0 && registry.model_generation === 0 && registry.model_year === 0 && registry.ru_eaeu_applicability === 0 && registry.ecu_fitment === 0 && registry.dtc_fitment === 0 && registry.repair_procedure === 0, "CarDir SQLite source registry boundary failed");
     const sourceFile = db.prepare("SELECT sha256,byte_size,source_row_count,filtered_vag_row_count FROM source_files").get();
-    assert(sourceFile && sourceFile.sha256 === snapshotHash && sourceFile.byte_size === snapshot.source_file_bytes && sourceFile.source_row_count === 44245 && sourceFile.filtered_vag_row_count === 948, "CarDir SQLite source-file registry mismatch");
+    assert(sourceFile && sourceFile.sha256 === snapshotHash && sourceFile.byte_size === snapshot.source_file_bytes && sourceFile.source_row_count === 44272 && sourceFile.filtered_vag_row_count === 948, "CarDir SQLite source-file registry mismatch");
     const invalid = count(db, "SELECT count(*) AS n FROM facts WHERE source_id!='" + SOURCE_ID + "' OR publisher_verification_status!='publisher_verified' OR technical_review_status!='not_independently_reviewed' OR market_scope!='UNKNOWN' OR model_generation IS NOT NULL OR model_year_from IS NOT NULL OR model_year_to IS NOT NULL OR engine_code IS NOT NULL OR transmission_code IS NOT NULL OR exact_engine_gearbox_pair!=0 OR production_fitment!=0 OR ecu_fitment!=0 OR dtc_fitment!=0 OR repair_procedure!=0");
     const badHashes = count(db, "SELECT count(*) AS n FROM facts WHERE length(source_row_sha256)!=64 OR source_row_sha256 GLOB '*[^0-9a-f]*'");
     assert(invalid === 0 && badHashes === 0, "CarDir fact rows crossed research-only or provenance boundary");
