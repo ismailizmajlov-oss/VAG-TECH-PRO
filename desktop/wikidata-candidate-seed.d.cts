@@ -5,6 +5,7 @@ export type WikidataCandidateSeedResult = {
   inserted?: number;
   unchanged?: number;
   packageSha256?: string;
+  package_sha256?: string;
   packageKind?: string;
   source_id?: string;
   source_revision?: string;
