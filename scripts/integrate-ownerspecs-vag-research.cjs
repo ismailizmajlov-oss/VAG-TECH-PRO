@@ -4,12 +4,12 @@ const {DatabaseSync}=require("node:sqlite");
 const ID="ownerspecs-vag-vehicle-specs-research",SOURCE="ownerspecs-verified-vehicle-specs-cc-by-sa-4.0";
 const SOURCE_MANIFEST="data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json";
 const PIN={
- artifact:"441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3",
- source:"7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
- sourceManifest:"3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
- packManifest:"7d47964b15d787c9ae1ebf5a16b5f0fa2082d9bc64c0fbe7e44a660b8c299a57",
- database:"eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf",
- bytes:683641
+ artifact:"93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1",
+ source:"6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+ sourceManifest:"3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
+ packManifest:"35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd",
+ database:"572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683",
+ bytes:683533
 };
 function assert(v,m){if(!v)throw new Error(m);}
 function json(p){return JSON.parse(fs.readFileSync(p,"utf8").replace(/^\uFEFF/,""));}
@@ -112,7 +112,7 @@ function main(){
  const pack=walk(download),v=verify(repo,pack,a["artifact-sha256"]),research=safe(desktop,"data/research"),target=safe(research,ID);
  const register=json(safe(repo,"data/source-manifests/vag-factory-source-register.json"));
  const registered=register.sources.find(x=>x.source_id===SOURCE);
- assert(registered&&registered.research_pack_workflow_run_id===Number(a["source-run-id"])&&registered.research_pack_run_number===Number(a["source-run-number"])&&registered.research_pack_artifact_sha256===a["artifact-sha256"]&&registered.research_pack_source_commit==="c75eee82df6d97e44b89e8f9722fe5756777f580"&&registered.research_pack_artifact_id===13733448981,"OwnerSpecs source register run/artifact pin mismatch");
+ assert(registered&&registered.research_pack_workflow_run_id===Number(a["source-run-id"])&&registered.research_pack_run_number===Number(a["source-run-number"])&&registered.research_pack_artifact_sha256===a["artifact-sha256"]&&registered.research_pack_source_commit==="da635dd1b17131c6f33840c1601ba1ea24dccf08"&&registered.research_pack_artifact_id===13742090427,"OwnerSpecs source register run/artifact pin mismatch");
  assert(!fs.existsSync(target),"Refusing to overwrite OwnerSpecs pack in desktop staging");fs.mkdirSync(target,{recursive:true});
  const src=safe(repo,SOURCE_MANIFEST);
  const copy=[["ownerspecs-vag-research.sqlite",v.files.db],["manifest.json",v.files.manifest],["source.json",v.files.source],["source-snapshot.json",v.files.snapshot],["acquisition-snapshot.json",v.files.acquisition],["ATTRIBUTION.md",safe(pack,"ATTRIBUTION.md")],["LICENSE-REFERENCE.txt",safe(pack,"LICENSE-REFERENCE.txt")],["source-manifest.json",src]];
