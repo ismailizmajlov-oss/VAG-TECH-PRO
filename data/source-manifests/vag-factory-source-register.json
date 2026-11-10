@@ -8273,7 +8273,7 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending",
+      "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_verified_windows_server_2022_native_windows_10_11_pending",
       "research_pack": {
         "status": "verified_research_only",
         "research_pack_allowed": true,
@@ -8416,7 +8416,7 @@
             "review_status": "exact_multiset_comparison_verified; only CSV row order changed; new exact byte snapshot pinned and rebuilt into a separate research SQLite; no new VAG facts or applicability claims"
           }
         ],
-        "desktop_integration_status": "pending_windows_desktop_lifecycle",
+        "desktop_integration_status": "verified_windows_server_2022_x64_lifecycle_run1208_native_windows_10_11_pending",
         "database_sha256": "8536c2a545115334803733ed037d714e6b80bfdd65236bef7c72108a7c977a76",
         "database_byte_size": 1957888,
         "source_manifest_sha256": "965998c480be85ec2f26b1a14ce1bb268cc03810d89a8c7408af5867a751a818",
@@ -8559,7 +8559,65 @@
         "core_vag_page_url_changed_groups_since_previous_pinned_snapshot": 0,
         "source_rows_multiset_sha256": "af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f",
         "vag_rows_multiset_sha256": "6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0",
-        "source_row_hash_method": "SHA-256 of compact canonical UTF-8 JSON over original CSV field strings with sorted keys"
+        "source_row_hash_method": "SHA-256 of compact canonical UTF-8 JSON over original CSV field strings with sorted keys",
+        "research_database_included_in_desktop": true,
+        "desktop_lifecycle_evidence": {
+          "status": "verified_windows_server_2022_x64_lifecycle",
+          "workflow": "VAG TECH PRO Windows x64 desktop validation run91",
+          "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+          "run_id": 42760585201,
+          "run_number": 1208,
+          "build_job_id": 129645072379,
+          "compatibility_job_id": 129653714680,
+          "commit": "068eb5cbbb9cab1e05a18a31c13ac11d491c8d8f",
+          "environment": "Windows Server 2022 x64",
+          "checks": {
+            "clean_install": true,
+            "offline_launch": true,
+            "backup_restore": true,
+            "upgrade_from": "0.2.3",
+            "upgrade_to": "0.2.4",
+            "sqlite_user_data_preserved": true,
+            "uninstall_preserves_user_data": true
+          },
+          "offline_research_manifest_sha256": "6ecf43abbaa18b77465e100cc3a98d20d0bbbb2098cc12d06605af36df8d946c",
+          "offline_research_manifest_entries": 10,
+          "source_verification_file": "_temp/vag-tech-pro-run71-artifact/windows-lifecycle-staging/source-verification.txt",
+          "source_verification_sha256": "38843a5bda64437b960407b09d073d31dd799cfccfafe53e7f544fdc0656091c",
+          "source_verification_bytes": 9670,
+          "lifecycle_log_file": "VAG-TECH-PRO/VAG-TECH-PRO/windows-2022-lifecycle.log",
+          "lifecycle_log_sha256": "95467ddb72a7fd7f16baefbe842844699f039d0f332d752a7b4118d35d8281b7",
+          "lifecycle_log_bytes": 1232,
+          "build_metadata_file_sha256": "d480099a8b10c047d832f3776840cce911600e52fb90267af941752060fbe136",
+          "build_metadata_file_bytes": 8927,
+          "build_metadata_artifact_id": 13738805743,
+          "build_metadata_artifact_digest": "f42b5bb6b1c1e9c715b8de4f75fd2c62c80b76e4ecfc9367c8617beae5f3edce",
+          "build_metadata_artifact_expires_at": "2026-12-10T05:36:00Z",
+          "lifecycle_artifact_id": 13738433199,
+          "lifecycle_artifact_digest": "d1ea9e289bd3dab892fdf23e43928d07f4f9507645fc5639395b591c1cd7bf2d",
+          "lifecycle_artifact_expires_at": "2026-12-10T05:41:07Z",
+          "installer_artifact_id": 13738563172,
+          "installer_artifact_digest": "3c719bf1f69ab1ca34075b7df516e577bc7a517cbd6c515fd8da2308a8d725b7",
+          "installer_artifact_bytes": 1370625377,
+          "installer_artifact_expires_at": "2026-11-24T05:36:14Z",
+          "installers": [
+            {
+              "version": "0.2.3",
+              "file": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
+              "bytes": 568993133,
+              "sha256": "3f3128718a1df1d12c77930c4b16cde3b7c180bcc4003ed0d797907d80dd4e33"
+            },
+            {
+              "version": "0.2.4",
+              "file": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
+              "bytes": 568992965,
+              "sha256": "7c770600ace987c79828ae29c0589105b886584b29178da8cc0cb1d9aa9cdc5d"
+            }
+          ],
+          "signature_status": "unsigned",
+          "native_windows_10_11_verified": false,
+          "native_windows_10_11_status": "not_run_owner_runner_gate_disabled"
+        }
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json",
       "latest_source_snapshot_review": {
@@ -8709,9 +8767,67 @@
       "research_pack_source_manifest_sha256": "3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
       "product_database_ingested": false,
       "research_pack_source_commit": "c75eee82df6d97e44b89e8f9722fe5756777f580",
-      "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending",
-      "research_pack_desktop_integration_status": "pending_windows_desktop_lifecycle",
-      "research_pack_run_number": 64
+      "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_verified_windows_server_2022_native_windows_10_11_pending",
+      "research_pack_desktop_integration_status": "verified_windows_server_2022_x64_lifecycle_run1208_native_windows_10_11_pending",
+      "research_pack_run_number": 64,
+      "research_database_included_in_desktop": true,
+      "desktop_lifecycle_evidence": {
+        "status": "verified_windows_server_2022_x64_lifecycle",
+        "workflow": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "run_id": 42760585201,
+        "run_number": 1208,
+        "build_job_id": 129645072379,
+        "compatibility_job_id": 129653714680,
+        "commit": "068eb5cbbb9cab1e05a18a31c13ac11d491c8d8f",
+        "environment": "Windows Server 2022 x64",
+        "checks": {
+          "clean_install": true,
+          "offline_launch": true,
+          "backup_restore": true,
+          "upgrade_from": "0.2.3",
+          "upgrade_to": "0.2.4",
+          "sqlite_user_data_preserved": true,
+          "uninstall_preserves_user_data": true
+        },
+        "offline_research_manifest_sha256": "6ecf43abbaa18b77465e100cc3a98d20d0bbbb2098cc12d06605af36df8d946c",
+        "offline_research_manifest_entries": 10,
+        "source_verification_file": "_temp/vag-tech-pro-run71-artifact/windows-lifecycle-staging/source-verification.txt",
+        "source_verification_sha256": "38843a5bda64437b960407b09d073d31dd799cfccfafe53e7f544fdc0656091c",
+        "source_verification_bytes": 9670,
+        "lifecycle_log_file": "VAG-TECH-PRO/VAG-TECH-PRO/windows-2022-lifecycle.log",
+        "lifecycle_log_sha256": "95467ddb72a7fd7f16baefbe842844699f039d0f332d752a7b4118d35d8281b7",
+        "lifecycle_log_bytes": 1232,
+        "build_metadata_file_sha256": "d480099a8b10c047d832f3776840cce911600e52fb90267af941752060fbe136",
+        "build_metadata_file_bytes": 8927,
+        "build_metadata_artifact_id": 13738805743,
+        "build_metadata_artifact_digest": "f42b5bb6b1c1e9c715b8de4f75fd2c62c80b76e4ecfc9367c8617beae5f3edce",
+        "build_metadata_artifact_expires_at": "2026-12-10T05:36:00Z",
+        "lifecycle_artifact_id": 13738433199,
+        "lifecycle_artifact_digest": "d1ea9e289bd3dab892fdf23e43928d07f4f9507645fc5639395b591c1cd7bf2d",
+        "lifecycle_artifact_expires_at": "2026-12-10T05:41:07Z",
+        "installer_artifact_id": 13738563172,
+        "installer_artifact_digest": "3c719bf1f69ab1ca34075b7df516e577bc7a517cbd6c515fd8da2308a8d725b7",
+        "installer_artifact_bytes": 1370625377,
+        "installer_artifact_expires_at": "2026-11-24T05:36:14Z",
+        "installers": [
+          {
+            "version": "0.2.3",
+            "file": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
+            "bytes": 568993133,
+            "sha256": "3f3128718a1df1d12c77930c4b16cde3b7c180bcc4003ed0d797907d80dd4e33"
+          },
+          {
+            "version": "0.2.4",
+            "file": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
+            "bytes": 568992965,
+            "sha256": "7c770600ace987c79828ae29c0589105b886584b29178da8cc0cb1d9aa9cdc5d"
+          }
+        ],
+        "signature_status": "unsigned",
+        "native_windows_10_11_verified": false,
+        "native_windows_10_11_status": "not_run_owner_runner_gate_disabled"
+      }
     }
   ],
   "minimum_fitment_evidence_fields": [
