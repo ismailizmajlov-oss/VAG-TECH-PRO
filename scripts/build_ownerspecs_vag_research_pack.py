@@ -227,6 +227,9 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
     pinned_hash = source["snapshot"].get("source_snapshot_sha256")
     if pinned_hash and pinned_hash != snapshot_hash:
         raise ValueError("OwnerSpecs source JSON SHA-256 differs from the pinned manifest.")
+    pinned_bytes = source["snapshot"].get("source_file_bytes")
+    if pinned_bytes is not None and pinned_bytes != snapshot_size:
+        raise ValueError("OwnerSpecs source JSON byte size differs from the pinned manifest.")
     source_manifest_hash = sha256_file(source_manifest_path)
     acquisition_snapshot_path = source_json.parent / "acquisition-snapshot.json"
     if acquisition_snapshot_path.is_file() and not acquisition_snapshot_path.is_symlink():
