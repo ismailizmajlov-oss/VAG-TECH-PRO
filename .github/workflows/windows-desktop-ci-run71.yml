@@ -43,8 +43,10 @@ on:
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
       - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - ".github/workflows/build-ownerspecs-vag-research-pack.yml"
       - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
       - "scripts/build_cardir_vag_open_data_pack.py"
       - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
       - "tests/test_cardir_vag_open_data_pack.py"
@@ -200,8 +202,10 @@ on:
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
       - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - ".github/workflows/build-ownerspecs-vag-research-pack.yml"
       - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
       - "scripts/build_cardir_vag_open_data_pack.py"
       - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
       - "tests/test_cardir_vag_open_data_pack.py"
@@ -380,6 +384,16 @@ jobs:
           python tests/test_wikipedia_vag_engine_list_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed." }
           python tests/test_openvag_source_rights.py
+           python -m py_compile scripts/build_ownerspecs_vag_research_pack.py
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs builder Python compilation failed." }
+           python -m unittest discover -s tests -p "test_ownerspecs_vag_research_pack.py" -v
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs isolated SQLite research-pack tests failed." }
+           python tests/test_ownerspecs_source_rights.py
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }
+           node --check scripts/integrate-ownerspecs-vag-research.cjs
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop integration script syntax failed." }
+           node --test tests/ownerspecs-pack-integration-contract.test.cjs
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop integration contract failed." }
           python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
           python tests/test_decode_tr_source_rights.py
@@ -1838,6 +1852,87 @@ jobs:
           $cardirReport = Get-Content -LiteralPath $cardirReportPath -Raw | ConvertFrom-Json
           "cardir_vag_owner_manual_facts=run${{ steps.cardir-pack.outputs.run_number }}/${{ steps.cardir-pack.outputs.run_id }}; artifact_sha256=${{ steps.cardir-pack.outputs.artifact_sha256 }}; database_sha256=$($cardirReport.database_sha256); source_snapshot_sha256=$($cardirReport.source_snapshot_sha256); source_manifest_sha256=$($cardirReport.source_manifest_sha256); facts=948; models=26; brands=5; parameters=19; market=UNKNOWN; research_only=true; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+
+      - name: Resolve pinned OwnerSpecs VAG CC BY-SA research pack
+        id: ownerspecs-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $register = Get-Content -LiteralPath "data/source-manifests/vag-factory-source-register.json" -Raw | ConvertFrom-Json
+          $entry = @($register.sources | Where-Object { $_.source_id -eq "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0" }) | Select-Object -First 1
+          if (-not $entry -or $entry.data_ingested -ne $false -or $entry.product_import_allowed -ne $false) { throw "OwnerSpecs source register entry missing or production-import boundary changed." }
+          $runId = [string]$entry.research_pack_workflow_run_id
+          $expectedRun = [string]$entry.research_pack_source_commit
+          $artifactId = [string]$entry.research_pack_artifact_id
+          $expectedDigest = ([string]$entry.research_pack_artifact_sha256).ToLowerInvariant()
+          if ($runId -ne "42736946351" -or $expectedRun -ne "a1c91b0c6039640be63996571dc0607a33d64948" -or $artifactId -ne "13727965683" -or $expectedDigest -ne "3ac33a190f4621dc1b6fc69f59c90425001fd171b335c10e48268ecd62eaa82f") { throw "OwnerSpecs artifact pins differ from the reviewed source register." }
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId" -Headers $headers -Method Get -TimeoutSec 30
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success" -or $run.head_sha -ne $expectedRun -or $run.run_number -ne 31) { throw "Pinned OwnerSpecs research-pack workflow run is not the reviewed successful source revision." }
+          $artifact = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/artifacts/$artifactId" -Headers $headers -Method Get -TimeoutSec 30
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($artifact.id -ne [long]$artifactId -or $artifact.name -ne "ownerspecs-vag-vehicle-specs-research-pack" -or $artifact.expired -ne $false -or $digest -ne $expectedDigest) { throw "Pinned OwnerSpecs research-pack artifact ID, name, expiry or SHA-256 mismatch." }
+          "run_id=$runId" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "OwnerSpecs source run #$($run.run_number) / $runId · artifact SHA-256 $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download pinned OwnerSpecs VAG CC BY-SA research pack
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ownerspecs-vag-vehicle-specs-research-pack
+          path: ${{ runner.temp }}/vag-tech-pro-ownerspecs-pack
+          run-id: ${{ steps.ownerspecs-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Integrate OwnerSpecs VAG research pack into offline desktop
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-ownerspecs-pack"
+          node --check scripts/integrate-ownerspecs-vag-research.cjs
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop integration script syntax failed." }
+          node scripts/integrate-ownerspecs-vag-research.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id ${{ steps.ownerspecs-pack.outputs.run_id }} --source-run-number ${{ steps.ownerspecs-pack.outputs.run_number }} --artifact-sha256 ${{ steps.ownerspecs-pack.outputs.artifact_sha256 }} 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/ownerspecs-desktop-integration.log"
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs VAG desktop integration failed." }
+          node --check desktop-source/lib/ownerspecs-vag-research-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop SQLite reader syntax failed." }
+          node --test desktop-source/tests/ownerspecs-vag-research-db.test.cjs desktop-source/tests/ownerspecs-vag-research-ui-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/ownerspecs-desktop-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop DB/UI contract tests failed." }
+          node desktop-source/scripts/verify-ownerspecs-vag-research-pack.cjs desktop-source/data/research 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/ownerspecs-desktop-verify.log"
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs installed research-pack verification failed." }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $metadataFiles = @(
+            "data/research/manifest.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/manifest.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/ownerspecs-vag-research.sqlite",
+            "data/research/ownerspecs-vag-vehicle-specs-research/source-manifest.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/source-snapshot.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/acquisition-snapshot.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/LICENSE-REFERENCE.txt",
+            "data/research/ownerspecs-vag-vehicle-specs-research/ATTRIBUTION.md",
+            "data/research/ownerspecs-vag-vehicle-specs-research/desktop-integration-report.json",
+            "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json",
+            "lib/ownerspecs-vag-research-db.cjs",
+            "scripts/verify-ownerspecs-vag-research-pack.cjs",
+            "tests/ownerspecs-vag-research-db.test.cjs",
+            "tests/ownerspecs-vag-research-ui-contract.test.cjs",
+            "components/local-research-catalog.tsx",
+            "app/api/local-research/route.ts",
+            "scripts/windows-installer-lifecycle.ps1",
+            "package.json"
+          )
+          foreach ($relative in $metadataFiles) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "OwnerSpecs audit source is missing: $relative" }
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          $ownerReportPath = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/research/ownerspecs-vag-vehicle-specs-research/desktop-integration-report.json"
+          $ownerReport = Get-Content -LiteralPath $ownerReportPath -Raw | ConvertFrom-Json
+          "ownerspecs_vag_research=run${{ steps.ownerspecs-pack.outputs.run_number }}/${{ steps.ownerspecs-pack.outputs.run_id }}; artifact_sha256=${{ steps.ownerspecs-pack.outputs.artifact_sha256 }}; database_sha256=$($ownerReport.database_sha256); source_snapshot_sha256=$($ownerReport.source_snapshot_sha256); source_manifest_sha256=$($ownerReport.source_manifest_sha256); vag_generations=20; vag_facts=233; market=UNKNOWN; research_only=true; share_alike=true; production_import=false; critical_values_publishable=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Render typed technical payloads in offline workspace (run79)
         shell: pwsh
