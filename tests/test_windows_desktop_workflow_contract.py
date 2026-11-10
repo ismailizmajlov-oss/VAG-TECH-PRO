@@ -680,6 +680,21 @@ def main() -> None:
     ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\n      - name:", 1)[0]
     if ownerspecs_step.count("ConvertFrom-Json -AsHashtable") != 1 or "ConvertFrom-Json -AsHashtable -AsHashtable" in ownerspecs_step:
         raise SystemExit("OwnerSpecs resolver must use exactly one -AsHashtable to preserve case-sensitive source-register keys")
+    rights_step_marker = "      - name: Validate offline data-pack tooling and rights boundaries"
+    if rights_step_marker not in text:
+        raise SystemExit("Windows workflow is missing the offline data-pack rights validation step")
+    rights_step = text.split(rights_step_marker, 1)[1].split("\n      - name:", 1)[0]
+    if '$PSNativeCommandUseErrorActionPreference = $true' not in rights_step:
+        raise SystemExit("PowerShell rights-validation step must fail on every non-zero native command")
+    rights_command_order = (
+        "python tests/test_ownerspecs_source_rights.py",
+        'if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }',
+        "python tests/test_cardir_source_rights.py",
+        'if ($LASTEXITCODE -ne 0) { throw "CarDir live snapshot multiset review failed." }',
+    )
+    rights_positions = [rights_step.find(marker) for marker in rights_command_order]
+    if any(position < 0 for position in rights_positions) or rights_positions != sorted(rights_positions):
+        raise SystemExit("OwnerSpecs and CarDir source-rights checks must each immediately follow their own test command")
 
 if __name__ == "__main__":
     main()
