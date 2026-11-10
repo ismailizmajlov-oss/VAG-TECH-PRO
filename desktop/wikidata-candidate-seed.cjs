@@ -189,7 +189,8 @@ function seedWikidataCandidateCatalog(dbPath, researchRoot, options = {}) {
     license_sha256: pkg.license_sha256, rights_evidence_sha256: pkg.rights_evidence_sha256,
     snapshot_manifest: pkg.snapshot_manifest, records: pkg.records });
   const imported = core.importPackage(dbPath, pkg, options);
-  return { ...imported, source_id: manifest.source_id, source_revision: sourceRevision, market_scope: "UNKNOWN",
+  return { ...imported, packageSha256: pkg.package_sha256, package_sha256: pkg.package_sha256,
+    source_id: manifest.source_id, source_revision: sourceRevision, market_scope: "UNKNOWN",
     applicability_precision: "candidate_identity_only", manufacturers: manufacturerCount, models: modelCount,
     verified_models: 0, exact_fitments: 0, engine_codes: 0, transmission_codes: 0 };
 }
