@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-10",
+  "updated_at": "2026-11-11",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -4181,7 +4181,7 @@
       "url": "https://www.otts.bot/",
       "terms_url": "https://www.otts.bot/terms",
       "source_kind": "commercial_aggregated_ru_eaeu_vehicle_compliance_database",
-      "source_revision": "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-10",
+      "source_revision": "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-11",
       "market_scope": [
         "RU",
         "EAEU"
@@ -4203,6 +4203,19 @@
           "homepage_sbkt_and_otsh_counters_rechecked": false,
           "independently_audited": false,
           "dataset_export_observed": false
+        },
+        "recheck_2026_11_11": {
+          "observed_at": "2026-11-11",
+          "ot_ts_page_result_counter": 74115,
+          "marketing_headline": "46,000+",
+          "count_discrepancy_unresolved": true,
+          "homepage_otts_records": 74115,
+          "homepage_sbkts_records": 224744,
+          "homepage_otsh_records": 1655,
+          "technical_characteristics_section": "not yet populated",
+          "engine_section": "not yet populated",
+          "dataset_export_observed": false,
+          "independently_audited": false
         }
       },
       "access": {
@@ -4252,8 +4265,8 @@
       "project_decision": "restricted_no_automated_collection_beyond_ordinary_use_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "OTTS_page_and_user_agreement_rechecked_2026-11-10; agreement_last_updated_2026-08-26",
-      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_RECHECK_2026-11-10.md",
+      "evidence_status": "OTTS_page_and_user_agreement_rechecked_2026-11-11; agreement_last_updated_2026-08-26",
+      "rights_review_document": "docs/research/RUSSIAN_OTTS_AGGREGATOR_RIGHTS_RECHECK_2026-11-11.md",
       "evidence_reviewed": [
         {
           "url": "https://www.otts.bot/terms",
@@ -4269,6 +4282,16 @@
           "url": "https://www.otts.bot/",
           "reviewed_at": "2026-11-09",
           "observation": "Homepage displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records, and describes technical-characteristics/engine sections as not yet populated. Counts are provider UI metadata only."
+        },
+        {
+          "url": "https://www.otts.bot/terms",
+          "reviewed_at": "2026-11-11",
+          "observation": "Rechecked 2026-11-11; agreement last updated 2026-08-26. Clause 3 prohibits scraping/mass requests beyond ordinary user scenarios and proprietary redistribution of documents/database information; clauses 4.3-4.4 grant rights to the operator only; clause 5 reserves the database structure and site text."
+        },
+        {
+          "url": "https://www.otts.bot/otts",
+          "reviewed_at": "2026-11-11",
+          "observation": "Rechecked page shows 74,115 OTTS result counter versus 46,000+ headline, 500 RUB single-document price, and no dataset export or third-party offline licence."
         }
       ],
       "product_import_allowed": false,
@@ -4311,6 +4334,56 @@
           "product_import_allowed": false
         },
         "decision": "discovery_only_no_scraping_no_bulk_requests_no_offline_cache_no_third_party_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders"
+      },
+      "rights_recheck_2026_11_11": {
+        "reviewed_at": "2026-11-11",
+        "terms_url": "https://www.otts.bot/terms",
+        "terms_last_updated": "2026-08-26",
+        "clauses": {
+          "3": {
+            "ordinary_search": "free ordinary website search",
+            "automated_collection": "scraping or mass requests beyond ordinary user scenarios prohibited",
+            "redistribution": "resale, publication or other distribution of obtained documents/database information as a proprietary information product prohibited"
+          },
+          "5": {
+            "website_and_database_structure": "operator-owned; use outside ordinary site viewing requires written consent",
+            "underlying_documents": "rights remain with their respective rightsholders"
+          },
+          "4.3-4.4": {
+            "contributor_warranty": "contributor warrants lawful acquisition and right to transfer the document",
+            "operator_grant": "contributor grants the operator placement, reproduction, public display and paid delivery rights",
+            "sublicense_to_vag_tech_pro": false
+          }
+        },
+        "page_observation": {
+          "url": "https://www.otts.bot/otts",
+          "reviewed_at": "2026-11-11",
+          "result_counter": 74115,
+          "headline": "46,000+",
+          "count_discrepancy_unresolved": true,
+          "paid_single_document_price_rub": 500,
+          "dataset_export_observed": false,
+          "third_party_offline_product_licence": false
+        },
+        "homepage_observation": {
+          "url": "https://www.otts.bot/",
+          "reviewed_at": "2026-11-11",
+          "otts_records": 74115,
+          "sbkts_records": 224744,
+          "otsh_records": 1655,
+          "technical_characteristics_section": "not yet populated",
+          "engine_section": "not yet populated"
+        },
+        "acquisition_state": {
+          "account_created": false,
+          "subscription_started": false,
+          "payment_made": false,
+          "automated_queries_used": false,
+          "documents_downloaded": false,
+          "source_bytes_cached": false,
+          "product_import_allowed": false
+        },
+        "decision": "no_scraping_no_bulk_requests_no_offline_cache_no_third_party_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders"
       }
     },
     {
@@ -5217,7 +5290,7 @@
       "url": "https://otts.rusavtolab.ru/",
       "related_operator_site": "https://rusavtolab.ru/",
       "source_kind": "private_aggregated_otts_search_and_document_service",
-      "source_revision": "public pages observed 2026-11-06; no dataset release or API revision identified",
+      "source_revision": "public pages rechecked 2026-11-11; no dataset release or API revision identified",
       "market_scope": [
         "RU",
         "EAEU"
@@ -5228,7 +5301,8 @@
         "public_offer_price_rub_per_document": 200,
         "public_offer_service_description": "electronic copy of OTTS from open sources",
         "access_claims_conflict": true,
-        "count_treatment": "publisher_claim_not_verified_corpus_count"
+        "count_treatment": "publisher_claim_not_verified_corpus_count",
+        "observed_at": "2026-11-11"
       },
       "rights": {
         "dataset_license": "not_found",
@@ -5259,7 +5333,8 @@
         "Landing page says free PDF downloads, while public offer states 200 RUB per document; discrepancy unresolved.",
         "No dataset-specific licence or written bulk reuse permission identified.",
         "No reproducible bulk export or per-document upstream provenance export established.",
-        "No documents downloaded and no snapshot hash exists."
+        "No documents downloaded and no snapshot hash exists.",
+        "2026-11-11 recheck confirmed the landing-page claim of free PDF downloads conflicts with the public offer's 200 RUB per-document price. No dataset licence or written bulk-reuse permission was found."
       ],
       "evidence_reviewed": [
         {
@@ -5276,10 +5351,27 @@
           "url": "https://otts.rusavtolab.ru/oferta/",
           "reviewed_at": "2026-11-06",
           "evidence": "Public offer describes a 200 RUB per-document service and says the electronic copy is taken from open sources."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/",
+          "reviewed_at": "2026-11-11",
+          "evidence": "Landing page states 77,802 OTTS records and free PDF downloads; this is a provider UI claim only."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/o-servise/",
+          "reviewed_at": "2026-11-11",
+          "evidence": "About page identifies the service operator as SpecReg / RusAutoLab, a private business."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/oferta/",
+          "reviewed_at": "2026-11-11",
+          "evidence": "Public offer states 200 RUB per electronic copy of an OTTS document from open sources; it does not grant systematic extraction or third-party product redistribution."
         }
       ],
       "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion"
+      "hash_status": "not_downloaded_no_ingestion",
+      "evidence_status": "Landing page, About page and public offer rechecked 2026-11-11; no dataset licence or bulk reuse permission identified; no data downloaded.",
+      "rights_review_document": "docs/research/RUSSIAN_OTTS_AGGREGATOR_RIGHTS_RECHECK_2026-11-11.md"
     },
     {
       "source_id": "volkswagen-group-diagnostics-data",
