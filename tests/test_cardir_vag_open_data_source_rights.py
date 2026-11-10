@@ -44,9 +44,21 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(len(matches),1); source=matches[0]
         self.assertIs(source["data_ingested"],False); self.assertIs(source["product_import_allowed"],False)
         self.assertEqual(source["rights"]["permission_status"],"not_required_under_published_CC_BY_4_0")
-        self.assertEqual(source["verification_status"],"licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending")
+        self.assertEqual(source["verification_status"],"licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_verified_windows_server_2022_native_windows_10_11_pending")
         pack=source["research_pack"]
         self.assertEqual(pack["status"],"verified_research_only")
+        self.assertEqual(pack["desktop_integration_status"],"verified_windows_server_2022_x64_lifecycle_run1208_native_windows_10_11_pending")
+        self.assertIs(pack["research_database_included_in_desktop"],True)
+        desktop=pack["desktop_lifecycle_evidence"]
+        self.assertEqual(desktop["status"],"verified_windows_server_2022_x64_lifecycle")
+        self.assertEqual(desktop["run_number"],1208)
+        self.assertTrue(desktop["checks"]["clean_install"])
+        self.assertTrue(desktop["checks"]["offline_launch"])
+        self.assertTrue(desktop["checks"]["backup_restore"])
+        self.assertTrue(desktop["checks"]["sqlite_user_data_preserved"])
+        self.assertTrue(desktop["checks"]["uninstall_preserves_user_data"])
+        self.assertEqual(desktop["signature_status"],"unsigned")
+        self.assertIs(desktop["native_windows_10_11_verified"],False)
         self.assertIs(pack["production_import"],False)
         self.assertIs(pack["exact_engine_gearbox_pair"],False)
         self.assertIs(pack["ru_eaeu_applicability"],False)
