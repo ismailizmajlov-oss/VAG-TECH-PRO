@@ -49,3 +49,11 @@ CC BY-SA 4.0 requires attribution and Share-Alike for adapted material. If acqui
 7. Independently verify any critical value against the cited primary document before it can enter the professional repair library.
 
 The source-rights review itself did not download bytes; the separate Windows acquisition workflow did. No values were imported into the production vehicle/technical database. The research pack remains a separate CC BY-SA 4.0 dataset with market UNKNOWN and no critical-value or exact-fitment approval.
+
+## Offline desktop research integration
+
+The current integration change adds a separate read-only OwnerSpecs tab to the desktop research catalogue. It packages the pinned source JSON, source manifest, source snapshot, acquisition snapshot, attribution, CC BY-SA 4.0 license reference and VAG-filtered SQLite in a dedicated directory. The desktop reader verifies SHA-256 values and the source/pack provenance chain before returning results.
+
+The UI labels every row as a publisher-verified candidate that has not undergone independent OEM technical review. Market remains UNKNOWN; year/generation spans remain candidates; exact vehicle fitment, factory engine/gearbox codes and pairs, ECU/DTC applicability, Russian/EAEU applicability and repair-procedure applicability remain false. Critical torque/fluid values are not publishable for repair decisions. The Share-Alike database is not merged into the production vehicle or technical database.
+
+The Windows x64 integration and installer lifecycle checks must pass before this desktop integration can be considered verified. Native Windows 10/11 acceptance remains a separate release gate.
