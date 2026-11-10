@@ -173,14 +173,14 @@ function getOwnerSpecsSummary(explicitRoot) {
     const invalidGenerations = count(db, "SELECT count(*) AS n FROM generations WHERE source_id!='" + SOURCE_ID +
       "' OR publisher_verification_status!='publisher_verified' OR technical_review_status!='not_independently_reviewed' OR market_scope!='UNKNOWN' OR applicability_precision!='publisher_generation_candidate_only' OR model_generation_candidate!=1 OR model_year_candidate!=1 OR exact_vehicle_fitment!=0 OR exact_engine_code_mapping!=0 OR exact_gearbox_code_mapping!=0 OR exact_engine_gearbox_pair!=0 OR ru_eaeu_applicability!=0 OR ecu_fitment!=0 OR dtc_fitment!=0 OR repair_procedure_applicability!=0");
     const invalidFacts = count(db, "SELECT count(*) AS n FROM facts WHERE publisher_verification_status!='publisher_verified' OR technical_review_status!='not_independently_reviewed' OR market_scope!='UNKNOWN' OR applicability_precision!='publisher_generation_candidate_only' OR critical_value_publishable!=0 OR exact_engine_code_mapping!=0 OR exact_gearbox_code_mapping!=0 OR exact_engine_gearbox_pair!=0 OR ru_eaeu_applicability!=0 OR repair_procedure_applicability!=0 OR primary_document_url IS NOT NULL OR primary_document_revision IS NOT NULL");
-    const badHashes = count(db, "SELECT count(*) AS n FROM facts WHERE length(source_row_sha256)!=64 OR source_row_sha256 GLOB '*[^0-9a-f]*'");
+    const badHashes = count(db, "SELECT count(*) AS n FROM facts WHERE length(source_row_sha256)!=64 OR source_row_sha256 GLOB '*[^0-9a-f]*'");\n    const badGenerationHashes = count(db, "SELECT count(*) AS n FROM generations WHERE length(generation_sha256)!=64 OR generation_sha256 GLOB '*[^0-9a-f]*'");
     counts = {
       sourceGenerations: count(db, "SELECT count(*) AS n FROM generations"),
       sourceFacts: count(db, "SELECT count(*) AS n FROM facts"),
       vagGenerations: count(db, "SELECT count(*) AS n FROM generations WHERE brand IN ('Audi','Porsche','SEAT','Skoda','Volkswagen')"),
       vagFacts: count(db, "SELECT count(*) AS n FROM facts")
     };
-    assert(invalidGenerations === 0 && invalidFacts === 0 && badHashes === 0, "OwnerSpecs rows crossed the candidate-only or provenance boundary");
+    assert(invalidGenerations === 0 && invalidFacts === 0 && badHashes === 0 && badGenerationHashes === 0, "OwnerSpecs rows crossed the candidate-only or provenance boundary");
     assert(counts.sourceGenerations === EXPECTED_COUNTS.sourceGenerations && counts.sourceFacts === EXPECTED_COUNTS.sourceFacts &&
       counts.vagGenerations === EXPECTED_COUNTS.vagGenerations && counts.vagFacts === EXPECTED_COUNTS.vagFacts,
       "OwnerSpecs pinned research counts mismatch");
@@ -234,7 +234,7 @@ function searchOwnerSpecsFacts(query, limit, explicitRoot) {
       ...row,
       value: row.valueJson === null ? null : JSON.parse(row.valueJson),
       valueMax: row.valueMaxJson === null ? null : JSON.parse(row.valueMaxJson),
-      provenance: JSON.parse(row.provenanceJson),
+      provenance: JSON.parse(row.provenanceJson || "[]"),
       sourceRevision: summary.sourceRevision,
       sourceSnapshotSha256: summary.sourceSnapshotSha256,
       sourceManifestSha256: summary.sourceManifestSha256,
