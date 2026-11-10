@@ -1,9 +1,12 @@
 import hashlib
 import json
 import unittest
+from pathlib import Path
 from urllib.error import URLError
 
 from scripts.probe_eea_discodata_access import HOST, QUERY, QUERY_SHA256, probe
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def sample_row():
@@ -21,6 +24,15 @@ def sample_row():
 
 
 class EeaDiscodataProbeTests(unittest.TestCase):
+    def test_source_register_pins_documented_endpoint_and_keeps_product_import_disabled(self):
+        register = json.loads((ROOT / "data/source-manifests/vag-factory-source-register.json").read_text(encoding="utf-8"))
+        source = next(item for item in register["sources"] if item["source_id"] == "eea-co2-passenger-cars-2019-2025")
+        self.assertEqual(source["access"]["public_sql_rest_endpoint"], "https://discodata.eea.europa.eu/sql")
+        self.assertEqual(source["access"]["hosted_runner_probe_status"], "not_run")
+        self.assertFalse(source["access"]["raw_probe_response_retained"])
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+
     def test_probe_uses_one_row_allowlisted_non_personal_query(self):
         self.assertIn("SELECT TOP 1", QUERY)
         self.assertIn("[CO2Emission].[latest].[co2cars_2025Pv31]", QUERY)
