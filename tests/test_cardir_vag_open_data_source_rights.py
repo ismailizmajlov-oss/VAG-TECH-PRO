@@ -24,6 +24,7 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.manifest["snapshot"]["expected_model_count"],610)
         self.assertEqual(self.manifest["snapshot"]["observed_vag_row_count"],948)
         self.assertEqual(self.manifest["snapshot"]["observed_vag_model_count"],26)
+        self.assertEqual(self.manifest["snapshot"]["observed_vag_brand_values"],["Audi","Porsche","SEAT","Skoda","Volkswagen"])
         self.assertIs(self.manifest["import_policy"]["data_ingested"],False)
     def test_central_register_has_one_research_only_entry(self):
         matches=[s for s in self.register["sources"] if s.get("source_id")==SOURCE_ID]
