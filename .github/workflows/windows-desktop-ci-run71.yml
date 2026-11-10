@@ -9,6 +9,8 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - "README.md"
+      - "docs/research/OBDB_VAG_SIGNAL_PACK_AUDIT_2026-11-05.md"
       - ".github/workflows/build-eea-vag-approval-research-pack.yml"
       - "scripts/build_eea_vag_approval_research_pack.py"
       - "tests/test_eea_vag_approval_research_pack.py"
@@ -175,6 +177,8 @@ on:
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
+      - "README.md"
+      - "docs/research/OBDB_VAG_SIGNAL_PACK_AUDIT_2026-11-05.md"
       - ".github/workflows/build-eea-vag-approval-research-pack.yml"
       - "scripts/build_eea_vag_approval_research_pack.py"
       - "tests/test_eea_vag_approval_research_pack.py"
