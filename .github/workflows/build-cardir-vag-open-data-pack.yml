@@ -1,18 +1,8 @@
 name: Build CarDir VAG owner-manual facts CC BY 4.0 research pack
 
+# Live CarDir acquisition is manual: the publisher endpoint can revert to an older byte snapshot.
+# Desktop PR validation consumes only the immutable, already verified pack pinned in the source register.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
-      - "scripts/build_cardir_vag_open_data_pack.py"
-      - "tests/test_cardir_vag_open_data_pack.py"
-  pull_request:
-    branches: [main]
-    paths:
-      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
-      - "scripts/build_cardir_vag_open_data_pack.py"
-      - "tests/test_cardir_vag_open_data_pack.py"
   workflow_dispatch:
 
 permissions:

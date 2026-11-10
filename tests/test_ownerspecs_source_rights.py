@@ -82,7 +82,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.entry["source_file_bytes"],683533)
         self.assertTrue(self.entry["research_pack_acquisition_allowed"])
         self.assertFalse(self.entry["research_pack_acquired"]); self.assertFalse(self.entry["research_pack_current"])
-        self.assertEqual(self.entry["research_pack_status"],"rebuild_pending_after_live_source_update")
+        self.assertEqual(self.entry["research_pack_status"],"rebuild_pending_after_exact_snapshot_reacquisition")
         self.assertFalse(self.entry["research_database_included_in_desktop"])
         self.assertEqual(self.entry["research_pack_source_manifest_sha256"],"3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc")
         self.assertEqual(self.entry["research_pack_source_snapshot_sha256"],"6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
