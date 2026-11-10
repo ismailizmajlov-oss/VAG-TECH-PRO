@@ -788,6 +788,8 @@ def main() -> None:
         "vehiclesDbPackManifest.repair_decision_use !== false",
         "vehiclesDbPackManifest.open_data_policy_notice.includes",
         "not designed or warranted for safety-critical",
+        "vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models",
+        "vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence",
     )
     missing_dynamic_gate = [marker for marker in manifest_driven_vehiclesdb_gate if marker not in vehiclesdb_patcher]
     if missing_dynamic_gate:
