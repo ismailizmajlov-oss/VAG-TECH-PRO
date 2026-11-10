@@ -90,6 +90,22 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.entry["research_pack_workflow_run_id"], 42752686437)
         self.assertEqual(self.entry["research_pack_artifact_id"], 13733448981)
         self.assertEqual(self.entry["research_pack_run_number"], 64)
+        self.assertEqual(self.entry["research_pack_desktop_integration_status"], "verified_windows_server_2022_x64_lifecycle_run1208_native_windows_10_11_pending")
+        self.assertIs(self.entry["research_database_included_in_desktop"], True)
+        desktop = self.entry["desktop_lifecycle_evidence"]
+        self.assertEqual(desktop["run_number"], 1208)
+        self.assertEqual(desktop["status"], "verified_windows_server_2022_x64_lifecycle")
+        self.assertTrue(desktop["checks"]["clean_install"])
+        self.assertTrue(desktop["checks"]["offline_launch"])
+        self.assertTrue(desktop["checks"]["backup_restore"])
+        self.assertTrue(desktop["checks"]["sqlite_user_data_preserved"])
+        self.assertTrue(desktop["checks"]["uninstall_preserves_user_data"])
+        self.assertEqual(desktop["signature_status"], "unsigned")
+        self.assertIs(desktop["native_windows_10_11_verified"], False)
+        self.assertEqual(
+            self.entry["verification_status"],
+            "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_verified_windows_server_2022_native_windows_10_11_pending",
+        )
         self.assertEqual(self.entry["research_pack_source_commit"], "c75eee82df6d97e44b89e8f9722fe5756777f580")
         self.assertEqual(self.entry["research_pack_artifact_name"], "ownerspecs-vag-vehicle-specs-research-pack")
         self.assertIs(self.entry["product_database_ingested"], False)
