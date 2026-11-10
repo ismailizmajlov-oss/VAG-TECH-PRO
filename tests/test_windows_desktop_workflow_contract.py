@@ -759,7 +759,7 @@ def main() -> None:
     if mechanicdb_resolver_marker not in text:
         raise SystemExit("Windows workflow is missing the MechanicDB artifact ID/digest resolver")
     mechanicdb_resolver = text.split(mechanicdb_resolver_marker, 1)[1].split("\n      - name: Download MechanicDB candidate pack", 1)[0]
-    for required in ("ConvertFrom-Json -AsHashtable", "research_pack_run_id", "research_pack_artifact_id", "artifact.digest", "artifact_sha256", "research_pack_source_commit"):
+    for required in ("ConvertFrom-Json -AsHashtable", "research_pack_run_id", "research_pack_artifact_id", "actions/runs/$runId/artifacts", "artifact.digest", "artifact_sha256", "research_pack_source_commit"):
         if required not in mechanicdb_resolver:
             raise SystemExit(f"MechanicDB resolver is missing a pinned artifact/provenance check: {required}")
     mechanicdb_download = text.split("      - name: Download MechanicDB candidate pack", 1)[1].split("\n      - name:", 1)[0]
