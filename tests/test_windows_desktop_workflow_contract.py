@@ -664,5 +664,12 @@ def main() -> None:
     if text.count("apply-vehicle-config-ui-guard-run77.cjs") < 4:
         raise SystemExit("Run77 UI guard script and its logs must be retained in Windows CI evidence artifacts")
 
+    ownerspecs_marker = "      - name: Resolve pinned OwnerSpecs VAG CC BY-SA research pack"
+    if ownerspecs_marker not in text:
+        raise SystemExit("Windows workflow is missing the pinned OwnerSpecs research-pack resolver")
+    ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\\n      - name:", 1)[0]
+    if "ConvertFrom-Json -AsHashtable" not in ownerspecs_step:
+        raise SystemExit("OwnerSpecs resolver must preserve case-sensitive manufacturer keys in the source-rights register")
+
 if __name__ == "__main__":
     main()
