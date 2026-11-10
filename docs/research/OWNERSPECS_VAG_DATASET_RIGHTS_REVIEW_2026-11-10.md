@@ -12,7 +12,7 @@ The publisher's published CC BY-SA 4.0 licence permits commercial reuse, display
 
 A fresh live review on 2026-11-10 confirms that the HTML dataset page and JSON descriptor both report **111 generations**. The HTML page also reports **27 brands and 2,369 verified datapoints**. The earlier 112-generation observation came from a stale indexed response and is superseded by the current live page/JSON pair.
 
-Windows x64 acquisition workflow run #13 completed on 2026-11-10 at 01:29:53 UTC. It downloaded the exact JSON snapshot (683,641 bytes; SHA-256 `7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d`), reconciled the actual 111-generation array and 2,369 datapoints, and built a separate SQLite pack with **20 VAG generation candidates and 233 VAG facts**. The initial pack passed SQLite integrity, foreign-key, row-hash, attribution and applicability-boundary checks. The source manifest is now pinned to that JSON hash; the pack is being rebuilt against the pinned manifest before it can be marked acquired for the current revision.
+Windows x64 acquisition workflow run #13 completed on 2026-11-10 at 01:29:53 UTC. It downloaded the exact JSON snapshot (683,641 bytes; SHA-256 `7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d`), reconciled the actual 111-generation array and 2,369 datapoints, and built a separate SQLite pack with **20 VAG generation candidates and 233 VAG facts**. The initial pack passed SQLite integrity, foreign-key, row-hash, attribution and applicability-boundary checks. The source snapshot SHA-256 is now pinned in the source manifest; the pack is being rebuilt against the pinned manifest before it can be marked acquired for the current revision.
 
 ## What the dataset contains
 
