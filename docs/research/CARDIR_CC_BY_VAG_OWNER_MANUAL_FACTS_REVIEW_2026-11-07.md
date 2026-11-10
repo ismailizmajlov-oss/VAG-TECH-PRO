@@ -90,3 +90,19 @@ The previous pinned CSV (`64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6
 - Canonical SHA-256 of the sorted VAG row set in both snapshots: `92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad`.
 
 Thus the upstream CSV changed, but the retained VAG facts did not. The source manifest and CI row-count contracts are updated to the new complete-file hash and counts. The previous Windows pack artifact was built against the old source hash and is stale; a fresh SQLite pack build and independent verification are required before it can be used by desktop CI. The pack remains a separate read-only CC BY 4.0 research resource with market scope UNKNOWN and no exact fitment, RU/EAEU applicability or production import.
+
+
+## 2026-11-10 current SQLite pack rebuild — Windows run 68
+
+The refreshed source snapshot was acquired and the isolated VAG SQLite research pack was rebuilt and independently verified on Windows x64 in workflow run 68 (run ID `42742855224`). The pack contains 948 VAG facts across 26 models, five brands and 19 parameter keys. The full source CSV contains 44,272 rows / 611 brand-model pairs; the VAG-only rows remain byte-for-byte identical to the previous pinned VAG subset.
+
+Verified hashes:
+
+- Source CSV SHA-256: `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`
+- Source manifest SHA-256: `9ea9a26e8bd75e95016f3925fed4ee2b3119343fb67329bedfdb40ce0eb310fe`
+- SQLite SHA-256: `bc6df970cff98f71980e402ac8744937d17741ccb0361e301610c65b1f0f8850`
+- Pack manifest SHA-256: `463f527fe8582f58cf67320894c6ec0edc9b958ae5162926216105fc3e5a3524`
+- Build report SHA-256: `435669848a9d34ea0f8457f10dd61f2fe4b76b6943f3d66cb4f7a7c24649e6e8`
+- Windows artifact SHA-256: `32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d`
+
+SQLite `integrity_check=ok`, `foreign_key_check=0`; all 948 source-row hashes are valid. The pack records CC BY 4.0 attribution, market UNKNOWN, publisher verification but no independent OEM technical review, no exact engine/gearbox pair, no RU/EAEU applicability, and `production_import=false` / `product_import_allowed=false`. It remains a separate read-only research pack; desktop lifecycle integration is pending.
