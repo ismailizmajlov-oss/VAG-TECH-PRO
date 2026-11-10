@@ -312,6 +312,23 @@ const golfHashAfter = [
   '  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
 ].join("\n");
 tests = replaceOnce(tests, golfHashBefore, golfHashAfter, "VehiclesDB record and source catalog fingerprints");
+
+for (const required of [
+  "vehiclesDbManifest.counts.models",
+  "vehiclesDbManifest.counts.market_evidence",
+  "obdexPack.snapshot_generated_at_utc",
+  "candidateRecordSha256",
+]) {
+  if (!tests.includes(required)) throw new Error("VehiclesDB regression test is missing required manifest-driven assertion: " + required);
+}
+for (const required of [
+  "identityOnlyUse: packManifest.identity_only_use === true",
+  "safetyCriticalReliance: packManifest.safety_critical_reliance === true",
+  "repairDecisionUse: packManifest.repair_decision_use === true",
+  "openDataPolicyNotice: packManifest.open_data_policy_notice",
+]) {
+  if (!source.includes(required)) throw new Error("VehiclesDB candidate result is missing safety metadata: " + required);
+}
 fs.writeFileSync(testFile, tests, "utf8");
 
 process.stdout.write(JSON.stringify({
