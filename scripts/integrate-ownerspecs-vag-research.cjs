@@ -4,10 +4,10 @@ const {DatabaseSync}=require("node:sqlite");
 const ID="ownerspecs-vag-vehicle-specs-research",SOURCE="ownerspecs-verified-vehicle-specs-cc-by-sa-4.0";
 const SOURCE_MANIFEST="data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json";
 const PIN={
- artifact:"3ac33a190f4621dc1b6fc69f59c90425001fd171b335c10e48268ecd62eaa82f",
+ artifact:"441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3",
  source:"7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
  sourceManifest:"3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
- packManifest:"784845406eb378cc6ece940b22822cc972a2f01a3bceec6a46b96f5758fb0ae9",
+ packManifest:"7d47964b15d787c9ae1ebf5a16b5f0fa2082d9bc64c0fbe7e44a660b8c299a57",
  database:"eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf",
  bytes:683641
 };
@@ -112,7 +112,7 @@ function main(){
  const pack=walk(download),v=verify(repo,pack,a["artifact-sha256"]),research=safe(desktop,"data/research"),target=safe(research,ID);
  const register=json(safe(repo,"data/source-manifests/vag-factory-source-register.json"));
  const registered=register.sources.find(x=>x.source_id===SOURCE);
- assert(registered&&registered.research_pack_workflow_run_id===Number(a["source-run-id"])&&registered.research_pack_run_number===Number(a["source-run-number"])&&registered.research_pack_artifact_sha256===a["artifact-sha256"]&&registered.research_pack_source_commit==="a1c91b0c6039640be63996571dc0607a33d64948"&&registered.research_pack_artifact_id===13727965683,"OwnerSpecs source register run/artifact pin mismatch");
+ assert(registered&&registered.research_pack_workflow_run_id===Number(a["source-run-id"])&&registered.research_pack_run_number===Number(a["source-run-number"])&&registered.research_pack_artifact_sha256===a["artifact-sha256"]&&registered.research_pack_source_commit==="c75eee82df6d97e44b89e8f9722fe5756777f580"&&registered.research_pack_artifact_id===13733448981,"OwnerSpecs source register run/artifact pin mismatch");
  assert(!fs.existsSync(target),"Refusing to overwrite OwnerSpecs pack in desktop staging");fs.mkdirSync(target,{recursive:true});
  const src=safe(repo,SOURCE_MANIFEST);
  const copy=[["ownerspecs-vag-research.sqlite",v.files.db],["manifest.json",v.files.manifest],["source.json",v.files.source],["source-snapshot.json",v.files.snapshot],["acquisition-snapshot.json",v.files.acquisition],["ATTRIBUTION.md",safe(pack,"ATTRIBUTION.md")],["LICENSE-REFERENCE.txt",safe(pack,"LICENSE-REFERENCE.txt")],["source-manifest.json",src]];
