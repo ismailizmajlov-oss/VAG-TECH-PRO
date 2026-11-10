@@ -474,5 +474,52 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         self.assertEqual(self.db.execute("SELECT count(*) FROM v_published_oem_dtc_index WHERE dtc_code='P1A25'").fetchone()[0], 1)
 
 
+    def test_oem_dtc_publication_requires_matching_source_market_and_locks_provenance(self) -> None:
+        source_document_id = self.insert_source_document(
+            "test-oem-dtc-market-lock", "TEST-OEM-DTC-MARKET-LOCK",
+            source_sha256=self.h("a"), market_scope="EU"
+        )
+        self.add_approved_technical_rights(source_document_id)
+        self.db.execute("""INSERT INTO oem_dtc_index
+          (dtc_code,dtc_namespace,manufacturer,market_scope,engine_code,transmission_code,
+           engine_code_explicit,transmission_code_explicit,source_document_id,evidence_locator,
+           applicability_level,source_claim_hash,created_at_utc)
+          VALUES ('P1A26','manufacturer_specific_vag','AUDI','RU','CCTA','DQ250',1,1,?,
+                  'source snapshot / EU exact variant row','engine_transmission_variant',?,?)""",
+          (source_document_id,self.h("b"),UTC))
+        dtc_id = int(self.db.execute("SELECT last_insert_rowid()").fetchone()[0])
+
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "source reuse rights"):
+            self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (dtc_id,))
+
+        self.db.execute("UPDATE oem_dtc_index SET market_scope='EU' WHERE oem_dtc_id=?", (dtc_id,))
+        self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (dtc_id,))
+        self.assertEqual(self.db.execute(
+            "SELECT count(*) FROM oem_dtc_publication_locks WHERE oem_dtc_id=?", (dtc_id,)
+        ).fetchone()[0], 1)
+        self.assertEqual(self.db.execute(
+            "SELECT count(*) FROM v_published_oem_dtc_index WHERE oem_dtc_id=?", (dtc_id,)
+        ).fetchone()[0], 1)
+
+        # A published claim and its pinned source metadata are immutable, even after withdrawal.
+        self.db.execute("UPDATE oem_dtc_index SET review_status='rejected' WHERE oem_dtc_id=?", (dtc_id,))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "published OEM DTC claim is immutable"):
+            self.db.execute("UPDATE oem_dtc_index SET engine_code='CCTA2' WHERE oem_dtc_id=?", (dtc_id,))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "source snapshot metadata is immutable"):
+            self.db.execute("UPDATE source_documents SET source_sha256=? WHERE source_document_id=?",
+                            (self.h("d"),source_document_id))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "append-only"):
+            self.db.execute("UPDATE oem_dtc_publication_locks SET source_claim_hash=? WHERE oem_dtc_id=?",
+                            (self.h("e"),dtc_id))
+
+        # Rights revocation remains the supported way to withdraw a published record.
+        self.db.execute("UPDATE technical_source_rights SET rights_status='restricted' WHERE source_document_id=?",
+                        (source_document_id,))
+        self.assertEqual(self.db.execute(
+            "SELECT count(*) FROM v_published_oem_dtc_index WHERE oem_dtc_id=?", (dtc_id,)
+        ).fetchone()[0], 0)
+        self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+
+
 if __name__ == "__main__":
     unittest.main()
