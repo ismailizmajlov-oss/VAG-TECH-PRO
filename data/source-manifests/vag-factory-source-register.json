@@ -7923,10 +7923,10 @@
       },
       "content_review": {
         "html_page_generation_count": 111,
-        "json_descriptor_generation_count": 112,
+        "json_descriptor_generation_count": 111,
         "html_page_brand_count": 27,
         "html_page_verified_datapoint_count": 2369,
-        "metadata_consistent": false,
+        "metadata_consistent": true,
         "per_value_primary_document_url": false,
         "per_value_primary_document_revision": false,
         "per_value_source_count": true,
@@ -7949,9 +7949,9 @@
       "data_ingested": false,
       "source_snapshot_sha256": null,
       "research_pack_allowed": true,
-      "research_pack_acquisition_allowed": false,
+      "research_pack_acquisition_allowed": true,
       "product_import_allowed": false,
-      "project_decision": "rights approved for a separate attributed CC BY-SA 4.0 research pack; acquisition is held until the HTML page's 111-generation count and JSON descriptor's 112-generation count are reconciled; no production applicability or repair-value approval"
+      "project_decision": "Rights are approved for a separate attributed CC BY-SA 4.0 research pack. Fresh live HTML and JSON metadata agree at 111 generations; acquire and validate the exact snapshot in Windows CI. No production applicability or repair-value approval."
     }
   ],
   "minimum_fitment_evidence_fields": [
