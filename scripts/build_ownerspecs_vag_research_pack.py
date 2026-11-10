@@ -228,6 +228,16 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
     if pinned_hash and pinned_hash != snapshot_hash:
         raise ValueError("OwnerSpecs source JSON SHA-256 differs from the pinned manifest.")
     source_manifest_hash = sha256_file(source_manifest_path)
+    acquisition_snapshot_path = source_json.parent / "acquisition-snapshot.json"
+    if acquisition_snapshot_path.is_file() and not acquisition_snapshot_path.is_symlink():
+        acquisition_snapshot = read_json(acquisition_snapshot_path)
+        if acquisition_snapshot.get("source_snapshot_sha256") != snapshot_hash:
+            raise ValueError("OwnerSpecs acquisition snapshot does not match the source JSON.")
+        retrieved_at_utc = acquisition_snapshot.get("retrieved_at_utc")
+        if not isinstance(retrieved_at_utc, str) or not retrieved_at_utc.endswith("+00:00"):
+            raise ValueError("OwnerSpecs acquisition timestamp must be UTC.")
+    else:
+        retrieved_at_utc = datetime.now(timezone.utc).isoformat()
 
     output_dir.mkdir(parents=True, exist_ok=True)
     database_path = output_dir / "ownerspecs-vag-research.sqlite"
@@ -385,7 +395,7 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
             "ownerspecs-dataset-json", SOURCE_ID, "dataset.json", source["data_revision"],
             snapshot_hash, snapshot_size, len(generations),
             sum(int(g.get("verified_datapoints") or 0) for g in generations),
-            source["reviewed_at"],
+            retrieved_at_utc,
         ))
         metadata = {
             "pack_id": PACK_ID,
@@ -430,7 +440,7 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         "source_id": SOURCE_ID,
         "source_url": source["source_urls"]["json"],
         "source_revision": source["data_revision"],
-        "retrieved_at_utc": source["reviewed_at"],
+        "retrieved_at_utc": retrieved_at_utc,
         "source_file": "source.json",
         "source_file_bytes": snapshot_size,
         "source_snapshot_sha256": snapshot_hash,
