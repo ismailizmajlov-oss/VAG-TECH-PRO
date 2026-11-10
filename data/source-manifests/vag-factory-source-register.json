@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-10T03:13:59.217Z",
+  "updated_at": "2026-11-10T03:17:05.443Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -3471,7 +3471,41 @@
           "public_otts_query_has_gearbox_column": false,
           "interpretation": "Confirms gearbox information exists in the EOTTS workflow, not that the public query exposes factory VAG gearbox codes or exact fitment."
         },
-        "rights_effect": "No licence or permission was obtained. No XLSX, PDF, source data, API response or registry record was downloaded or imported. Display, offline cache, bulk extraction, commercial reuse and redistribution remain unconfirmed."
+        "rights_effect": "none; official homepage confirms navigation and participant access conditions only; no dataset licence or reuse permission obtained",
+        "homepage_evidence": {
+          "url": "https://elpts.ru/",
+          "observed_at": "2026-11-10",
+          "official_page_lines": {
+            "paid_reports": [
+              388,
+              391,
+              393,
+              396,
+              398,
+              401
+            ],
+            "eotts_training_materials": [
+              574,
+              577,
+              579
+            ],
+            "national_register_link": [
+              596,
+              598
+            ],
+            "reference_books": [
+              80,
+              84
+            ]
+          },
+          "observations": {
+            "paid_reports": "ELPTS states that SEP statistical reports are additional services for participants under existing service agreements and separate addenda; EOTTS reports for certification bodies/applicant organizations are supplied under invoice-contract after request and prior approval.",
+            "eotts_training_materials": "Access to AS EOTTS training materials requires entry through the official organization profile in the Centre for Applications; the login is the email address stated in the organization's contract.",
+            "national_register": "The official homepage links to the national part of the unified register of issued OTTS, OTSH and SBKTS on rst.gov.ru.",
+            "reference_books": "The homepage links to make and technical-characteristics reference books; the linked XLSX/Yandex Disk files state no dataset licence on the observed pages."
+          },
+          "interpretation": "These are official access/navigation and service conditions. They do not establish a dataset-specific licence for bulk extraction, SQLite caching, offline display, commercial reuse or redistribution."
+        }
       },
       "official_national_registry_url": "https://www.rst.gov.ru/portal/gost/home/activity/compliance/evaluationcompliance/AcknowledgementCorrespondence",
       "public_reference_books": [
