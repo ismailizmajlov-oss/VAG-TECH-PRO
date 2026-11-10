@@ -34,37 +34,6 @@ BEGIN
  THEN RAISE(ABORT,'permission-granted vehicle catalog rights require a permission reference') END;
 END;
 
-CREATE TABLE IF NOT EXISTS technical_source_rights (
- source_document_id INTEGER PRIMARY KEY REFERENCES source_documents(source_document_id) ON DELETE RESTRICT,
- rights_status TEXT NOT NULL CHECK(rights_status IN('not_reviewed','permission_required','approved','restricted','expired')),
- commercial_use_allowed INTEGER NOT NULL DEFAULT 0 CHECK(commercial_use_allowed IN(0,1)),
- display_allowed INTEGER NOT NULL DEFAULT 0 CHECK(display_allowed IN(0,1)),
- offline_cache_allowed INTEGER NOT NULL DEFAULT 0 CHECK(offline_cache_allowed IN(0,1)),
- bulk_reuse_allowed INTEGER NOT NULL DEFAULT 0 CHECK(bulk_reuse_allowed IN(0,1)),
- redistribution_allowed INTEGER NOT NULL DEFAULT 0 CHECK(redistribution_allowed IN(0,1)),
- store_text_allowed INTEGER NOT NULL DEFAULT 0 CHECK(store_text_allowed IN(0,1)),
- store_diagrams_allowed INTEGER NOT NULL DEFAULT 0 CHECK(store_diagrams_allowed IN(0,1)),
- store_structured_data_allowed INTEGER NOT NULL DEFAULT 0 CHECK(store_structured_data_allowed IN(0,1)),
- license_text_sha256 TEXT CHECK(license_text_sha256 IS NULL OR(length(license_text_sha256)=64 AND license_text_sha256 NOT GLOB '*[^a-f0-9]*')),
- permission_reference TEXT, rights_revision TEXT NOT NULL, reviewed_at_utc TEXT NOT NULL,
- CHECK(rights_status<>'approved' OR(display_allowed=1 AND offline_cache_allowed=1 AND bulk_reuse_allowed=1 AND redistribution_allowed=1 AND license_text_sha256 IS NOT NULL))
-);
-CREATE TRIGGER IF NOT EXISTS technical_source_permission_reference_guard
-BEFORE INSERT ON technical_source_rights WHEN NEW.rights_status='approved'
-BEGIN
- SELECT CASE WHEN(SELECT license_status FROM source_documents WHERE source_document_id=NEW.source_document_id)='permission_granted'
- AND(NEW.permission_reference IS NULL OR length(trim(NEW.permission_reference))=0)
- THEN RAISE(ABORT,'permission-granted source rights require a permission reference') END;
-END;
-CREATE TRIGGER IF NOT EXISTS technical_source_permission_reference_update
-BEFORE UPDATE OF rights_status,permission_reference ON technical_source_rights
-WHEN NEW.rights_status='approved'
-BEGIN
- SELECT CASE WHEN(SELECT license_status FROM source_documents WHERE source_document_id=NEW.source_document_id)='permission_granted'
- AND(NEW.permission_reference IS NULL OR length(trim(NEW.permission_reference))=0)
- THEN RAISE(ABORT,'permission-granted source rights require a permission reference') END;
-END;
-
 CREATE TABLE IF NOT EXISTS technical_documents (
  technical_document_id INTEGER PRIMARY KEY,
  source_document_id INTEGER NOT NULL REFERENCES source_documents(source_document_id) ON DELETE RESTRICT,
