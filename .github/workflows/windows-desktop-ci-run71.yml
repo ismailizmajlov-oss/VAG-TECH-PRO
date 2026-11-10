@@ -688,7 +688,8 @@ jobs:
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
           $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId" -Headers $headers -Method Get -TimeoutSec 30
           if ($run.status -ne "completed" -or $run.conclusion -ne "success" -or $run.head_sha -ne $entry.research_pack_source_commit -or $run.run_number -ne $entry.research_pack_run_number -or $run.workflow_id -ne 405584927 -or $run.event -ne "push") { throw "Pinned MechanicDB pack workflow run is not the reviewed successful source revision." }
-          $artifact = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/artifacts/$artifactId" -Headers $headers -Method Get -TimeoutSec 30
+          $artifactResponse = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId/artifacts?per_page=100" -Headers $headers -Method Get -TimeoutSec 30
+          $artifact = @($artifactResponse.artifacts | Where-Object { $_.id -eq [long]$artifactId }) | Select-Object -First 1
           $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
           if ($artifact.id -ne [long]$artifactId -or $artifact.name -ne $entry.research_pack_artifact_name -or $artifact.expired -ne $false -or $digest -ne $expectedDigest) { throw "Pinned MechanicDB artifact ID, name, expiry or SHA-256 mismatch." }
           "run_id=$runId" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
