@@ -24,8 +24,8 @@ test("OwnerSpecs desktop integration is pinned to the reviewed CC BY-SA pack", (
 
 test("Windows desktop workflow downloads the exact pinned OwnerSpecs artifact and tests integration", () => {
   assert.match(workflow, /ownerspecs-vag-research-pack/);
-  assert.match(workflow, /42736946351/);
-  assert.match(workflow, /3ac33a190f4621dc1b6fc69f59c90425001fd171b335c10e48268ecd62eaa82f/);
+  assert.match(workflow, /42752686437/);
+  assert.match(workflow, /441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3/);
   assert.match(workflow, /integrate-ownerspecs-vag-research\.cjs/);
   assert.match(workflow, /ownerspecs-pack-integration-contract\.test\.cjs/);
 });
