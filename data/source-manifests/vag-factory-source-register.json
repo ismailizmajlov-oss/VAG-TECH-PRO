@@ -7957,10 +7957,6 @@
           "Volkswagen"
         ],
         "retrieved_at_utc": "2026-11-10T00:27:29.713087+00:00",
-        "source_rows_changed": 1658,
-        "vag_rows_changed": 1,
-        "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
-        "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment",
         "source_rows_net_change_since_archived_baseline": 2596,
         "vag_rows_added_since_archived_baseline": 205,
         "vag_rows_removed_since_archived_baseline": 30,
@@ -7970,7 +7966,15 @@
         "vag_page_url_changed_groups_since_archived_baseline": 22,
         "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
         "previous_pinned_snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
-        "exact_delta_from_previous_pinned_snapshot_available": false
+        "exact_delta_from_previous_pinned_snapshot_available": false,
+        "previous_snapshot_review": {
+          "snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+          "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
+          "source_rows_changed": 1658,
+          "vag_rows_changed": 1,
+          "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
+          "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
+        }
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     }
