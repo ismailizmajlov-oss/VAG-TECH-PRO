@@ -55,7 +55,7 @@ test("bundled CC0 Wikidata taxonomy seeds only provenance-bound identity candida
   assert.equal(result.exact_fitments, 0);
   assert.equal(result.engine_codes, 0);
   assert.equal(result.transmission_codes, 0);
-  assert.match(result.packageSha256, /^[a-f0-9]{64}$/);
+  assert.equal(result.packageSha256, "52c4b195d8200594aca1cec2de93f64f8fbe94a746dea0406715da7348e057d2");
   assert.equal(result.source_id, sourceId);
   assert.equal(result.source_revision, "wikidata-snapshot-630dbed1af15");
   assert.equal(result.market_scope, "UNKNOWN");
@@ -85,7 +85,7 @@ test("bundled CC0 Wikidata taxonomy seeds only provenance-bound identity candida
     assert.equal(batch.records_seen, 527);
     assert.equal(batch.records_inserted, 527);
     assert.equal(batch.records_unchanged, 0);
-    assert.match(batch.package_sha256, /^[a-f0-9]{64}$/);
+    assert.equal(batch.package_sha256, "52c4b195d8200594aca1cec2de93f64f8fbe94a746dea0406715da7348e057d2");
     const sample = db.prepare("SELECT * FROM vehicle_models WHERE source_id=? ORDER BY id LIMIT 1").get(sourceId);
     assert.ok(sample);
     assert.equal(sample.review_status, "candidate");
