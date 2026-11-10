@@ -4,27 +4,15 @@ on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
-      - "data/source-manifests/vag-factory-source-register.json"
-      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
-      - "tests/test_cardir_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "scripts/build_cardir_vag_open_data_pack.py"
       - "tests/test_cardir_vag_open_data_pack.py"
-      - "tests/test_cardir_vag_open_data_source_rights.py"
-      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
-      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
   pull_request:
     branches: [main]
     paths:
-      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
-      - "data/source-manifests/vag-factory-source-register.json"
-      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
-      - "tests/test_cardir_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "scripts/build_cardir_vag_open_data_pack.py"
       - "tests/test_cardir_vag_open_data_pack.py"
-      - "tests/test_cardir_vag_open_data_source_rights.py"
-      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
-      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
   workflow_dispatch:
 
 permissions:
