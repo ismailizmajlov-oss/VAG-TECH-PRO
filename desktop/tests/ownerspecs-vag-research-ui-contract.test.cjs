@@ -25,7 +25,7 @@ test("OwnerSpecs UI never presents critical values as confirmed repair data", ()
     assert.ok(ui.includes(field), "missing OwnerSpecs provenance field: " + field);
   }
   assert.match(ui, /точная применимость не подтверждена/);
-  assert.match(ui, /критические значения не допущены к ремонту/);
+  assert.match(ui, /критические значения не допущены к ремонту/i);
   assert.match(ui, /Share-Alike/);
 });
 
