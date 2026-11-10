@@ -3,8 +3,8 @@
   "dataset_id": "vehiclesdb-vag-identity-cc-by-4.0",
   "publisher": "VehiclesDB",
   "repository": "https://github.com/vehiclesdb/vehiclesdb",
-  "upstream_tag": "v2026.10.4",
-  "expected_version": "2026.10.4",
+  "upstream_tag": "v2026.11.3",
+  "expected_version": "2026.11.3",
   "data_license": "CC-BY-4.0",
   "license_url": "https://creativecommons.org/licenses/by/4.0/",
   "attribution": {
@@ -55,7 +55,8 @@
     "il_mot": "Source-specific terms are not relicensed as CC-BY-4.0; exclude pending separate terms review.",
     "th_dlt": "Thailand is outside the requested Russian/EAEU product market.",
     "ch_tg": "One Swiss canton only; do not represent it as nationwide Swiss coverage.",
-    "no_svv_pkk": "Roadworthiness-inspection evidence is not a vehicle registration/fleet register."
+    "no_svv_pkk": "Roadworthiness-inspection evidence is not a vehicle registration/fleet register.",
+    "de_kba_nfz": "KBA FZ 2.2/FZ 2.8/FZ 4.8 is attach-only in the upstream source notes; excluded from this identity pack to avoid treating it as a complete fleet/count source."
   },
   "source_files": [
     "dist/catalog.sqlite",
@@ -66,8 +67,8 @@
   "expected_counts": {
     "sources": 14,
     "source_files": 4,
-    "models": 260,
-    "market_evidence": 1524
+    "models": 307,
+    "market_evidence": 1621
   },
   "build_policy": {
     "output_database": "vag-identity-vehiclesdb.sqlite",
@@ -75,23 +76,27 @@
     "market_presence_only": true,
     "unknown_years_remain_null": true,
     "unknown_generation_engine_gearbox_remain_absent": true,
-    "do_not_promote_to_exact_fitment": true
+    "do_not_promote_to_exact_fitment": true,
+    "identity_only_use": true,
+    "safety_critical_reliance": false,
+    "repair_decision_use": false,
+    "open_data_policy_notice": "VehiclesDB's open-data policy warns that the dataset is not designed or warranted for safety-critical reliance; this pack is identity-only and must not drive repair, safety-critical or exact-fitment decisions."
   },
   "not_in_release_sources": {
-    "ro_drpciv": "Not present in the pinned VehiclesDB v2026.10.4 manifest; record as absent, not as an excluded source in this release."
+    "ro_drpciv": "Not present in the pinned VehiclesDB v2026.11.3 manifest; record as absent, not as an excluded source in this release."
   },
   "expected_source_files": {
     "catalog.sqlite": {
-      "byte_size": 9773056,
-      "sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704"
+      "byte_size": 10260480,
+      "sha256": "06aa916028e2d732ce087e9a566fc26717ae0a9a2ab8cd8487a0e6df31f1b172"
     },
     "manifest.json": {
-      "byte_size": 11249,
-      "sha256": "a401b7bd9bb58ea581fffaf1cccfb79a28b4592d4674c36b10e419f6c30b8fa8"
+      "byte_size": 12498,
+      "sha256": "7df6ec271cb5a7aae80164e28cb3b4be83612da42942b76989e43b7c99e8c075"
     },
     "ATTRIBUTION.md": {
-      "byte_size": 9615,
-      "sha256": "bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21"
+      "byte_size": 10256,
+      "sha256": "47edb850ed4ff02f5c9d8de3efcdd314d7a0162b1067e1c15ca07b956acccf60"
     },
     "LICENSE": {
       "byte_size": 1319,
