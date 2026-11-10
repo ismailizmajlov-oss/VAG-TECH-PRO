@@ -35,6 +35,19 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(source["research_pack"]["vag_models"],26)
         self.assertEqual(source["research_pack"]["source_snapshot_sha256"],"64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be")
         self.assertIs(source["research_pack"]["production_import"],False)
+    def test_current_snapshot_change_review_is_conservative_and_does_not_claim_unavailable_delta(self):
+        change = self.manifest["snapshot"]["change_review"]
+        self.assertEqual(change["comparison_baseline_sha256"], "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375")
+        self.assertEqual(change["current_snapshot_sha256"], "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be")
+        self.assertEqual(change["vag_rows_added"], 205)
+        self.assertEqual(change["vag_rows_removed"], 30)
+        self.assertEqual(change["vag_identity_groups_added"], 121)
+        self.assertEqual(change["vag_identity_groups_removed"], 0)
+        self.assertEqual(change["vag_value_or_unit_changed_groups"], 0)
+        self.assertEqual(change["vag_verified_at_changed_groups"], 0)
+        self.assertEqual(change["vag_page_url_changed_groups"], 22)
+        self.assertIs(change["exact_delta_from_previous_pinned_snapshot_available"], False)
+
     def test_not_misclassified_as_russian_or_eaeu_otts(self):
         self.assertNotIn(SOURCE_ID,{s.get("source_id") for s in self.ru["sources"]})
         self.assertEqual(self.manifest["applicability_policy"]["market_scope"],"UNKNOWN")
