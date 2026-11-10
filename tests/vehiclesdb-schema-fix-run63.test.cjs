@@ -20,6 +20,12 @@ function fixture(root, dynamicGate = true) {
   const gate = dynamicGate ? [
     "if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||",
     "    vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license ||",
+    "    vehiclesDbProvenance.upstream_tag !== vehiclesDbPackManifest.upstream_tag ||",
+    "    vehiclesDbProvenance.upstream_manifest_sha256 !== vehiclesDbPackManifest.source_manifest_sha256 ||",
+    "    vehiclesDbProvenance.source_catalog_sha256 !== vehiclesDbPackManifest.source_catalog_sha256 ||",
+    "    vehiclesDbProvenance.attribution_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"ATTRIBUTION.md\"] ||",
+    "    vehiclesDbProvenance.license_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"LICENSE\"] ||",
+    "    vehiclesDbProvenance.lock_sha256 !== vehiclesDbPackManifest.lock_sha256 ||",
     "    vehiclesDbCounts.sources !== 14 ||",
     "    vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models ||",
     "    vehiclesDbCounts.marketEvidence !== vehiclesDbPackManifest.counts?.market_evidence ||",
@@ -27,8 +33,14 @@ function fixture(root, dynamicGate = true) {
     "    vehiclesDbPackManifest.identity_only_use !== true ||",
     "    vehiclesDbPackManifest.safety_critical_reliance !== false ||",
     "    vehiclesDbPackManifest.repair_decision_use !== false ||",
+    "    vehiclesDbPackManifest.fitment_claim !== false ||",
+    "    vehiclesDbPackManifest.ru_evidence_present !== false ||",
+    "    vehiclesDbPackManifest.attribution?.required !== true ||",
+    "    vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models ||",
+    "    vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||",
     "    !vehiclesDbPackManifest.open_data_policy_notice.includes(" + "\"not designed or warranted for safety-critical\") ||",
-    "    vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license) {"
+    "    !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) ||",
+    "    !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {"
   ].join("\n") : [
     "if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||",
     "    vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models ||"
