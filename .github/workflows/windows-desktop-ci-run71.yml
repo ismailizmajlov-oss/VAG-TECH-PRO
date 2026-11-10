@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - automation/windows-desktop-build-run61-integrated
+      - automation/atomic-rights-import-guard-run94-20261110
     paths:
       - ".github/workflows/windows-desktop-ci.yml"
       - ".github/workflows/windows-desktop-ci-run71.yml"
