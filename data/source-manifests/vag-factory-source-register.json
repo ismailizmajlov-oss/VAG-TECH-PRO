@@ -8597,12 +8597,21 @@
         "public_sql_rest_endpoint": "https://discodata.eea.europa.eu/sql",
         "endpoint_documentation": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/b4044b06-2e6b-4f8e-a6e6-66e0e98bb0dd?language=eng",
         "api_protocol": "GET /sql?query=<encoded SQL>&p=<page>&nrOfHits=<page size>",
-        "hosted_runner_probe_status": "not_run",
+        "hosted_runner_probe_status": "blocked_http_403",
         "hosted_runner_probe_scope": "one read-only row; core VAG makes; 2025 provisional; safe type-approval/variant fields only",
         "raw_probe_response_retained": false,
         "full_acquisition_runner_policy": "owner_controlled_windows_10_11_x64_only_until_separately_validated",
         "product_import_allowed": false,
-        "product_fitment_confirmation_allowed": false
+        "product_fitment_confirmation_allowed": false,
+        "hosted_runner_probe_at_utc": "2026-11-10T15:21:20.333233+00:00",
+        "hosted_runner_probe_runner": "GitHub-hosted windows-2025 x64",
+        "hosted_runner_probe_rows": 0,
+        "hosted_runner_probe_query_sha256": "c8e1cebdd37bd712f084ac42d6c6ef19ffddae23f786f18ae5cce6895d160124",
+        "hosted_runner_probe_response_sha256": null,
+        "hosted_runner_probe_workflow_run_id": 42843396637,
+        "hosted_runner_probe_workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42843396637",
+        "hosted_runner_probe_raw_response_retained": false,
+        "hosted_runner_probe_data_acquired": false
       }
     },
     {
