@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "source_id": "cardir-vag-owner-manual-facts-cc-by-4.0",
+  "publisher": "CarDir",
+  "source_kind": "curated_owner_manual_reference_facts",
+  "reviewed_at": "2026-11-07",
+  "data_revision": "CarDir open-data snapshot 2026-11-07; SHA-256 72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+  "source_urls": {
+    "dataset_page": "https://cardir.ru/dannye/",
+    "csv": "https://cardir.ru/dannye/cardir-zapravochnye-obemy.csv",
+    "json": "https://cardir.ru/dannye/cardir-zapravochnye-obemy.json",
+    "methodology": "https://cardir.ru/metodika/",
+    "source_methodology": "https://cardir.ru/istochniki/",
+    "license": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "rights": {
+    "rights_status": "approved_by_published_CC_BY_4_0",
+    "permission_status": "not_required_under_published_CC_BY_4_0",
+    "license_id": "CC-BY-4.0",
+    "license_name": "Creative Commons Attribution 4.0 International",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "bulk_reuse_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": true,
+    "attribution_text": "CarDir (https://cardir.ru/dannye/), CC BY 4.0. Modified: filtered to the exact VAG-brand allowlist; original source field values and qualifiers are preserved.",
+    "evidence_urls": [
+      "https://cardir.ru/dannye/",
+      "https://cardir.ru/metodika/",
+      "https://cardir.ru/istochniki/"
+    ],
+    "evidence_summary": "The publisher's open-data page explicitly licenses the CSV/JSON facts under CC BY 4.0, including commercial reuse, use in services and redistribution with attribution. Each row includes owner-manual title, page locator, CarDir source-card URL, model-page URL, qualifier and verification date."
+  },
+  "snapshot": {
+    "status": "source_snapshot_acquired_schema_verified",
+    "expected_data_updated_at": "2026-11-07",
+    "expected_source_row_count": 41649,
+    "expected_model_count": 561,
+    "source_snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+    "source_file_bytes": 14291343,
+    "note": "Exact source CSV acquired by Windows CI on 2026-11-07; current SHA-256 and byte size pinned. Compared with prior snapshot 93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375: 1,658 source rows changed in the full all-brand CSV; the 773-row VAG subset has exactly one changed fact (Porsche Cayman 2009, wheel_size, rear axle/summer tires: 10 J x 19 H2 -> 8.5 J x 17 H2). That qualifier is broader than one wheel-size option and is retained only as raw, not-independently-reviewed research; no exact fitment is inferred. The separate read-only SQLite pack is an attributed CC BY 4.0 research resource only, not a production catalog import.",
+    "observed_source_row_count": 41649,
+    "observed_model_count": 561,
+    "observed_vag_row_count": 773,
+    "observed_vag_model_count": 24,
+    "observed_vag_brand_values": [
+      "Audi",
+      "Porsche",
+      "Skoda",
+      "Volkswagen"
+    ],
+    "verified_at_min": "2026-09-28",
+    "verified_at_max": "2026-11-07",
+    "columns_sha256": "c113d5ebe76d96895eb41e185e2b719bf48028f24287ed472ee1cda3b9e29997",
+    "retrieved_at_utc": "2026-11-07T13:00:14.942499+00:00",
+    "change_review": {
+      "previous_snapshot_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
+      "current_snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+      "full_source_rows_changed": 1658,
+      "vag_rows_changed": 1,
+      "changed_vag_fact": {
+        "brand": "Porsche",
+        "model": "Cayman",
+        "key": "wheel_size",
+        "qualifier": "Cayman, летние шины, задняя ось",
+        "previous_value": "10 J x 19 H2",
+        "current_value": "8.5 J x 17 H2",
+        "source_title": "Руководство по эксплуатации Porsche Cayman (2009 (Cayman, Cayman S))",
+        "source_page": "270",
+        "source_url": "https://cardir.ru/istochnik/3178/#page-270",
+        "review_status": "publisher_snapshot_change_not_independently_resolved",
+        "applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
+      }
+    }
+  },
+  "data_scope": {
+    "dataset_title": "CarDir verified owner-manual reference facts",
+    "expected_fields": [
+      "brand",
+      "model",
+      "key",
+      "key_label_ru",
+      "qualifier",
+      "value",
+      "unit",
+      "source_title",
+      "source_page",
+      "source_url",
+      "page_url",
+      "verified_at"
+    ],
+    "parameter_groups": [
+      "engine_oil",
+      "gearbox_oil",
+      "coolant",
+      "brake_fluid",
+      "tire_pressure",
+      "tire_and_wheel_size",
+      "battery",
+      "spark_plug",
+      "service_interval",
+      "air_conditioning_refrigerant"
+    ],
+    "vag_brand_allowlist": [
+      "Audi",
+      "Bentley",
+      "CUPRA",
+      "Lamborghini",
+      "Porsche",
+      "SEAT",
+      "Skoda",
+      "Škoda",
+      "Volkswagen",
+      "Volkswagen Commercial Vehicles",
+      "Volkswagen Nutzfahrzeuge",
+      "VW"
+    ],
+    "no_vin_or_personal_data_expected": true,
+    "source_kind_boundary": "curated factual extracts from owner manuals; CarDir is the dataset publisher, not the vehicle manufacturer"
+  },
+  "applicability_policy": {
+    "market_scope": "UNKNOWN",
+    "raw_brand_and_model_preserved": true,
+    "raw_qualifier_preserved": true,
+    "qualifier_semantics": "unparsed publisher text; may describe engine, gearbox, year, load or another condition",
+    "exact_engine_code_mapping": false,
+    "exact_gearbox_code_mapping": false,
+    "exact_engine_gearbox_pair": false,
+    "model_generation_inferred": false,
+    "model_year_inferred": false,
+    "exact_vehicle_fitment": false,
+    "ru_eaeu_applicability": false,
+    "ecu_fitment": false,
+    "dtc_fitment": false,
+    "wiring_or_pinout_content": false,
+    "repair_procedure_content": false,
+    "production_fitment": false
+  },
+  "import_policy": {
+    "research_pack_allowed": true,
+    "research_pack_read_only": true,
+    "product_database_ingested": false,
+    "data_ingested": false,
+    "production_import": false,
+    "product_import_allowed": false,
+    "technician_repair_authorization": false,
+    "require_source_row_sha256": true,
+    "require_source_snapshot_sha256": true
+  }
+}
