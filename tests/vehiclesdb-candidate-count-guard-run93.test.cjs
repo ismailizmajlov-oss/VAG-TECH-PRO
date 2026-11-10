@@ -95,9 +95,9 @@ test("run93 composes after run68's manifest-driven count guard without rewriting
       "vehiclesDbPackManifest.identity_only_use !== true ||",
       "vehiclesDbPackManifest.safety_critical_reliance !== false ||",
       "vehiclesDbPackManifest.repair_decision_use !== false ||",
-      "typeof vehiclesDbPackManifest.open_data_policy_notice !== \\"string\\" ||",
-      "!vehiclesDbPackManifest.open_data_policy_notice.includes(\\"not designed or warranted for safety-critical\\") ||"
-    ].join("\\n        ");
+      "typeof vehiclesDbPackManifest.open_data_policy_notice !== \"string\" ||",
+      "!vehiclesDbPackManifest.open_data_policy_notice.includes(\"not designed or warranted for safety-critical\") ||"
+    ].join("\n        ");
     assert.equal(before.split(legacy).length - 1, 1);
     fs.writeFileSync(dbPath, before.replace(legacy, dynamic));
     const afterRun68 = fs.readFileSync(dbPath, "utf8");
@@ -105,9 +105,9 @@ test("run93 composes after run68's manifest-driven count guard without rewriting
     assert.equal(first.status, 0, first.stderr);
     const afterRun93 = fs.readFileSync(dbPath, "utf8");
     assert.equal(afterRun93.split(dynamic).length - 1, 1, "run93 must preserve run68's already-aligned predicate");
-    assert.match(afterRun93, /identityOnlyUse: packManifest\\.identity_only_use/);
-    assert.match(afterRun93, /safetyCriticalReliance: packManifest\\.safety_critical_reliance/);
-    assert.match(afterRun93, /repairDecisionUse: packManifest\\.repair_decision_use/);
+    assert.match(afterRun93, /identityOnlyUse: packManifest\.identity_only_use/);
+    assert.match(afterRun93, /safetyCriticalReliance: packManifest\.safety_critical_reliance/);
+    assert.match(afterRun93, /repairDecisionUse: packManifest\.repair_decision_use/);
     assert.notEqual(afterRun93, afterRun68, "run93 must still add the returned identity-only policy fields");
     const evidence = JSON.parse(fs.readFileSync(path.join(root, "data", "research", "vehiclesdb-vag-identity", "desktop-candidate-boundary-verification.json"), "utf8"));
     assert.equal(evidence.status, "vehiclesdb_identity_only_dynamic_count_gate_applied");
