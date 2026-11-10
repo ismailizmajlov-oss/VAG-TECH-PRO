@@ -72,9 +72,9 @@ class HptSuRightsRecordTests(unittest.TestCase):
         review = self.source["latest_terms_review"]
         self.assertEqual(review["reviewed_at"], "2026-11-10")
         self.assertIn("6.4", review["reviewed_sections"]["api_terms"])
-        self.assertFalse(review["project_use"]["account_created"])
-        self.assertFalse(review["project_use"]["subscription_started"])
-        self.assertFalse(review["project_use"]["product_import_allowed"])
+        self.assertFalse(review["project_actions"]["account_created"])
+        self.assertFalse(review["project_actions"]["subscription_started"])
+        self.assertFalse(review["project_actions"]["product_import_allowed"])
 
 
 if __name__ == "__main__":
