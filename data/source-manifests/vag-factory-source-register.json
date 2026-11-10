@@ -636,7 +636,21 @@
         "third_party_desktop_display_allowed": false,
         "written_permission_for_product_distribution_obtained": false,
         "api_internal_use_does_not_authorize_third_party_distribution": true,
-        "connector_mit_license_scope": "hptsu-mcp connector software only; not HPT.SU database or underlying documents"
+        "connector_mit_license_scope": "hptsu-mcp connector software only; not HPT.SU database or underlying documents",
+        "api_derived_analytics_outputs": {
+          "allowed_with_conditions": true,
+          "conditions": [
+            "output must be the subscriber's own analytical work, not a repackaging of API data",
+            "the amount and composition of shared data must be materially smaller than the provider database",
+            "attribute HPT.SU when the result is published"
+          ],
+          "simple_repackaging_allowed": false,
+          "substantially_reproducing_provider_database_allowed": false,
+          "equivalent_third_party_database_access_allowed": false,
+          "product_database_distribution_authorized": false,
+          "source_attribution_required_when_published": true,
+          "terms_reference": "API terms §6.4"
+        }
       },
       "limitations": [
         "A public page, free MCP tier or statement that documents originate from open sources is not an open-data license for the provider's compiled database.",
@@ -667,7 +681,53 @@
         "connector_repository": "https://github.com/HPT-SU/hptsu-mcp",
         "reviewed_at": "2026-11-07"
       },
-      "data_ingested": false
+      "data_ingested": false,
+      "latest_terms_review": {
+        "reviewed_at": "2026-11-10",
+        "offer_url": "https://hpt.su/p/oferta/",
+        "offer_effective_date": "2026-08-22",
+        "api_terms_url": "https://hpt.su/p/api-terms/",
+        "api_terms_effective_date": "2026-05-27",
+        "reviewed_sections": {
+          "offer": [
+            "4.1.4",
+            "11.2",
+            "11.3",
+            "11.4",
+            "11.5"
+          ],
+          "api_terms": [
+            "2.2",
+            "3.3",
+            "6.1",
+            "6.2",
+            "6.3",
+            "6.4",
+            "6.5",
+            "8.6"
+          ]
+        },
+        "findings": [
+          "Offer §11.3 permits local saving and own-use processing of individual materials obtained through authorized standard interfaces; this is not a right to redistribute a catalogue.",
+          "Offer §11.4 restricts substantial or systematic extraction and derivative databases for third parties without written consent; §11.5 preserves use of individual documents for own purposes but does not remove extraction limits.",
+          "API §6.2 permits internal integration and own analytics, but only where third-party products do not provide access equivalent to the provider database.",
+          "API §6.3 prohibits equivalent third-party database access and substantially reproducing derivative databases without separate written consent.",
+          "API §6.4 permits sharing the subscriber's own analytical results only when they are not simple repackaging, are materially smaller than the provider database, and attribute HPT.SU when published.",
+          "API §8.6 prohibits systematically transferring a complete current copy of the provider database into the subscriber's or another party's storage."
+        ],
+        "rights_effect": "The §6.4 narrow analytical-output carve-out does not authorize a VAG TECH PRO offline catalogue, source-record cache, third-party desktop display or redistribution.",
+        "project_actions": {
+          "account_created": false,
+          "api_or_mcp_key_requested": false,
+          "subscription_started": false,
+          "payment_made": false,
+          "api_calls_made": false,
+          "documents_downloaded": 0,
+          "sqlite_imported": false
+        },
+        "source_page_file_sha256": null,
+        "hash_status": "live_terms_review_only_no_source_file_downloaded"
+      }
     },
     {
       "source_id": "mechanicdb-public-generic-repair-guidance",
