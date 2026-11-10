@@ -36,11 +36,11 @@ This source can add traceable owner-manual reference facts for maintenance secti
 
 ## Snapshot acquisition and hashes
 
-The current source manifest now pins the 2026-11-09 CSV snapshot retrieved by Windows CI on 2026-11-10: 15,165,485 bytes, SHA-256 `64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be`, 44,245 rows and 610 brand/model pairs. Exact VAG brand equality retains 948 facts across 26 models and five labels: Audi, Porsche, SEAT, Skoda and Volkswagen. The publisher page reports the same 44,245/610 counts and explicitly grants CC BY 4.0 commercial reuse, display, caching and redistribution with attribution. A byte-level probe compared the current CSV with the archived run-36 baseline (`93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375`): 3,920 all-brand rows were added and 1,324 removed; within the VAG subset 205 rows were added, 30 old full-row variants were removed, 121 identity groups were added and none removed. No VAG value/unit or `verified_at` changes were found; 22 groups changed only their `page_url`. The intermediate 72b3 snapshot is not present as a CSV artifact, so these deltas are explicitly against the archived 93709 baseline, not claimed as the exact 72b3-to-64a delta. Raw qualifiers remain unparsed; no engine/gearbox code or exact fitment is inferred.
+The first 2026-11-10 acquisition pinned 15,165,485 bytes, SHA-256 `64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be`, 44,245 rows and 610 brand/model pairs. That snapshot is now superseded. The latest Windows acquisition (2026-11-10 02:23 UTC) contains 15,174,126 bytes, SHA-256 `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`, 44,272 rows and 611 brand/model pairs. The publisher page still displays 44,245/610, so the page/file count discrepancy is explicitly recorded. Exact VAG brand equality retains the same 948 facts across 26 models and five labels: Audi, Porsche, SEAT, Skoda and Volkswagen. Exact multiset comparison of the previous pinned CSV with the latest CSV found 52 full rows added and 25 removed, all outside the VAG allowlist; the complete VAG row multiset and canonical SHA-256 `92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad` are unchanged. No VAG value, unit, qualifier, source title, source locator, source URL or verification date changed. The earlier comparison with the archived run-36 baseline (`93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375`) remains historical; it is not substituted for the exact latest-snapshot delta.
 
-The last successful SQLite pack build, Windows workflow run 36 on 2026-11-07, used the **previous** snapshot (`93709b...`), not the current `72b3...` snapshot. Its artifact is therefore stale for the current source revision and must not be packaged as the current pack. The current snapshot's acquisition and SQLite rebuild must pass again before a current database hash or artifact hash is recorded. Until then, the current source snapshot is pinned but its refreshed SQLite pack remains pending and outside the desktop installer.
+The last successful current-pack build (Windows workflow run 58 on 2026-11-10) used the previous pinned CSV snapshot `64a507...`; it is stale for the latest `30f502...` file. The subsequent acquisition probe run 59 failed closed when it detected 44,272 rows / 611 model pairs instead of the old 44,245 / 610 pin. The exact VAG subset was independently compared and found unchanged. A new Windows SQLite build and independent verification against `30f502...` are required before the refreshed pack can be used by desktop CI; the previous artifact must not be substituted.
 
-A Windows-only workflow will acquire the exact published CSV over HTTPS from the URL below, reject redirects away from the CarDir host, enforce a download-size cap, validate the 12-column schema and the publisher-stated 41,649-row / 561-model snapshot, and calculate:
+A Windows-only workflow acquires the exact published CSV over HTTPS from the URL below, rejects redirects away from the CarDir host, enforces a download-size cap, validates the 12-column schema and the pinned 44,272-row / 611-model file snapshot, and calculates. The publisher page's 44,245 / 610 summary remains a separate page observation and is not treated as the downloaded-file count.
 
 1. SHA-256 of the complete source CSV;
 2. SHA-256 of every retained VAG source row over canonical JSON of the original parsed field strings;
@@ -69,10 +69,40 @@ The published licence covers the dataset. It does not transfer rights in the und
 **Disposition:** verified licensed research pack only; market_scope=UNKNOWN; `data_ingested=false`; `production_import=false`; `product_import_allowed=false`; source snapshot and SQLite hashes are pinned above. Desktop integration and any production use remain disabled.
 
 
-## 2026-11-10 source snapshot recheck
+## 2026-11-10 initial source snapshot recheck (superseded by the later refresh below)
 
 The current publisher page (https://cardir.ru/dannye/) reports 44,245 verified values for 610 models, data last checked 2026-11-09, and CC BY 4.0 terms permitting commercial use, display in services, offline copying and redistribution with attribution. The Windows source-change probe retrieved the CSV directly from the publisher's HTTPS URL and independently computed the SHA-256 and row/model counts. The complete CSV and snapshot manifest were retained as a CI audit artifact; no owner-manual PDF was downloaded or bundled.
 
 The current VAG subset contains 948 rows across 26 models and Audi, Porsche, SEAT, Skoda and Volkswagen. Against the archived run-36 CSV baseline, no VAG values or units changed and no VAG verification dates changed. There were 121 new VAG identity groups, 205 added rows, 30 removed full-row variants and 22 page-URL-only groups. Because the intermediate 72b3 snapshot has no available CSV artifact, no exact delta from that intermediate revision is claimed.
 
 The refreshed SQLite pack is still pending its current-snapshot build and independent verification. The data remains a separate read-only reference-facts research resource: market UNKNOWN; no production import; no exact vehicle fitment; no exact engine/gearbox mapping; no RU/EAEU applicability; no ECU, DTC, wiring, pinout or repair-procedure claims.
+
+## 2026-11-10 live CSV refresh — 02:23 UTC
+
+The next Windows acquisition downloaded a new exact CSV snapshot from the same official HTTPS URL. The publisher page still displays **44,245 values / 610 models**, but the downloaded file contains **44,272 rows / 611 brand/model pairs**, 15,174,126 bytes, SHA-256 `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`. The page/file count discrepancy is preserved explicitly; the file hash and observed row/model counts, not the stale page summary, are now the pinned acquisition contract.
+
+The previous pinned CSV (`64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be`) and the new CSV were both available as CI artifacts and compared as exact row multisets:
+
+- 52 full rows added, 25 removed (net +27), producing one additional non-VAG brand/model pair.
+- VAG exact-allowlist subset: 948 rows / 26 models before and after.
+- Added/removed VAG rows: 0 / 0.
+- VAG values, units, qualifiers, source titles, page locators, source URLs and verification dates: unchanged.
+- Canonical SHA-256 of the sorted VAG row set in both snapshots: `92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad`.
+
+Thus the upstream CSV changed, but the retained VAG facts did not. The source manifest and CI row-count contracts are updated to the new complete-file hash and counts. The previous Windows pack artifact was built against the old source hash and is stale; a fresh SQLite pack build and independent verification are required before it can be used by desktop CI. The pack remains a separate read-only CC BY 4.0 research resource with market scope UNKNOWN and no exact fitment, RU/EAEU applicability or production import.
+
+
+## 2026-11-10 current SQLite pack rebuild — Windows run 68
+
+The refreshed source snapshot was acquired and the isolated VAG SQLite research pack was rebuilt and independently verified on Windows x64 in workflow run 68 (run ID `42742855224`). The pack contains 948 VAG facts across 26 models, five brands and 19 parameter keys. The full source CSV contains 44,272 rows / 611 brand-model pairs; the VAG-only rows remain byte-for-byte identical to the previous pinned VAG subset.
+
+Verified hashes:
+
+- Source CSV SHA-256: `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`
+- Source manifest SHA-256: `9ea9a26e8bd75e95016f3925fed4ee2b3119343fb67329bedfdb40ce0eb310fe`
+- SQLite SHA-256: `bc6df970cff98f71980e402ac8744937d17741ccb0361e301610c65b1f0f8850`
+- Pack manifest SHA-256: `463f527fe8582f58cf67320894c6ec0edc9b958ae5162926216105fc3e5a3524`
+- Build report SHA-256: `435669848a9d34ea0f8457f10dd61f2fe4b76b6943f3d66cb4f7a7c24649e6e8`
+- Windows artifact SHA-256: `32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d`
+
+SQLite `integrity_check=ok`, `foreign_key_check=0`; all 948 source-row hashes are valid. The pack records CC BY 4.0 attribution, market UNKNOWN, publisher verification but no independent OEM technical review, no exact engine/gearbox pair, no RU/EAEU applicability, and `production_import=false` / `product_import_allowed=false`. It remains a separate read-only research pack; desktop lifecycle integration is pending.
