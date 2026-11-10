@@ -57,5 +57,25 @@ class HptSuRightsRecordTests(unittest.TestCase):
         self.assertEqual(self.source["rights"]["permission_status"], "no_project_permission_or_subscription_obtained")
 
 
+    def test_api_analytics_carveout_does_not_authorize_product_database_distribution(self):
+        rights = self.source["rights"]
+        analytics = rights["api_derived_analytics_outputs"]
+        self.assertTrue(analytics["allowed_with_conditions"])
+        self.assertFalse(analytics["simple_repackaging_allowed"])
+        self.assertFalse(analytics["substantially_reproducing_provider_database_allowed"])
+        self.assertFalse(analytics["equivalent_third_party_database_access_allowed"])
+        self.assertFalse(analytics["product_database_distribution_authorized"])
+        self.assertTrue(analytics["source_attribution_required_when_published"])
+        self.assertTrue(any("materially smaller" in item for item in analytics["conditions"]))
+        self.assertFalse(rights["offline_cache_for_product_distribution_allowed"])
+
+        review = self.source["latest_terms_review"]
+        self.assertEqual(review["reviewed_at"], "2026-11-10")
+        self.assertIn("6.4", review["api_terms_sections"])
+        self.assertFalse(review["project_use"]["account_created"])
+        self.assertFalse(review["project_use"]["subscription_started"])
+        self.assertFalse(review["project_use"]["product_import_allowed"])
+
+
 if __name__ == "__main__":
     unittest.main()
