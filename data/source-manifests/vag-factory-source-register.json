@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-10T03:17:05.443Z",
+  "updated_at": "2026-11-10T03:57:11Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -8500,21 +8500,21 @@
       "research_pack_allowed": true,
       "research_pack_acquisition_allowed": true,
       "product_import_allowed": false,
-      "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. The exact JSON snapshot is hash-pinned; Windows x64 CI reconciled 111 source generations / 2,369 datapoints and built a separately licensed VAG pack with 20 generation candidates / 233 facts. The current deterministic pack artifact, manifest and SQLite hashes are pinned. Keep market UNKNOWN, technical review not independently reviewed, and all production fitment/repair claims disabled. The research pack has not been imported into the production vehicle/technical database.",
+      "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. The exact JSON snapshot is hash-pinned; Windows x64 CI reconciled 111 source generations / 2,369 datapoints and built a separately licensed VAG pack with 20 generation candidates / 233 facts. The current deterministic pack manifest, source manifest, SQLite and artifact hashes are pinned to successful Windows run #64. The pack manifest now explicitly records source_file_bytes and the verifier cross-checks it against both the source snapshot and exact source.json bytes. Keep market UNKNOWN, technical review not independently reviewed, and all production fitment/repair claims disabled. The research pack has not been imported into the production vehicle/technical database.",
       "research_pack_acquired": true,
-      "research_pack_last_verified_at": "2026-11-10T01:36:32Z",
-      "research_pack_workflow_run_id": 42736946351,
-      "research_pack_artifact_id": 13727965683,
+      "research_pack_last_verified_at": "2026-11-10T03:57:11Z",
+      "research_pack_workflow_run_id": 42752686437,
+      "research_pack_artifact_id": 13733448981,
       "research_pack_artifact_name": "ownerspecs-vag-vehicle-specs-research-pack",
-      "research_pack_artifact_sha256": "3ac33a190f4621dc1b6fc69f59c90425001fd171b335c10e48268ecd62eaa82f",
-      "research_pack_manifest_sha256": "784845406eb378cc6ece940b22822cc972a2f01a3bceec6a46b96f5758fb0ae9",
+      "research_pack_artifact_sha256": "441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3",
+      "research_pack_manifest_sha256": "7d47964b15d787c9ae1ebf5a16b5f0fa2082d9bc64c0fbe7e44a660b8c299a57",
       "research_pack_database_sha256": "eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf",
       "research_pack_source_manifest_sha256": "3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
       "product_database_ingested": false,
-      "research_pack_source_commit": "a1c91b0c6039640be63996571dc0607a33d64948",
+      "research_pack_source_commit": "c75eee82df6d97e44b89e8f9722fe5756777f580",
       "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending",
       "research_pack_desktop_integration_status": "pending_windows_desktop_lifecycle",
-      "research_pack_run_number": 31
+      "research_pack_run_number": 64
     }
   ],
   "minimum_fitment_evidence_fields": [
