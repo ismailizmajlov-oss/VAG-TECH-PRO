@@ -353,6 +353,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          $PSNativeCommandUseErrorActionPreference = $true
           python --version
           python tests/test_windows_desktop_workflow_contract.py
           python tests/test_source_manifest_bundle.py -v
@@ -389,9 +390,9 @@ jobs:
            python -m unittest discover -s tests -p "test_ownerspecs_vag_research_pack.py" -v
            if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs isolated SQLite research-pack tests failed." }
            python tests/test_ownerspecs_source_rights.py
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }
            python tests/test_cardir_source_rights.py
            if ($LASTEXITCODE -ne 0) { throw "CarDir live snapshot multiset review failed." }
-           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }
            node --check scripts/integrate-ownerspecs-vag-research.cjs
            if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop integration script syntax failed." }
            node --test tests/ownerspecs-pack-integration-contract.test.cjs
