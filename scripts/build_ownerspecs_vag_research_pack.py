@@ -563,7 +563,7 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
                  technical_review_status,applicability_precision,exact_vehicle_fitment,
                  exact_engine_code_mapping,exact_gearbox_code_mapping,exact_engine_gearbox_pair,
                  ru_eaeu_applicability,ecu_fitment,dtc_fitment,repair_procedure_applicability,
-                 source_ordinal
+                 source_ordinal,body_type,dimensions_json,fuel_tank_l_json,verified_datapoints
           FROM generations ORDER BY generation_id
         """).fetchall()
         fact_rows = db.execute("""
@@ -604,6 +604,10 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
                 or row[5] != expected_generation.get("url")
                 or row[6] != expected_generation.get("year_start")
                 or row[7] != expected_generation.get("year_end")
+                or row[22] != expected_generation.get("body_type")
+                or row[23] != json.dumps(expected_generation.get("dimensions_mm") or {}, ensure_ascii=False, sort_keys=True)
+                or row[24] != json.dumps(expected_generation.get("fuel_tank_l"), ensure_ascii=False)
+                or row[25] != int(expected_generation.get("verified_datapoints") or 0)
             ):
                 raise ValueError("OwnerSpecs generation row does not match the exact source JSON.")
             if row[10] != "UNKNOWN" or row[11] != "not_independently_reviewed" or row[12] != "publisher_generation_candidate_only":
