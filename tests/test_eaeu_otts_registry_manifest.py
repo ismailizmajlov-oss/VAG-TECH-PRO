@@ -270,3 +270,31 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_elpts_2026_11_10_otts_page_recheck_is_filter_metadata_only(self):
+        source = self.factory_sources["elpts-national-otts-register-public-query"]
+        observation = source["public_page_observations"]["latest_ot_ts_recheck_2026_11_10"]
+        self.assertEqual(observation["url"], "https://docs.elpts.ru/ncher/otts")
+        self.assertEqual(observation["observed_at"], "2026-11-10")
+        self.assertEqual(observation["visible_total_label"], "Всего оформлено: 14822")
+        self.assertEqual(observation["visible_date_filters"], ["09.11.2026", "10.11.2026"])
+        self.assertEqual(observation["search_result_label"], "Найдено: []")
+        self.assertEqual(observation["filtered_result_count"], 0)
+        self.assertEqual(observation["manufacturer_filter_options_observed"], ["AUDI AG", "Volkswagen AG"])
+        self.assertTrue(observation["manufacturer_filter_values_are_options_only"])
+        self.assertFalse(observation["vag_records_observed"])
+        self.assertFalse(observation["vag_record_count_verified"])
+        self.assertFalse(observation["record_rows_observed"])
+        self.assertFalse(observation["raw_page_bytes_captured"])
+        self.assertIsNone(observation["raw_page_sha256"])
+        self.assertIsNone(observation["source_snapshot_sha256"])
+        self.assertFalse(observation["api_or_export_endpoint_verified"])
+        self.assertFalse(observation["pdf_downloaded"])
+        self.assertFalse(observation["engine_code_exposed"])
+        self.assertFalse(observation["gearbox_code_exposed"])
+        self.assertFalse(observation["exact_engine_gearbox_pair_exposed"])
+        self.assertIn("UI total label only", observation["count_interpretation"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
