@@ -195,8 +195,28 @@ function main() {
   fs.mkdirSync(path.dirname(evidencePath), { recursive: true });
   if (fs.existsSync(evidencePath)) {
     const current = readRegular(desktopRoot, "data/research/vehiclesdb-vag-identity/desktop-candidate-boundary-verification.json");
-    if (JSON.stringify(JSON.parse(current.text)) !== JSON.stringify(evidence)) {
-      fail("Existing VehiclesDB candidate-boundary evidence differs from current source, patch or desktop files");
+    const currentEvidence = JSON.parse(current.text);
+    const identityKeys = [
+      "schema_version", "status", "patch_id", "source_revision", "data_license",
+      "market_scope", "counts", "identity_only_use", "safety_critical_reliance",
+      "repair_decision_use", "open_data_policy_notice", "fitment_claim",
+      "ru_evidence_present", "source_manifest_sha256", "patch_sha256"
+    ];
+    const currentKeys = Object.keys(currentEvidence).sort();
+    const expectedKeys = Object.keys(evidence).sort();
+    if (JSON.stringify(currentKeys) !== JSON.stringify(expectedKeys)) {
+      fail("Existing VehiclesDB candidate-boundary evidence has an unexpected schema");
+    }
+    for (const key of identityKeys) {
+      if (JSON.stringify(currentEvidence[key]) !== JSON.stringify(evidence[key])) {
+        fail("Existing VehiclesDB candidate-boundary source/policy identity changed: " + key);
+      }
+    }
+    // Later, separately licensed research-pack integrations may legitimately
+    // extend the shared verifier/test files. Refresh only their content hashes;
+    // never refresh or weaken the pinned source identity and safety boundary.
+    if (JSON.stringify(currentEvidence) !== JSON.stringify(evidence)) {
+      writeAtomic(current.file, JSON.stringify(evidence, null, 2) + "\n", current.stat.mode);
     }
   } else {
     writeAtomic(evidencePath, JSON.stringify(evidence, null, 2) + "\n");
@@ -207,7 +227,8 @@ function main() {
     counts: evidence.counts,
     patch_sha256: evidence.patch_sha256,
     source_manifest_sha256: evidence.source_manifest_sha256,
-    research_packs_test_sha256: evidence.research_packs_test_sha256
+    research_packs_test_sha256: evidence.research_packs_test_sha256,
+    evidence_sha256: sha256(fs.readFileSync(evidencePath))
   }, null, 2) + "\n");
 }
 try { main(); } catch (error) {
