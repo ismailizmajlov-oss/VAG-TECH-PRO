@@ -108,7 +108,7 @@ async function assertRightsReadAfterWriteLock(t, pkg, label) {
   });
 
   await waitForMessage(worker, (message) => message.type === "started");
-  const premature = await expectNoMessage(worker, (message) => message.type === "source_read", 300);
+  const premature = await expectNoMessage(worker, (message) => message.type === "source_read", 500);
   assert.equal(premature, null, label + ": source rights were read before the SQLite write transaction was acquired");
 
   lockDb.exec("COMMIT");
