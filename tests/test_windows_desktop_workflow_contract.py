@@ -550,7 +550,7 @@ def main() -> None:
         'python -m unittest discover -s tests -p "test_cardir_vag_open_data_pack.py" -v',
         "python tests/test_cardir_vag_open_data_source_rights.py",
         "node --check scripts/integrate-cardir-vag-owner-manual-facts.cjs",
-        "Resolve CarDir VAG owner-manual facts pack for exact source revision",
+        "Resolve pinned CarDir VAG owner-manual facts pack from source register",
         "Download verified CarDir VAG owner-manual facts SQLite research pack",
         "node scripts/integrate-cardir-vag-owner-manual-facts.cjs",
         "node --test desktop-source/tests/cardir-vag-reference-facts-db.test.cjs desktop-source/tests/cardir-vag-reference-facts-ui-contract.test.cjs",
@@ -663,6 +663,23 @@ def main() -> None:
         raise SystemExit("Windows build metadata must record the exact run77 UI guard patch SHA-256")
     if text.count("apply-vehicle-config-ui-guard-run77.cjs") < 4:
         raise SystemExit("Run77 UI guard script and its logs must be retained in Windows CI evidence artifacts")
+
+    cardir_resolver_marker = "      - name: Resolve pinned CarDir VAG owner-manual facts pack from source register"
+    cardir_resolver_step = text.split(cardir_resolver_marker, 1)[1].split("\\n      - name: Download verified CarDir", 1)[0]
+    for required in ("ConvertFrom-Json -AsHashtable", "$pack.artifact_run_id", "$pack.artifact_id", "$pack.artifact_sha256", "$pack.source_manifest_sha256", "$pack.source_snapshot_sha256", "Get-FileHash"):
+        if required not in cardir_resolver_step:
+            raise SystemExit(f"CarDir resolver must use immutable source-register artifact pins: {required}")
+    if "$expectedHeadSha" in cardir_resolver_step:
+        raise SystemExit("CarDir pack resolution must be pinned to source-manifest and snapshot hashes, not a transient repository commit")
+    build_cardir_workflow = (ROOT / ".github" / "workflows" / "build-cardir-vag-open-data-pack.yml").read_text(encoding="utf-8")
+    if "data/source-manifests/vag-factory-source-register.json" in build_cardir_workflow:
+        raise SystemExit("CarDir pack rebuild must not be triggered by source-register artifact-pin updates; that creates a provenance rebuild loop")
+    ownerspecs_marker = "      - name: Resolve pinned OwnerSpecs VAG CC BY-SA research pack"
+    if ownerspecs_marker not in text:
+        raise SystemExit("Windows workflow is missing the pinned OwnerSpecs research-pack resolver")
+    ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\\n      - name:", 1)[0]
+    if "ConvertFrom-Json -AsHashtable" not in ownerspecs_step:
+        raise SystemExit("OwnerSpecs resolver must preserve case-sensitive manufacturer keys in the source-rights register")
 
 if __name__ == "__main__":
     main()
