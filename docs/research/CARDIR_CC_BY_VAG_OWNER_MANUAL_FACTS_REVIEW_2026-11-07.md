@@ -106,3 +106,12 @@ Verified hashes:
 - Windows artifact SHA-256: `32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d`
 
 SQLite `integrity_check=ok`, `foreign_key_check=0`; all 948 source-row hashes are valid. The pack records CC BY 4.0 attribution, market UNKNOWN, publisher verification but no independent OEM technical review, no exact engine/gearbox pair, no RU/EAEU applicability, and `production_import=false` / `product_import_allowed=false`. It remains a separate read-only research pack; desktop lifecycle integration is pending.
+
+
+## 2026-11-10 source-order-only refresh — 03:09 UTC
+
+A subsequent acquisition of the same official CSV URL returned a different byte-level snapshot: SHA-256 `5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a`, 15,174,126 bytes. The prior pinned byte snapshot was `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`. The files differ in row ordering, but an exact multiset comparison of all parsed CSV rows found no additions, removals or field-value changes. Both contain 44,272 rows and 611 brand/model pairs. The length-prefixed canonical full-row multiset SHA-256 is `6a66802bae4ab8d9a2170aa4813fd396933b1d5ce1378e1d1a09774af7e7588f` for both snapshots.
+
+The exact VAG allowlist subset remains 948 rows across 26 models. Its canonical row-multiset SHA-256 is `ac1780f1c66621a4b373eb4eb3b9393d20e554ffa7fbbb6e42c16846a08c647d`; no VAG row was added or removed and no VAG field value changed. This is an order-only byte-snapshot refresh, not new technical evidence. The new exact byte hash is pinned separately because source row numbers are part of the SQLite provenance and may change when row order changes. A new Windows SQLite build and independent verification are required; the previous SQLite pack remains explicitly tied to the prior `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4` snapshot until that rebuild completes.
+
+The refreshed source remains a separate CC BY 4.0 research pack only: market UNKNOWN, publisher verification but no independent OEM review, no exact engine/gearbox codes or pair, no model generation/year, no RU/EAEU applicability, no ECU/DTC fitment, no repair authorization and no production import.
