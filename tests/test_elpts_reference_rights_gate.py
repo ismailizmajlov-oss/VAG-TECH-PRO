@@ -75,7 +75,7 @@ class ElptsReferenceRightsGateTests(unittest.TestCase):
         self.assertIsNone(source.get("source_snapshot_sha256"))
         note = (ROOT / "docs/research/ELPTS_PUBLIC_UI_RECHECK_2026-11-11.md").read_text(encoding="utf-8").casefold()
         self.assertIn("search-indexed result", note)
-        self.assertIn("does not grant dataset reuse rights", note)
+        self.assertIn("do not grant dataset reuse rights", note)
 
     def test_reference_workbooks_have_no_retrieved_bytes_or_fabricated_hash(self):
         registry = load_json(CENTRAL)
