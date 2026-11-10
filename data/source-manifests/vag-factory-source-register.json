@@ -8070,12 +8070,15 @@
         "previous_pinned_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
         "exact_delta_from_previous_pinned_snapshot_available": true,
         "previous_snapshot_review": {
-          "snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
-          "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
-          "source_rows_changed": 1658,
-          "vag_rows_changed": 1,
-          "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
-          "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
+          "snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
+          "current_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+          "source_rows_changed": 77,
+          "source_rows_added": 52,
+          "source_rows_removed": 25,
+          "vag_rows_changed": 0,
+          "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
+          "exact_vag_subset_unchanged": true,
+          "review_status": "exact_multiset_comparison_verified; all source changes are outside exact VAG allowlist"
         },
         "source_rows_added_since_previous_pinned_snapshot": 52,
         "source_rows_removed_since_previous_pinned_snapshot": 25,
@@ -8103,7 +8106,17 @@
           "exact_vag_subset_unchanged": true,
           "publisher_page_count_discrepancy": "publisher page displays 44245 values / 610 models; downloaded CSV contains 44272 rows / 611 brand-model pairs",
           "reviewed_at": "2026-11-10"
-        }
+        },
+        "previous_snapshot_review_history": [
+          {
+            "snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
+            "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
+            "source_rows_changed": 1658,
+            "vag_rows_changed": 1,
+            "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
+            "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
+          }
+        ]
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     }
