@@ -7977,6 +7977,86 @@
         }
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
+    },
+    {
+      "source_id": "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0",
+      "publisher": "ownerspecs.com",
+      "url": "https://ownerspecs.com/data",
+      "source_kind": "curated_document_verified_vehicle_generation_specifications",
+      "source_revision": "publisher dataset JSON generated 2026-11-09; exact JSON snapshot acquired and SHA-256 pinned 2026-11-10; 111 generations, 2,369 datapoints, 20 VAG generation candidates and 233 VAG facts",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "publisher_claimed_market_scope": "Global · multi-market",
+      "evidence_scope": [
+        "vehicle_generation_candidates",
+        "publisher_year_spans",
+        "dimensions",
+        "masses",
+        "tyre_pressure",
+        "fluid_and_capacity_reference_facts",
+        "engine_family_or_code_candidates",
+        "selected_torque_reference_facts"
+      ],
+      "rights": {
+        "data_license": "CC-BY-SA-4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "permission_status": "approved_by_published_license_for_reuse",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "attribution": "Vehicle data from ownerspecs.com (https://ownerspecs.com), licensed under CC BY-SA 4.0."
+      },
+      "content_review": {
+        "html_page_generation_count": 111,
+        "json_descriptor_generation_count": 111,
+        "html_page_brand_count": 27,
+        "html_page_verified_datapoint_count": 2369,
+        "metadata_consistent": true,
+        "per_value_primary_document_url": false,
+        "per_value_primary_document_revision": false,
+        "per_value_source_count": true,
+        "per_value_provenance_kind": true,
+        "vag_generation_count": 20,
+        "vag_fact_count": 233,
+        "source_snapshot_status": "source_snapshot_acquired_schema_verified",
+        "source_file_bytes": 683641
+      },
+      "applicability": {
+        "market_scope": "UNKNOWN",
+        "generation_and_year_span": "publisher_candidate_only",
+        "exact_model_generation_year_fitment": false,
+        "exact_factory_engine_code_fitment": false,
+        "exact_factory_gearbox_code_fitment": false,
+        "exact_engine_gearbox_pair": false,
+        "exact_vehicle_fitment": false,
+        "ru_eaeu_applicability": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_applicability": false,
+        "technical_review_status": "not_independently_reviewed"
+      },
+      "data_ingested": false,
+      "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
+      "research_pack_allowed": true,
+      "research_pack_acquisition_allowed": true,
+      "product_import_allowed": false,
+      "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. The exact JSON snapshot is hash-pinned; Windows x64 CI reconciled 111 source generations / 2,369 datapoints and built a separately licensed VAG pack with 20 generation candidates / 233 facts. The current deterministic pack artifact, manifest and SQLite hashes are pinned. Keep market UNKNOWN, technical review not independently reviewed, and all production fitment/repair claims disabled. The research pack has not been imported into the production vehicle/technical database.",
+      "research_pack_acquired": true,
+      "research_pack_last_verified_at": "2026-11-10T01:36:32Z",
+      "research_pack_workflow_run_id": 42736946351,
+      "research_pack_artifact_id": 13727965683,
+      "research_pack_artifact_name": "ownerspecs-vag-vehicle-specs-research-pack",
+      "research_pack_artifact_sha256": "3ac33a190f4621dc1b6fc69f59c90425001fd171b335c10e48268ecd62eaa82f",
+      "research_pack_manifest_sha256": "784845406eb378cc6ece940b22822cc972a2f01a3bceec6a46b96f5758fb0ae9",
+      "research_pack_database_sha256": "eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf",
+      "research_pack_source_manifest_sha256": "3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
+      "product_database_ingested": false
     }
   ],
   "minimum_fitment_evidence_fields": [
