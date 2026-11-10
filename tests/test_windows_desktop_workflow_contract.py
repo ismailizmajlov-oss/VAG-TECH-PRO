@@ -350,7 +350,7 @@ def main() -> None:
         "Verify packaged source manifests and technical library schemas",
         "vag-tech-pro-windows-x64-run71",
     ):
-        if marker not in workflow:
+        if marker not in text:
             raise SystemExit(f"Windows workflow is missing technical-library packaging contract: {marker}")
 
     patch_set_line = next((line for line in text.splitlines() if "patch_set = " in line), "")
