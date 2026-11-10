@@ -110,45 +110,52 @@ function getOwnerSpecsSummary(explicitRoot) {
   const attribution = fs.readFileSync(attributionFile, "utf8");
   const license = fs.readFileSync(licenseFile, "utf8");
 
-  assert(
-    pack.pack_id === PACK_ID &&
-    pack.source_id === SOURCE_ID &&
-    pack.status === "verified_research_only" &&
-    pack.license.id === LICENSE_ID && pack.source_file === "source.json" && pack.source_file_bytes === entry.source_file_bytes &&
-    pack.source_manifest_sha256 === entry.source_manifest_sha256 &&
-    pack.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
-    pack.database.sha256 === entry.database_sha256 &&
-    pack.database.integrity_check === "ok" &&
-    pack.database.foreign_key_violations === 0 &&
-    pack.market_scope.includes("UNKNOWN") &&
-    pack.publisher_verification_status === "publisher_verified" &&
-    pack.technical_review_status === "not_independently_reviewed" &&
-    pack.critical_technical_values_publishable === false &&
-    pack.exact_engine_gearbox_pair === false &&
-    pack.exact_vehicle_fitment === false &&
-    pack.ru_eaeu_applicability === false &&
-    pack.repair_procedure_applicability === false &&
-    source.source_id === SOURCE_ID &&
-    source.snapshot.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
-    source.snapshot.source_file_bytes === entry.source_file_bytes &&
-    source.rights.rights_status === "approved_by_published_CC_BY_SA_4_0_for_separate_research_pack" &&
-    source.rights.share_alike_required === true &&
-    source.rights.separate_pack_required === true &&
-    source.import_policy.production_import === false &&
-    source.import_policy.product_import_allowed === false &&
-    source.applicability_policy.market_scope === "UNKNOWN" &&
-    source.applicability_policy.exact_engine_gearbox_pair === false &&
-    source.applicability_policy.ru_eaeu_applicability === false &&
-    snapshot.source_snapshot_sha256 === entry.source_snapshot_sha256 && snapshot.source_manifest_sha256 === entry.source_manifest_sha256 &&
-    snapshot.source_file_bytes === entry.source_file_bytes &&
-    acquisition.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
-    acquisition.retrieved_at_utc === entry.acquisition_retrieved_at_utc &&
-    attribution.includes("ownerspecs.com") &&
-    attribution.includes("CC BY-SA 4.0") &&
-    license.includes("CC BY-SA 4.0") &&
-    license.includes("must remain under CC BY-SA 4.0"),
-    "OwnerSpecs pack manifest, rights, attribution or snapshot provenance failed"
-  );
+  const checks = {
+    pack_id: pack.pack_id === PACK_ID,
+    source_id: pack.source_id === SOURCE_ID,
+    pack_status: pack.status === "verified_research_only",
+    license_id: pack.license.id === LICENSE_ID,
+    source_file_name: pack.source_file === "source.json",
+    source_file_bytes: pack.source_file_bytes === entry.source_file_bytes,
+    source_manifest_sha256: pack.source_manifest_sha256 === entry.source_manifest_sha256,
+    source_snapshot_sha256: pack.source_snapshot_sha256 === entry.source_snapshot_sha256,
+    database_sha256: pack.database.sha256 === entry.database_sha256,
+    database_integrity: pack.database.integrity_check === "ok",
+    database_foreign_keys: pack.database.foreign_key_violations === 0,
+    market_unknown: Array.isArray(pack.market_scope) && pack.market_scope.includes("UNKNOWN"),
+    publisher_verified: pack.publisher_verification_status === "publisher_verified",
+    technical_review_pending: pack.technical_review_status === "not_independently_reviewed",
+    critical_values_disabled: pack.critical_technical_values_publishable === false,
+    exact_pair_disabled: pack.exact_engine_gearbox_pair === false,
+    exact_fitment_disabled: pack.exact_vehicle_fitment === false,
+    ru_eaeu_disabled: pack.ru_eaeu_applicability === false,
+    repair_applicability_disabled: pack.repair_procedure_applicability === false,
+    source_id_matches: source.source_id === SOURCE_ID,
+    source_snapshot_matches: source.snapshot.source_snapshot_sha256 === entry.source_snapshot_sha256,
+    source_snapshot_bytes: source.snapshot.source_file_bytes === entry.source_file_bytes,
+    rights_status: source.rights.rights_status === "approved_by_published_CC_BY_SA_4_0_for_separate_research_pack",
+    share_alike_required: source.rights.share_alike_required === true,
+    separate_pack_required: source.rights.separate_pack_required === true,
+    production_import_disabled: source.import_policy.production_import === false,
+    product_import_disabled: source.import_policy.product_import_allowed === false,
+    source_market_unknown: source.applicability_policy.market_scope === "UNKNOWN",
+    source_exact_pair_disabled: source.applicability_policy.exact_engine_gearbox_pair === false,
+    source_ru_eaeu_disabled: source.applicability_policy.ru_eaeu_applicability === false,
+    snapshot_hash: snapshot.source_snapshot_sha256 === entry.source_snapshot_sha256,
+    snapshot_manifest_hash: snapshot.source_manifest_sha256 === entry.source_manifest_sha256,
+    snapshot_bytes: snapshot.source_file_bytes === entry.source_file_bytes,
+    acquisition_hash: acquisition.source_snapshot_sha256 === entry.source_snapshot_sha256,
+    acquisition_timestamp: acquisition.retrieved_at_utc === entry.acquisition_retrieved_at_utc,
+    attribution_publisher: attribution.includes("ownerspecs.com"),
+    attribution_license: attribution.includes("CC BY-SA 4.0"),
+    license_label: license.includes("CC BY-SA 4.0"),
+    license_share_alike: license.includes("must remain under CC BY-SA 4.0"),
+    root_status: entry.status === "verified_research_only",
+    root_pack_build_status: entry.pack_build_status === "verified_research_only",
+    root_snapshot_file_hash_present: /^[a-f0-9]{64}$/.test(entry.source_snapshot_file_sha256 || "")
+  };
+  const failedChecks = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);
+  assert(failedChecks.length === 0, `OwnerSpecs pack manifest, rights, attribution or snapshot provenance failed: ${failedChecks.join(", ")}`);
 
   const db = openReadOnly(databaseFile);
   let counts;
