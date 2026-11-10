@@ -12,7 +12,7 @@ The publisher's published CC BY-SA 4.0 licence permits commercial reuse, display
 
 A fresh live review on 2026-11-10 confirms that the HTML dataset page and JSON descriptor both report **111 generations**. The HTML page also reports **27 brands and 2,369 verified datapoints**. The earlier 112-generation observation came from a stale indexed response and is superseded by the current live page/JSON pair. The count metadata is now consistent; the actual downloaded array and datapoint totals still must be checked against pinned bytes before publishing a pack.
 
-No dataset bytes were downloaded in this review. No source SHA-256 is claimed.
+No dataset bytes were downloaded in the source-rights review itself. No source SHA-256 is claimed in the repository manifest yet. PR #83 adds a Windows x64 acquisition/build/verification workflow; its first successful run must produce the exact snapshot hash before the manifest can be pinned or the pack can be merged.
 
 ## What the dataset contains
 
@@ -40,12 +40,12 @@ CC BY-SA 4.0 requires attribution and Share-Alike for adapted material. If acqui
 
 ## Required before publication
 
-1. Download the exact public JSON and CSV snapshots from the published URLs; calculate and pin each SHA-256 before parsing.
-2. Verify JSON `generation_count=111`, actual generation-array length, HTML page count, unique brand count and the published 2,369 datapoints. Cross-check the CSV row count against the JSON facts.
+1. Download the exact public JSON snapshot from the published URL; calculate and pin its SHA-256 before parsing. The CSV endpoint is not used by this pack builder and must not be assumed to be part of the snapshot.
+2. Verify JSON `generation_count=111`, actual generation-array length, HTML page count, unique brand count and the published 2,369 datapoints. If the CSV is acquired in a later revision, hash it separately and reconcile its rows before use.
 3. Filter only an exact VAG brand allowlist; preserve raw brand/model/generation labels, year spans, values, units, source counts, provenance kinds and generation URLs.
 4. Calculate row-level hashes and record the source snapshot hash, schema/revision, licence and attribution.
 5. Keep every record in a separate research-only namespace with `market_scope=UNKNOWN`, `technical_review_status=not_independently_reviewed` and no production-fitment promotion.
 6. Treat all engine-code strings as candidates; do not parse grouped strings into canonical factory codes or infer engine/gearbox pairs.
 7. Independently verify any critical value against the cited primary document before it can enter the professional repair library.
 
-No dataset bytes were downloaded, no source hash was fabricated, and no records were imported or displayed during this review.
+No dataset bytes were downloaded during the source-rights review, no source hash was fabricated, and no records were imported or displayed into the product database during that review. The separate Windows research-pack workflow is pending its first successful acquisition.
