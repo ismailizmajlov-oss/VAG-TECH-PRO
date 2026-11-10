@@ -42,11 +42,19 @@ function fixture(overrides = {}) {
     '        attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",'
   ].join("\n");
   fs.writeFileSync(path.join(root, "lib", "local-research-db.cjs"), oldCountGate + "\n" + oldReturn + "\n");
-  const oldVerifierCountGate = 'assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, \`VehiclesDB foreign-market-only count gate failed: \${JSON.stringify(vehiclesDbCounts)}\`);';
+  const tick = String.fromCharCode(96);
+  const dollar = String.fromCharCode(36);
+  const interpolation = dollar + "{JSON.stringify(vehiclesDbCounts)}";
+  const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
   const oldVerifierBoundary = 'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
   fs.writeFileSync(path.join(root, "scripts", "verify-local-research-packs.cjs"), oldVerifierCountGate + "\n" + oldVerifierBoundary + "\n");
   fs.writeFileSync(path.join(root, "tests", "local-research-db.test.cjs"),
     '  assert.equal(golf.sourceRevision, vehiclesDbManifest.source_revision);\n');
+  fs.writeFileSync(path.join(root, "tests", "local-research-packs.test.cjs"), [
+    "  assert.equal(result.vehiclesdb_identity.sources, 14);",
+    "  assert.equal(result.vehiclesdb_identity.models, 260);",
+    "  assert.equal(result.vehiclesdb_identity.marketEvidence, 1524);"
+  ].join("\n") + "\n");
   return root;
 }
 
@@ -54,7 +62,7 @@ function run(root) {
   return spawnSync(process.execPath, [PATCH, "--desktop-root", root], { encoding: "utf8" });
 }
 
-test("run93 binds current VehiclesDB counts and safety policy into desktop search and verifier", () => {
+test("run93 binds current VehiclesDB counts and safety policy into desktop search, verifiers and research-pack test", () => {
   const root = fixture();
   try {
     const first = run(root);
@@ -62,6 +70,7 @@ test("run93 binds current VehiclesDB counts and safety policy into desktop searc
     const db = fs.readFileSync(path.join(root, "lib", "local-research-db.cjs"), "utf8");
     const verifier = fs.readFileSync(path.join(root, "scripts", "verify-local-research-packs.cjs"), "utf8");
     const tests = fs.readFileSync(path.join(root, "tests", "local-research-db.test.cjs"), "utf8");
+    const researchPacksTest = fs.readFileSync(path.join(root, "tests", "local-research-packs.test.cjs"), "utf8");
     assert.match(db, /vehiclesDbCounts\.models !== vehiclesDbPackManifest\.counts\?\.models/);
     assert.match(db, /vehiclesDbCounts\.marketEvidence !== vehiclesDbPackManifest\.counts\?\.market_evidence/);
     assert.match(db, /safety_critical_reliance !== false/);
@@ -72,10 +81,16 @@ test("run93 binds current VehiclesDB counts and safety policy into desktop searc
     assert.match(verifier, /vehiclesDbCounts\.models === vehiclesDbSnapshot\.counts\?\.models/);
     assert.match(verifier, /vehiclesDbCounts\.marketEvidence === vehiclesDbSnapshot\.counts\?\.market_evidence/);
     assert.match(tests, /assert\.equal\(golf\.safetyCriticalReliance, false\)/);
+    assert.match(researchPacksTest, /vehiclesDbPackManifest\.counts\.sources/);
+    assert.match(researchPacksTest, /vehiclesDbPackManifest\.counts\.models/);
+    assert.match(researchPacksTest, /vehiclesDbPackManifest\.counts\.market_evidence/);
+    assert.doesNotMatch(researchPacksTest, /vehiclesdb_identity\.models, 260/);
+    assert.doesNotMatch(researchPacksTest, /vehiclesdb_identity\.marketEvidence, 1524/);
     const evidence = JSON.parse(fs.readFileSync(path.join(root, "data", "research", "vehiclesdb-vag-identity", "desktop-candidate-boundary-verification.json"), "utf8"));
     assert.equal(evidence.status, "vehiclesdb_identity_only_dynamic_count_gate_applied");
     assert.deepEqual(evidence.counts, { sources: 14, models: 307, market_evidence: 1621 });
     assert.equal(evidence.safety_critical_reliance, false);
+    assert.match(evidence.research_packs_test_sha256, /^[a-f0-9]{64}$/);
     const second = run(root);
     assert.equal(second.status, 0, second.stderr);
     assert.equal(JSON.parse(second.stdout).status, "vehiclesdb_identity_only_dynamic_count_gate_applied");
@@ -117,6 +132,7 @@ test("run93 composes after run68's manifest-driven count guard without rewriting
     assert.notEqual(afterRun93, afterRun68, "run93 must still add the returned identity-only policy fields");
     const evidence = JSON.parse(fs.readFileSync(path.join(root, "data", "research", "vehiclesdb-vag-identity", "desktop-candidate-boundary-verification.json"), "utf8"));
     assert.equal(evidence.status, "vehiclesdb_identity_only_dynamic_count_gate_applied");
+    assert.match(evidence.research_packs_test_sha256, /^[a-f0-9]{64}$/);
     const second = run(root);
     assert.equal(second.status, 0, second.stderr);
   } finally {
@@ -129,10 +145,12 @@ test("run93 rejects a VehiclesDB pack that permits safety-critical reliance with
   try {
     const dbPath = path.join(root, "lib", "local-research-db.cjs");
     const before = fs.readFileSync(dbPath, "utf8");
+    const researchPacksTestBefore = fs.readFileSync(path.join(root, "tests", "local-research-packs.test.cjs"), "utf8");
     const result = run(root);
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /identity-only, market, count or safety-use boundary/);
     assert.equal(fs.readFileSync(dbPath, "utf8"), before);
+    assert.equal(fs.readFileSync(path.join(root, "tests", "local-research-packs.test.cjs"), "utf8"), researchPacksTestBefore);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
