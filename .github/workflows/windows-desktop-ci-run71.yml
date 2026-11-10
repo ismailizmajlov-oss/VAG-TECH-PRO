@@ -90,6 +90,7 @@ on:
       - "tests/test_sync_vag_source_register_source_rights.py"
       - "tests/test_windows_desktop_workflow_contract.py"
       - "tests/obdb-source-count-run521.test.cjs"
+      - "tests/vehiclesdb-candidate-count-guard-run93.test.cjs"
       - "tests/vehiclesdb-revision-manifest-run89.test.cjs"
       - "scripts/sync_vag_source_register.py"
       - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
@@ -255,6 +256,7 @@ on:
       - "tests/test_sync_vag_source_register_source_rights.py"
       - "tests/test_windows_desktop_workflow_contract.py"
       - "tests/obdb-source-count-run521.test.cjs"
+      - "tests/vehiclesdb-candidate-count-guard-run93.test.cjs"
       - "scripts/sync_vag_source_register.py"
       - "data/source-manifests/vag-factory-source-register.json"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
@@ -1023,6 +1025,23 @@ jobs:
           $vehiclesManifest = Get-Content -LiteralPath "desktop-source/data/research/vehiclesdb-vag-identity/manifest.json" -Raw | ConvertFrom-Json
           if ($evidence.status -ne "desktop_test_revision_bound_to_manifest" -or $evidence.source_revision -ne $vehiclesManifest.source_revision -or $evidence.data_license -ne "CC-BY-4.0" -or $evidence.market_scope -ne "foreign_market_presence_only" -or $evidence.exact_fitment -ne $false -or $evidence.ru_evidence_present -ne $false) { throw "Run89 VehiclesDB evidence failed the foreign-market candidate-only gate" }
           "vehiclesdb_test_revision=$($evidence.source_revision); license=CC-BY-4.0; market=foreign_market_presence_only; exact_fitment=none; patch_sha256=$patchHash; manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+
+      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-vehiclesdb-candidate-count-guard-run93.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run93 VehiclesDB desktop gate syntax check failed" }
+          node --test tests/vehiclesdb-candidate-count-guard-run93.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run93 VehiclesDB desktop gate contract tests failed" }
+          node apply-vehiclesdb-candidate-count-guard-run93.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vehiclesdb-candidate-boundary-run93.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run93 VehiclesDB dynamic count and identity-only safety gate failed" }
+          $patchHash = (Get-FileHash -LiteralPath "apply-vehiclesdb-candidate-count-guard-run93.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $evidencePath = "desktop-source/data/research/vehiclesdb-vag-identity/desktop-candidate-boundary-verification.json"
+          $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
+          if ($evidence.status -ne "vehiclesdb_identity_only_dynamic_count_gate_applied" -or $evidence.source_revision -ne "v2026.11.3" -or $evidence.counts.models -ne 307 -or $evidence.counts.market_evidence -ne 1621 -or $evidence.identity_only_use -ne $true -or $evidence.safety_critical_reliance -ne $false -or $evidence.repair_decision_use -ne $false -or $evidence.fitment_claim -ne $false -or $evidence.ru_evidence_present -ne $false -or $evidence.patch_sha256 -ne $patchHash) { throw "Run93 VehiclesDB candidate-only evidence failed its pinned manifest gate" }
+          "vehiclesdb_run93=identity_only; revision=$($evidence.source_revision); models=$($evidence.counts.models); market_evidence=$($evidence.counts.market_evidence); safety_critical=false; repair_decision=false; exact_fitment=false; patch_sha256=$patchHash; manifest_sha256=$($evidence.source_manifest_sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)
         shell: pwsh
