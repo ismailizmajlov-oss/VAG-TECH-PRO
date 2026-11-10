@@ -212,6 +212,7 @@ on:
       - "scripts/integrate-ownerspecs-vag-research.cjs"
       - "tests/test_ownerspecs_vag_research_pack.py"
       - "tests/test_ownerspecs_source_rights.py"
+      - "tests/test_community_vag_candidate_packs_source_rights.py"
       - "tests/ownerspecs-pack-integration-contract.test.cjs"
       - "desktop/ownerspecs-vag-research-db.cjs"
       - "desktop/scripts/verify-ownerspecs-vag-research-pack.cjs"
@@ -399,6 +400,8 @@ jobs:
           python tests/test_wikipedia_vag_engine_list_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed." }
           python tests/test_openvag_source_rights.py
+          python tests/test_community_vag_candidate_packs_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "Community VAG candidate-pack source rights and display policy failed." }
            python -m py_compile scripts/build_ownerspecs_vag_research_pack.py
            if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs builder Python compilation failed." }
            python -m unittest discover -s tests -p "test_ownerspecs_vag_research_pack.py" -v
