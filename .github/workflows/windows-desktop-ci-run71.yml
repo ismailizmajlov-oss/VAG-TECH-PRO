@@ -1764,48 +1764,48 @@ jobs:
           }
           "kba_de_vag_stock=run${{ steps.kba-pack.outputs.run_number }}/${{ steps.kba-pack.outputs.run_id }}; artifact_sha256=${{ steps.kba-pack.outputs.artifact_sha256 }}; scope=DE; precision=aggregate_stock_observation; research_pack_ingested=true; product_database_ingested=false; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
-      - name: Resolve CarDir VAG owner-manual facts pack for exact source revision
+      - name: Resolve pinned CarDir VAG owner-manual facts pack from source register
         id: cardir-pack
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $ErrorActionPreference = "Stop"
-          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
-            $event = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
-            $branch = [string]$event.pull_request.head.ref
-            $expectedHeadSha = [string]$event.pull_request.head.sha
-          } else {
-            $branch = [string]$env:GITHUB_REF_NAME
-            $expectedHeadSha = [string]$env:GITHUB_SHA
-          }
-          if ([string]::IsNullOrWhiteSpace($branch) -or $expectedHeadSha -notmatch "^[a-f0-9]{40}$") { throw "Cannot resolve exact CarDir source revision." }
+          $register = Get-Content -LiteralPath "data/source-manifests/vag-factory-source-register.json" -Raw | ConvertFrom-Json -AsHashtable
+          $source = @($register.sources | Where-Object { $_.source_id -eq "cardir-vag-owner-manual-facts-cc-by-4.0" }) | Select-Object -First 1
+          if (-not $source) { throw "CarDir source register entry is missing." }
+          if ($source.data_ingested -ne $false -or $source.product_import_allowed -ne $false -or $source.market_scope -notcontains "UNKNOWN") { throw "CarDir research pack must remain non-production and market UNKNOWN." }
+          $pack = $source.research_pack
+          if ($pack.status -ne "verified_research_only" -or $pack.pack_build_status -ne "verified_research_only") { throw "CarDir source register does not pin a verified research-only pack." }
+          $sourceManifestPath = "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+          $sourceManifest = Get-Content -LiteralPath $sourceManifestPath -Raw | ConvertFrom-Json -AsHashtable
+          $sourceManifestSha = (Get-FileHash -LiteralPath $sourceManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          $expectedSnapshotSha = ([string]$sourceManifest.snapshot.source_snapshot_sha256).ToLowerInvariant()
+          if ($pack.source_manifest_sha256 -ne $sourceManifestSha -or $pack.source_snapshot_sha256 -ne $expectedSnapshotSha) { throw "Pinned CarDir artifact does not match the current source manifest and exact source snapshot." }
+          $runId = [long]$pack.artifact_run_id
+          $runNumber = [long]$pack.artifact_run_number
+          $artifactId = [long]$pack.artifact_id
+          $artifactName = [string]$pack.artifact_name
+          $expectedDigest = ([string]$pack.artifact_sha256).ToLowerInvariant()
+          $expectedSize = [long]$pack.artifact_size_bytes
+          if ($runId -le 0 -or $runNumber -le 0 -or $artifactId -le 0 -or $expectedDigest -notmatch "^[a-f0-9]{64}$" -or [string]::IsNullOrWhiteSpace($artifactName) -or $expectedSize -le 0) { throw "CarDir artifact pin is incomplete or invalid." }
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
-          $encodedBranch = [uri]::EscapeDataString($branch)
-          $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-cardir-vag-open-data-pack.yml/runs?branch=$encodedBranch&per_page=100"
-          $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get -TimeoutSec 30
-          $run = $response.workflow_runs |
-            Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
-            Sort-Object { [datetime]$_.created_at } -Descending |
-            Select-Object -First 1
-          if (-not $run) { throw "No CarDir research-pack build exists for exact source commit $expectedHeadSha; refusing stale artifact." }
-          $deadline = (Get-Date).AddMinutes(45)
-          while ($run.status -ne "completed" -and (Get-Date) -lt $deadline) {
-            Start-Sleep -Seconds 20
-            $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)" -Headers $headers -Method Get -TimeoutSec 30
-          }
-          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "CarDir research-pack build did not complete successfully for this commit. Run=$($run.id), status=$($run.status), conclusion=$($run.conclusion)" }
-          $artifactUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
+          $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId" -Headers $headers -Method Get -TimeoutSec 30
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success" -or [long]$run.run_number -ne $runNumber) { throw "Pinned CarDir source-pack run is not a successful completed run. Run=$runId, status=$($run.status), conclusion=$($run.conclusion)." }
+          $artifactUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId/artifacts?per_page=100"
           $artifactResponse = Invoke-RestMethod -Uri $artifactUri -Headers $headers -Method Get -TimeoutSec 30
-          $artifact = $artifactResponse.artifacts | Where-Object { $_.name -eq "cardir-vag-owner-manual-facts-research-pack" -and $_.expired -eq $false } | Select-Object -First 1
-          if (-not $artifact) { throw "CarDir successful build has no unexpired research-pack artifact." }
+          $artifact = @($artifactResponse.artifacts | Where-Object { [long]$_.id -eq $artifactId }) | Select-Object -First 1
+          if (-not $artifact -or $artifact.expired -or $artifact.name -ne $artifactName -or [long]$artifact.size_in_bytes -ne $expectedSize) { throw "Pinned CarDir artifact id/name/size is missing, expired or mismatched." }
           $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
-          if ($digest -notmatch "^[a-f0-9]{64}$") { throw "CarDir artifact SHA-256 is invalid." }
-          "run_id=$($run.id)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
-          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
-          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
-          "CarDir VAG owner-manual facts source run: #$($run.run_number) / $($run.id)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
-          "CarDir artifact SHA-256: $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          if ($digest -ne $expectedDigest) { throw "Pinned CarDir artifact digest differs from the source register." }
+          "run_id=$runId" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$runNumber" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$expectedDigest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_id=$artifactId" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "CarDir pinned artifact id: $artifactId; source run #$runNumber / $runId" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "CarDir exact source manifest SHA-256: $sourceManifestSha" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "CarDir exact source snapshot SHA-256: $expectedSnapshotSha" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "CarDir artifact SHA-256: $expectedDigest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Download verified CarDir VAG owner-manual facts SQLite research pack
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
