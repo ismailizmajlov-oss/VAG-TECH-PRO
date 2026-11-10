@@ -92,6 +92,7 @@ on:
       - "tests/obdb-source-count-run521.test.cjs"
       - "tests/vehiclesdb-candidate-count-guard-run93.test.cjs"
       - "tests/vehiclesdb-revision-manifest-run89.test.cjs"
+      - "tests/vehiclesdb-schema-fix-run63.test.cjs"
       - "scripts/sync_vag_source_register.py"
       - "scripts/integrate-wikidata-vag-generation-candidates.cjs"
       - "data/source-manifests/wikidata-vag-generation-candidates.json"
