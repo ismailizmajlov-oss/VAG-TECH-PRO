@@ -139,3 +139,18 @@ This remains a separate research-only pack: market UNKNOWN, no generation/year, 
 The next Windows acquisition probe retained the exact live CSV bytes at SHA-256 `d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf` (15,178,035 bytes; 44,272 rows; 611 brand/model pairs; 948 exact-allowlist VAG rows across 26 models). The byte hash is the same older snapshot already independently built and verified in Windows run #126. Its exact row-multiset fingerprints also match that retained review: full source `af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f`, VAG subset `6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0`.
 
 The current pinned source remains the newer 2026-11-10 05:51 snapshot `902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb`, whose separate SQLite pack was rebuilt and verified in run #145 (artifact `13740955733`). The live endpoint therefore returned an older previously verified byte snapshot. The acquisition correctly failed closed on the pinned SHA-256 mismatch; it did not silently downgrade the source register or replace the newer run #145 pack. The run #145 pack remains current for its pinned snapshot. No new VAG technical values or production applicability are inferred from this probe.
+
+
+## Current research pack and desktop integration — 2026-11-10
+
+The current pinned source snapshot is `902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb` (15,179,458 bytes; 44,272 source rows; 611 brand/model pairs; 948 exact-allowlist VAG facts across 26 models and five brand labels). The VAG subset contains no changed technical values, units, qualifiers, source titles/pages or verification dates relative to the previous pinned snapshot; the observed changes are page-URL-only. Market scope remains UNKNOWN.
+
+The exact current snapshot was rebuilt and independently verified in Windows research-pack workflow run **145** (run ID `42767707066`):
+- Artifact ID `13740955733`; artifact SHA-256 `530614ac8ecbdc82ca099a58433558694808bd36b687c16fd8c5db1927c596eb`.
+- SQLite SHA-256 `20b5f84ec5e265ea7455cdfa149bf357864d4c9d7571933d65d4f75d80025b4f`; database size 1,961,984 bytes.
+- Pack-manifest SHA-256 `b156a4abcadabd6189fae5627091818eccf7bc1cbcf7e25b5fef876dd1f3949c`; source-manifest SHA-256 `64fb51903d237befed7712baafa998d069e3f64bf26fd7974656a418f7feb209`.
+- SQLite `integrity_check=ok`, zero foreign-key violations, 948/948 source-row hashes verified, and source-row-number mapping verified.
+
+The verified pack was then integrated into the offline Windows desktop research catalog by PR #91, Windows x64 validation run **1264** (run ID `42813922741`), step 68; the CarDir resolve/download/integration steps 66–68 all completed successfully. The same run passed the Windows x64 build/lifecycle job and the separate Windows Server 2022 installer-compatibility lifecycle. The pack is therefore included in the validated offline desktop research catalog as a separate read-only CC BY 4.0 resource. The raw 44,272-row source CSV is not bundled; the pack retains the filtered VAG SQLite, row hashes, source snapshot metadata, source references, attribution and licence text.
+
+This desktop integration does **not** change the production disposition: `data_ingested=false`, `product_database_ingested=false`, `production_import=false` and `product_import_allowed=false`. The facts remain UNKNOWN-market, publisher-curated owner-manual references, not independent OEM technical verification. No generation/year, exact engine code, exact gearbox code, engine/gearbox pair, ECU, DTC, wiring, pinout or repair applicability is inferred. Native Windows 10/11 client lifecycle remains unverified because the owner-controlled runner gate is disabled.
