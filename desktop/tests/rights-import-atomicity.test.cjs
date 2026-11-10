@@ -92,7 +92,7 @@ async function assertRightsReadAfterWriteLock(t, pkg, label) {
       'const core = require(workerData.corePath);',
       'parentPort.postMessage({ type: "started" });',
       'try {',
-      '  const importer = workerData.pkg.package_kind === "vehicle_catalog" ? core.importVehicleCatalog : core.importPackage;',
+      '  const importer = workerData.pkg.package_kind === "vehicle_catalog" ? core.importCatalogPackage : core.importPackage;',
       '  if (typeof importer !== "function") throw new Error("Expected import function is unavailable");',
       '  const result = importer(workerData.dbPath, workerData.pkg, {',
       '    afterSourceRead: (source) => parentPort.postMessage({ type: "source_read", status: source && source.status, rightsStatus: source && source.rights_status })',
