@@ -19,7 +19,7 @@ test("OwnerSpecs pack is a hash-verified, isolated CC BY-SA research-only SQLite
   assert.match(summary.databaseSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceFileSha256, /^[a-f0-9]{64}$/);
   assert.equal(summary.sourceFileBytes, 683641);
-  assert.match(summary.sourceSnapshotSha256, /^[a-f0-9]{64}$/);
+  assert.match(summary.sourceSnapshotSha256, /^[a-f0-9]{64}$/);\n  assert.match(summary.sourceSnapshotFileSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceManifestSha256, /^[a-f0-9]{64}$/);
 });
 
