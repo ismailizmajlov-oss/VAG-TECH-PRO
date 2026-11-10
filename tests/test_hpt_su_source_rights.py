@@ -48,7 +48,7 @@ class HptSuSourceRightsTests(unittest.TestCase):
         license_info = source["license"]
         self.assertEqual(license_info["commercial_use"], "internal_user_use_only_with_active_api_subscription")
         self.assertEqual(license_info["display_to_third_parties"],
-                         "prohibited_in_equivalent_database_form_without_written_consent")
+                         "not_authorized_as_equivalent_database_access_without_separate_written_consent")
         self.assertEqual(license_info["bulk_copy"], "prohibited")
         self.assertEqual(license_info["full_database_mirror"], "prohibited")
 
@@ -60,6 +60,43 @@ class HptSuSourceRightsTests(unittest.TestCase):
             "offline caching",
             "redistribution",
             "MIT",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+
+    def test_api_analytics_carveout_does_not_authorize_product_database_distribution(self):
+        registry = load_json("data/source-manifests/vag-factory-source-register.json")
+        source = next(s for s in registry["sources"] if s["source_id"] == "hpt-su-otts-aggregator")
+        rights = source["rights"]
+        analytics = rights["api_derived_analytics_outputs"]
+        self.assertTrue(analytics["allowed_with_conditions"])
+        self.assertFalse(analytics["simple_repackaging_allowed"])
+        self.assertFalse(analytics["substantially_reproducing_provider_database_allowed"])
+        self.assertFalse(analytics["equivalent_third_party_database_access_allowed"])
+        self.assertFalse(analytics["product_database_distribution_authorized"])
+        self.assertTrue(analytics["source_attribution_required_when_published"])
+        self.assertTrue(any("materially smaller" in item for item in analytics["conditions"]))
+        self.assertFalse(rights["offline_cache_for_product_distribution_allowed"])
+
+        review = source["latest_terms_review"]
+        self.assertEqual(review["reviewed_at"], "2026-11-10")
+        self.assertIn("6.4", review["reviewed_sections"]["api_terms"])
+        self.assertFalse(review["project_actions"]["account_created"])
+        self.assertFalse(review["project_actions"]["subscription_started"])
+        self.assertFalse(review["project_actions"]["product_import_allowed"])
+
+
+    def test_latest_terms_review_is_preserved_as_a_dated_research_record(self):
+        path = ROOT / "docs/research/HPT_SU_SOURCE_RIGHTS_RECHECK_2026-11-10.md"
+        text = path.read_text(encoding="utf-8")
+        for phrase in (
+            "API terms §6.4",
+            "существенно меньше базы HPT.SU",
+            "не является разрешением распространять локальную базу ОТТС",
+            "Аккаунт HPT.SU не создавался",
+            "Документы и записи не скачивались",
+            "Исходные байты не получены",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)

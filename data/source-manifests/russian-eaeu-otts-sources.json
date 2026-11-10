@@ -727,8 +727,8 @@
       "license": {
         "identifier": "contractual_subscription_license",
         "commercial_use": "internal_user_use_only_with_active_api_subscription",
-        "display_to_third_parties": "prohibited_in_equivalent_database_form_without_written_consent",
-        "offline_cache": "not_confirmed_for_distribution",
+        "display_to_third_parties": "not_authorized_as_equivalent_database_access_without_separate_written_consent",
+        "offline_cache": "not_authorized_for_third_party_product_distribution_without_separate_written_consent",
         "bulk_copy": "prohibited",
         "derived_database_for_third_parties": "prohibited_without_separate_written_consent",
         "full_database_mirror": "prohibited"
@@ -743,8 +743,51 @@
         "API terms require an active subscription to an API tariff.",
         "Internal integration and processing for the subscriber's own needs are permitted.",
         "Equivalent third-party access, substantially reproducing derived databases, and systematic full database copying are restricted without separate written consent.",
-        "No account, subscription, API key or payment was created."
-      ]
+        "No account, subscription, API key or payment was created.",
+        "API terms §6.4 permit only the subscriber's own analytical outputs for third parties when they are not simple repackaging, are materially smaller than the provider database and attribute HPT.SU; this narrow carve-out does not authorize a VAG TECH PRO offline catalogue or third-party database distribution."
+      ],
+      "latest_terms_review": {
+        "reviewed_at": "2026-11-10",
+        "offer_url": "https://hpt.su/p/oferta/",
+        "offer_effective_date": "2026-08-22",
+        "api_terms_url": "https://hpt.su/p/api-terms/",
+        "api_terms_effective_date": "2026-05-27",
+        "offer_sections": [
+          "4.1.4",
+          "11.2",
+          "11.3",
+          "11.4",
+          "11.5"
+        ],
+        "api_terms_sections": [
+          "6.1",
+          "6.2",
+          "6.3",
+          "6.4",
+          "6.5",
+          "8.6"
+        ],
+        "confirmed_api_analytics_carveout": {
+          "allowed": true,
+          "conditions": [
+            "subscriber's own analytical work, not simple repackaging of API data",
+            "amount and composition materially smaller than provider database",
+            "attribute HPT.SU when published"
+          ],
+          "does_not_authorize_third_party_database_or_offline_product_distribution": true
+        },
+        "project_use": {
+          "account_created": false,
+          "api_key_requested": false,
+          "subscription_started": false,
+          "payment_made": false,
+          "api_calls_made": false,
+          "documents_downloaded": 0,
+          "product_import_allowed": false
+        },
+        "source_page_file_sha256": null,
+        "hash_status": "live_terms_review_only_no_source_file_downloaded"
+      }
     },
     {
       "source_id": "otts-bot-and-public-aggregators",
@@ -2204,6 +2247,98 @@
         "No VAG approval record or VAG coverage count was observed.",
         "Do not infer engine/gearbox codes or pairings from approval dates, manufacturer filter options or unrelated document classes.",
         "Recheck the official endpoint and obtain dataset-specific written permission before any acquisition or product import."
+      ]
+    },
+    {
+      "source_id": "elpts-docs-electronic-otts-public-ui",
+      "publisher": "АО «Электронный паспорт»; public UI hosted on docs.elpts.ru subdomain, not cross-linked from the homepage national-register link",
+      "source_type": "operator_hosted_public_electronic_otts_search_ui_discovery",
+      "source_url": "https://docs.elpts.ru/ncher/otts",
+      "market_scope": [
+        "RU",
+        "UNKNOWN"
+      ],
+      "document_types": [
+        "OTTS"
+      ],
+      "access": {
+        "page_title": "РЕЕСТР ОДОБРЕНИЙ ТИПА ТРАНСПОРТНОГО СРЕДСТВА, ОФОРМЛЕННЫХ В ЭЛЕКТРОННОМ ВИДЕ",
+        "page_accessible": true,
+        "reviewed_at": "2026-11-10",
+        "official_operator_homepage": "https://elpts.ru/",
+        "operator_identity_observed": "АО «Электронный паспорт»",
+        "homepage_national_register_link": "https://www.rst.gov.ru/portal/gost/home/activity/compliance/evaluationcompliance/AcknowledgementCorrespondence",
+        "homepage_link_relationship": "official homepage links the national register to rst.gov.ru; docs.elpts.ru was discovered independently and is not asserted to be that linked endpoint",
+        "query_date_range": {
+          "from": "2026-11-09",
+          "to": "2026-11-10"
+        },
+        "visible_search_fields": [
+          "approval_registration_number",
+          "vehicle_make",
+          "vehicle_type",
+          "status",
+          "valid_from",
+          "valid_to",
+          "applicant_name",
+          "manufacturer_name",
+          "certification_body_name",
+          "environmental_class",
+          "title_form_accounting_number",
+          "annex_form_accounting_numbers",
+          "supplementary_sheet_accounting_numbers",
+          "printable_approval_form"
+        ],
+        "manufacturer_filter_values_observed": [
+          "AUDI AG",
+          "Volkswagen AG",
+          "Skoda Auto a.s."
+        ],
+        "manufacturer_filter_values_are_not_record_evidence": true,
+        "displayed_total_counter": 14822,
+        "displayed_total_counter_status": "search-indexed_UI_counter_not_independently_verified_not_a_VAG_count_or_complete_dataset_count",
+        "returned_rows_for_observed_date_range": 0,
+        "empty_result_state_observed": true,
+        "machine_readable_api": "not_verified",
+        "documented_export": "not_verified",
+        "bulk_export": "not_established",
+        "automated_extraction": "not_established",
+        "offline_cache": "not_established",
+        "third_party_display": "not_established",
+        "redistribution": "not_established"
+      },
+      "license": {
+        "identifier": null,
+        "commercial_use": "not_confirmed",
+        "display": "not_confirmed",
+        "offline_cache": "not_confirmed",
+        "bulk_export": "not_confirmed",
+        "redistribution": "not_confirmed",
+        "permission_status": "not_obtained",
+        "written_permission_obtained": false
+      },
+      "status": "discovery_only_rights_unconfirmed",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "source_snapshot_sha256": null,
+      "hash_status": "no_source_bytes_downloaded_no_ingestion",
+      "applicability_precision": "document_identity_and_search_filter_metadata_only",
+      "technical_scope": {
+        "approval_document_metadata_only": true,
+        "exact_vag_model_generation_year": false,
+        "exact_engine_code": false,
+        "exact_gearbox_code": false,
+        "exact_engine_gearbox_pair": false,
+        "ecu_dtc_repair_applicability": false
+      },
+      "notes": [
+        "The public page shell and table headers were observed; dynamic result placeholders were not resolved by the page renderer.",
+        "Search indexing showed a provider UI counter of 14,822 and a selected 2026-11-09 through 2026-11-10 date range with no returned rows. The counter is not independently verified and is not a VAG count.",
+        "AUDI AG, Volkswagen AG and Skoda Auto a.s. appeared as manufacturer filter values. Filter values are not evidence that any corresponding approval record exists in the selected result set.",
+        "The visible table columns are document and registry metadata only; they do not expose engine code, gearbox code, ECU, DTC or repair applicability.",
+        "The official elpts.ru homepage identifies AO Elektronny Passport and links the national register to rst.gov.ru. The docs.elpts.ru route was discovered independently; its exact relationship to that linked national register endpoint requires confirmation.",
+        "No raw page bytes, records, attachments, PDFs or API responses were downloaded. No undocumented endpoint was queried and no scraping was performed.",
+        "Public visibility does not establish commercial reuse, bulk extraction, persistent offline caching, third-party display or installer redistribution rights."
       ]
     }
   ],
