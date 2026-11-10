@@ -73,12 +73,21 @@ def main() -> None:
     if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
         raise AssertionError("SQLite integrity_check failed")
 
+    obdex_snapshot_sha256 = hashlib.sha256(b"synthetic-obdex-cc0-snapshot").hexdigest()
+    cc0_license_sha256 = hashlib.sha256(b"CC0-1.0 public domain dedication").hexdigest()
     db.execute("""INSERT INTO source_documents
       (source_id,publisher,document_id,document_type,revision,market_scope,
-       license_status,reuse_scope,redistribution_allowed,retrieved_at_utc)
+       license_status,license_name,reuse_scope,redistribution_allowed,source_sha256,retrieved_at_utc)
       VALUES ('OBDex','OBDex','snapshot','dtc_table','1','UNKNOWN',
-              'cc0','generic research only',1,'2026-11-03T00:00:00Z')""")
+              'cc0','CC0-1.0','generic research only',1,?,'2026-11-03T00:00:00Z')""",
+      (obdex_snapshot_sha256,))
     cc0_source = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+    db.execute("""INSERT INTO technical_source_rights
+      (source_document_id,rights_status,commercial_use_allowed,display_allowed,offline_cache_allowed,
+       bulk_reuse_allowed,redistribution_allowed,store_text_allowed,store_diagrams_allowed,
+       store_structured_data_allowed,license_text_sha256,rights_revision,reviewed_at_utc)
+      VALUES (?,'approved',1,1,1,1,1,1,0,1,?,'synthetic-cc0-r1','2026-11-03T00:00:00Z')""",
+      (cc0_source,cc0_license_sha256))
 
     # Direct INSERT must not bypass the rights/applicability publication guard.
     expect_integrity_error(
