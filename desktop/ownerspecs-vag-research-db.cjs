@@ -251,7 +251,7 @@ function searchOwnerSpecsFacts(query, limit, explicitRoot) {
       exactGearboxCodeMapping: false,
       exactEngineGearboxPair: false,
       ruEaeuApplicability: false,
-      criticalValuePublishable: false,
+      criticalValuePublishable: 0,
       repairProcedureApplicability: false,
       ecuFitment: false,
       dtcFitment: false
