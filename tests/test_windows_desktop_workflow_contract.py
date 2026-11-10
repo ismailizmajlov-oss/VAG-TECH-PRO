@@ -578,7 +578,7 @@ def main() -> None:
     cardir_verifier = ROOT / "desktop" / "scripts" / "verify-cardir-vag-open-data-pack.cjs"
     if not cardir_verifier.is_file() or 'require("../lib/cardir-vag-reference-facts-db.cjs")' not in cardir_verifier.read_text(encoding="utf-8"):
         raise SystemExit("CarDir verifier must resolve the database module from the staged scripts directory")
-    cardir_integrate_marker = "      - name: Integrate CarDir VAG owner-manual facts into offline desktop"
+    cardir_integrate_marker = "      - name: Integrate CarDir VAG reference facts into offline desktop"
     if not (text.index(kba_integrate_marker) < text.index(cardir_integrate_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker)):
         raise SystemExit("CarDir pack must be integrated and verified after KBA and before desktop tests and NSIS packaging")
     if "cardir_database_sha256=$($cardirSummary.databaseSha256)" not in text or "cardir_vag_owner_manual_facts_database_sha256 = $cardirDatabaseHash" not in text:
