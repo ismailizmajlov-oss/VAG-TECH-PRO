@@ -777,6 +777,19 @@ def main() -> None:
     if text.index(wikidata_step) > text.index(vehiclesdb_guard_step):
         raise SystemExit("Wikidata integration must run before the VehiclesDB guard rewrites its shared provenance anchor")
 
+    wikidata_patcher = (ROOT / "apply-wikidata-vag-taxonomy-run68.cjs").read_text(encoding="utf-8")
+    manifest_driven_vehiclesdb_gate = (
+        "vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models",
+        "vehiclesDbCounts.marketEvidence !== vehiclesDbPackManifest.counts?.market_evidence",
+        "vehiclesDbPackManifest.identity_only_use !== true",
+        "vehiclesDbPackManifest.safety_critical_reliance !== false",
+        "vehiclesDbPackManifest.repair_decision_use !== false",
+        "vehiclesDbPackManifest.open_data_policy_notice.includes(\\\"not designed or warranted for safety-critical\\\")",
+    )
+    missing_dynamic_gate = [marker for marker in manifest_driven_vehiclesdb_gate if marker not in wikidata_patcher]
+    if missing_dynamic_gate:
+        raise SystemExit(f"Wikidata integration must validate the current VehiclesDB manifest counts and identity-only safety boundary before querying the desktop research summary: {missing_dynamic_gate}")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 if __name__ == "__main__":
