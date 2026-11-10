@@ -6,6 +6,7 @@ const os = require("node:os");
 const path = require("node:path");
 const core = require("../lib/local-core-db.cjs");
 const { seedWikidataCandidateCatalog } = require("../lib/wikidata-candidate-seed.cjs");
+const { seedWikidataCandidateCatalog } = require("../lib/wikidata-candidate-seed.cjs");
 
 const researchRoot = path.resolve(__dirname, "../data/research");
 const sourceId = "wikidata-vag-model-taxonomy";
