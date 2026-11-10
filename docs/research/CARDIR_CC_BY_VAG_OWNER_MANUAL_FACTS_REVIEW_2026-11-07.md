@@ -114,3 +114,12 @@ A later live acquisition probe retrieved a byte-different CSV snapshot (SHA-256 
 The two CSVs were compared as exact multisets of all 12 source fields, not merely by row counts. Both contain 44,272 rows, 611 brand/model pairs, 948 exact-allowlist VAG rows and 26 VAG models. The order-independent full-row multiset SHA-256 is identical for both snapshots: `d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74`. The VAG-subset multiset SHA-256 is also identical: `ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b`. Exact multiset comparison found zero added rows, zero removed rows and zero changed VAG values; only CSV row order changed.
 
 The new raw snapshot was therefore recorded as an unpinned live probe, not silently substituted for the reviewed pack input. The existing pinned CC BY 4.0 research pack remains valid and unchanged. The acquisition builder correctly fails closed on a raw SHA-256 mismatch until a new snapshot is explicitly reviewed and pinned. No production data was imported.
+
+
+## 2026-11-10 source-order-only refresh — 03:11 UTC
+
+A repeat acquisition of the official CarDir CSV returned a new byte-level snapshot: `5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a`, 15,174,126 bytes. The previously pinned snapshot was `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`. An exact row-hash multiset comparison over all parsed CSV rows found no additions, removals or value changes: 44,272 rows and 611 brand/model pairs in both snapshots. Full-row multiset SHA-256: `d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74`.
+
+The exact VAG allowlist subset is unchanged at 948 rows across 26 models. Its row-multiset SHA-256 is `ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b`. No VAG rows were added or removed. The byte-level hash changed because row order changed. The new exact source snapshot is pinned, and a fresh Windows SQLite pack build is required because source row numbers are part of the provenance. The old SQLite pack remains explicitly labelled as verified for the previous snapshot only until the new pack is independently built and verified.
+
+All CarDir facts remain a separate CC BY 4.0 research resource with market UNKNOWN, publisher verification but no independent OEM review, no exact engine/gearbox codes or pair, no model generation/year, no RU/EAEU applicability, no ECU/DTC fitment, and no production import or repair authorization.
