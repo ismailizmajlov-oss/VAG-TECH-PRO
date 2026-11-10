@@ -722,7 +722,7 @@ def main() -> int:
             "source_revision": source["data_revision"],
             "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_file": "source.json",
-            "source_file_bytes": source_json.stat().st_size,
+            "source_file_bytes": source_json_path.stat().st_size,
             "source_snapshot_sha256": sha256_file(args.output_dir / "source.json"),
             "generation_count": len(generations),
             "verified_datapoints": sum(int(g.get("verified_datapoints") or 0) for g in generations),
