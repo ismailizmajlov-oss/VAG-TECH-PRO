@@ -10,6 +10,8 @@ test("OwnerSpecs pack is a hash-verified, isolated CC BY-SA research-only SQLite
   const summary = getOwnerSpecsSummary(researchRoot);
   assert.deepEqual(summary.counts, { sourceGenerations: 111, sourceFacts: 2369, vagGenerations: 20, vagFacts: 233 });
   assert.equal(summary.marketScope, "UNKNOWN");
+  assert.equal(summary.status, "verified_research_only");
+  assert.equal(summary.packBuildStatus, "verified_research_only");
   assert.equal(summary.license, "CC BY-SA 4.0");
   assert.equal(summary.productionImport, false);
   assert.equal(summary.productImportAllowed, false);
