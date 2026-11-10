@@ -92,7 +92,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(previous["database_sha256"],"eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf")
         self.assertEqual(self.entry["previous_desktop_lifecycle_evidence"]["run_number"],1208)
         self.assertIsNone(self.entry["desktop_lifecycle_evidence"])
-        self.assertEqual(self.entry["research_pack_desktop_integration_status"],"previous_pack_run1208_current_snapshot_not_yet_packaged")
+        self.assertEqual(self.entry["research_pack_desktop_integration_status"],"previous_verified_pack_only_current_snapshot_not_yet_packaged")
         self.assertEqual(self.entry["verification_status"],"licensed_source_snapshot_updated_reviewed_research_pack_rebuild_pending_candidate_only_no_production_import")
         self.assertFalse(self.entry["product_database_ingested"]); self.assertFalse(self.entry["product_import_allowed"])
         self.assertEqual(self.entry["applicability"]["market_scope"],"UNKNOWN")
