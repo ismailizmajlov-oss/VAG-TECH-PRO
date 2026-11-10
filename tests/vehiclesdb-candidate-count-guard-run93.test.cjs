@@ -120,6 +120,15 @@ test("run93 composes after run68's manifest-driven count guard without rewriting
     assert.equal(before.split(legacy).length - 1, 1);
     fs.writeFileSync(dbPath, before.replace(legacy, dynamic));
     const afterRun68 = fs.readFileSync(dbPath, "utf8");
+    const verifierPath = path.join(root, "scripts", "verify-local-research-packs.cjs");
+    const verifierBefore = fs.readFileSync(verifierPath, "utf8");
+    const tick = String.fromCharCode(96);
+    const dollar = String.fromCharCode(36);
+    const interpolation = dollar + "{JSON.stringify(vehiclesDbCounts)}";
+    const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
+    const run68VerifierCountGate = "assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDb foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
+    assert.equal(verifierBefore.split(oldVerifierCountGate).length - 1, 1);
+    fs.writeFileSync(verifierPath, verifierBefore.replace(oldVerifierCountGate, run68VerifierCountGate));
     const first = run(root);
     assert.equal(first.status, 0, first.stderr);
     const afterRun93 = fs.readFileSync(dbPath, "utf8");
@@ -127,9 +136,11 @@ test("run93 composes after run68's manifest-driven count guard without rewriting
     assert.match(afterRun93, /identityOnlyUse: packManifest\.identity_only_use/);
     assert.match(afterRun93, /safetyCriticalReliance: packManifest\.safety_critical_reliance/);
     assert.match(afterRun93, /repairDecisionUse: packManifest\.repair_decision_use/);
-    const verifier = fs.readFileSync(path.join(root, "scripts", "verify-local-research-packs.cjs"), "utf8");
+    const verifier = fs.readFileSync(verifierPath, "utf8");
+    assert.equal(verifier.split(run68VerifierCountGate).length - 1, 1, "run93 must preserve run68's already-aligned independent-verifier count predicate");
     assert.match(verifier, /vehiclesDbCounts\.models === vehiclesDbSnapshot\.counts\?\.models/);
     assert.match(verifier, /vehiclesDbCounts\.marketEvidence === vehiclesDbSnapshot\.counts\?\.market_evidence/);
+    assert.match(verifier, /VehiclesDB safety-critical and repair-decision boundary failed/);
     assert.notEqual(afterRun93, afterRun68, "run93 must still add the returned identity-only policy fields");
     const evidence = JSON.parse(fs.readFileSync(path.join(root, "data", "research", "vehiclesdb-vag-identity", "desktop-candidate-boundary-verification.json"), "utf8"));
     assert.equal(evidence.status, "vehiclesdb_identity_only_dynamic_count_gate_applied");
