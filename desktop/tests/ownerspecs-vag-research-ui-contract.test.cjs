@@ -27,6 +27,7 @@ test("OwnerSpecs UI never presents critical values as confirmed repair data", ()
   assert.match(ui, /точная применимость не подтверждена/);
   assert.match(ui, /критические значения не допущены к ремонту/i);
   assert.match(ui, /Share-Alike/);
+  assert.match(ui, /snapshot manifest file SHA-256/);
 });
 
 test("Windows offline lifecycle checks OwnerSpecs rights and candidate-only boundaries", () => {
