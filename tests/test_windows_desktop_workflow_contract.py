@@ -566,7 +566,7 @@ def main() -> None:
         raise SystemExit(f"CarDir pack integration/NSIS verification pipeline is incomplete: {missing_cardir_pipeline_steps}")
     cardir_script = ROOT / "scripts" / "integrate-cardir-vag-owner-manual-facts.cjs"
     cardir_script_text = cardir_script.read_text(encoding="utf-8")
-    for required in ("snapshot.source_row_count === 44245", "snapshot.vag_row_count === 948", "sourceFile.source_row_count === 44245", "sourceFile.filtered_vag_row_count === 948", "counts.vagFacts === 948 && counts.vagBrands === 5 && counts.vagModels === 26 && counts.parameterKeys === 19"):
+    for required in ("snapshot.source_row_count === 44272", "snapshot.vag_row_count === 948", "sourceFile.source_row_count === 44272", "sourceFile.filtered_vag_row_count === 948", "counts.vagFacts === 948 && counts.vagBrands === 5 && counts.vagModels === 26 && counts.parameterKeys === 19"):
         if required not in cardir_script_text:
             raise SystemExit(f"CarDir integration script is not pinned to the reviewed source snapshot: {required}")
     cardir_module = ROOT / "desktop" / "cardir-vag-reference-facts-db.cjs"
