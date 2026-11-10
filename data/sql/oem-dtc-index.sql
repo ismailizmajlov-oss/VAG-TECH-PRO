@@ -30,6 +30,37 @@ CREATE TABLE IF NOT EXISTS source_documents (
   UNIQUE(source_id, document_id, revision, market_scope)
 );
 
+CREATE TABLE IF NOT EXISTS technical_source_rights (
+ source_document_id INTEGER PRIMARY KEY REFERENCES source_documents(source_document_id) ON DELETE RESTRICT,
+ rights_status TEXT NOT NULL CHECK(rights_status IN('not_reviewed','permission_required','approved','restricted','expired')),
+ commercial_use_allowed INTEGER NOT NULL DEFAULT 0 CHECK(commercial_use_allowed IN(0,1)),
+ display_allowed INTEGER NOT NULL DEFAULT 0 CHECK(display_allowed IN(0,1)),
+ offline_cache_allowed INTEGER NOT NULL DEFAULT 0 CHECK(offline_cache_allowed IN(0,1)),
+ bulk_reuse_allowed INTEGER NOT NULL DEFAULT 0 CHECK(bulk_reuse_allowed IN(0,1)),
+ redistribution_allowed INTEGER NOT NULL DEFAULT 0 CHECK(redistribution_allowed IN(0,1)),
+ store_text_allowed INTEGER NOT NULL DEFAULT 0 CHECK(store_text_allowed IN(0,1)),
+ store_diagrams_allowed INTEGER NOT NULL DEFAULT 0 CHECK(store_diagrams_allowed IN(0,1)),
+ store_structured_data_allowed INTEGER NOT NULL DEFAULT 0 CHECK(store_structured_data_allowed IN(0,1)),
+ license_text_sha256 TEXT CHECK(license_text_sha256 IS NULL OR(length(license_text_sha256)=64 AND license_text_sha256 NOT GLOB '*[^a-f0-9]*')),
+ permission_reference TEXT, rights_revision TEXT NOT NULL, reviewed_at_utc TEXT NOT NULL,
+ CHECK(rights_status<>'approved' OR(display_allowed=1 AND offline_cache_allowed=1 AND bulk_reuse_allowed=1 AND redistribution_allowed=1 AND license_text_sha256 IS NOT NULL))
+);
+CREATE TRIGGER IF NOT EXISTS technical_source_permission_reference_guard
+BEFORE INSERT ON technical_source_rights WHEN NEW.rights_status='approved'
+BEGIN
+ SELECT CASE WHEN(SELECT license_status FROM source_documents WHERE source_document_id=NEW.source_document_id)='permission_granted'
+ AND(NEW.permission_reference IS NULL OR length(trim(NEW.permission_reference))=0)
+ THEN RAISE(ABORT,'permission-granted source rights require a permission reference') END;
+END;
+CREATE TRIGGER IF NOT EXISTS technical_source_permission_reference_update
+BEFORE UPDATE OF rights_status,permission_reference ON technical_source_rights
+WHEN NEW.rights_status='approved'
+BEGIN
+ SELECT CASE WHEN(SELECT license_status FROM source_documents WHERE source_document_id=NEW.source_document_id)='permission_granted'
+ AND(NEW.permission_reference IS NULL OR length(trim(NEW.permission_reference))=0)
+ THEN RAISE(ABORT,'permission-granted source rights require a permission reference') END;
+END;
+
 CREATE TABLE IF NOT EXISTS ecu_identities (
   ecu_identity_id INTEGER PRIMARY KEY,
   supplier TEXT,
@@ -174,26 +205,124 @@ BEGIN
   SELECT RAISE(ABORT, 'DTC publication must use guarded review-status transition');
 END;
 
--- A row cannot be promoted until both technical review and reuse rights are cleared.
+-- Publication requires a pinned source snapshot, detailed commercial/offline rights and explicit applicability.
 CREATE TRIGGER IF NOT EXISTS prevent_unapproved_oem_dtc_publication
 BEFORE UPDATE OF review_status ON oem_dtc_index
 WHEN NEW.review_status = 'publication_approved'
 BEGIN
   SELECT CASE
     WHEN NOT EXISTS (
-      SELECT 1 FROM source_documents s
+      SELECT 1
+      FROM source_documents s
+      JOIN technical_source_rights r ON r.source_document_id = s.source_document_id
       WHERE s.source_document_id = NEW.source_document_id
+        AND s.market_scope = NEW.market_scope
         AND s.redistribution_allowed = 1
         AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+        AND s.source_sha256 IS NOT NULL
+        AND length(s.source_sha256) = 64
+        AND s.source_sha256 NOT GLOB '*[^a-f0-9]*'
+        AND length(trim(s.revision)) > 0
+        AND r.rights_status = 'approved'
+        AND r.commercial_use_allowed = 1
+        AND r.display_allowed = 1
+        AND r.offline_cache_allowed = 1
+        AND r.bulk_reuse_allowed = 1
+        AND r.redistribution_allowed = 1
+        AND r.store_structured_data_allowed = 1
+        AND (NEW.description IS NULL OR length(trim(NEW.description)) = 0 OR r.store_text_allowed = 1)
+        AND r.license_text_sha256 IS NOT NULL
+        AND length(r.license_text_sha256) = 64
+        AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
+        AND length(trim(r.rights_revision)) > 0
+        AND length(trim(r.reviewed_at_utc)) > 0
+        AND (s.license_status <> 'permission_granted'
+             OR (r.permission_reference IS NOT NULL AND length(trim(r.permission_reference)) > 0))
     )
     THEN RAISE(ABORT, 'publication blocked: source reuse rights not cleared')
   END;
   SELECT CASE
-    WHEN NEW.evidence_locator = ''
+    WHEN NEW.market_scope = 'UNKNOWN'
+      OR length(trim(NEW.evidence_locator)) = 0
       OR NEW.applicability_level IN ('generic_only','unknown','model_year_only')
     THEN RAISE(ABORT, 'publication blocked: insufficient exact applicability evidence')
   END;
+  SELECT CASE
+    WHEN NEW.applicability_level = 'exact_vin'
+      AND NEW.vin_range_explicit <> 1
+    THEN RAISE(ABORT, 'exact VIN applicability requires an explicit VIN range')
+  END;
+  SELECT CASE
+    WHEN NEW.applicability_level = 'exact_ecu_hw_sw'
+      AND (
+        NEW.ecu_identity_id IS NULL
+        OR NEW.ecu_hw_sw_explicit <> 1
+        OR NOT EXISTS (
+          SELECT 1 FROM ecu_identities e
+          WHERE e.ecu_identity_id = NEW.ecu_identity_id
+            AND e.identity_status = 'exact'
+            AND length(trim(coalesce(e.hardware_number,''))) > 0
+            AND length(trim(coalesce(e.software_number,''))) > 0
+        )
+      )
+    THEN RAISE(ABORT, 'exact ECU HW/SW applicability requires an exact ECU identity')
+  END;
+  SELECT CASE
+    WHEN NEW.applicability_level = 'engine_transmission_variant'
+      AND (
+        length(trim(coalesce(NEW.engine_code,''))) = 0
+        OR length(trim(coalesce(NEW.transmission_code,''))) = 0
+        OR NEW.engine_code_explicit <> 1
+        OR NEW.transmission_code_explicit <> 1
+      )
+    THEN RAISE(ABORT, 'engine/transmission applicability requires both explicit factory codes')
+  END;
 END;
+
+-- Once a DTC claim has been approved, preserve the exact reviewed claim and its source snapshot.
+CREATE TABLE IF NOT EXISTS oem_dtc_publication_locks (
+  oem_dtc_id INTEGER PRIMARY KEY REFERENCES oem_dtc_index(oem_dtc_id) ON DELETE RESTRICT,
+  source_claim_hash TEXT NOT NULL CHECK(length(source_claim_hash)=64 AND source_claim_hash NOT GLOB '*[^a-f0-9]*'),
+  approved_at_utc TEXT NOT NULL
+);
+CREATE TRIGGER IF NOT EXISTS record_oem_dtc_publication_lock
+AFTER UPDATE OF review_status ON oem_dtc_index
+WHEN NEW.review_status='publication_approved' AND OLD.review_status<>'publication_approved'
+BEGIN
+  INSERT OR IGNORE INTO oem_dtc_publication_locks(oem_dtc_id,source_claim_hash,approved_at_utc)
+  VALUES(NEW.oem_dtc_id,NEW.source_claim_hash,strftime('%Y-%m-%dT%H:%M:%fZ','now'));
+END;
+INSERT OR IGNORE INTO oem_dtc_publication_locks(oem_dtc_id,source_claim_hash,approved_at_utc)
+SELECT oem_dtc_id,source_claim_hash,created_at_utc
+FROM oem_dtc_index WHERE review_status='publication_approved';
+
+CREATE TRIGGER IF NOT EXISTS oem_dtc_published_claim_immutable
+BEFORE UPDATE OF dtc_code,dtc_namespace,manufacturer,market_scope,model,generation_or_type_code,
+ model_year_from,model_year_to,production_date_from,production_date_to,engine_code,transmission_code,
+ drive_configuration,pr_codes_json,ecu_identity_id,source_document_id,description,symptoms_json,
+ causes_json,test_plan_reference,evidence_locator,applicability_level,vin_range_explicit,
+ engine_code_explicit,transmission_code_explicit,ecu_hw_sw_explicit,source_claim_hash,created_at_utc
+ON oem_dtc_index
+WHEN EXISTS(SELECT 1 FROM oem_dtc_publication_locks l WHERE l.oem_dtc_id=OLD.oem_dtc_id)
+BEGIN
+  SELECT RAISE(ABORT,'published OEM DTC claim is immutable; create a new source revision');
+END;
+CREATE TRIGGER IF NOT EXISTS oem_dtc_published_source_immutable
+BEFORE UPDATE ON source_documents
+WHEN EXISTS(
+  SELECT 1 FROM oem_dtc_publication_locks l
+  JOIN oem_dtc_index d ON d.oem_dtc_id=l.oem_dtc_id
+  WHERE d.source_document_id=OLD.source_document_id
+)
+BEGIN
+  SELECT RAISE(ABORT,'source snapshot metadata is immutable after OEM DTC publication');
+END;
+CREATE TRIGGER IF NOT EXISTS oem_dtc_publication_lock_no_update
+BEFORE UPDATE ON oem_dtc_publication_locks
+BEGIN SELECT RAISE(ABORT,'OEM DTC publication lock is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS oem_dtc_publication_lock_no_delete
+BEFORE DELETE ON oem_dtc_publication_locks
+BEGIN SELECT RAISE(ABORT,'OEM DTC publication lock is append-only'); END;
 
 -- Generic SAE/ISO definitions may not be silently labelled as manufacturer-specific VAG.
 CREATE TRIGGER IF NOT EXISTS prevent_generic_vag_mislabel
@@ -248,3 +377,55 @@ WHEN NEW.dtc_namespace='manufacturer_specific_other' AND NEW.manufacturer<>'OTHE
 BEGIN
   SELECT RAISE(ABORT, 'other manufacturer-specific DTC must use OTHER manufacturer');
 END;
+
+-- Runtime-safe public surface: revoking rights immediately removes a DTC from this view.
+CREATE VIEW IF NOT EXISTS v_published_oem_dtc_index AS
+SELECT d.*,
+       s.publisher AS source_publisher,
+       s.document_id AS source_document_id_text,
+       s.revision AS source_revision,
+       s.source_url,
+       s.source_sha256,
+       s.license_status,
+       s.license_name,
+       r.rights_revision,
+       r.license_text_sha256
+FROM oem_dtc_index d
+JOIN source_documents s ON s.source_document_id = d.source_document_id
+JOIN technical_source_rights r ON r.source_document_id = s.source_document_id
+WHERE d.review_status = 'publication_approved'
+  AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+  AND s.redistribution_allowed = 1
+  AND s.market_scope = d.market_scope
+  AND length(trim(s.revision)) > 0
+  AND s.source_sha256 IS NOT NULL
+  AND length(s.source_sha256) = 64
+  AND s.source_sha256 NOT GLOB '*[^a-f0-9]*'
+  AND r.rights_status = 'approved'
+  AND r.commercial_use_allowed = 1
+  AND r.display_allowed = 1
+  AND r.offline_cache_allowed = 1
+  AND r.bulk_reuse_allowed = 1
+  AND r.redistribution_allowed = 1
+  AND r.store_structured_data_allowed = 1
+  AND (d.description IS NULL OR length(trim(d.description)) = 0 OR r.store_text_allowed = 1)
+  AND (s.license_status <> 'permission_granted' OR (r.permission_reference IS NOT NULL AND length(trim(r.permission_reference)) > 0))
+  AND length(trim(r.rights_revision)) > 0
+  AND length(trim(r.reviewed_at_utc)) > 0
+  AND r.license_text_sha256 IS NOT NULL
+  AND length(r.license_text_sha256) = 64
+  AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
+  AND d.market_scope <> 'UNKNOWN'
+  AND length(trim(d.evidence_locator)) > 0
+  AND d.applicability_level NOT IN ('generic_only','unknown','model_year_only')
+  AND (d.applicability_level <> 'exact_vin' OR d.vin_range_explicit = 1)
+  AND (d.applicability_level <> 'exact_ecu_hw_sw' OR (
+       d.ecu_identity_id IS NOT NULL AND d.ecu_hw_sw_explicit = 1
+       AND EXISTS(SELECT 1 FROM ecu_identities e WHERE e.ecu_identity_id=d.ecu_identity_id
+                  AND e.identity_status='exact'
+                  AND length(trim(coalesce(e.hardware_number,'')))>0
+                  AND length(trim(coalesce(e.software_number,'')))>0)))
+  AND (d.applicability_level <> 'engine_transmission_variant' OR (
+       length(trim(coalesce(d.engine_code,'')))>0
+       AND length(trim(coalesce(d.transmission_code,'')))>0
+       AND d.engine_code_explicit=1 AND d.transmission_code_explicit=1));

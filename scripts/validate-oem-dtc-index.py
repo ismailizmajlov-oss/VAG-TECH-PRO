@@ -73,12 +73,21 @@ def main() -> None:
     if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
         raise AssertionError("SQLite integrity_check failed")
 
+    obdex_snapshot_sha256 = hashlib.sha256(b"synthetic-obdex-cc0-snapshot").hexdigest()
+    cc0_license_sha256 = hashlib.sha256(b"CC0-1.0 public domain dedication").hexdigest()
     db.execute("""INSERT INTO source_documents
       (source_id,publisher,document_id,document_type,revision,market_scope,
-       license_status,reuse_scope,redistribution_allowed,retrieved_at_utc)
+       license_status,license_name,reuse_scope,redistribution_allowed,source_sha256,retrieved_at_utc)
       VALUES ('OBDex','OBDex','snapshot','dtc_table','1','UNKNOWN',
-              'cc0','generic research only',1,'2026-11-03T00:00:00Z')""")
+              'cc0','CC0-1.0','generic research only',1,?,'2026-11-03T00:00:00Z')""",
+      (obdex_snapshot_sha256,))
     cc0_source = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+    db.execute("""INSERT INTO technical_source_rights
+      (source_document_id,rights_status,commercial_use_allowed,display_allowed,offline_cache_allowed,
+       bulk_reuse_allowed,redistribution_allowed,store_text_allowed,store_diagrams_allowed,
+       store_structured_data_allowed,license_text_sha256,rights_revision,reviewed_at_utc)
+      VALUES (?,'approved',1,1,1,1,1,1,0,1,?,'synthetic-cc0-r1','2026-11-03T00:00:00Z')""",
+      (cc0_source,cc0_license_sha256))
 
     # Direct INSERT must not bypass the rights/applicability publication guard.
     expect_integrity_error(
@@ -144,12 +153,25 @@ def main() -> None:
         "VAG-specific DTC requires a VAG Group manufacturer"
     )
 
+    source_snapshot_sha256 = hashlib.sha256(b"synthetic-open-license-source-snapshot").hexdigest()
+    license_text_sha256 = hashlib.sha256(b"synthetic-open-license-text").hexdigest()
     db.execute("""INSERT INTO source_documents
       (source_id,publisher,document_id,document_type,revision,market_scope,
-       license_status,reuse_scope,redistribution_allowed,retrieved_at_utc)
+       license_status,license_name,reuse_scope,redistribution_allowed,source_sha256,retrieved_at_utc)
       VALUES ('synthetic-vag-test','Synthetic VAG test source','vag-dtc-test','dtc_table','r1','RU',
-              'permission_granted','synthetic fixture only',1,'2026-11-03T00:00:00Z')""")
+              'open_license','MIT','synthetic fixture only',1,?,'2026-11-03T00:00:00Z')""",
+      (source_snapshot_sha256,))
     vag_source = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+    db.execute("""INSERT INTO technical_source_rights
+      (source_document_id,rights_status,commercial_use_allowed,display_allowed,offline_cache_allowed,
+       bulk_reuse_allowed,redistribution_allowed,store_text_allowed,store_diagrams_allowed,
+       store_structured_data_allowed,license_text_sha256,rights_revision,reviewed_at_utc)
+      VALUES (?,'approved',1,1,1,1,1,0,0,1,?,'synthetic-r1','2026-11-03T00:00:00Z')""",
+      (vag_source,license_text_sha256))
+    db.execute("""INSERT INTO ecu_identities
+      (supplier,ecu_family,system_name,part_number,hardware_number,software_number,identity_status)
+      VALUES ('Synthetic ECU supplier','EDC17','Engine','03L906018AB','HW-01','SW-01','exact')""")
+    exact_ecu_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
     expect_integrity_error(lambda: db.execute("""INSERT INTO oem_dtc_index
       (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,evidence_locator,applicability_level,source_claim_hash,created_at_utc)
       VALUES ('P2345','manufacturer_specific_vag','AUDI','RU',?,'generic P2 range','exact_ecu_hw_sw',?,'2026-11-03T00:00:00Z')""",(vag_source,"2"*64)),
@@ -180,16 +202,18 @@ def main() -> None:
     )
 
     db.execute("""INSERT INTO oem_dtc_index
-      (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
-       evidence_locator,applicability_level,source_claim_hash,created_at_utc)
-      VALUES ('P33A6','manufacturer_specific_vag','VOLKSWAGEN','RU',?,
+      (dtc_code,dtc_namespace,manufacturer,market_scope,ecu_identity_id,ecu_hw_sw_explicit,
+       source_document_id,evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+      VALUES ('P33A6','manufacturer_specific_vag','VOLKSWAGEN','RU',?,1,?,
               'page 9, ECU table','exact_ecu_hw_sw',?,'2026-11-03T00:00:00Z')""",
-      (vag_source, "c" * 64))
+      (exact_ecu_id,vag_source, "c" * 64))
     publishable_record = db.execute("SELECT last_insert_rowid()").fetchone()[0]
     db.execute(
         "UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?",
         (publishable_record,)
     )
+    if db.execute("SELECT count(*) FROM v_published_oem_dtc_index WHERE oem_dtc_id=?", (publishable_record,)).fetchone()[0] != 1:
+        raise AssertionError("approved OEM DTC did not appear in the rights-filtered publication view")
 
     # Unresolved/reserved identifiers may be retained as unknown research rows,
     # but cannot be promoted to a published repair record.
