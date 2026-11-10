@@ -768,16 +768,18 @@ def main() -> None:
     if "run-id: ${{ steps.mechanicdb-pack.outputs.run_id }}" not in mechanicdb_download:
         raise SystemExit("MechanicDB download must use the verified source-register run ID, not an unverified hard-coded run")
 
-    # run68 must add the Wikidata pack before run93 changes the shared VehiclesDB count guard.
-    # Reversing these patch steps removes run68's legacy anchor and breaks the Windows build.
+    # run93 must update the VehiclesDB manifest-driven reader gate before
+    # run68 calls getResearchSummary(); otherwise v2026.11.3 is rejected by
+    # the stale 260/1524 counts.
+    revision_step = "      - name: Bind VehiclesDB test revision to the pinned manifest (run89)"
+    candidate_gate_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
     wikidata_step = "      - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)"
-    vehiclesdb_guard_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
-    if wikidata_step not in text or vehiclesdb_guard_step not in text:
-        raise SystemExit("Windows workflow is missing the Wikidata or VehiclesDB candidate-only integration step")
-    if text.index(wikidata_step) > text.index(vehiclesdb_guard_step):
-        raise SystemExit("Wikidata integration must run before the VehiclesDB guard rewrites its shared provenance anchor")
+    if not all(step in text for step in (revision_step, candidate_gate_step, wikidata_step)):
+        raise SystemExit("Windows workflow is missing a required VehiclesDB/Wikidata integration step")
+    if not (text.index(revision_step) < text.index(candidate_gate_step) < text.index(wikidata_step)):
+        raise SystemExit("VehiclesDB revision binding and identity-only gate must run before Wikidata integration")
 
-    wikidata_patcher = (ROOT / "apply-wikidata-vag-taxonomy-run68.cjs").read_text(encoding="utf-8")
+    vehiclesdb_patcher = (ROOT / "apply-vehiclesdb-candidate-count-guard-run93.cjs").read_text(encoding="utf-8")
     manifest_driven_vehiclesdb_gate = (
         "vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models",
         "vehiclesDbCounts.marketEvidence !== vehiclesDbPackManifest.counts?.market_evidence",
@@ -787,23 +789,13 @@ def main() -> None:
         "vehiclesDbPackManifest.open_data_policy_notice.includes",
         "not designed or warranted for safety-critical",
     )
-    missing_dynamic_gate = [marker for marker in manifest_driven_vehiclesdb_gate if marker not in wikidata_patcher]
+    missing_dynamic_gate = [marker for marker in manifest_driven_vehiclesdb_gate if marker not in vehiclesdb_patcher]
     if missing_dynamic_gate:
-        raise SystemExit(f"Wikidata integration must validate the current VehiclesDB manifest counts and identity-only safety boundary before querying the desktop research summary: {missing_dynamic_gate}")
+        raise SystemExit(f"VehiclesDB pre-summary patch must enforce manifest counts and identity-only safety boundary: {missing_dynamic_gate}")
 
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
-    # The refreshed VehiclesDB manifest must be applied to the desktop reader
-    # before the Wikidata integration calls getResearchSummary(). Otherwise the
-    # old 260/1524 count guard rejects the valid v2026.11.3 307/1621 pack.
-    revision_step = "      - name: Bind VehiclesDB test revision to the pinned manifest (run89)"
-    candidate_gate_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
-    wikidata_step = "      - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)"
-    if not all(step in text for step in (revision_step, candidate_gate_step, wikidata_step)):
-        raise SystemExit("Windows workflow is missing a required VehiclesDB/Wikidata integration step")
-    if not (text.index(revision_step) < text.index(candidate_gate_step) < text.index(wikidata_step)):
-        raise SystemExit("VehiclesDB identity-only gate must run before Wikidata integration")
-    
+
 if __name__ == "__main__":
     main()
