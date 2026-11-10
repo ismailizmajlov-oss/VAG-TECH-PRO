@@ -56,6 +56,7 @@ A publicly reachable search interface does not itself grant rights to bulk extra
 
 - Official electronic SBKTS search page: https://docs.elpts.ru/ncher/esbkts
 - ELPTS homepage and register navigation: https://elpts.ru/
+- EEC explanatory report on TR TS 018/2011: https://eec.eaeunion.org/upload/iblock/33d/_Otch-o-NIR-2-etap_itog_T-1-i-T-2.pdf (describes SBKTS as confirming an individual vehicle).
 - ELPTS tariff-plan amendment notice (software-use terms, not a dataset licence): https://elpts.ru/uvedomlenie-o-vnesenii-izmenenij-v-tarifnyj-plan-k-oferte-pravo-ispolzovaniya-po/
 
 ## Product decision
