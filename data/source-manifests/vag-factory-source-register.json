@@ -7997,7 +7997,7 @@
       "market_scope": [
         "UNKNOWN"
       ],
-      "data_revision": "CarDir open-data snapshot 2026-11-09; SHA-256 64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
+      "data_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T02:23:10Z; SHA-256 30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
       "evidence_scope": [
         "owner_manual_reference_facts",
         "fluids",
@@ -8043,12 +8043,12 @@
         "production_import": false,
         "exact_engine_gearbox_pair": false,
         "ru_eaeu_applicability": false,
-        "expected_source_rows": 44245,
-        "expected_models": 610,
-        "source_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
-        "source_file_bytes": 15165485,
-        "source_rows": 44245,
-        "source_models": 610,
+        "expected_source_rows": 44272,
+        "expected_models": 611,
+        "source_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+        "source_file_bytes": 15174126,
+        "source_rows": 44272,
+        "source_models": 611,
         "vag_fact_rows": 948,
         "vag_models": 26,
         "vag_brand_values": [
@@ -8058,8 +8058,8 @@
           "Skoda",
           "Volkswagen"
         ],
-        "retrieved_at_utc": "2026-11-10T00:27:29.713087+00:00",
-        "source_rows_net_change_since_archived_baseline": 2596,
+        "retrieved_at_utc": "2026-11-10T02:23:10.300971+00:00",
+        "source_rows_net_change_since_archived_baseline": 2623,
         "vag_rows_added_since_archived_baseline": 205,
         "vag_rows_removed_since_archived_baseline": 30,
         "vag_rows_net_change_since_archived_baseline": 175,
@@ -8067,8 +8067,8 @@
         "vag_value_or_unit_changed_groups_since_archived_baseline": 0,
         "vag_page_url_changed_groups_since_archived_baseline": 22,
         "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
-        "previous_pinned_snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
-        "exact_delta_from_previous_pinned_snapshot_available": false,
+        "previous_pinned_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
+        "exact_delta_from_previous_pinned_snapshot_available": true,
         "previous_snapshot_review": {
           "snapshot_sha256": "72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922",
           "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
@@ -8076,6 +8076,33 @@
           "vag_rows_changed": 1,
           "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
           "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
+        },
+        "source_rows_added_since_previous_pinned_snapshot": 52,
+        "source_rows_removed_since_previous_pinned_snapshot": 25,
+        "source_rows_net_change_since_previous_pinned_snapshot": 27,
+        "vag_rows_added_since_previous_pinned_snapshot": 0,
+        "vag_rows_removed_since_previous_pinned_snapshot": 0,
+        "vag_rows_net_change_since_previous_pinned_snapshot": 0,
+        "vag_identity_groups_added_since_previous_pinned_snapshot": 0,
+        "vag_identity_groups_removed_since_previous_pinned_snapshot": 0,
+        "vag_value_or_unit_changed_groups_since_previous_pinned_snapshot": 0,
+        "vag_verified_at_changed_groups_since_previous_pinned_snapshot": 0,
+        "vag_page_url_changed_groups_since_previous_pinned_snapshot": 0,
+        "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
+        "pack_build_status": "pending_rebuild_after_source_snapshot_change",
+        "latest_snapshot_review": {
+          "previous_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
+          "current_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+          "source_rows_added": 52,
+          "source_rows_removed": 25,
+          "source_rows_net_change": 27,
+          "vag_rows_added": 0,
+          "vag_rows_removed": 0,
+          "vag_rows_net_change": 0,
+          "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
+          "exact_vag_subset_unchanged": true,
+          "publisher_page_count_discrepancy": "publisher page displays 44245 values / 610 models; downloaded CSV contains 44272 rows / 611 brand-model pairs",
+          "reviewed_at": "2026-11-10"
         }
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
