@@ -9613,6 +9613,96 @@
       "data_ingested": false,
       "product_import_allowed": false,
       "verification_status": "commercial_terms_prohibit_bulk_or_competing_catalog_reuse_without_separate_written_agreement"
+    },
+    {
+      "source_id": "elpts-esbkts-public-query",
+      "publisher": "АО «Электронный паспорт»",
+      "url": "https://docs.elpts.ru/ncher/esbkts",
+      "source_kind": "official_public_query_for_electronic_sbkts_certificates",
+      "market_scope": [
+        "RU"
+      ],
+      "document_types": [
+        "SBKTS"
+      ],
+      "fields_observed": [
+        "certificate_registration_number",
+        "make",
+        "vehicle_type",
+        "status",
+        "issue_date",
+        "applicant",
+        "manufacturer",
+        "testing_laboratory",
+        "environmental_class",
+        "blank_numbers",
+        "certificate_pdf_link"
+      ],
+      "sample_index_observation": {
+        "observed_at": "2026-11-10",
+        "observation_method": "search_indexed_preview_of_official_dynamic_page; not a raw registry export",
+        "filtered_record_date": "2026-11-04",
+        "filtered_result_count": 155,
+        "total_records_displayed": 2799410,
+        "non_personal_example": {
+          "make": "VOLKSWAGEN",
+          "vehicle_type": "FV6462HADCG"
+        },
+        "caution": "Indexed preview counts and example are discovery observations only; they are not a pinned source snapshot or a complete VAG dataset."
+      },
+      "privacy": {
+        "individual_vehicle_certificate_records": true,
+        "may_contain_personal_data": true,
+        "applicant_field_present": true,
+        "pdf_may_contain_personal_data": true,
+        "personal_values_retrieved": false,
+        "personal_data_retained": false,
+        "excluded_fields": [
+          "applicant_name",
+          "VIN",
+          "registration_plate",
+          "owner_identity",
+          "postal_address",
+          "contact_details",
+          "certificate_pdf_contents"
+        ]
+      },
+      "rights": {
+        "data_license_status": "not_established",
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "permission_status": "not_obtained",
+        "permission_required_before_product_import_or_distribution": true
+      },
+      "access": {
+        "public_query_page_observed": true,
+        "raw_record_bytes_retrieved": false,
+        "pdf_downloaded": false,
+        "automated_extraction": "not_performed",
+        "bulk_export": "not_established",
+        "offline_cache": "not_established",
+        "third_party_display": "not_established",
+        "redistribution": "not_established"
+      },
+      "not_confirmed": [
+        "OTTS or OTSH type-approval applicability",
+        "VAG factory engine code",
+        "VAG factory gearbox code",
+        "exact engine-gearbox pair",
+        "ECU identity or applicability",
+        "DTC applicability",
+        "repair, wiring, pinout, torque or adaptation applicability",
+        "model generation or production-year applicability"
+      ],
+      "applicability_precision": "individual_certificate_metadata_only",
+      "source_snapshot_sha256": null,
+      "hash_status": "not_downloaded_no_ingestion",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "project_decision": "discovery_only_metadata. SBKTS is an individual-vehicle safety certificate, not OTTS. Do not automate, import, cache, display, bundle or redistribute records or PDFs without explicit rights and privacy clearance. Exclude personal fields and PDF contents. Never infer VAG factory fitment from SBKTS document metadata."
     }
   ],
   "minimum_fitment_evidence_fields": [
