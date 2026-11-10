@@ -2703,7 +2703,7 @@
         "document_metadata_only"
       ],
       "access": {
-        "public_query_route": "The distinct public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. Its visible 07.11.2026–08.11.2026 date-filtered result set was empty; the UI total label was 14822. AUDI AG and Volkswagen AG are manufacturer filter options only, not returned records. Separate OTSH and SBKTS pages remain distinct. On 2026-11-09 the docs.elpts.ru OTTS page shell was accessible and displayed the OTTS register title, document-class navigation and unresolved dynamic result-count placeholders; no record rows or API/export endpoint were exposed in the rendered page. A fresh search-indexed rendering observed on 2026-11-09 again displayed UI total 14822 and manufacturer filter options AUDI AG and Volkswagen AG, while the active 07.11.2026–08.11.2026 date filter returned no rows; these are UI/filter observations only, not VAG approval records or a verified complete-corpus count. The opened page still exposed unresolved dynamic placeholders, so record rows, API and export remain unverified. Fresh 2026-11-09 cross-register recheck: the OTTS indexed page shows only the Volkswagen AG filter option (AUDI AG was not reproduced); the separate ESBKTS indexed page shows AUDI AG/Volkswagen AG filter options and two VOLKSWAGEN SBKTS metadata rows dated 04.11.2026. No SBKTS item is reclassified as OTTS; no documents or raw bytes were downloaded. Fresh 2026-11-10 search-indexed OTTS rendering shows the UI total label 14822, an empty active 09.11.2026–10.11.2026 date-filtered result, and AUDI AG plus Volkswagen AG as manufacturer filter options only. These are search/UI observations, not approval rows or a verified corpus count. The separately opened official page still exposes dynamic result placeholders; no raw bytes, record rows, API/export endpoint or downloadable PDF were verified.",
+        "public_query_route": "The distinct public OTTS page at docs.elpts.ru/ncher/otts was rechecked on 2026-11-08. Its visible 07.11.2026–08.11.2026 date-filtered result set was empty; the UI total label was 14822. AUDI AG and Volkswagen AG are manufacturer filter options only, not returned records. Separate OTSH and SBKTS pages remain distinct. On 2026-11-09 the docs.elpts.ru OTTS page shell was accessible and displayed the OTTS register title, document-class navigation and unresolved dynamic result-count placeholders; no record rows or API/export endpoint were exposed in the rendered page. A fresh search-indexed rendering observed on 2026-11-09 again displayed UI total 14822 and manufacturer filter options AUDI AG and Volkswagen AG, while the active 07.11.2026–08.11.2026 date filter returned no rows; these are UI/filter observations only, not VAG approval records or a verified complete-corpus count. The opened page still exposed unresolved dynamic placeholders, so record rows, API and export remain unverified. Fresh 2026-11-09 cross-register recheck: the OTTS indexed page shows only the Volkswagen AG filter option (AUDI AG was not reproduced); the separate ESBKTS indexed page shows AUDI AG/Volkswagen AG filter options and two VOLKSWAGEN SBKTS metadata rows dated 04.11.2026. No SBKTS item is reclassified as OTTS; no documents or raw bytes were downloaded. Fresh 2026-11-10 search-indexed OTTS rendering shows the UI total label 14822, an empty active 09.11.2026–10.11.2026 date-filtered result, and AUDI AG plus Volkswagen AG as manufacturer filter options only. These are search/UI observations, not approval rows or a verified corpus count. The separately opened official page still exposes dynamic result placeholders; no raw bytes, record rows, API/export endpoint or downloadable PDF were verified. The official ELPTS homepage also links to the national part of the unified OTTS/OTSH/SBKTS register on rst.gov.ru and to public XLSX reference books for makes and technical characteristics. The RST route timed out on 2026-11-10. The XLSX links were not downloaded because no licence or offline-cache/redistribution permission was stated. The homepage says AS EOTTS training materials require an official organization profile with a contract; a 2026-08-21 ELPTS notice confirms the EOTTS workflow stores gearbox information, but the public OTTS table does not expose exact gearbox codes.",
         "machine_readable_api": "not_verified",
         "individual_query_access": "public_web_page_observed; exact OTTS query coverage and completeness not established",
         "bulk_export": "CSV, PDF and XML export controls observed on the public OTTS page; export endpoint, scope, completeness, file download and reuse rights not verified",
@@ -2961,10 +2961,12 @@
         "The separate SBKTS search snapshot showed a Volkswagen/FAW-Volkswagen metadata row for 04.11.2026–05.11.2026; it remains SBKTS, not OTTS, and is not fitment evidence.",
         "The 2026-11-07 page showed CSV/PDF/XML export controls, but no export was activated or downloaded; endpoint, export scope, completeness and reuse rights remain unverified.",
         "The 2026-11-08 public page observation used the active 07.11.2026–08.11.2026 date filter and returned no rows. The 14822 label remains a UI observation, not a verified complete-corpus count. No raw page bytes or source hash were captured.",
-        "A fresh 2026-11-10 search-indexed OTTS rendering lists AUDI AG and Volkswagen AG as manufacturer filter options, not records. The active 09.11.2026–10.11.2026 date filter returned no rows; this is not proof that no older VAG OTTS records exist. The 14822 UI total is not a verified corpus count. No raw page bytes, source snapshot hash, API/export endpoint or PDF were obtained, and this observation grants no reuse rights."
+        "A fresh 2026-11-10 search-indexed OTTS rendering lists AUDI AG and Volkswagen AG as manufacturer filter options, not records. The active 09.11.2026–10.11.2026 date filter returned no rows; this is not proof that no older VAG OTTS records exist. The 14822 UI total is not a verified corpus count. No raw page bytes, source snapshot hash, API/export endpoint or PDF were obtained, and this observation grants no reuse rights.",
+        "Official ELPTS homepage links to a national OTTS/OTSH/SBKTS register on rst.gov.ru (timed out on 2026-11-10) and to XLSX reference books for makes and technical characteristics. Their public links do not state a licence or offline caching/redistribution permission; files were not downloaded and no hashes are claimed.",
+        "ELPTS notice dated 2026-08-21 confirms the AS EOTTS workflow handles gearbox information including additional reduction and hydraulic transmissions. The public OTTS search table still exposes no engine/gearbox code fields or exact VAG engine/gearbox pairing."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "ELPTS national OTTS page shell rechecked 2026-11-09. Fresh indexed OTTS rendering shows UI total 14822, date filter 08.11.2026-09.11.2026 with no rows, and Volkswagen AG as a filter option only; AUDI AG was not reproduced on the OTTS page. A separate ESBKTS indexed rendering for 04.11.2026-05.11.2026 shows 155 results and two VOLKSWAGEN SBKTS metadata rows (FAW-Volkswagen type FV6462HADCG; SAIC Volkswagen type SVW71421GT). These are SBKTS, not OTTS, and the type strings are not engine/gearbox codes. No documents or raw bytes were downloaded; no data imported; no reuse rights changed. Official ELPTS homepage and paid-report forms page were rechecked 2026-11-09. The 20-page appendix to Order 10/81-26 dated 2026-10-02 defines participant-scoped R3/R4 reports (weekly, 180/120 RUB per row including VAT) with OTTS identifiers and vehicle descriptors, but no engine/gearbox codes; the daily R report includes gearbox make/type wording at 15 RUB per row but no exact VAG gearbox code. No report was ordered or downloaded; no reuse rights were upgraded. Fresh 2026-11-10 search-indexed OTTS rendering again exposes AUDI AG and Volkswagen AG as manufacturer filter options, but no approval rows; the 14822 total remains a UI label only and the active date filter is empty. No raw page bytes or records were captured, no hash exists, and reuse rights remain unconfirmed.",
+      "evidence_status": "ELPTS national OTTS page shell rechecked 2026-11-09. Fresh indexed OTTS rendering shows UI total 14822, date filter 08.11.2026-09.11.2026 with no rows, and Volkswagen AG as a filter option only; AUDI AG was not reproduced on the OTTS page. A separate ESBKTS indexed rendering for 04.11.2026-05.11.2026 shows 155 results and two VOLKSWAGEN SBKTS metadata rows (FAW-Volkswagen type FV6462HADCG; SAIC Volkswagen type SVW71421GT). These are SBKTS, not OTTS, and the type strings are not engine/gearbox codes. No documents or raw bytes were downloaded; no data imported; no reuse rights changed. Official ELPTS homepage and paid-report forms page were rechecked 2026-11-09. The 20-page appendix to Order 10/81-26 dated 2026-10-02 defines participant-scoped R3/R4 reports (weekly, 180/120 RUB per row including VAT) with OTTS identifiers and vehicle descriptors, but no engine/gearbox codes; the daily R report includes gearbox make/type wording at 15 RUB per row but no exact VAG gearbox code. No report was ordered or downloaded; no reuse rights were upgraded. Fresh 2026-11-10 search-indexed OTTS rendering again exposes AUDI AG and Volkswagen AG as manufacturer filter options, but no approval rows; the 14822 total remains a UI label only and the active date filter is empty. No raw page bytes or records were captured, no hash exists, and reuse rights remain unconfirmed. On 2026-11-10 the official ELPTS homepage was reviewed: it links to the national OTTS/OTSH/SBKTS register at rst.gov.ru and to XLSX make/technical-characteristics reference books. The RST link timed out; the XLSX files were not downloaded because no reuse licence was stated. ELPTS also documents a gearbox-entry correction in AS EOTTS on 2026-08-21; this does not expose VAG factory codes or fitment.",
       "public_page_observations": {
         "observed_at": "2026-11-08",
         "ot_ts": {
@@ -3378,7 +3380,158 @@
         "linked_page_content_verified": false,
         "api_or_export_verified": false,
         "rights_effect": "none; an official navigation link does not grant bulk retrieval, persistent local storage, offline display or redistribution rights"
-      }
+      },
+      "official_portal_observations_2026_11_10": {
+        "observed_at": "2026-11-10",
+        "official_homepage_url": "https://elpts.ru/",
+        "official_national_registry": {
+          "label": "Национальная часть единого реестра выданных ОТТС, ОТШ, СБКТС",
+          "url": "https://www.rst.gov.ru/portal/gost/home/activity/compliance/evaluationcompliance/AcknowledgementCorrespondence",
+          "linked_from_official_elpts_homepage": true,
+          "access_result": "timeout",
+          "checked_at": "2026-11-10",
+          "raw_bytes_captured": false,
+          "source_snapshot_sha256": null,
+          "license_id": null,
+          "license_status": "not_stated",
+          "product_import_allowed": false,
+          "note": "The official ELPTS homepage links to this national register route. The route timed out when opened; no data, file or API was obtained."
+        },
+        "reference_books": [
+          {
+            "id": "elpts-make-directory-xlsx",
+            "label": "Справочник марок",
+            "url": "https://elpts.ru/wp-content/uploads/2023/06/spravochnik-marok.xlsx",
+            "format": "xlsx",
+            "linked_from_official_elpts_homepage": true,
+            "displayed_revision_date": null,
+            "displayed_size": null,
+            "license_id": null,
+            "license_status": "not_stated",
+            "downloaded": false,
+            "sha256": null,
+            "rights_status": "not_confirmed",
+            "display_allowed": false,
+            "offline_cache_allowed": false,
+            "product_import_allowed": false,
+            "note": "Public link from the official ELPTS homepage; no reuse licence or caching permission was stated on the linked page. Not downloaded."
+          },
+          {
+            "id": "elpts-technical-characteristics-xlsx",
+            "label": "Справочник технических характеристик",
+            "url": "https://disk.yandex.ru/d/VeYxsi3IcnmK2w",
+            "file_name": "Справочник технических характеристик_202601109_1755.xlsx",
+            "format": "xlsx",
+            "linked_from_official_elpts_homepage": true,
+            "displayed_revision_date": "2026-11-09 18:03",
+            "displayed_size": "16.9 MB",
+            "license_id": null,
+            "license_status": "not_stated",
+            "downloaded": false,
+            "sha256": null,
+            "rights_status": "not_confirmed",
+            "display_allowed": false,
+            "offline_cache_allowed": false,
+            "product_import_allowed": false,
+            "note": "Yandex Disk listing is public and linked from the official ELPTS homepage. Public accessibility does not establish licence, offline caching or redistribution rights. Not downloaded."
+          },
+          {
+            "id": "elpts-mass-range-limitations-xlsx",
+            "label": "Ограничения диапазона значений технически допустимой максимальной массы",
+            "url": "https://disk.yandex.ru/d/VeYxsi3IcnmK2w",
+            "file_name": "Ограничения диапазона значений технически допустимой максимальной массы.xlsx",
+            "format": "xlsx",
+            "linked_from_official_elpts_homepage": true,
+            "displayed_revision_date": "2026-04-09 18:14",
+            "displayed_size": "10 KB",
+            "license_id": null,
+            "license_status": "not_stated",
+            "downloaded": false,
+            "sha256": null,
+            "rights_status": "not_confirmed",
+            "display_allowed": false,
+            "offline_cache_allowed": false,
+            "product_import_allowed": false,
+            "note": "Public Yandex Disk listing linked from the official ELPTS homepage; no reuse licence stated. Not downloaded."
+          }
+        ],
+        "access_conditions": {
+          "eotts_training_materials_require_official_organization_profile": true,
+          "login_source": "email address stated in the organisation's contract",
+          "contract_and_confidentiality_links_present_on_official_homepage": true,
+          "paid_eotts_reports_require_separate_invoice_contract_or_addendum": true,
+          "interpretation": "These conditions concern participant training/materials and paid reports; they do not by themselves establish rights for the public OTTS query or reference-book files. No account or contract was created."
+        },
+        "gearbox_notice": {
+          "url": "https://elpts.ru/uvazhaemye-polzovateli-as-eotts/",
+          "published_at": "2026-08-21",
+          "observed_statement": "The updated AS EOTTS corrected entry of gearbox information for transmissions with additional reduction and hydraulic transmissions.",
+          "exact_vag_gearbox_codes_exposed": false,
+          "exact_engine_gearbox_pair_exposed": false,
+          "public_otts_query_has_gearbox_column": false,
+          "interpretation": "Confirms gearbox information exists in the EOTTS workflow, not that the public query exposes factory VAG gearbox codes or exact fitment."
+        },
+        "rights_effect": "No licence or permission was obtained. No XLSX, PDF, source data, API response or registry record was downloaded or imported. Display, offline cache, bulk extraction, commercial reuse and redistribution remain unconfirmed."
+      },
+      "official_national_registry_url": "https://www.rst.gov.ru/portal/gost/home/activity/compliance/evaluationcompliance/AcknowledgementCorrespondence",
+      "public_reference_books": [
+        {
+          "id": "elpts-make-directory-xlsx",
+          "label": "Справочник марок",
+          "url": "https://elpts.ru/wp-content/uploads/2023/06/spravochnik-marok.xlsx",
+          "format": "xlsx",
+          "linked_from_official_elpts_homepage": true,
+          "displayed_revision_date": null,
+          "displayed_size": null,
+          "license_id": null,
+          "license_status": "not_stated",
+          "downloaded": false,
+          "sha256": null,
+          "rights_status": "not_confirmed",
+          "display_allowed": false,
+          "offline_cache_allowed": false,
+          "product_import_allowed": false,
+          "note": "Public link from the official ELPTS homepage; no reuse licence or caching permission was stated on the linked page. Not downloaded."
+        },
+        {
+          "id": "elpts-technical-characteristics-xlsx",
+          "label": "Справочник технических характеристик",
+          "url": "https://disk.yandex.ru/d/VeYxsi3IcnmK2w",
+          "file_name": "Справочник технических характеристик_202601109_1755.xlsx",
+          "format": "xlsx",
+          "linked_from_official_elpts_homepage": true,
+          "displayed_revision_date": "2026-11-09 18:03",
+          "displayed_size": "16.9 MB",
+          "license_id": null,
+          "license_status": "not_stated",
+          "downloaded": false,
+          "sha256": null,
+          "rights_status": "not_confirmed",
+          "display_allowed": false,
+          "offline_cache_allowed": false,
+          "product_import_allowed": false,
+          "note": "Yandex Disk listing is public and linked from the official ELPTS homepage. Public accessibility does not establish licence, offline caching or redistribution rights. Not downloaded."
+        },
+        {
+          "id": "elpts-mass-range-limitations-xlsx",
+          "label": "Ограничения диапазона значений технически допустимой максимальной массы",
+          "url": "https://disk.yandex.ru/d/VeYxsi3IcnmK2w",
+          "file_name": "Ограничения диапазона значений технически допустимой максимальной массы.xlsx",
+          "format": "xlsx",
+          "linked_from_official_elpts_homepage": true,
+          "displayed_revision_date": "2026-04-09 18:14",
+          "displayed_size": "10 KB",
+          "license_id": null,
+          "license_status": "not_stated",
+          "downloaded": false,
+          "sha256": null,
+          "rights_status": "not_confirmed",
+          "display_allowed": false,
+          "offline_cache_allowed": false,
+          "product_import_allowed": false,
+          "note": "Public Yandex Disk listing linked from the official ELPTS homepage; no reuse licence stated. Not downloaded."
+        }
+      ]
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
