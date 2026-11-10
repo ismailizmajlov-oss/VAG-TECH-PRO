@@ -26,12 +26,28 @@ function ensureVehiclesDbCandidateGate(source) {
   if (gateStart >= 0 && gateEnd > gateStart) {
     const gate = source.slice(gateStart, gateEnd + 3);
     const requiredDynamicMarkers = [
+      "vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||",
+      "vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license ||",
+      "vehiclesDbProvenance.upstream_tag !== vehiclesDbPackManifest.upstream_tag ||",
+      "vehiclesDbProvenance.upstream_manifest_sha256 !== vehiclesDbPackManifest.source_manifest_sha256 ||",
+      "vehiclesDbProvenance.source_catalog_sha256 !== vehiclesDbPackManifest.source_catalog_sha256 ||",
+      "vehiclesDbProvenance.attribution_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"ATTRIBUTION.md\"] ||",
+      "vehiclesDbProvenance.license_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"LICENSE\"] ||",
+      "vehiclesDbProvenance.lock_sha256 !== vehiclesDbPackManifest.lock_sha256 ||",
       "vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models ||",
       "vehiclesDbCounts.marketEvidence !== vehiclesDbPackManifest.counts?.market_evidence ||",
+      "vehiclesDbCounts.russianEvidence !== 0 ||",
       "vehiclesDbPackManifest.identity_only_use !== true ||",
       "vehiclesDbPackManifest.safety_critical_reliance !== false ||",
       "vehiclesDbPackManifest.repair_decision_use !== false ||",
-      "vehiclesDbPackManifest.open_data_policy_notice.includes("
+      "vehiclesDbPackManifest.fitment_claim !== false ||",
+      "vehiclesDbPackManifest.ru_evidence_present !== false ||",
+      "vehiclesDbPackManifest.attribution?.required !== true ||",
+      "vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models ||",
+      "vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||",
+      "vehiclesDbPackManifest.open_data_policy_notice.includes(",
+      "!/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution)",
+      "!/UNCONDITIONAL/i.test(vehiclesDbAttribution)"
     ];
     if (requiredDynamicMarkers.every((marker) => gate.includes(marker))) {
       if (/vehiclesDbCounts\.models\s*!==\s*\d+/.test(gate) ||
