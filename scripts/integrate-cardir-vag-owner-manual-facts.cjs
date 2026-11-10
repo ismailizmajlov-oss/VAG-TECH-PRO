@@ -234,6 +234,22 @@ function patchLifecycle(desktopRoot) {
   fs.writeFileSync(file, text, "utf8");
 }
 
+function patchResearchPackVerifier(desktopRoot) {
+  const file = safeJoin(desktopRoot, "scripts/verify-local-research-packs.cjs");
+  let text = fs.readFileSync(file, "utf8");
+  const countPattern = /((?:[A-Za-z_$][\\w$]*\\.)?packs\\.length\\s*(?:!==|!=|===|==)\\s*)13\\b/g;
+  const countMatches = [...text.matchAll(countPattern)];
+  assert(countMatches.length === 1, "Expected exactly one hard-coded 13-pack assertion before adding CarDir; found " + countMatches.length);
+  text = text.replace(countPattern, "$1" + "14");
+  const messagePattern = /Expected 13 separately licensed research packs[^"']*/;
+  const messageMatch = text.match(messagePattern);
+  assert(messageMatch, "Expected the 13-pack verifier diagnostic to be present");
+  text = text.replace(messageMatch[0], "Expected 14 separately licensed research packs, including the DE-only KBA VAG stock research pack and the CarDir VAG owner-manual facts pack");
+  assert(!/packs\\.length\\s*(?:!==|!=|===|==)\\s*13\\b/.test(text), "The stale 13-pack assertion remains after CarDir integration");
+  fs.writeFileSync(file, text, "utf8");
+  return { expectedResearchPackCount: 14 };
+}
+
 function patchPackage(desktopRoot) {
   const file = safeJoin(desktopRoot, "package.json");
   const pkg = readJson(file);
@@ -396,6 +412,7 @@ function integrate(repoRoot, desktopRoot, downloadRoot, sourceRunId, sourceRunNu
   patchApi(desktopRoot);
   patchUi(desktopRoot);
   patchLifecycle(desktopRoot);
+  patchResearchPackVerifier(desktopRoot);
   patchPackage(desktopRoot);
   process.stdout.write(JSON.stringify({
     status: "integrated_verified_research_only",
@@ -431,4 +448,4 @@ if (require.main === module) {
   try { main(process.argv.slice(2)); }
   catch (error) { process.stderr.write((error.stack || error.message) + "\n"); process.exitCode = 1; }
 }
-module.exports = { validatePack, locatePackRoot, safeJoin };
+module.exports = { validatePack, locatePackRoot, safeJoin, patchResearchPackVerifier };
