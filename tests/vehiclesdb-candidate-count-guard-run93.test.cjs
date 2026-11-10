@@ -148,6 +148,8 @@ test("run93 repairs a downstream legacy count assertion and refreshes only deskt
     assert.equal(first.status, 0, first.stderr);
     const evidencePath = path.join(root, "data", "research", "vehiclesdb-vag-identity", "desktop-candidate-boundary-verification.json");
     const firstEvidence = JSON.parse(fs.readFileSync(evidencePath, "utf8"));
+    const priorEvidence = { ...firstEvidence, patch_sha256: "0".repeat(64) };
+    fs.writeFileSync(evidencePath, JSON.stringify(priorEvidence, null, 2) + "\n");
     const testPath = path.join(root, "tests", "local-research-packs.test.cjs");
     const dynamicBlock = [
       '  const vehiclesDbPackManifest = JSON.parse(require("node:fs").readFileSync(require("node:path").join(__dirname, "../data/research/vehiclesdb-vag-identity/manifest.json"), "utf8"));',
@@ -182,6 +184,7 @@ test("run93 repairs a downstream legacy count assertion and refreshes only deskt
     assert.notEqual(firstEvidence.research_packs_test_sha256, secondEvidence.research_packs_test_sha256);
     assert.notEqual(firstEvidence.verifier_sha256, secondEvidence.verifier_sha256);
     assert.equal(secondEvidence.source_manifest_sha256, firstEvidence.source_manifest_sha256);
+    assert.equal(secondEvidence.patch_sha256, digest(fs.readFileSync(PATCH)));
     assert.deepEqual(secondEvidence.counts, firstEvidence.counts);
 
     const third = run(root);
