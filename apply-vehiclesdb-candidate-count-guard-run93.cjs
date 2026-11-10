@@ -200,7 +200,7 @@ function main() {
       "schema_version", "status", "patch_id", "source_revision", "data_license",
       "market_scope", "counts", "identity_only_use", "safety_critical_reliance",
       "repair_decision_use", "open_data_policy_notice", "fitment_claim",
-      "ru_evidence_present", "source_manifest_sha256", "patch_sha256"
+      "ru_evidence_present", "source_manifest_sha256"
     ];
     const currentKeys = Object.keys(currentEvidence).sort();
     const expectedKeys = Object.keys(evidence).sort();
