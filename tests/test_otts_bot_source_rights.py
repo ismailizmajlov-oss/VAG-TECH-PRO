@@ -50,7 +50,7 @@ class OttsBotRightsBoundaryTests(unittest.TestCase):
         self.assertIn("no_offline_cache", source["project_decision"])
         self.assertFalse(source["applicability"]["engine_gearbox_pairing"])
         self.assertFalse(source["applicability"]["exact_ecu_dtc_fitment"])
-        self.assertEqual(source["evidence_status"], "homepage_OTTS_page_and_user_agreement_rechecked_2026-11-10; agreement_last_updated_2026-08-26")
+        self.assertEqual(source["evidence_status"], "OTTS_page_and_user_agreement_rechecked_2026-11-10; agreement_last_updated_2026-08-26")
         self.assertEqual(source["rights"]["review_date"], "2026-11-10")
         self.assertEqual(source["rights_recheck_2026_11_10"]["page_observation"]["result_counter"], 74115)
         self.assertTrue(source["rights_recheck_2026_11_10"]["page_observation"]["count_discrepancy_unresolved"])
