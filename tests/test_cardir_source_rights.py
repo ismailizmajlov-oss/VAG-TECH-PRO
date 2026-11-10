@@ -56,6 +56,19 @@ class CardirLiveSnapshotProbeTests(unittest.TestCase):
         self.assertFalse(self.entry["applicability"]["ru_eaeu"])
         self.assertEqual(self.entry["market_scope"], ["UNKNOWN"])
 
+    def test_pinned_order_only_refresh_requires_new_pack_and_keeps_fitment_quarantined(self) -> None:
+        probe = self.pack["latest_live_probe"]
+        self.assertEqual(probe["live_raw_snapshot_sha256"], "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a")
+        self.assertEqual(probe["full_row_multiset_sha256"], "d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74")
+        self.assertEqual(probe["vag_row_multiset_sha256"], "ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b")
+        self.assertTrue(probe["exact_row_multiset_unchanged"])
+        self.assertTrue(probe["exact_vag_subset_unchanged"])
+        self.assertEqual(self.pack["latest_snapshot_refresh_status"], "new_exact_source_snapshot_pinned_sqlite_rebuild_pending")
+        self.assertEqual(self.entry["data_revision"], "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T03:11:09Z; SHA-256 5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a")
+        self.assertFalse(self.entry["data_ingested"])
+        self.assertFalse(self.entry["product_import_allowed"])
+        self.assertEqual(self.entry["market_scope"], ["UNKNOWN"])
+
 
 if __name__ == "__main__":
     unittest.main()
