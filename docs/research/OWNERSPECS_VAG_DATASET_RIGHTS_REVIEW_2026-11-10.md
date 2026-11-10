@@ -57,3 +57,14 @@ The current integration change adds a separate read-only OwnerSpecs tab to the d
 The UI labels every row as a publisher-verified candidate that has not undergone independent OEM technical review. Market remains UNKNOWN; year/generation spans remain candidates; exact vehicle fitment, factory engine/gearbox codes and pairs, ECU/DTC applicability, Russian/EAEU applicability and repair-procedure applicability remain false. Critical torque/fluid values are not publishable for repair decisions. The Share-Alike database is not merged into the production vehicle or technical database.
 
 The Windows x64 integration and installer lifecycle checks must pass before this desktop integration can be considered verified. Native Windows 10/11 acceptance remains a separate release gate.
+
+
+## 2026-11-10 exact source-byte re-acquisition — 06:28 UTC
+
+The Windows x64 acquisition-evidence artifact from run #110 retained the exact publisher JSON bytes. The file is **683,533 bytes**, SHA-256 `6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95`; the acquisition snapshot records retrieval at `2026-11-10T06:28:05.310530+00:00`. The source descriptor and HTML counts reconcile at 111 generations / 2,369 datapoints. The exact VAG filter retains 20 generation candidates / 233 facts.
+
+The retained prior verified source JSON from run #64 (`7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d`, 683,641 bytes) was compared fact-by-fact with the newly retained bytes. There are no generation or fact membership changes. Four specification values changed across three generations: Audi A1 CO2, Audi A1 fuel consumption, Volkswagen Polo CO2, and Mercedes-Benz A-Class CO2 (three VAG facts, one non-VAG). In addition, one non-VAG Hyundai i10 engine-oil-capacity unit label changed only in case, from `L` to `l`; the numeric range remains 3.1–3.4. The complete review therefore records four value changes plus one unit-only record change across four generations, rather than treating the unit spelling as a fifth changed value.
+
+An earlier 05:51 acquisition note reported hash `f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4`, but the raw bytes for that intermediate observation are not present in the retained artifact. That hash is preserved as an unverified intermediate claim; no direct delta from it is asserted. The 06:28 raw file is the exact reproducible snapshot pinned for the next separate CC BY-SA pack build.
+
+All records remain publisher candidates, market UNKNOWN, with no per-value primary-document URL/revision in the JSON. No generation, engine, gearbox, ECU, DTC, RU/EAEU or repair applicability is promoted; no critical torque/fluid values become repair instructions. The Share-Alike research database remains separate from the production catalog.

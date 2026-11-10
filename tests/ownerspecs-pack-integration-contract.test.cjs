@@ -11,8 +11,8 @@ const workflow = fs.readFileSync(path.join(root, ".github/workflows/windows-desk
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"), "utf8"));
 
 test("OwnerSpecs desktop integration is pinned to the reviewed CC BY-SA pack", () => {
-  assert.equal(manifest.snapshot.source_snapshot_sha256, "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d");
-  assert.equal(manifest.snapshot.source_file_bytes, 683641);
+  assert.equal(manifest.snapshot.source_snapshot_sha256, "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95");
+  assert.equal(manifest.snapshot.source_file_bytes, 683533);
   assert.equal(manifest.snapshot.json_descriptor_generation_count, 111);
   assert.equal(manifest.snapshot.html_page_verified_datapoint_count, 2369);
   assert.match(integration, /ownerspecs-vag-vehicle-specs-research/);
