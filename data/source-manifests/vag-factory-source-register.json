@@ -8592,7 +8592,18 @@
           "reviewed_at": "2026-11-10",
           "observation": "Official Volkswagen Group brand portfolio reference for a future VAG make filter. This page does not establish which raw EEA make strings occur in the dataset; that mapping remains pending source-data discovery."
         }
-      ]
+      ],
+      "access": {
+        "public_sql_rest_endpoint": "https://discodata.eea.europa.eu/sql",
+        "endpoint_documentation": "https://sdi.eea.europa.eu/catalogue/datahub/api/records/b4044b06-2e6b-4f8e-a6e6-66e0e98bb0dd?language=eng",
+        "api_protocol": "GET /sql?query=<encoded SQL>&p=<page>&nrOfHits=<page size>",
+        "hosted_runner_probe_status": "not_run",
+        "hosted_runner_probe_scope": "one read-only row; core VAG makes; 2025 provisional; safe type-approval/variant fields only",
+        "raw_probe_response_retained": false,
+        "full_acquisition_runner_policy": "owner_controlled_windows_10_11_x64_only_until_separately_validated",
+        "product_import_allowed": false,
+        "product_fitment_confirmation_allowed": false
+      }
     },
     {
       "source_id": "cardir-vag-owner-manual-facts-cc-by-4.0",
