@@ -43,8 +43,10 @@ on:
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
       - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - ".github/workflows/build-ownerspecs-vag-research-pack.yml"
       - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
       - "scripts/build_cardir_vag_open_data_pack.py"
       - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
       - "tests/test_cardir_vag_open_data_pack.py"
@@ -200,8 +202,10 @@ on:
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
       - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - ".github/workflows/build-ownerspecs-vag-research-pack.yml"
       - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
       - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
       - "scripts/build_cardir_vag_open_data_pack.py"
       - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
       - "tests/test_cardir_vag_open_data_pack.py"
@@ -380,6 +384,16 @@ jobs:
           python tests/test_wikipedia_vag_engine_list_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed." }
           python tests/test_openvag_source_rights.py
+           python -m py_compile scripts/build_ownerspecs_vag_research_pack.py
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs builder Python compilation failed." }
+           python -m unittest discover -s tests -p "test_ownerspecs_vag_research_pack.py" -v
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs isolated SQLite research-pack tests failed." }
+           python tests/test_ownerspecs_source_rights.py
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }
+           node --check scripts/integrate-ownerspecs-vag-research.cjs
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop integration script syntax failed." }
+           node --test tests/ownerspecs-pack-integration-contract.test.cjs
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop integration contract failed." }
           python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
           python tests/test_decode_tr_source_rights.py
@@ -1200,6 +1214,11 @@ jobs:
           if ($sync.manifest_count -lt 2 -or $sync.manifest_index_sha256 -notmatch "^[a-f0-9]{64}$") { throw "Desktop source-manifest bundle index verification failed" }
           $russianManifestEntry = $sync.manifest_files | Where-Object { $_.name -eq "russian-eaeu-otts-sources.json" } | Select-Object -First 1
           if ($null -eq $russianManifestEntry -or $russianManifestEntry.sha256 -notmatch "^[a-f0-9]{64}$") { throw "Russian/EEU OTTS source manifest was not copied into desktop staging" }
+          $ownerSpecsManifestEntry = $sync.manifest_files | Where-Object { $_.name -eq "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json" } | Select-Object -First 1
+          if ($null -eq $ownerSpecsManifestEntry -or $ownerSpecsManifestEntry.sha256 -notmatch "^[a-f0-9]{64}$") { throw "OwnerSpecs CC BY-SA source manifest was not copied into desktop staging" }
+          $ownerSpecsManifestPath = "desktop-source/data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+          $ownerSpecsManifest = Get-Content -LiteralPath $ownerSpecsManifestPath -Raw | ConvertFrom-Json
+          if ($ownerSpecsManifest.snapshot.source_snapshot_sha256 -ne "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d" -or $ownerSpecsManifest.import_policy.product_import_allowed -ne $false -or $ownerSpecsManifest.applicability_policy.market_scope -ne "UNKNOWN" -or $ownerSpecsManifest.applicability_policy.exact_engine_gearbox_pair -ne $false) { throw "OwnerSpecs source manifest hash or candidate-only applicability policy mismatch" }
           $russianManifestPath = "desktop-source/data/source-manifests/russian-eaeu-otts-sources.json"
           $russianManifest = Get-Content -LiteralPath $russianManifestPath -Raw | ConvertFrom-Json
           if (@($russianManifest.sources | Where-Object { $_.data_ingested -eq $true }).Count -gt 0) { throw "Unlicensed Russian/EEU OTTS source is marked as ingested" }
@@ -1207,6 +1226,7 @@ jobs:
           "source_manifest_count=$($sync.manifest_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "source_manifest_skipped_empty_files=$(@($sync.skipped_empty_files) -join ',')" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "russian_eaeu_otts_manifest_sha256=$($russianManifestEntry.sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "ownerspecs_source_manifest_sha256=$($ownerSpecsManifestEntry.sha256); source_snapshot_sha256=$($ownerSpecsManifest.snapshot.source_snapshot_sha256); market=UNKNOWN; product_import_allowed=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "russian_eaeu_otts_source_count=$($russianManifestEntry.source_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "vag_source_register_sha256=$($sync.sha256)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "vag_source_register_source_count=$($sync.source_count)" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
@@ -1839,6 +1859,88 @@ jobs:
           "cardir_vag_owner_manual_facts=run${{ steps.cardir-pack.outputs.run_number }}/${{ steps.cardir-pack.outputs.run_id }}; artifact_sha256=${{ steps.cardir-pack.outputs.artifact_sha256 }}; database_sha256=$($cardirReport.database_sha256); source_snapshot_sha256=$($cardirReport.source_snapshot_sha256); source_manifest_sha256=$($cardirReport.source_manifest_sha256); facts=948; models=26; brands=5; parameters=19; market=UNKNOWN; research_only=true; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
 
+      - name: Resolve pinned OwnerSpecs VAG CC BY-SA research pack
+        id: ownerspecs-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $register = Get-Content -LiteralPath "data/source-manifests/vag-factory-source-register.json" -Raw | ConvertFrom-Json
+          $entry = @($register.sources | Where-Object { $_.source_id -eq "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0" }) | Select-Object -First 1
+          if (-not $entry -or $entry.data_ingested -ne $false -or $entry.product_import_allowed -ne $false) { throw "OwnerSpecs source register entry missing or production-import boundary changed." }
+          $runId = [string]$entry.research_pack_workflow_run_id
+          $expectedRun = [string]$entry.research_pack_source_commit
+          $artifactId = [string]$entry.research_pack_artifact_id
+          $expectedDigest = ([string]$entry.research_pack_artifact_sha256).ToLowerInvariant()
+          if ($runId -ne "42736946351" -or $expectedRun -ne "a1c91b0c6039640be63996571dc0607a33d64948" -or $artifactId -ne "13727965683" -or $expectedDigest -ne "3ac33a190f4621dc1b6fc69f59c90425001fd171b335c10e48268ecd62eaa82f") { throw "OwnerSpecs artifact pins differ from the reviewed source register." }
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId" -Headers $headers -Method Get -TimeoutSec 30
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success" -or $run.head_sha -ne $expectedRun -or $run.run_number -ne 31) { throw "Pinned OwnerSpecs research-pack workflow run is not the reviewed successful source revision." }
+          $artifact = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/artifacts/$artifactId" -Headers $headers -Method Get -TimeoutSec 30
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($artifact.id -ne [long]$artifactId -or $artifact.name -ne "ownerspecs-vag-vehicle-specs-research-pack" -or $artifact.expired -ne $false -or $digest -ne $expectedDigest) { throw "Pinned OwnerSpecs research-pack artifact ID, name, expiry or SHA-256 mismatch." }
+          "run_id=$runId" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "OwnerSpecs source run #$($run.run_number) / $runId · artifact SHA-256 $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download pinned OwnerSpecs VAG CC BY-SA research pack
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ownerspecs-vag-vehicle-specs-research-pack
+          path: ${{ runner.temp }}/vag-tech-pro-ownerspecs-pack
+          run-id: ${{ steps.ownerspecs-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Integrate OwnerSpecs VAG research pack into offline desktop
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-ownerspecs-pack"
+          node --check scripts/integrate-ownerspecs-vag-research.cjs
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop integration script syntax failed." }
+          node scripts/integrate-ownerspecs-vag-research.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id ${{ steps.ownerspecs-pack.outputs.run_id }} --source-run-number ${{ steps.ownerspecs-pack.outputs.run_number }} --artifact-sha256 ${{ steps.ownerspecs-pack.outputs.artifact_sha256 }} 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/ownerspecs-desktop-integration.log"
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs VAG desktop integration failed." }
+          node --check desktop-source/lib/ownerspecs-vag-research-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop SQLite reader syntax failed." }
+          node --test desktop-source/tests/ownerspecs-vag-research-db.test.cjs desktop-source/tests/ownerspecs-vag-research-ui-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/ownerspecs-desktop-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs desktop DB/UI contract tests failed." }
+          node desktop-source/scripts/verify-ownerspecs-vag-research-pack.cjs desktop-source/data/research 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/ownerspecs-desktop-verify.log"
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs installed research-pack verification failed." }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $metadataFiles = @(
+            "data/research/manifest.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/manifest.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/ownerspecs-vag-research.sqlite",
+            "data/research/ownerspecs-vag-vehicle-specs-research/source-manifest.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/source.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/source-snapshot.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/acquisition-snapshot.json",
+            "data/research/ownerspecs-vag-vehicle-specs-research/LICENSE-REFERENCE.txt",
+            "data/research/ownerspecs-vag-vehicle-specs-research/ATTRIBUTION.md",
+            "data/research/ownerspecs-vag-vehicle-specs-research/desktop-integration-report.json",
+            "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json",
+            "lib/ownerspecs-vag-research-db.cjs",
+            "scripts/verify-ownerspecs-vag-research-pack.cjs",
+            "tests/ownerspecs-vag-research-db.test.cjs",
+            "tests/ownerspecs-vag-research-ui-contract.test.cjs",
+            "components/local-research-catalog.tsx",
+            "app/api/local-research/route.ts",
+            "scripts/windows-installer-lifecycle.ps1",
+            "package.json"
+          )
+          foreach ($relative in $metadataFiles) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "OwnerSpecs audit source is missing: $relative" }
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          $ownerReportPath = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/research/ownerspecs-vag-vehicle-specs-research/desktop-integration-report.json"
+          $ownerReport = Get-Content -LiteralPath $ownerReportPath -Raw | ConvertFrom-Json
+          "ownerspecs_vag_research=run${{ steps.ownerspecs-pack.outputs.run_number }}/${{ steps.ownerspecs-pack.outputs.run_id }}; artifact_sha256=${{ steps.ownerspecs-pack.outputs.artifact_sha256 }}; database_sha256=$($ownerReport.database_sha256); source_snapshot_sha256=$($ownerReport.source_snapshot_sha256); source_manifest_sha256=$($ownerReport.source_manifest_sha256); vag_generations=20; vag_facts=233; market=UNKNOWN; research_only=true; share_alike=true; production_import=false; critical_values_publishable=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Render typed technical payloads in offline workspace (run79)
         shell: pwsh
         run: |
@@ -2317,6 +2419,20 @@ jobs:
           $cardirSourceRunNumber = if ($cardirReport) { $cardirReport.source_run_number } else { $null }
           $cardirIntegrationScriptHash = (Get-FileHash -LiteralPath "scripts/integrate-cardir-vag-owner-manual-facts.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
           $cardirDbModuleHash = if (Test-Path "desktop-source/lib/cardir-vag-reference-facts-db.cjs") { (Get-FileHash -LiteralPath "desktop-source/lib/cardir-vag-reference-facts-db.cjs" -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $ownerReportPath = "desktop-source/data/research/ownerspecs-vag-vehicle-specs-research/desktop-integration-report.json"
+          $ownerReport = if (Test-Path $ownerReportPath) { Get-Content -LiteralPath $ownerReportPath -Raw | ConvertFrom-Json } else { $null }
+          $ownerReportHash = if (Test-Path $ownerReportPath) { (Get-FileHash -LiteralPath $ownerReportPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $ownerDatabaseHash = if ($ownerReport) { $ownerReport.database_sha256 } else { $null }
+          $ownerSnapshotHash = if ($ownerReport) { $ownerReport.source_snapshot_sha256 } else { $null }
+          $ownerSourceManifestHash = if ($ownerReport) { $ownerReport.source_manifest_sha256 } else { $null }
+          $ownerPackManifestHash = if ($ownerReport) { $ownerReport.pack_manifest_sha256 } else { $null }
+          $ownerArtifactHash = if ($ownerReport) { $ownerReport.artifact_sha256 } else { $null }
+          $ownerGenerationCount = if ($ownerReport) { $ownerReport.counts.vagGenerations } else { $null }
+          $ownerFactCount = if ($ownerReport) { $ownerReport.counts.vagFacts } else { $null }
+          $ownerSourceRunId = if ($ownerReport) { $ownerReport.source_run_id } else { $null }
+          $ownerSourceRunNumber = if ($ownerReport) { $ownerReport.source_run_number } else { $null }
+          $ownerIntegrationScriptHash = (Get-FileHash -LiteralPath "scripts/integrate-ownerspecs-vag-research.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $ownerDbModuleHash = if (Test-Path "desktop-source/lib/ownerspecs-vag-research-db.cjs") { (Get-FileHash -LiteralPath "desktop-source/lib/ownerspecs-vag-research-db.cjs" -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $generationReportPath = "desktop-source/data/research/wikidata-vag-generation-candidates-cc0/integration-verification.json"
           $generationReport = if (Test-Path $generationReportPath) { Get-Content -LiteralPath $generationReportPath -Raw | ConvertFrom-Json } else { $null }
           $generationDbHash = if ($generationReport) { $generationReport.database_sha256 } else { $null }
@@ -2397,7 +2513,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; vehicle_catalog_package_schema_sha256 = $vehicleCatalogPackageSchemaHash; engine_transmission_pair_evidence_patch_sha256 = $pairEvidencePatchHash; engine_transmission_pair_code_binding_patch_sha256 = $pairCodeBindingPatchHash; technical_payload_step_order_patch_sha256 = $technicalStepOrderPatchHash; dtc_namespace_range_patch_sha256 = $dtcNamespaceRangePatchHash; dtc_namespace_range_correction_patch_sha256 = $dtcNamespaceRangeCorrectionPatchHash; obdb_source_count_patch_sha256 = $obdbSourceCountPatchHash; obdb_manifest_sha256 = $obdbManifestHash; obdb_database_sha256 = $obdbDatabaseHash; obdb_source_count = $obdbSourceCount; obdb_generation_candidate_count = $obdbGenerationCount; obdb_ecu_candidate_count = $obdbEcuCount; obdb_uds_command_candidate_count = $obdbCommandCount; obdb_signal_candidate_count = $obdbSignalCount; vehiclesdb_revision_patch_sha256 = $vehiclesDbRevisionPatchHash; vehiclesdb_revision_evidence_sha256 = $vehiclesDbRevisionEvidenceHash; vehiclesdb_revision = $vehiclesDbRevision; dtc_namespace_policy_sha256 = $dtcNamespacePolicyHash; dtc_research_range_quarantine_patch_sha256 = $dtcResearchQuarantinePatchHash; oem_dtc_index_schema_sha256 = $oemDtcIndexSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; cardir_vag_owner_manual_facts_database_sha256 = $cardirDatabaseHash; cardir_vag_owner_manual_facts_source_snapshot_sha256 = $cardirSnapshotHash; cardir_vag_owner_manual_facts_source_manifest_sha256 = $cardirManifestHash; cardir_vag_owner_manual_facts_artifact_sha256 = $cardirArtifactHash; cardir_vag_owner_manual_facts_integration_report_sha256 = $cardirReportHash; cardir_vag_owner_manual_facts_fact_count = $cardirFactCount; cardir_vag_owner_manual_facts_model_count = $cardirModelCount; cardir_vag_owner_manual_facts_brand_count = $cardirBrandCount; cardir_vag_owner_manual_facts_parameter_key_count = $cardirParameterCount; cardir_vag_owner_manual_facts_source_run_id = $cardirSourceRunId; cardir_vag_owner_manual_facts_source_run_number = $cardirSourceRunNumber; cardir_integration_script_sha256 = $cardirIntegrationScriptHash; cardir_db_module_sha256 = $cardirDbModuleHash; desktop_version = '0.2.4'; desktop_offline_entry = 'app/desktop'; desktop_supabase_env_forwarded = $false; desktop_offline_entry_patch_sha256 = (Get-FileHash -LiteralPath 'apply-desktop-offline-entry-run90.cjs' -Algorithm SHA256).Hash.ToLowerInvariant(); patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-normalize-windows-sql-migration-line-endings+run74-astra-ch-research-pack-verification+run75-close-test-database-on-error+run76-desktop-row-types-fix+run77-lifecycle-session-output+run78-rdw-ui-contract+run79-typed-technical-payload-renderer+run80-technical-payload-schema-validation+run81-strict-dtc-oem-supersession-validation+run82-engine-transmission-pair-evidence-guard+run83-engine-transmission-pair-source-manifest-binding+run84-engine-transmission-pair-code-binding+run85-technical-step-order-validation+run86-dtc-namespace-code-range-validation+run87-conservative-dtc-namespace-quarantine+run88-obdb-16-source-count-sync+run89-vehiclesdb-revision-manifest-binding+run90-offline-desktop-entry+run77-unique-exact-configuration-ui-guard+run91-obdex-dtc-research-range-quarantine+cardir-vag-owner-manual-facts-cc-by-4.0-research-only'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; vehicle_catalog_package_schema_sha256 = $vehicleCatalogPackageSchemaHash; engine_transmission_pair_evidence_patch_sha256 = $pairEvidencePatchHash; engine_transmission_pair_code_binding_patch_sha256 = $pairCodeBindingPatchHash; technical_payload_step_order_patch_sha256 = $technicalStepOrderPatchHash; dtc_namespace_range_patch_sha256 = $dtcNamespaceRangePatchHash; dtc_namespace_range_correction_patch_sha256 = $dtcNamespaceRangeCorrectionPatchHash; obdb_source_count_patch_sha256 = $obdbSourceCountPatchHash; obdb_manifest_sha256 = $obdbManifestHash; obdb_database_sha256 = $obdbDatabaseHash; obdb_source_count = $obdbSourceCount; obdb_generation_candidate_count = $obdbGenerationCount; obdb_ecu_candidate_count = $obdbEcuCount; obdb_uds_command_candidate_count = $obdbCommandCount; obdb_signal_candidate_count = $obdbSignalCount; vehiclesdb_revision_patch_sha256 = $vehiclesDbRevisionPatchHash; vehiclesdb_revision_evidence_sha256 = $vehiclesDbRevisionEvidenceHash; vehiclesdb_revision = $vehiclesDbRevision; dtc_namespace_policy_sha256 = $dtcNamespacePolicyHash; dtc_research_range_quarantine_patch_sha256 = $dtcResearchQuarantinePatchHash; oem_dtc_index_schema_sha256 = $oemDtcIndexSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; cardir_vag_owner_manual_facts_database_sha256 = $cardirDatabaseHash; cardir_vag_owner_manual_facts_source_snapshot_sha256 = $cardirSnapshotHash; cardir_vag_owner_manual_facts_source_manifest_sha256 = $cardirManifestHash; cardir_vag_owner_manual_facts_artifact_sha256 = $cardirArtifactHash; cardir_vag_owner_manual_facts_integration_report_sha256 = $cardirReportHash; cardir_vag_owner_manual_facts_fact_count = $cardirFactCount; cardir_vag_owner_manual_facts_model_count = $cardirModelCount; cardir_vag_owner_manual_facts_brand_count = $cardirBrandCount; cardir_vag_owner_manual_facts_parameter_key_count = $cardirParameterCount; cardir_vag_owner_manual_facts_source_run_id = $cardirSourceRunId; cardir_vag_owner_manual_facts_source_run_number = $cardirSourceRunNumber; cardir_integration_script_sha256 = $cardirIntegrationScriptHash; cardir_db_module_sha256 = $cardirDbModuleHash; ownerspecs_database_sha256 = $ownerDatabaseHash; ownerspecs_source_snapshot_sha256 = $ownerSnapshotHash; ownerspecs_source_manifest_sha256 = $ownerSourceManifestHash; ownerspecs_pack_manifest_sha256 = $ownerPackManifestHash; ownerspecs_artifact_sha256 = $ownerArtifactHash; ownerspecs_integration_report_sha256 = $ownerReportHash; ownerspecs_vag_generation_count = $ownerGenerationCount; ownerspecs_vag_fact_count = $ownerFactCount; ownerspecs_source_run_id = $ownerSourceRunId; ownerspecs_source_run_number = $ownerSourceRunNumber; ownerspecs_integration_script_sha256 = $ownerIntegrationScriptHash; ownerspecs_db_module_sha256 = $ownerDbModuleHash; desktop_version = '0.2.4'; desktop_offline_entry = 'app/desktop'; desktop_supabase_env_forwarded = $false; desktop_offline_entry_patch_sha256 = (Get-FileHash -LiteralPath 'apply-desktop-offline-entry-run90.cjs' -Algorithm SHA256).Hash.ToLowerInvariant(); patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-normalize-windows-sql-migration-line-endings+run74-astra-ch-research-pack-verification+run75-close-test-database-on-error+run76-desktop-row-types-fix+run77-lifecycle-session-output+run78-rdw-ui-contract+run79-typed-technical-payload-renderer+run80-technical-payload-schema-validation+run81-strict-dtc-oem-supersession-validation+run82-engine-transmission-pair-evidence-guard+run83-engine-transmission-pair-source-manifest-binding+run84-engine-transmission-pair-code-binding+run85-technical-step-order-validation+run86-dtc-namespace-code-range-validation+run87-conservative-dtc-namespace-quarantine+run88-obdb-16-source-count-sync+run89-vehiclesdb-revision-manifest-binding+run90-offline-desktop-entry+run77-unique-exact-configuration-ui-guard+run91-obdex-dtc-research-range-quarantine+cardir-vag-owner-manual-facts-cc-by-4.0-research-only+ownerspecs-vag-generation-specs-cc-by-sa-4.0-research-only'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Upload standalone build metadata for independent installer hash verification
         if: always() && hashFiles('build-metadata.json') != ''
@@ -2679,7 +2795,29 @@ jobs:
           $kbaPackManifest = Get-Content -LiteralPath (Join-Path $kbaResearchRoot $kbaEntry.pack_manifest_file) -Raw | ConvertFrom-Json
           $kbaSourceManifest = Get-Content -LiteralPath (Join-Path $kbaResearchRoot $kbaEntry.source_manifest_file) -Raw | ConvertFrom-Json
           if ($kbaPackManifest.source_snapshot_sha256 -ne $kbaEntry.source_snapshot_sha256 -or $kbaSourceManifest.snapshot.source_snapshot_sha256 -ne $kbaEntry.source_snapshot_sha256 -or $kbaPackManifest.database.sha256 -ne $kbaEntry.database_sha256) { throw "Packaged KBA source/DB provenance chain mismatch." }
-          foreach ($required in @("data/research/manifest.json", "data/research/kba-de-vag-stock-research/manifest.json", "data/research/kba-de-vag-stock-research/kba-de-vag-stock-research.sqlite", "data/research/kba-de-vag-stock-research/source-manifest.json", "data/research/kba-de-vag-stock-research/LICENSE.txt", "data/research/kba-de-vag-stock-research/ATTRIBUTION.md", "data/research/kba-de-vag-stock-research/desktop-integration-report.json", "lib/kba-de-stock-research-db.cjs", "scripts/verify-kba-de-stock-research-pack.cjs", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/schemas/oem-dtc-index.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
+          $ownerEntry = @($researchManifest.packs | Where-Object { $_.id -eq "ownerspecs-vag-vehicle-specs-research" }) | Select-Object -First 1
+          if (-not $ownerEntry -or $ownerEntry.license -ne "CC BY-SA 4.0" -or $ownerEntry.market_scope[0] -ne "UNKNOWN" -or $ownerEntry.product_import_allowed -ne $false -or $ownerEntry.critical_technical_values_publishable -ne $false -or $ownerEntry.exact_engine_gearbox_pair -ne $false -or $ownerEntry.ru_eaeu_applicability -ne $false -or $ownerEntry.share_alike_required -ne $true -or $ownerEntry.separate_pack_required -ne $true) { throw "Packaged OwnerSpecs entry is missing or crossed its CC BY-SA research-only boundary." }
+          if ($metadata.ownerspecs_vag_generation_count -ne 20 -or $metadata.ownerspecs_vag_fact_count -ne 233 -or $metadata.ownerspecs_database_sha256 -ne $ownerEntry.database_sha256 -or $metadata.ownerspecs_source_snapshot_sha256 -ne $ownerEntry.source_snapshot_sha256 -or $metadata.ownerspecs_source_manifest_sha256 -ne $ownerEntry.source_manifest_sha256 -or $metadata.ownerspecs_artifact_sha256 -ne $ownerEntry.source_artifact_sha256) { throw "OwnerSpecs research pack does not match standalone build metadata." }
+          $ownerResearchRoot = Join-Path $desktopRoot "data/research"
+          $ownerFiles = @(
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.database); hash=$ownerEntry.database_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.pack_manifest_file); hash=$ownerEntry.pack_manifest_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_manifest_file); hash=$ownerEntry.source_manifest_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_file); hash=$ownerEntry.source_file_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_snapshot_file); hash=$ownerEntry.source_snapshot_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.acquisition_snapshot_file); hash=$ownerEntry.acquisition_snapshot_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.attribution_file); hash=$ownerEntry.attribution_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.license_file); hash=$ownerEntry.license_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.desktop_integration_report_file); hash=$ownerEntry.desktop_integration_report_sha256 }
+          )
+          foreach ($file in $ownerFiles) {
+            if (-not (Test-Path -LiteralPath $file.path -PathType Leaf)) { throw "Packaged OwnerSpecs research resource is missing: $($file.path)" }
+            if ((Get-FileHash -LiteralPath $file.path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $file.hash) { throw "Packaged OwnerSpecs research resource SHA-256 mismatch: $($file.path)" }
+          }
+          $ownerPackManifest = Get-Content -LiteralPath (Join-Path $ownerResearchRoot $ownerEntry.pack_manifest_file) -Raw | ConvertFrom-Json
+          $ownerSourceManifest = Get-Content -LiteralPath (Join-Path $ownerResearchRoot $ownerEntry.source_manifest_file) -Raw | ConvertFrom-Json
+          if ($ownerPackManifest.source_snapshot_sha256 -ne $ownerEntry.source_snapshot_sha256 -or $ownerSourceManifest.snapshot.source_snapshot_sha256 -ne $ownerEntry.source_snapshot_sha256 -or $ownerPackManifest.database.sha256 -ne $ownerEntry.database_sha256 -or $ownerPackManifest.critical_technical_values_publishable -ne $false -or $ownerSourceManifest.applicability_policy.ru_eaeu_applicability -ne $false) { throw "Packaged OwnerSpecs source/DB provenance chain or applicability boundary mismatch." }
+          foreach ($required in @("data/research/manifest.json", "data/research/ownerspecs-vag-vehicle-specs-research/manifest.json", "data/research/ownerspecs-vag-vehicle-specs-research/ownerspecs-vag-research.sqlite", "data/research/ownerspecs-vag-vehicle-specs-research/source-manifest.json", "data/research/ownerspecs-vag-vehicle-specs-research/source.json", "data/research/ownerspecs-vag-vehicle-specs-research/source-snapshot.json", "data/research/ownerspecs-vag-vehicle-specs-research/acquisition-snapshot.json", "data/research/ownerspecs-vag-vehicle-specs-research/LICENSE-REFERENCE.txt", "data/research/ownerspecs-vag-vehicle-specs-research/ATTRIBUTION.md", "data/research/ownerspecs-vag-vehicle-specs-research/desktop-integration-report.json", "lib/ownerspecs-vag-research-db.cjs", "scripts/verify-ownerspecs-vag-research-pack.cjs", "data/research/kba-de-vag-stock-research/manifest.json", "data/research/kba-de-vag-stock-research/kba-de-vag-stock-research.sqlite", "data/research/kba-de-vag-stock-research/source-manifest.json", "data/research/kba-de-vag-stock-research/LICENSE.txt", "data/research/kba-de-vag-stock-research/ATTRIBUTION.md", "data/research/kba-de-vag-stock-research/desktop-integration-report.json", "lib/kba-de-stock-research-db.cjs", "scripts/verify-kba-de-stock-research-pack.cjs", "data/source-manifests/source-manifest-index.json", "data/source-manifests/russian-eaeu-otts-sources.json", "data/sql/technical-library.sql", "data/schemas/technical-record-payloads.schema.json", "data/schemas/oem-dtc-index.schema.json", "data/research/wikidata-vag-generation-candidates-cc0/manifest.json", "data/research/wikidata-vag-generation-candidates-cc0/wikidata-vag-generations.sqlite", "lib/local-research-db.cjs", "scripts/verify-local-research-packs.cjs")) {
             if (-not (Test-Path (Join-Path $desktopRoot $required))) { throw "Offline lifecycle evidence file is missing: $required" }
           }
           Set-Location $desktopRoot
