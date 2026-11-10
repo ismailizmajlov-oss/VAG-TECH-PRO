@@ -8150,7 +8150,7 @@
       "market_scope": [
         "UNKNOWN"
       ],
-      "data_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T02:23:10Z; SHA-256 30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+      "data_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T03:09:20Z; SHA-256 5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
       "evidence_scope": [
         "owner_manual_reference_facts",
         "fluids",
@@ -8189,9 +8189,9 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending",
+      "verification_status": "latest_source_snapshot_order_only_change_verified_pack_refresh_pending",
       "research_pack": {
-        "status": "verified_research_only",
+        "status": "verified_research_only_previous_snapshot",
         "research_pack_allowed": true,
         "production_import": false,
         "exact_engine_gearbox_pair": false,
@@ -8245,7 +8245,7 @@
         "vag_verified_at_changed_groups_since_previous_pinned_snapshot": 0,
         "vag_page_url_changed_groups_since_previous_pinned_snapshot": 0,
         "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
-        "pack_build_status": "verified_research_only",
+        "pack_build_status": "verified_research_only_previous_snapshot",
         "latest_snapshot_review": {
           "previous_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
           "current_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
@@ -8297,9 +8297,35 @@
         "artifact_created_at": "2026-11-10T02:28:00Z",
         "artifact_expires_at": "2027-02-08T02:27:09Z",
         "pack_verified_at": "2026-11-10T02:28:00Z",
-        "source_file_included_in_desktop": false
+        "source_file_included_in_desktop": false,
+        "latest_snapshot_refresh_status": "new_exact_source_snapshot_pinned_sqlite_rebuild_pending",
+        "latest_source_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
+        "latest_source_rows_multiset_sha256": "6a66802bae4ab8d9a2170aa4813fd396933b1d5ce1378e1d1a09774af7e7588f",
+        "latest_vag_rows_multiset_sha256": "ac1780f1c66621a4b373eb4eb3b9393d20e554ffa7fbbb6e42c16846a08c647d"
       },
-      "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json",
+      "latest_source_snapshot_review": {
+        "previous_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+        "current_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
+        "source_file_bytes": 15174126,
+        "source_rows": 44272,
+        "source_models": 611,
+        "source_rows_added": 0,
+        "source_rows_removed": 0,
+        "source_rows_net_change": 0,
+        "source_rows_multiset_sha256": "6a66802bae4ab8d9a2170aa4813fd396933b1d5ce1378e1d1a09774af7e7588f",
+        "vag_rows": 948,
+        "vag_models": 26,
+        "vag_rows_added": 0,
+        "vag_rows_removed": 0,
+        "vag_subset_multiset_sha256": "ac1780f1c66621a4b373eb4eb3b9393d20e554ffa7fbbb6e42c16846a08c647d",
+        "exact_vag_subset_unchanged": true,
+        "row_order_changed": true,
+        "byte_snapshot_changed": true,
+        "comparison_method": "Exact multiset comparison of all parsed CSV row field strings. Each row is compact canonical UTF-8 JSON with sorted keys; rows are sorted and length-prefixed before SHA-256. The full source row multiset and exact VAG allowlist subset are identical; only source row ordering changed.",
+        "reviewed_at_utc": "2026-11-10T03:09:20.719256+00:00",
+        "disposition": "pin_new_exact_byte_snapshot_and_rebuild_sqlite_because_source_row_numbers_are_part_of_provenance"
+      }
     }
   ],
   "minimum_fitment_evidence_fields": [
