@@ -1,0 +1,21 @@
+export type WikidataCandidateSeedResult = {
+  status: string;
+  reason?: string;
+  batchId?: number;
+  inserted?: number;
+  unchanged?: number;
+  packageSha256?: string;
+  packageKind?: string;
+  source_id?: string;
+  source_revision?: string;
+  market_scope?: "UNKNOWN";
+  applicability_precision?: "candidate_identity_only";
+  manufacturers?: number;
+  models?: number;
+  verified_models?: 0;
+  exact_fitments?: 0;
+  engine_codes?: 0;
+  transmission_codes?: 0;
+  missing?: string[];
+};
+export function seedWikidataCandidateCatalog(dbPath: string, researchRoot: string, options?: Record<string, unknown>): WikidataCandidateSeedResult;
