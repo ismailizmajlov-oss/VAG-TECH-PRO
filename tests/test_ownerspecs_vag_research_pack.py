@@ -164,7 +164,7 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
         manifest_path = self.output / "manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest["source_file_bytes"] += 1
-        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2) + "\\n", encoding="utf-8")
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "source-file byte-size metadata mismatch"):
             verify_pack(self.output, self.source_manifest)
 
