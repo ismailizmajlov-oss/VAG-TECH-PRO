@@ -348,7 +348,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: vag-tech-pro-windows-x64-v3-${{ github.ref }}
+  group: vag-tech-pro-windows-x64-v4-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
