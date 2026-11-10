@@ -240,7 +240,7 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(hpt["license"]["full_database_mirror"], "prohibited")
         central = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
         central_hpt = next(item for item in central["sources"] if item["source_id"] == "hpt-su-otts-aggregator")
-        self.assertEqual(central_hpt["evidence_status"], "official HPT.SU offer, API terms, pricing and MCP pages reviewed 2026-11-07; no account, key, subscription or data access used")
+        self.assertEqual(central_hpt["evidence_status"], "official HPT.SU offer and API terms rechecked 2026-11-10; narrow own-analytics carve-out documented; no project account, key, subscription, API use, download or data import")
         self.assertFalse(central_hpt["rights"]["offline_cache_for_product_distribution_allowed"])
         self.assertFalse(central_hpt["rights"]["third_party_desktop_display_allowed"])
         self.assertFalse(central_hpt["rights"]["written_permission_for_product_distribution_obtained"])
