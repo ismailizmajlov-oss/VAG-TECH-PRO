@@ -44,7 +44,7 @@ const helper = [
 '        s.attribution_text||null,s.market_scope,s.source_snapshot_sha256||null,s.rights_evidence_sha256||null,',
 '        s.rights_status.startsWith("approved_by_") ? "approved" : s.rights_status === "restricted" ? "blocked" : "candidate",now,now',
 '      );',
-'      db.prepare("INSERT INTO audit_events(event_type,entity_type,entity_key,details_json,created_at) VALUES(\\'source_registered\\',\\'source\\',?,?,?)")',
+      "      db.prepare(\"INSERT INTO audit_events(event_type,entity_type,entity_key,details_json,created_at) VALUES(\'source_registered\',\'source\',?,?,?)\")",
 '        .run(s.source_id, JSON.stringify({ rightsStatus: s.rights_status, revision: s.revision, registrationMode: "insert_if_absent" }), now);',
 '      const inserted = db.prepare("SELECT * FROM sources WHERE source_id=?").get(s.source_id);',
 '      db.exec("COMMIT");',
