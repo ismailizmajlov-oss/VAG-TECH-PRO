@@ -170,6 +170,18 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "differs from the pinned manifest"):
             build_pack(self.source_json, self.source_manifest, self.output)
 
+    def test_rolls_back_and_removes_partial_database_on_insert_failure(self):
+        dataset = fixture_dataset()
+        duplicate = dataset["generations"][1]
+        duplicate["brand"] = "Audi"
+        duplicate["model"] = "A1 duplicate"
+        duplicate["generation_slug"] = dataset["generations"][0]["generation_slug"]
+        duplicate["url"] = "https://ownerspecs.com/audi/a1-duplicate"
+        self.source_json.write_text(json.dumps(dataset, ensure_ascii=False), encoding="utf-8")
+        with self.assertRaises(sqlite3.IntegrityError):
+            build_pack(self.source_json, self.source_manifest, self.output)
+        self.assertFalse((self.output / "ownerspecs-vag-research.sqlite").exists())
+
     def test_does_not_overwrite_existing_database(self):
         self.output.mkdir(exist_ok=True)
         (self.output / "ownerspecs-vag-research.sqlite").write_bytes(b"sentinel")
