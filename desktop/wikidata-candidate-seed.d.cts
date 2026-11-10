@@ -17,5 +17,6 @@ export type WikidataCandidateSeedResult = {
   engine_codes?: 0;
   transmission_codes?: 0;
   missing?: string[];
+  message?: string;
 };
 export function seedWikidataCandidateCatalog(dbPath: string, researchRoot: string, options?: Record<string, unknown>): WikidataCandidateSeedResult;
