@@ -34,16 +34,16 @@
     "evidence_summary": "The publisher's open-data page explicitly licenses its machine-readable generation/specification facts under CC BY-SA 4.0, permits commercial reuse and redistribution with attribution, and states that no manual text is reproduced. Share-Alike applies to adapted database material."
   },
   "snapshot": {
-    "status": "not_acquired_snapshot_pending",
+    "status": "source_snapshot_acquired_schema_verified",
     "publisher_generated_date": "2026-11-09",
     "html_page_generation_count": 111,
     "json_descriptor_generation_count": 111,
     "html_page_brand_count": 27,
     "html_page_verified_datapoint_count": 2369,
-    "source_snapshot_sha256": null,
-    "source_file_bytes": null,
-    "retrieved_at_utc": null,
-    "note": "Fresh live review on 2026-11-10 confirms the current HTML dataset page and JSON descriptor agree on 111 generations; the HTML page also reports 27 brands and 2,369 verified datapoints. No source snapshot was downloaded in this review. Do not claim a source hash until exact JSON/CSV bytes are acquired and pinned."
+    "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
+    "source_file_bytes": 683641,
+    "retrieved_at_utc": "2026-11-10T01:29:53.763466+00:00",
+    "note": "Exact public JSON acquired by Windows x64 CI run #13. The source descriptor and actual array reconcile to 111 generations and 2,369 datapoints; the exact VAG allowlist retains 20 generation candidates and 233 facts. Source SHA-256 is pinned. All rows remain UNKNOWN-market, not independently reviewed, and research-only."
   },
   "data_scope": {
     "dataset_title": "ownerspecs.com — verified vehicle specifications",
@@ -121,14 +121,14 @@
     "require_attribution_in_ui_and_pack": true
   },
   "limitations": [
-    "The current HTML page and JSON descriptor both report 111 generations; actual downloaded array/datapoint counts still must be reconciled against the pinned source bytes before pack publication.",
+    "The acquired JSON contains 111 publisher generations and 2,369 publisher-verified datapoints; the exact VAG allowlist retains 20 generation candidates and 233 facts. These counts do not establish factory applicability.",
     "The CSV endpoint is not the canonical input to this builder; the separate JSON snapshot is acquired, hashed and count-reconciled. Any future CSV acquisition must be independently hashed and reconciled before use.",
     "The publisher's public JSON exposes provenance kinds and source counts, but not a primary-document URL or revision for each individual value.",
     "The dataset's global multi-market label is not a market-by-market applicability map; normalized market scope remains UNKNOWN.",
     "Generation-level ranges and broad engine-family strings do not establish an individual vehicle's exact engine, gearbox or ECU.",
     "No exact VAG engine-to-gearbox pairs, ECU mappings, DTCs, wiring diagrams, pinouts, adaptations or repair procedures are established by this dataset.",
     "Any future integration must remain a separate CC BY-SA 4.0 database with visible attribution and Share-Alike compliance; do not merge it into a differently licensed production database.",
-    "No exact source snapshot has yet been pinned in this manifest; the Windows acquisition workflow must download the public JSON and record its exact SHA-256 before the research pack can be published."
+    "The exact source JSON is pinned for the separate research pack only; no values have been imported into the production vehicle or technical library database."
   ],
   "evidence_reviewed": [
     {
@@ -147,6 +147,6 @@
       "observation": "CC BY-SA 4.0 permits sharing and adaptation, including commercial use, subject to attribution, indication of changes and Share-Alike for adapted material."
     }
   ],
-  "verification_status": "license_observed; html_json_generation_counts_reconciled; no_snapshot_downloaded",
-  "project_decision": "Rights are approved for a separate attributed CC BY-SA 4.0 research pack. Fresh live HTML and JSON metadata now agree at 111 generations. Acquire and pin the exact JSON/CSV snapshot in Windows CI, validate actual counts and row hashes, and keep all records research-only with UNKNOWN market scope; no production fitment or repair-value approval."
+  "verification_status": "license_observed; source_snapshot_acquired; json_generation_and_datapoint_counts_reconciled; vag_filter_verified; sqlite_integrity_and_row_hashes_verified; applicability_candidate_only",
+  "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. Windows x64 CI acquired and hashed the exact JSON snapshot, reconciled 111 generations and 2,369 datapoints, and built a separate VAG-filtered SQLite containing 20 generation candidates and 233 facts. Keep market UNKNOWN, technical review not independently reviewed, and all repair/fitment applicability disabled. Pin the source snapshot hash; do not import into the production repair database."
 }
