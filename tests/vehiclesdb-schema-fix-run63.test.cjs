@@ -78,6 +78,7 @@ function fixture(root, dynamicGate = true) {
   ].join("\n");
 
   const tests = [
+    "  assert.deepEqual(vehiclesDb.counts, { sources: 14, models: 260, marketEvidence: 1524, russianEvidence: 0 });",
     "  assert.equal(rows[0].snapshotGeneratedAt, \"2026-11-03T07:21:36.7901580Z\");",
     "  assert.throws(() => vehiclesDb.exec(\"DELETE FROM model_candidates WHERE model_candidate_id=1\"), /readonly|read-only|query only/i);",
     "  assert.match(golf.sourceSha256, /^[a-f0-9]{64}$/);",
