@@ -708,6 +708,8 @@ def main() -> None:
     if '$PSNativeCommandUseErrorActionPreference = $true' not in rights_step:
         raise SystemExit("PowerShell rights-validation step must fail on every non-zero native command")
     rights_command_order = (
+        "python tests/test_community_vag_candidate_packs_source_rights.py",
+        'if ($LASTEXITCODE -ne 0) { throw "Community VAG candidate-pack source rights and display policy failed." }',
         "python tests/test_ownerspecs_source_rights.py",
         'if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }',
         "python tests/test_cardir_source_rights.py",
