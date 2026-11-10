@@ -106,3 +106,11 @@ Verified hashes:
 - Windows artifact SHA-256: `32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d`
 
 SQLite `integrity_check=ok`, `foreign_key_check=0`; all 948 source-row hashes are valid. The pack records CC BY 4.0 attribution, market UNKNOWN, publisher verification but no independent OEM technical review, no exact engine/gearbox pair, no RU/EAEU applicability, and `production_import=false` / `product_import_allowed=false`. It remains a separate read-only research pack; desktop lifecycle integration is pending.
+
+## Live source probe — 2026-11-10
+
+A later live acquisition probe retrieved a byte-different CSV snapshot (SHA-256 `5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a`, 15,174,126 bytes; retrieved at `2026-11-10T03:11:09.539790+00:00`). The pinned snapshot remains `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`.
+
+The two CSVs were compared as exact multisets of all 12 source fields, not merely by row counts. Both contain 44,272 rows, 611 brand/model pairs, 948 exact-allowlist VAG rows and 26 VAG models. The order-independent full-row multiset SHA-256 is identical for both snapshots: `d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74`. The VAG-subset multiset SHA-256 is also identical: `ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b`. Exact multiset comparison found zero added rows, zero removed rows and zero changed VAG values; only CSV row order changed.
+
+The new raw snapshot was therefore recorded as an unpinned live probe, not silently substituted for the reviewed pack input. The existing pinned CC BY 4.0 research pack remains valid and unchanged. The acquisition builder correctly fails closed on a raw SHA-256 mismatch until a new snapshot is explicitly reviewed and pinned. No production data was imported.
