@@ -793,5 +793,17 @@ def main() -> None:
 
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
+
+    # The refreshed VehiclesDB manifest must be applied to the desktop reader
+    # before the Wikidata integration calls getResearchSummary(). Otherwise the
+    # old 260/1524 count guard rejects the valid v2026.11.3 307/1621 pack.
+    revision_step = "      - name: Bind VehiclesDB test revision to the pinned manifest (run89)"
+    candidate_gate_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
+    wikidata_step = "      - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)"
+    if not all(step in text for step in (revision_step, candidate_gate_step, wikidata_step)):
+        raise SystemExit("Windows workflow is missing a required VehiclesDB/Wikidata integration step")
+    if not (text.index(revision_step) < text.index(candidate_gate_step) < text.index(wikidata_step)):
+        raise SystemExit("VehiclesDB identity-only gate must run before Wikidata integration")
+    
 if __name__ == "__main__":
     main()
