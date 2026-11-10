@@ -92,11 +92,11 @@ class HptSuSourceRightsTests(unittest.TestCase):
         text = path.read_text(encoding="utf-8")
         for phrase in (
             "API terms §6.4",
-            "materially smaller",
-            "does not authorize",
-            "No account",
-            "No documents",
-            "No source bytes",
+            "существенно меньше базы HPT.SU",
+            "не является разрешением распространять локальную базу ОТТС",
+            "Аккаунт HPT.SU не создавался",
+            "Документы и записи не скачивались",
+            "Исходные байты не получены",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
