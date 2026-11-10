@@ -124,9 +124,13 @@ function main() {
   const returnPatch = replaceExactlyOnce(dbText, oldReturn, newReturn, "VehiclesDB identity-only fields in candidate result");
   dbText = returnPatch.text;
 
+  const oldVerifierCountGate = 'assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, `VehiclesDB foreign-market-only count gate failed: ${JSON.stringify(vehiclesDbCounts)}`);';
+  const newVerifierCountGate = 'assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, `VehiclesDB foreign-market-only count gate failed: ${JSON.stringify(vehiclesDbCounts)}`);';
+  const verifierCountPatch = replaceExactlyOnce(verifierItem.text, oldVerifierCountGate, newVerifierCountGate, "VehiclesDB manifest-driven count gate in independent verifier");
+
   const oldVerifier = 'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
   const newVerifier = oldVerifier + '\n    assert(vehiclesDbSnapshot.identity_only_use === true && vehiclesDbSnapshot.safety_critical_reliance === false && vehiclesDbSnapshot.repair_decision_use === false && typeof vehiclesDbSnapshot.open_data_policy_notice === "string" && vehiclesDbSnapshot.open_data_policy_notice.includes("not designed or warranted for safety-critical"), "VehiclesDB safety-critical and repair-decision boundary failed");';
-  const verifierPatch = replaceExactlyOnce(verifierItem.text, oldVerifier, newVerifier, "VehiclesDB independent verifier safety boundary");
+  const verifierPatch = replaceExactlyOnce(verifierCountPatch.text, oldVerifier, newVerifier, "VehiclesDB independent verifier safety boundary");
 
   const oldTest = "  assert.equal(golf.sourceRevision, vehiclesDbManifest.source_revision);";
   const newTest = [
@@ -139,7 +143,7 @@ function main() {
   const testPatch = replaceExactlyOnce(testItem.text, oldTest, newTest, "VehiclesDB desktop candidate safety assertions");
 
   if (countPatch.changed || returnPatch.changed) writeAtomic(dbItem.file, dbText, dbItem.stat.mode);
-  if (verifierPatch.changed) writeAtomic(verifierItem.file, verifierPatch.text, verifierItem.stat.mode);
+  if (verifierCountPatch.changed || verifierPatch.changed) writeAtomic(verifierItem.file, verifierPatch.text, verifierItem.stat.mode);
   if (testPatch.changed) writeAtomic(testItem.file, testPatch.text, testItem.stat.mode);
 
   const finalDb = readRegular(desktopRoot, dbRelative);
