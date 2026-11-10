@@ -777,7 +777,7 @@
         "RU",
         "EAEU"
       ],
-      "terms_revision": "last_updated_2026-08-26; homepage_OTTS_page_and_terms_reviewed_2026-11-09",
+      "terms_revision": "last_updated_2026-08-26; homepage_OTTS_page_and_terms_rechecked_2026-11-10",
       "license": {
         "identifier": null,
         "dataset_license": "not_granted",
@@ -798,7 +798,7 @@
       "source_snapshot_sha256": null,
       "hash_status": "terms_review_only_no_dataset_snapshot",
       "notes": [
-        "The 2026-11-09 /otts page renders a result counter of 74,115 OTTS while its headline says 46,000+; the homepage also displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH. These are dynamic provider UI counts, not an independently audited dataset or an authorized export.",
+        "The 2026-11-10 /otts page renders a result counter of 74,115 OTTS while its headline says 46,000+; this discrepancy remains unresolved. These are dynamic provider UI counts, not an independently audited dataset or an authorized export.",
         "The public page advertises free ordinary search, one-off PDF delivery for 500 RUB and subscriptions from 990 RUB for 3 days to 29,900 RUB per year; no paid access, account or terms were used.",
         "Published User Agreement, last updated 2026-08-26, clause 3 prohibits scraping/mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of documents and database information as a proprietary information product.",
         "Clauses 4.3-4.4 require contributors to warrant their own rights and grant document placement/reproduction/delivery rights to the operator only; they do not grant VAG TECH PRO reuse rights.",
@@ -806,7 +806,8 @@
         "The public UI exposes approval number, make, commercial name, vehicle type, category, environmental class, modifications, chassis, VIN, applicant and manufacturer filters, but no exact VAG engine code, gearbox code, pair, ECU or repair applicability was established.",
         "The public technical-characteristics and engine sections are described as not yet populated; no technical-characteristics or engine dataset was inspected or acquired.",
         "No account, subscription, payment, automated request, document download, cache or import was used; no source-file SHA-256 is claimed.",
-        "Do not scrape, bulk-query, cache, display or redistribute this aggregator's records or documents in VAG TECH PRO without separate written permission from the operator and relevant underlying document rightsholders."
+        "Do not scrape, bulk-query, cache, display or redistribute this aggregator's records or documents in VAG TECH PRO without separate written permission from the operator and relevant underlying document rightsholders.",
+        "The 2026-11-10 recheck of the published User Agreement found the same last-updated date (2026-08-26) and confirmed clause 3's restrictions, clause 4.4's operator-only grant, and clause 5's reservation of the site's database structure and text."
       ],
       "observed_counts": {
         "observed_at": "2026-11-09",
@@ -849,13 +850,13 @@
       "terms_evidence_reviewed": [
         {
           "url": "https://www.otts.bot/terms",
-          "reviewed_at": "2026-11-09",
-          "observation": "Published User Agreement last updated 2026-08-26. Clause 3 allows ordinary free search but prohibits scraping/mass requests beyond ordinary user scenarios and resale, publication or other distribution of documents/database information as a proprietary information product. Clauses 4.3-4.4 place rights warranties on contributors and grant document-placement/use rights to the operator only. Clause 5 reserves site/database structure and text to the operator and states that underlying document rights belong to their respective rightsholders."
+          "reviewed_at": "2026-11-10",
+          "observation": "Rechecked 2026-11-10; page states last updated 2026-08-26. Clause 3 permits ordinary free search but prohibits scraping/mass requests beyond ordinary user scenarios and resale, publication or other distribution of documents/database information as a proprietary information product. Clauses 4.3-4.4 place rights warranties on contributors and grant placement/reproduction/delivery rights to the operator only. Clause 5 reserves site presentation, database structure, section text and code to the operator; underlying document rights remain with respective rightsholders."
         },
         {
           "url": "https://www.otts.bot/otts",
-          "reviewed_at": "2026-11-09",
-          "observation": "Public page advertises free search and one-off document delivery for 500 RUB. The page headline says 46,000+ approvals while the rendered result counter says 74,115; the discrepancy is not reconciled and neither figure is an independently audited export."
+          "reviewed_at": "2026-11-10",
+          "observation": "Rechecked 2026-11-10: page advertises free ordinary search; rendered result counter 74,115 while the headline says 46,000+; no dataset export or licence is exposed. The page advertises one-off PDF delivery for 500 RUB; no document purchased."
         },
         {
           "url": "https://www.otts.bot/",
@@ -863,7 +864,47 @@
           "observation": "Homepage displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records, and describes technical-characteristics/engine sections as not yet populated. Counts are provider UI metadata only."
         }
       ],
-      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-09.md"
+      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-09.md",
+      "rights_recheck_2026_11_10": {
+        "reviewed_at": "2026-11-10",
+        "terms_url": "https://www.otts.bot/terms",
+        "terms_last_updated": "2026-08-26",
+        "clauses": {
+          "3": {
+            "ordinary_search": "free ordinary website search",
+            "automated_collection": "scraping or mass requests beyond ordinary user scenarios prohibited",
+            "redistribution": "resale, publication or other distribution of obtained documents and database information as a proprietary information product prohibited"
+          },
+          "5": {
+            "website_and_database_structure": "operator-owned; use outside ordinary site viewing requires written consent",
+            "underlying_documents": "rights remain with their respective rightsholders"
+          },
+          "4.3-4.4": {
+            "contributor_warranty": "contributor warrants lawful acquisition and right to transfer the document",
+            "operator_grant": "contributor grants the operator placement, reproduction, public display and paid delivery rights",
+            "sublicense_to_vag_tech_pro": false
+          }
+        },
+        "page_observation": {
+          "url": "https://www.otts.bot/otts",
+          "result_counter": 74115,
+          "headline": "46,000+",
+          "count_discrepancy_unresolved": true,
+          "paid_single_document_price_rub": 500,
+          "dataset_export_observed": false,
+          "licence_for_third_party_offline_product": false
+        },
+        "acquisition_state": {
+          "account_created": false,
+          "subscription_started": false,
+          "payment_made": false,
+          "automated_queries_used": false,
+          "documents_downloaded": false,
+          "source_bytes_cached": false,
+          "product_import_allowed": false
+        },
+        "decision": "discovery_only_no_scraping_no_bulk_requests_no_offline_cache_no_third_party_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders"
+      }
     },
     {
       "source_id": "otts-baza-ru",
