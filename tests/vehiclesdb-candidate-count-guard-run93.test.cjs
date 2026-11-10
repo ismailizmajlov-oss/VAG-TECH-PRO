@@ -39,11 +39,11 @@ function fixture(overrides = {}) {
   const oldCountGate = "vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||";
   const oldReturn = [
     "attributionRequired: true,",
-    '        attribution: typeof packManifest.attribution === "string" ? packManifest.attribution : "Vehicle data by VehiclesDB (vehiclesdb.com)",'
+    '        attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",'
   ].join("\n");
   fs.writeFileSync(path.join(root, "lib", "local-research-db.cjs"), oldCountGate + "\n" + oldReturn + "\n");
   fs.writeFileSync(path.join(root, "scripts", "verify-local-research-packs.cjs"),
-    'assert(vehiclesDbSnapshot.attribution_required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");\n');
+    'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");\n');
   fs.writeFileSync(path.join(root, "tests", "local-research-db.test.cjs"),
     '  assert.equal(golf.sourceRevision, vehiclesDbManifest.source_revision);\n');
   return root;
