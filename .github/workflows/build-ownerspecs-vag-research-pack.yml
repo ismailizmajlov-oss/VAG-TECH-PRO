@@ -1,0 +1,110 @@
+name: Build OwnerSpecs VAG CC BY-SA 4.0 research pack
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-ownerspecs-vag-research-pack.yml"
+      - "scripts/build_ownerspecs_vag_research_pack.py"
+      - "tests/test_ownerspecs_vag_research_pack.py"
+      - "tests/test_ownerspecs_source_rights.py"
+      - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-ownerspecs-vag-research-pack.yml"
+      - "scripts/build_ownerspecs_vag_research_pack.py"
+      - "tests/test_ownerspecs_vag_research_pack.py"
+      - "tests/test_ownerspecs_source_rights.py"
+      - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-ownerspecs-research-pack-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acquire-build-verify:
+    name: Acquire and verify isolated OwnerSpecs VAG SQLite research pack
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source, rights manifest and builder
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Compile and run OwnerSpecs rights and SQLite pack tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python --version
+          python -m py_compile scripts/build_ownerspecs_vag_research_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs builder compilation failed." }
+          python -m unittest discover -s tests -p "test_ownerspecs_vag_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs SQLite research-pack tests failed." }
+          python tests/test_ownerspecs_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA source-rights tests failed." }
+
+      - name: Acquire the publisher JSON and verify exact generation/datapoint counts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_ownerspecs_vag_research_pack.py --acquire --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-source 2>&1 | Tee-Object -FilePath ownerspecs-acquisition.log
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs licensed source acquisition failed." }
+          $snapshot = Get-Content -LiteralPath artifacts/ownerspecs-vag-research-pack/source-snapshot.json -Raw | ConvertFrom-Json
+          if ($snapshot.generation_count -ne 111 -or $snapshot.verified_datapoints -ne 2369 -or $snapshot.vag_generation_count -le 0 -or $snapshot.vag_fact_count -le 0 -or $snapshot.source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") {
+            throw "OwnerSpecs snapshot differs from the reviewed publisher dataset; refusing to publish the research pack."
+          }
+          "OwnerSpecs source JSON SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Generations: $($snapshot.generation_count); datapoints: $($snapshot.verified_datapoints); retained VAG generations: $($snapshot.vag_generation_count); VAG facts: $($snapshot.vag_fact_count)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Preserve acquisition evidence if source validation fails
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ownerspecs-vag-source-acquisition-evidence
+          path: |
+            artifacts/ownerspecs-source/**
+            ownerspecs-acquisition.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Build and independently verify the separate CC BY-SA SQLite pack
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_ownerspecs_vag_research_pack.py --input-json artifacts/ownerspecs-source/source.json --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-build.log
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs VAG SQLite research-pack build failed." }
+          python scripts/build_ownerspecs_vag_research_pack.py --verify-only --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-verify.log
+          if ($LASTEXITCODE -ne 0) { throw "Independent OwnerSpecs SQLite/provenance verification failed." }
+          $manifest = Get-Content -LiteralPath artifacts/ownerspecs-vag-research-pack/manifest.json -Raw | ConvertFrom-Json
+          if ($manifest.market_scope[0] -ne "UNKNOWN" -or $manifest.product_import_allowed -ne $false -or $manifest.production_import -ne $false -or $manifest.exact_engine_gearbox_pair -ne $false -or $manifest.ru_eaeu_applicability -ne $false -or $manifest.critical_technical_values_publishable -ne $false -or $manifest.license.share_alike_required -ne $true) {
+            throw "OwnerSpecs research pack escaped its CC BY-SA, UNKNOWN-market, non-fitment boundary."
+          }
+          "## OwnerSpecs VAG research pack" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "CC BY-SA 4.0 isolated database; attribution and Share-Alike required; market UNKNOWN; no exact fitment; critical repair values disabled." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Counts: $($manifest.counts | ConvertTo-Json -Compress)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Source JSON SHA-256: $($manifest.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "SQLite SHA-256: $($manifest.database.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload verified SQLite, exact source JSON and attribution
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ownerspecs-vag-vehicle-specs-research-pack
+          path: |
+            artifacts/ownerspecs-vag-research-pack/**
+            ownerspecs-acquisition.log
+            ownerspecs-pack-build.log
+            ownerspecs-pack-verify.log
+          if-no-files-found: error
+          retention-days: 90
