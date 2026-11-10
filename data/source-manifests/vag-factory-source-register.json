@@ -1945,8 +1945,7 @@
           "model": "A4",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A4",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-Q7",
@@ -1956,8 +1955,7 @@
           "model": "Q7",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q7",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Golf",
@@ -1967,8 +1965,7 @@
           "model": "Golf",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Golf",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Passat",
@@ -1978,8 +1975,7 @@
           "model": "Passat",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Passat",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-ID.4",
@@ -1989,8 +1985,7 @@
           "model": "ID.4",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_ID.4",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Seat-Tarraco",
@@ -2000,8 +1995,7 @@
           "model": "Tarraco",
           "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Tarraco",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-A3",
@@ -2011,8 +2005,7 @@
           "model": "A3",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A3",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-A5",
@@ -2022,8 +2015,7 @@
           "model": "A5",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A5",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-A6",
@@ -2033,8 +2025,7 @@
           "model": "A6",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A6",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Tiguan",
@@ -2044,8 +2035,7 @@
           "model": "Tiguan",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Tiguan",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Jetta",
@@ -2055,8 +2045,7 @@
           "model": "Jetta",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Jetta",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Polo",
@@ -2066,8 +2055,7 @@
           "model": "Polo",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Polo",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Seat-Leon",
@@ -2077,8 +2065,7 @@
           "model": "Leon",
           "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Leon",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Skoda-Octavia",
@@ -2088,8 +2075,7 @@
           "model": "Octavia",
           "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Octavia",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": true
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Skoda-Superb",
@@ -2099,8 +2085,7 @@
           "model": "Superb",
           "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Superb",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": true
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Skoda-Fabia",
@@ -2110,34 +2095,240 @@
           "model": "Fabia",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Skoda_Fabia",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": true
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-Touareg",
+          "commit_sha": "3a3e2fbd005c062c1d9680452a04c114a54321eb",
+          "commit_date": "2026-11-02T01:49:19Z",
+          "make": "Volkswagen",
+          "model": "Touareg",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Touareg",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Audi-Q5",
+          "commit_sha": "6404e34ae5233ba7af8bd6f280d1049927490951",
+          "commit_date": "2026-11-02T17:58:55Z",
+          "make": "Audi",
+          "model": "Q5",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q5",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Seat-Ibiza",
+          "commit_sha": "23d9a88695333237d6c1bc34584468538377df61",
+          "commit_date": "2026-11-08T00:01:28Z",
+          "make": "SEAT",
+          "model": "Ibiza",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Ibiza",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Formentor",
+          "commit_sha": "0ec97ea9736f06111defd60fe499a91e3e2f16a1",
+          "commit_date": "2026-11-09T19:01:21Z",
+          "make": "CUPRA",
+          "model": "Formentor",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Formentor",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Leon",
+          "commit_sha": "6e0b744dba712922b1dbab05fed5b40f9902710b",
+          "commit_date": "2026-11-10T06:01:08Z",
+          "make": "CUPRA",
+          "model": "Leon",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Leon",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Born",
+          "commit_sha": "c63926843ca5e16fe8e7c35cf5a36898cafaa195",
+          "commit_date": "2026-11-07T14:57:18Z",
+          "make": "CUPRA",
+          "model": "Born",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Born",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-CC",
+          "commit_sha": "90b3d5118de633a7962d4ce1c0596e716043fb5f",
+          "commit_date": "2026-11-02T01:49:30Z",
+          "make": "Volkswagen",
+          "model": "CC",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_CC",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-e-Golf",
+          "commit_sha": "1f80c1a2367ed3962beb28a5525e17a74862d75f",
+          "commit_date": "2026-11-07T03:01:06Z",
+          "make": "Volkswagen",
+          "model": "e-Golf",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_e-Golf",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-ID3",
+          "commit_sha": "a9d43a31b0c8617a93ee7478c24d5d6689bec7bb",
+          "commit_date": "2026-10-30T19:24:58Z",
+          "make": "Volkswagen",
+          "model": "ID.3",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_ID.3",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-T-Cross",
+          "commit_sha": "9216cd0d69644647d3bebda998c45325e210ab29",
+          "commit_date": "2026-11-02T01:44:10Z",
+          "make": "Volkswagen",
+          "model": "T-Cross",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_T-Cross",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-T-Roc",
+          "commit_sha": "25bc38483a0a053644444014100fb49c13dbe898",
+          "commit_date": "2026-11-02T01:44:26Z",
+          "make": "Volkswagen",
+          "model": "T-Roc",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_T-Roc",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-Transporter",
+          "commit_sha": "05f275e8f6f7766e7890581d0205596354aaa474",
+          "commit_date": "2026-11-02T01:49:13Z",
+          "make": "Volkswagen",
+          "model": "Transporter",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Transporter",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Audi-Q3",
+          "commit_sha": "04f87376f7918501948e0bb5850db663914cb3d9",
+          "commit_date": "2026-11-09T12:57:37Z",
+          "make": "Audi",
+          "model": "Q3",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q3",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Audi-Q8",
+          "commit_sha": "326ae20b47a4411ad66010faeaad5cbb56d2d7f3",
+          "commit_date": "2026-11-09T18:59:52Z",
+          "make": "Audi",
+          "model": "Q8",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q8",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Seat-Ateca",
+          "commit_sha": "5f57d9b30fcc3238bb96d93032da954f9c40c23c",
+          "commit_date": "2026-11-02T01:44:32Z",
+          "make": "SEAT",
+          "model": "Ateca",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Ateca",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Seat-Arona",
+          "commit_sha": "45d1f4e9a8d1ba7eff5da8d1e423a6ce07e86637",
+          "commit_date": "2026-11-02T01:47:48Z",
+          "make": "SEAT",
+          "model": "Arona",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Arona",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Tavascan",
+          "commit_sha": "a4d44c1baec5cfcaf7176da2d666c6f75f2139a5",
+          "commit_date": "2026-10-11T19:55:05Z",
+          "make": "CUPRA",
+          "model": "Tavascan",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Tavascan",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Terramar",
+          "commit_sha": "30465e079674e664f121efd42b5fb911aae2fcce",
+          "commit_date": "2026-10-31T07:58:07Z",
+          "make": "CUPRA",
+          "model": "Terramar",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Terramar",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Kodiaq",
+          "commit_sha": "bbfbe7a8eb4fca5894e2dbecebd9c7ce10429da8",
+          "commit_date": "2026-10-04T03:56:19Z",
+          "make": "Škoda",
+          "model": "Kodiaq",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Kodiaq",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Kamiq",
+          "commit_sha": "d1c2aafffdf73c260a0b36a969478bd46c419b0e",
+          "commit_date": "2026-10-04T03:56:10Z",
+          "make": "Škoda",
+          "model": "Kamiq",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Kamiq",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Rapid",
+          "commit_sha": "716b5f3b22afba7f6c09b2bdb4c0c6a7d82f3492",
+          "commit_date": "2026-10-04T03:56:38Z",
+          "make": "Škoda",
+          "model": "Rapid",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Rapid",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Scala",
+          "commit_sha": "de22f91d6e8af3a87a22a644ba003aeec93b3234",
+          "commit_date": "2026-10-14T14:29:34Z",
+          "make": "Škoda",
+          "model": "Scala",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Scala",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
         }
       ],
       "source_manifest_path": "data/source-manifests/obdb-vag-signalsets.json",
       "source_snapshot_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
-      "source_file_count": 64,
-      "source_repository_count": 16,
+      "source_file_count": 152,
+      "source_repository_count": 38,
       "market_scope": [
         "UNKNOWN"
       ],
       "applicability_precision": "vehicle_model_and_signal_candidate",
-      "verification_status": "unverified_community_candidate",
+      "verification_status": "source_manifest_updated_rebuild_pending_research_only_no_production_import",
       "display_status": "read_only_research_candidate",
-      "counts": {
-        "source_repositories": 16,
-        "upstream_files": 64,
-        "generation_candidates": 82,
-        "ecu_candidates": 44,
-        "uds_command_candidates": 7890,
-        "signal_candidates": 8446,
-        "dtc_definitions": 0,
-        "repair_procedures": 0,
-        "approved_test_plans": 0,
-        "exact_vehicle_fitment_rows": 0,
-        "verified_generation_year_mappings": 0,
-        "generation_only_sources": 3
-      },
+      "counts": null,
       "rights": {
         "data_license": "CC-BY-SA-4.0",
         "license_files_reviewed_at_each_pinned_commit": true,
@@ -2166,7 +2357,10 @@
         "factory_pinouts": false,
         "market_scope": "UNKNOWN",
         "generation_candidates": true,
-        "generation_only_sources": 3
+        "generation_only_sources": 3,
+        "excluded_generic_service_ids": [
+          "01"
+        ]
       },
       "project_decision": "allow_separate_read_only_CC_BY_SA_research_pack_only; preserve attribution and share_alike; candidate discovery only; do not present as validated DTC/test plan or exact vehicle/ECU fitment; do not execute UDS commands",
       "limitations": [
@@ -2179,67 +2373,31 @@
       "data_ingested": false,
       "product_import_allowed": false,
       "research_pack_build_evidence": {
-        "workflow_run_number": 253,
-        "workflow_run_id": 42443454970,
-        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
-        "source_commit": "9466d050476e7e4398c1c578e305c809067d29fe",
-        "artifact_id": 13603020392,
-        "artifact_name": "obdb-vag-research-cc-by-sa",
-        "artifact_sha256": "cc52fb5fefee9da9aa732dee6dd9202ec6a832e7d3da73b8f96e4714d6a60c78",
-        "artifact_size_bytes": 2715793,
-        "database_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
-        "manifest_sha256": "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105",
-        "attribution_sha256": "999d59e300e2e8ca53598231675e896863e2f4f04a23635e14dee894cd3a11fc",
-        "built_at_utc": "2026-11-08T03:37:13Z",
-        "counts": {
-          "source_repositories": 16,
-          "upstream_files": 64,
-          "generation_candidates": 82,
-          "ecu_candidates": 44,
-          "uds_command_candidates": 7890,
-          "signal_candidates": 8446,
-          "dtc_definitions": 0,
-          "repair_procedures": 0,
-          "approved_test_plans": 0,
-          "exact_vehicle_fitment": 0,
-          "exact_ecu_fitment": 0,
-          "exact_engine_gearbox_pairs": 0,
-          "generation_only_sources": 3
-        },
-        "generation_only_source_counts": {
-          "OBDb/Skoda-Octavia": {
-            "generations": 4,
-            "ecus": 0,
-            "commands": 0,
-            "signals": 0
-          },
-          "OBDb/Skoda-Superb": {
-            "generations": 7,
-            "ecus": 0,
-            "commands": 0,
-            "signals": 0
-          },
-          "OBDb/Skoda-Fabia": {
-            "generations": 4,
-            "ecus": 0,
-            "commands": 0,
-            "signals": 0
-          }
-        },
+        "status": "rebuild_pending_after_source_manifest_update",
+        "source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f",
+        "workflow_run_id": null,
+        "workflow_run_number": null,
+        "artifact_id": null,
+        "artifact_sha256": null,
+        "artifact_size_bytes": null,
+        "database_sha256": null,
+        "manifest_sha256": null,
+        "attribution_sha256": null,
         "license_id": "CC-BY-SA-4.0",
         "share_alike_required": true,
         "separate_pack_required": true,
-        "market_scope": "UNKNOWN",
-        "verification_status": "unverified_community_candidate",
         "execution_allowed": false,
         "product_database_import": false,
-        "desktop_integration_status": "not_integrated",
-        "status": "verified_research_pack_build_only"
+        "desktop_integration_status": "not_integrated"
       },
       "generation_only_repositories": [
         "OBDb/Skoda-Octavia",
         "OBDb/Skoda-Superb",
-        "OBDb/Skoda-Fabia"
+        "OBDb/Skoda-Fabia",
+        "OBDb/Skoda-Kodiaq",
+        "OBDb/Skoda-Kamiq",
+        "OBDb/Skoda-Rapid",
+        "OBDb/Skoda-Scala"
       ],
       "generation_only_source_counts": {
         "OBDb/Skoda-Octavia": {
@@ -2281,7 +2439,67 @@
         "obdb_manifest_sha256": "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105",
         "built_at_utc": "2026-11-08T03:38:15.108260+00:00",
         "verification": "All three research databases and the VehiclesDB source-snapshot SQLite passed independent SHA-256 verification, integrity_check=ok and foreign_key_check=0."
-      }
+      },
+      "previous_verified_pack": {
+        "workflow_run_number": 253,
+        "workflow_run_id": 42443454970,
+        "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
+        "source_commit": "9466d050476e7e4398c1c578e305c809067d29fe",
+        "artifact_id": 13603020392,
+        "artifact_name": "obdb-vag-research-cc-by-sa",
+        "artifact_sha256": "cc52fb5fefee9da9aa732dee6dd9202ec6a832e7d3da73b8f96e4714d6a60c78",
+        "artifact_size_bytes": 2715793,
+        "database_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
+        "manifest_sha256": "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105",
+        "attribution_sha256": "999d59e300e2e8ca53598231675e896863e2f4f04a23635e14dee894cd3a11fc",
+        "built_at_utc": "2026-11-08T03:37:13Z",
+        "counts": {
+          "source_repositories": 16,
+          "upstream_files": 64,
+          "generation_candidates": 82,
+          "ecu_candidates": 44,
+          "uds_command_candidates": 7890,
+          "signal_candidates": 8446,
+          "dtc_definitions": 0,
+          "repair_procedures": 0,
+          "approved_test_plans": 0,
+          "exact_vehicle_fitment_rows": 0,
+          "verified_generation_year_mappings": 0,
+          "generation_only_sources": 3
+        },
+        "generation_only_source_counts": {
+          "OBDb/Skoda-Octavia": {
+            "generations": 4,
+            "ecus": 0,
+            "commands": 0,
+            "signals": 0
+          },
+          "OBDb/Skoda-Superb": {
+            "generations": 7,
+            "ecus": 0,
+            "commands": 0,
+            "signals": 0
+          },
+          "OBDb/Skoda-Fabia": {
+            "generations": 4,
+            "ecus": 0,
+            "commands": 0,
+            "signals": 0
+          }
+        },
+        "license_id": "CC-BY-SA-4.0",
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "market_scope": "UNKNOWN",
+        "verification_status": "unverified_community_candidate",
+        "execution_allowed": false,
+        "product_database_import": false,
+        "desktop_integration_status": "not_integrated",
+        "status": "verified_research_pack_build_only"
+      },
+      "previous_verified_pack_history": [],
+      "source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f",
+      "research_database_included_in_desktop": false
     },
     {
       "source_id": "volkswagen-okapi-product-data-api",

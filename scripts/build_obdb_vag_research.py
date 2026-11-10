@@ -509,7 +509,7 @@ def main() -> int:
             "Market scope is UNKNOWN for every source.",
             "Model-level repository scope does not establish generation, engine, gearbox, PR-code, ECU-hardware or VIN applicability.",
             "filter and dbgfilter payloads are preserved verbatim and are not interpreted as fitment rules.",
-            "Only UDS service 0x22 read-data identifiers are present; this pack is reference-only and never sends commands to a vehicle.",
+            "Only UDS service 0x22 read-data identifiers are included. Generic OBD-II service 0x01 records are excluded from this VAG UDS namespace. This pack is reference-only and never sends commands to a vehicle.",
             "No DTC definitions, repair procedures, wiring diagrams, pinouts, torque values, adaptations or service schedules are included.",
             "Generation labels and year ranges are source candidates; they are not linked to signal rows as confirmed applicability.",
             "The adapted SQLite database must remain available under CC BY-SA 4.0 with attribution; do not apply DRM or additional restrictions to redistributed copies."
@@ -551,13 +551,13 @@ def main() -> int:
     for source in source_manifest["sources"]:
         attribution_lines.append(f"{source['make']} {source['model']}: {source['repository']} @ {source['commit_sha']}")
     (output / "ATTRIBUTION.txt").write_text("\n".join(attribution_lines) + "\n", encoding="utf-8")
-    readme = """# OBDb VAG signal research pack
+    readme = f"""# OBDb VAG signal research pack
 
-This folder contains a separate, read-only SQLite adaptation of six OBDb community signal-set repositories.
+This folder contains a separate, read-only SQLite adaptation of {len(prepared)} OBDb community model repositories.
 
 License: CC BY-SA 4.0. Commercial use is allowed under that license, subject to attribution and ShareAlike. The adapted database is distributed under CC BY-SA 4.0. Do not apply DRM or additional restrictions to copies of this database.
 
-The SQLite file preserves pinned upstream commits, source file SHA-256 values, license copies, model labels, generation candidates, ECU headers, UDS 0x22 identifiers, signal formats, and the original filter/debug-filter JSON.
+The SQLite file preserves pinned upstream commits, source file SHA-256 values, license copies, model labels, generation candidates, ECU headers, UDS 0x22 identifiers, signal formats, and the original filter/debug-filter JSON. The source manifest also records repositories and generic service IDs excluded from this VAG UDS namespace.
 
 This is not factory service information. Market is UNKNOWN; exact generation, engine, gearbox, PR-code, ECU hardware, and VIN applicability are not established. All signal records are unverified community candidates. Filter fields are not interpreted. No command is executed by this pack.
 
