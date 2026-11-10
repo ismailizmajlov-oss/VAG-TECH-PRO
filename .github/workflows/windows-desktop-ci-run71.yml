@@ -2244,6 +2244,22 @@ jobs:
           Copy-Item -LiteralPath "apply-dtc-research-range-quarantine-run91.cjs" -Destination $patchInSource -Force
           "dtc_research_namespace_quarantine=run91; policy_revision=run87-2026-11-08; source_pack=obdex-generic-cc0; unresolved_ranges_quarantined=true; generic_rows_research_only=true; policy_resource=app-runtime/data/policies; VAG_fitment=false; diagnostic_execution=false; production_import=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Lock source-rights checks inside SQLite import transactions (run94)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          node --check apply-source-rights-atomicity-run94.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run94 source-rights patch syntax check failed." }
+          node apply-source-rights-atomicity-run94.cjs --desktop-root desktop-source 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/source-rights-atomicity-run94.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run94 source-rights transaction patch failed." }
+          node --check desktop-source/lib/local-core-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run94 patched local-core database failed syntax validation." }
+          node --check desktop-source/tests/rights-import-atomicity.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Run94 regression test failed syntax validation." }
+          node --test desktop-source/tests/rights-import-atomicity.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/source-rights-atomicity-run94-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "Run94 source-rights transaction race tests failed." }
+          "source_rights_validation=inside_begin_immediate; technical_and_catalog_imports=transaction_locked; bundled_source_registration=insert_only; race_regression_tests=passed" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
       - name: Seed CC0 Wikidata model identity candidates into local SQLite core (run92)
         shell: pwsh
         run: |
