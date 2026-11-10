@@ -43,8 +43,10 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(snapshot["json_descriptor_generation_count"], 111)
         self.assertEqual(snapshot["html_page_brand_count"], 27)
         self.assertEqual(snapshot["html_page_verified_datapoint_count"], 2369)
-        self.assertEqual(snapshot["status"], "not_acquired_snapshot_pending")
-        self.assertIsNone(snapshot["source_snapshot_sha256"])
+        self.assertEqual(snapshot["status"], "source_snapshot_acquired_schema_verified")
+        self.assertEqual(snapshot["source_snapshot_sha256"], "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d")
+        self.assertEqual(snapshot["source_file_bytes"], 683641)
+        self.assertTrue(snapshot["retrieved_at_utc"].endswith("+00:00"))
         policy = self.manifest["import_policy"]
         self.assertIs(policy["acquisition_allowed"], True)
         self.assertIs(policy["research_pack_import_allowed"], True)
@@ -79,8 +81,9 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         ):
             self.assertIs(rights[field], True)
         self.assertIs(self.entry["data_ingested"], False)
-        self.assertIsNone(self.entry["source_snapshot_sha256"])
+        self.assertEqual(self.entry["source_snapshot_sha256"], self.manifest["snapshot"]["source_snapshot_sha256"])
         self.assertIs(self.entry["research_pack_acquisition_allowed"], True)
+        self.assertIs(self.entry["research_pack_acquired"], False)
         self.assertIs(self.entry["product_import_allowed"], False)
         self.assertEqual(self.entry["applicability"]["market_scope"], "UNKNOWN")
         self.assertIs(self.entry["applicability"]["exact_engine_gearbox_pair"], False)
@@ -92,7 +95,9 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
             "27 brands",
             "2,369 verified datapoints",
             "current live page/json pair",
-            "no source sha-256 is claimed",
+            "source snapshot sha-256 is pinned",
+            "20 vag generation candidates",
+            "233 vag facts",
             "market_scope=unknown",
             "must not be promoted to repair instructions",
         ):
