@@ -195,6 +195,7 @@ jobs:
           $record = [ordered]@{
             schema_version = 1
             recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
+            # Must exactly match the top-level name in windows-desktop-ci-run71.yml.
             upstream_workflow = "VAG TECH PRO Windows x64 desktop validation run91"
             run_id = [long]$env:UPSTREAM_RUN_ID
             run_number = [int]$env:UPSTREAM_RUN_NUMBER
