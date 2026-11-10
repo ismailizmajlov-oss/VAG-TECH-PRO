@@ -379,7 +379,11 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         self.assertIn("patch SHA-256 mismatch", loader_text)
 
     def test_unresolved_reserved_dtc_ranges_remain_unknown_and_unpublishable(self) -> None:
-        source_document_id = self.insert_source_document("test-dtc-quarantine", "TEST-DTC-QUARANTINE", market_scope="UNKNOWN")
+        source_document_id = self.insert_source_document(
+            "test-dtc-quarantine", "TEST-DTC-QUARANTINE",
+            source_sha256=self.h("a"), market_scope="UNKNOWN"
+        )
+        self.add_approved_technical_rights(source_document_id)
         codes = ("P3400", "P3497", "P34C8", "P35A6", "P39AB", "U3ABC", "B3ABC", "C3ABC")
         for code in codes:
             self.db.execute("""INSERT INTO oem_dtc_index
