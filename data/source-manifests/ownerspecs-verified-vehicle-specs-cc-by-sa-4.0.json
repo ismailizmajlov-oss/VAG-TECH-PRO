@@ -128,7 +128,7 @@
     "Generation-level ranges and broad engine-family strings do not establish an individual vehicle's exact engine, gearbox or ECU.",
     "No exact VAG engine-to-gearbox pairs, ECU mappings, DTCs, wiring diagrams, pinouts, adaptations or repair procedures are established by this dataset.",
     "Any future integration must remain a separate CC BY-SA 4.0 database with visible attribution and Share-Alike compliance; do not merge it into a differently licensed production database.",
-    "No exact source snapshot has yet been pinned in this manifest; the Windows acquisition workflow must download the public JSON and record its exact SHA-256 before the research pack can be published.",
+    "No exact source snapshot has yet been pinned in this manifest; the Windows acquisition workflow must download the public JSON and record its exact SHA-256 before the research pack can be published."
   ],
   "evidence_reviewed": [
     {
