@@ -957,8 +957,8 @@ jobs:
           $patchHash = (Get-FileHash -LiteralPath "apply-obdb-38-source-count-run521.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
           $evidencePath = "desktop-source/data/research/obdb-vag-signals-cc-by-sa/desktop-integration-count-verification.json"
           $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
-          if ($evidence.status -ne "desktop_count_gates_synchronized" -or $evidence.counts.sources -ne 16 -or $evidence.counts.generations -ne 82 -or $evidence.counts.ecus -ne 44 -or $evidence.counts.commands -ne 7890 -or $evidence.counts.signals -ne 8446 -or $evidence.execution_allowed -ne $false) { throw "Run88 OBDb desktop evidence failed its candidate-only gate" }
-          "obdb_pack=CC-BY-SA-4.0; sources=16; generations=82; ecus=44; commands=7890; signals=8446; market=UNKNOWN; verification=unverified_community_candidate; execution=disabled; patch_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          if ($evidence.status -ne "desktop_count_gates_synchronized" -or $evidence.counts.sources -ne 38 -or $evidence.counts.generations -ne 135 -or $evidence.counts.ecus -ne 71 -or $evidence.counts.commands -ne 18387 -or $evidence.counts.signals -ne 19799 -or $evidence.execution_allowed -ne $false -or $evidence.dtc_definitions_included -ne $false) { throw "Run521 OBDb desktop evidence failed its candidate-only namespace gate" }
+          "obdb_pack=CC-BY-SA-4.0; sources=38; generations=135; ecus=71; commands=18387; signals=19799; UDS_service=22; generic_OBD_service_01=excluded; DTC_definitions=none; market=UNKNOWN; verification=unverified_community_candidate; execution=disabled; patch_sha256=$patchHash" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Bind VehiclesDB test revision to the pinned manifest (run89)
         shell: pwsh
