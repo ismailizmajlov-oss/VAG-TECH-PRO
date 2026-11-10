@@ -5,9 +5,11 @@ import shutil
 import sqlite3
 import tempfile
 import unittest
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 SOURCE_MANIFEST = ROOT / "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
 
 from scripts.build_ownerspecs_vag_research_pack import build_pack, verify_pack
