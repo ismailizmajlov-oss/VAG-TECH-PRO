@@ -4,7 +4,7 @@
   "publisher": "ownerspecs.com",
   "source_kind": "curated_document_verified_vehicle_generation_specifications",
   "reviewed_at": "2026-11-10",
-  "data_revision": "Publisher states the dataset was generated 2026-11-09; the current HTML dataset page and JSON descriptor disagree on generation_count.",
+  "data_revision": "Publisher states the dataset was generated 2026-11-09; fresh live review on 2026-11-10 confirms the HTML page and JSON descriptor both report 111 generations.",
   "source_urls": {
     "dataset_page": "https://ownerspecs.com/data",
     "json": "https://ownerspecs.com/data/dataset.json",
@@ -34,16 +34,16 @@
     "evidence_summary": "The publisher's open-data page explicitly licenses its machine-readable generation/specification facts under CC BY-SA 4.0, permits commercial reuse and redistribution with attribution, and states that no manual text is reproduced. Share-Alike applies to adapted database material."
   },
   "snapshot": {
-    "status": "not_acquired_metadata_mismatch",
+    "status": "not_acquired_snapshot_pending",
     "publisher_generated_date": "2026-11-09",
     "html_page_generation_count": 111,
-    "json_descriptor_generation_count": 112,
+    "json_descriptor_generation_count": 111,
     "html_page_brand_count": 27,
     "html_page_verified_datapoint_count": 2369,
     "source_snapshot_sha256": null,
     "source_file_bytes": null,
     "retrieved_at_utc": null,
-    "note": "The HTML dataset page reports 111 generations, 27 brands and 2,369 verified datapoints, while the current JSON descriptor reports generation_count=112. No source snapshot was downloaded in this review. Do not pin, hash or ingest until the publisher's count discrepancy is reconciled."
+    "note": "Fresh live review on 2026-11-10 confirms the current HTML dataset page and JSON descriptor agree on 111 generations; the HTML page also reports 27 brands and 2,369 verified datapoints. No source snapshot was downloaded in this review. Do not claim a source hash until exact JSON/CSV bytes are acquired and pinned."
   },
   "data_scope": {
     "dataset_title": "ownerspecs.com — verified vehicle specifications",
@@ -107,8 +107,8 @@
   },
   "import_policy": {
     "rights_allow_separate_research_pack": true,
-    "acquisition_allowed": false,
-    "research_pack_import_allowed": false,
+    "acquisition_allowed": true,
+    "research_pack_import_allowed": true,
     "research_pack_read_only": true,
     "product_database_ingested": false,
     "data_ingested": false,
@@ -121,24 +121,26 @@
     "require_attribution_in_ui_and_pack": true
   },
   "limitations": [
+    "The current HTML page and JSON descriptor both report 111 generations; actual downloaded array/datapoint counts still must be reconciled against the pinned source bytes before pack publication.",
     "The HTML page reports 111 generations while the JSON descriptor reports 112; the current snapshot is not eligible for acquisition or import until this is resolved.",
     "The publisher's public JSON exposes provenance kinds and source counts, but not a primary-document URL or revision for each individual value.",
     "The dataset's global multi-market label is not a market-by-market applicability map; normalized market scope remains UNKNOWN.",
     "Generation-level ranges and broad engine-family strings do not establish an individual vehicle's exact engine, gearbox or ECU.",
     "No exact VAG engine-to-gearbox pairs, ECU mappings, DTCs, wiring diagrams, pinouts, adaptations or repair procedures are established by this dataset.",
     "Any future integration must remain a separate CC BY-SA 4.0 database with visible attribution and Share-Alike compliance; do not merge it into a differently licensed production database.",
-    "No dataset bytes were downloaded, no source SHA-256 exists, and no values were imported or displayed."
+    "No dataset bytes were downloaded, no source SHA-256 exists, and no values were imported or displayed.",
+    "No dataset bytes have been acquired in this review; source_snapshot_sha256 and file SHA-256 values remain null until the exact public JSON/CSV snapshot is downloaded."
   ],
   "evidence_reviewed": [
     {
       "url": "https://ownerspecs.com/data",
       "reviewed_at": "2026-11-10",
-      "observation": "HTML page states 111 generations, 27 brands and 2,369 verified datapoints; it declares CC BY-SA 4.0 and describes the provenance kinds and attribution."
+      "observation": "Fresh live HTML page reports 111 generations, 27 brands and 2,369 verified datapoints; it declares CC BY-SA 4.0, commercial reuse with attribution, and describes the provenance kinds."
     },
     {
       "url": "https://ownerspecs.com/data/dataset.json",
       "reviewed_at": "2026-11-10",
-      "observation": "Current JSON descriptor declares CC BY-SA 4.0, attribution_required=true and generation_count=112; generation entries expose model/generation/year spans and per-value source counts/provenance kinds."
+      "observation": "Fresh live JSON descriptor reports generation_count=111, matching the HTML page; it declares CC BY-SA 4.0, attribution_required=true and per-value source counts/provenance kinds."
     },
     {
       "url": "https://creativecommons.org/licenses/by-sa/4.0/",
@@ -146,6 +148,6 @@
       "observation": "CC BY-SA 4.0 permits sharing and adaptation, including commercial use, subject to attribution, indication of changes and Share-Alike for adapted material."
     }
   ],
-  "verification_status": "license_observed; dataset_page_json_generation_count_mismatch; no_snapshot_downloaded",
-  "project_decision": "rights approved for a separate attributed CC BY-SA research pack, but acquisition and integration are blocked until the 111-versus-112 generation-count discrepancy is reconciled and the exact snapshot is pinned; no production or repair applicability is approved"
+  "verification_status": "license_observed; html_json_generation_counts_reconciled; no_snapshot_downloaded",
+  "project_decision": "Rights are approved for a separate attributed CC BY-SA 4.0 research pack. Fresh live HTML and JSON metadata now agree at 111 generations. Acquire and pin the exact JSON/CSV snapshot in Windows CI, validate actual counts and row hashes, and keep all records research-only with UNKNOWN market scope; no production fitment or repair-value approval."
 }
