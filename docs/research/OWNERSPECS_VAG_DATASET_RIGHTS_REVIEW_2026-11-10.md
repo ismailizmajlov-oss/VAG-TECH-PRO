@@ -68,3 +68,10 @@ The retained prior verified source JSON from run #64 (`7b39e1183bd2a7617d43fdbe1
 An earlier 05:51 acquisition note reported hash `f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4`, but the raw bytes for that intermediate observation are not present in the retained artifact. That hash is preserved as an unverified intermediate claim; no direct delta from it is asserted. The 06:28 raw file is the exact reproducible snapshot pinned for the next separate CC BY-SA pack build.
 
 All records remain publisher candidates, market UNKNOWN, with no per-value primary-document URL/revision in the JSON. No generation, engine, gearbox, ECU, DTC, RU/EAEU or repair applicability is promoted; no critical torque/fluid values become repair instructions. The Share-Alike research database remains separate from the production catalog.
+
+
+## Verified current research pack — Windows run #115, 2026-11-10
+
+The exact retained source snapshot (`6ed73e4c...`, 683,533 bytes) was packaged successfully in [Windows x64 workflow run #115](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42770457166), artifact ID `13742090427`, 114,062 bytes, SHA-256 `93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1`. The pack contains 20 VAG generation candidates and 233 facts. The SQLite database is 323,584 bytes, SHA-256 `572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683`; `integrity_check=ok`, foreign-key violations: 0. The pack manifest SHA-256 is `35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd`.
+
+This confirms the separate CC BY-SA research pack build only. It does **not** confirm the underlying engine codes or service values against factory documentation. Market remains UNKNOWN; technical review is not independently performed; exact engine/gearbox pairs, ECU, DTC, RU/EAEU fitment and repair applicability remain false. The pack is not part of the production SQLite. Desktop integration and the full Windows lifecycle still require successful validation.

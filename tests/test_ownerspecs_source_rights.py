@@ -70,7 +70,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         ):
             self.assertIs(applicability[field], False)
 
-    def test_central_register_preserves_rights_and_marks_current_snapshot_pending(self):
+    def test_central_register_preserves_rights_and_marks_verified_research_pack_non_production(self):
         rights=self.entry["rights"]
         self.assertEqual(rights["data_license"],"CC-BY-SA-4.0")
         self.assertEqual(rights["permission_status"],"approved_by_published_license_for_reuse")
@@ -81,10 +81,18 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.entry["source_snapshot_sha256"],"6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
         self.assertEqual(self.entry["source_file_bytes"],683533)
         self.assertTrue(self.entry["research_pack_acquisition_allowed"])
-        self.assertFalse(self.entry["research_pack_acquired"]); self.assertFalse(self.entry["research_pack_current"])
-        self.assertEqual(self.entry["research_pack_status"],"rebuild_pending_after_exact_snapshot_reacquisition")
+        self.assertTrue(self.entry["research_pack_acquired"]); self.assertTrue(self.entry["research_pack_current"])
+        self.assertEqual(self.entry["research_pack_status"],"verified_research_only")
         self.assertFalse(self.entry["research_database_included_in_desktop"])
         self.assertEqual(self.entry["research_pack_source_manifest_sha256"],"3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc")
+        self.assertEqual(self.entry["research_pack_workflow_run_id"],42770457166)
+        self.assertEqual(self.entry["research_pack_run_number"],115)
+        self.assertEqual(self.entry["research_pack_artifact_id"],13742090427)
+        self.assertEqual(self.entry["research_pack_artifact_sha256"],"93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1")
+        self.assertEqual(self.entry["research_pack_database_sha256"],"572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683")
+        self.assertEqual(self.entry["research_pack_manifest_sha256"],"35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd")
+        self.assertEqual(self.entry["research_pack_artifact_size_bytes"],114062)
+        self.assertEqual(self.entry["research_pack_database_byte_size"],323584)
         self.assertEqual(self.entry["research_pack_source_snapshot_sha256"],"6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
         previous=self.entry["previous_verified_research_pack"]
         self.assertEqual(previous["artifact_id"],13733448981); self.assertEqual(previous["artifact_run_number"],64)
@@ -92,8 +100,8 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(previous["database_sha256"],"eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf")
         self.assertEqual(self.entry["previous_desktop_lifecycle_evidence"]["run_number"],1208)
         self.assertIsNone(self.entry["desktop_lifecycle_evidence"])
-        self.assertEqual(self.entry["research_pack_desktop_integration_status"],"previous_verified_pack_only_current_snapshot_not_yet_packaged")
-        self.assertEqual(self.entry["verification_status"],"licensed_source_snapshot_reacquired_hash_pinned_research_pack_rebuild_pending_candidate_only_no_production_import")
+        self.assertEqual(self.entry["research_pack_desktop_integration_status"],"verified_pack_available_desktop_sync_pending")
+        self.assertEqual(self.entry["verification_status"],"licensed_source_snapshot_reacquired_pack_built_verified_candidate_only_no_production_import")
         self.assertFalse(self.entry["product_database_ingested"]); self.assertFalse(self.entry["product_import_allowed"])
         self.assertEqual(self.entry["applicability"]["market_scope"],"UNKNOWN")
         self.assertFalse(self.entry["applicability"]["exact_engine_gearbox_pair"])
