@@ -217,6 +217,29 @@ class ElptsOttsSourceRightsTests(unittest.TestCase):
         self.assertEqual(source["rights"]["redistribution_allowed"], "not_established")
 
 
+    def test_2026_11_10_official_homepage_access_conditions_do_not_grant_reuse(self):
+        source = self.source
+        observation = source["official_portal_observations_2026_11_10"]
+        evidence = observation["homepage_evidence"]
+        self.assertEqual(evidence["url"], "https://elpts.ru/")
+        self.assertEqual(evidence["observed_at"], "2026-11-10")
+        self.assertEqual(evidence["official_page_lines"]["paid_reports"], [388, 391, 393, 396, 398, 401])
+        self.assertEqual(evidence["official_page_lines"]["eotts_training_materials"], [574, 577, 579])
+        self.assertEqual(evidence["official_page_lines"]["national_register_link"], [596, 598])
+        self.assertIn("separate addenda", evidence["observations"]["paid_reports"])
+        self.assertIn("official organization profile", evidence["observations"]["eotts_training_materials"])
+        self.assertIn("rst.gov.ru", evidence["observations"]["national_register"])
+        self.assertIn("no dataset licence", evidence["observations"]["reference_books"])
+        self.assertIn("do not establish a dataset-specific licence", evidence["interpretation"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+        self.assertEqual(source["rights"]["offline_cache_allowed"], "not_established")
+        self.assertEqual(source["rights"]["bulk_reuse_allowed"], "not_established")
+        self.assertEqual(source["rights"]["redistribution_allowed"], "not_established")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
