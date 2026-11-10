@@ -665,7 +665,7 @@ def main() -> None:
         raise SystemExit("Run77 UI guard script and its logs must be retained in Windows CI evidence artifacts")
 
     cardir_resolver_marker = "      - name: Resolve pinned CarDir VAG owner-manual facts pack from source register"
-    cardir_resolver_step = text.split(cardir_resolver_marker, 1)[1].split("\\n      - name: Download verified CarDir", 1)[0]
+    cardir_resolver_step = text.split(cardir_resolver_marker, 1)[1].split("\n      - name: Download verified CarDir", 1)[0]
     for required in ("ConvertFrom-Json -AsHashtable", "$pack.artifact_run_id", "$pack.artifact_id", "$pack.artifact_sha256", "$pack.source_manifest_sha256", "$pack.source_snapshot_sha256", "Get-FileHash"):
         if required not in cardir_resolver_step:
             raise SystemExit(f"CarDir resolver must use immutable source-register artifact pins: {required}")
@@ -677,7 +677,7 @@ def main() -> None:
     ownerspecs_marker = "      - name: Resolve pinned OwnerSpecs VAG CC BY-SA research pack"
     if ownerspecs_marker not in text:
         raise SystemExit("Windows workflow is missing the pinned OwnerSpecs research-pack resolver")
-    ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\\n      - name:", 1)[0]
+    ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\n      - name:", 1)[0]
     if "ConvertFrom-Json -AsHashtable" not in ownerspecs_step:
         raise SystemExit("OwnerSpecs resolver must preserve case-sensitive manufacturer keys in the source-rights register")
 
