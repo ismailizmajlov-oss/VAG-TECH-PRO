@@ -2,8 +2,8 @@ from __future__ import annotations
 import json
 import unittest
 from pathlib import Path
-ROOT = Path(__file__).resolve().parents[1]
-REGISTER = ROOT / "data" / "source-manifests" / "vag-factory-source-register.json"
+ROOT=Path(__file__).resolve().parents[1]
+REGISTER=ROOT/"data"/"source-manifests"/"vag-factory-source-register.json"
 class CardirLiveSnapshotProbeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -30,19 +30,20 @@ class CardirLiveSnapshotProbeTests(unittest.TestCase):
         self.assertTrue(p["row_order_changed"]); self.assertTrue(p["semantic_rows_unchanged_excluding_page_url"])
         self.assertFalse(p["exact_row_multiset_unchanged"]); self.assertTrue(p["exact_vag_values_unchanged"])
         self.assertTrue(p["exact_vag_subset_unchanged_except_page_url"]); self.assertEqual(p["non_page_url_field_changes"],0)
-    def test_previous_pack_is_retained_and_new_snapshot_is_not_claimed_as_packaged(self):
+    def test_current_pack_is_verified_but_not_yet_integrated_in_desktop(self):
+        self.assertEqual(self.pack["status"],"verified_research_only")
+        self.assertEqual(self.pack["pack_build_status"],"verified_research_only")
+        self.assertTrue(self.pack["research_pack_current"])
+        self.assertFalse(self.pack["research_database_included_in_desktop"])
         self.assertEqual(self.pack["source_snapshot_sha256"],"902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb")
-        self.assertEqual(self.pack["status"],"source_snapshot_updated_research_pack_rebuild_pending")
-        self.assertEqual(self.pack["pack_build_status"],"rebuild_pending_after_live_source_update")
-        self.assertFalse(self.pack["research_pack_current"]); self.assertFalse(self.pack["research_database_included_in_desktop"])
-        previous=self.pack["previous_verified_pack"]
-        self.assertEqual(previous["artifact_id"],13736057820); self.assertEqual(previous["artifact_run_number"],126)
-        self.assertEqual(previous["source_snapshot_sha256"],"d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf")
-        self.assertEqual(previous["database_sha256"],"8536c2a545115334803733ed037d714e6b80bfdd65236bef7c72108a7c977a76")
-        self.assertEqual(self.pack["previous_verified_pack_history"][-1]["artifact_run_number"],83)
+        self.assertEqual(self.pack["artifact_id"],13740955733); self.assertEqual(self.pack["artifact_run_number"],145)
+        self.assertEqual(self.pack["database_sha256"],"20b5f84ec5e265ea7455cdfa149bf357864d4c9d7571933d65d4f75d80025b4f")
+        self.assertEqual(self.pack["source_row_hashes_verified"],948); self.assertTrue(self.pack["source_row_number_mapping_verified"])
+        self.assertEqual(self.pack["sqlite_integrity_check"],"ok"); self.assertEqual(self.pack["foreign_key_violations"],0)
+        self.assertEqual(self.pack["desktop_integration_status"],"verified_research_pack_current_desktop_integration_pending")
+        self.assertEqual(self.pack["previous_verified_pack"]["artifact_run_number"],126)
         self.assertEqual(self.pack["previous_desktop_lifecycle_evidence"]["run_number"],1208)
         self.assertIsNone(self.pack["desktop_lifecycle_evidence"])
-        self.assertEqual(self.pack["desktop_integration_status"],"previous_pack_run1208_current_snapshot_not_yet_packaged")
         self.assertFalse(self.entry["data_ingested"]); self.assertFalse(self.entry["product_import_allowed"])
         self.assertFalse(self.entry["applicability"]["exact_vehicle_fitment"])
         self.assertFalse(self.entry["applicability"]["exact_engine_gearbox_pair"])
