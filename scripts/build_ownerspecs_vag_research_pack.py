@@ -240,8 +240,18 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         retrieved_at_utc = datetime.now(timezone.utc).isoformat()
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    source_copy = output_dir / "source.json"
+    copied_source_json = False
+    if source_json.resolve() != source_copy.resolve():
+        if source_copy.exists() or source_copy.is_symlink():
+            raise FileExistsError(f"Refusing to overwrite an existing OwnerSpecs pack source snapshot: {source_copy}")
+        source_copy.write_bytes(source_json.read_bytes())
+        source_json = source_copy
+        copied_source_json = True
     database_path = output_dir / "ownerspecs-vag-research.sqlite"
     if database_path.exists() or database_path.is_symlink():
+        if copied_source_json:
+            source_copy.unlink(missing_ok=True)
         raise FileExistsError(f"Refusing to overwrite an existing research database: {database_path}")
     db = sqlite3.connect(database_path)
     try:
@@ -392,7 +402,7 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         db.execute("""
           INSERT INTO source_files VALUES (?,?,?,?,?,?,?,?,?)
         """, (
-            "ownerspecs-dataset-json", SOURCE_ID, "dataset.json", source["data_revision"],
+            "ownerspecs-dataset-json", SOURCE_ID, "source.json", source["data_revision"],
             snapshot_hash, snapshot_size, len(generations),
             sum(int(g.get("verified_datapoints") or 0) for g in generations),
             retrieved_at_utc,
@@ -416,6 +426,8 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         db.rollback()
         db.close()
         database_path.unlink(missing_ok=True)
+        if copied_source_json:
+            source_copy.unlink(missing_ok=True)
         raise
     else:
         db.close()
