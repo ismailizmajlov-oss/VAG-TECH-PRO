@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-10T03:05:41.607Z",
+  "updated_at": "2026-11-10T03:13:59.217Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -8297,7 +8297,35 @@
         "artifact_created_at": "2026-11-10T02:28:00Z",
         "artifact_expires_at": "2027-02-08T02:27:09Z",
         "pack_verified_at": "2026-11-10T02:28:00Z",
-        "source_file_included_in_desktop": false
+        "source_file_included_in_desktop": false,
+        "latest_live_probe": {
+          "status": "observed_unpinned_live_csv_order_change_only",
+          "data_updated_at": "2026-11-09",
+          "retrieved_at_utc": "2026-11-10T03:11:09.539790+00:00",
+          "source_manifest_sha256": "9ea9a26e8bd75e95016f3925fed4ee2b3119343fb67329bedfdb40ce0eb310fe",
+          "previous_pinned_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+          "live_raw_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
+          "source_file_bytes": 15174126,
+          "source_row_count": 44272,
+          "model_count": 611,
+          "vag_row_count": 948,
+          "vag_model_count": 26,
+          "source_rows_added": 0,
+          "source_rows_removed": 0,
+          "source_rows_net_change": 0,
+          "vag_rows_added": 0,
+          "vag_rows_removed": 0,
+          "vag_rows_net_change": 0,
+          "row_order_changed": true,
+          "exact_row_multiset_unchanged": true,
+          "exact_vag_subset_unchanged": true,
+          "full_row_multiset_sha256": "d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74",
+          "vag_row_multiset_sha256": "ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b",
+          "comparison_method": "For each CSV row, SHA-256 of UTF-8 JSON with sorted keys, ensure_ascii=false and compact separators; compare sorted multisets of row hashes. Exact multiset comparison across all 44,272 rows and exact VAG allowlist subset.",
+          "review_status": "exact_multiset_comparison_verified; only CSV row order changed; no row/value changes; existing pinned research pack remains valid; no new data imported"
+        },
+        "pinned_snapshot_retained": true,
+        "latest_live_probe_reviewed_at": "2026-11-10"
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     },
