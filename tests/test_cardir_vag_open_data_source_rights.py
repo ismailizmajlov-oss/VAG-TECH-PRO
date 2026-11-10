@@ -31,10 +31,19 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(len(matches),1); source=matches[0]
         self.assertIs(source["data_ingested"],False); self.assertIs(source["product_import_allowed"],False)
         self.assertEqual(source["rights"]["permission_status"],"not_required_under_published_CC_BY_4_0")
-        self.assertEqual(source["research_pack"]["status"],"source_snapshot_acquired_schema_verified")
+        self.assertEqual(source["research_pack"]["status"],"verified_research_only")
         self.assertEqual(source["research_pack"]["vag_fact_rows"],948)
         self.assertEqual(source["research_pack"]["vag_models"],26)
         self.assertEqual(source["research_pack"]["source_snapshot_sha256"],"30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4")
+        self.assertEqual(source["verification_status"],"licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending")
+        self.assertEqual(source["research_pack"]["pack_build_status"],"verified_research_only")
+        self.assertEqual(source["research_pack"]["desktop_integration_status"],"pending_windows_desktop_lifecycle")
+        self.assertEqual(source["research_pack"]["database_sha256"],"bc6df970cff98f71980e402ac8744937d17741ccb0361e301610c65b1f0f8850")
+        self.assertEqual(source["research_pack"]["source_manifest_sha256"],"9ea9a26e8bd75e95016f3925fed4ee2b3119343fb67329bedfdb40ce0eb310fe")
+        self.assertEqual(source["research_pack"]["pack_manifest_sha256"],"463f527fe8582f58cf67320894c6ec0edc9b958ae5162926216105fc3e5a3524")
+        self.assertEqual(source["research_pack"]["artifact_sha256"],"32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
         self.assertIs(source["research_pack"]["production_import"],False)
     def test_current_snapshot_change_review_is_conservative_and_does_not_claim_unavailable_delta(self):
         change = self.manifest["snapshot"]["change_review"]
