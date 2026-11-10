@@ -8,7 +8,7 @@ const researchRoot = path.resolve(__dirname, "../data/research");
 
 test("CarDir pack is a hash-verified CC BY 4.0 research-only SQLite resource", () => {
   const summary = getCardirSummary(researchRoot);
-  assert.equal(summary.counts.sourceRows, 44245);
+  assert.equal(summary.counts.sourceRows, 44272);
   assert.equal(summary.counts.vagFacts, 948);
   assert.equal(summary.counts.vagBrands, 5);
   assert.equal(summary.counts.vagModels, 26);
