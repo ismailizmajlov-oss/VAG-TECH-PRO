@@ -768,16 +768,16 @@ def main() -> None:
     if "run-id: ${{ steps.mechanicdb-pack.outputs.run_id }}" not in mechanicdb_download:
         raise SystemExit("MechanicDB download must use the verified source-register run ID, not an unverified hard-coded run")
 
-    # run93 must update the VehiclesDB manifest-driven reader gate before
-    # run68 calls getResearchSummary(); otherwise v2026.11.3 is rejected by
-    # the stale 260/1524 counts.
+    # run68 aligns the full VehiclesDB provenance predicate with the v2026.11.3
+    # schema. run93 must follow it: its count-gate replacement is idempotent,
+    # and it adds the returned identity-only flags plus verifier assertions.
     revision_step = "      - name: Bind VehiclesDB test revision to the pinned manifest (run89)"
-    candidate_gate_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
     wikidata_step = "      - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)"
-    if not all(step in text for step in (revision_step, candidate_gate_step, wikidata_step)):
+    candidate_gate_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
+    if not all(step in text for step in (revision_step, wikidata_step, candidate_gate_step)):
         raise SystemExit("Windows workflow is missing a required VehiclesDB/Wikidata integration step")
-    if not (text.index(revision_step) < text.index(candidate_gate_step) < text.index(wikidata_step)):
-        raise SystemExit("VehiclesDB revision binding and identity-only gate must run before Wikidata integration")
+    if not (text.index(revision_step) < text.index(wikidata_step) < text.index(candidate_gate_step)):
+        raise SystemExit("VehiclesDB revision binding, provenance alignment and identity-only gate must run in order")
 
     vehiclesdb_patcher = (ROOT / "apply-vehiclesdb-candidate-count-guard-run93.cjs").read_text(encoding="utf-8")
     manifest_driven_vehiclesdb_gate = (
@@ -791,7 +791,7 @@ def main() -> None:
     )
     missing_dynamic_gate = [marker for marker in manifest_driven_vehiclesdb_gate if marker not in vehiclesdb_patcher]
     if missing_dynamic_gate:
-        raise SystemExit(f"VehiclesDB pre-summary patch must enforce manifest counts and identity-only safety boundary: {missing_dynamic_gate}")
+        raise SystemExit(f"VehiclesDB candidate gate must enforce manifest counts and identity-only safety boundary: {missing_dynamic_gate}")
 
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
