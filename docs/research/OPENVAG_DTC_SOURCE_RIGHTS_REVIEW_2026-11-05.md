@@ -1,4 +1,4 @@
-# OpenVAG DTC dataset — rights, provenance and applicability review (2026-11-05)
+# OpenVAG DTC dataset — rights, provenance and applicability review (2026-11-10)
 
 ## Decision
 
@@ -61,3 +61,10 @@ The maintainer must provide:
 The source is registered as `openvag-riz4d-dtc-candidate` in `data/source-manifests/vag-factory-source-register.json`. Status is quarantined; `data_ingested=false`; `source_snapshot_sha256=null`. It is excluded from Windows offline packs and from all DTC lookup namespaces.
 
 No external account, paid access, API key, download or contact with the maintainer was initiated.
+
+
+## Recheck — 2026-11-10
+
+The pinned upstream `main` revision remains `407d5e042cf46d55087ed4ae4e056605f2b04f08`. The root `LICENSE` file is present (Git blob SHA-1 `e4d04cc8ef5aaf11907d50758fc397fe05215391`) and declares MIT for the repository software and associated documentation. The current `.gitignore` explicitly excludes `db/openvag.db`; a direct GitHub Contents API lookup for that path returned HTTP 404. `app/main.py` references `scripts/init_db.py`, but that path also returned HTTP 404. The database bytes remain unavailable, so the publisher's README row counts cannot be reproduced and no database SHA-256 can be recorded. No acquisition, extraction, import, display, cache or redistribution was performed.
+
+This recheck does not change the decision: keep the source quarantined. The repository-level MIT declaration is not treated as a dataset-specific licence or evidence that the maintainer can sublicense third-party DTC definitions, fault variants, symptoms, causes or repair solutions.

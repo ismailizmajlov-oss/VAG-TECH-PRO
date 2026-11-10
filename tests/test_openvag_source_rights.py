@@ -54,6 +54,18 @@ class OpenVAGSourceRightsTests(unittest.TestCase):
         self.assertFalse(evidence["database_generation_script_present"])
         self.assertFalse(evidence["release_artifact_present"])
         self.assertIsNone(self.manifest["provenance_review"]["data_snapshot_sha256"])
+        latest = self.manifest["latest_recheck"]
+        self.assertEqual(latest["observed_at"], "2026-11-10")
+        self.assertEqual(latest["repository_revision"], self.manifest["pinned_revision"])
+        self.assertEqual(latest["database_path"], "db/openvag.db")
+        self.assertFalse(latest["database_file_present_in_default_branch"])
+        self.assertEqual(latest["database_fetch_result"], "GitHub Contents API returned HTTP 404 Not Found")
+        self.assertTrue(latest["gitignore_explicitly_excludes_database"])
+        self.assertEqual(latest["generation_script_path_referenced"], "scripts/init_db.py")
+        self.assertFalse(latest["generation_script_present_in_default_branch"])
+        self.assertFalse(latest["database_bytes_received"])
+        self.assertIsNone(latest["database_sha256"])
+        self.assertEqual(latest["import_eligibility"], "blocked_quarantine_only")
 
     def test_no_record_level_provenance_or_fitment_is_claimed(self):
         provenance = self.manifest["provenance_review"]
@@ -94,6 +106,35 @@ class OpenVAGSourceRightsTests(unittest.TestCase):
         self.assertFalse(applicability["engine_gearbox_pairing"])
         self.assertFalse(applicability["exact_ecu_part_number_hw_sw_fitment"])
         self.assertIn("quarantined_no_import", entry["project_decision"])
+        latest = entry["latest_review"]
+        self.assertEqual(latest["observed_at"], "2026-11-10")
+        self.assertEqual(latest["repository_revision"], self.manifest["pinned_revision"])
+        self.assertFalse(latest["database_file_present"])
+        self.assertEqual(latest["database_fetch_result"], "HTTP_404_NOT_FOUND")
+        self.assertTrue(latest["database_path_gitignored"])
+        self.assertFalse(latest["referenced_generation_script_present"])
+        self.assertFalse(latest["database_bytes_received"])
+        self.assertIsNone(latest["database_sha256"])
+        for field in ("data_import_allowed", "display_allowed", "offline_cache_allowed", "redistribution_allowed"):
+            self.assertFalse(latest[field])
+
+    def test_all_openvag_source_register_aliases_remain_quarantined(self):
+        entries = [
+            item for item in self.registry["sources"]
+            if item.get("url") == "https://github.com/riz4d/OpenVAG"
+        ]
+        self.assertGreaterEqual(len(entries), 1)
+        for entry in entries:
+            with self.subTest(source_id=entry.get("source_id")):
+                self.assertIs(entry.get("data_ingested"), False)
+                if "product_import_allowed" in entry:
+                    self.assertIs(entry["product_import_allowed"], False)
+                if "source_snapshot_sha256" in entry:
+                    self.assertIsNone(entry["source_snapshot_sha256"])
+                rights = entry.get("rights", {})
+                self.assertNotIn(rights.get("permission_status"), ("approved", "approved_by_published_license_for_reuse"))
+                for field in ("display_allowed", "offline_cache_allowed", "redistribution_allowed"):
+                    self.assertNotIn(rights.get(field), (True, "approved", "allowed"))
 
     def test_publisher_counts_are_not_treated_as_verified_rows(self):
         claims = self.manifest["claimed_counts_from_upstream_documentation"]
@@ -115,6 +156,18 @@ class OpenVAGSourceRightsTests(unittest.TestCase):
         self.assertFalse(policy["offline_cache_allowed"])
         self.assertFalse(policy["redistribution_allowed"])
         self.assertIn("Do not ingest or display", policy["decision"])
+
+    def test_latest_recheck_document_records_missing_bytes_and_no_promotion(self):
+        review = (self.root / "docs" / "research" / "OPENVAG_DTC_SOURCE_RIGHTS_REVIEW_2026-11-05.md").read_text(encoding="utf-8").casefold()
+        for phrase in (
+            "recheck — 2026-11-10",
+            "returned http 404",
+            "no database sha-256 can be recorded",
+            "not treated as a dataset-specific licence",
+            "keep the source quarantined",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, review)
 
     def test_no_openvag_snapshot_is_materialized_in_research_tree(self):
         research_dir = self.root / "data" / "research"

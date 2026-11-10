@@ -3,7 +3,7 @@
   "source_id": "openvag-community-dtc-api",
   "publisher": "riz4d / OpenVAG",
   "repository_url": "https://github.com/riz4d/OpenVAG",
-  "reviewed_at": "2026-11-04",
+  "reviewed_at": "2026-11-10",
   "pinned_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
   "repository_license": {
     "id": "MIT",
@@ -32,6 +32,10 @@
       {
         "path": ".gitignore",
         "git_blob_sha1": "6fe697c8fe8a3bb7bb2892b3d27892164393fef8"
+      },
+      {
+        "path": "LICENSE",
+        "git_blob_sha1": "e4d04cc8ef5aaf11907d50758fc397fe05215391"
       }
     ],
     "tracked_data_artifact": false,
@@ -84,5 +88,22 @@
     "offline_cache_allowed": false,
     "redistribution_allowed": false,
     "decision": "Do not ingest or display. Re-review only if the upstream maintainer supplies the actual database artifact, reproducible build inputs, record-level provenance, and an explicit data license covering commercial display, offline caching and redistribution."
+  },
+  "latest_recheck": {
+    "observed_at": "2026-11-10",
+    "repository_revision": "407d5e042cf46d55087ed4ae4e056605f2b04f08",
+    "license_file_git_blob_sha1": "e4d04cc8ef5aaf11907d50758fc397fe05215391",
+    "license_scope": "Root MIT text licenses repository software and associated documentation files; it does not establish provenance or sublicensing rights for absent/generated or third-party-derived DTC database content.",
+    "database_path": "db/openvag.db",
+    "database_file_present_in_default_branch": false,
+    "database_fetch_result": "GitHub Contents API returned HTTP 404 Not Found",
+    "gitignore_explicitly_excludes_database": true,
+    "generation_script_path_referenced": "scripts/init_db.py",
+    "generation_script_present_in_default_branch": false,
+    "database_bytes_received": false,
+    "database_sha256": null,
+    "row_level_source_provenance_observed": false,
+    "published_counts_status": "README and db/README publisher claims only; not independently reproducible without database bytes",
+    "import_eligibility": "blocked_quarantine_only"
   }
 }
