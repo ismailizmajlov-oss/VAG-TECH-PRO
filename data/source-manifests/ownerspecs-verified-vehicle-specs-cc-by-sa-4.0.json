@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "source_id": "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0",
+  "publisher": "ownerspecs.com",
+  "source_kind": "curated_document_verified_vehicle_generation_specifications",
+  "reviewed_at": "2026-11-10",
+  "data_revision": "Publisher states the dataset was generated 2026-11-09; fresh live review on 2026-11-10 confirms the HTML page and JSON descriptor both report 111 generations.",
+  "source_urls": {
+    "dataset_page": "https://ownerspecs.com/data",
+    "json": "https://ownerspecs.com/data/dataset.json",
+    "csv": "https://ownerspecs.com/data/dataset.csv",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "rights": {
+    "rights_status": "approved_by_published_CC_BY_SA_4_0_for_separate_research_pack",
+    "permission_status": "not_required_under_published_CC_BY_SA_4_0",
+    "license_id": "CC-BY-SA-4.0",
+    "license_name": "Creative Commons Attribution-ShareAlike 4.0 International",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "commercial_use_allowed": true,
+    "display_allowed": true,
+    "offline_cache_allowed": true,
+    "bulk_reuse_allowed": true,
+    "redistribution_allowed": true,
+    "attribution_required": true,
+    "share_alike_required": true,
+    "separate_pack_required": true,
+    "attribution_text": "Vehicle data from ownerspecs.com (https://ownerspecs.com), licensed under CC BY-SA 4.0. Modified: filtered to VAG brands and stored as a separate research-only SQLite pack.",
+    "evidence_urls": [
+      "https://ownerspecs.com/data",
+      "https://ownerspecs.com/data/dataset.json",
+      "https://creativecommons.org/licenses/by-sa/4.0/"
+    ],
+    "evidence_summary": "The publisher's open-data page explicitly licenses its machine-readable generation/specification facts under CC BY-SA 4.0, permits commercial reuse and redistribution with attribution, and states that no manual text is reproduced. Share-Alike applies to adapted database material."
+  },
+  "snapshot": {
+    "status": "source_snapshot_acquired_schema_verified",
+    "publisher_generated_date": "2026-11-09",
+    "html_page_generation_count": 111,
+    "json_descriptor_generation_count": 111,
+    "html_page_brand_count": 27,
+    "html_page_verified_datapoint_count": 2369,
+    "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
+    "source_file_bytes": 683641,
+    "retrieved_at_utc": "2026-11-10T01:29:53.763466+00:00",
+    "note": "Exact public JSON acquired by Windows x64 CI run #13. The source descriptor and actual array reconcile to 111 generations and 2,369 datapoints; the exact VAG allowlist retains 20 generation candidates and 233 facts. Source SHA-256 is pinned. All rows remain UNKNOWN-market, not independently reviewed, and research-only."
+  },
+  "data_scope": {
+    "dataset_title": "ownerspecs.com — verified vehicle specifications",
+    "publisher_claimed_market_scope": "Global · multi-market",
+    "normalized_market_scope": "UNKNOWN",
+    "expected_generation_fields": [
+      "brand",
+      "model",
+      "generation",
+      "generation_slug",
+      "url",
+      "year_start",
+      "year_end",
+      "body_type",
+      "dimensions_mm",
+      "fuel_tank_l",
+      "verified_datapoints",
+      "specifications",
+      "masses",
+      "tyres"
+    ],
+    "expected_specification_fields": [
+      "field",
+      "label",
+      "value",
+      "value_max",
+      "unit",
+      "is_range",
+      "sources",
+      "provenance"
+    ],
+    "provenance_kinds": {
+      "oem_portal": "Manufacturer owner's manual / OEM portal",
+      "workshop_dataset": "Professional workshop technical dataset",
+      "official_open_data": "Government vehicle registry / open data",
+      "first_party_scan": "First-party photo of the vehicle's own placard / type plate"
+    },
+    "primary_document_locator_per_value_in_json": false,
+    "primary_document_revision_per_value_in_json": false,
+    "source_count_per_value": true,
+    "provenance_kind_per_value": true,
+    "no_manual_text_reproduced": true,
+    "no_images_or_manual_files_included": true,
+    "vag_brand_filter_required": true
+  },
+  "applicability_policy": {
+    "market_scope": "UNKNOWN",
+    "generation_and_year_span": "publisher_candidate_only_until_independent_primary_document_review",
+    "model_generation_verified": false,
+    "model_year_verified": false,
+    "exact_factory_engine_code_mapping": false,
+    "exact_factory_gearbox_code_mapping": false,
+    "exact_engine_gearbox_pair": false,
+    "exact_vehicle_fitment": false,
+    "ru_eaeu_applicability": false,
+    "ecu_fitment": false,
+    "dtc_fitment": false,
+    "repair_procedure_applicability": false,
+    "critical_technical_values_publishable": false,
+    "engine_code_field_semantics": "Publisher values may be broad engine-family labels or variant summaries; do not assume every value is a canonical three-letter VAG engine code."
+  },
+  "import_policy": {
+    "rights_allow_separate_research_pack": true,
+    "acquisition_allowed": true,
+    "research_pack_import_allowed": true,
+    "research_pack_read_only": true,
+    "product_database_ingested": false,
+    "data_ingested": false,
+    "production_import": false,
+    "product_import_allowed": false,
+    "require_source_snapshot_sha256": true,
+    "require_row_sha256": true,
+    "require_count_reconciliation": true,
+    "require_sharealike_isolated_database": true,
+    "require_attribution_in_ui_and_pack": true
+  },
+  "limitations": [
+    "The acquired JSON contains 111 publisher generations and 2,369 publisher-verified datapoints; the exact VAG allowlist retains 20 generation candidates and 233 facts. These counts do not establish factory applicability.",
+    "The CSV endpoint is not the canonical input to this builder; the separate JSON snapshot is acquired, hashed and count-reconciled. Any future CSV acquisition must be independently hashed and reconciled before use.",
+    "The publisher's public JSON exposes provenance kinds and source counts, but not a primary-document URL or revision for each individual value.",
+    "The dataset's global multi-market label is not a market-by-market applicability map; normalized market scope remains UNKNOWN.",
+    "Generation-level ranges and broad engine-family strings do not establish an individual vehicle's exact engine, gearbox or ECU.",
+    "No exact VAG engine-to-gearbox pairs, ECU mappings, DTCs, wiring diagrams, pinouts, adaptations or repair procedures are established by this dataset.",
+    "Any future integration must remain a separate CC BY-SA 4.0 database with visible attribution and Share-Alike compliance; do not merge it into a differently licensed production database.",
+    "The exact source JSON is pinned for the separate research pack only; no values have been imported into the production vehicle or technical library database."
+  ],
+  "evidence_reviewed": [
+    {
+      "url": "https://ownerspecs.com/data",
+      "reviewed_at": "2026-11-10",
+      "observation": "Fresh live HTML page reports 111 generations, 27 brands and 2,369 verified datapoints; it declares CC BY-SA 4.0, commercial reuse with attribution, and describes the provenance kinds."
+    },
+    {
+      "url": "https://ownerspecs.com/data/dataset.json",
+      "reviewed_at": "2026-11-10",
+      "observation": "Fresh live JSON descriptor reports generation_count=111, matching the HTML page; it declares CC BY-SA 4.0, attribution_required=true and per-value source counts/provenance kinds."
+    },
+    {
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "reviewed_at": "2026-11-10",
+      "observation": "CC BY-SA 4.0 permits sharing and adaptation, including commercial use, subject to attribution, indication of changes and Share-Alike for adapted material."
+    }
+  ],
+  "verification_status": "license_observed; source_snapshot_acquired; json_generation_and_datapoint_counts_reconciled; vag_filter_verified; sqlite_integrity_and_row_hashes_verified; applicability_candidate_only",
+  "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. Windows x64 CI acquired and hashed the exact JSON snapshot, reconciled 111 generations and 2,369 datapoints, and built a separate VAG-filtered SQLite containing 20 generation candidates and 233 facts. Keep market UNKNOWN, technical review not independently reviewed, and all repair/fitment applicability disabled. Pin the source snapshot hash; do not import into the production repair database."
+}
