@@ -12,7 +12,7 @@ The publisher's published CC BY-SA 4.0 licence permits commercial reuse, display
 
 A fresh live review on 2026-11-10 confirms that the HTML dataset page and JSON descriptor both report **111 generations**. The HTML page also reports **27 brands and 2,369 verified datapoints**. The earlier 112-generation observation came from a stale indexed response and is superseded by the current live page/JSON pair.
 
-Windows x64 acquisition workflow run #13 completed on 2026-11-10 at 01:29:53 UTC. It downloaded the exact JSON snapshot (683,641 bytes; SHA-256 `7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d`), reconciled the actual 111-generation array and 2,369 datapoints, and built a separate SQLite pack with **20 VAG generation candidates and 233 VAG facts**. The initial pack passed SQLite integrity, foreign-key, row-hash, attribution and applicability-boundary checks. The source snapshot SHA-256 is now pinned in the source manifest; the pack is being rebuilt against the pinned manifest before it can be marked acquired for the current revision.
+Windows x64 acquisition workflow run #21 completed on 2026-11-10 at 01:32:44 UTC. It downloaded the exact JSON snapshot (683,641 bytes; SHA-256 \`7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d\`), reconciled the actual 111-generation array and 2,369 datapoints, and built a separate SQLite pack with **20 VAG generation candidates and 233 VAG facts**. The source snapshot SHA-256 is pinned in the source manifest. The final pack was rebuilt against that pinned manifest and independently verified: source-manifest SHA-256 \`3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb\`, SQLite SHA-256 \`1ce220adbd1b535137d01b8957e5d3aca538e2294c6cb2ca157bba385d93ceea\`, pack-manifest SHA-256 \`6374cc2e2889d8b1f94f717d9dca7abd32c57034eb3248d78e65a1c96c90585e\`, and artifact ZIP SHA-256 \`557c166b18985c68ad90c928e59699372b54b9a750e1505752d342f6197626cf\`. Independent local verification confirmed SQLite integrity ok, zero foreign-key violations, exact source-to-row hash parity, 20 VAG generations and 233 facts. All critical-value and fitment flags remain false.
 
 ## What the dataset contains
 
@@ -38,12 +38,12 @@ Neither those labels nor generation-level ranges establish an exact vehicle, eng
 
 CC BY-SA 4.0 requires attribution and Share-Alike for adapted material. If acquired, the VAG-filtered SQLite database and any adapted database material must remain separately packaged and clearly labelled CC BY-SA 4.0. The application must show the required attribution and identify the VAG filtering/modifications. Do not include owner-manual PDFs, workshop documents, images or other underlying source files merely because factual rows are licensed.
 
-## Required before publication
+## Publication and production boundary
 
 1. The exact public JSON snapshot is acquired and pinned by SHA-256. The CSV endpoint is not used by this pack builder and is not assumed to be part of the snapshot.
 2. Windows CI reconciled JSON `generation_count=111`, actual generation-array length, HTML page count, unique brand count and the published 2,369 datapoints. If the CSV is acquired in a later revision, hash it separately and reconcile its rows before use.
 3. The exact VAG brand allowlist retains 20 generations and 233 facts; raw brand/model/generation labels, year spans, values, units, source counts, provenance kinds and generation URLs are preserved.
-4. The pack stores the source snapshot hash, source manifest hash, generation hashes, fact-row hashes, schema/revision, licence and attribution. Rebuild against the newly pinned source manifest before marking the current artifact revision acquired.
+4. The final pack stores the pinned source snapshot hash, current source-manifest hash, generation hashes, fact-row hashes, schema/revision, licence and attribution. This artifact is acquired and verified; keep its hashes in the central source register.
 5. Keep every record in a separate research-only namespace with `market_scope=UNKNOWN`, `technical_review_status=not_independently_reviewed` and no production-fitment promotion.
 6. Treat all engine-code strings as candidates; do not parse grouped strings into canonical factory codes or infer engine/gearbox pairs.
 7. Independently verify any critical value against the cited primary document before it can enter the professional repair library.
