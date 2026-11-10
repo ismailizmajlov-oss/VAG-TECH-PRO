@@ -3565,7 +3565,8 @@
           "product_import_allowed": false,
           "note": "Public Yandex Disk listing linked from the official ELPTS homepage; no reuse licence stated. Not downloaded."
         }
-      ]
+      ],
+      "product_import_allowed": false
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
@@ -8184,7 +8185,7 @@
       "market_scope": [
         "UNKNOWN"
       ],
-      "data_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T02:23:10Z; SHA-256 30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+      "data_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T03:11:09Z; SHA-256 5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
       "evidence_scope": [
         "owner_manual_reference_facts",
         "fluids",
@@ -8223,9 +8224,9 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending",
+      "verification_status": "latest_source_snapshot_order_only_change_verified_pack_refresh_pending",
       "research_pack": {
-        "status": "verified_research_only",
+        "status": "verified_research_only_previous_snapshot",
         "research_pack_allowed": true,
         "production_import": false,
         "exact_engine_gearbox_pair": false,
@@ -8279,7 +8280,7 @@
         "vag_verified_at_changed_groups_since_previous_pinned_snapshot": 0,
         "vag_page_url_changed_groups_since_previous_pinned_snapshot": 0,
         "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
-        "pack_build_status": "verified_research_only",
+        "pack_build_status": "verified_research_only_previous_snapshot",
         "latest_snapshot_review": {
           "previous_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
           "current_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
@@ -8359,7 +8360,11 @@
           "review_status": "exact_multiset_comparison_verified; only CSV row order changed; no row/value changes; existing pinned research pack remains valid; no new data imported"
         },
         "pinned_snapshot_retained": true,
-        "latest_live_probe_reviewed_at": "2026-11-10"
+        "latest_live_probe_reviewed_at": "2026-11-10",
+        "latest_snapshot_refresh_status": "new_exact_source_snapshot_pinned_sqlite_rebuild_pending",
+        "latest_source_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
+        "latest_source_rows_multiset_sha256": "d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74",
+        "latest_vag_rows_multiset_sha256": "ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b"
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
     },
