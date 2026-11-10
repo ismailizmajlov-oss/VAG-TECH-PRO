@@ -46,7 +46,7 @@ function fixture(overrides = {}) {
   const tick = String.fromCharCode(96);
   const dollar = String.fromCharCode(36);
   const interpolation = dollar + "{JSON.stringify(vehiclesDbCounts)}";
-  const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
+  const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + interpolation + tick + ");";
   const oldVerifierBoundary = 'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
   fs.writeFileSync(path.join(root, "scripts", "verify-local-research-packs.cjs"), oldVerifierCountGate + "\n" + oldVerifierBoundary + "\n");
   fs.writeFileSync(path.join(root, "tests", "local-research-db.test.cjs"),
@@ -125,8 +125,8 @@ test("run93 composes after run68's manifest-driven count guard without rewriting
     const tick = String.fromCharCode(96);
     const dollar = String.fromCharCode(36);
     const interpolation = dollar + "{JSON.stringify(vehiclesDbCounts)}";
-    const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
-    const run68VerifierCountGate = "assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDb foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
+    const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + interpolation + tick + ");";
+    const run68VerifierCountGate = "assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + interpolation + tick + ");";
     assert.equal(verifierBefore.split(oldVerifierCountGate).length - 1, 1);
     fs.writeFileSync(verifierPath, verifierBefore.replace(oldVerifierCountGate, run68VerifierCountGate));
     const first = run(root);
