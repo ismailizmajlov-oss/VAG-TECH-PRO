@@ -688,9 +688,15 @@ def main() -> int:
         args.output_dir.mkdir(parents=True, exist_ok=True)
         destination = args.output_dir / "source.json"
         if source_json.resolve() != destination.resolve():
-            if destination.exists():
+            if destination.exists() or destination.is_symlink():
                 raise FileExistsError(f"Refusing to overwrite existing source JSON: {destination}")
             destination.write_bytes(source_json.read_bytes())
+            acquisition_snapshot_source = source_json.parent / "acquisition-snapshot.json"
+            acquisition_snapshot_target = args.output_dir / "acquisition-snapshot.json"
+            if acquisition_snapshot_source.is_file() and not acquisition_snapshot_source.is_symlink():
+                if acquisition_snapshot_target.exists() or acquisition_snapshot_target.is_symlink():
+                    raise FileExistsError(f"Refusing to overwrite existing acquisition snapshot: {acquisition_snapshot_target}")
+                acquisition_snapshot_target.write_bytes(acquisition_snapshot_source.read_bytes())
         source_json = destination
     manifest = build_pack(source_json, args.source_manifest, args.output_dir)
     print(json.dumps({"status": manifest["status"], "counts": manifest["counts"], "source_snapshot_sha256": manifest["source_snapshot_sha256"], "database_sha256": manifest["database"]["sha256"]}, ensure_ascii=False))
