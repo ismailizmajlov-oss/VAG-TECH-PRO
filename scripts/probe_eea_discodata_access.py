@@ -33,9 +33,9 @@ HOST = "discodata.eea.europa.eu"
 
 
 def _network_status(message: str) -> str:
-    if re.search(r"HTTP 403\\b", message, re.IGNORECASE):
+    if re.search(r"HTTP 403\b", message, re.IGNORECASE):
         return "blocked_http_403"
-    if re.search(r"HTTP (?:429|500|502|503|504)\\b", message, re.IGNORECASE):
+    if re.search(r"HTTP (?:429|500|502|503|504)\b", message, re.IGNORECASE):
         return "transient_http_error"
     return "request_rejected"
 
@@ -103,7 +103,7 @@ def main() -> int:
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     report = probe()
-    encoded = json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\\n"
+    encoded = json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(encoded, encoding="utf-8")
