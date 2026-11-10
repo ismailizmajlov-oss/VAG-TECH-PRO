@@ -137,7 +137,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         tables={r[0] for r in self.db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         self.assertTrue({"technical_source_rights","technical_documents","technical_applicability","technical_records"}<=tables)
         views={r[0] for r in self.db.execute("SELECT name FROM sqlite_master WHERE type='view'")}
-        self.assertTrue({"v_published_technical_records","v_generic_dtc_test_plans","v_vag_specific_dtc_test_plans"}<=views)
+        self.assertTrue({"v_published_technical_records","v_generic_dtc_test_plans","v_vag_specific_dtc_test_plans","v_published_oem_dtc_index"}<=views)
 
     def test_exact_engine_transmission_record_requires_complete_evidence_and_publishes(self) -> None:
         self.seed_published_exact_pair()
@@ -393,6 +393,81 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
                 self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (row_id,))
         self.assertEqual(self.db.execute("SELECT count(*) FROM oem_dtc_index").fetchone()[0], len(codes))
         self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+
+
+    def test_oem_dtc_publication_requires_full_source_rights_and_hides_revoked_rights(self) -> None:
+        source_document_id = self.insert_source_document(
+            "test-oem-dtc-rights", "TEST-OEM-DTC-RIGHTS",
+            source_sha256=self.h("a"), market_scope="EU"
+        )
+        self.db.execute("""INSERT INTO oem_dtc_index
+          (dtc_code,dtc_namespace,manufacturer,market_scope,engine_code,transmission_code,
+           engine_code_explicit,transmission_code_explicit,source_document_id,evidence_locator,
+           applicability_level,source_claim_hash,created_at_utc)
+          VALUES ('P1A20','manufacturer_specific_vag','AUDI','EU','CCTA','DQ250',1,1,?,
+                  'approval annex / exact variant row','engine_transmission_variant',?,?)""",
+          (source_document_id,self.h("b"),UTC))
+        dtc_id = self.db.execute("SELECT oem_dtc_id FROM oem_dtc_index WHERE dtc_code='P1A20'").fetchone()[0]
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "source reuse rights"):
+            self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (dtc_id,))
+
+        self.add_approved_technical_rights(source_document_id)
+        self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (dtc_id,))
+        self.assertEqual(self.db.execute("SELECT count(*) FROM v_published_oem_dtc_index").fetchone()[0], 1)
+
+        self.db.execute("UPDATE technical_source_rights SET rights_status='restricted' WHERE source_document_id=?", (source_document_id,))
+        self.assertEqual(self.db.execute("SELECT count(*) FROM v_published_oem_dtc_index").fetchone()[0], 0)
+
+    def test_oem_dtc_publication_requires_precision_specific_identifiers(self) -> None:
+        source_document_id = self.insert_source_document(
+            "test-oem-dtc-precision", "TEST-OEM-DTC-PRECISION",
+            source_sha256=self.h("a"), market_scope="EU"
+        )
+        self.add_approved_technical_rights(source_document_id)
+
+        def add_dtc(code: str, applicability: str, *, ecu_id: int | None = None,
+                    ecu_explicit: int = 0, engine: str | None = None,
+                    transmission: str | None = None, engine_explicit: int = 0,
+                    transmission_explicit: int = 0, vin_explicit: int = 0) -> int:
+            self.db.execute("""INSERT INTO oem_dtc_index
+              (dtc_code,dtc_namespace,manufacturer,market_scope,engine_code,transmission_code,
+               ecu_identity_id,engine_code_explicit,transmission_code_explicit,ecu_hw_sw_explicit,
+               vin_range_explicit,source_document_id,evidence_locator,applicability_level,
+               source_claim_hash,created_at_utc)
+              VALUES (?,'manufacturer_specific_vag','AUDI','EU',?,?,?,?,?,?,?,?,?,?,?,?)""",
+              (code,engine,transmission,ecu_id,engine_explicit,transmission_explicit,
+               ecu_explicit,vin_explicit,source_document_id,'precision evidence row',
+               applicability,self.h("c"),UTC))
+            return int(self.db.execute("SELECT last_insert_rowid()").fetchone()[0])
+
+        no_ecu = add_dtc("P1A21","exact_ecu_hw_sw")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "exact ECU HW/SW"):
+            self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (no_ecu,))
+
+        self.db.execute("""INSERT INTO ecu_identities
+          (supplier,ecu_family,system_name,part_number,hardware_number,software_number,identity_status)
+          VALUES ('Bosch','EDC17','Engine','03L906018AB','HW-01','SW-01','family_only')""")
+        family_ecu_id = int(self.db.execute("SELECT last_insert_rowid()").fetchone()[0])
+        family_only = add_dtc("P1A22","exact_ecu_hw_sw",ecu_id=family_ecu_id,ecu_explicit=1)
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "exact ECU HW/SW"):
+            self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (family_only,))
+
+        incomplete_pair = add_dtc("P1A23","engine_transmission_variant",engine="CCTA",
+                                  engine_explicit=1)
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "both explicit factory codes"):
+            self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (incomplete_pair,))
+
+        no_vin_range = add_dtc("P1A24","exact_vin")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "explicit VIN range"):
+            self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (no_vin_range,))
+
+        self.db.execute("""INSERT INTO ecu_identities
+          (supplier,ecu_family,system_name,part_number,hardware_number,software_number,identity_status)
+          VALUES ('Bosch','EDC17','Engine','03L906018AB','HW-01','SW-01','exact')""")
+        exact_ecu_id = int(self.db.execute("SELECT last_insert_rowid()").fetchone()[0])
+        exact_ecu = add_dtc("P1A25","exact_ecu_hw_sw",ecu_id=exact_ecu_id,ecu_explicit=1)
+        self.db.execute("UPDATE oem_dtc_index SET review_status='publication_approved' WHERE oem_dtc_id=?", (exact_ecu,))
+        self.assertEqual(self.db.execute("SELECT count(*) FROM v_published_oem_dtc_index WHERE dtc_code='P1A25'").fetchone()[0], 1)
 
 
 if __name__ == "__main__":
