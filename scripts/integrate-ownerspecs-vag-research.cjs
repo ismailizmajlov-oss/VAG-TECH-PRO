@@ -35,7 +35,7 @@ function verify(repo,pack,artifact){
   assert(db.prepare("PRAGMA foreign_key_check").all().length===0,"OwnerSpecs foreign-key violations");
   const r=db.prepare("SELECT * FROM source_registry").get();
   assert(r.source_id===SOURCE&&r.license_id==="CC-BY-SA-4.0"&&r.share_alike_required===1&&r.separate_pack_required===1&&r.market_scope==="UNKNOWN"&&r.research_pack_only===1&&r.production_import===0&&r.product_import_allowed===0&&r.exact_engine_gearbox_pair===0&&r.ru_eaeu_applicability===0&&r.critical_technical_values_publishable===0,"OwnerSpecs DB registry boundary failed");
-  const g=db.prepare("SELECT count(*) n FROM generations").get().n,f=db.prepare("SELECT count(*) n FROM facts").get().n;
+  const g=db.prepare("SELECT count(*) n FROM generations").get().n,f=db.prepare("SELECT count(*) n FROM facts").get().n;\n  assert(db.prepare("SELECT count(*) n FROM generations WHERE length(generation_sha256)!=64 OR generation_sha256 GLOB '*[^0-9a-f]*'").get().n===0,"OwnerSpecs generation SHA-256 values invalid");
   assert(g===20&&f===233,"OwnerSpecs VAG row counts changed");
   assert(db.prepare("SELECT count(*) n FROM generations WHERE market_scope!='UNKNOWN' OR technical_review_status!='not_independently_reviewed' OR exact_engine_gearbox_pair!=0 OR ru_eaeu_applicability!=0").get().n===0,"OwnerSpecs generations crossed candidate boundary");
   assert(db.prepare("SELECT count(*) n FROM facts WHERE market_scope!='UNKNOWN' OR technical_review_status!='not_independently_reviewed' OR critical_value_publishable!=0 OR exact_engine_gearbox_pair!=0 OR ru_eaeu_applicability!=0 OR primary_document_url IS NOT NULL OR primary_document_revision IS NOT NULL OR length(source_row_sha256)!=64").get().n===0,"OwnerSpecs facts crossed candidate/provenance boundary");
