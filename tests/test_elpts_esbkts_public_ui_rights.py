@@ -16,7 +16,7 @@ class ElptsEsbktsPublicUiRightsTests(unittest.TestCase):
         cls.central = json.loads(CENTRAL.read_text(encoding="utf-8"))
         cls.sources = {item["source_id"]: item for item in cls.central["sources"]}
 
-    def test_source_is_separate_sb kts_discovery_only_entry(self):
+    def test_source_is_separate_sbkts_discovery_only_entry(self):
         source = self.sources["elpts-esbkts-public-query"]
         self.assertEqual(source["source_kind"], "official_public_query_for_electronic_sbkts_certificates")
         self.assertEqual(source["url"], "https://docs.elpts.ru/ncher/esbkts")
@@ -74,7 +74,7 @@ class ElptsEsbktsPublicUiRightsTests(unittest.TestCase):
         self.assertIn("exact engine-gearbox pair", " ".join(source["not_confirmed"]))
         self.assertIn("individual-vehicle", source["project_decision"])
 
-    def test_sb kts_is_not_mixed_into_the_otts_import_manifest(self):
+    def test_sbkts_is_not_mixed_into_the_otts_import_manifest(self):
         regional = json.loads(REGIONAL_OTTS.read_text(encoding="utf-8"))
         regional_ids = {item["source_id"] for item in regional["sources"]}
         self.assertNotIn("elpts-esbkts-public-query", regional_ids)
