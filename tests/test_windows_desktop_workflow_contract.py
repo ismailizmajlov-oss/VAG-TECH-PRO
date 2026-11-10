@@ -28,9 +28,13 @@ def main() -> None:
             "Native Windows 10/11 lifecycle trigger does not match the current desktop workflow name: "
             + desktop_workflow_name.group(1)
         )
-    status_workflow = re.search(r'(?m)^\s+upstream_workflow:\s*"([^"]+)"', native_text)
-    if not status_workflow or status_workflow.group(1) != desktop_workflow_name.group(1):
-        raise SystemExit("Native Windows status record must identify the exact upstream desktop workflow")
+    status_workflow = re.search(r'(?m)^\s+upstream_workflow\s*=\s*"([^"]+)"', native_text)
+    actual_status_workflow = status_workflow.group(1) if status_workflow else "<missing>"
+    if actual_status_workflow != desktop_workflow_name.group(1):
+        raise SystemExit(
+            "Native Windows status record must identify the exact upstream desktop workflow; "
+            f"expected {desktop_workflow_name.group(1)!r}, found {actual_status_workflow!r}"
+        )
     if "windows-lifecycle-staging/desktop-source/lib/local-research-db.cjs" not in text:
         raise SystemExit("Windows audit artifact must include the local research verifier source")
     if "windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/manifest.json" not in text:
@@ -350,7 +354,7 @@ def main() -> None:
         "Verify packaged source manifests and technical library schemas",
         "vag-tech-pro-windows-x64-run71",
     ):
-        if marker not in workflow:
+        if marker not in text:
             raise SystemExit(f"Windows workflow is missing technical-library packaging contract: {marker}")
 
     patch_set_line = next((line for line in text.splitlines() if "patch_set = " in line), "")
@@ -438,17 +442,26 @@ def main() -> None:
     if "desktop_offline_entry = 'app/desktop'" not in metadata_step_for_offline or "desktop_offline_entry_patch_sha256" not in metadata_step_for_offline:
         raise SystemExit("Build metadata does not bind the dedicated offline entry and its patch hash")
 
-    print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
-    rdw_step_marker = "      - name: Resolve latest successful RDW NL/EU research pack run"
+    rdw_step_marker = "      - name: Resolve latest successful RDW NL/EU research pack compatible with pinned manifest"
     if rdw_step_marker not in text:
         raise SystemExit("Windows workflow is missing the current RDW pack resolver")
     rdw_step = text.split(rdw_step_marker, 1)[1].split("\n      - name:", 1)[0]
-    if 'for ($attempt = 0; $attempt -lt 120 -and $run.status -ne "completed"; $attempt++)' not in rdw_step or "Start-Sleep -Seconds 20" not in rdw_step:
-        raise SystemExit("RDW pack resolver must allow a 40-minute completion window for the measured acquisition duration")
-    if "timeout-minutes: 90" not in text:
-        raise SystemExit("Windows build job must leave headroom after the 40-minute RDW pack wait")
+    rdw_required = (
+        '$successfulRuns = @($response.workflow_runs | Where-Object { $_.head_branch -eq "main" -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "workflow_dispatch") } | Sort-Object run_number -Descending)',
+        '$run = $successfulRuns | Select-Object -First 1',
+        '$latestObservedRun = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1',
+        'using latest successful run',
+        'source-manifest and snapshot hashes to the pinned repository manifest',
+        '$digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()',
+        '$digest -notmatch "^[a-f0-9]{64}$"',
+    )
+    missing_rdw_contract = [marker for marker in rdw_required if marker not in rdw_step]
+    if missing_rdw_contract:
+        raise SystemExit(f"RDW resolver must select a completed successful run and verify its pinned artifact digest: {missing_rdw_contract}")
+    if not re.search(r"(?m)^\s+timeout-minutes:\s+\d+", text):
+        raise SystemExit("Windows build job must retain an explicit bounded timeout")
 
     if "name: Create desktop source inventory for technical-section audit" not in text:
         raise SystemExit("Desktop source technical-surface inventory step is missing")
@@ -550,7 +563,7 @@ def main() -> None:
         'python -m unittest discover -s tests -p "test_cardir_vag_open_data_pack.py" -v',
         "python tests/test_cardir_vag_open_data_source_rights.py",
         "node --check scripts/integrate-cardir-vag-owner-manual-facts.cjs",
-        "Resolve CarDir VAG owner-manual facts pack for exact source revision",
+        "Resolve pinned CarDir VAG owner-manual facts pack from source register",
         "Download verified CarDir VAG owner-manual facts SQLite research pack",
         "node scripts/integrate-cardir-vag-owner-manual-facts.cjs",
         "node --test desktop-source/tests/cardir-vag-reference-facts-db.test.cjs desktop-source/tests/cardir-vag-reference-facts-ui-contract.test.cjs",
@@ -575,7 +588,7 @@ def main() -> None:
     cardir_verifier = ROOT / "desktop" / "scripts" / "verify-cardir-vag-open-data-pack.cjs"
     if not cardir_verifier.is_file() or 'require("../lib/cardir-vag-reference-facts-db.cjs")' not in cardir_verifier.read_text(encoding="utf-8"):
         raise SystemExit("CarDir verifier must resolve the database module from the staged scripts directory")
-    cardir_integrate_marker = "      - name: Integrate CarDir VAG owner-manual facts into offline desktop"
+    cardir_integrate_marker = "      - name: Integrate CarDir VAG reference facts into offline desktop"
     if not (text.index(kba_integrate_marker) < text.index(cardir_integrate_marker) < text.index(desktop_tests_marker) < text.index(installer_build_marker)):
         raise SystemExit("CarDir pack must be integrated and verified after KBA and before desktop tests and NSIS packaging")
     if "cardir_database_sha256=$($cardirSummary.databaseSha256)" not in text or "cardir_vag_owner_manual_facts_database_sha256 = $cardirDatabaseHash" not in text:
@@ -663,6 +676,99 @@ def main() -> None:
         raise SystemExit("Windows build metadata must record the exact run77 UI guard patch SHA-256")
     if text.count("apply-vehicle-config-ui-guard-run77.cjs") < 4:
         raise SystemExit("Run77 UI guard script and its logs must be retained in Windows CI evidence artifacts")
+
+    cardir_resolver_marker = "      - name: Resolve pinned CarDir VAG owner-manual facts pack from source register"
+    cardir_resolver_step = text.split(cardir_resolver_marker, 1)[1].split("\n      - name: Download verified CarDir", 1)[0]
+    for required in ("ConvertFrom-Json -AsHashtable", "$pack.artifact_run_id", "$pack.artifact_id", "$pack.artifact_sha256", "$pack.source_manifest_sha256", "$pack.source_snapshot_sha256", "Get-FileHash"):
+        if required not in cardir_resolver_step:
+            raise SystemExit(f"CarDir resolver must use immutable source-register artifact pins: {required}")
+    if "$expectedHeadSha" in cardir_resolver_step:
+        raise SystemExit("CarDir pack resolution must be pinned to source-manifest and snapshot hashes, not a transient repository commit")
+    build_cardir_workflow = (ROOT / ".github" / "workflows" / "build-cardir-vag-open-data-pack.yml").read_text(encoding="utf-8")
+    if "data/source-manifests/vag-factory-source-register.json" in build_cardir_workflow:
+        raise SystemExit("CarDir pack rebuild must not be triggered by source-register artifact-pin updates; that creates a provenance rebuild loop")
+    ownerspecs_marker = "      - name: Resolve pinned OwnerSpecs VAG CC BY-SA research pack"
+    if ownerspecs_marker not in text:
+        raise SystemExit("Windows workflow is missing the pinned OwnerSpecs research-pack resolver")
+    ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\n      - name:", 1)[0]
+    if ownerspecs_step.count("ConvertFrom-Json -AsHashtable") != 1 or "ConvertFrom-Json -AsHashtable -AsHashtable" in ownerspecs_step:
+        raise SystemExit("OwnerSpecs resolver must use exactly one -AsHashtable to preserve case-sensitive source-register keys")
+    owner_hash_bindings = (
+        '@{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_file); hash=$ownerEntry.source_file_sha256 }',
+        '@{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_snapshot_file); hash=$ownerEntry.source_snapshot_file_sha256 }',
+        '@{ path=(Join-Path $ownerResearchRoot $ownerEntry.acquisition_snapshot_file); hash=$ownerEntry.acquisition_snapshot_sha256 }',
+    )
+    missing_owner_hash_bindings = [marker for marker in owner_hash_bindings if marker not in step]
+    if missing_owner_hash_bindings or '$ownerEntry.source_snapshot_file); hash=$ownerEntry.source_snapshot_sha256' in step:
+        raise SystemExit(f"OwnerSpecs lifecycle must hash the raw source, snapshot metadata and acquisition snapshot using their distinct digest fields: {missing_owner_hash_bindings}")
+    rights_step_marker = "      - name: Validate offline data-pack tooling and rights boundaries"
+    if rights_step_marker not in text:
+        raise SystemExit("Windows workflow is missing the offline data-pack rights validation step")
+    rights_step = text.split(rights_step_marker, 1)[1].split("\n      - name:", 1)[0]
+    if '$PSNativeCommandUseErrorActionPreference = $true' not in rights_step:
+        raise SystemExit("PowerShell rights-validation step must fail on every non-zero native command")
+    rights_command_order = (
+        "python tests/test_community_vag_candidate_packs_source_rights.py",
+        'if ($LASTEXITCODE -ne 0) { throw "Community VAG candidate-pack source rights and display policy failed." }',
+        "python tests/test_ownerspecs_source_rights.py",
+        'if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }',
+        "python tests/test_cardir_source_rights.py",
+        'if ($LASTEXITCODE -ne 0) { throw "CarDir live snapshot multiset review failed." }',
+    )
+    rights_positions = [rights_step.find(marker) for marker in rights_command_order]
+    if any(position < 0 for position in rights_positions) or rights_positions != sorted(rights_positions):
+        raise SystemExit("OwnerSpecs and CarDir source-rights checks must each immediately follow their own test command")
+
+    pull_request_trigger = text.split("  pull_request:", 1)[1].split("\njobs:", 1)[0]
+    owner_paths = (
+        "scripts/integrate-ownerspecs-vag-research.cjs",
+        "tests/test_ownerspecs_source_rights.py",
+        "tests/ownerspecs-pack-integration-contract.test.cjs",
+        "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json",
+        "desktop/ownerspecs-vag-research-db.cjs",
+    )
+    missing_owner_paths = [path for path in owner_paths if ('"' + path + '"') not in pull_request_trigger]
+    if missing_owner_paths:
+        raise SystemExit(f"Windows pull-request path filter must rerun for OwnerSpecs integration changes: {missing_owner_paths}")
+
+    mechanicdb_register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+    mechanicdb_entries = [entry for entry in mechanicdb_register["sources"] if entry.get("source_id") == "mechanicdb-vag-dtc-candidates-odbl"]
+    if len(mechanicdb_entries) != 1:
+        raise SystemExit("MechanicDB candidate source must have exactly one central register entry")
+    mechanicdb = mechanicdb_entries[0]
+    mechanicdb_expected = {
+        "research_pack_run_id": 41622526550,
+        "research_pack_run_number": 8,
+        "research_pack_artifact_id": 13223942420,
+        "research_pack_artifact_name": "mechanicdb-audi-vw-dtc-candidates-odbl-research",
+        "research_pack_source_commit": "05a58d9e800dc9d725f3cc254857f68c32cf59c6",
+        "artifact_sha256": "f294bf4ebe6384b2ad6a586244ba0c49011fb441c691006c460d8a070744a5d6",
+        "source_snapshot_sha256": "f123b251659b45f4acf64071329dec6dc3a4ba1c8b2f827ff1ad3b45e28e0c94",
+        "source_csv_sha256": "796fa2b18bdbff311f15eb4943b68adbf7241e564ce8eff32023a2d297694bff",
+        "display_status": "candidate_reference_visible_separate_namespace",
+    }
+    for key, value in mechanicdb_expected.items():
+        if mechanicdb.get(key) != value:
+            raise SystemExit(f"MechanicDB source-register pin mismatch for {key}")
+    if mechanicdb.get("research_pack_ingested") is not True or mechanicdb.get("data_ingested") is not False or mechanicdb.get("product_database_ingested") is not False:
+        raise SystemExit("MechanicDB must remain an isolated research pack and never enter the production catalog")
+    if mechanicdb.get("counts", {}).get("generic_sae_iso_rows") != 0 or mechanicdb.get("counts", {}).get("manufacturer_controlled_candidates") != 2:
+        raise SystemExit("MechanicDB candidate pack must contain only the two make-labelled candidates and zero generic DTC rows")
+    if mechanicdb.get("display_policy", {}).get("diagnostic_execution_allowed") is not False or mechanicdb.get("display_policy", {}).get("vag_oem_confirmation") is not False:
+        raise SystemExit("MechanicDB candidate display must remain non-actionable and not OEM-confirmed")
+
+    mechanicdb_resolver_marker = "      - name: Verify pinned MechanicDB Audi/VW candidate artifact"
+    if mechanicdb_resolver_marker not in text:
+        raise SystemExit("Windows workflow is missing the MechanicDB artifact ID/digest resolver")
+    mechanicdb_resolver = text.split(mechanicdb_resolver_marker, 1)[1].split("\n      - name: Download MechanicDB candidate pack", 1)[0]
+    for required in ("ConvertFrom-Json -AsHashtable", "research_pack_run_id", "research_pack_artifact_id", "actions/runs/$runId/artifacts", "artifact.digest", "artifact_sha256", "research_pack_source_commit"):
+        if required not in mechanicdb_resolver:
+            raise SystemExit(f"MechanicDB resolver is missing a pinned artifact/provenance check: {required}")
+    mechanicdb_download = text.split("      - name: Download MechanicDB candidate pack", 1)[1].split("\n      - name:", 1)[0]
+    if "run-id: ${{ steps.mechanicdb-pack.outputs.run_id }}" not in mechanicdb_download:
+        raise SystemExit("MechanicDB download must use the verified source-register run ID, not an unverified hard-coded run")
+
+    print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 if __name__ == "__main__":
     main()

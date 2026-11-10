@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - automation/obdb-vag-research-pack-run17
+      - automation/ownerspecs-desktop-integration-clean-20261110
     paths:
       - .github/workflows/acquire-obdb-vag-signalsets.yml
       - data/source-manifests/obdb-vag-signalsets.json

@@ -164,7 +164,7 @@ class OfflineDataPackRightsTests(unittest.TestCase):
     def test_desktop_research_sync_guard_matches_obdex_locked_ranges(self):
         lock = json.loads((ROOT / "data" / "source-manifests" / "obdex-generic-cc0.lock.json").read_text(encoding="utf-8"))
         sync_source = (ROOT / "scripts" / "sync-desktop-research-manifest.cjs").read_text(encoding="utf-8")
-        self.assertIn("(sourceManifest.sources || []).length !== 16", sync_source)
+        self.assertIn("(sourceManifest.sources || []).length !== 38", sync_source)
         allowed = json.dumps(lock["scope"]["generic_code_ranges"])
         excluded = json.dumps(lock["scope"]["excluded_manufacturer_controlled_ranges"])
         self.assertIn(f"JSON.stringify(scope.generic_code_ranges) !== JSON.stringify({allowed})", sync_source)

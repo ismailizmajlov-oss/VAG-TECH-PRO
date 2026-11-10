@@ -106,3 +106,36 @@ Verified hashes:
 - Windows artifact SHA-256: `32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d`
 
 SQLite `integrity_check=ok`, `foreign_key_check=0`; all 948 source-row hashes are valid. The pack records CC BY 4.0 attribution, market UNKNOWN, publisher verification but no independent OEM technical review, no exact engine/gearbox pair, no RU/EAEU applicability, and `production_import=false` / `product_import_allowed=false`. It remains a separate read-only research pack; desktop lifecycle integration is pending.
+
+## Live source probe — 2026-11-10
+
+A later live acquisition probe retrieved a byte-different CSV snapshot (SHA-256 `5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a`, 15,174,126 bytes; retrieved at `2026-11-10T03:11:09.539790+00:00`). The pinned snapshot remains `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`.
+
+The two CSVs were compared as exact multisets of all 12 source fields, not merely by row counts. Both contain 44,272 rows, 611 brand/model pairs, 948 exact-allowlist VAG rows and 26 VAG models. The order-independent full-row multiset SHA-256 is identical for both snapshots: `d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74`. The VAG-subset multiset SHA-256 is also identical: `ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b`. Exact multiset comparison found zero added rows, zero removed rows and zero changed VAG values; only CSV row order changed.
+
+The new raw snapshot was therefore recorded as an unpinned live probe, not silently substituted for the reviewed pack input. The existing pinned CC BY 4.0 research pack remains valid and unchanged. The acquisition builder correctly fails closed on a raw SHA-256 mismatch until a new snapshot is explicitly reviewed and pinned. No production data was imported.
+
+
+## 2026-11-10 source-order-only refresh — 03:11 UTC
+
+A repeat acquisition of the official CarDir CSV returned a new byte-level snapshot: `5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a`, 15,174,126 bytes. The previously pinned snapshot was `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`. An exact row-hash multiset comparison over all parsed CSV rows found no additions, removals or value changes: 44,272 rows and 611 brand/model pairs in both snapshots. Full-row multiset SHA-256: `d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74`.
+
+The exact VAG allowlist subset is unchanged at 948 rows across 26 models. Its row-multiset SHA-256 is `ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b`. No VAG rows were added or removed. The byte-level hash changed because row order changed. The new exact source snapshot is pinned, and a fresh Windows SQLite pack build is required because source row numbers are part of the provenance. The old SQLite pack remains explicitly labelled as verified for the previous snapshot only until the new pack is independently built and verified.
+
+All CarDir facts remain a separate CC BY 4.0 research resource with market UNKNOWN, publisher verification but no independent OEM review, no exact engine/gearbox codes or pair, no model generation/year, no RU/EAEU applicability, no ECU/DTC fitment, and no production import or repair authorization.
+
+
+## 2026-11-10 Windows SQLite refresh verification — run #83
+
+The exact 2026-11-10 03:11 UTC CSV snapshot (`5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a`) was rebuilt as a separate Windows research SQLite pack in GitHub Actions run #83 (`42749534305`). Artifact id `13733081894`, artifact SHA-256 `6613fb01c9b1555e5afb872356df841c49edd5c83f92a7786966daec2826a251`. Database SHA-256 `0aab9c87e863586f1db059499800b1161f52e99e941c5773350ea42bd441da9f`; pack manifest SHA-256 `070eca034f11acc9f4345896c71166a0269c20a1ce52412735cfd9ca8528ed4b`; source manifest SHA-256 `527240b1784c435ba747fc033d29f25e369dc84476b4a5e123f780c1aee206a1`; source-snapshot file SHA-256 `c586cd707824df0ef5e3ad85dcd81abcf7927b5da5947691b66d9b1ecf1768ee`; build report SHA-256 `b3551d1cc2aa6fdda3930c18e43d2d2fe5c2f754a8aefa6f39d2a99712e8626b`.
+
+Independent verification: SQLite `integrity_check=ok`, zero foreign-key violations, 948/948 row SHA-256 values verified against the exact source CSV row numbers, and all source row-number references map to the new pinned snapshot. The pack contains 948 VAG allowlist facts across 26 models, 5 brands and 19 parameter keys. The full 44,272-row source multiset and exact VAG subset remain unchanged from the previous byte snapshot; only row order changed. The raw source CSV is not included in the desktop pack; source URL, byte SHA-256, row-level hashes, source revision, attribution and CC BY 4.0 license are retained.
+
+This remains a separate research-only pack: market UNKNOWN, no generation/year, no exact engine or gearbox code/pair, no ECU/DTC/repair applicability, no RU/ЕАЭС applicability, no production import and no critical repair-value approval. Full desktop lifecycle verification is still required before marking desktop integration complete.
+
+
+## 2026-11-10 live endpoint reversion probe — 06:28 UTC
+
+The next Windows acquisition probe retained the exact live CSV bytes at SHA-256 `d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf` (15,178,035 bytes; 44,272 rows; 611 brand/model pairs; 948 exact-allowlist VAG rows across 26 models). The byte hash is the same older snapshot already independently built and verified in Windows run #126. Its exact row-multiset fingerprints also match that retained review: full source `af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f`, VAG subset `6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0`.
+
+The current pinned source remains the newer 2026-11-10 05:51 snapshot `902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb`, whose separate SQLite pack was rebuilt and verified in run #145 (artifact `13740955733`). The live endpoint therefore returned an older previously verified byte snapshot. The acquisition correctly failed closed on the pinned SHA-256 mismatch; it did not silently downgrade the source register or replace the newer run #145 pack. The run #145 pack remains current for its pinned snapshot. No new VAG technical values or production applicability are inferred from this probe.

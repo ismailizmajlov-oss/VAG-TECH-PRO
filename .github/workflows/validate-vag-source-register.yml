@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
+      - "tests/test_ownerspecs_source_rights.py"
+      - "tests/test_cardir_source_rights.py"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "tests/test_kba_germany_open_data_source_rights.py"
@@ -91,6 +95,10 @@ on:
     branches: [main]
     paths:
       - "data/source-manifests/vag-factory-source-register.json"
+      - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
+      - "tests/test_ownerspecs_source_rights.py"
+      - "tests/test_cardir_source_rights.py"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "tests/test_kba_germany_open_data_source_rights.py"

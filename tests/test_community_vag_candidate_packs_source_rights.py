@@ -37,14 +37,23 @@ class CommunityVagCandidatePackRightsTests(unittest.TestCase):
         self.assertIs(source["diagnostic_execution_allowed"], False)
         self.assertIs(source["repair_advice_approved"], False)
 
-    def test_mechanicdb_rows_remain_hidden_make_candidates(self):
+    def test_mechanicdb_rows_remain_read_only_separate_research_candidates(self):
         source = SOURCES["mechanicdb-vag-dtc-candidates-odbl"]
         rights = source["rights"]
         self.assertEqual(source["pinned_revision"], "c788dfe9ed1517d4cd0be27f5aacb4776abf4864")
         self.assertEqual(source["market_scope"], ["UNKNOWN"])
         self.assertEqual(source["applicability_precision"], "manufacturer_make_candidate")
         self.assertEqual(source["verification_status"], "community_reference_unverified")
-        self.assertEqual(source["display_status"], "hidden_pending_technical_review")
+        self.assertEqual(source["display_status"], "candidate_reference_visible_separate_namespace")
+        self.assertIs(source["research_pack_ingested"], True)
+        self.assertIs(source["data_ingested"], False)
+        self.assertIs(source["product_database_ingested"], False)
+        self.assertEqual(source["research_pack_run_id"], 41622526550)
+        self.assertEqual(source["research_pack_artifact_id"], 13223942420)
+        self.assertEqual(source["artifact_sha256"], "f294bf4ebe6384b2ad6a586244ba0c49011fb441c691006c460d8a070744a5d6")
+        self.assertEqual(source["display_policy"]["namespace"], "manufacturer_controlled_candidate")
+        self.assertIs(source["display_policy"]["vag_oem_confirmation"], False)
+        self.assertIs(source["display_policy"]["diagnostic_execution_allowed"], False)
         self.assertEqual(rights["database_license"], "ODbL-1.0")
         self.assertEqual(rights["documentation_license"], "CC-BY-4.0")
         for key in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed",

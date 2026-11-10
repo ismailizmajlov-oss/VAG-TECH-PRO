@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-10T00:27:29Z",
+  "updated_at": "2026-11-10",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1872,7 +1872,7 @@
       ],
       "applicability_precision": "manufacturer_make_candidate",
       "verification_status": "community_reference_unverified",
-      "display_status": "hidden_pending_technical_review",
+      "display_status": "candidate_reference_visible_separate_namespace",
       "counts": {
         "manufacturer_controlled_candidates": 2,
         "audi_candidates": 1,
@@ -1922,14 +1922,51 @@
         "No generic SAE/ISO rows are included; generic DTC remains in a separate namespace.",
         "No diagnostic execution, repair procedure, OEM part mapping or approved test plan."
       ],
-      "project_decision": "allow_separate_candidate_pack_only_under_ODbL; keep hidden from normal DTC lookup pending technical review; never describe as verified VAG-specific or enable diagnostic execution",
-      "evidence_status": "pinned_source_csv_and_pack_independently_audited_2026-11-05; physical source-line hashes, pack hashes and SQLite integrity verified",
+      "project_decision": "allow_separate_candidate_pack_only_under_ODbL; visible only in a read-only separate research tab; hidden from normal DTC lookup; never describe as verified VAG-specific or enable diagnostic execution",
+      "evidence_status": "pinned_source_csv_and_pack_independently_audited_2026-11-05; artifact run #8 / 41622526550 and artifact 13223942420 SHA-256 pinned; visible only as separate community candidates",
       "exact_vehicle_fitment": false,
       "ecu_fitment": false,
       "pr_code_fitment": false,
       "diagnostic_execution_allowed": false,
       "repair_advice_approved": false,
-      "data_ingested": false
+      "data_ingested": false,
+      "research_pack_ingested": true,
+      "product_database_ingested": false,
+      "research_pack_run_id": 41622526550,
+      "research_pack_run_number": 8,
+      "research_pack_artifact_id": 13223942420,
+      "research_pack_artifact_name": "mechanicdb-audi-vw-dtc-candidates-odbl-research",
+      "research_pack_source_commit": "05a58d9e800dc9d725f3cc254857f68c32cf59c6",
+      "display_policy": {
+        "status": "candidate_reference_visible_separate_namespace",
+        "purpose": "read_only_research_reference_only",
+        "namespace": "manufacturer_controlled_candidate",
+        "exposed_fields": [
+          "dtc_code",
+          "oem_make",
+          "system_category",
+          "fault_family",
+          "short_description",
+          "source_revision",
+          "source_line_no",
+          "source_line_sha256",
+          "source_file_sha256"
+        ],
+        "excluded_fields": [
+          "detailed_technical_explanation",
+          "repair_actions",
+          "test_plan",
+          "ecu_fitment",
+          "vehicle_fitment",
+          "pr_code_fitment",
+          "oem_part_mapping"
+        ],
+        "exact_vehicle_fitment": false,
+        "vag_oem_confirmation": false,
+        "diagnostic_execution_allowed": false,
+        "repair_procedures_included": false,
+        "oem_part_numbers_included": false
+      }
     },
     {
       "source_id": "obdb-vag-signalsets-cc-by-sa",
@@ -1945,8 +1982,7 @@
           "model": "A4",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A4",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-Q7",
@@ -1956,8 +1992,7 @@
           "model": "Q7",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q7",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Golf",
@@ -1967,8 +2002,7 @@
           "model": "Golf",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Golf",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Passat",
@@ -1978,8 +2012,7 @@
           "model": "Passat",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Passat",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-ID.4",
@@ -1989,8 +2022,7 @@
           "model": "ID.4",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_ID.4",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Seat-Tarraco",
@@ -2000,8 +2032,7 @@
           "model": "Tarraco",
           "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Tarraco",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-A3",
@@ -2011,8 +2042,7 @@
           "model": "A3",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A3",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-A5",
@@ -2022,8 +2052,7 @@
           "model": "A5",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A5",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Audi-A6",
@@ -2033,8 +2062,7 @@
           "model": "A6",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_A6",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Tiguan",
@@ -2044,8 +2072,7 @@
           "model": "Tiguan",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Tiguan",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Jetta",
@@ -2055,8 +2082,7 @@
           "model": "Jetta",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Jetta",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Volkswagen-Polo",
@@ -2066,8 +2092,7 @@
           "model": "Polo",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Polo",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Seat-Leon",
@@ -2077,8 +2102,7 @@
           "model": "Leon",
           "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Leon",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": false
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Skoda-Octavia",
@@ -2088,8 +2112,7 @@
           "model": "Octavia",
           "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Octavia",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": true
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Skoda-Superb",
@@ -2099,8 +2122,7 @@
           "model": "Superb",
           "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Superb",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": true
+          "license_id": "CC-BY-SA-4.0"
         },
         {
           "repository": "OBDb/Skoda-Fabia",
@@ -2110,33 +2132,252 @@
           "model": "Fabia",
           "generation_reference_url": "https://en.wikipedia.org/wiki/Skoda_Fabia",
           "license_file": "LICENSE",
-          "license_id": "CC-BY-SA-4.0",
-          "generation_only": true
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-Touareg",
+          "commit_sha": "3a3e2fbd005c062c1d9680452a04c114a54321eb",
+          "commit_date": "2026-11-02T01:49:19Z",
+          "make": "Volkswagen",
+          "model": "Touareg",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Touareg",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Audi-Q5",
+          "commit_sha": "6404e34ae5233ba7af8bd6f280d1049927490951",
+          "commit_date": "2026-11-02T17:58:55Z",
+          "make": "Audi",
+          "model": "Q5",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q5",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Seat-Ibiza",
+          "commit_sha": "23d9a88695333237d6c1bc34584468538377df61",
+          "commit_date": "2026-11-08T00:01:28Z",
+          "make": "SEAT",
+          "model": "Ibiza",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Ibiza",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Formentor",
+          "commit_sha": "0ec97ea9736f06111defd60fe499a91e3e2f16a1",
+          "commit_date": "2026-11-09T19:01:21Z",
+          "make": "CUPRA",
+          "model": "Formentor",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Formentor",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Leon",
+          "commit_sha": "6e0b744dba712922b1dbab05fed5b40f9902710b",
+          "commit_date": "2026-11-10T06:01:08Z",
+          "make": "CUPRA",
+          "model": "Leon",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Leon",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Born",
+          "commit_sha": "c63926843ca5e16fe8e7c35cf5a36898cafaa195",
+          "commit_date": "2026-11-07T14:57:18Z",
+          "make": "CUPRA",
+          "model": "Born",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Born",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-CC",
+          "commit_sha": "90b3d5118de633a7962d4ce1c0596e716043fb5f",
+          "commit_date": "2026-11-02T01:49:30Z",
+          "make": "Volkswagen",
+          "model": "CC",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_CC",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-e-Golf",
+          "commit_sha": "1f80c1a2367ed3962beb28a5525e17a74862d75f",
+          "commit_date": "2026-11-07T03:01:06Z",
+          "make": "Volkswagen",
+          "model": "e-Golf",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_e-Golf",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-ID3",
+          "commit_sha": "a9d43a31b0c8617a93ee7478c24d5d6689bec7bb",
+          "commit_date": "2026-10-30T19:24:58Z",
+          "make": "Volkswagen",
+          "model": "ID.3",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_ID.3",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-T-Cross",
+          "commit_sha": "9216cd0d69644647d3bebda998c45325e210ab29",
+          "commit_date": "2026-11-02T01:44:10Z",
+          "make": "Volkswagen",
+          "model": "T-Cross",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_T-Cross",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-T-Roc",
+          "commit_sha": "25bc38483a0a053644444014100fb49c13dbe898",
+          "commit_date": "2026-11-02T01:44:26Z",
+          "make": "Volkswagen",
+          "model": "T-Roc",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_T-Roc",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Volkswagen-Transporter",
+          "commit_sha": "05f275e8f6f7766e7890581d0205596354aaa474",
+          "commit_date": "2026-11-02T01:49:13Z",
+          "make": "Volkswagen",
+          "model": "Transporter",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Volkswagen_Transporter",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Audi-Q3",
+          "commit_sha": "04f87376f7918501948e0bb5850db663914cb3d9",
+          "commit_date": "2026-11-09T12:57:37Z",
+          "make": "Audi",
+          "model": "Q3",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q3",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Audi-Q8",
+          "commit_sha": "326ae20b47a4411ad66010faeaad5cbb56d2d7f3",
+          "commit_date": "2026-11-09T18:59:52Z",
+          "make": "Audi",
+          "model": "Q8",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Audi_Q8",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Seat-Ateca",
+          "commit_sha": "5f57d9b30fcc3238bb96d93032da954f9c40c23c",
+          "commit_date": "2026-11-02T01:44:32Z",
+          "make": "SEAT",
+          "model": "Ateca",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Ateca",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Seat-Arona",
+          "commit_sha": "45d1f4e9a8d1ba7eff5da8d1e423a6ce07e86637",
+          "commit_date": "2026-11-02T01:47:48Z",
+          "make": "SEAT",
+          "model": "Arona",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/SEAT_Arona",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Tavascan",
+          "commit_sha": "a4d44c1baec5cfcaf7176da2d666c6f75f2139a5",
+          "commit_date": "2026-10-11T19:55:05Z",
+          "make": "CUPRA",
+          "model": "Tavascan",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Tavascan",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Cupra-Terramar",
+          "commit_sha": "30465e079674e664f121efd42b5fb911aae2fcce",
+          "commit_date": "2026-10-31T07:58:07Z",
+          "make": "CUPRA",
+          "model": "Terramar",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/Cupra_Terramar",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Kodiaq",
+          "commit_sha": "bbfbe7a8eb4fca5894e2dbecebd9c7ce10429da8",
+          "commit_date": "2026-10-04T03:56:19Z",
+          "make": "Škoda",
+          "model": "Kodiaq",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Kodiaq",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Kamiq",
+          "commit_sha": "d1c2aafffdf73c260a0b36a969478bd46c419b0e",
+          "commit_date": "2026-10-04T03:56:10Z",
+          "make": "Škoda",
+          "model": "Kamiq",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Kamiq",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Rapid",
+          "commit_sha": "716b5f3b22afba7f6c09b2bdb4c0c6a7d82f3492",
+          "commit_date": "2026-10-04T03:56:38Z",
+          "make": "Škoda",
+          "model": "Rapid",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Rapid",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
+        },
+        {
+          "repository": "OBDb/Skoda-Scala",
+          "commit_sha": "de22f91d6e8af3a87a22a644ba003aeec93b3234",
+          "commit_date": "2026-10-14T14:29:34Z",
+          "make": "Škoda",
+          "model": "Scala",
+          "generation_reference_url": "https://en.wikipedia.org/wiki/%C5%A0koda_Scala",
+          "license_file": "LICENSE",
+          "license_id": "CC-BY-SA-4.0"
         }
       ],
       "source_manifest_path": "data/source-manifests/obdb-vag-signalsets.json",
-      "source_snapshot_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
-      "source_file_count": 64,
-      "source_repository_count": 16,
+      "source_snapshot_sha256": "1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195",
+      "source_file_count": 152,
+      "source_repository_count": 38,
       "market_scope": [
         "UNKNOWN"
       ],
       "applicability_precision": "vehicle_model_and_signal_candidate",
-      "verification_status": "unverified_community_candidate",
+      "verification_status": "verified_research_pack_build_candidate_only_no_production_import",
       "display_status": "read_only_research_candidate",
       "counts": {
-        "source_repositories": 16,
-        "upstream_files": 64,
-        "generation_candidates": 82,
-        "ecu_candidates": 44,
-        "uds_command_candidates": 7890,
-        "signal_candidates": 8446,
+        "source_repositories": 38,
+        "upstream_files": 152,
+        "generation_candidates": 135,
+        "ecu_candidates": 71,
+        "uds_command_candidates": 18387,
+        "signal_candidates": 19799,
         "dtc_definitions": 0,
         "repair_procedures": 0,
         "approved_test_plans": 0,
         "exact_vehicle_fitment_rows": 0,
         "verified_generation_year_mappings": 0,
-        "generation_only_sources": 3
+        "generation_only_sources": 7
       },
       "rights": {
         "data_license": "CC-BY-SA-4.0",
@@ -2166,19 +2407,128 @@
         "factory_pinouts": false,
         "market_scope": "UNKNOWN",
         "generation_candidates": true,
-        "generation_only_sources": 3
+        "generation_only_sources": 7,
+        "excluded_generic_service_ids": [
+          "01"
+        ]
       },
       "project_decision": "allow_separate_read_only_CC_BY_SA_research_pack_only; preserve attribution and share_alike; candidate discovery only; do not present as validated DTC/test plan or exact vehicle/ECU fitment; do not execute UDS commands",
       "limitations": [
-        "Only 16 community repositories and 64 pinned source files are represented; this is not a complete VAG catalogue.",
-        "Skoda Octavia, Superb and Fabia contribute generation candidates only; their signal, ECU and command counts are zero.",
-        "All 7,890 command candidates use UDS service 0x22 and are read-only; execution is disabled and none is an approved test plan.",
-        "No DTC definitions, repair procedures, factory wiring diagrams, pinouts, torque specifications, adaptations or exact vehicle/ECU fitment."
+        "38 community repositories and 152 pinned source files are represented; this is not a complete VAG catalogue.",
+        "Seven Škoda repositories contribute generation candidates only: Octavia, Superb, Fabia, Kodiaq, Kamiq, Rapid and Scala. Their signal, ECU and command counts are zero.",
+        "All 18,387 command candidates use UDS service 0x22 and are read-only; execution is disabled and none is an approved test plan.",
+        "No DTC definitions, repair procedures, factory wiring diagrams, pinouts, torque specifications, adaptations or service schedules."
       ],
-      "evidence_status": "16 pinned OBDb repositories and all 64 source files fetched at immutable commits; every pinned LICENSE reviewed as CC BY-SA 4.0; run253 independently verified hashes, read-only UDS 0x22 service, disabled execution, SQLite integrity and foreign keys.",
+      "evidence_status": "38 pinned OBDb repositories and all 152 upstream files fetched at immutable commits; every pinned LICENSE reviewed as CC BY-SA 4.0; Windows offline pack workflow run521 independently verified all 152 file/license SHA-256 values, 38 source rows, 135 generation candidates, 71 ECU candidates, 18,387 UDS 0x22 command candidates, 19,799 signal candidates, SQLite integrity_check=ok, foreign_key_check=0, and zero execution/fitment claims.",
       "data_ingested": false,
       "product_import_allowed": false,
       "research_pack_build_evidence": {
+        "status": "verified_research_pack_build_candidate_only",
+        "source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f",
+        "workflow_run_id": 42770036360,
+        "workflow_run_number": 521,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42770036360",
+        "artifact_id": 13741207907,
+        "artifact_name": "obdb-vag-research-cc-by-sa",
+        "artifact_sha256": "5555247d7d7e25db1fe9ccb50566123a867f1948bbe3f955e0593ca95b5a3e91",
+        "artifact_size_bytes": 6209463,
+        "database_sha256": "1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195",
+        "manifest_sha256": "6470cb542918a6bc773ac17960f639331abea5eff34d4de22b86ac687d3ad32f",
+        "attribution_sha256": "507120ae0bd921f131623cb596cfd7cfcd16fa29efe2975c9c96878ad6ad89dd",
+        "license_id": "CC-BY-SA-4.0",
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "execution_allowed": false,
+        "product_database_import": false,
+        "counts": {
+          "sources": 38,
+          "generations": 135,
+          "ecus": 71,
+          "commands": 18387,
+          "signals": 19799
+        },
+        "source_file_count": 152,
+        "source_repository_count": 38,
+        "built_at_utc": "2026-11-10T06:40:43Z",
+        "verification": "All 152 upstream file SHA-256 values and 38 license-file SHA-256 values match the manifest; SQLite integrity_check=ok; foreign_key_check=0; all 18,387 commands are service 0x22; all command execution flags are false; all records remain UNKNOWN/unverified candidates.",
+        "desktop_integration_status": "not_integrated"
+      },
+      "generation_only_repositories": [
+        "OBDb/Skoda-Octavia",
+        "OBDb/Skoda-Superb",
+        "OBDb/Skoda-Fabia",
+        "OBDb/Skoda-Kodiaq",
+        "OBDb/Skoda-Kamiq",
+        "OBDb/Skoda-Rapid",
+        "OBDb/Skoda-Scala"
+      ],
+      "generation_only_source_counts": {
+        "OBDb/Skoda-Octavia": {
+          "generations": 4,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Superb": {
+          "generations": 7,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Fabia": {
+          "generations": 4,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Kodiaq": {
+          "generations": 3,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Kamiq": {
+          "generations": 2,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Rapid": {
+          "generations": 2,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Scala": {
+          "generations": 2,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        }
+      },
+      "offline_bundle": {
+        "status": "previous_verified_bundle_stale_after_obdb_source_expansion_rebuild_pending",
+        "workflow_run_number": 253,
+        "workflow_run_id": 42443454970,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
+        "artifact_id": 13603085469,
+        "artifact_size_bytes": 39103187,
+        "artifact_sha256": "8b9a126612c933c3b64c9b6c0d4d2d85470e6e6404acd3f2b761617ac4b341ff",
+        "bundle_index_sha256": "eda9d2dc4e5b115057133a06a9d85bba79a99108d967e349acc1b3e57b016fcb",
+        "target_platform": "windows-x64",
+        "separate_database_count": 3,
+        "vehiclesdb_database_sha256": "13d55243c9ca48216eda467df06971dd85362e7499b6a40715448f99705e2463",
+        "vehiclesdb_manifest_sha256": "a3fc7c970748e0155759b015825d31b5ad9d28af977ee4f1ee0a820c17f3aafd",
+        "vehiclesdb_source_snapshot_sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704",
+        "obdex_database_sha256": "a26760aa58170d379f913770650945b8268fac6e453bb52f8d8a58426a930704",
+        "obdex_manifest_sha256": "5d99fc0f0811bd5cdf6119252fbacfebc74a1eeaee357a8eeb5b81cb42b03913",
+        "obdb_database_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
+        "obdb_manifest_sha256": "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105",
+        "built_at_utc": "2026-11-08T03:38:15.108260+00:00",
+        "verification": "All three research databases and the VehiclesDB source-snapshot SQLite passed independent SHA-256 verification, integrity_check=ok and foreign_key_check=0.",
+        "rebuild_required": true
+      },
+      "previous_verified_pack": {
         "workflow_run_number": 253,
         "workflow_run_id": 42443454970,
         "workflow_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
@@ -2201,9 +2551,8 @@
           "dtc_definitions": 0,
           "repair_procedures": 0,
           "approved_test_plans": 0,
-          "exact_vehicle_fitment": 0,
-          "exact_ecu_fitment": 0,
-          "exact_engine_gearbox_pairs": 0,
+          "exact_vehicle_fitment_rows": 0,
+          "verified_generation_year_mappings": 0,
           "generation_only_sources": 3
         },
         "generation_only_source_counts": {
@@ -2236,52 +2585,10 @@
         "desktop_integration_status": "not_integrated",
         "status": "verified_research_pack_build_only"
       },
-      "generation_only_repositories": [
-        "OBDb/Skoda-Octavia",
-        "OBDb/Skoda-Superb",
-        "OBDb/Skoda-Fabia"
-      ],
-      "generation_only_source_counts": {
-        "OBDb/Skoda-Octavia": {
-          "generations": 4,
-          "ecus": 0,
-          "commands": 0,
-          "signals": 0
-        },
-        "OBDb/Skoda-Superb": {
-          "generations": 7,
-          "ecus": 0,
-          "commands": 0,
-          "signals": 0
-        },
-        "OBDb/Skoda-Fabia": {
-          "generations": 4,
-          "ecus": 0,
-          "commands": 0,
-          "signals": 0
-        }
-      },
-      "offline_bundle": {
-        "status": "verified_offline_research_bundle_not_installer",
-        "workflow_run_number": 253,
-        "workflow_run_id": 42443454970,
-        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
-        "artifact_id": 13603085469,
-        "artifact_size_bytes": 39103187,
-        "artifact_sha256": "8b9a126612c933c3b64c9b6c0d4d2d85470e6e6404acd3f2b761617ac4b341ff",
-        "bundle_index_sha256": "eda9d2dc4e5b115057133a06a9d85bba79a99108d967e349acc1b3e57b016fcb",
-        "target_platform": "windows-x64",
-        "separate_database_count": 3,
-        "vehiclesdb_database_sha256": "13d55243c9ca48216eda467df06971dd85362e7499b6a40715448f99705e2463",
-        "vehiclesdb_manifest_sha256": "a3fc7c970748e0155759b015825d31b5ad9d28af977ee4f1ee0a820c17f3aafd",
-        "vehiclesdb_source_snapshot_sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704",
-        "obdex_database_sha256": "a26760aa58170d379f913770650945b8268fac6e453bb52f8d8a58426a930704",
-        "obdex_manifest_sha256": "5d99fc0f0811bd5cdf6119252fbacfebc74a1eeaee357a8eeb5b81cb42b03913",
-        "obdb_database_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
-        "obdb_manifest_sha256": "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105",
-        "built_at_utc": "2026-11-08T03:38:15.108260+00:00",
-        "verification": "All three research databases and the VehiclesDB source-snapshot SQLite passed independent SHA-256 verification, integrity_check=ok and foreign_key_check=0."
-      }
+      "previous_verified_pack_history": [],
+      "source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f",
+      "research_database_included_in_desktop": false,
+      "research_pack_source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f"
     },
     {
       "source_id": "volkswagen-okapi-product-data-api",
@@ -3471,7 +3778,41 @@
           "public_otts_query_has_gearbox_column": false,
           "interpretation": "Confirms gearbox information exists in the EOTTS workflow, not that the public query exposes factory VAG gearbox codes or exact fitment."
         },
-        "rights_effect": "No licence or permission was obtained. No XLSX, PDF, source data, API response or registry record was downloaded or imported. Display, offline cache, bulk extraction, commercial reuse and redistribution remain unconfirmed."
+        "rights_effect": "none; official homepage confirms navigation and participant access conditions only; no dataset licence or reuse permission obtained",
+        "homepage_evidence": {
+          "url": "https://elpts.ru/",
+          "observed_at": "2026-11-10",
+          "official_page_lines": {
+            "paid_reports": [
+              388,
+              391,
+              393,
+              396,
+              398,
+              401
+            ],
+            "eotts_training_materials": [
+              574,
+              577,
+              579
+            ],
+            "national_register_link": [
+              596,
+              598
+            ],
+            "reference_books": [
+              80,
+              84
+            ]
+          },
+          "observations": {
+            "paid_reports": "ELPTS states that SEP statistical reports are additional services for participants under existing service agreements and separate addenda; EOTTS reports for certification bodies/applicant organizations are supplied under invoice-contract after request and prior approval.",
+            "eotts_training_materials": "Access to AS EOTTS training materials requires entry through the official organization profile in the Centre for Applications; the login is the email address stated in the organization's contract.",
+            "national_register": "The official homepage links to the national part of the unified register of issued OTTS, OTSH and SBKTS on rst.gov.ru.",
+            "reference_books": "The homepage links to make and technical-characteristics reference books; the linked XLSX/Yandex Disk files state no dataset licence on the observed pages."
+          },
+          "interpretation": "These are official access/navigation and service conditions. They do not establish a dataset-specific licence for bulk extraction, SQLite caching, offline display, commercial reuse or redistribution."
+        }
       },
       "official_national_registry_url": "https://www.rst.gov.ru/portal/gost/home/activity/compliance/evaluationcompliance/AcknowledgementCorrespondence",
       "public_reference_books": [
@@ -3531,7 +3872,8 @@
           "product_import_allowed": false,
           "note": "Public Yandex Disk listing linked from the official ELPTS homepage; no reuse licence stated. Not downloaded."
         }
-      ]
+      ],
+      "product_import_allowed": false
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
@@ -3778,7 +4120,7 @@
       "url": "https://www.otts.bot/",
       "terms_url": "https://www.otts.bot/terms",
       "source_kind": "commercial_aggregated_ru_eaeu_vehicle_compliance_database",
-      "source_revision": "published_user_agreement_last_updated_2026-08-26; homepage_and_OTTS_page_reviewed_2026-11-09",
+      "source_revision": "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-10",
       "market_scope": [
         "RU",
         "EAEU"
@@ -3791,7 +4133,16 @@
         "marketing_headline": "46,000+ OTTS",
         "count_discrepancy": "The /otts page headline says 46,000+ while its rendered result counter says 74,115; not reconciled.",
         "independently_audited": false,
-        "limitation": "Dynamic provider-displayed UI counts only; not an audited snapshot, export, licence or evidence of VAG rows."
+        "limitation": "Dynamic provider-displayed UI counts only; not an audited snapshot, export, licence or evidence of VAG rows.",
+        "recheck_2026_11_10": {
+          "observed_at": "2026-11-10",
+          "ot_ts_page_result_counter": 74115,
+          "marketing_headline": "46,000+ OTTS",
+          "count_discrepancy_unresolved": true,
+          "homepage_sbkt_and_otsh_counters_rechecked": false,
+          "independently_audited": false,
+          "dataset_export_observed": false
+        }
       },
       "access": {
         "public_search": "free ordinary web search",
@@ -3815,7 +4166,7 @@
         "database_structure_and_site_text_rights": "operator_owned; use outside ordinary site viewing requires written consent under clause 5",
         "partner_program_grant_scope": "partner grants placement/reproduction/site-delivery rights to the operator only; contributor warranty does not grant VAG TECH PRO rights",
         "written_permission_obtained": false,
-        "review_date": "2026-11-09",
+        "review_date": "2026-11-10",
         "agreement_last_updated": "2026-08-26"
       },
       "applicability": {
@@ -3840,18 +4191,18 @@
       "project_decision": "restricted_no_automated_collection_beyond_ordinary_use_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "homepage_OTTS_page_and_user_agreement_reviewed_2026-11-09; agreement_last_updated_2026-08-26",
-      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_REVIEW_2026-11-09.md",
+      "evidence_status": "OTTS_page_and_user_agreement_rechecked_2026-11-10; agreement_last_updated_2026-08-26",
+      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_RECHECK_2026-11-10.md",
       "evidence_reviewed": [
         {
           "url": "https://www.otts.bot/terms",
-          "reviewed_at": "2026-11-09",
-          "observation": "Published User Agreement last updated 2026-08-26. Clause 3 allows ordinary free search but prohibits scraping/mass requests beyond ordinary user scenarios and resale, publication or other distribution of documents/database information as a proprietary information product. Clauses 4.3-4.4 place rights warranties on contributors and grant document-placement/use rights to the operator only. Clause 5 reserves site/database structure and text to the operator and states that underlying document rights belong to their respective rightsholders."
+          "reviewed_at": "2026-11-10",
+          "observation": "Rechecked 2026-11-10; agreement last updated 2026-08-26. Clause 3 prohibits scraping/mass requests beyond ordinary user scenarios and prohibits resale, publication or other distribution of documents/database information as a proprietary information product. Clauses 4.3-4.4 give the operator placement/reproduction/delivery rights only; clause 5 reserves the site's database structure and text to the operator, while underlying document rights remain with their respective rightsholders."
         },
         {
           "url": "https://www.otts.bot/otts",
-          "reviewed_at": "2026-11-09",
-          "observation": "Public page advertises free search and one-off document delivery for 500 RUB. The page headline says 46,000+ approvals while the rendered result counter says 74,115; the discrepancy is not reconciled and neither figure is an independently audited export."
+          "reviewed_at": "2026-11-10",
+          "observation": "Rechecked 2026-11-10: result counter 74,115 conflicts with the 46,000+ headline; no export or dataset licence exposed. One-off document price 500 RUB advertised; no purchase made."
         },
         {
           "url": "https://www.otts.bot/",
@@ -3859,7 +4210,47 @@
           "observation": "Homepage displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records, and describes technical-characteristics/engine sections as not yet populated. Counts are provider UI metadata only."
         }
       ],
-      "product_import_allowed": false
+      "product_import_allowed": false,
+      "rights_recheck_2026_11_10": {
+        "reviewed_at": "2026-11-10",
+        "terms_url": "https://www.otts.bot/terms",
+        "terms_last_updated": "2026-08-26",
+        "clauses": {
+          "3": {
+            "ordinary_search": "free ordinary website search",
+            "automated_collection": "scraping or mass requests beyond ordinary user scenarios prohibited",
+            "redistribution": "resale, publication or other distribution of obtained documents and database information as a proprietary information product prohibited"
+          },
+          "5": {
+            "website_and_database_structure": "operator-owned; use outside ordinary site viewing requires written consent",
+            "underlying_documents": "rights remain with their respective rightsholders"
+          },
+          "4.3-4.4": {
+            "contributor_warranty": "contributor warrants lawful acquisition and right to transfer the document",
+            "operator_grant": "contributor grants the operator placement, reproduction, public display and paid delivery rights",
+            "sublicense_to_vag_tech_pro": false
+          }
+        },
+        "page_observation": {
+          "url": "https://www.otts.bot/otts",
+          "result_counter": 74115,
+          "headline": "46,000+",
+          "count_discrepancy_unresolved": true,
+          "paid_single_document_price_rub": 500,
+          "dataset_export_observed": false,
+          "licence_for_third_party_offline_product": false
+        },
+        "acquisition_state": {
+          "account_created": false,
+          "subscription_started": false,
+          "payment_made": false,
+          "automated_queries_used": false,
+          "documents_downloaded": false,
+          "source_bytes_cached": false,
+          "product_import_allowed": false
+        },
+        "decision": "discovery_only_no_scraping_no_bulk_requests_no_offline_cache_no_third_party_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders"
+      }
     },
     {
       "source_id": "openvag-riz4d-dtc-candidate",
@@ -8150,7 +8541,7 @@
       "market_scope": [
         "UNKNOWN"
       ],
-      "data_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T02:23:10Z; SHA-256 30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+      "data_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T05:51:15Z; SHA-256 902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
       "evidence_scope": [
         "owner_manual_reference_facts",
         "fluids",
@@ -8189,7 +8580,7 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending",
+      "verification_status": "licensed_source_snapshot_updated_pack_verified_research_only_desktop_integration_pending_no_production_import",
       "research_pack": {
         "status": "verified_research_only",
         "research_pack_allowed": true,
@@ -8198,8 +8589,8 @@
         "ru_eaeu_applicability": false,
         "expected_source_rows": 44272,
         "expected_models": 611,
-        "source_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
-        "source_file_bytes": 15174126,
+        "source_snapshot_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+        "source_file_bytes": 15179458,
         "source_rows": 44272,
         "source_models": 611,
         "vag_fact_rows": 948,
@@ -8211,7 +8602,7 @@
           "Skoda",
           "Volkswagen"
         ],
-        "retrieved_at_utc": "2026-11-10T02:23:10.300971+00:00",
+        "retrieved_at_utc": "2026-11-10T05:51:15.423849+00:00",
         "source_rows_net_change_since_archived_baseline": 2623,
         "vag_rows_added_since_archived_baseline": 205,
         "vag_rows_removed_since_archived_baseline": 30,
@@ -8220,7 +8611,7 @@
         "vag_value_or_unit_changed_groups_since_archived_baseline": 0,
         "vag_page_url_changed_groups_since_archived_baseline": 22,
         "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
-        "previous_pinned_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
+        "previous_pinned_snapshot_sha256": "d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
         "exact_delta_from_previous_pinned_snapshot_available": true,
         "previous_snapshot_review": {
           "snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
@@ -8233,32 +8624,104 @@
           "exact_vag_subset_unchanged": true,
           "review_status": "exact_multiset_comparison_verified; all source changes are outside exact VAG allowlist"
         },
-        "source_rows_added_since_previous_pinned_snapshot": 52,
-        "source_rows_removed_since_previous_pinned_snapshot": 25,
-        "source_rows_net_change_since_previous_pinned_snapshot": 27,
-        "vag_rows_added_since_previous_pinned_snapshot": 0,
-        "vag_rows_removed_since_previous_pinned_snapshot": 0,
+        "source_rows_added_since_previous_pinned_snapshot": 252,
+        "source_rows_removed_since_previous_pinned_snapshot": 252,
+        "source_rows_net_change_since_previous_pinned_snapshot": 0,
+        "vag_rows_added_since_previous_pinned_snapshot": 13,
+        "vag_rows_removed_since_previous_pinned_snapshot": 13,
         "vag_rows_net_change_since_previous_pinned_snapshot": 0,
         "vag_identity_groups_added_since_previous_pinned_snapshot": 0,
         "vag_identity_groups_removed_since_previous_pinned_snapshot": 0,
         "vag_value_or_unit_changed_groups_since_previous_pinned_snapshot": 0,
         "vag_verified_at_changed_groups_since_previous_pinned_snapshot": 0,
-        "vag_page_url_changed_groups_since_previous_pinned_snapshot": 0,
-        "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
+        "vag_page_url_changed_groups_since_previous_pinned_snapshot": 13,
+        "vag_subset_canonical_rows_sha256": "6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0",
         "pack_build_status": "verified_research_only",
         "latest_snapshot_review": {
-          "previous_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
-          "current_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
-          "source_rows_added": 52,
-          "source_rows_removed": 25,
-          "source_rows_net_change": 27,
-          "vag_rows_added": 0,
-          "vag_rows_removed": 0,
+          "previous_snapshot_sha256": "d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
+          "current_snapshot_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+          "previous_source_file_bytes": 15178035,
+          "current_source_file_bytes": 15179458,
+          "retrieved_at_utc": "2026-11-10T05:51:15.423849+00:00",
+          "source_row_count": 44272,
+          "model_count": 611,
+          "vag_row_count": 948,
+          "vag_model_count": 26,
+          "source_rows_added": 252,
+          "source_rows_removed": 252,
+          "source_rows_net_change": 0,
+          "page_url_changed_groups": 126,
+          "page_url_changed_rows": 252,
+          "page_url_changed_brands": [
+            "BYD",
+            "Chevrolet",
+            "FIAT",
+            "Foton",
+            "Hongqi",
+            "Hyundai",
+            "Jetour",
+            "Mazda",
+            "Nissan",
+            "Pontiac",
+            "Renault",
+            "Rolls-Royce",
+            "Skoda",
+            "Suzuki",
+            "Volvo",
+            "Москвич"
+          ],
+          "non_vag_page_url_changed_groups": 113,
+          "vag_rows_added": 13,
+          "vag_rows_removed": 13,
           "vag_rows_net_change": 0,
-          "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
-          "exact_vag_subset_unchanged": true,
-          "publisher_page_count_discrepancy": "publisher page displays 44245 values / 610 models; downloaded CSV contains 44272 rows / 611 brand-model pairs",
-          "reviewed_at": "2026-11-10"
+          "vag_page_url_changed_groups": 13,
+          "vag_page_url_changed_rows": 26,
+          "vag_page_url_changed_brands": [
+            "Skoda"
+          ],
+          "vag_page_url_changes": [
+            {
+              "brand": "Skoda",
+              "model": "Fabia RS",
+              "old_url": "https://cardir.ru/skoda/fabia-rs/",
+              "new_url": "https://cardir.ru/skoda/fabia-rs/antifriz/",
+              "fields": [
+                "coolant_spec",
+                "coolant_volume"
+              ],
+              "changed_groups": 12
+            },
+            {
+              "brand": "Skoda",
+              "model": "Kamiq",
+              "old_url": "https://cardir.ru/skoda/kamiq/",
+              "new_url": "https://cardir.ru/skoda/kamiq/antifriz/",
+              "fields": [
+                "coolant_spec"
+              ],
+              "changed_groups": 1
+            }
+          ],
+          "non_page_url_field_changes": 0,
+          "vag_value_or_unit_changed_groups": 0,
+          "vag_verified_at_changed_groups": 0,
+          "vag_source_title_or_page_changed_groups": 0,
+          "vag_source_url_changed_groups": 0,
+          "vag_qualifier_changed_groups": 0,
+          "vag_identity_groups_added": 0,
+          "vag_identity_groups_removed": 0,
+          "source_rows_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
+          "vag_rows_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
+          "source_rows_multiset_excluding_page_url_sha256": "9a4eb1b268758404bced45802070d77bdfff5d386aeec10d3c1cafaf4d9d0eec",
+          "vag_rows_multiset_excluding_page_url_sha256": "8033e6628dca374804fb0282c47b12d315be136a155ee6c3e17e1244984a3a3",
+          "row_order_changed": true,
+          "semantic_row_order_changed": true,
+          "semantic_rows_unchanged_excluding_page_url": true,
+          "exact_row_multiset_unchanged": false,
+          "exact_vag_subset_unchanged": false,
+          "exact_vag_values_unchanged": true,
+          "exact_vag_subset_unchanged_except_page_url": true,
+          "disposition": "rebuild_research_pack_for_new_source_snapshot; keep_research_only; no_production_import"
         },
         "previous_snapshot_review_history": [
           {
@@ -8279,27 +8742,816 @@
             "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
             "exact_vag_subset_unchanged": true,
             "review_status": "exact_multiset_comparison_verified; all source changes are outside exact VAG allowlist"
+          },
+          {
+            "previous_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+            "current_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
+            "source_rows_added": 0,
+            "source_rows_removed": 0,
+            "source_rows_net_change": 0,
+            "source_rows_multiset_sha256": "d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74",
+            "vag_rows_added": 0,
+            "vag_rows_removed": 0,
+            "vag_rows_net_change": 0,
+            "vag_subset_multiset_sha256": "ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b",
+            "exact_vag_subset_unchanged": true,
+            "row_order_changed": true,
+            "reviewed_at_utc": "2026-11-10T03:27:27.730815+00:00",
+            "pack_build_run_id": 42749534305,
+            "pack_build_run_number": 83,
+            "pack_artifact_id": 13733081894,
+            "pack_artifact_sha256": "6613fb01c9b1555e5afb872356df841c49edd5c83f92a7786966daec2826a251",
+            "database_sha256": "0aab9c87e863586f1db059499800b1161f52e99e941c5773350ea42bd441da9f",
+            "source_row_hashes_verified": 948,
+            "source_row_number_mapping_verified": true,
+            "sqlite_integrity_check": "ok",
+            "foreign_key_violations": 0,
+            "review_status": "exact_multiset_comparison_verified; only CSV row order changed; new exact byte snapshot pinned and rebuilt into a separate research SQLite; no new VAG facts or applicability claims"
           }
         ],
-        "desktop_integration_status": "pending_windows_desktop_lifecycle",
-        "database_sha256": "bc6df970cff98f71980e402ac8744937d17741ccb0361e301610c65b1f0f8850",
-        "database_byte_size": 1949696,
-        "source_manifest_sha256": "9ea9a26e8bd75e95016f3925fed4ee2b3119343fb67329bedfdb40ce0eb310fe",
-        "source_snapshot_manifest_sha256": "f077ac8c60defb003de0b152b4d215ae1df5aee697b0b98120bbe79ee03e9830",
-        "pack_manifest_sha256": "463f527fe8582f58cf67320894c6ec0edc9b958ae5162926216105fc3e5a3524",
-        "build_report_sha256": "435669848a9d34ea0f8457f10dd61f2fe4b76b6943f3d66cb4f7a7c24649e6e8",
+        "desktop_integration_status": "verified_research_pack_current_desktop_integration_pending",
+        "database_sha256": "20b5f84ec5e265ea7455cdfa149bf357864d4c9d7571933d65d4f75d80025b4f",
+        "database_byte_size": 1961984,
+        "source_manifest_sha256": "64fb51903d237befed7712baafa998d069e3f64bf26fd7974656a418f7feb209",
+        "source_snapshot_manifest_sha256": "319e01f3656d9bb3dc87b10e637d85679152848442f9d08e7708bbcf87c6b9f3",
+        "pack_manifest_sha256": "b156a4abcadabd6189fae5627091818eccf7bc1cbcf7e25b5fef876dd1f3949c",
+        "build_report_sha256": "db34e09c644ae3e1c7100e85e993a36282bf74db5afe0544095dd01379dd0a68",
         "attribution_sha256": "ef45e4dc5ffc5daca4b999bab824cf95e2cf6fcb848b6c00845fad370aa2565f",
         "license_sha256": "0ddb35d5724ea6f23893ccf927d16830c95cb743c8d3f9819fabea6827e8b16f",
-        "artifact_id": 13730315262,
-        "artifact_sha256": "32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d",
-        "artifact_run_id": 42742855224,
-        "artifact_run_number": 68,
-        "artifact_created_at": "2026-11-10T02:28:00Z",
-        "artifact_expires_at": "2027-02-08T02:27:09Z",
-        "pack_verified_at": "2026-11-10T02:28:00Z",
-        "source_file_included_in_desktop": false
+        "artifact_id": 13740955733,
+        "artifact_sha256": "530614ac8ecbdc82ca099a58433558694808bd36b687c16fd8c5db1927c596eb",
+        "artifact_run_id": 42767707066,
+        "artifact_run_number": 145,
+        "artifact_created_at": "2026-11-10T06:19:47Z",
+        "artifact_expires_at": "2027-02-08T06:19:14Z",
+        "pack_verified_at": "2026-11-10T06:19:47Z",
+        "source_file_included_in_desktop": false,
+        "latest_live_probe": {
+          "status": "reviewed_live_source_snapshot_page_url_only_research_pack_rebuild_verified",
+          "previous_pinned_snapshot_sha256": "d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
+          "live_raw_snapshot_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+          "source_file_bytes": 15179458,
+          "retrieved_at_utc": "2026-11-10T05:51:15.423849+00:00",
+          "source_rows_added": 252,
+          "source_rows_removed": 252,
+          "source_rows_net_change": 0,
+          "page_url_changed_groups": 126,
+          "page_url_changed_rows": 252,
+          "page_url_changed_brands": [
+            "BYD",
+            "Chevrolet",
+            "FIAT",
+            "Foton",
+            "Hongqi",
+            "Hyundai",
+            "Jetour",
+            "Mazda",
+            "Nissan",
+            "Pontiac",
+            "Renault",
+            "Rolls-Royce",
+            "Skoda",
+            "Suzuki",
+            "Volvo",
+            "Москвич"
+          ],
+          "non_vag_page_url_changed_groups": 113,
+          "vag_rows_added": 13,
+          "vag_rows_removed": 13,
+          "vag_rows_net_change": 0,
+          "vag_page_url_changed_groups": 13,
+          "vag_page_url_changed_rows": 26,
+          "vag_page_url_changed_brands": [
+            "Skoda"
+          ],
+          "vag_value_or_unit_changed_groups": 0,
+          "vag_verified_at_changed_groups": 0,
+          "vag_source_title_or_page_changed_groups": 0,
+          "vag_source_url_changed_groups": 0,
+          "vag_qualifier_changed_groups": 0,
+          "vag_identity_groups_added": 0,
+          "vag_identity_groups_removed": 0,
+          "source_row_count": 44272,
+          "model_count": 611,
+          "vag_row_count": 948,
+          "vag_model_count": 26,
+          "full_row_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
+          "vag_row_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
+          "source_rows_multiset_excluding_page_url_sha256": "9a4eb1b268758404bced45802070d77bdfff5d386aeec10d3c1cafaf4d9d0eec",
+          "vag_rows_multiset_excluding_page_url_sha256": "8033e6628dca374804fb0282c47b12d315be136a155ee6c3e17e1244984a3a3",
+          "row_order_changed": true,
+          "semantic_rows_unchanged_excluding_page_url": true,
+          "exact_row_multiset_unchanged": false,
+          "exact_vag_subset_unchanged": false,
+          "exact_vag_values_unchanged": true,
+          "exact_vag_subset_unchanged_except_page_url": true,
+          "non_page_url_field_changes": 0
+        },
+        "pinned_snapshot_retained": true,
+        "latest_live_probe_reviewed_at": "2026-11-10",
+        "latest_snapshot_refresh_status": "source_snapshot_updated_pack_verified",
+        "latest_source_snapshot_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+        "latest_source_rows_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
+        "latest_vag_rows_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
+        "previous_verified_pack": {
+          "status": "verified_research_only_previous_snapshot",
+          "source_snapshot_sha256": "d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
+          "source_manifest_sha256": "965998c480be85ec2f26b1a14ce1bb268cc03810d89a8c7408af5867a751a818",
+          "source_snapshot_manifest_sha256": "b5fdb0a2efb8b4411c8b8935a0a4e1d91c09a8b21d529a736d92194209c84081",
+          "pack_manifest_sha256": "552ecb6f18564369b5a76a5e40bf2c06c1223e2e71db644da5064ad3c1ebf615",
+          "build_report_sha256": "6b12e36bce32cdb59c84744d3aaaaf59e4fcb69a973c7164c121d95f9a899a4c",
+          "database_sha256": "8536c2a545115334803733ed037d714e6b80bfdd65236bef7c72108a7c977a76",
+          "database_byte_size": 1957888,
+          "artifact_id": 13736057820,
+          "artifact_sha256": "750ed171598bd91fc463ccccb078ed2aee839b360adbb91a3e49e4a5bfd34bba",
+          "artifact_run_id": 42757593051,
+          "artifact_run_number": 126,
+          "artifact_size_bytes": 1859476,
+          "artifact_created_at": "2026-11-10T04:43:18Z",
+          "artifact_expires_at": "2027-02-08T04:42:53Z",
+          "source_row_hashes_verified": 948,
+          "source_row_number_mapping_verified": true,
+          "sqlite_integrity_check": "ok",
+          "foreign_key_violations": 0
+        },
+        "source_file_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+        "source_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T05:51:15Z; SHA-256 902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+        "artifact_name": "cardir-vag-owner-manual-facts-research-pack",
+        "artifact_size_bytes": 1860378,
+        "source_row_hashes_verified": 948,
+        "source_row_number_mapping_verified": true,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_violations": 0,
+        "full_row_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
+        "vag_row_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
+        "previous_verified_pack_history": [
+          {
+            "source_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+            "database_sha256": "bc6df970cff98f71980e402ac8744937d17741ccb0361e301610c65b1f0f8850",
+            "source_manifest_sha256": "9ea9a26e8bd75e95016f3925fed4ee2b3119343fb67329bedfdb40ce0eb310fe",
+            "source_snapshot_manifest_sha256": "f077ac8c60defb003de0b152b4d215ae1df5aee697b0b98120bbe79ee03e9830",
+            "pack_manifest_sha256": "463f527fe8582f58cf67320894c6ec0edc9b958ae5162926216105fc3e5a3524",
+            "build_report_sha256": "435669848a9d34ea0f8457f10dd61f2fe4b76b6943f3d66cb4f7a7c24649e6e8",
+            "attribution_sha256": "ef45e4dc5ffc5daca4b999bab824cf95e2cf6fcb848b6c00845fad370aa2565f",
+            "license_sha256": "0ddb35d5724ea6f23893ccf927d16830c95cb743c8d3f9819fabea6827e8b16f",
+            "artifact_id": 13730315262,
+            "artifact_sha256": "32f2e3e5b39ad1fb8caedcc6bd8da28fc5f32eb3d8cd1360906950c32506487d",
+            "artifact_run_id": 42742855224,
+            "artifact_run_number": 68,
+            "artifact_created_at": "2026-11-10T02:28:00Z",
+            "artifact_expires_at": "2027-02-08T02:27:09Z",
+            "database_byte_size": 1949696,
+            "status": "verified_research_only_previous_snapshot"
+          },
+          {
+            "source_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
+            "database_sha256": "0aab9c87e863586f1db059499800b1161f52e99e941c5773350ea42bd441da9f",
+            "source_manifest_sha256": "527240b1784c435ba747fc033d29f25e369dc84476b4a5e123f780c1aee206a1",
+            "source_snapshot_manifest_sha256": "c586cd707824df0ef5e3ad85dcd81abcf7927b5da5947691b66d9b1ecf1768ee",
+            "pack_manifest_sha256": "070eca034f11acc9f4345896c71166a0269c20a1ce52412735cfd9ca8528ed4b",
+            "build_report_sha256": "b3551d1cc2aa6fdda3930c18e43d2d2fe5c2f754a8aefa6f39d2a99712e8626b",
+            "attribution_sha256": "ef45e4dc5ffc5daca4b999bab824cf95e2cf6fcb848b6c00845fad370aa2565f",
+            "license_sha256": "0ddb35d5724ea6f23893ccf927d16830c95cb743c8d3f9819fabea6827e8b16f",
+            "artifact_id": 13733081894,
+            "artifact_sha256": "6613fb01c9b1555e5afb872356df841c49edd5c83f92a7786966daec2826a251",
+            "artifact_run_id": 42749534305,
+            "artifact_run_number": 83,
+            "artifact_created_at": "2026-11-10T03:27:38Z",
+            "artifact_expires_at": "2027-02-08T03:27:10Z",
+            "artifact_size_bytes": 1858479,
+            "database_byte_size": 1949696,
+            "status": "verified_research_only_previous_snapshot"
+          }
+        ],
+        "previous_live_probe_history": [
+          {
+            "status": "reviewed_and_pinned_page_url_only_snapshot_refresh_verified_with_new_sqlite_pack",
+            "data_updated_at": "2026-11-09",
+            "source_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T04:37:02Z; SHA-256 d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
+            "source_snapshot_sha256": "d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
+            "source_file_bytes": 15178035,
+            "retrieved_at_utc": "2026-11-10T04:37:02.355843+00:00",
+            "source_rows": 44272,
+            "models": 611,
+            "vag_rows": 948,
+            "vag_models": 26,
+            "source_rows_added": 354,
+            "source_rows_removed": 354,
+            "source_rows_net_change": 0,
+            "source_rows_multiset_sha256": "af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f",
+            "vag_rows_added": 13,
+            "vag_rows_removed": 13,
+            "vag_rows_net_change": 0,
+            "vag_rows_multiset_sha256": "6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0",
+            "page_url_changed_rows": 354,
+            "vag_page_url_changed_groups": 13,
+            "non_page_url_field_changes": 0,
+            "exact_vag_values_unchanged": true,
+            "exact_vag_subset_unchanged_except_page_url": true,
+            "comparison_method": "For each parsed CSV row, SHA-256 of compact UTF-8 JSON with sorted keys, ensure_ascii=false; compare sorted multisets of row hashes using newline delimiters and a trailing newline. Stable-key comparison excluding page_url confirms all 354 full-source row changes are page_url-only. Exact VAG allowlist comparison confirms 13 page_url-only changes and no change to technical values, units, qualifiers, source title/page/URL or verified_at.",
+            "reviewed_at_utc": "2026-11-10T04:43:12.267867+00:00",
+            "source_manifest_sha256": "965998c480be85ec2f26b1a14ce1bb268cc03810d89a8c7408af5867a751a818",
+            "review_status": "exact row multiset comparison verified; only page_url values changed; new byte snapshot pinned and rebuilt into a separate research SQLite; no VAG technical values, qualifiers or applicability claims changed"
+          }
+        ],
+        "vag_page_url_changed_brands_since_previous_pinned_snapshot": [
+          "Porsche"
+        ],
+        "core_vag_page_url_changed_groups_since_previous_pinned_snapshot": 0,
+        "source_rows_multiset_sha256": "af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f",
+        "vag_rows_multiset_sha256": "6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0",
+        "source_row_hash_method": "SHA-256 of compact canonical UTF-8 JSON over original CSV field strings with sorted keys",
+        "research_database_included_in_desktop": false,
+        "desktop_lifecycle_evidence": null,
+        "research_pack_current": true,
+        "exact_vag_values_unchanged": true,
+        "exact_vag_subset_unchanged_except_page_url": true,
+        "source_rows_multiset_excluding_page_url_sha256": "9a4eb1b268758404bced45802070d77bdfff5d386aeec10d3c1cafaf4d9d0eec",
+        "vag_rows_multiset_excluding_page_url_sha256": "8033e6628dca374804fb0282c47b12d315be136a155ee6c3e17e1244984a3a3",
+        "page_url_changed_groups_total": 126,
+        "page_url_changed_rows_total": 252,
+        "non_page_url_field_changes": 0,
+        "row_order_changed": true,
+        "semantic_rows_unchanged_excluding_page_url": true,
+        "page_url_changed_brands": [
+          "BYD",
+          "Chevrolet",
+          "FIAT",
+          "Foton",
+          "Hongqi",
+          "Hyundai",
+          "Jetour",
+          "Mazda",
+          "Nissan",
+          "Pontiac",
+          "Renault",
+          "Rolls-Royce",
+          "Skoda",
+          "Suzuki",
+          "Volvo",
+          "Москвич"
+        ],
+        "vag_page_url_changed_brands": [
+          "Skoda"
+        ],
+        "previous_desktop_lifecycle_evidence": {
+          "status": "verified_windows_server_2022_x64_lifecycle",
+          "workflow": "VAG TECH PRO Windows x64 desktop validation run91",
+          "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+          "run_id": 42760585201,
+          "run_number": 1208,
+          "build_job_id": 129645072379,
+          "compatibility_job_id": 129653714680,
+          "commit": "068eb5cbbb9cab1e05a18a31c13ac11d491c8d8f",
+          "environment": "Windows Server 2022 x64",
+          "checks": {
+            "clean_install": true,
+            "offline_launch": true,
+            "backup_restore": true,
+            "upgrade_from": "0.2.3",
+            "upgrade_to": "0.2.4",
+            "sqlite_user_data_preserved": true,
+            "uninstall_preserves_user_data": true
+          },
+          "offline_research_manifest_sha256": "6ecf43abbaa18b77465e100cc3a98d20d0bbbb2098cc12d06605af36df8d946c",
+          "offline_research_manifest_entries": 10,
+          "source_verification_file": "_temp/vag-tech-pro-run71-artifact/windows-lifecycle-staging/source-verification.txt",
+          "source_verification_sha256": "38843a5bda64437b960407b09d073d31dd799cfccfafe53e7f544fdc0656091c",
+          "source_verification_bytes": 9670,
+          "lifecycle_log_file": "VAG-TECH-PRO/VAG-TECH-PRO/windows-2022-lifecycle.log",
+          "lifecycle_log_sha256": "95467ddb72a7fd7f16baefbe842844699f039d0f332d752a7b4118d35d8281b7",
+          "lifecycle_log_bytes": 1232,
+          "build_metadata_file_sha256": "d480099a8b10c047d832f3776840cce911600e52fb90267af941752060fbe136",
+          "build_metadata_file_bytes": 8927,
+          "build_metadata_artifact_id": 13738805743,
+          "build_metadata_artifact_digest": "f42b5bb6b1c1e9c715b8de4f75fd2c62c80b76e4ecfc9367c8617beae5f3edce",
+          "build_metadata_artifact_expires_at": "2026-12-10T05:36:00Z",
+          "lifecycle_artifact_id": 13738433199,
+          "lifecycle_artifact_digest": "d1ea9e289bd3dab892fdf23e43928d07f4f9507645fc5639395b591c1cd7bf2d",
+          "lifecycle_artifact_expires_at": "2026-12-10T05:41:07Z",
+          "installer_artifact_id": 13738563172,
+          "installer_artifact_digest": "3c719bf1f69ab1ca34075b7df516e577bc7a517cbd6c515fd8da2308a8d725b7",
+          "installer_artifact_bytes": 1370625377,
+          "installer_artifact_expires_at": "2026-11-24T05:36:14Z",
+          "installers": [
+            {
+              "version": "0.2.3",
+              "file": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
+              "bytes": 568993133,
+              "sha256": "3f3128718a1df1d12c77930c4b16cde3b7c180bcc4003ed0d797907d80dd4e33"
+            },
+            {
+              "version": "0.2.4",
+              "file": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
+              "bytes": 568992965,
+              "sha256": "7c770600ace987c79828ae29c0589105b886584b29178da8cc0cb1d9aa9cdc5d"
+            }
+          ],
+          "signature_status": "unsigned",
+          "native_windows_10_11_verified": false,
+          "native_windows_10_11_status": "not_run_owner_runner_gate_disabled"
+        },
+        "latest_live_probe_attempt": {
+          "status": "live_endpoint_returned_previously_verified_older_snapshot_pinned_newer_pack_retained",
+          "retrieved_at_utc": "2026-11-10T06:28:08.567781+00:00",
+          "live_raw_snapshot_sha256": "d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
+          "source_file_bytes": 15178035,
+          "source_rows": 44272,
+          "source_models": 611,
+          "vag_rows": 948,
+          "vag_models": 26,
+          "full_row_multiset_sha256": "af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f",
+          "vag_row_multiset_sha256": "6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0",
+          "exact_snapshot_previously_verified": true,
+          "previous_verified_pack_run_number": 126,
+          "previous_verified_pack_artifact_id": 13736057820,
+          "current_pinned_snapshot_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+          "current_pinned_pack_run_number": 145,
+          "current_pinned_pack_artifact_id": 13740955733,
+          "disposition": "do_not_downgrade_or_replace_the_current_902adb_snapshot_pack; the live endpoint returned the exact older d4b3 snapshot already verified in run126; acquisition failed closed on the pinned SHA-256 mismatch; no new source facts or production applicability are inferred"
+        }
       },
-      "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json",
+      "latest_source_snapshot_review": {
+        "previous_snapshot_sha256": "d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf",
+        "current_snapshot_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+        "previous_source_file_bytes": 15178035,
+        "current_source_file_bytes": 15179458,
+        "retrieved_at_utc": "2026-11-10T05:51:15.423849+00:00",
+        "source_row_count": 44272,
+        "model_count": 611,
+        "vag_row_count": 948,
+        "vag_model_count": 26,
+        "source_rows_added": 252,
+        "source_rows_removed": 252,
+        "source_rows_net_change": 0,
+        "page_url_changed_groups": 126,
+        "page_url_changed_rows": 252,
+        "page_url_changed_brands": [
+          "BYD",
+          "Chevrolet",
+          "FIAT",
+          "Foton",
+          "Hongqi",
+          "Hyundai",
+          "Jetour",
+          "Mazda",
+          "Nissan",
+          "Pontiac",
+          "Renault",
+          "Rolls-Royce",
+          "Skoda",
+          "Suzuki",
+          "Volvo",
+          "Москвич"
+        ],
+        "non_vag_page_url_changed_groups": 113,
+        "vag_rows_added": 13,
+        "vag_rows_removed": 13,
+        "vag_rows_net_change": 0,
+        "vag_page_url_changed_groups": 13,
+        "vag_page_url_changed_rows": 26,
+        "vag_page_url_changed_brands": [
+          "Skoda"
+        ],
+        "vag_page_url_changes": [
+          {
+            "brand": "Skoda",
+            "model": "Fabia RS",
+            "old_url": "https://cardir.ru/skoda/fabia-rs/",
+            "new_url": "https://cardir.ru/skoda/fabia-rs/antifriz/",
+            "fields": [
+              "coolant_spec",
+              "coolant_volume"
+            ],
+            "changed_groups": 12
+          },
+          {
+            "brand": "Skoda",
+            "model": "Kamiq",
+            "old_url": "https://cardir.ru/skoda/kamiq/",
+            "new_url": "https://cardir.ru/skoda/kamiq/antifriz/",
+            "fields": [
+              "coolant_spec"
+            ],
+            "changed_groups": 1
+          }
+        ],
+        "non_page_url_field_changes": 0,
+        "vag_value_or_unit_changed_groups": 0,
+        "vag_verified_at_changed_groups": 0,
+        "vag_source_title_or_page_changed_groups": 0,
+        "vag_source_url_changed_groups": 0,
+        "vag_qualifier_changed_groups": 0,
+        "vag_identity_groups_added": 0,
+        "vag_identity_groups_removed": 0,
+        "source_rows_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
+        "vag_rows_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
+        "source_rows_multiset_excluding_page_url_sha256": "9a4eb1b268758404bced45802070d77bdfff5d386aeec10d3c1cafaf4d9d0eec",
+        "vag_rows_multiset_excluding_page_url_sha256": "8033e6628dca374804fb0282c47b12d315be136a155ee6c3e17e1244984a3a3",
+        "row_order_changed": true,
+        "semantic_row_order_changed": true,
+        "semantic_rows_unchanged_excluding_page_url": true,
+        "exact_row_multiset_unchanged": false,
+        "exact_vag_subset_unchanged": false,
+        "exact_vag_values_unchanged": true,
+        "exact_vag_subset_unchanged_except_page_url": true,
+        "disposition": "rebuild_research_pack_for_new_source_snapshot; keep_research_only; no_production_import"
+      },
+      "source_file_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+      "source_file_bytes": 15179458,
+      "retrieved_at_utc": "2026-11-10T05:51:15.423849+00:00",
+      "source_snapshot_sha256": "902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+      "source_manifest_sha256": "64fb51903d237befed7712baafa998d069e3f64bf26fd7974656a418f7feb209",
+      "source_snapshot_manifest_sha256": "319e01f3656d9bb3dc87b10e637d85679152848442f9d08e7708bbcf87c6b9f3",
+      "database_sha256": "20b5f84ec5e265ea7455cdfa149bf357864d4c9d7571933d65d4f75d80025b4f",
+      "database_byte_size": 1961984,
+      "pack_manifest_sha256": "b156a4abcadabd6189fae5627091818eccf7bc1cbcf7e25b5fef876dd1f3949c",
+      "build_report_sha256": "db34e09c644ae3e1c7100e85e993a36282bf74db5afe0544095dd01379dd0a68",
+      "attribution_sha256": "ef45e4dc5ffc5daca4b999bab824cf95e2cf6fcb848b6c00845fad370aa2565f",
+      "license_sha256": "0ddb35d5724ea6f23893ccf927d16830c95cb743c8d3f9819fabea6827e8b16f",
+      "artifact_id": 13740955733,
+      "artifact_sha256": "530614ac8ecbdc82ca099a58433558694808bd36b687c16fd8c5db1927c596eb",
+      "artifact_run_id": 42767707066,
+      "artifact_run_number": 145,
+      "artifact_created_at": "2026-11-10T06:19:47Z",
+      "artifact_expires_at": "2027-02-08T06:19:14Z",
+      "artifact_size_bytes": 1860378,
+      "artifact_name": "cardir-vag-owner-manual-facts-research-pack",
+      "source_row_hashes_verified": 948,
+      "source_row_number_mapping_verified": true,
+      "sqlite_integrity_check": "ok",
+      "foreign_key_violations": 0,
+      "full_row_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
+      "vag_row_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
+      "source_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T05:51:15Z; SHA-256 902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb"
+    },
+    {
+      "source_id": "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0",
+      "publisher": "ownerspecs.com",
+      "url": "https://ownerspecs.com/data",
+      "source_kind": "curated_document_verified_vehicle_generation_specifications",
+      "source_revision": "OpenSpecs dataset generated 2026-11-09; exact source.json re-acquired by Windows x64 CI at 2026-11-10T06:28:05Z; raw SHA-256 6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95; exact comparison with retained run64 source 7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d: four specification values changed (three VAG) plus one non-VAG unit-label case normalization; candidate-only.",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "publisher_claimed_market_scope": "Global · multi-market",
+      "evidence_scope": [
+        "vehicle_generation_candidates",
+        "publisher_year_spans",
+        "dimensions",
+        "masses",
+        "tyre_pressure",
+        "fluid_and_capacity_reference_facts",
+        "engine_family_or_code_candidates",
+        "selected_torque_reference_facts"
+      ],
+      "rights": {
+        "data_license": "CC-BY-SA-4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "permission_status": "approved_by_published_license_for_reuse",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "attribution": "Vehicle data from ownerspecs.com (https://ownerspecs.com), licensed under CC BY-SA 4.0."
+      },
+      "content_review": {
+        "html_page_generation_count": 111,
+        "json_descriptor_generation_count": 111,
+        "html_page_brand_count": 27,
+        "html_page_verified_datapoint_count": 2369,
+        "metadata_consistent": true,
+        "per_value_primary_document_url": false,
+        "per_value_primary_document_revision": false,
+        "per_value_source_count": true,
+        "per_value_provenance_kind": true,
+        "vag_generation_count": 20,
+        "vag_fact_count": 233,
+        "source_snapshot_status": "source_snapshot_acquired_schema_verified",
+        "source_file_bytes": 683533,
+        "source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+        "retrieved_at_utc": "2026-11-10T06:28:05.310530+00:00",
+        "generation_count": 111,
+        "verified_datapoints": 2369,
+        "changed_generations_total": 4,
+        "changed_datapoints_total": 5,
+        "vag_changed_generations": 2,
+        "vag_changed_datapoints": 3,
+        "non_vag_changed_datapoints": 2,
+        "generation_membership_changed": false,
+        "datapoint_membership_changed": false,
+        "all_changes_are_range_collapses_to_upper_value": false,
+        "changed_specification_values_total": 4,
+        "changed_unit_only_records_total": 1,
+        "all_specification_value_changes_are_range_collapses_to_upper_value": true
+      },
+      "applicability": {
+        "market_scope": "UNKNOWN",
+        "generation_and_year_span": "publisher_candidate_only",
+        "exact_model_generation_year_fitment": false,
+        "exact_factory_engine_code_fitment": false,
+        "exact_factory_gearbox_code_fitment": false,
+        "exact_engine_gearbox_pair": false,
+        "exact_vehicle_fitment": false,
+        "ru_eaeu_applicability": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_applicability": false,
+        "technical_review_status": "not_independently_reviewed"
+      },
+      "data_ingested": false,
+      "source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+      "research_pack_allowed": true,
+      "research_pack_acquisition_allowed": true,
+      "product_import_allowed": false,
+      "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. Exact source JSON SHA-256 6ed73e4c... is retained and compared against the verified run64 baseline. The VAG-filtered pack was rebuilt and independently checked in Windows x64 run #115: 20 generation candidates / 233 facts, SQLite integrity ok and zero foreign-key violations. The pack remains market UNKNOWN, technical review not independently reviewed, with no exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability. It is a separate Share-Alike research pack only and is not imported into the production vehicle/technical database.",
+      "research_pack_acquired": true,
+      "research_pack_last_verified_at": "2026-11-10T06:43:59.091416+00:00",
+      "research_pack_workflow_run_id": 42770457166,
+      "research_pack_artifact_id": 13742090427,
+      "research_pack_artifact_name": "ownerspecs-vag-vehicle-specs-research-pack",
+      "research_pack_artifact_sha256": "93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1",
+      "research_pack_manifest_sha256": "35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd",
+      "research_pack_database_sha256": "572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683",
+      "research_pack_source_manifest_sha256": "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
+      "product_database_ingested": false,
+      "research_pack_source_commit": "da635dd1b17131c6f33840c1601ba1ea24dccf08",
+      "verification_status": "licensed_source_snapshot_reacquired_pack_built_verified_candidate_only_no_production_import",
+      "research_pack_desktop_integration_status": "verified_pack_available_desktop_sync_pending",
+      "research_pack_run_number": 115,
+      "research_database_included_in_desktop": false,
+      "desktop_lifecycle_evidence": null,
+      "previous_verified_research_pack": {
+        "status": "verified_research_only_previous_snapshot",
+        "source_manifest_sha256": "3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
+        "pack_manifest_sha256": "7d47964b15d787c9ae1ebf5a16b5f0fa2082d9bc64c0fbe7e44a660b8c299a57",
+        "database_sha256": "eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf",
+        "artifact_id": 13733448981,
+        "artifact_sha256": "441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3",
+        "artifact_run_id": 42752686437,
+        "artifact_run_number": 64,
+        "artifact_name": "ownerspecs-vag-vehicle-specs-research-pack",
+        "source_commit": "c75eee82df6d97e44b89e8f9722fe5756777f580",
+        "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
+        "source_snapshot_manifest_sha256": "07441a2d7bb098b394a516cbb02e78d5a19dac0aa98baa66036f0014c6070c7a",
+        "database_byte_size": 323584,
+        "artifact_size_bytes": 113519,
+        "artifact_created_at": "2026-11-10T03:57:11Z",
+        "artifact_expires_at": "2027-02-08T03:56:54Z"
+      },
+      "previous_desktop_lifecycle_evidence": {
+        "status": "verified_windows_server_2022_x64_lifecycle",
+        "workflow": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "run_id": 42760585201,
+        "run_number": 1208,
+        "build_job_id": 129645072379,
+        "compatibility_job_id": 129653714680,
+        "commit": "068eb5cbbb9cab1e05a18a31c13ac11d491c8d8f",
+        "environment": "Windows Server 2022 x64",
+        "checks": {
+          "clean_install": true,
+          "offline_launch": true,
+          "backup_restore": true,
+          "upgrade_from": "0.2.3",
+          "upgrade_to": "0.2.4",
+          "sqlite_user_data_preserved": true,
+          "uninstall_preserves_user_data": true
+        },
+        "offline_research_manifest_sha256": "6ecf43abbaa18b77465e100cc3a98d20d0bbbb2098cc12d06605af36df8d946c",
+        "offline_research_manifest_entries": 10,
+        "source_verification_file": "_temp/vag-tech-pro-run71-artifact/windows-lifecycle-staging/source-verification.txt",
+        "source_verification_sha256": "38843a5bda64437b960407b09d073d31dd799cfccfafe53e7f544fdc0656091c",
+        "source_verification_bytes": 9670,
+        "lifecycle_log_file": "VAG-TECH-PRO/VAG-TECH-PRO/windows-2022-lifecycle.log",
+        "lifecycle_log_sha256": "95467ddb72a7fd7f16baefbe842844699f039d0f332d752a7b4118d35d8281b7",
+        "lifecycle_log_bytes": 1232,
+        "build_metadata_file_sha256": "d480099a8b10c047d832f3776840cce911600e52fb90267af941752060fbe136",
+        "build_metadata_file_bytes": 8927,
+        "build_metadata_artifact_id": 13738805743,
+        "build_metadata_artifact_digest": "f42b5bb6b1c1e9c715b8de4f75fd2c62c80b76e4ecfc9367c8617beae5f3edce",
+        "build_metadata_artifact_expires_at": "2026-12-10T05:36:00Z",
+        "lifecycle_artifact_id": 13738433199,
+        "lifecycle_artifact_digest": "d1ea9e289bd3dab892fdf23e43928d07f4f9507645fc5639395b591c1cd7bf2d",
+        "lifecycle_artifact_expires_at": "2026-12-10T05:41:07Z",
+        "installer_artifact_id": 13738563172,
+        "installer_artifact_digest": "3c719bf1f69ab1ca34075b7df516e577bc7a517cbd6c515fd8da2308a8d725b7",
+        "installer_artifact_bytes": 1370625377,
+        "installer_artifact_expires_at": "2026-11-24T05:36:14Z",
+        "installers": [
+          {
+            "version": "0.2.3",
+            "file": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
+            "bytes": 568993133,
+            "sha256": "3f3128718a1df1d12c77930c4b16cde3b7c180bcc4003ed0d797907d80dd4e33"
+          },
+          {
+            "version": "0.2.4",
+            "file": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
+            "bytes": 568992965,
+            "sha256": "7c770600ace987c79828ae29c0589105b886584b29178da8cc0cb1d9aa9cdc5d"
+          }
+        ],
+        "signature_status": "unsigned",
+        "native_windows_10_11_verified": false,
+        "native_windows_10_11_status": "not_run_owner_runner_gate_disabled"
+      },
+      "source_manifest_sha256": "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
+      "source_file_bytes": 683533,
+      "data_revision": "OpenSpecs dataset generated 2026-11-09; live JSON re-acquired 2026-11-10T05:51:09Z; SHA-256 f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4; 4 specification values changed (3 VAG) with no generation/datapoint membership changes; candidate-only.",
+      "latest_snapshot_review": {
+        "previous_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
+        "current_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+        "previous_source_file_bytes": 683641,
+        "current_source_file_bytes": 683533,
+        "retrieved_at_utc": "2026-11-10T06:28:05.310530+00:00",
+        "generation_count": 111,
+        "datapoint_count": 2369,
+        "vag_generation_count": 20,
+        "vag_fact_count": 233,
+        "generations_added": 0,
+        "generations_removed": 0,
+        "datapoints_added": 0,
+        "datapoints_removed": 0,
+        "changed_generations_total": 4,
+        "changed_datapoints_total": 5,
+        "changed_specification_values_total": 4,
+        "changed_unit_only_records_total": 1,
+        "vag_changed_generations": 2,
+        "vag_changed_datapoints": 3,
+        "non_vag_changed_datapoints": 2,
+        "all_changed_fields_are_specification_values": false,
+        "all_specification_value_changes_are_range_collapses_to_upper_value": true,
+        "all_changes_are_range_collapses_to_upper_value": false,
+        "changed_values": [
+          {
+            "brand": "Mercedes-Benz",
+            "model": "A-Class",
+            "generation": "A-Class (W177, 4th gen)",
+            "field": "co2",
+            "unit": "g/km",
+            "old": {
+              "value": 121,
+              "value_max": 139,
+              "is_range": true
+            },
+            "new": {
+              "value": 139,
+              "is_range": false
+            },
+            "vag": false
+          },
+          {
+            "brand": "Audi",
+            "model": "A1",
+            "generation": "A1 (GB)",
+            "field": "co2",
+            "unit": "g/km",
+            "old": {
+              "value": 117,
+              "value_max": 145,
+              "is_range": true
+            },
+            "new": {
+              "value": 145,
+              "is_range": false
+            },
+            "vag": true
+          },
+          {
+            "brand": "Audi",
+            "model": "A1",
+            "generation": "A1 (GB)",
+            "field": "fuel_consumption",
+            "unit": "l/100km",
+            "old": {
+              "value": 5.1,
+              "value_max": 6.4,
+              "is_range": true
+            },
+            "new": {
+              "value": 6.4,
+              "is_range": false
+            },
+            "vag": true
+          },
+          {
+            "brand": "Volkswagen",
+            "model": "Polo",
+            "generation": "Polo VI (AW)",
+            "field": "co2",
+            "unit": "g/km",
+            "old": {
+              "value": 104,
+              "value_max": 121,
+              "is_range": true
+            },
+            "new": {
+              "value": 121,
+              "is_range": false
+            },
+            "vag": true
+          }
+        ],
+        "changed_units": [
+          {
+            "brand": "Hyundai",
+            "model": "i10",
+            "generation": "i10 III (AC3)",
+            "field": "engine_oil_capacity",
+            "old_unit": "L",
+            "new_unit": "l",
+            "value": 3.1,
+            "value_max": 3.4,
+            "is_range": true,
+            "vag": false
+          }
+        ],
+        "primary_document_locator_per_value_in_json": false,
+        "primary_document_revision_per_value_in_json": false,
+        "market_scope": "UNKNOWN",
+        "critical_repair_values_publishable": false,
+        "candidate_only": true,
+        "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_exact_retained_bytes; do_not_promote_to_factory_fitment_or_repair_data"
+      },
+      "research_pack_source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+      "research_pack_current": true,
+      "research_pack_status": "verified_research_only",
+      "research_pack_database_byte_size": 323584,
+      "research_pack_artifact_size_bytes": 114062,
+      "research_pack_artifact_created_at": "2026-11-10T06:44:01Z",
+      "research_pack_artifact_expires_at": "2027-02-08T06:43:45Z",
+      "research_pack_attribution_sha256": "6e9005e67b6dfa8704bcd83be166ec61749dedeeeebe0f6ddd80c7b3725c2eeb",
+      "research_pack_license_reference_sha256": "7802316f0a49ea293c239db64b24756ff2621983892a0aa649adf74b30d99762",
+      "research_pack_source_snapshot_manifest_sha256": "c5c17ffb46dc2300a0b5eb9ef57a2877ea8be52a40cc657fccc38f3b1c45b01c",
+      "research_pack_acquisition_snapshot_sha256": "5c397284c0c9f39c10f2178558b448dc4b6b16d28bcbedaecf28a59c57753f6b"
+    },
+    {
+      "source_id": "otts-baza-commercial-otts-catalog",
+      "publisher": "OTTS-Baza.ru / commercial service operator identified in published offer",
+      "url": "https://www.otts-baza.ru/",
+      "terms_url": "https://www.otts-baza.ru/offer/",
+      "source_kind": "commercial_aggregated_ru_eaeu_vehicle_type_approval_catalog",
+      "source_revision": "Terms revision 2026-10-14; reviewed 2026-11-10",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "market_scope_precision": "provider_claimed_eaeu_coverage_not_independently_verified",
+      "document_types": [
+        "OTTS"
+      ],
+      "provider_displayed_counts": {
+        "cards": 42050,
+        "observed_at": "2026-11-10",
+        "count_status": "provider_interface_count_not_independently_verified_not_a_vag_count"
+      },
+      "evidence_scope": "Public search UI and published terms only. Search metadata fields observed; no document contents or raw source files acquired.",
+      "access": {
+        "public_search_ui_observed": true,
+        "full_document_access": "account_and_access_plan_or_quota_based",
+        "account_created": false,
+        "paid_plan_started": false,
+        "documents_downloaded": 0
+      },
+      "rights": {
+        "dataset_license": "not_granted",
+        "terms_revision": "2026-10-14",
+        "individual_document_internal_professional_use": "described_by_terms_subject_to_authorized_access",
+        "bulk_automated_extraction_allowed": false,
+        "systematic_extraction_of_substantial_part_allowed": false,
+        "competing_catalog_creation_allowed": false,
+        "offline_cache_for_product_distribution_allowed": false,
+        "third_party_display_allowed": false,
+        "redistribution_allowed": false,
+        "derivative_database_reproduction_allowed": false,
+        "written_permission_obtained": false,
+        "permission_status": "not_obtained_separate_written_agreement_required_for_product_use"
+      },
+      "limitations": [
+        "Published terms prohibit systematic extraction of a substantial part of the database for publication, resale or creation of a competing catalogue without a separate agreement.",
+        "Individual internal professional use does not grant rights to redistribute source documents or derived database contents to VAG TECH PRO users.",
+        "Provider-displayed 42,050-card count is not independently verified and is not a VAG-specific count.",
+        "No account was created, no paid plan was accepted and no documents were downloaded."
+      ],
+      "project_decision": "discovery_only_no_ingest_no_offline_cache_no_third_party_display_no_redistribution_without_separate_written_permission",
+      "evidence_status": "published_terms_reviewed_2026_11_10_no_reuse_rights_for_vag_tech_pro_database",
+      "evidence_reviewed": "2026-11-10",
+      "review_document": "docs/research/OTTS_BAZA_TERMS_REVIEW_2026-11-10.md",
+      "rights_review_references": [
+        "https://www.otts-baza.ru/",
+        "https://www.otts-baza.ru/offer/"
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "not_computed_no_source_file_acquired",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "verification_status": "commercial_terms_prohibit_bulk_or_competing_catalog_reuse_without_separate_written_agreement"
     }
   ],
   "minimum_fitment_evidence_fields": [
