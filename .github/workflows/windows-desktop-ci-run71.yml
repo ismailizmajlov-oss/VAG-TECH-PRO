@@ -42,6 +42,18 @@ on:
       - "scripts/apply-kba-de-vag-research-verification-run1.cjs"
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "tests/cardir-research-pack-count-patch.test.cjs"
+      - "desktop/cardir-vag-reference-facts-db.cjs"
+      - "desktop/scripts/verify-cardir-vag-open-data-pack.cjs"
+      - "desktop/tests/cardir-vag-reference-facts-db.test.cjs"
+      - "desktop/tests/cardir-vag-reference-facts-ui-contract.test.cjs"
       - "tests/kba-pack-integration-contract.test.cjs"
       - "tests/rdw-pack-integration-contract.test.cjs"
       - "scripts/apply-rdw-ui-contract-fix-run78.cjs"
@@ -187,6 +199,17 @@ on:
       - "scripts/apply-kba-de-vag-research-verification-run1.cjs"
       - "tests/test_kba_de_vag_stock_research_pack.py"
       - "tests/test_kba_open_data_probe.py"
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "desktop/cardir-vag-reference-facts-db.cjs"
+      - "desktop/scripts/verify-cardir-vag-open-data-pack.cjs"
+      - "desktop/tests/cardir-vag-reference-facts-db.test.cjs"
+      - "desktop/tests/cardir-vag-reference-facts-ui-contract.test.cjs"
       - "tests/kba-pack-integration-contract.test.cjs"
       - "tests/rdw-pack-integration-contract.test.cjs"
       - "scripts/apply-rdw-ui-contract-fix-run78.cjs"
@@ -383,6 +406,20 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "KBA published licence/source-rights tests failed." }
           node --test tests/kba-pack-integration-contract.test.cjs
           if ($LASTEXITCODE -ne 0) { throw "KBA desktop integration contract tests failed." }
+          python -m py_compile scripts/build_cardir_vag_open_data_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir Python compilation failed." }
+          python -m unittest discover -s tests -p "test_cardir_vag_open_data_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "CarDir SQLite research-pack tests failed." }
+          python tests/test_cardir_vag_open_data_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir source-rights and applicability tests failed." }
+          node --check scripts/integrate-cardir-vag-owner-manual-facts.cjs
+          if ($LASTEXITCODE -ne 0) { throw "CarDir desktop integration script syntax failed." }
+          node --test tests/cardir-research-pack-count-patch.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "CarDir research-pack count integration regression failed." }
+          node --check desktop/cardir-vag-reference-facts-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "CarDir desktop database module syntax failed." }
+          node --check desktop/scripts/verify-cardir-vag-open-data-pack.cjs
+          if ($LASTEXITCODE -ne 0) { throw "CarDir desktop research-pack verifier syntax failed." }
 
 
       - name: Reassemble and verify pinned desktop source archive
@@ -1705,6 +1742,103 @@ jobs:
           }
           "kba_de_vag_stock=run${{ steps.kba-pack.outputs.run_number }}/${{ steps.kba-pack.outputs.run_id }}; artifact_sha256=${{ steps.kba-pack.outputs.artifact_sha256 }}; scope=DE; precision=aggregate_stock_observation; research_pack_ingested=true; product_database_ingested=false; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Resolve CarDir VAG owner-manual facts pack for exact source revision
+        id: cardir-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ($env:GITHUB_EVENT_NAME -eq "pull_request") {
+            $event = Get-Content -LiteralPath $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+            $branch = [string]$event.pull_request.head.ref
+            $expectedHeadSha = [string]$event.pull_request.head.sha
+          } else {
+            $branch = [string]$env:GITHUB_REF_NAME
+            $expectedHeadSha = [string]$env:GITHUB_SHA
+          }
+          if ([string]::IsNullOrWhiteSpace($branch) -or $expectedHeadSha -notmatch "^[a-f0-9]{40}$") { throw "Cannot resolve exact CarDir source revision." }
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $encodedBranch = [uri]::EscapeDataString($branch)
+          $workflowUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/workflows/build-cardir-vag-open-data-pack.yml/runs?branch=$encodedBranch&per_page=100"
+          $response = Invoke-RestMethod -Uri $workflowUri -Headers $headers -Method Get -TimeoutSec 30
+          $run = $response.workflow_runs |
+            Where-Object { $_.head_sha -eq $expectedHeadSha -and $_.event -in @("push", "pull_request", "workflow_dispatch") } |
+            Sort-Object { [datetime]$_.created_at } -Descending |
+            Select-Object -First 1
+          if (-not $run) { throw "No CarDir research-pack build exists for exact source commit $expectedHeadSha; refusing stale artifact." }
+          $deadline = (Get-Date).AddMinutes(45)
+          while ($run.status -ne "completed" -and (Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 20
+            $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)" -Headers $headers -Method Get -TimeoutSec 30
+          }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success") { throw "CarDir research-pack build did not complete successfully for this commit. Run=$($run.id), status=$($run.status), conclusion=$($run.conclusion)" }
+          $artifactUri = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$($run.id)/artifacts?per_page=100"
+          $artifactResponse = Invoke-RestMethod -Uri $artifactUri -Headers $headers -Method Get -TimeoutSec 30
+          $artifact = $artifactResponse.artifacts | Where-Object { $_.name -eq "cardir-vag-owner-manual-facts-research-pack" -and $_.expired -eq $false } | Select-Object -First 1
+          if (-not $artifact) { throw "CarDir successful build has no unexpired research-pack artifact." }
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($digest -notmatch "^[a-f0-9]{64}$") { throw "CarDir artifact SHA-256 is invalid." }
+          "run_id=$($run.id)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "run_number=$($run.run_number)" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "CarDir VAG owner-manual facts source run: #$($run.run_number) / $($run.id)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "CarDir artifact SHA-256: $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Download verified CarDir VAG owner-manual facts SQLite research pack
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: cardir-vag-owner-manual-facts-research-pack
+          path: ${{ runner.temp }}/vag-tech-pro-cardir-pack
+          run-id: ${{ steps.cardir-pack.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Integrate CarDir VAG reference facts into offline desktop
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packDir = Join-Path $env:RUNNER_TEMP "vag-tech-pro-cardir-pack"
+          node --check scripts/integrate-cardir-vag-owner-manual-facts.cjs
+          node scripts/integrate-cardir-vag-owner-manual-facts.cjs --desktop-root desktop-source --pack-dir $packDir --source-run-id ${{ steps.cardir-pack.outputs.run_id }} --source-run-number ${{ steps.cardir-pack.outputs.run_number }} --artifact-sha256 ${{ steps.cardir-pack.outputs.artifact_sha256 }} 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/cardir-desktop-integration.log"
+          if ($LASTEXITCODE -ne 0) { throw "CarDir VAG reference-facts desktop integration failed." }
+          node --check desktop-source/lib/cardir-vag-reference-facts-db.cjs
+          if ($LASTEXITCODE -ne 0) { throw "CarDir desktop reader syntax check failed." }
+          node --test desktop-source/tests/cardir-vag-reference-facts-db.test.cjs desktop-source/tests/cardir-vag-reference-facts-ui-contract.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/cardir-desktop-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "CarDir desktop database/UI contract tests failed." }
+          node desktop-source/scripts/verify-cardir-vag-open-data-pack.cjs desktop-source/data/research 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/cardir-desktop-verify.log"
+          if ($LASTEXITCODE -ne 0) { throw "CarDir installed research-pack verification failed." }
+          $auditRoot = Join-Path $env:GITHUB_WORKSPACE "windows-lifecycle-staging/desktop-source"
+          $metadataFiles = @(
+            "data/research/manifest.json",
+            "data/research/cardir-vag-owner-manual-facts-research/manifest.json",
+            "data/research/cardir-vag-owner-manual-facts-research/cardir-vag-owner-manual-facts.sqlite",
+            "data/research/cardir-vag-owner-manual-facts-research/source-manifest.json",
+            "data/research/cardir-vag-owner-manual-facts-research/source-snapshot.json",
+            "data/research/cardir-vag-owner-manual-facts-research/build-report.json",
+            "data/research/cardir-vag-owner-manual-facts-research/LICENSE.txt",
+            "data/research/cardir-vag-owner-manual-facts-research/ATTRIBUTION.md",
+            "data/research/cardir-vag-owner-manual-facts-research/desktop-integration-report.json",
+            "lib/cardir-vag-reference-facts-db.cjs",
+            "tests/cardir-vag-reference-facts-db.test.cjs",
+            "tests/cardir-vag-reference-facts-ui-contract.test.cjs",
+            "scripts/verify-cardir-vag-open-data-pack.cjs",
+            "components/local-research-catalog.tsx",
+            "app/api/local-research/route.ts",
+            "scripts/windows-installer-lifecycle.ps1",
+            "package.json"
+          )
+          foreach ($relative in $metadataFiles) {
+            $sourceFile = Join-Path (Join-Path $env:GITHUB_WORKSPACE "desktop-source") $relative
+            if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) { throw "CarDir audit source is missing: $relative" }
+            $destinationFile = Join-Path $auditRoot $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destinationFile) | Out-Null
+            Copy-Item -LiteralPath $sourceFile -Destination $destinationFile -Force
+          }
+          $cardirReportPath = Join-Path $env:GITHUB_WORKSPACE "desktop-source/data/research/cardir-vag-owner-manual-facts-research/desktop-integration-report.json"
+          $cardirReport = Get-Content -LiteralPath $cardirReportPath -Raw | ConvertFrom-Json
+          "cardir_vag_owner_manual_facts=run${{ steps.cardir-pack.outputs.run_number }}/${{ steps.cardir-pack.outputs.run_id }}; artifact_sha256=${{ steps.cardir-pack.outputs.artifact_sha256 }}; database_sha256=$($cardirReport.database_sha256); source_snapshot_sha256=$($cardirReport.source_snapshot_sha256); source_manifest_sha256=$($cardirReport.source_manifest_sha256); facts=948; models=26; brands=5; parameters=19; market=UNKNOWN; research_only=true; production_import=false; exact_engine_gearbox_pair=false; ru_eaeu_applicability=false" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+
+
       - name: Render typed technical payloads in offline workspace (run79)
         shell: pwsh
         run: |
@@ -2029,6 +2163,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Packaged ASTRA CH research pack verification failed" }
           node scripts/verify-astra-ch-tas-pack.cjs
           if ($LASTEXITCODE -ne 0) { throw "Packaged ASTRA CH research pack verification failed" }
+          node -e 'const g=require("./lib/cardir-vag-reference-facts-db.cjs").getCardirSummary(); if(g.counts.sourceRows!==44245 || g.counts.vagFacts!==948 || g.counts.vagBrands!==5 || g.counts.vagModels!==26 || g.counts.parameterKeys!==19 || g.marketScope!=="UNKNOWN" || g.rightsStatus!=="approved_by_published_CC_BY_4_0" || g.productionImport!==false || g.productImportAllowed!==false || g.ruEaeuApplicability!==false || g.exactEngineGearboxPair!==false || g.exactVehicleFitment!==false || g.repairProcedure!==false) throw new Error("Packaged CarDir CC BY 4.0 research-only resource verification failed"); console.log(JSON.stringify(g));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged CarDir research resource verification failed" }
 
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.3-x64.exe") -Force
@@ -2058,6 +2194,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade ASTRA CH research pack verification failed" }
           node scripts/verify-astra-ch-tas-pack.cjs
           if ($LASTEXITCODE -ne 0) { throw "Packaged upgrade ASTRA CH research pack verification failed" }
+          node -e 'const g=require("./lib/cardir-vag-reference-facts-db.cjs").getCardirSummary(); if(g.counts.sourceRows!==44245 || g.counts.vagFacts!==948 || g.counts.vagBrands!==5 || g.counts.vagModels!==26 || g.counts.parameterKeys!==19 || g.marketScope!=="UNKNOWN" || g.rightsStatus!=="approved_by_published_CC_BY_4_0" || g.productionImport!==false || g.productImportAllowed!==false || g.ruEaeuApplicability!==false || g.exactEngineGearboxPair!==false || g.exactVehicleFitment!==false || g.repairProcedure!==false) throw new Error("Packaged CarDir CC BY 4.0 research-only resource verification failed"); console.log(JSON.stringify(g));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged CarDir research resource verification failed" }
 
           Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           Copy-Item -LiteralPath $installer -Destination (Join-Path $env:RUNNER_TEMP "VAG-TECH-PRO-Setup-0.2.4-x64.exe") -Force
@@ -2109,6 +2247,12 @@ jobs:
           $schemaSourceHash = (Get-FileHash -LiteralPath $schemaSource -Algorithm SHA256).Hash.ToLowerInvariant()
           $schemaPackagedHash = (Get-FileHash -LiteralPath $schemaPackaged -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($schemaSourceHash -ne $schemaPackagedHash) { throw "Packaged technical payload schema differs from the source file." }
+          if (@($index.files | Where-Object { $_.name -eq "cardir-vag-owner-manual-facts-cc-by-4.0.json" }).Count -ne 1) { throw "Packaged CarDir source manifest is missing from the immutable source-manifest index." }
+          $env:VAG_TECH_PRO_RESEARCH_DIR = Join-Path $resources "research-data"
+          $cardirSummaryJson = node -e 'const g=require("./lib/cardir-vag-reference-facts-db.cjs").getCardirSummary(); if(g.counts.sourceRows!==44245 || g.counts.vagFacts!==948 || g.counts.vagBrands!==5 || g.counts.vagModels!==26 || g.counts.parameterKeys!==19 || g.marketScope!=="UNKNOWN" || g.productionImport!==false || g.productImportAllowed!==false || g.ruEaeuApplicability!==false || g.exactEngineGearboxPair!==false || g.exactVehicleFitment!==false || g.repairProcedure!==false) throw new Error("Packaged CarDir resource failed research-only verification"); process.stdout.write(JSON.stringify(g));'
+          if ($LASTEXITCODE -ne 0) { throw "Packaged CarDir resource verification failed." }
+          $cardirSummary = $cardirSummaryJson | ConvertFrom-Json
+          Remove-Item Env:VAG_TECH_PRO_RESEARCH_DIR -ErrorAction SilentlyContinue
           $indexHash = (Get-FileHash -LiteralPath $indexPath -Algorithm SHA256).Hash.ToLowerInvariant()
           $russianHash = (Get-FileHash -LiteralPath $russianPath -Algorithm SHA256).Hash.ToLowerInvariant()
           @(
@@ -2117,6 +2261,13 @@ jobs:
             "russian_eaeu_otts_manifest_sha256=$russianHash"
             "russian_eaeu_otts_source_count=$(@($russian.sources).Count)"
             $sqlVerificationLines
+            "cardir_database_sha256=$($cardirSummary.databaseSha256)"
+            "cardir_source_snapshot_sha256=$($cardirSummary.sourceSnapshotSha256)"
+            "cardir_source_manifest_sha256=$($cardirSummary.sourceManifestSha256)"
+            "cardir_vag_fact_count=$($cardirSummary.counts.vagFacts)"
+            "cardir_vag_model_count=$($cardirSummary.counts.vagModels)"
+            "cardir_vag_brand_count=$($cardirSummary.counts.vagBrands)"
+            "cardir_parameter_key_count=$($cardirSummary.counts.parameterKeys)"
             "technical_payload_schema_sha256=$schemaPackagedHash"
           ) | Out-File -FilePath "$env:GITHUB_WORKSPACE/package-resource-verification.txt" -Encoding utf8
 
@@ -2151,6 +2302,21 @@ jobs:
           $genericSourceRevision = if ($genericReport) { $genericReport.source_revision } else { $null }
           $genericGuidanceCount = if ($genericReport) { $genericReport.counts.generic_authored_guidance } else { $null }
           $genericDtcCount = if ($genericReport) { $genericReport.counts.generic_sae_dtc_references } else { $null }
+          $cardirReportPath = "desktop-source/data/research/cardir-vag-owner-manual-facts-research/desktop-integration-report.json"
+          $cardirReport = if (Test-Path $cardirReportPath) { Get-Content -LiteralPath $cardirReportPath -Raw | ConvertFrom-Json } else { $null }
+          $cardirReportHash = if (Test-Path $cardirReportPath) { (Get-FileHash -LiteralPath $cardirReportPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+          $cardirDatabaseHash = if ($cardirReport) { $cardirReport.database_sha256 } else { $null }
+          $cardirSnapshotHash = if ($cardirReport) { $cardirReport.source_snapshot_sha256 } else { $null }
+          $cardirManifestHash = if ($cardirReport) { $cardirReport.source_manifest_sha256 } else { $null }
+          $cardirArtifactHash = if ($cardirReport) { $cardirReport.artifact_sha256 } else { $null }
+          $cardirFactCount = if ($cardirReport) { $cardirReport.counts.vagFacts } else { $null }
+          $cardirModelCount = if ($cardirReport) { $cardirReport.counts.vagModels } else { $null }
+          $cardirBrandCount = if ($cardirReport) { $cardirReport.counts.vagBrands } else { $null }
+          $cardirParameterCount = if ($cardirReport) { $cardirReport.counts.parameterKeys } else { $null }
+          $cardirSourceRunId = if ($cardirReport) { $cardirReport.source_run_id } else { $null }
+          $cardirSourceRunNumber = if ($cardirReport) { $cardirReport.source_run_number } else { $null }
+          $cardirIntegrationScriptHash = (Get-FileHash -LiteralPath "scripts/integrate-cardir-vag-owner-manual-facts.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $cardirDbModuleHash = if (Test-Path "desktop-source/lib/cardir-vag-reference-facts-db.cjs") { (Get-FileHash -LiteralPath "desktop-source/lib/cardir-vag-reference-facts-db.cjs" -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
           $generationReportPath = "desktop-source/data/research/wikidata-vag-generation-candidates-cc0/integration-verification.json"
           $generationReport = if (Test-Path $generationReportPath) { Get-Content -LiteralPath $generationReportPath -Raw | ConvertFrom-Json } else { $null }
           $generationDbHash = if ($generationReport) { $generationReport.database_sha256 } else { $null }
@@ -2231,7 +2397,7 @@ jobs:
               $items += [ordered]@{ name = [System.IO.Path]::GetFileName($file); bytes = (Get-Item $file).Length; sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
             }
           }
-          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; vehicle_catalog_package_schema_sha256 = $vehicleCatalogPackageSchemaHash; engine_transmission_pair_evidence_patch_sha256 = $pairEvidencePatchHash; engine_transmission_pair_code_binding_patch_sha256 = $pairCodeBindingPatchHash; technical_payload_step_order_patch_sha256 = $technicalStepOrderPatchHash; dtc_namespace_range_patch_sha256 = $dtcNamespaceRangePatchHash; dtc_namespace_range_correction_patch_sha256 = $dtcNamespaceRangeCorrectionPatchHash; obdb_source_count_patch_sha256 = $obdbSourceCountPatchHash; obdb_manifest_sha256 = $obdbManifestHash; obdb_database_sha256 = $obdbDatabaseHash; obdb_source_count = $obdbSourceCount; obdb_generation_candidate_count = $obdbGenerationCount; obdb_ecu_candidate_count = $obdbEcuCount; obdb_uds_command_candidate_count = $obdbCommandCount; obdb_signal_candidate_count = $obdbSignalCount; vehiclesdb_revision_patch_sha256 = $vehiclesDbRevisionPatchHash; vehiclesdb_revision_evidence_sha256 = $vehiclesDbRevisionEvidenceHash; vehiclesdb_revision = $vehiclesDbRevision; dtc_namespace_policy_sha256 = $dtcNamespacePolicyHash; dtc_research_range_quarantine_patch_sha256 = $dtcResearchQuarantinePatchHash; oem_dtc_index_schema_sha256 = $oemDtcIndexSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; desktop_version = '0.2.4'; desktop_offline_entry = 'app/desktop'; desktop_supabase_env_forwarded = $false; desktop_offline_entry_patch_sha256 = (Get-FileHash -LiteralPath 'apply-desktop-offline-entry-run90.cjs' -Algorithm SHA256).Hash.ToLowerInvariant(); patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-normalize-windows-sql-migration-line-endings+run74-astra-ch-research-pack-verification+run75-close-test-database-on-error+run76-desktop-row-types-fix+run77-lifecycle-session-output+run78-rdw-ui-contract+run79-typed-technical-payload-renderer+run80-technical-payload-schema-validation+run81-strict-dtc-oem-supersession-validation+run82-engine-transmission-pair-evidence-guard+run83-engine-transmission-pair-source-manifest-binding+run84-engine-transmission-pair-code-binding+run85-technical-step-order-validation+run86-dtc-namespace-code-range-validation+run87-conservative-dtc-namespace-quarantine+run88-obdb-16-source-count-sync+run89-vehiclesdb-revision-manifest-binding+run90-offline-desktop-entry+run77-unique-exact-configuration-ui-guard+run91-obdex-dtc-research-range-quarantine'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
+          [ordered]@{ source_archive_sha256 = $sourceHash; vag_source_register_sha256 = $sourceRegisterHash; vag_source_register_source_count = $sourceRegisterCount; vag_source_register_updated_at = $sourceRegisterUpdatedAt; source_manifest_index_sha256 = $manifestIndexHash; source_manifest_count = $manifestCount; russian_eaeu_otts_manifest_sha256 = $russianManifestHash; russian_eaeu_otts_source_count = $russianManifestCount; technical_library_sql_sha256 = $technicalLibrarySqlHash; vehicle_catalog_sql_sha256 = $vehicleCatalogSqlHash; oem_dtc_index_sql_sha256 = $oemDtcIndexSqlHash; dtc_catalog_links_sql_sha256 = $dtcCatalogLinksSqlHash; technical_payload_schema_sha256 = $technicalPayloadSchemaHash; vehicle_catalog_package_schema_sha256 = $vehicleCatalogPackageSchemaHash; engine_transmission_pair_evidence_patch_sha256 = $pairEvidencePatchHash; engine_transmission_pair_code_binding_patch_sha256 = $pairCodeBindingPatchHash; technical_payload_step_order_patch_sha256 = $technicalStepOrderPatchHash; dtc_namespace_range_patch_sha256 = $dtcNamespaceRangePatchHash; dtc_namespace_range_correction_patch_sha256 = $dtcNamespaceRangeCorrectionPatchHash; obdb_source_count_patch_sha256 = $obdbSourceCountPatchHash; obdb_manifest_sha256 = $obdbManifestHash; obdb_database_sha256 = $obdbDatabaseHash; obdb_source_count = $obdbSourceCount; obdb_generation_candidate_count = $obdbGenerationCount; obdb_ecu_candidate_count = $obdbEcuCount; obdb_uds_command_candidate_count = $obdbCommandCount; obdb_signal_candidate_count = $obdbSignalCount; vehiclesdb_revision_patch_sha256 = $vehiclesDbRevisionPatchHash; vehiclesdb_revision_evidence_sha256 = $vehiclesDbRevisionEvidenceHash; vehiclesdb_revision = $vehiclesDbRevision; dtc_namespace_policy_sha256 = $dtcNamespacePolicyHash; dtc_research_range_quarantine_patch_sha256 = $dtcResearchQuarantinePatchHash; oem_dtc_index_schema_sha256 = $oemDtcIndexSchemaHash; catalog_import_v2_patch_sha256 = $patchHash; vehicle_config_ui_guard_patch_sha256 = $uiGuardPatchHash; wikidata_database_sha256 = $wikidataDbHash; wikidata_snapshot_sha256 = $wikidataSnapshotHash; wikidata_manifest_sha256 = $wikidataManifestHash; wikidata_artifact_sha256 = $wikidataArtifactHash; wikidata_source_revision = $wikidataSourceRevision; wikidata_generation_database_sha256 = $generationDbHash; wikidata_generation_snapshot_sha256 = $generationSnapshotHash; wikidata_generation_query_sha256 = $generationQueryHash; wikidata_generation_manifest_sha256 = $generationManifestHash; wikidata_generation_artifact_sha256 = $generationArtifactHash; wikidata_generation_source_revision = $generationSourceRevision; wikidata_generation_member_entities = $generationMemberCount; wikidata_generation_model_member_links = $generationLinkCount; wikidata_generation_source_bindings = $generationBindingCount; generic_guidance_database_sha256 = $genericDbHash; generic_guidance_snapshot_sha256 = $genericSnapshotHash; generic_guidance_manifest_sha256 = $genericManifestHash; generic_guidance_source_revision = $genericSourceRevision; generic_guidance_rows = $genericGuidanceCount; generic_dtc_references = $genericDtcCount; cardir_vag_owner_manual_facts_database_sha256 = $cardirDatabaseHash; cardir_vag_owner_manual_facts_source_snapshot_sha256 = $cardirSnapshotHash; cardir_vag_owner_manual_facts_source_manifest_sha256 = $cardirManifestHash; cardir_vag_owner_manual_facts_artifact_sha256 = $cardirArtifactHash; cardir_vag_owner_manual_facts_integration_report_sha256 = $cardirReportHash; cardir_vag_owner_manual_facts_fact_count = $cardirFactCount; cardir_vag_owner_manual_facts_model_count = $cardirModelCount; cardir_vag_owner_manual_facts_brand_count = $cardirBrandCount; cardir_vag_owner_manual_facts_parameter_key_count = $cardirParameterCount; cardir_vag_owner_manual_facts_source_run_id = $cardirSourceRunId; cardir_vag_owner_manual_facts_source_run_number = $cardirSourceRunNumber; cardir_integration_script_sha256 = $cardirIntegrationScriptHash; cardir_db_module_sha256 = $cardirDbModuleHash; desktop_version = '0.2.4'; desktop_offline_entry = 'app/desktop'; desktop_supabase_env_forwarded = $false; desktop_offline_entry_patch_sha256 = (Get-FileHash -LiteralPath 'apply-desktop-offline-entry-run90.cjs' -Algorithm SHA256).Hash.ToLowerInvariant(); patch_set = 'run54-local-catalog-import-v2+run68-wikidata-cc0-candidate-pack+run69-mechanicdb-generic-odbl-research-only+run71-wikidata-generation-candidates+run71-technical-library-schema+source-manifest-index-bundle+run72-local-catalog-schema-v2-rights-gated-review-source-revisions-immutable-history+run73-share-alike-core-isolation-migration-audit-review-queue-1000+run74-normalize-windows-sql-migration-line-endings+run74-astra-ch-research-pack-verification+run75-close-test-database-on-error+run76-desktop-row-types-fix+run77-lifecycle-session-output+run78-rdw-ui-contract+run79-typed-technical-payload-renderer+run80-technical-payload-schema-validation+run81-strict-dtc-oem-supersession-validation+run82-engine-transmission-pair-evidence-guard+run83-engine-transmission-pair-source-manifest-binding+run84-engine-transmission-pair-code-binding+run85-technical-step-order-validation+run86-dtc-namespace-code-range-validation+run87-conservative-dtc-namespace-quarantine+run88-obdb-16-source-count-sync+run89-vehiclesdb-revision-manifest-binding+run90-offline-desktop-entry+run77-unique-exact-configuration-ui-guard+run91-obdex-dtc-research-range-quarantine+cardir-vag-owner-manual-facts-cc-by-4.0-research-only'; installers = $items; run_id = $env:GITHUB_RUN_ID; commit = $env:GITHUB_SHA } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath build-metadata.json -Encoding utf8
 
       - name: Upload standalone build metadata for independent installer hash verification
         if: always() && hashFiles('build-metadata.json') != ''

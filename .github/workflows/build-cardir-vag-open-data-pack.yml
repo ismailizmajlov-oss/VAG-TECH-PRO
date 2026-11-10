@@ -1,0 +1,113 @@
+name: Build CarDir VAG owner-manual facts CC BY 4.0 research pack
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
+      - "desktop/**"
+      - ".github/workflows/windows-desktop-ci-run71.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-cardir-vag-open-data-pack.yml"
+      - "scripts/build_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_pack.py"
+      - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/CARDIR_CC_BY_VAG_OWNER_MANUAL_FACTS_REVIEW_2026-11-07.md"
+      - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
+      - "desktop/**"
+      - ".github/workflows/windows-desktop-ci-run71.yml"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-cardir-vag-open-facts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acquire-build-verify:
+    name: Acquire and verify licensed CarDir VAG reference-facts SQLite
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source, rights manifest and builder
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+      - name: Compile and run CarDir rights and SQLite pack tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python --version
+          python -m py_compile scripts/build_cardir_vag_open_data_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir builder compilation failed." }
+          python -m unittest discover -s tests -p "test_cardir_vag_open_data_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "CarDir SQLite research-pack tests failed." }
+          python tests/test_cardir_vag_open_data_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "CarDir CC BY 4.0 source-rights tests failed." }
+      - name: Acquire published CSV and verify the reviewed source snapshot
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_cardir_vag_open_data_pack.py --acquire --source-manifest data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json --output-dir artifacts/cardir-source 2>&1 | Tee-Object -FilePath cardir-acquisition.log
+          if ($LASTEXITCODE -ne 0) { throw "CarDir licensed source acquisition failed." }
+          $snapshot = Get-Content -LiteralPath artifacts/cardir-source/snapshot.json -Raw | ConvertFrom-Json
+          if ($snapshot.source_row_count -ne 44245 -or $snapshot.model_count -ne 610 -or $snapshot.vag_row_count -le 0 -or $snapshot.source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") {
+            throw "CarDir source snapshot differs from the re-reviewed publisher dataset; refusing to build."
+          }
+          "CarDir source SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Source rows: $($snapshot.source_row_count); models: $($snapshot.model_count); retained VAG facts: $($snapshot.vag_row_count); VAG models: $($snapshot.vag_model_count)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+      - name: Preserve source-change probe evidence if acquisition fails
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cardir-vag-source-change-probe
+          path: |
+            artifacts/cardir-source/**
+            cardir-acquisition.log
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Build and independently verify isolated VAG SQLite research pack
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python scripts/build_cardir_vag_open_data_pack.py --build --csv artifacts/cardir-source/source.csv --snapshot-manifest artifacts/cardir-source/snapshot.json --source-manifest data/source-manifests/cardir-vag-owner-manual-facts-cc-by-4.0.json --output-dir artifacts/cardir-vag-owner-manual-facts-research-pack 2>&1 | Tee-Object -FilePath cardir-pack-build.log
+          if ($LASTEXITCODE -ne 0) { throw "CarDir VAG SQLite research-pack build failed." }
+          python scripts/build_cardir_vag_open_data_pack.py --verify-only --output-dir artifacts/cardir-vag-owner-manual-facts-research-pack 2>&1 | Tee-Object -FilePath cardir-pack-verify.log
+          if ($LASTEXITCODE -ne 0) { throw "Independent CarDir SQLite/provenance verification failed." }
+          $manifest = Get-Content -LiteralPath artifacts/cardir-vag-owner-manual-facts-research-pack/manifest.json -Raw | ConvertFrom-Json
+          if ($manifest.market_scope[0] -ne "UNKNOWN" -or $manifest.product_import_allowed -ne $false -or $manifest.production_import -ne $false -or $manifest.exact_engine_gearbox_pair -ne $false -or $manifest.ru_eaeu_applicability -ne $false -or $manifest.exact_vehicle_fitment -ne $false) {
+            throw "CarDir research pack escaped its UNKNOWN-market, non-fitment boundary."
+          }
+          "## CarDir VAG owner-manual facts research pack" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "CC BY 4.0 with attribution; market UNKNOWN; production import false; exact fitment/pairs false; RU/EAEU applicability false." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Counts: $($manifest.counts | ConvertTo-Json -Compress)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Source CSV SHA-256: $($manifest.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "SQLite SHA-256: $($manifest.database.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+      - name: Upload verified SQLite, exact source snapshot and attribution
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cardir-vag-owner-manual-facts-research-pack
+          path: |
+            artifacts/cardir-source/**
+            artifacts/cardir-vag-owner-manual-facts-research-pack/**
+            cardir-acquisition.log
+            cardir-pack-build.log
+            cardir-pack-verify.log
+          if-no-files-found: error
+          retention-days: 90
