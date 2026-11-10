@@ -10,9 +10,9 @@ Licence: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
 The publisher's published CC BY-SA 4.0 licence permits commercial reuse, display, offline caching, bulk reuse and redistribution with attribution. Adapted database material must remain under the same Share-Alike licence and be separately packaged from differently licensed production data.
 
-A fresh live review on 2026-11-10 confirms that the HTML dataset page and JSON descriptor both report **111 generations**. The HTML page also reports **27 brands and 2,369 verified datapoints**. The earlier 112-generation observation came from a stale indexed response and is superseded by the current live page/JSON pair. The count metadata is now consistent; the actual downloaded array and datapoint totals still must be checked against pinned bytes before publishing a pack.
+A fresh live review on 2026-11-10 confirms that the HTML dataset page and JSON descriptor both report **111 generations**. The HTML page also reports **27 brands and 2,369 verified datapoints**. The earlier 112-generation observation came from a stale indexed response and is superseded by the current live page/JSON pair.
 
-No dataset bytes were downloaded in the source-rights review itself. No source SHA-256 is claimed in the repository manifest yet. PR #83 adds a Windows x64 acquisition/build/verification workflow; its first successful run must produce the exact snapshot hash before the manifest can be pinned or the pack can be merged.
+Windows x64 acquisition workflow run #13 completed on 2026-11-10 at 01:29:53 UTC. It downloaded the exact JSON snapshot (683,641 bytes; SHA-256 `7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d`), reconciled the actual 111-generation array and 2,369 datapoints, and built a separate SQLite pack with **20 VAG generation candidates and 233 VAG facts**. The initial pack passed SQLite integrity, foreign-key, row-hash, attribution and applicability-boundary checks. The source manifest is now pinned to that JSON hash; the pack is being rebuilt against the pinned manifest before it can be marked acquired for the current revision.
 
 ## What the dataset contains
 
@@ -40,12 +40,12 @@ CC BY-SA 4.0 requires attribution and Share-Alike for adapted material. If acqui
 
 ## Required before publication
 
-1. Download the exact public JSON snapshot from the published URL; calculate and pin its SHA-256 before parsing. The CSV endpoint is not used by this pack builder and must not be assumed to be part of the snapshot.
-2. Verify JSON `generation_count=111`, actual generation-array length, HTML page count, unique brand count and the published 2,369 datapoints. If the CSV is acquired in a later revision, hash it separately and reconcile its rows before use.
-3. Filter only an exact VAG brand allowlist; preserve raw brand/model/generation labels, year spans, values, units, source counts, provenance kinds and generation URLs.
-4. Calculate row-level hashes and record the source snapshot hash, schema/revision, licence and attribution.
+1. The exact public JSON snapshot is acquired and pinned by SHA-256. The CSV endpoint is not used by this pack builder and is not assumed to be part of the snapshot.
+2. Windows CI reconciled JSON `generation_count=111`, actual generation-array length, HTML page count, unique brand count and the published 2,369 datapoints. If the CSV is acquired in a later revision, hash it separately and reconcile its rows before use.
+3. The exact VAG brand allowlist retains 20 generations and 233 facts; raw brand/model/generation labels, year spans, values, units, source counts, provenance kinds and generation URLs are preserved.
+4. The pack stores the source snapshot hash, source manifest hash, generation hashes, fact-row hashes, schema/revision, licence and attribution. Rebuild against the newly pinned source manifest before marking the current artifact revision acquired.
 5. Keep every record in a separate research-only namespace with `market_scope=UNKNOWN`, `technical_review_status=not_independently_reviewed` and no production-fitment promotion.
 6. Treat all engine-code strings as candidates; do not parse grouped strings into canonical factory codes or infer engine/gearbox pairs.
 7. Independently verify any critical value against the cited primary document before it can enter the professional repair library.
 
-No dataset bytes were downloaded during the source-rights review, no source hash was fabricated, and no records were imported or displayed into the product database during that review. The separate Windows research-pack workflow is pending its first successful acquisition.
+The source-rights review itself did not download bytes; the separate Windows acquisition workflow did. No values were imported into the production vehicle/technical database. The research pack remains a separate CC BY-SA 4.0 dataset with market UNKNOWN and no critical-value or exact-fitment approval.
