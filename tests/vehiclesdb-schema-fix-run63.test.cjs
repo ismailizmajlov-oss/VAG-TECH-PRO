@@ -118,7 +118,7 @@ test("run63 preserves the newer manifest-driven candidate/safety gate and remain
     assert.match(verifier, /SELECT source_path, sha256, source_role FROM source_file_artifacts/);
 
     const tests = fs.readFileSync(path.join(root, "desktop-source/tests/local-research-db.test.cjs"), "utf8");
-    assert.match(tests, /vehiclesDbManifest\.source_revision/);
+    assert.match(tests, /obdexPack\.snapshot_generated_at_utc/);
     assert.match(tests, /WHERE model_id='car\/audi\/100'/);
     assert.match(tests, /candidateRecordSha256/);
 
