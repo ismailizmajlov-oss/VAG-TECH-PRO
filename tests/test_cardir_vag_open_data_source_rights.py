@@ -16,11 +16,12 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
             self.assertIs(self.manifest["rights"][field],True)
         self.assertIn("cardir.ru/dannye",self.manifest["rights"]["attribution_text"])
     def test_windows_acquired_snapshot_hash_and_counts_are_pinned(self):
-        self.assertEqual(self.manifest["snapshot"]["source_snapshot_sha256"],"5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a")
-        self.assertEqual(self.manifest["data_revision"],"CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T03:11:09Z; SHA-256 5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a")
-        self.assertEqual(self.manifest["snapshot"]["source_rows_multiset_sha256"],"d147ca79d44472bc049d2dfd600a9a87ac5f1c7db6c2f21fc1b9f0e77fd02a74")
-        self.assertEqual(self.manifest["snapshot"]["vag_rows_multiset_sha256"],"ded1df125225426b5bfae4377a7309c73453f7f7fc3800babe07633107c8a20b")
-        self.assertEqual(self.manifest["snapshot"]["source_file_bytes"],15174126)
+        self.assertEqual(self.manifest["snapshot"]["source_snapshot_sha256"],"d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf")
+        self.assertEqual(self.manifest["data_revision"],"CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T04:37:02Z; SHA-256 d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf")
+        self.assertEqual(self.manifest["snapshot"]["source_rows_multiset_sha256"],"af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f")
+        self.assertEqual(self.manifest["snapshot"]["vag_rows_multiset_sha256"],"6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0")
+        self.assertEqual(self.manifest["snapshot"]["source_file_bytes"],15178035)
+        self.assertEqual(self.manifest["snapshot"]["retrieved_at_utc"],"2026-11-10T04:37:02.355843+00:00")
         self.assertEqual(self.manifest["snapshot"]["status"],"source_snapshot_acquired_schema_verified")
         self.assertEqual(self.manifest["snapshot"]["expected_data_updated_at"],"2026-11-09")
         self.assertEqual(self.manifest["snapshot"]["expected_source_row_count"],44272)
@@ -28,6 +29,15 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.manifest["snapshot"]["observed_vag_row_count"],948)
         self.assertEqual(self.manifest["snapshot"]["observed_vag_model_count"],26)
         self.assertEqual(self.manifest["snapshot"]["observed_vag_brand_values"],["Audi","Porsche","SEAT","Skoda","Volkswagen"])
+        review=self.manifest["snapshot"]["latest_snapshot_review"]
+        self.assertEqual(review["previous_snapshot_sha256"],"5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a")
+        self.assertEqual(review["current_snapshot_sha256"],"d4b3f7baf3b278d404bedc512e57bc0cf007b1b95114da0ad1d5a13d160800bf")
+        self.assertEqual(review["page_url_changed_rows"],354)
+        self.assertEqual(review["non_page_url_field_changes"],0)
+        self.assertEqual(review["vag_page_url_changed_groups"],13)
+        self.assertEqual(review["vag_value_or_unit_changed_groups"],0)
+        self.assertIs(review["exact_vag_values_unchanged"],True)
+        self.assertIs(review["exact_vag_subset_unchanged_except_page_url"],True)
         self.assertIs(self.manifest["import_policy"]["data_ingested"],False)
     def test_central_register_has_one_research_only_entry(self):
         matches=[s for s in self.register["sources"] if s.get("source_id")==SOURCE_ID]
