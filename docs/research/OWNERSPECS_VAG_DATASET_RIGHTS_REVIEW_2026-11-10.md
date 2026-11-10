@@ -15,7 +15,7 @@ A fresh live review on 2026-11-10 confirms that the HTML dataset page and JSON d
 ## Exact retained snapshot and change review
 
 Windows x64 CI re-acquired the exact JSON snapshot on 2026-11-10 at 06:28:05 UTC:
-- Raw source.json SHA-256: **6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95**.
+- Raw source.json SHA-256: **6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95**. The source snapshot SHA-256 is pinned in the source manifest and build evidence.
 - Raw file size: **683,533 bytes**.
 - 111 generations and 2,369 datapoints; VAG subset: 20 generation candidates and 233 facts.
 - Market scope remains UNKNOWN.
