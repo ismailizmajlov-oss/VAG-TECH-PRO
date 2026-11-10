@@ -580,7 +580,21 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
         registry = db.execute("SELECT * FROM source_registry").fetchall()
         if len(registry) != 1 or registry[0][0] != SOURCE_ID:
             raise ValueError("OwnerSpecs SQLite source registry mismatch.")
-        if registry[0][15] != "UNKNOWN" or registry[0][16] != 1 or registry[0][17] != 0 or registry[0][18] != 0:
+        if (
+            registry[0][16] != "UNKNOWN"
+            or registry[0][17] != 1
+            or registry[0][18] != 0
+            or registry[0][19] != 0
+            or registry[0][20] != 0
+            or registry[0][21] != 0
+            or registry[0][22] != 0
+            or registry[0][23] != 0
+            or registry[0][24] != 0
+            or registry[0][25] != 0
+            or registry[0][26] != 0
+            or registry[0][27] != 0
+            or registry[0][28] != 0
+        ):
             raise ValueError("OwnerSpecs SQLite source rights/applicability boundary failed.")
     finally:
         db.close()
