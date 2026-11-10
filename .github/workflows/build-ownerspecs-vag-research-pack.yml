@@ -9,7 +9,6 @@ on:
       - "tests/test_ownerspecs_vag_research_pack.py"
       - "tests/test_ownerspecs_source_rights.py"
       - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
-      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
   pull_request:
     branches: [main]
     paths:
