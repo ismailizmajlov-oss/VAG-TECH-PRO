@@ -7922,6 +7922,72 @@
     "source_header_verified",
     "applicability_verified",
     "engineer_reviewed",
-    "publication_approved"
+    "publication_approved",
+    {
+      "source_id": "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0",
+      "publisher": "ownerspecs.com",
+      "url": "https://ownerspecs.com/data",
+      "source_kind": "curated_document_verified_vehicle_generation_specifications",
+      "source_revision": "publisher dataset JSON generated 2026-11-09; reviewed 2026-11-10; HTML/JSON generation-count mismatch",
+      "market_scope": [
+        "UNKNOWN"
+      ],
+      "publisher_claimed_market_scope": "Global · multi-market",
+      "evidence_scope": [
+        "vehicle_generation_candidates",
+        "publisher_year_spans",
+        "dimensions",
+        "masses",
+        "tyre_pressure",
+        "fluid_and_capacity_reference_facts",
+        "engine_family_or_code_candidates",
+        "selected_torque_reference_facts"
+      ],
+      "rights": {
+        "data_license": "CC-BY-SA-4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "permission_status": "approved_by_published_license_for_reuse",
+        "commercial_use_allowed": true,
+        "display_allowed": true,
+        "offline_cache_allowed": true,
+        "bulk_reuse_allowed": true,
+        "redistribution_allowed": true,
+        "attribution_required": true,
+        "share_alike_required": true,
+        "separate_pack_required": true,
+        "attribution": "Vehicle data from ownerspecs.com (https://ownerspecs.com), licensed under CC BY-SA 4.0."
+      },
+      "content_review": {
+        "html_page_generation_count": 111,
+        "json_descriptor_generation_count": 112,
+        "html_page_brand_count": 27,
+        "html_page_verified_datapoint_count": 2369,
+        "metadata_consistent": false,
+        "per_value_primary_document_url": false,
+        "per_value_primary_document_revision": false,
+        "per_value_source_count": true,
+        "per_value_provenance_kind": true
+      },
+      "applicability": {
+        "market_scope": "UNKNOWN",
+        "generation_and_year_span": "publisher_candidate_only",
+        "exact_model_generation_year_fitment": false,
+        "exact_factory_engine_code_fitment": false,
+        "exact_factory_gearbox_code_fitment": false,
+        "exact_engine_gearbox_pair": false,
+        "exact_vehicle_fitment": false,
+        "ru_eaeu_applicability": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_procedure_applicability": false,
+        "technical_review_status": "not_independently_reviewed"
+      },
+      "data_ingested": false,
+      "source_snapshot_sha256": null,
+      "research_pack_allowed": true,
+      "research_pack_acquisition_allowed": false,
+      "product_import_allowed": false,
+      "project_decision": "rights approved for a separate attributed CC BY-SA 4.0 research pack; acquisition is held until the HTML page's 111-generation count and JSON descriptor's 112-generation count are reconciled; no production applicability or repair-value approval"
+    }
   ]
 }
