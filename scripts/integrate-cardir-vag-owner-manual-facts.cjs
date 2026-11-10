@@ -237,7 +237,7 @@ function patchLifecycle(desktopRoot) {
 function patchResearchPackVerifier(desktopRoot) {
   const file = safeJoin(desktopRoot, "scripts/verify-local-research-packs.cjs");
   let text = fs.readFileSync(file, "utf8");
-  const countPattern = /((?:[A-Za-z_$][\\w$]*\\.)?packs\\.length\\s*(?:!==|!=|===|==)\\s*)13\\b/g;
+  const countPattern = /((?:[A-Za-z_$][\w$]*\.)?packs\.length\s*(?:!==|!=|===|==)\s*)13\b/g;
   const countMatches = [...text.matchAll(countPattern)];
   assert(countMatches.length === 1, "Expected exactly one hard-coded 13-pack assertion before adding CarDir; found " + countMatches.length);
   text = text.replace(countPattern, "$1" + "14");
@@ -245,7 +245,7 @@ function patchResearchPackVerifier(desktopRoot) {
   const messageMatch = text.match(messagePattern);
   assert(messageMatch, "Expected the 13-pack verifier diagnostic to be present");
   text = text.replace(messageMatch[0], "Expected 14 separately licensed research packs, including the DE-only KBA VAG stock research pack and the CarDir VAG owner-manual facts pack");
-  assert(!/packs\\.length\\s*(?:!==|!=|===|==)\\s*13\\b/.test(text), "The stale 13-pack assertion remains after CarDir integration");
+  assert(!/packs\.length\s*(?:!==|!=|===|==)\s*13\b/.test(text), "The stale 13-pack assertion remains after CarDir integration");
   fs.writeFileSync(file, text, "utf8");
   return { expectedResearchPackCount: 14 };
 }
