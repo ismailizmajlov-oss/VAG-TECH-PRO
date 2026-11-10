@@ -123,7 +123,7 @@ jobs:
           $lock | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $lockPath -Encoding utf8
           $inputDir = Join-Path $env:RUNNER_TEMP "vehiclesdb-v2026.11.3-probe"
           New-Item -ItemType Directory -Path $inputDir -Force | Out-Null
-          $base = "https://cdn.jsdelivr.net/gh/vehiclesdb/vehiclesdb@v2026.11.3"
+          $base = "https://raw.githubusercontent.com/vehiclesdb/vehiclesdb/v2026.11.3"
           $files = @(
             @{ url = "$base/dist/catalog.sqlite"; name = "catalog.sqlite" },
             @{ url = "$base/manifest.json"; name = "manifest.json" },
