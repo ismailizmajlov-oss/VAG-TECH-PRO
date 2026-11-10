@@ -190,7 +190,7 @@ function getOwnerSpecsSummary(explicitRoot) {
   } finally { db.close(); }
 
   return {
-    packId: PACK_ID, counts, marketScope: "UNKNOWN",
+    packId: PACK_ID, status: entry.status, packBuildStatus: entry.pack_build_status, counts, marketScope: "UNKNOWN",
     rightsStatus: source.rights.rights_status, license: "CC BY-SA 4.0",
     sourceUrl: SOURCE_URL, licenseUrl: source.rights.license_url,
     attributionText: source.rights.attribution_text,
