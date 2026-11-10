@@ -8304,7 +8304,7 @@
         "vag_value_or_unit_changed_groups_since_archived_baseline": 0,
         "vag_page_url_changed_groups_since_archived_baseline": 22,
         "comparison_baseline_sha256": "93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375",
-        "previous_pinned_snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
+        "previous_pinned_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
         "exact_delta_from_previous_pinned_snapshot_available": true,
         "previous_snapshot_review": {
           "snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
@@ -8470,10 +8470,10 @@
         "previous_verified_pack": {
           "source_snapshot_sha256": "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
           "database_sha256": "0aab9c87e863586f1db059499800b1161f52e99e941c5773350ea42bd441da9f",
-          "source_manifest_sha256": "527240b2e1d94bb91d8c5a07f21bb67e19bb6a90d971d1e1d48c8f6e20c3c4ab",
-          "source_snapshot_manifest_sha256": "c5869c6d0d4e2d2e16b5d6a3f3cdd64c9a9a65d8f5e3f1bcbf0d4d6f2f5e8a9c",
-          "pack_manifest_sha256": "070eca5f3c7b5f9f4b7b7f7a5c2a1d5f8e7a9c0b1d2e3f4a5b6c7d8e9f0a1b2c",
-          "build_report_sha256": "b355f4c6c7f9d5e4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0",
+          "source_manifest_sha256": "527240b1784c435ba747fc033d29f25e369dc84476b4a5e123f780c1aee206a1",
+          "source_snapshot_manifest_sha256": "c586cd707824df0ef5e3ad85dcd81abcf7927b5da5947691b66d9b1ecf1768ee",
+          "pack_manifest_sha256": "070eca034f11acc9f4345896c71166a0269c20a1ce52412735cfd9ca8528ed4b",
+          "build_report_sha256": "b3551d1cc2aa6fdda3930c18e43d2d2fe5c2f754a8aefa6f39d2a99712e8626b",
           "attribution_sha256": "ef45e4dc5ffc5daca4b999bab824cf95e2cf6fcb848b6c00845fad370aa2565f",
           "license_sha256": "0ddb35d5724ea6f23893ccf927d16830c95cb743c8d3f9819fabea6827e8b16f",
           "artifact_id": 13733081894,
@@ -8482,6 +8482,7 @@
           "artifact_run_number": 83,
           "artifact_created_at": "2026-11-10T03:27:38Z",
           "artifact_expires_at": "2027-02-08T03:27:10Z",
+          "artifact_size_bytes": 1858479,
           "database_byte_size": 1949696,
           "status": "verified_research_only_previous_snapshot"
         },
