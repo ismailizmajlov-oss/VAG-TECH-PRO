@@ -12,6 +12,10 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.error import URLError
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from scripts.build_eea_vag_approval_research_pack import (
     api_request,
     map_vag_make,
