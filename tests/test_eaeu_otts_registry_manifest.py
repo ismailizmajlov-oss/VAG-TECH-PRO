@@ -189,7 +189,7 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(regional["data_ingested"])
         self.assertTrue(regional["observed_public_claims"]["access_claims_conflict"])
         self.assertEqual(regional["observed_public_claims"]["observed_at"], "2026-11-11")
-        self.assertEqual(regional["observed_public_claims"]["landing_page_document_count"], 77802)
+        self.assertEqual(regional["observed_public_claims"]["landing_page_claimed_document_count"], 77802)
         self.assertEqual(regional["observed_public_claims"]["public_offer_price_rub_per_document"], 200)
         self.assertTrue(any(item["reviewed_at"] == "2026-11-11" for item in regional["evidence_reviewed"]))
         self.assertFalse(central["product_import_allowed"])
@@ -341,9 +341,6 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
 
-if __name__ == "__main__":
-    unittest.main()
-
     def test_otts_bot_2026_11_11_recheck_keeps_automated_collection_and_product_reuse_blocked(self):
         central = self.factory_sources["otts-bot"]
         regional = self.russian_sources["otts-bot"]
@@ -361,3 +358,6 @@ if __name__ == "__main__":
         self.assertEqual(regional["terms_revision"], central["source_revision"])
         self.assertTrue(any(item["reviewed_at"] == "2026-11-11" for item in regional["terms_evidence_reviewed"]))
         self.assertFalse(regional["data_ingested"])
+
+if __name__ == "__main__":
+    unittest.main()
