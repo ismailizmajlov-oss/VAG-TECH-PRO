@@ -97,7 +97,8 @@ function getOwnerSpecsSummary(explicitRoot) {
   const packManifestFile = verifyFile(root, entry, "pack_manifest_file", "pack_manifest_sha256");
   const sourceManifestFile = verifyFile(root, entry, "source_manifest_file", "source_manifest_sha256");
   const sourceSnapshotFile = verifyFile(root, entry, "source_snapshot_file", "source_snapshot_sha256");
-  const sourceJsonFile = verifyFile(root, entry, "source_file", "source_file_sha256");\n  assert(fs.statSync(sourceJsonFile).size === entry.source_file_bytes, "OwnerSpecs raw source snapshot byte size mismatch");
+  const sourceJsonFile = verifyFile(root, entry, "source_file", "source_file_sha256");
+  assert(fs.statSync(sourceJsonFile).size === entry.source_file_bytes, "OwnerSpecs raw source snapshot byte size mismatch");
   const acquisitionSnapshotFile = verifyFile(root, entry, "acquisition_snapshot_file", "acquisition_snapshot_sha256");
   const attributionFile = verifyFile(root, entry, "attribution_file", "attribution_sha256");
   const licenseFile = verifyFile(root, entry, "license_file", "license_sha256");
@@ -193,7 +194,7 @@ function getOwnerSpecsSummary(explicitRoot) {
     rightsStatus: source.rights.rights_status, license: "CC BY-SA 4.0",
     sourceUrl: SOURCE_URL, licenseUrl: source.rights.license_url,
     attributionText: source.rights.attribution_text,
-    sourceRevision: entry.source_revision, sourceSnapshotSha256: entry.source_snapshot_sha256,
+    sourceRevision: entry.source_revision, sourceFileSha256: entry.source_file_sha256, sourceFileBytes: entry.source_file_bytes,\n    sourceSnapshotSha256: entry.source_snapshot_sha256,
     sourceManifestSha256: entry.source_manifest_sha256, databaseSha256: entry.database_sha256,
     packManifestSha256: entry.pack_manifest_sha256, artifactSha256: entry.source_artifact_sha256,
     sourceRetrievedAtUtc: entry.source_retrieved_at_utc, acquisitionRetrievedAtUtc: entry.acquisition_retrieved_at_utc,
