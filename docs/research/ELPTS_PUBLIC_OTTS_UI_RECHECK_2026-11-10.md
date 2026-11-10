@@ -39,3 +39,28 @@ The page is publicly reachable, but no dataset-specific licence or written permi
 The currently linked ELPTS offer is titled “ОФЕРТА (право использования ПО)”. It governs use of the operator's software and requires formal acceptance and payment for the specified software rights; it is not a dataset-specific open-data licence or permission to reproduce the public register. The offer also contains intellectual-property restrictions relating to the operator's software and materials. No offer was accepted.
 
 Reference: https://elpts.ru/articles/oferta-pravo-ispolzovaniya-po/
+
+
+## Published ELPTS legal terms checked — 2026-11-10
+
+Two distinct published agreements were reviewed. Neither is a dataset licence, and neither was accepted.
+
+### Software-use offer
+
+The ELPTS homepage links [“ОФЕРТА (право использования ПО)”](https://elpts.ru/articles/oferta-pravo-ispolzovaniya-po/), whose linked [2.0 PDF](https://elpts.ru/wp-content/uploads/2023/04/oferta-pravo-ispolzovaniya-po-s-izmen-2.0.pdf) is a software-use contract:
+- Clauses 1.1–1.4 address the offer to Russian legal entities and individual entrepreneurs, state that it is not a public offer, and define acceptance by a qualified electronic signature.
+- Clauses 2.3 and 3.1 define the licensed subject as the operator's own software and grant a non-exclusive right to use that software.
+- Clauses 4.1 and 5.5 require an application and payment, with 100% prepayment.
+- Clause 8.2 restricts copying, recording, reproducing or distributing the operator's intellectual-property results without written permission.
+
+This offer does not grant rights to reproduce the public OTTS register, bulk-extract registry rows, cache OTTS documents offline, display the data in a third-party desktop product, or redistribute data in an installer. It is not an open-data or OTTS-dataset licence.
+
+### Confidentiality agreement
+
+The separate [“Соглашение о конфиденциальности для юридических лиц” acceptance page](https://oferta.elpts.ru/19/create) states that acceptance occurs by signing the completed form with a qualified electronic signature. Its clauses 4 and 6 prohibit disclosure of covered confidential information to third parties or use for the recipient's own benefit, and require return or destruction of received data and copies on written request. Clauses 7–8 protect information about the operator's systems and prohibit copying/decompiling software accessed through those systems.
+
+This agreement also does not grant a right to reuse public OTTS records. It is a separate confidentiality contract, not a data licence. It has not been accepted.
+
+### Rights disposition
+
+The public UI remains discovery-only. The software-use offer and confidentiality agreement do not cure the missing dataset-specific permission. No account, qualified signature, paid plan, API credential or agreement was created or accepted. No OTTS rows, XLSX files, PDFs or source bytes were downloaded, cached, displayed or imported. Product import remains blocked pending a written permission or published dataset licence that expressly covers bulk extraction, local SQLite storage, offline display, installer/update redistribution and commercial/non-commercial use.
