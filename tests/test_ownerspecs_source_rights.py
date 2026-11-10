@@ -99,7 +99,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
             "27 brands",
             "2,369 verified datapoints",
             "current live page/json pair",
-            "source snapshot sha-256 is now pinned",
+            "source snapshot sha-256 is pinned",
             "20 vag generation candidates",
             "233 vag facts",
             "market_scope=unknown",
