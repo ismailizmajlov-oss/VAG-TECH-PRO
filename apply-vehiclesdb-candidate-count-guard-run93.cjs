@@ -89,9 +89,11 @@ function main() {
   const dbRelative = "lib/local-research-db.cjs";
   const verifierRelative = "scripts/verify-local-research-packs.cjs";
   const testRelative = "tests/local-research-db.test.cjs";
+  const researchPacksTestRelative = "tests/local-research-packs.test.cjs";
   const dbItem = readRegular(desktopRoot, dbRelative);
   const verifierItem = readRegular(desktopRoot, verifierRelative);
   const testItem = readRegular(desktopRoot, testRelative);
+  const researchPacksTestItem = readRegular(desktopRoot, researchPacksTestRelative);
 
   const oldCountGate = "vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||";
   const newCountGate = [
@@ -124,8 +126,11 @@ function main() {
   const returnPatch = replaceExactlyOnce(dbText, oldReturn, newReturn, "VehiclesDB identity-only fields in candidate result");
   dbText = returnPatch.text;
 
-  const oldVerifierCountGate = 'assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, `VehiclesDB foreign-market-only count gate failed: ${JSON.stringify(vehiclesDbCounts)}`);';
-  const newVerifierCountGate = 'assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, `VehiclesDB foreign-market-only count gate failed: ${JSON.stringify(vehiclesDbCounts)}`);';
+  const tick = String.fromCharCode(96);
+  const dollar = String.fromCharCode(36);
+  const interpolation = dollar + "{JSON.stringify(vehiclesDbCounts)}";
+  const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + " + interpolation + " + tick + ");";
+  const newVerifierCountGate = "assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + " + interpolation + " + tick + ");";
   const verifierCountPatch = replaceExactlyOnce(verifierItem.text, oldVerifierCountGate, newVerifierCountGate, "VehiclesDB manifest-driven count gate in independent verifier");
 
   const oldVerifier = 'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
@@ -142,13 +147,28 @@ function main() {
   ].join("\n");
   const testPatch = replaceExactlyOnce(testItem.text, oldTest, newTest, "VehiclesDB desktop candidate safety assertions");
 
+  const oldResearchPacksCounts = [
+    "  assert.equal(result.vehiclesdb_identity.sources, 14);",
+    "  assert.equal(result.vehiclesdb_identity.models, 260);",
+    "  assert.equal(result.vehiclesdb_identity.marketEvidence, 1524);"
+  ].join("\n");
+  const newResearchPacksCounts = [
+    "  const vehiclesDbPackManifest = JSON.parse(require(\"node:fs\").readFileSync(require(\"node:path\").join(__dirname, \"../data/research/vehiclesdb-vag-identity/manifest.json\"), \"utf8\"));",
+    "  assert.equal(result.vehiclesdb_identity.sources, vehiclesDbPackManifest.counts.sources);",
+    "  assert.equal(result.vehiclesdb_identity.models, vehiclesDbPackManifest.counts.models);",
+    "  assert.equal(result.vehiclesdb_identity.marketEvidence, vehiclesDbPackManifest.counts.market_evidence);"
+  ].join("\n");
+  const researchPacksTestPatch = replaceExactlyOnce(researchPacksTestItem.text, oldResearchPacksCounts, newResearchPacksCounts, "VehiclesDB manifest-driven count assertions in central research-pack test");
+
   if (countPatch.changed || returnPatch.changed) writeAtomic(dbItem.file, dbText, dbItem.stat.mode);
   if (verifierCountPatch.changed || verifierPatch.changed) writeAtomic(verifierItem.file, verifierPatch.text, verifierItem.stat.mode);
   if (testPatch.changed) writeAtomic(testItem.file, testPatch.text, testItem.stat.mode);
+  if (researchPacksTestPatch.changed) writeAtomic(researchPacksTestItem.file, researchPacksTestPatch.text, researchPacksTestItem.stat.mode);
 
   const finalDb = readRegular(desktopRoot, dbRelative);
   const finalVerifier = readRegular(desktopRoot, verifierRelative);
   const finalTest = readRegular(desktopRoot, testRelative);
+  const finalResearchPacksTest = readRegular(desktopRoot, researchPacksTestRelative);
   const patchHash = sha256(fs.readFileSync(__filename));
   const evidence = {
     schema_version: 1,
@@ -168,7 +188,8 @@ function main() {
     patch_sha256: patchHash,
     desktop_db_sha256: sha256(Buffer.from(finalDb.text, "utf8")),
     verifier_sha256: sha256(Buffer.from(finalVerifier.text, "utf8")),
-    test_sha256: sha256(Buffer.from(finalTest.text, "utf8"))
+    test_sha256: sha256(Buffer.from(finalTest.text, "utf8")),
+    research_packs_test_sha256: sha256(Buffer.from(finalResearchPacksTest.text, "utf8"))
   };
   const evidencePath = path.join(desktopRoot, "data/research/vehiclesdb-vag-identity/desktop-candidate-boundary-verification.json");
   fs.mkdirSync(path.dirname(evidencePath), { recursive: true });
@@ -185,7 +206,8 @@ function main() {
     source_revision: evidence.source_revision,
     counts: evidence.counts,
     patch_sha256: evidence.patch_sha256,
-    source_manifest_sha256: evidence.source_manifest_sha256
+    source_manifest_sha256: evidence.source_manifest_sha256,
+    research_packs_test_sha256: evidence.research_packs_test_sha256
   }, null, 2) + "\n");
 }
 try { main(); } catch (error) {
