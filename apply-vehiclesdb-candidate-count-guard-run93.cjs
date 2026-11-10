@@ -46,11 +46,12 @@ function writeAtomic(file, content, mode = 0o644) {
   }
 }
 function replaceExactlyOnce(source, before, after, label) {
-  const beforeCount = source.split(before).length - 1;
   const afterCount = source.split(after).length - 1;
-  if (beforeCount === 0 && afterCount === 1) return { text: source, changed: false };
-  if (beforeCount !== 1 || afterCount !== 0) {
-    fail(label + ": expected one legacy anchor or one already-patched anchor (legacy=" + beforeCount + ", patched=" + afterCount + ")");
+  if (afterCount === 1) return { text: source, changed: false };
+  if (afterCount > 1) fail(label + ": patched anchor appears more than once");
+  const beforeCount = source.split(before).length - 1;
+  if (beforeCount !== 1) {
+    fail(label + ": expected exactly one legacy anchor or one already-patched anchor (legacy=" + beforeCount + ", patched=" + afterCount + ")");
   }
   return { text: source.replace(before, after), changed: true };
 }
@@ -137,8 +138,7 @@ function main() {
   ].join("\n");
   const testPatch = replaceExactlyOnce(testItem.text, oldTest, newTest, "VehiclesDB desktop candidate safety assertions");
 
-  if (countPatch.changed) writeAtomic(dbItem.file, dbText, dbItem.stat.mode);
-  if (returnPatch.changed) writeAtomic(dbItem.file, dbText, dbItem.stat.mode);
+  if (countPatch.changed || returnPatch.changed) writeAtomic(dbItem.file, dbText, dbItem.stat.mode);
   if (verifierPatch.changed) writeAtomic(verifierItem.file, verifierPatch.text, verifierItem.stat.mode);
   if (testPatch.changed) writeAtomic(testItem.file, testPatch.text, testItem.stat.mode);
 
