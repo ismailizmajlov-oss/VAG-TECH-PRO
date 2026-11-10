@@ -108,7 +108,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertTrue(self.entry["content_review"]["metadata_consistent"])
     def test_review_records_current_counts_and_no_unverified_promotion(self):
         review = self.review.casefold()
-        for phrase in ("111 generations","27 brands","2,369 verified datapoints","current live page/json pair","source snapshot sha-256 is pinned","20 vag generation candidates","233 vag facts","five records changed across four generations","four specification values changed","one non-vag unit-only normalization","three are vag","intermediate, unverified claim","market scope remains unknown","must not be promoted to factory engine/gearbox fitment"):
+        for phrase in ("111 generations","27 brands","2,369 verified datapoints","current live page/json pair","6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95","20 vag generation candidates","233 vag facts","five records changed across four generations","four specification values changed","one non-vag unit-only normalization","three are vag","intermediate, unverified claim","market scope remains unknown","must not be promoted to factory engine/gearbox fitment"):
             with self.subTest(phrase=phrase): self.assertIn(phrase.casefold(), review)
 
     def test_latest_snapshot_review_records_four_value_changes_three_vag_values_and_one_unit_only_change(self):
