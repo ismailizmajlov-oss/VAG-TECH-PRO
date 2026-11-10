@@ -39,10 +39,10 @@ test("CarDir search returns publisher facts with raw qualifiers and complete pro
   assert.equal(row.modelYearTo, null);
   assert.equal(row.engineCode, null);
   assert.equal(row.transmissionCode, null);
-  assert.equal(row.exactEngineGearboxPair, 0);
-  assert.equal(row.productionFitment, 0);
+  assert.equal(row.exactEngineGearboxPair, false);
+  assert.equal(row.productionFitment, false);
   assert.equal(row.exactVehicleFitment, false);
-  assert.equal(row.repairProcedure, 0);
+  assert.equal(row.repairProcedure, false);
   assert.match(row.sourceRowSha256, /^[a-f0-9]{64}$/);
   assert.match(row.sourceSnapshotSha256, /^[a-f0-9]{64}$/);
   assert.match(row.databaseSha256, /^[a-f0-9]{64}$/);
