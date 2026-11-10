@@ -12,66 +12,31 @@ The publisher's published CC BY-SA 4.0 licence permits commercial reuse, display
 
 A fresh live review on 2026-11-10 confirms that the HTML dataset page and JSON descriptor both report **111 generations**. The HTML page also reports **27 brands and 2,369 verified datapoints**. The earlier 112-generation observation came from a stale indexed response and is superseded by the current live page/JSON pair.
 
-Windows x64 acquisition workflow run #64 completed on 2026-11-10 at 03:57:11 UTC. It acquired the exact JSON snapshot (683,641 bytes; SHA-256 `7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d`), reconciled the actual 111-generation array and 2,369 datapoints, and built a separate SQLite pack with **20 VAG generation candidates and 233 VAG facts**. The source snapshot SHA-256 is pinned in the source manifest. The final pack was rebuilt against that pinned manifest and independently verified: source-manifest SHA-256 `3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb`, SQLite SHA-256 `eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf`, pack-manifest SHA-256 `7d47964b15d787c9ae1ebf5a16b5f0fa2082d9bc64c0fbe7e44a660b8c299a57`, and artifact ZIP SHA-256 `441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3`. Independent verification confirmed SQLite integrity ok, zero foreign-key violations, exact source-to-row hash parity, 20 VAG generations and 233 facts. The pack manifest explicitly records `source_file_bytes=683641`; the pack verifier checks this against both the snapshot metadata and the actual `source.json` byte size. The database uses the pinned original retrieval timestamp for reproducible content hashes; each CI fetch timestamp is preserved separately in the acquisition snapshot. All critical-value and fitment flags remain false.
+## Exact retained snapshot and change review
 
-## What the dataset contains
+Windows x64 CI re-acquired the exact JSON snapshot on 2026-11-10 at 06:28:05 UTC:
+- Raw source.json SHA-256: **6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95**.
+- Raw file size: **683,533 bytes**.
+- 111 generations and 2,369 datapoints; VAG subset: 20 generation candidates and 233 facts.
+- Market scope remains UNKNOWN.
 
-The JSON describes vehicle generations with brand, model, generation label, canonical generation URL, year_start/year_end, body type, dimensions, fuel tank, and nested specification, mass and tyre records. Per-value fields include a stable field key, value/value_max, unit, range flag, source count and provenance kind.
+Comparison with the retained run 64 source snapshot **7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d** found no generation or datapoint membership changes. Five records changed across four generations:
+- Four specification values changed. Three are VAG: Audi A1 CO2, Audi A1 fuel consumption, and Volkswagen Polo CO2. One is non-VAG: Mercedes-Benz A-Class CO2. Each changed specification value was previously represented as a range and is now represented by its upper bound alone.
+- One non-VAG unit-only normalization: Hyundai i10 engine-oil capacity changed unit spelling from L to l; the numeric range did not change.
 
-The publisher defines provenance kinds as:
-- `oem_portal` — manufacturer owner's manual / OEM portal;
-- `workshop_dataset` — professional workshop technical dataset;
-- `official_open_data` — government vehicle registry / open data;
-- `first_party_scan` — first-party photograph of a vehicle placard or type plate.
+The earlier 05:51 acquisition note reported SHA-256 **f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4**, but the raw bytes from that acquisition were not retained in the available artifact. That hash is preserved in review history as an intermediate, unverified claim. No exact byte-level delta between that unretained snapshot and the 06:28 snapshot is asserted.
 
-The publisher states that facts are checked against primary documents and that manual text is not reproduced. The JSON exposes source counts and provenance kinds, but not a primary-document URL or revision for every individual value.
+The source JSON does not provide a primary-document locator or revision per value. The dataset is not independently reviewed for repair accuracy. These records remain generation/model candidates only and must not be promoted to factory engine/gearbox fitment, ECU applicability, repair procedures or critical workshop values.
 
-## VAG applicability boundary
+## Verified separate research pack — run 115
 
-The dataset includes VAG makes such as Audi, Volkswagen and Škoda. The publisher's “Global · multi-market” description is not a country-by-country applicability map; normalized market scope therefore remains `UNKNOWN`.
+- Workflow run: **115 / 42770457166**.
+- Artifact ID: **13742090427**.
+- Artifact SHA-256: **93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1**.
+- Research SQLite SHA-256: **572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683**.
+- Database size: **323,584 bytes**.
+- Pack manifest SHA-256: **35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd**.
+- SQLite integrity check: **ok**; foreign-key violations: **0**.
+- Counts: 111 generations, 2,369 source datapoints, 20 VAG generations and 233 VAG facts.
 
-Generation labels and year spans are publisher candidates, not confirmed factory production boundaries for a specific market. Values in an `engine_code` field may be broad engine-family labels or grouped variant summaries, not necessarily canonical three-letter VAG engine codes. Even a code-shaped value such as `DPCA` remains a publisher candidate until its primary document, revision, market and exact variant scope are independently reviewed.
-
-Neither those labels nor generation-level ranges establish an exact vehicle, engine, gearbox, ECU or engine/gearbox pair. The source does not establish VAG-specific DTCs, test plans, wiring diagrams, pinouts, adaptations or repair procedures. Critical service values must not be promoted to repair instructions without independent primary-document review tied to the exact engine/gearbox, market, model generation and production boundary.
-
-## Rights and packaging
-
-CC BY-SA 4.0 requires attribution and Share-Alike for adapted material. If acquired, the VAG-filtered SQLite database and any adapted database material must remain separately packaged and clearly labelled CC BY-SA 4.0. The application must show the required attribution and identify the VAG filtering/modifications. Do not include owner-manual PDFs, workshop documents, images or other underlying source files merely because factual rows are licensed.
-
-## Publication and production boundary
-
-1. The exact public JSON snapshot is acquired and pinned by SHA-256. The CSV endpoint is not used by this pack builder and is not assumed to be part of the snapshot.
-2. Windows CI reconciled JSON `generation_count=111`, actual generation-array length, HTML page count, unique brand count and the published 2,369 datapoints. If the CSV is acquired in a later revision, hash it separately and reconcile its rows before use.
-3. The exact VAG brand allowlist retains 20 generations and 233 facts; raw brand/model/generation labels, year spans, values, units, source counts, provenance kinds and generation URLs are preserved.
-4. The final pack stores the pinned source snapshot hash, current source-manifest hash, generation hashes, fact-row hashes, schema/revision, licence and attribution. This artifact is acquired and verified; keep its hashes in the central source register.
-5. Keep every record in a separate research-only namespace with `market_scope=UNKNOWN`, `technical_review_status=not_independently_reviewed` and no production-fitment promotion.
-6. Treat all engine-code strings as candidates; do not parse grouped strings into canonical factory codes or infer engine/gearbox pairs.
-7. Independently verify any critical value against the cited primary document before it can enter the professional repair library.
-
-The source-rights review itself did not download bytes; the separate Windows acquisition workflow did. No values were imported into the production vehicle/technical database. The research pack remains a separate CC BY-SA 4.0 dataset with market UNKNOWN and no critical-value or exact-fitment approval.
-
-## Offline desktop research integration
-
-The current integration change adds a separate read-only OwnerSpecs tab to the desktop research catalogue. It packages the pinned source JSON, source manifest, source snapshot, acquisition snapshot, attribution, CC BY-SA 4.0 license reference and VAG-filtered SQLite in a dedicated directory. The desktop reader verifies SHA-256 values and the source/pack provenance chain before returning results.
-
-The UI labels every row as a publisher-verified candidate that has not undergone independent OEM technical review. Market remains UNKNOWN; year/generation spans remain candidates; exact vehicle fitment, factory engine/gearbox codes and pairs, ECU/DTC applicability, Russian/EAEU applicability and repair-procedure applicability remain false. Critical torque/fluid values are not publishable for repair decisions. The Share-Alike database is not merged into the production vehicle or technical database.
-
-The Windows x64 integration and installer lifecycle checks must pass before this desktop integration can be considered verified. Native Windows 10/11 acceptance remains a separate release gate.
-
-
-## 2026-11-10 exact source-byte re-acquisition — 06:28 UTC
-
-The Windows x64 acquisition-evidence artifact from run #110 retained the exact publisher JSON bytes. The file is **683,533 bytes**, SHA-256 `6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95`; the acquisition snapshot records retrieval at `2026-11-10T06:28:05.310530+00:00`. The source descriptor and HTML counts reconcile at 111 generations / 2,369 datapoints. The exact VAG filter retains 20 generation candidates / 233 facts.
-
-The retained prior verified source JSON from run #64 (`7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d`, 683,641 bytes) was compared fact-by-fact with the newly retained bytes. There are no generation or fact membership changes. Four specification values changed across three generations: Audi A1 CO2, Audi A1 fuel consumption, Volkswagen Polo CO2, and Mercedes-Benz A-Class CO2 (three VAG facts, one non-VAG). In addition, one non-VAG Hyundai i10 engine-oil-capacity unit label changed only in case, from `L` to `l`; the numeric range remains 3.1–3.4. The complete review therefore records four value changes plus one unit-only record change across four generations, rather than treating the unit spelling as a fifth changed value.
-
-An earlier 05:51 acquisition note reported hash `f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4`, but the raw bytes for that intermediate observation are not present in the retained artifact. That hash is preserved as an unverified intermediate claim; no direct delta from it is asserted. The 06:28 raw file is the exact reproducible snapshot pinned for the next separate CC BY-SA pack build.
-
-All records remain publisher candidates, market UNKNOWN, with no per-value primary-document URL/revision in the JSON. No generation, engine, gearbox, ECU, DTC, RU/EAEU or repair applicability is promoted; no critical torque/fluid values become repair instructions. The Share-Alike research database remains separate from the production catalog.
-
-
-## Verified current research pack — Windows run #115, 2026-11-10
-
-The exact retained source snapshot (`6ed73e4c...`, 683,533 bytes) was packaged successfully in [Windows x64 workflow run #115](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42770457166), artifact ID `13742090427`, 114,062 bytes, SHA-256 `93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1`. The pack contains 20 VAG generation candidates and 233 facts. The SQLite database is 323,584 bytes, SHA-256 `572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683`; `integrity_check=ok`, foreign-key violations: 0. The pack manifest SHA-256 is `35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd`.
-
-This confirms the separate CC BY-SA research pack build only. It does **not** confirm the underlying engine codes or service values against factory documentation. Market remains UNKNOWN; technical review is not independently performed; exact engine/gearbox pairs, ECU, DTC, RU/EAEU fitment and repair applicability remain false. The pack is not part of the production SQLite. Desktop integration and the full Windows lifecycle still require successful validation.
+The pack is verified as a separate CC BY-SA research artifact, but it is not yet integrated into the Windows desktop application. Production import remains disabled; no critical repair values are publishable from this source.
