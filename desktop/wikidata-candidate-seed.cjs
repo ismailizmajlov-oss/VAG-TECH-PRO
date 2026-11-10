@@ -147,25 +147,19 @@ function seedWikidataCandidateCatalog(dbPath, researchRoot, options = {}) {
     attribution_text: manifest.attribution_text, market_scope: "UNKNOWN",
     source_snapshot_sha256: sourceSnapshotSha256, rights_evidence_sha256: rightsEvidenceSha256
   };
-  const currentDb = core.openDatabase(dbPath);
-  let existingSource;
-  try { existingSource = currentDb.prepare("SELECT * FROM sources WHERE source_id=?").get(manifest.source_id); }
-  finally { currentDb.close(); }
-  if (existingSource) {
-    const expected = [sourceMeta.publisher, sourceMeta.title, sourceMeta.source_type, sourceMeta.source_url, sourceMeta.revision,
-      sourceMeta.license_id, sourceMeta.license_url, sourceMeta.license_sha256, sourceMeta.rights_status,
-      1, 1, 1, 1, 1, 0, 0, sourceMeta.attribution_text, "UNKNOWN", sourceSnapshotSha256, rightsEvidenceSha256, "approved"];
-    const actual = [existingSource.publisher, existingSource.title, existingSource.source_type, existingSource.source_url, existingSource.revision,
-      existingSource.license_id, existingSource.license_url, existingSource.license_sha256, existingSource.rights_status,
-      existingSource.commercial_use_allowed, existingSource.display_allowed, existingSource.offline_cache_allowed,
-      existingSource.bulk_reuse_allowed, existingSource.redistribution_allowed, existingSource.share_alike_required,
-      existingSource.attribution_required, existingSource.attribution_text, existingSource.market_scope,
-      existingSource.source_snapshot_sha256, existingSource.rights_evidence_sha256, existingSource.status];
-    if (expected.some((value, index) => value !== actual[index])) {
-      return { status: "skipped", reason: "existing_source_metadata_conflict_or_rights_revoked", source_id: manifest.source_id };
-    }
-  } else {
-    core.registerSource(dbPath, sourceMeta, options);
+  const registration = core.registerSourceIfAbsent(dbPath, sourceMeta, options);
+  const existingSource = registration.source;
+  const expected = [sourceMeta.publisher, sourceMeta.title, sourceMeta.source_type, sourceMeta.source_url, sourceMeta.revision,
+    sourceMeta.license_id, sourceMeta.license_url, sourceMeta.license_sha256, sourceMeta.rights_status,
+    1, 1, 1, 1, 1, 0, 0, sourceMeta.attribution_text, "UNKNOWN", sourceSnapshotSha256, rightsEvidenceSha256, "approved"];
+  const actual = [existingSource.publisher, existingSource.title, existingSource.source_type, existingSource.source_url, existingSource.revision,
+    existingSource.license_id, existingSource.license_url, existingSource.license_sha256, existingSource.rights_status,
+    existingSource.commercial_use_allowed, existingSource.display_allowed, existingSource.offline_cache_allowed,
+    existingSource.bulk_reuse_allowed, existingSource.redistribution_allowed, existingSource.share_alike_required,
+    existingSource.attribution_required, existingSource.attribution_text, existingSource.market_scope,
+    existingSource.source_snapshot_sha256, existingSource.rights_evidence_sha256, existingSource.status];
+  if (expected.some((value, index) => value !== actual[index])) {
+    return { status: "skipped", reason: "existing_source_metadata_conflict_or_rights_revoked", source_id: manifest.source_id };
   }
 
   const snapshotManifest = {
