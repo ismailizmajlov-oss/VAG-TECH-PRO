@@ -33,7 +33,7 @@ copy("desktop/tests/wikidata-core-catalog-seed.test.cjs", "tests/wikidata-core-c
 copy("desktop/tests/wikidata-core-catalog-seed-route.test.cjs", "tests/wikidata-core-catalog-seed-route.test.cjs");
 
 const routePath = path.join(desktopRoot, "app/api/local-core/route.ts");
-let route = fs.readFileSync(routePath, "utf8");
+let route = fs.readFileSync(routePath, "utf8").replace(/\r\n/g, "\n");
 const importAnchor = 'import * as localCore from "../../../lib/local-core-db.cjs";';
 const seedImport = 'import { seedWikidataCandidateCatalog } from "../../../lib/wikidata-candidate-seed.cjs";';
 if (!route.includes(importAnchor)) throw new Error("Unexpected local-core route import contract");
@@ -69,7 +69,7 @@ packageJson.scripts["test:local-core"] = localCoreScript;
 fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2) + "\n", "utf8");
 
 const lifecyclePath = path.join(desktopRoot, "scripts/windows-installer-lifecycle.ps1");
-let lifecycle = fs.readFileSync(lifecyclePath, "utf8");
+let lifecycle = fs.readFileSync(lifecyclePath, "utf8").replace(/\r\n/g, "\n");
 const lifecycleAnchor = '  if ($summary.mode -ne "offline_local_sqlite_admin") { throw "The local SQLite API did not initialize in offline mode." }';
 if (!lifecycle.includes("Bundled Wikidata core seed did not remain a candidate-only identity import.")) {
   if (!lifecycle.includes(lifecycleAnchor)) throw new Error("Unexpected Windows installer lifecycle summary check");
