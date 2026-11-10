@@ -717,6 +717,18 @@ def main() -> None:
     if any(position < 0 for position in rights_positions) or rights_positions != sorted(rights_positions):
         raise SystemExit("OwnerSpecs and CarDir source-rights checks must each immediately follow their own test command")
 
+    pull_request_trigger = text.split("  pull_request:", 1)[1].split("\njobs:", 1)[0]
+    owner_paths = (
+        "scripts/integrate-ownerspecs-vag-research.cjs",
+        "tests/test_ownerspecs_source_rights.py",
+        "tests/ownerspecs-pack-integration-contract.test.cjs",
+        "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json",
+        "desktop/ownerspecs-vag-research-db.cjs",
+    )
+    missing_owner_paths = [path for path in owner_paths if ('"' + path + '"') not in pull_request_trigger]
+    if missing_owner_paths:
+        raise SystemExit(f"Windows pull-request path filter must rerun for OwnerSpecs integration changes: {missing_owner_paths}")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 if __name__ == "__main__":
