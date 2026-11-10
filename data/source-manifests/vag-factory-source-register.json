@@ -723,7 +723,8 @@
           "payment_made": false,
           "api_calls_made": false,
           "documents_downloaded": 0,
-          "sqlite_imported": false
+          "sqlite_imported": false,
+          "product_import_allowed": false
         },
         "source_page_file_sha256": null,
         "hash_status": "live_terms_review_only_no_source_file_downloaded"
