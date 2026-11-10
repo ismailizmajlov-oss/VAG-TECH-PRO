@@ -1,6 +1,6 @@
 # CarDir CC BY 4.0 owner-manual facts — source and rights review
 
-Review date: 2026-11-07.
+Original rights review: 2026-11-07. Snapshot recheck: 2026-11-10.
 
 ## Decision
 
@@ -10,7 +10,7 @@ This is not an OEM primary database. CarDir is the publisher of a curated datase
 
 ## Publisher-published dataset scope
 
-The dataset page reviewed on 2026-11-07 states that the current snapshot was checked on 2026-11-07 and contains 41,649 verified values for 561 models. It offers CSV and JSON files and identifies these columns:
+The dataset page rechecked on 2026-11-10 states that the current snapshot was checked on 2026-11-09 and contains 44,245 verified values for 610 models. It offers CSV and JSON files and identifies these columns:
 
 - brand, model, key, key_label_ru
 - qualifier, value, unit
@@ -36,7 +36,7 @@ This source can add traceable owner-manual reference facts for maintenance secti
 
 ## Snapshot acquisition and hashes
 
-The current source manifest pins the 2026-11-07 CSV snapshot at 14,291,343 bytes with SHA-256 `72b3c68490cdef52bbbc8e124700ddc3a627e6ed7d15e0f809010c72dec2c922`. It contains 41,649 rows and 561 brand/model pairs; exact VAG brand equality retains 773 facts across 24 models and the observed labels Audi, Porsche, Skoda and Volkswagen. Compared with the previous snapshot (`93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375`), 1,658 all-brand source rows changed and one VAG fact changed: a Porsche Cayman 2009 rear-axle/summer-tyre wheel-size value changed from `10 J x 19 H2` to `8.5 J x 17 H2`. The publisher's qualifier is broader than one wheel-size option; this row remains raw, ambiguous and not independently resolved. No exact fitment is inferred.
+The current source manifest now pins the 2026-11-09 CSV snapshot retrieved by Windows CI on 2026-11-10: 15,165,485 bytes, SHA-256 `64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be`, 44,245 rows and 610 brand/model pairs. Exact VAG brand equality retains 948 facts across 26 models and five labels: Audi, Porsche, SEAT, Skoda and Volkswagen. The publisher page reports the same 44,245/610 counts and explicitly grants CC BY 4.0 commercial reuse, display, caching and redistribution with attribution. A byte-level probe compared the current CSV with the archived run-36 baseline (`93709b613cd289cb50f2f13ed9f02319979d6b9be94330326df3fc24a9841375`): 3,920 all-brand rows were added and 1,324 removed; within the VAG subset 205 rows were added, 30 old full-row variants were removed, 121 identity groups were added and none removed. No VAG value/unit or `verified_at` changes were found; 22 groups changed only their `page_url`. The intermediate 72b3 snapshot is not present as a CSV artifact, so these deltas are explicitly against the archived 93709 baseline, not claimed as the exact 72b3-to-64a delta. Raw qualifiers remain unparsed; no engine/gearbox code or exact fitment is inferred.
 
 The last successful SQLite pack build, Windows workflow run 36 on 2026-11-07, used the **previous** snapshot (`93709b...`), not the current `72b3...` snapshot. Its artifact is therefore stale for the current source revision and must not be packaged as the current pack. The current snapshot's acquisition and SQLite rebuild must pass again before a current database hash or artifact hash is recorded. Until then, the current source snapshot is pinned but its refreshed SQLite pack remains pending and outside the desktop installer.
 
@@ -67,3 +67,12 @@ The published licence covers the dataset. It does not transfer rights in the und
 4. Example VAG model pages showing model/generation and powertrain-conditioned reference sections: Volkswagen Golf https://cardir.ru/volkswagen/golf/ ; Audi A4 https://cardir.ru/audi/a4/ ; Skoda Octavia https://cardir.ru/skoda/octavia/
 
 **Disposition:** verified licensed research pack only; market_scope=UNKNOWN; `data_ingested=false`; `production_import=false`; `product_import_allowed=false`; source snapshot and SQLite hashes are pinned above. Desktop integration and any production use remain disabled.
+
+
+## 2026-11-10 source snapshot recheck
+
+The current publisher page (https://cardir.ru/dannye/) reports 44,245 verified values for 610 models, data last checked 2026-11-09, and CC BY 4.0 terms permitting commercial use, display in services, offline copying and redistribution with attribution. The Windows source-change probe retrieved the CSV directly from the publisher's HTTPS URL and independently computed the SHA-256 and row/model counts. The complete CSV and snapshot manifest were retained as a CI audit artifact; no owner-manual PDF was downloaded or bundled.
+
+The current VAG subset contains 948 rows across 26 models and Audi, Porsche, SEAT, Skoda and Volkswagen. Against the archived run-36 CSV baseline, no VAG values or units changed and no VAG verification dates changed. There were 121 new VAG identity groups, 205 added rows, 30 removed full-row variants and 22 page-URL-only groups. Because the intermediate 72b3 snapshot has no available CSV artifact, no exact delta from that intermediate revision is claimed.
+
+The refreshed SQLite pack is still pending its current-snapshot build and independent verification. The data remains a separate read-only reference-facts research resource: market UNKNOWN; no production import; no exact vehicle fitment; no exact engine/gearbox mapping; no RU/EAEU applicability; no ECU, DTC, wiring, pinout or repair-procedure claims.
