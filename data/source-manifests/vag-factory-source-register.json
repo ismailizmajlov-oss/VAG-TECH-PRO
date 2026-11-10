@@ -1872,7 +1872,7 @@
       ],
       "applicability_precision": "manufacturer_make_candidate",
       "verification_status": "community_reference_unverified",
-      "display_status": "hidden_pending_technical_review",
+      "display_status": "candidate_reference_visible_separate_namespace",
       "counts": {
         "manufacturer_controlled_candidates": 2,
         "audi_candidates": 1,
@@ -1922,14 +1922,51 @@
         "No generic SAE/ISO rows are included; generic DTC remains in a separate namespace.",
         "No diagnostic execution, repair procedure, OEM part mapping or approved test plan."
       ],
-      "project_decision": "allow_separate_candidate_pack_only_under_ODbL; keep hidden from normal DTC lookup pending technical review; never describe as verified VAG-specific or enable diagnostic execution",
-      "evidence_status": "pinned_source_csv_and_pack_independently_audited_2026-11-05; physical source-line hashes, pack hashes and SQLite integrity verified",
+      "project_decision": "allow_separate_candidate_pack_only_under_ODbL; visible only in a read-only separate research tab; hidden from normal DTC lookup; never describe as verified VAG-specific or enable diagnostic execution",
+      "evidence_status": "pinned_source_csv_and_pack_independently_audited_2026-11-05; artifact run #8 / 41622526550 and artifact 13223942420 SHA-256 pinned; visible only as separate community candidates",
       "exact_vehicle_fitment": false,
       "ecu_fitment": false,
       "pr_code_fitment": false,
       "diagnostic_execution_allowed": false,
       "repair_advice_approved": false,
-      "data_ingested": false
+      "data_ingested": false,
+      "research_pack_ingested": true,
+      "product_database_ingested": false,
+      "research_pack_run_id": 41622526550,
+      "research_pack_run_number": 8,
+      "research_pack_artifact_id": 13223942420,
+      "research_pack_artifact_name": "mechanicdb-audi-vw-dtc-candidates-odbl-research",
+      "research_pack_source_commit": "05a58d9e800dc9d725f3cc254857f68c32cf59c6",
+      "display_policy": {
+        "status": "candidate_reference_visible_separate_namespace",
+        "purpose": "read_only_research_reference_only",
+        "namespace": "manufacturer_controlled_candidate",
+        "exposed_fields": [
+          "dtc_code",
+          "oem_make",
+          "system_category",
+          "fault_family",
+          "short_description",
+          "source_revision",
+          "source_line_no",
+          "source_line_sha256",
+          "source_file_sha256"
+        ],
+        "excluded_fields": [
+          "detailed_technical_explanation",
+          "repair_actions",
+          "test_plan",
+          "ecu_fitment",
+          "vehicle_fitment",
+          "pr_code_fitment",
+          "oem_part_mapping"
+        ],
+        "exact_vehicle_fitment": false,
+        "vag_oem_confirmation": false,
+        "diagnostic_execution_allowed": false,
+        "repair_procedures_included": false,
+        "oem_part_numbers_included": false
+      }
     },
     {
       "source_id": "obdb-vag-signalsets-cc-by-sa",
