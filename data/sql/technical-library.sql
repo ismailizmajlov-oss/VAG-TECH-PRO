@@ -295,3 +295,24 @@ CREATE VIEW IF NOT EXISTS v_generic_dtc_test_plans AS
 SELECT * FROM v_published_technical_records WHERE record_kind='diagnostic_test_plan' AND dtc_namespace='generic_sae_iso';
 CREATE VIEW IF NOT EXISTS v_vag_specific_dtc_test_plans AS
 SELECT * FROM v_published_technical_records WHERE record_kind='diagnostic_test_plan' AND dtc_namespace='manufacturer_specific_vag';
+
+
+-- Fail closed: publication checks are implemented on UPDATE; direct INSERT must not bypass them.
+CREATE TRIGGER IF NOT EXISTS technical_applicability_publication_insert_requires_guarded_transition
+BEFORE INSERT ON technical_applicability
+WHEN NEW.review_status='publication_approved'
+BEGIN
+ SELECT RAISE(ABORT,'technical applicability publication must use guarded review-status transition');
+END;
+CREATE TRIGGER IF NOT EXISTS technical_document_publication_insert_requires_guarded_transition
+BEFORE INSERT ON technical_documents
+WHEN NEW.review_status='publication_approved'
+BEGIN
+ SELECT RAISE(ABORT,'technical document publication must use guarded review-status transition');
+END;
+CREATE TRIGGER IF NOT EXISTS technical_record_publication_insert_requires_guarded_transition
+BEFORE INSERT ON technical_records
+WHEN NEW.review_status='publication_approved'
+BEGIN
+ SELECT RAISE(ABORT,'technical record publication must use guarded review-status transition');
+END;
