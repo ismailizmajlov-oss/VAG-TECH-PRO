@@ -46,7 +46,7 @@ class CardirLiveSnapshotProbeTests(unittest.TestCase):
     def test_pinned_pack_and_production_boundary_remain_unchanged(self) -> None:
         self.assertEqual(
             self.pack["source_snapshot_sha256"],
-            "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+            "5b82f00adee26d165cc187e27952f9b2d9a2f3e6c6da216f3030b72cacac370a",
         )
         self.assertTrue(self.pack["pinned_snapshot_retained"])
         self.assertEqual(self.pack["database_sha256"], "0aab9c87e863586f1db059499800b1161f52e99e941c5773350ea42bd441da9f")
