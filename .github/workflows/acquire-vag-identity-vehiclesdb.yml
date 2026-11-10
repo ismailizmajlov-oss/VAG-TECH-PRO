@@ -35,7 +35,7 @@ jobs:
           $ProgressPreference = "SilentlyContinue"
           $lock = Get-Content "data/source-manifests/vehiclesdb-vag-identity.lock.json" -Raw | ConvertFrom-Json
           $tag = $lock.upstream_tag
-          $base = "https://cdn.jsdelivr.net/gh/vehiclesdb/vehiclesdb@$tag"
+          $base = "https://raw.githubusercontent.com/vehiclesdb/vehiclesdb/$tag"
           $inputDir = Join-Path $env:RUNNER_TEMP "vehiclesdb-vag-input"
           New-Item -ItemType Directory -Path $inputDir -Force | Out-Null
 
