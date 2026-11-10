@@ -8115,6 +8115,17 @@
             "vag_rows_changed": 1,
             "changed_vag_fact_review_status": "publisher_snapshot_change_not_independently_resolved",
             "changed_vag_fact_applicability_status": "raw_qualifier_ambiguous_no_exact_fitment"
+          },
+          {
+            "snapshot_sha256": "64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be",
+            "current_snapshot_sha256": "30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4",
+            "source_rows_changed": 77,
+            "source_rows_added": 52,
+            "source_rows_removed": 25,
+            "vag_rows_changed": 0,
+            "vag_subset_canonical_rows_sha256": "92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad",
+            "exact_vag_subset_unchanged": true,
+            "review_status": "exact_multiset_comparison_verified; all source changes are outside exact VAG allowlist"
           }
         ]
       },
