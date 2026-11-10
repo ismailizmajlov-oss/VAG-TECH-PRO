@@ -1,75 +1,75 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-10T00:49:13.9455570Z",
+  "recorded_at_utc": "2026-11-10T02:10:21.9870678Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run91",
-  "run_id": 42727684064,
-  "run_number": 1065,
+  "run_id": 42737491563,
+  "run_number": 1123,
   "run_attempt": 1,
   "status": "completed",
   "conclusion": "success",
-  "head_sha": "baaaa4de7508fe69035abba00ae9a8cb2d7dbfab",
+  "head_sha": "a33c29a2c6fce82212cab557c1bb0d8c51811a09",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42727684064",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42737491563",
   "jobs": [
     {
-      "id": 129537418514,
+      "id": 129570167820,
       "name": "build-and-lifecycle",
       "status": "completed",
       "conclusion": "success",
-      "runner_name": "GitHub Actions 1000004172",
-      "started_at": "2026-11-10T00:21:37Z",
-      "completed_at": "2026-11-10T00:45:19Z"
+      "runner_name": "GitHub Actions 1000004540",
+      "started_at": "2026-11-10T01:40:53Z",
+      "completed_at": "2026-11-10T02:06:28Z"
     },
     {
-      "id": 129547654530,
+      "id": 129579819293,
       "name": "Windows Server 2022 installer compatibility lifecycle",
       "status": "completed",
       "conclusion": "success",
-      "runner_name": "GitHub Actions 1000004244",
-      "started_at": "2026-11-10T00:45:21Z",
-      "completed_at": "2026-11-10T00:48:52Z"
+      "runner_name": "GitHub Actions 1000004548",
+      "started_at": "2026-11-10T02:06:31Z",
+      "completed_at": "2026-11-10T02:10:06Z"
     }
   ],
   "artifacts": [
     {
-      "id": 13724671907,
+      "id": 13729176224,
       "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 1369493993,
+      "size_in_bytes": 1370219434,
       "expired": false,
-      "created_at": "2026-11-10T00:45:14Z",
-      "expires_at": "2026-11-24T00:44:20Z"
+      "created_at": "2026-11-10T02:06:23Z",
+      "expires_at": "2026-11-24T02:05:29Z"
     },
     {
-      "id": 13724631862,
-      "name": "vag-tech-pro-build-metadata-42727684064",
-      "size_in_bytes": 3034,
+      "id": 13729156001,
+      "name": "vag-tech-pro-desktop-source-audit-42737491563",
+      "size_in_bytes": 2534092,
       "expired": false,
-      "created_at": "2026-11-10T00:44:07Z",
-      "expires_at": "2026-12-10T00:44:06Z"
+      "created_at": "2026-11-10T02:05:28Z",
+      "expires_at": "2026-12-10T02:05:27Z"
     },
     {
-      "id": 13724267367,
-      "name": "vag-tech-pro-desktop-source-audit-42727684064",
-      "size_in_bytes": 2528543,
-      "expired": false,
-      "created_at": "2026-11-10T00:44:19Z",
-      "expires_at": "2026-12-10T00:44:17Z"
-    },
-    {
-      "id": 13723689886,
+      "id": 13728577944,
       "name": "vag-tech-pro-windows-2022-lifecycle-run71",
-      "size_in_bytes": 7526,
+      "size_in_bytes": 8253,
       "expired": false,
-      "created_at": "2026-11-10T00:48:50Z",
-      "expires_at": "2026-12-10T00:48:50Z"
+      "created_at": "2026-11-10T02:10:03Z",
+      "expires_at": "2026-12-10T02:10:02Z"
     },
     {
-      "id": 13722159821,
+      "id": 13728388053,
+      "name": "vag-tech-pro-build-metadata-42737491563",
+      "size_in_bytes": 3467,
+      "expired": false,
+      "created_at": "2026-11-10T02:05:18Z",
+      "expires_at": "2026-12-10T02:05:18Z"
+    },
+    {
+      "id": 13726684744,
       "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
       "size_in_bytes": 24882,
       "expired": false,
-      "created_at": "2026-11-10T00:23:50Z",
-      "expires_at": "2026-11-17T00:23:49Z"
+      "created_at": "2026-11-10T01:44:23Z",
+      "expires_at": "2026-11-17T01:44:22Z"
     }
   ],
   "native_windows_10_11": {
