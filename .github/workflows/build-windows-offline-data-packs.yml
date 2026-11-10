@@ -83,8 +83,7 @@ jobs:
 
 
   probe-vag-identity-next:
-    name: Probe next VehiclesDB release (count-only, no pack write)
-    continue-on-error: true
+    name: Independent read-only VehiclesDB count verification
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
@@ -97,33 +96,17 @@ jobs:
       - name: Run synthetic probe regression tests
         run: python scripts/test_probe_vag_identity_vehiclesdb.py
 
-      - name: Download and probe pinned VehiclesDB v2026.11.3 without building a pack
+      - name: Download and independently verify the pinned VehiclesDB source snapshot
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           $ProgressPreference = "SilentlyContinue"
-          $lock = Get-Content "data/source-manifests/vehiclesdb-vag-identity.lock.json" -Raw | ConvertFrom-Json -AsHashtable
-          $lock.upstream_tag = "v2026.11.3"
-          $lock.expected_version = "2026.11.3"
-          $lock.excluded_source_reasons["de_kba_nfz"] = "KBA FZ 2.2/FZ 2.8/FZ 4.8 is attach-only in the upstream source notes; excluded from this identity pack to avoid treating it as a complete fleet/count source."
-          $lock.not_in_release_sources["ro_drpciv"] = "Not present in the pinned VehiclesDB v2026.11.3 manifest; record as absent, not as an excluded source in this release."
-          $lock.expected_counts = @{
-            sources = 14
-            source_files = 4
-            models = 0
-            market_evidence = 0
-          }
-          $lock.expected_source_files = @{
-            "catalog.sqlite" = @{ byte_size = 10260480; sha256 = "06aa916028e2d732ce087e9a566fc26717ae0a9a2ab8cd8487a0e6df31f1b172" }
-            "manifest.json" = @{ byte_size = 12498; sha256 = "7df6ec271cb5a7aae80164e28cb3b4be83612da42942b76989e43b7c99e8c075" }
-            "ATTRIBUTION.md" = @{ byte_size = 10256; sha256 = "47edb850ed4ff02f5c9d8de3efcdd314d7a0162b1067e1c15ca07b956acccf60" }
-            "LICENSE" = @{ byte_size = 1319; sha256 = "48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78" }
-          }
-          $lockPath = Join-Path $env:RUNNER_TEMP "vehiclesdb-v2026.11.3-probe-lock.json"
-          $lock | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $lockPath -Encoding utf8
-          $inputDir = Join-Path $env:RUNNER_TEMP "vehiclesdb-v2026.11.3-probe"
+          $lockPath = "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+          $lock = Get-Content $lockPath -Raw | ConvertFrom-Json
+          $tag = $lock.upstream_tag
+          $base = "https://raw.githubusercontent.com/vehiclesdb/vehiclesdb/$tag"
+          $inputDir = Join-Path $env:RUNNER_TEMP "vehiclesdb-pinned-probe"
           New-Item -ItemType Directory -Path $inputDir -Force | Out-Null
-          $base = "https://raw.githubusercontent.com/vehiclesdb/vehiclesdb/v2026.11.3"
           $files = @(
             @{ url = "$base/dist/catalog.sqlite"; name = "catalog.sqlite" },
             @{ url = "$base/manifest.json"; name = "manifest.json" },
@@ -139,17 +122,18 @@ jobs:
             $hash = (Get-FileHash -Path $target -Algorithm SHA256).Hash.ToLowerInvariant()
             Write-Host "$($file.name) bytes=$((Get-Item $target).Length) sha256=$hash"
           }
-          $report = Join-Path $env:RUNNER_TEMP "vehiclesdb-v2026.11.3-probe-report.json"
+          $report = Join-Path $env:RUNNER_TEMP "vehiclesdb-vag-identity-probe-report.json"
           $probeArgs = @(
             "--lock", $lockPath,
             "--source-db", (Join-Path $inputDir "catalog.sqlite"),
             "--manifest", (Join-Path $inputDir "manifest.json"),
             "--attribution", (Join-Path $inputDir "ATTRIBUTION.md"),
             "--license", (Join-Path $inputDir "LICENSE"),
-            "--output", $report
+            "--output", $report,
+            "--require-count-match"
           )
           python scripts/probe_vag_identity_vehiclesdb.py @probeArgs
-          if ($LASTEXITCODE -ne 0) { throw "VehiclesDB read-only count probe failed." }
+          if ($LASTEXITCODE -ne 0) { throw "VehiclesDB source count/provenance probe failed." }
 
       - name: Compile read-only probe
         run: python -m py_compile scripts/probe_vag_identity_vehiclesdb.py
@@ -157,8 +141,8 @@ jobs:
       - name: Upload count-only source probe report
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: vehiclesdb-v2026.11.3-count-probe
-          path: ${{ runner.temp }}/vehiclesdb-v2026.11.3-probe-report.json
+          name: vehiclesdb-vag-identity-count-probe
+          path: ${{ runner.temp }}/vehiclesdb-vag-identity-probe-report.json
           if-no-files-found: error
           retention-days: 14
 
