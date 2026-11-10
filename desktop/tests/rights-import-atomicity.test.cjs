@@ -66,7 +66,7 @@ function waitForMessage(worker, predicate, timeoutMs = 5000) {
     worker.once("error", (error) => { clearTimeout(timer); worker.off("message", listener); reject(error); });
   });
 }
-function expectNoMessage(worker, predicate, timeoutMs = 300) {
+function expectNoMessage(worker, predicate, timeoutMs = 500) {
   return new Promise((resolve) => {
     const listener = (message) => {
       if (!predicate(message)) return;
@@ -82,50 +82,56 @@ async function assertRightsReadAfterWriteLock(t, pkg, label) {
   const { dbPath } = fixture(t);
   core.registerSource(dbPath, source());
   const lockDb = new DatabaseSync(dbPath);
-  lockDb.exec("PRAGMA busy_timeout=5000; BEGIN IMMEDIATE");
-  lockDb.prepare("UPDATE sources SET status='blocked',rights_status='restricted',commercial_use_allowed=0,display_allowed=0,offline_cache_allowed=0,bulk_reuse_allowed=0,redistribution_allowed=0 WHERE source_id=?").run("rights-lock-test");
+  let worker;
+  try {
+    lockDb.exec("PRAGMA busy_timeout=5000; BEGIN IMMEDIATE");
+    lockDb.prepare("UPDATE sources SET status='blocked',rights_status='restricted',commercial_use_allowed=0,display_allowed=0,offline_cache_allowed=0,bulk_reuse_allowed=0,redistribution_allowed=0 WHERE source_id=?").run("rights-lock-test");
 
-  const workerCode = [
-    'const { parentPort, workerData } = require("node:worker_threads");',
-    'const core = require(workerData.corePath);',
-    'parentPort.postMessage({ type: "started" });',
-    'try {',
-    '  const result = core.importPackage(workerData.dbPath, workerData.pkg, {',
-    '    afterSourceRead: (source) => parentPort.postMessage({ type: "source_read", status: source && source.status, rightsStatus: source && source.rights_status })',
-    '  });',
-    '  parentPort.postMessage({ type: "result", ok: true, result });',
-    '} catch (error) {',
-    '  parentPort.postMessage({ type: "result", ok: false, error: error.message });',
-    '}'
-  ].join("\n");
-  const worker = new Worker(workerCode, { eval: true, workerData: {
-    corePath: path.resolve(__dirname, "../lib/local-core-db.cjs"), dbPath, pkg
-  } });
-  t.after(async () => {
+    const workerCode = [
+      'const { parentPort, workerData } = require("node:worker_threads");',
+      'const core = require(workerData.corePath);',
+      'parentPort.postMessage({ type: "started" });',
+      'try {',
+      '  const importer = workerData.pkg.package_kind === "vehicle_catalog" ? core.importVehicleCatalog : core.importPackage;',
+      '  if (typeof importer !== "function") throw new Error("Expected import function is unavailable");',
+      '  const result = importer(workerData.dbPath, workerData.pkg, {',
+      '    afterSourceRead: (source) => parentPort.postMessage({ type: "source_read", status: source && source.status, rightsStatus: source && source.rights_status })',
+      '  });',
+      '  parentPort.postMessage({ type: "result", ok: true, result });',
+      '} catch (error) {',
+      '  parentPort.postMessage({ type: "result", ok: false, error: error.message });',
+      '}'
+    ].join("\n");
+    worker = new Worker(workerCode, { eval: true, workerData: {
+      corePath: path.resolve(__dirname, "../lib/local-core-db.cjs"), dbPath, pkg
+    } });
+
+    await waitForMessage(worker, (message) => message.type === "started");
+    const premature = await expectNoMessage(worker, (message) => message.type === "source_read");
+    assert.equal(premature, null, label + ": source rights were read before the SQLite write transaction was acquired");
+
+    lockDb.exec("COMMIT");
+    const sourceRead = await waitForMessage(worker, (message) => message.type === "source_read");
+    assert.equal(sourceRead.status, "blocked");
+    assert.equal(sourceRead.rightsStatus, "restricted");
+    const result = await waitForMessage(worker, (message) => message.type === "result");
+    assert.equal(result.ok, false, label + ": import must fail after source rights are revoked");
+    assert.match(result.error, /source rights/i);
+
+    const db = core.openDatabase(dbPath);
+    try {
+      assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 0);
+      assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 0);
+      assert.equal(db.prepare("SELECT count(*) AS n FROM brands").get().n, 0);
+      assert.equal(db.prepare("SELECT count(*) AS n FROM vehicle_models").get().n, 0);
+    } finally { db.close(); }
+  } finally {
     try { lockDb.exec("ROLLBACK"); } catch {}
     try { lockDb.close(); } catch {}
-    try { await worker.terminate(); } catch {}
-  });
-
-  await waitForMessage(worker, (message) => message.type === "started");
-  const premature = await expectNoMessage(worker, (message) => message.type === "source_read", 500);
-  assert.equal(premature, null, label + ": source rights were read before the SQLite write transaction was acquired");
-
-  lockDb.exec("COMMIT");
-  const sourceRead = await waitForMessage(worker, (message) => message.type === "source_read");
-  assert.equal(sourceRead.status, "blocked");
-  assert.equal(sourceRead.rightsStatus, "restricted");
-  const result = await waitForMessage(worker, (message) => message.type === "result");
-  assert.equal(result.ok, false, label + ": import must fail after source rights are revoked");
-  assert.match(result.error, /source rights/i);
-
-  const db = core.openDatabase(dbPath);
-  try {
-    assert.equal(db.prepare("SELECT count(*) AS n FROM import_batches").get().n, 0);
-    assert.equal(db.prepare("SELECT count(*) AS n FROM technical_records").get().n, 0);
-    assert.equal(db.prepare("SELECT count(*) AS n FROM brands").get().n, 0);
-    assert.equal(db.prepare("SELECT count(*) AS n FROM vehicle_models").get().n, 0);
-  } finally { db.close(); }
+    if (worker) {
+      try { await worker.terminate(); } catch {}
+    }
+  }
 }
 test("technical-record import acquires the SQLite write lock before reading source rights", async (t) => {
   await assertRightsReadAfterWriteLock(t, technicalPackage(), "technical import");
