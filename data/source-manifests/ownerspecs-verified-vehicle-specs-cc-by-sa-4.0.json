@@ -4,7 +4,7 @@
   "publisher": "ownerspecs.com",
   "source_kind": "curated_document_verified_vehicle_generation_specifications",
   "reviewed_at": "2026-11-10",
-  "data_revision": "Publisher states the dataset was generated 2026-11-09; fresh live review on 2026-11-10 confirms the HTML page and JSON descriptor both report 111 generations.",
+  "data_revision": "OpenSpecs dataset generated 2026-11-09; live JSON re-acquired 2026-11-10T05:51:09Z; SHA-256 f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4; 4 specification values changed (3 VAG) with no generation/datapoint membership changes; candidate-only.",
   "source_urls": {
     "dataset_page": "https://ownerspecs.com/data",
     "json": "https://ownerspecs.com/data/dataset.json",
@@ -40,10 +40,109 @@
     "json_descriptor_generation_count": 111,
     "html_page_brand_count": 27,
     "html_page_verified_datapoint_count": 2369,
-    "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
-    "source_file_bytes": 683641,
-    "retrieved_at_utc": "2026-11-10T01:29:53.763466+00:00",
-    "note": "Exact public JSON acquired by Windows x64 CI run #13. The source descriptor and actual array reconcile to 111 generations and 2,369 datapoints; the exact VAG allowlist retains 20 generation candidates and 233 facts. Source SHA-256 is pinned. All rows remain UNKNOWN-market, not independently reviewed, and research-only."
+    "source_snapshot_sha256": "f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4",
+    "source_file_bytes": 683533,
+    "retrieved_at_utc": "2026-11-10T05:51:09.113723+00:00",
+    "note": "Live JSON re-acquired by Windows x64 CI on 2026-11-10T05:51:09Z. Counts remain 111 generations and 2,369 datapoints, including 20 VAG generation candidates and 233 VAG facts. Four specification values changed across three generations (three VAG datapoints across Audi A1 and Volkswagen Polo; one non-VAG Mercedes-Benz A-Class). All four changes collapse a previously ranged value to its upper bound. No generation or datapoint membership changed. These values remain candidate-only, UNKNOWN-market and not publishable as critical repair specifications.",
+    "latest_snapshot_review": {
+      "previous_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
+      "current_snapshot_sha256": "f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4",
+      "previous_source_file_bytes": 683641,
+      "current_source_file_bytes": 683533,
+      "retrieved_at_utc": "2026-11-10T05:51:09.113723+00:00",
+      "generation_count": 111,
+      "datapoint_count": 2369,
+      "vag_generation_count": 20,
+      "vag_fact_count": 233,
+      "generations_added": 0,
+      "generations_removed": 0,
+      "datapoints_added": 0,
+      "datapoints_removed": 0,
+      "changed_generations_total": 3,
+      "changed_datapoints_total": 4,
+      "vag_changed_generations": 2,
+      "vag_changed_datapoints": 3,
+      "non_vag_changed_datapoints": 1,
+      "all_changed_fields_are_specification_values": true,
+      "all_changes_are_range_collapses_to_upper_value": true,
+      "changed_values": [
+        {
+          "brand": "Mercedes-Benz",
+          "model": "A-Class",
+          "generation": "A-Class (W177, 4th gen)",
+          "field": "co2",
+          "unit": "g/km",
+          "old": {
+            "value": 121,
+            "value_max": 139,
+            "is_range": true
+          },
+          "new": {
+            "value": 139,
+            "is_range": false
+          },
+          "vag": false
+        },
+        {
+          "brand": "Audi",
+          "model": "A1",
+          "generation": "A1 (GB)",
+          "field": "co2",
+          "unit": "g/km",
+          "old": {
+            "value": 117,
+            "value_max": 145,
+            "is_range": true
+          },
+          "new": {
+            "value": 145,
+            "is_range": false
+          },
+          "vag": true
+        },
+        {
+          "brand": "Audi",
+          "model": "A1",
+          "generation": "A1 (GB)",
+          "field": "fuel_consumption",
+          "unit": "l/100km",
+          "old": {
+            "value": 5.1,
+            "value_max": 6.4,
+            "is_range": true
+          },
+          "new": {
+            "value": 6.4,
+            "is_range": false
+          },
+          "vag": true
+        },
+        {
+          "brand": "Volkswagen",
+          "model": "Polo",
+          "generation": "Polo VI (AW)",
+          "field": "co2",
+          "unit": "g/km",
+          "old": {
+            "value": 104,
+            "value_max": 121,
+            "is_range": true
+          },
+          "new": {
+            "value": 121,
+            "is_range": false
+          },
+          "vag": true
+        }
+      ],
+      "primary_document_locator_per_value_in_json": false,
+      "primary_document_revision_per_value_in_json": false,
+      "market_scope": "UNKNOWN",
+      "critical_repair_values_publishable": false,
+      "candidate_only": true,
+      "disposition": "rebuild_separate_CC_BY_SA_research_pack; do_not_promote_to_factory_fitment_or_repair_data"
+    },
+    "snapshot_review_history": []
   },
   "data_scope": {
     "dataset_title": "ownerspecs.com — verified vehicle specifications",

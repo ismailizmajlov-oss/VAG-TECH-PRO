@@ -1225,7 +1225,7 @@ jobs:
           if ($null -eq $ownerSpecsManifestEntry -or $ownerSpecsManifestEntry.sha256 -notmatch "^[a-f0-9]{64}$") { throw "OwnerSpecs CC BY-SA source manifest was not copied into desktop staging" }
           $ownerSpecsManifestPath = "desktop-source/data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
           $ownerSpecsManifest = Get-Content -LiteralPath $ownerSpecsManifestPath -Raw | ConvertFrom-Json
-          if ($ownerSpecsManifest.snapshot.source_snapshot_sha256 -ne "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d" -or $ownerSpecsManifest.import_policy.product_import_allowed -ne $false -or $ownerSpecsManifest.applicability_policy.market_scope -ne "UNKNOWN" -or $ownerSpecsManifest.applicability_policy.exact_engine_gearbox_pair -ne $false) { throw "OwnerSpecs source manifest hash or candidate-only applicability policy mismatch" }
+          if ($ownerSpecsManifest.snapshot.source_snapshot_sha256 -ne "f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4" -or $ownerSpecsManifest.import_policy.product_import_allowed -ne $false -or $ownerSpecsManifest.applicability_policy.market_scope -ne "UNKNOWN" -or $ownerSpecsManifest.applicability_policy.exact_engine_gearbox_pair -ne $false) { throw "OwnerSpecs source manifest hash or candidate-only applicability policy mismatch" }
           $russianManifestPath = "desktop-source/data/source-manifests/russian-eaeu-otts-sources.json"
           $russianManifest = Get-Content -LiteralPath $russianManifestPath -Raw | ConvertFrom-Json
           if (@($russianManifest.sources | Where-Object { $_.data_ingested -eq $true }).Count -gt 0) { throw "Unlicensed Russian/EEU OTTS source is marked as ingested" }

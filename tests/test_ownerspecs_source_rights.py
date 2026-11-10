@@ -44,9 +44,9 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(snapshot["html_page_brand_count"], 27)
         self.assertEqual(snapshot["html_page_verified_datapoint_count"], 2369)
         self.assertEqual(snapshot["status"], "source_snapshot_acquired_schema_verified")
-        self.assertEqual(snapshot["source_snapshot_sha256"], "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d")
-        self.assertEqual(snapshot["source_file_bytes"], 683641)
-        self.assertTrue(snapshot["retrieved_at_utc"].endswith("+00:00"))
+        self.assertEqual(snapshot["source_snapshot_sha256"], "f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4")
+        self.assertEqual(snapshot["source_file_bytes"], 683533)
+        self.assertEqual(snapshot["retrieved_at_utc"],"2026-11-10T05:51:09.113723+00:00")
         policy = self.manifest["import_policy"]
         self.assertIs(policy["acquisition_allowed"], True)
         self.assertIs(policy["research_pack_import_allowed"], True)
@@ -70,64 +70,53 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         ):
             self.assertIs(applicability[field], False)
 
-    def test_central_register_preserves_rights_and_separate_pack_boundary(self):
-        rights = self.entry["rights"]
-        self.assertEqual(rights["data_license"], "CC-BY-SA-4.0")
-        self.assertEqual(rights["permission_status"], "approved_by_published_license_for_reuse")
-        for field in (
-            "commercial_use_allowed", "display_allowed", "offline_cache_allowed",
-            "bulk_reuse_allowed", "redistribution_allowed", "attribution_required",
-            "share_alike_required", "separate_pack_required",
-        ):
-            self.assertIs(rights[field], True)
-        self.assertIs(self.entry["data_ingested"], False)
-        self.assertEqual(self.entry["source_snapshot_sha256"], self.manifest["snapshot"]["source_snapshot_sha256"])
-        self.assertIs(self.entry["research_pack_acquisition_allowed"], True)
-        self.assertIs(self.entry["research_pack_acquired"], True)
-        self.assertEqual(self.entry["research_pack_artifact_sha256"], "441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3")
-        self.assertEqual(self.entry["research_pack_database_sha256"], "eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf")
-        self.assertEqual(self.entry["research_pack_source_manifest_sha256"], "3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb")
-        self.assertEqual(self.entry["research_pack_workflow_run_id"], 42752686437)
-        self.assertEqual(self.entry["research_pack_artifact_id"], 13733448981)
-        self.assertEqual(self.entry["research_pack_run_number"], 64)
-        self.assertEqual(self.entry["research_pack_desktop_integration_status"], "verified_windows_server_2022_x64_lifecycle_run1208_native_windows_10_11_pending")
-        self.assertIs(self.entry["research_database_included_in_desktop"], True)
-        desktop = self.entry["desktop_lifecycle_evidence"]
-        self.assertEqual(desktop["run_number"], 1208)
-        self.assertEqual(desktop["status"], "verified_windows_server_2022_x64_lifecycle")
-        self.assertTrue(desktop["checks"]["clean_install"])
-        self.assertTrue(desktop["checks"]["offline_launch"])
-        self.assertTrue(desktop["checks"]["backup_restore"])
-        self.assertTrue(desktop["checks"]["sqlite_user_data_preserved"])
-        self.assertTrue(desktop["checks"]["uninstall_preserves_user_data"])
-        self.assertEqual(desktop["signature_status"], "unsigned")
-        self.assertIs(desktop["native_windows_10_11_verified"], False)
-        self.assertEqual(
-            self.entry["verification_status"],
-            "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_verified_windows_server_2022_native_windows_10_11_pending",
-        )
-        self.assertEqual(self.entry["research_pack_source_commit"], "c75eee82df6d97e44b89e8f9722fe5756777f580")
-        self.assertEqual(self.entry["research_pack_artifact_name"], "ownerspecs-vag-vehicle-specs-research-pack")
-        self.assertIs(self.entry["product_database_ingested"], False)
-        self.assertIs(self.entry["product_import_allowed"], False)
-        self.assertEqual(self.entry["applicability"]["market_scope"], "UNKNOWN")
-        self.assertIs(self.entry["applicability"]["exact_engine_gearbox_pair"], False)
-        self.assertIs(self.entry["content_review"]["metadata_consistent"], True)
-
+    def test_central_register_preserves_rights_and_marks_current_snapshot_pending(self):
+        rights=self.entry["rights"]
+        self.assertEqual(rights["data_license"],"CC-BY-SA-4.0")
+        self.assertEqual(rights["permission_status"],"approved_by_published_license_for_reuse")
+        for field in ("commercial_use_allowed","display_allowed","offline_cache_allowed","bulk_reuse_allowed","redistribution_allowed","attribution_required","share_alike_required","separate_pack_required"):
+            self.assertIs(rights[field],True)
+        self.assertFalse(self.entry["data_ingested"])
+        self.assertEqual(self.entry["source_snapshot_sha256"],self.manifest["snapshot"]["source_snapshot_sha256"])
+        self.assertEqual(self.entry["source_snapshot_sha256"],"f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4")
+        self.assertEqual(self.entry["source_file_bytes"],683533)
+        self.assertTrue(self.entry["research_pack_acquisition_allowed"])
+        self.assertFalse(self.entry["research_pack_acquired"]); self.assertFalse(self.entry["research_pack_current"])
+        self.assertEqual(self.entry["research_pack_status"],"rebuild_pending_after_live_source_update")
+        self.assertFalse(self.entry["research_database_included_in_desktop"])
+        self.assertEqual(self.entry["research_pack_source_manifest_sha256"],"6ddf7ca341066a76fcd00c548349b5f5aa3b180a20d1b9a59c7652cb63941e8d")
+        self.assertEqual(self.entry["research_pack_source_snapshot_sha256"],"f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4")
+        previous=self.entry["previous_verified_research_pack"]
+        self.assertEqual(previous["artifact_id"],13733448981); self.assertEqual(previous["artifact_run_number"],64)
+        self.assertEqual(previous["source_snapshot_sha256"],"7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d")
+        self.assertEqual(previous["database_sha256"],"eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf")
+        self.assertEqual(self.entry["previous_desktop_lifecycle_evidence"]["run_number"],1208)
+        self.assertIsNone(self.entry["desktop_lifecycle_evidence"])
+        self.assertEqual(self.entry["research_pack_desktop_integration_status"],"previous_pack_run1208_current_snapshot_not_yet_packaged")
+        self.assertEqual(self.entry["verification_status"],"licensed_source_snapshot_updated_reviewed_research_pack_rebuild_pending_candidate_only_no_production_import")
+        self.assertFalse(self.entry["product_database_ingested"]); self.assertFalse(self.entry["product_import_allowed"])
+        self.assertEqual(self.entry["applicability"]["market_scope"],"UNKNOWN")
+        self.assertFalse(self.entry["applicability"]["exact_engine_gearbox_pair"])
+        self.assertTrue(self.entry["content_review"]["metadata_consistent"])
     def test_review_records_current_counts_and_no_unverified_promotion(self):
-        for phrase in (
-            "111 generations",
-            "27 brands",
-            "2,369 verified datapoints",
-            "current live page/json pair",
-            "source snapshot sha-256 is pinned",
-            "20 vag generation candidates",
-            "233 vag facts",
-            "market_scope=unknown",
-            "must not be promoted to repair instructions",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.review)
+        for phrase in ("111 generations","27 brands","2,369 verified datapoints","current live page/json pair","source snapshot sha-256 is pinned","20 vag generation candidates","233 vag facts","market_scope=unknown","must not be promoted to repair instructions"):
+            with self.subTest(phrase=phrase): self.assertIn(phrase,self.review)
+
+    def test_latest_snapshot_review_records_four_value_changes_and_three_vag_values(self):
+        review=self.manifest["snapshot"]["latest_snapshot_review"]
+        self.assertEqual(review["previous_snapshot_sha256"],"7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d")
+        self.assertEqual(review["current_snapshot_sha256"],"f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4")
+        self.assertEqual(review["changed_generations_total"],3); self.assertEqual(review["changed_datapoints_total"],4)
+        self.assertEqual(review["vag_changed_generations"],2); self.assertEqual(review["vag_changed_datapoints"],3)
+        self.assertEqual(review["non_vag_changed_datapoints"],1)
+        self.assertEqual(review["generations_added"],0); self.assertEqual(review["generations_removed"],0)
+        self.assertEqual(review["datapoints_added"],0); self.assertEqual(review["datapoints_removed"],0)
+        self.assertTrue(review["all_changes_are_range_collapses_to_upper_value"])
+        self.assertFalse(review["primary_document_locator_per_value_in_json"])
+        self.assertFalse(review["primary_document_revision_per_value_in_json"])
+        self.assertEqual(review["market_scope"],"UNKNOWN"); self.assertFalse(review["critical_repair_values_publishable"])
+        self.assertEqual({(x["brand"],x["model"],x["field"]) for x in review["changed_values"] if x["vag"]},{("Audi","A1","co2"),("Audi","A1","fuel_consumption"),("Volkswagen","Polo","co2")})
+
 
 
 if __name__ == "__main__":
