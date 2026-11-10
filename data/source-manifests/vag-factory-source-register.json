@@ -7886,43 +7886,7 @@
           "observation": "Official Volkswagen Group brand portfolio reference for a future VAG make filter. This page does not establish which raw EEA make strings occur in the dataset; that mapping remains pending source-data discovery."
         }
       ]
-    }
-  ],
-  "minimum_fitment_evidence_fields": [
-    "market_scope",
-    "make",
-    "model",
-    "generation_or_type_code",
-    "model_year",
-    "production_date_or_range",
-    "engine_code",
-    "transmission_code",
-    "drive_configuration",
-    "body_configuration",
-    "ecu_supplier_or_family",
-    "ecu_diagnostic_address",
-    "ecu_part_number",
-    "ecu_hardware_number",
-    "ecu_software_number_or_version",
-    "pr_codes_or_equipment_variant",
-    "vin_range_or_exact_vin_scope",
-    "source_document_id",
-    "source_revision",
-    "source_issue_date",
-    "page_section_or_table",
-    "source_file_sha256_when_lawfully_stored",
-    "data_license_status",
-    "reuse_scope",
-    "redistribution_allowed",
-    "permission_reference",
-    "technical_review_status"
-  ],
-  "review_states": [
-    "candidate",
-    "source_header_verified",
-    "applicability_verified",
-    "engineer_reviewed",
-    "publication_approved",
+    },
     {
       "source_id": "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0",
       "publisher": "ownerspecs.com",
@@ -7989,5 +7953,41 @@
       "product_import_allowed": false,
       "project_decision": "rights approved for a separate attributed CC BY-SA 4.0 research pack; acquisition is held until the HTML page's 111-generation count and JSON descriptor's 112-generation count are reconciled; no production applicability or repair-value approval"
     }
+  ],
+  "minimum_fitment_evidence_fields": [
+    "market_scope",
+    "make",
+    "model",
+    "generation_or_type_code",
+    "model_year",
+    "production_date_or_range",
+    "engine_code",
+    "transmission_code",
+    "drive_configuration",
+    "body_configuration",
+    "ecu_supplier_or_family",
+    "ecu_diagnostic_address",
+    "ecu_part_number",
+    "ecu_hardware_number",
+    "ecu_software_number_or_version",
+    "pr_codes_or_equipment_variant",
+    "vin_range_or_exact_vin_scope",
+    "source_document_id",
+    "source_revision",
+    "source_issue_date",
+    "page_section_or_table",
+    "source_file_sha256_when_lawfully_stored",
+    "data_license_status",
+    "reuse_scope",
+    "redistribution_allowed",
+    "permission_reference",
+    "technical_review_status"
+  ],
+  "review_states": [
+    "candidate",
+    "source_header_verified",
+    "applicability_verified",
+    "engineer_reviewed",
+    "publication_approved"
   ]
 }
