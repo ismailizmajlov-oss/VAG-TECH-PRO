@@ -130,7 +130,7 @@ function main() {
   const dollar = String.fromCharCode(36);
   const interpolation = dollar + "{JSON.stringify(vehiclesDbCounts)}";
   const oldVerifierCountGate = "assert(vehiclesDbCounts.sources === 14 && vehiclesDbCounts.models === 260 && vehiclesDbCounts.marketEvidence === 1524 && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
-  const newVerifierCountGate = "assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
+  const newVerifierCountGate = "assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDb foreign-market-only count gate failed: " + tick + interpolation + tick + ");";
   const verifierCountPatch = replaceExactlyOnce(verifierItem.text, oldVerifierCountGate, newVerifierCountGate, "VehiclesDB manifest-driven count gate in independent verifier");
 
   const oldVerifier = 'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
