@@ -28,7 +28,7 @@ def main() -> None:
             "Native Windows 10/11 lifecycle trigger does not match the current desktop workflow name: "
             + desktop_workflow_name.group(1)
         )
-    status_workflow = re.search(r'(?m)^\s+upstream_workflow:\s*"([^"]+)"', native_text)
+    status_workflow = re.search(r'(?m)^\s+upstream_workflow\s*=\s*"([^"]+)"', native_text)
     if not status_workflow or status_workflow.group(1) != desktop_workflow_name.group(1):
         raise SystemExit("Native Windows status record must identify the exact upstream desktop workflow")
     if "windows-lifecycle-staging/desktop-source/lib/local-research-db.cjs" not in text:
