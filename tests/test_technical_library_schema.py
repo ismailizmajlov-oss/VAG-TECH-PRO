@@ -297,6 +297,60 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         with self.assertRaisesRegex(sqlite3.IntegrityError, "permission reference"):
             self.db.execute("UPDATE technical_source_rights SET rights_status='approved' WHERE source_document_id=?", (source_document_id,))
 
+
+    def test_publication_status_cannot_bypass_guarded_update_triggers(self) -> None:
+        source_document_id, technical_document_id, applicability_id = self.seed_published_exact_pair()
+
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "vehicle catalog evidence publication must use guarded review-status transition"):
+            self.db.execute(
+                """INSERT INTO vehicle_catalog_evidence
+                   (source_id,document_id,retrieved_at_utc,evidence_locator,source_sha256,claim_type,review_status)
+                   VALUES ('test-vag-source','DIRECT-APPROVAL',?,'https://example.invalid/direct',?,'generation','publication_approved')""",
+                (UTC,self.h("9")),
+            )
+
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "DTC publication must use guarded review-status transition"):
+            self.db.execute(
+                """INSERT INTO oem_dtc_index
+                   (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                    evidence_locator,applicability_level,review_status,source_claim_hash,created_at_utc)
+                   VALUES ('P33A7','manufacturer_specific_vag','AUDI','EU',?,
+                           'direct publication bypass test','exact_ecu_hw_sw','publication_approved',?,?)""",
+                (source_document_id,self.h("8"),UTC),
+            )
+
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "technical document publication must use guarded review-status transition"):
+            self.db.execute(
+                """INSERT INTO technical_documents
+                   (source_document_id,technical_kind,title,document_revision,market_scope,
+                    content_storage_mode,review_status,created_at_utc)
+                   VALUES (?,'repair_procedure','Direct approved document','r1','EU',
+                           'reference_only','publication_approved',?)""",
+                (source_document_id,UTC),
+            )
+
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "technical applicability publication must use guarded review-status transition"):
+            self.db.execute(
+                """INSERT INTO technical_applicability
+                   (applicability_source_document_id,market_scope,applicability_precision,
+                    evidence_locator,evidence_sha256,review_status)
+                   VALUES (?,'EU','unknown','https://example.invalid/direct-applicability',?,'publication_approved')""",
+                (source_document_id,self.h("7")),
+            )
+
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "technical record publication must use guarded review-status transition"):
+            self.db.execute(
+                """INSERT INTO technical_records
+                   (technical_document_id,applicability_id,record_kind,record_revision,
+                    record_sha256,payload_json,review_status,created_at_utc)
+                   VALUES (?,?,'torque_specification','direct-publication',?,'{}','publication_approved',?)""",
+                (technical_document_id,applicability_id,self.h("6"),UTC),
+            )
+
+        # Existing candidate -> guarded UPDATE workflow remains valid.
+        self.assertEqual(self.db.execute("SELECT count(*) FROM v_published_technical_records").fetchone()[0],1)
+        self.assertEqual(self.db.execute("PRAGMA integrity_check").fetchone()[0],"ok")
+
     def test_run80_payload_validator_is_pinned_and_wired_into_windows_ci(self) -> None:
         payload_module = ROOT / "apply-technical-payload-validation-run80.payload.cjs"
         loader = ROOT / "apply-technical-payload-validation-run80.cjs"

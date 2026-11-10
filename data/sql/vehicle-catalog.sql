@@ -221,3 +221,12 @@ BEGIN
 END;
 
 -- A model-year range alone is not an engine or transmission fitment claim.
+
+
+-- Publication approval must pass through the UPDATE trigger so source rights are checked.
+CREATE TRIGGER IF NOT EXISTS vehicle_catalog_evidence_publication_insert_requires_guarded_transition
+BEFORE INSERT ON vehicle_catalog_evidence
+WHEN NEW.review_status='publication_approved'
+BEGIN
+  SELECT RAISE(ABORT, 'vehicle catalog evidence publication must use guarded review-status transition');
+END;
