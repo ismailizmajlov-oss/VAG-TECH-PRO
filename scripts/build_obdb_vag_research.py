@@ -504,6 +504,8 @@ def main() -> int:
         "database_sha256": sha256(database_path.read_bytes()),
         "counts": counts,
         "sources": [],
+        "excluded_repositories": manifest.get("excluded_repositories", []),
+        "command_namespace_policy": manifest.get("command_namespace_policy", {}),
         "limitations": [
             "Community-authored signal candidates only; technical correctness has not been independently verified on a vehicle.",
             "Market scope is UNKNOWN for every source.",
