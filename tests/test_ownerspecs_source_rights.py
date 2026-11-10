@@ -37,19 +37,17 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertIn("ownerspecs.com", rights["attribution_text"])
         self.assertIn("CC BY-SA 4.0", rights["attribution_text"])
 
-    def test_html_json_count_mismatch_blocks_acquisition(self):
+    def test_live_html_and_json_generation_counts_are_reconciled(self):
         snapshot = self.manifest["snapshot"]
         self.assertEqual(snapshot["html_page_generation_count"], 111)
-        self.assertEqual(snapshot["json_descriptor_generation_count"], 112)
-        self.assertNotEqual(
-            snapshot["html_page_generation_count"],
-            snapshot["json_descriptor_generation_count"],
-        )
-        self.assertEqual(snapshot["status"], "not_acquired_metadata_mismatch")
+        self.assertEqual(snapshot["json_descriptor_generation_count"], 111)
+        self.assertEqual(snapshot["html_page_brand_count"], 27)
+        self.assertEqual(snapshot["html_page_verified_datapoint_count"], 2369)
+        self.assertEqual(snapshot["status"], "not_acquired_snapshot_pending")
         self.assertIsNone(snapshot["source_snapshot_sha256"])
         policy = self.manifest["import_policy"]
-        self.assertIs(policy["acquisition_allowed"], False)
-        self.assertIs(policy["research_pack_import_allowed"], False)
+        self.assertIs(policy["acquisition_allowed"], True)
+        self.assertIs(policy["research_pack_import_allowed"], True)
         self.assertIs(policy["product_import_allowed"], False)
         self.assertIs(policy["data_ingested"], False)
 
@@ -82,17 +80,19 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
             self.assertIs(rights[field], True)
         self.assertIs(self.entry["data_ingested"], False)
         self.assertIsNone(self.entry["source_snapshot_sha256"])
-        self.assertIs(self.entry["research_pack_acquisition_allowed"], False)
+        self.assertIs(self.entry["research_pack_acquisition_allowed"], True)
         self.assertIs(self.entry["product_import_allowed"], False)
         self.assertEqual(self.entry["applicability"]["market_scope"], "UNKNOWN")
         self.assertIs(self.entry["applicability"]["exact_engine_gearbox_pair"], False)
+        self.assertIs(self.entry["content_review"]["metadata_consistent"], True)
 
-    def test_review_records_metadata_mismatch_and_no_unverified_promotion(self):
+    def test_review_records_current_counts_and_no_unverified_promotion(self):
         for phrase in (
             "111 generations",
-            "112",
-            "no dataset sha-256 is claimed",
-            "separate, read-only, attributed share-alike research pack",
+            "27 brands",
+            "2,369 verified datapoints",
+            "current live page/json pair",
+            "no source sha-256 is claimed",
             "market_scope=unknown",
             "must not be promoted to repair instructions",
         ):
