@@ -199,6 +199,10 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
         ecuFitment: false,
         exactFitment: false,
         ruEvidencePresent: false,
+        identityOnlyUse: packManifest.identity_only_use === true,
+        safetyCriticalReliance: packManifest.safety_critical_reliance === true,
+        repairDecisionUse: packManifest.repair_decision_use === true,
+        openDataPolicyNotice: packManifest.open_data_policy_notice,
         sourceRevision: packManifest.upstream_tag,
         sourceUrl: safeHttpsUrl(packManifest.source_repository),
         sourceLicense: PACKS.vehiclesdb.license,
@@ -279,6 +283,12 @@ verifier = replaceOnce(verifier, sourceArtifactBefore, sourceArtifactAfter, "Veh
 fs.writeFileSync(verifierFile, verifier, "utf8");
 
 let tests = fs.readFileSync(testFile, "utf8");
+tests = replaceOnce(
+  tests,
+  '  assert.deepEqual(vehiclesDb.counts, { sources: 14, models: 260, marketEvidence: 1524, russianEvidence: 0 });',
+  '  const vehiclesDbManifest = JSON.parse(fs.readFileSync(path.join(root, "vehiclesdb-vag-identity", "manifest.json"), "utf8"));\\n  assert.equal(vehiclesDb.counts.sources, vehiclesDbManifest.counts.sources);\\n  assert.equal(vehiclesDb.counts.models, vehiclesDbManifest.counts.models);\\n  assert.equal(vehiclesDb.counts.marketEvidence, vehiclesDbManifest.counts.market_evidence);\\n  assert.equal(vehiclesDb.counts.russianEvidence, 0);',
+  "VehiclesDB manifest-driven summary counts"
+);
 tests = replaceOnce(
   tests,
   '  assert.equal(rows[0].snapshotGeneratedAt, "2026-11-03T07:21:36.7901580Z");',
