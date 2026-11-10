@@ -76,7 +76,8 @@
       "vag_verified_at_changed_groups": 0,
       "vag_page_url_changed_groups": 22,
       "comparison_method": "Multiset comparison by exact brand/model/key/qualifier/source_title/source_page/source_url; VAG brands matched against the source manifest exact allowlist. Values and units compared separately from page URLs.",
-      "limitation": "The archived run-36 baseline is SHA-256 93709b...; the intermediate pinned 72b3... CSV is not present in the available artifacts. These deltas are therefore measured from 93709b... to the current 64a507... snapshot, not claimed as the exact delta from 72b3... . No VAG value/unit or verified_at changes were observed against the archived baseline; 22 groups changed only page_url."
+      "limitation": "The archived run-36 baseline is SHA-256 93709b...; the intermediate pinned 72b3... CSV is not present in the available artifacts. These deltas are therefore measured from 93709b... to the current 64a507... snapshot, not claimed as the exact delta from 72b3... . No VAG value/unit or verified_at changes were observed against the archived baseline; 22 groups changed only page_url.",
+      "exact_delta_from_previous_pinned_snapshot_available": false
     },
     "change_review_history": [
       {
