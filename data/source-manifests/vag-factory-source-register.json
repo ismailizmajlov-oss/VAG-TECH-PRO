@@ -8382,7 +8382,8 @@
       "product_database_ingested": false,
       "research_pack_source_commit": "a1c91b0c6039640be63996571dc0607a33d64948",
       "verification_status": "licensed_source_snapshot_and_sqlite_pack_verified_research_only_desktop_integration_pending",
-      "research_pack_desktop_integration_status": "pending_windows_desktop_lifecycle"
+      "research_pack_desktop_integration_status": "pending_windows_desktop_lifecycle",
+      "research_pack_run_number": 31
     }
   ],
   "minimum_fitment_evidence_fields": [
