@@ -128,6 +128,10 @@ def probe_counts(
         "fitment_status": "not_established",
         "fitment_claim": False,
         "exact_fitment": False,
+        "identity_only_use": lock["build_policy"]["identity_only_use"],
+        "safety_critical_reliance": lock["build_policy"]["safety_critical_reliance"],
+        "repair_decision_use": lock["build_policy"]["repair_decision_use"],
+        "open_data_policy_notice": lock["build_policy"]["open_data_policy_notice"],
         "ru_evidence_present": False,
         "engine_codes_included": False,
         "gearbox_codes_included": False,
@@ -158,10 +162,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--attribution", type=Path, required=True)
     parser.add_argument("--license", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--require-count-match", action="store_true")
     args = parser.parse_args(argv)
     report = probe_counts(
         args.lock, args.source_db, args.manifest, args.attribution, args.license
     )
+    if args.require_count_match and not report["counts_match"]:
+        raise SystemExit("VehiclesDB probe counts differ from the pinned lock.")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n",
