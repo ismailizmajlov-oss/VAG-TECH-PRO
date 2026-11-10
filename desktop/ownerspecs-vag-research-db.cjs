@@ -96,7 +96,7 @@ function getOwnerSpecsSummary(explicitRoot) {
   const databaseFile = verifyFile(root, entry, "database", "database_sha256");
   const packManifestFile = verifyFile(root, entry, "pack_manifest_file", "pack_manifest_sha256");
   const sourceManifestFile = verifyFile(root, entry, "source_manifest_file", "source_manifest_sha256");
-  const sourceSnapshotFile = verifyFile(root, entry, "source_snapshot_file", "source_snapshot_sha256");
+  const sourceSnapshotFile = verifyFile(root, entry, "source_snapshot_file", "source_snapshot_sha256");\n  const sourceJsonFile = verifyFile(root, entry, "source_file", "source_file_sha256");\n  assert(fs.statSync(sourceJsonFile).size === entry.source_file_bytes, "OwnerSpecs raw source snapshot byte size mismatch");
   const acquisitionSnapshotFile = verifyFile(root, entry, "acquisition_snapshot_file", "acquisition_snapshot_sha256");
   const attributionFile = verifyFile(root, entry, "attribution_file", "attribution_sha256");
   const licenseFile = verifyFile(root, entry, "license_file", "license_sha256");
