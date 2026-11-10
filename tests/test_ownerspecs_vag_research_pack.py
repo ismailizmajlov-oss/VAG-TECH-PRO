@@ -156,6 +156,13 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "per-generation verified_datapoints mismatch"):
             build_pack(self.source_json, self.source_manifest, self.output)
 
+    def test_rejects_source_snapshot_byte_size_mismatch(self):
+        source = json.loads(self.source_manifest.read_text(encoding="utf-8"))
+        source["snapshot"]["source_file_bytes"] = 1
+        self.source_manifest.write_text(json.dumps(source, ensure_ascii=False), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "byte size differs from the pinned manifest"):
+            build_pack(self.source_json, self.source_manifest, self.output)
+
     def test_rejects_unreviewed_or_missing_sharealike_rights(self):
         source = json.loads(self.source_manifest.read_text(encoding="utf-8"))
         source["rights"]["share_alike_required"] = False
