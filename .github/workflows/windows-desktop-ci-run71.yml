@@ -668,12 +668,39 @@ jobs:
           "offline_data_pack_run_id=${{ steps.offline-packs.outputs.run_id }}" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
           "offline_data_pack_sha256=${{ steps.offline-packs.outputs.artifact_sha256 }}" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
+      - name: Verify pinned MechanicDB Audi/VW candidate artifact
+        id: mechanicdb-pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $register = Get-Content -LiteralPath "data/source-manifests/vag-factory-source-register.json" -Raw | ConvertFrom-Json -AsHashtable
+          $entry = @($register.sources | Where-Object { $_.source_id -eq "mechanicdb-vag-dtc-candidates-odbl" }) | Select-Object -First 1
+          if (-not $entry -or $entry.research_pack_ingested -ne $true -or $entry.data_ingested -ne $false -or $entry.product_database_ingested -ne $false) { throw "MechanicDB candidate pack must remain research-only and excluded from the production database." }
+          if ($entry.display_status -ne "candidate_reference_visible_separate_namespace" -or $entry.display_policy.namespace -ne "manufacturer_controlled_candidate" -or $entry.display_policy.exact_vehicle_fitment -ne $false -or $entry.display_policy.vag_oem_confirmation -ne $false -or $entry.display_policy.diagnostic_execution_allowed -ne $false) { throw "MechanicDB display policy or candidate-only applicability boundary changed." }
+          if ($entry.pinned_revision -ne "c788dfe9ed1517d4cd0be27f5aacb4776abf4864" -or $entry.source_snapshot_sha256 -ne "f123b251659b45f4acf64071329dec6dc3a4ba1c8b2f827ff1ad3b45e28e0c94" -or $entry.source_csv_sha256 -ne "796fa2b18bdbff311f15eb4943b68adbf7241e564ce8eff32023a2d297694bff") { throw "MechanicDB source revision or snapshot hash differs from the reviewed register." }
+          if ($entry.counts.manufacturer_controlled_candidates -ne 2 -or $entry.counts.audi_candidates -ne 1 -or $entry.counts.volkswagen_candidates -ne 1 -or $entry.counts.generic_sae_iso_rows -ne 0 -or $entry.counts.repair_procedure_rows -ne 0 -or $entry.counts.exact_vehicle_fitment_rows -ne 0) { throw "MechanicDB candidate counts or namespace separation changed." }
+          if ($entry.rights.database_license -ne "ODbL-1.0" -or $entry.rights.upstream_attribution_notice -ne "MIT" -or $entry.rights.separate_pack_required -ne $true -or $entry.rights.share_alike_required -ne $true -or $entry.rights.attribution_required -ne $true) { throw "MechanicDB ODbL/attribution/Share-Alike rights boundary changed." }
+          $runId = [string]$entry.research_pack_run_id
+          $artifactId = [string]$entry.research_pack_artifact_id
+          $expectedDigest = ([string]$entry.artifact_sha256).ToLowerInvariant()
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
+          $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId" -Headers $headers -Method Get -TimeoutSec 30
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success" -or $run.head_sha -ne $entry.research_pack_source_commit -or $run.run_number -ne $entry.research_pack_run_number -or $run.event -ne "push") { throw "Pinned MechanicDB pack workflow run is not the reviewed successful source revision." }
+          $artifact = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/artifacts/$artifactId" -Headers $headers -Method Get -TimeoutSec 30
+          $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
+          if ($artifact.id -ne [long]$artifactId -or $artifact.name -ne $entry.research_pack_artifact_name -or $artifact.expired -ne $false -or $digest -ne $expectedDigest) { throw "Pinned MechanicDB artifact ID, name, expiry or SHA-256 mismatch." }
+          "run_id=$runId" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "artifact_sha256=$digest" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+          "MechanicDB candidate artifact run #$($run.run_number) / $runId · artifact $artifactId · SHA-256 $digest" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
       - name: Download MechanicDB candidate pack
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: mechanicdb-audi-vw-dtc-candidates-odbl-research
           path: ${{ runner.temp }}/vag-tech-pro-mechanicdb
-          run-id: 41622526550
+          run-id: ${{ steps.mechanicdb-pack.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Resolve latest successful AutoDiag2 policy-gated pack
@@ -952,7 +979,7 @@ jobs:
           if (-not (Test-Path $verification)) { throw "Run59 candidate-browser verification evidence was not written" }
           $evidence = Get-Content -LiteralPath $verification -Raw | ConvertFrom-Json
           if ($evidence.status -ne "verified_candidate_reference_only" -or $evidence.rows.generic_namespace_rows -ne 0 -or $evidence.exact_vehicle_fitment -ne $false -or $evidence.vag_oem_confirmation -ne $false -or $evidence.diagnostic_execution_allowed -ne $false) { throw "Run59 candidate-browser evidence failed the separation/safety gate" }
-          "mechanicdb_candidate_browser=separate_namespace; rows=2; OEM_fitment=none; generic_DTC_leakage=0; execution=disabled" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
+          "mechanicdb_candidate_browser=separate_namespace; rows=2; OEM_fitment=none; generic_DTC_leakage=0; execution=disabled; artifact_sha256=${{ steps.mechanicdb-pack.outputs.artifact_sha256 }}" | Out-File -FilePath "$env:GITHUB_WORKSPACE/source-verification.txt" -Append -Encoding utf8
 
       - name: Synchronize desktop OBDb count gates with the 38-source pack (run521)
         shell: pwsh
