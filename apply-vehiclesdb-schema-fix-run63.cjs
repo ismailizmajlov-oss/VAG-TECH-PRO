@@ -42,14 +42,14 @@ function ensureVehiclesDbCandidateGate(source) {
     }
   }
 
-  const legacyGate = \`if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbProvenance.attribution_required !== 1 ||
+  const legacyGate = `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbProvenance.attribution_required !== 1 ||
         vehiclesDbProvenance.ru_evidence_present !== 0 || vehiclesDbProvenance.fitment_claim !== 0 ||
         vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||
         vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbPackManifest.fitment_claim !== false ||
         vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution?.required !== true ||
         vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models || vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||
-        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {\`;
-  const currentGate = \`if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||
+        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`;
+  const currentGate = `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||
         vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license ||
         vehiclesDbProvenance.upstream_tag !== vehiclesDbPackManifest.upstream_tag ||
         vehiclesDbProvenance.upstream_manifest_sha256 !== vehiclesDbPackManifest.source_manifest_sha256 ||
@@ -61,7 +61,7 @@ function ensureVehiclesDbCandidateGate(source) {
         vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbPackManifest.fitment_claim !== false ||
         vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution?.required !== true ||
         vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models || vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||
-        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {\`;
+        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`;
   return replaceOnce(source, legacyGate, currentGate, "VehiclesDB provenance and candidate-only gate");
 }
 
