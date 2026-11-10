@@ -693,6 +693,14 @@ def main() -> None:
     ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\n      - name:", 1)[0]
     if ownerspecs_step.count("ConvertFrom-Json -AsHashtable") != 1 or "ConvertFrom-Json -AsHashtable -AsHashtable" in ownerspecs_step:
         raise SystemExit("OwnerSpecs resolver must use exactly one -AsHashtable to preserve case-sensitive source-register keys")
+    owner_hash_bindings = (
+        '@{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_file); hash=$ownerEntry.source_file_sha256 }',
+        '@{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_snapshot_file); hash=$ownerEntry.source_snapshot_file_sha256 }',
+        '@{ path=(Join-Path $ownerResearchRoot $ownerEntry.acquisition_snapshot_file); hash=$ownerEntry.acquisition_snapshot_sha256 }',
+    )
+    missing_owner_hash_bindings = [marker for marker in owner_hash_bindings if marker not in step]
+    if missing_owner_hash_bindings or '$ownerEntry.source_snapshot_file); hash=$ownerEntry.source_snapshot_sha256' in step:
+        raise SystemExit(f"OwnerSpecs lifecycle must hash the raw source, snapshot metadata and acquisition snapshot using their distinct digest fields: {missing_owner_hash_bindings}")
     rights_step_marker = "      - name: Validate offline data-pack tooling and rights boundaries"
     if rights_step_marker not in text:
         raise SystemExit("Windows workflow is missing the offline data-pack rights validation step")
