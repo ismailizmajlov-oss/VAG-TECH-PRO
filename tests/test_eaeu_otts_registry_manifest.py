@@ -188,6 +188,12 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertEqual(regional["status"], "permission_required")
         self.assertFalse(regional["data_ingested"])
         self.assertTrue(regional["observed_public_claims"]["access_claims_conflict"])
+        self.assertEqual(regional["observed_public_claims"]["observed_at"], "2026-11-11")
+        self.assertEqual(regional["observed_public_claims"]["landing_page_document_count"], 77802)
+        self.assertEqual(regional["observed_public_claims"]["public_offer_price_rub_per_document"], 200)
+        self.assertTrue(any(item["reviewed_at"] == "2026-11-11" for item in regional["evidence_reviewed"]))
+        self.assertFalse(central["product_import_allowed"])
+        self.assertFalse(central["data_ingested"])
         self.assertIsNone(regional["source_snapshot_sha256"])
     def test_russian_eaeu_manifest_keeps_open_data_catalog_and_otts_schema_separate(self):
         source = self.russian_sources["eaeu-open-data-portal"]
@@ -337,3 +343,21 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_otts_bot_2026_11_11_recheck_keeps_automated_collection_and_product_reuse_blocked(self):
+        central = self.factory_sources["otts-bot"]
+        regional = self.russian_sources["otts-bot"]
+        self.assertEqual(central["source_revision"], "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-11")
+        observation = central["provider_displayed_counts"]["recheck_2026_11_11"]
+        self.assertEqual(observation["ot_ts_page_result_counter"], 74115)
+        self.assertEqual(observation["marketing_headline"], "46,000+")
+        self.assertTrue(observation["count_discrepancy_unresolved"])
+        self.assertEqual(observation["homepage_sbkts_records"], 224744)
+        self.assertEqual(observation["homepage_otsh_records"], 1655)
+        self.assertFalse(central["rights"]["third_party_display_allowed"])
+        self.assertFalse(central["rights"]["offline_cache_allowed"])
+        self.assertFalse(central["product_import_allowed"])
+        self.assertFalse(central["data_ingested"])
+        self.assertEqual(regional["terms_revision"], central["source_revision"])
+        self.assertTrue(any(item["reviewed_at"] == "2026-11-11" for item in regional["terms_evidence_reviewed"]))
+        self.assertFalse(regional["data_ingested"])
