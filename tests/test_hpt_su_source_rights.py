@@ -87,5 +87,20 @@ class HptSuSourceRightsTests(unittest.TestCase):
         self.assertFalse(review["project_actions"]["product_import_allowed"])
 
 
+    def test_latest_terms_review_is_preserved_as_a_dated_research_record(self):
+        path = ROOT / "docs/research/HPT_SU_SOURCE_RIGHTS_RECHECK_2026-11-10.md"
+        text = path.read_text(encoding="utf-8")
+        for phrase in (
+            "API terms §6.4",
+            "materially smaller",
+            "does not authorize",
+            "No account",
+            "No documents",
+            "No source bytes",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+
 if __name__ == "__main__":
     unittest.main()
