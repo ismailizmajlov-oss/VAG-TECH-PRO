@@ -1146,6 +1146,8 @@ jobs:
           node apply-research-pack-hash-fix-run44.cjs
           if ($LASTEXITCODE -ne 0) { throw "Research pack hash verification patch failed" }
           node --check apply-vehiclesdb-schema-fix-run63.cjs
+          node --test tests/vehiclesdb-schema-fix-run63.test.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vehiclesdb-schema-fix-contract-tests.log"
+          if ($LASTEXITCODE -ne 0) { throw "VehiclesDB schema patch contract tests failed" }
           node apply-vehiclesdb-schema-fix-run63.cjs 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/vehiclesdb-schema-fix.log"
           if ($LASTEXITCODE -ne 0) { throw "VehiclesDB current-schema adaptation failed" }
           $patchHash = (Get-FileHash apply-vehiclesdb-schema-fix-run63.cjs -Algorithm SHA256).Hash.ToLowerInvariant()
