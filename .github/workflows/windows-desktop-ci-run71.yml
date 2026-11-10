@@ -49,6 +49,7 @@ on:
       - "scripts/integrate-cardir-vag-owner-manual-facts.cjs"
       - "tests/test_cardir_vag_open_data_pack.py"
       - "tests/test_cardir_vag_open_data_source_rights.py"
+      - "tests/cardir-research-pack-count-patch.test.cjs"
       - "desktop/cardir-vag-reference-facts-db.cjs"
       - "desktop/scripts/verify-cardir-vag-open-data-pack.cjs"
       - "desktop/tests/cardir-vag-reference-facts-db.test.cjs"
@@ -413,6 +414,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "CarDir source-rights and applicability tests failed." }
           node --check scripts/integrate-cardir-vag-owner-manual-facts.cjs
           if ($LASTEXITCODE -ne 0) { throw "CarDir desktop integration script syntax failed." }
+          node --test tests/cardir-research-pack-count-patch.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "CarDir research-pack count integration regression failed." }
           node --check desktop/cardir-vag-reference-facts-db.cjs
           if ($LASTEXITCODE -ne 0) { throw "CarDir desktop database module syntax failed." }
           node --check desktop/scripts/verify-cardir-vag-open-data-pack.cjs
