@@ -61,7 +61,7 @@ jobs:
           $ErrorActionPreference = "Stop"
           python scripts/build_ownerspecs_vag_research_pack.py --acquire --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-source 2>&1 | Tee-Object -FilePath ownerspecs-acquisition.log
           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs licensed source acquisition failed." }
-          $snapshot = Get-Content -LiteralPath artifacts/ownerspecs-vag-research-pack/source-snapshot.json -Raw | ConvertFrom-Json
+          $snapshot = Get-Content -LiteralPath artifacts/ownerspecs-source/acquisition-snapshot.json -Raw | ConvertFrom-Json
           if ($snapshot.generation_count -ne 111 -or $snapshot.verified_datapoints -ne 2369 -or $snapshot.vag_generation_count -le 0 -or $snapshot.vag_fact_count -le 0 -or $snapshot.source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") {
             throw "OwnerSpecs snapshot differs from the reviewed publisher dataset; refusing to publish the research pack."
           }
@@ -103,6 +103,8 @@ jobs:
           name: ownerspecs-vag-vehicle-specs-research-pack
           path: |
             artifacts/ownerspecs-vag-research-pack/**
+            artifacts/ownerspecs-source/source.json
+            artifacts/ownerspecs-source/acquisition-snapshot.json
             ownerspecs-acquisition.log
             ownerspecs-pack-build.log
             ownerspecs-pack-verify.log
