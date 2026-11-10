@@ -5,10 +5,12 @@ on:
     paths:
       - .github/workflows/probe-vag-identity-vehiclesdb.yml
       - scripts/probe_vag_identity_vehiclesdb.py
+      - scripts/test_probe_vag_identity_vehiclesdb.py
   pull_request:
     paths:
       - .github/workflows/probe-vag-identity-vehiclesdb.yml
       - scripts/probe_vag_identity_vehiclesdb.py
+      - scripts/test_probe_vag_identity_vehiclesdb.py
   workflow_dispatch:
 
 permissions:
@@ -99,6 +101,9 @@ jobs:
           python scripts/probe_vag_identity_vehiclesdb.py @probeArgs
           if ($LASTEXITCODE -ne 0) { throw "VehiclesDB read-only count probe failed." }
           "PROBE_REPORT=$report" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Run synthetic probe regression tests
+        run: python scripts/test_probe_vag_identity_vehiclesdb.py
 
       - name: Compile probe and source pipeline
         run: |
