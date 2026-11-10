@@ -442,10 +442,9 @@ def main() -> None:
     if "desktop_offline_entry = 'app/desktop'" not in metadata_step_for_offline or "desktop_offline_entry_patch_sha256" not in metadata_step_for_offline:
         raise SystemExit("Build metadata does not bind the dedicated offline entry and its patch hash")
 
-    print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
-    rdw_step_marker = "      - name: Resolve latest successful RDW NL/EU research pack run"
+    rdw_step_marker = "      - name: Resolve latest successful RDW NL/EU research pack compatible with pinned manifest"
     if rdw_step_marker not in text:
         raise SystemExit("Windows workflow is missing the current RDW pack resolver")
     rdw_step = text.split(rdw_step_marker, 1)[1].split("\n      - name:", 1)[0]
@@ -699,6 +698,8 @@ def main() -> None:
     rights_positions = [rights_step.find(marker) for marker in rights_command_order]
     if any(position < 0 for position in rights_positions) or rights_positions != sorted(rights_positions):
         raise SystemExit("OwnerSpecs and CarDir source-rights checks must each immediately follow their own test command")
+
+    print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 if __name__ == "__main__":
     main()
