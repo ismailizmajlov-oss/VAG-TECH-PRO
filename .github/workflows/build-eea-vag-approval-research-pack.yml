@@ -8,6 +8,8 @@ on:
       - "scripts/build_eea_vag_approval_research_pack.py"
       - "tests/test_eea_vag_approval_research_pack.py"
       - "tests/test_eea_co2_source_rights.py"
+      - "scripts/probe_eea_discodata_access.py"
+      - "tests/test_eea_discodata_probe.py"
       - "data/source-manifests/vag-factory-source-register.json"
   push:
     branches: [main]
@@ -16,6 +18,8 @@ on:
       - "scripts/build_eea_vag_approval_research_pack.py"
       - "tests/test_eea_vag_approval_research_pack.py"
       - "tests/test_eea_co2_source_rights.py"
+      - "scripts/probe_eea_discodata_access.py"
+      - "tests/test_eea_discodata_probe.py"
       - "data/source-manifests/vag-factory-source-register.json"
   workflow_dispatch:
     inputs:
@@ -47,14 +51,29 @@ jobs:
           architecture: "x64"
       - name: Compile EEA builder and run unit tests
         run: |
-          python -m py_compile scripts/build_eea_vag_approval_research_pack.py
-          if ($LASTEXITCODE -ne 0) { throw "EEA builder syntax check failed." }
+          python -m py_compile scripts/build_eea_vag_approval_research_pack.py scripts/probe_eea_discodata_access.py
+          if ($LASTEXITCODE -ne 0) { throw "EEA builder/probe syntax check failed." }
           python -m unittest discover -s tests -p "test_eea_vag_approval_research_pack.py" -v
           if ($LASTEXITCODE -ne 0) { throw "EEA research pack regression tests failed." }
+          python -m unittest discover -s tests -p "test_eea_discodata_probe.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "EEA Discodata probe regression tests failed." }
       - name: Verify EEA published CC BY 4.0 rights gate
         run: python tests/test_eea_co2_source_rights.py
       - name: Verify full source-register rights gate
         run: python -m unittest discover -s tests -p "test_sync_vag_source_register_source_rights.py" -v
+      - name: Probe public EEA Discodata SQL endpoint with one safe row
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $probePath = Join-Path $env:RUNNER_TEMP "eea-discodata-probe.json"
+          python scripts/probe_eea_discodata_access.py --out "$probePath"
+          if ($LASTEXITCODE -ne 0) { throw "EEA Discodata one-row probe failed schema validation." }
+          $probe = Get-Content -LiteralPath $probePath -Raw | ConvertFrom-Json
+          "Public SQL probe status: $($probe.status)" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+          "API host: $($probe.api_host); table: $($probe.table); rows returned: $($probe.row_count)" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+          "Query SHA-256: $($probe.query_sha256)" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
+          if ($probe.response_sha256) { "One-row response SHA-256: $($probe.response_sha256)" | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8 }
+          "No source rows or raw response are retained by this probe." | Out-File -FilePath "$env:GITHUB_STEP_SUMMARY" -Append -Encoding utf8
 
   acquire-live-data:
     name: Acquire EEA data from owner-controlled Windows 10/11 x64 runner
