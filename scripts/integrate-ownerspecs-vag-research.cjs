@@ -84,7 +84,7 @@ function ui(root){const f=safe(root,"components/local-research-catalog.tsx");let
  ].join("\n");
  t=replace(t,generic,card+"\n"+generic,"result card");
  const credits='      <p>SQLite SHA-256 · OBDex:';
- const credit='      {ownerSpecs && <><p><a href={ownerSpecs.sourceUrl} target="_blank" rel="noopener noreferrer">OwnerSpecs open vehicle-spec dataset</a> — CC BY-SA 4.0. Modified data: exact VAG-brand allowlist filter; source values and provenance labels retained in a separate Share-Alike SQLite database. Attribution: {ownerSpecs.attributionText}</p><p>Snapshot SHA-256 {ownerSpecs.sourceSnapshotSha256} · SQLite SHA-256 {ownerSpecs.databaseSha256} · source manifest SHA-256 {ownerSpecs.sourceManifestSha256} · pack manifest SHA-256 {ownerSpecs.packManifestSha256} · artifact SHA-256 {ownerSpecs.artifactSha256}. Market UNKNOWN; no factory fitment or critical repair value is approved.</p></>}';
+ const credit='      {ownerSpecs && <><p><a href={ownerSpecs.sourceUrl} target="_blank" rel="noopener noreferrer">OwnerSpecs open vehicle-spec dataset</a> — CC BY-SA 4.0. Modified data: exact VAG-brand allowlist filter; source values and provenance labels retained in a separate Share-Alike SQLite database. Attribution: {ownerSpecs.attributionText}</p><p>Snapshot SHA-256 {ownerSpecs.sourceSnapshotSha256} · snapshot manifest file SHA-256 {ownerSpecs.sourceSnapshotFileSha256} · SQLite SHA-256 {ownerSpecs.databaseSha256} · source manifest SHA-256 {ownerSpecs.sourceManifestSha256} · pack manifest SHA-256 {ownerSpecs.packManifestSha256} · artifact SHA-256 {ownerSpecs.artifactSha256}. Market UNKNOWN; no factory fitment or critical repair value is approved.</p></>}';
  t=replace(t,credits,credit+"\n"+credits,"attribution");
  fs.writeFileSync(f,t,"utf8");
 }
