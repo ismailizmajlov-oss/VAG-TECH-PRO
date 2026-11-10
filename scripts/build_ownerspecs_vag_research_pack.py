@@ -232,7 +232,12 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         raise ValueError("OwnerSpecs source JSON byte size differs from the pinned manifest.")
     source_manifest_hash = sha256_file(source_manifest_path)
     acquisition_snapshot_path = source_json.parent / "acquisition-snapshot.json"
-    if acquisition_snapshot_path.is_file() and not acquisition_snapshot_path.is_symlink():
+    pinned_retrieved_at = source["snapshot"].get("retrieved_at_utc")
+    if pinned_retrieved_at is not None:
+        if not isinstance(pinned_retrieved_at, str) or not pinned_retrieved_at.endswith("+00:00"):
+            raise ValueError("Pinned OwnerSpecs snapshot timestamp must be UTC.")
+        retrieved_at_utc = pinned_retrieved_at
+    elif acquisition_snapshot_path.is_file() and not acquisition_snapshot_path.is_symlink():
         acquisition_snapshot = read_json(acquisition_snapshot_path)
         if acquisition_snapshot.get("source_snapshot_sha256") != snapshot_hash:
             raise ValueError("OwnerSpecs acquisition snapshot does not match the source JSON.")
