@@ -2319,16 +2319,29 @@
         }
       ],
       "source_manifest_path": "data/source-manifests/obdb-vag-signalsets.json",
-      "source_snapshot_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
+      "source_snapshot_sha256": "1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195",
       "source_file_count": 152,
       "source_repository_count": 38,
       "market_scope": [
         "UNKNOWN"
       ],
       "applicability_precision": "vehicle_model_and_signal_candidate",
-      "verification_status": "source_manifest_updated_rebuild_pending_research_only_no_production_import",
+      "verification_status": "verified_research_pack_build_candidate_only_no_production_import",
       "display_status": "read_only_research_candidate",
-      "counts": null,
+      "counts": {
+        "source_repositories": 38,
+        "upstream_files": 152,
+        "generation_candidates": 135,
+        "ecu_candidates": 71,
+        "uds_command_candidates": 18387,
+        "signal_candidates": 19799,
+        "dtc_definitions": 0,
+        "repair_procedures": 0,
+        "approved_test_plans": 0,
+        "exact_vehicle_fitment_rows": 0,
+        "verified_generation_year_mappings": 0,
+        "generation_only_sources": 7
+      },
       "rights": {
         "data_license": "CC-BY-SA-4.0",
         "license_files_reviewed_at_each_pinned_commit": true,
@@ -2357,37 +2370,50 @@
         "factory_pinouts": false,
         "market_scope": "UNKNOWN",
         "generation_candidates": true,
-        "generation_only_sources": 3,
+        "generation_only_sources": 7,
         "excluded_generic_service_ids": [
           "01"
         ]
       },
       "project_decision": "allow_separate_read_only_CC_BY_SA_research_pack_only; preserve attribution and share_alike; candidate discovery only; do not present as validated DTC/test plan or exact vehicle/ECU fitment; do not execute UDS commands",
       "limitations": [
-        "Only 16 community repositories and 64 pinned source files are represented; this is not a complete VAG catalogue.",
-        "Skoda Octavia, Superb and Fabia contribute generation candidates only; their signal, ECU and command counts are zero.",
-        "All 7,890 command candidates use UDS service 0x22 and are read-only; execution is disabled and none is an approved test plan.",
-        "No DTC definitions, repair procedures, factory wiring diagrams, pinouts, torque specifications, adaptations or exact vehicle/ECU fitment."
+        "38 community repositories and 152 pinned source files are represented; this is not a complete VAG catalogue.",
+        "Seven Škoda repositories contribute generation candidates only: Octavia, Superb, Fabia, Kodiaq, Kamiq, Rapid and Scala. Their signal, ECU and command counts are zero.",
+        "All 18,387 command candidates use UDS service 0x22 and are read-only; execution is disabled and none is an approved test plan.",
+        "No DTC definitions, repair procedures, factory wiring diagrams, pinouts, torque specifications, adaptations or service schedules."
       ],
-      "evidence_status": "16 pinned OBDb repositories and all 64 source files fetched at immutable commits; every pinned LICENSE reviewed as CC BY-SA 4.0; run253 independently verified hashes, read-only UDS 0x22 service, disabled execution, SQLite integrity and foreign keys.",
+      "evidence_status": "38 pinned OBDb repositories and all 152 upstream files fetched at immutable commits; every pinned LICENSE reviewed as CC BY-SA 4.0; Windows offline pack workflow run521 independently verified all 152 file/license SHA-256 values, 38 source rows, 135 generation candidates, 71 ECU candidates, 18,387 UDS 0x22 command candidates, 19,799 signal candidates, SQLite integrity_check=ok, foreign_key_check=0, and zero execution/fitment claims.",
       "data_ingested": false,
       "product_import_allowed": false,
       "research_pack_build_evidence": {
-        "status": "rebuild_pending_after_source_manifest_update",
+        "status": "verified_research_pack_build_candidate_only",
         "source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f",
-        "workflow_run_id": null,
-        "workflow_run_number": null,
-        "artifact_id": null,
-        "artifact_sha256": null,
-        "artifact_size_bytes": null,
-        "database_sha256": null,
-        "manifest_sha256": null,
-        "attribution_sha256": null,
+        "workflow_run_id": 42770036360,
+        "workflow_run_number": 521,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42770036360",
+        "artifact_id": 13741207907,
+        "artifact_name": "obdb-vag-research-cc-by-sa",
+        "artifact_sha256": "5555247d7d7e25db1fe9ccb50566123a867f1948bbe3f955e0593ca95b5a3e91",
+        "artifact_size_bytes": 6209463,
+        "database_sha256": "1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195",
+        "manifest_sha256": "6470cb542918a6bc773ac17960f639331abea5eff34d4de22b86ac687d3ad32f",
+        "attribution_sha256": "507120ae0bd921f131623cb596cfd7cfcd16fa29efe2975c9c96878ad6ad89dd",
         "license_id": "CC-BY-SA-4.0",
         "share_alike_required": true,
         "separate_pack_required": true,
         "execution_allowed": false,
         "product_database_import": false,
+        "counts": {
+          "sources": 38,
+          "generations": 135,
+          "ecus": 71,
+          "commands": 18387,
+          "signals": 19799
+        },
+        "source_file_count": 152,
+        "source_repository_count": 38,
+        "built_at_utc": "2026-11-10T06:40:43Z",
+        "verification": "All 152 upstream file SHA-256 values and 38 license-file SHA-256 values match the manifest; SQLite integrity_check=ok; foreign_key_check=0; all 18,387 commands are service 0x22; all command execution flags are false; all records remain UNKNOWN/unverified candidates.",
         "desktop_integration_status": "not_integrated"
       },
       "generation_only_repositories": [
@@ -2417,10 +2443,34 @@
           "ecus": 0,
           "commands": 0,
           "signals": 0
+        },
+        "OBDb/Skoda-Kodiaq": {
+          "generations": 3,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Kamiq": {
+          "generations": 2,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Rapid": {
+          "generations": 2,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
+        },
+        "OBDb/Skoda-Scala": {
+          "generations": 2,
+          "ecus": 0,
+          "commands": 0,
+          "signals": 0
         }
       },
       "offline_bundle": {
-        "status": "verified_offline_research_bundle_not_installer",
+        "status": "previous_verified_bundle_stale_after_obdb_source_expansion_rebuild_pending",
         "workflow_run_number": 253,
         "workflow_run_id": 42443454970,
         "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
@@ -2438,7 +2488,8 @@
         "obdb_database_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
         "obdb_manifest_sha256": "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105",
         "built_at_utc": "2026-11-08T03:38:15.108260+00:00",
-        "verification": "All three research databases and the VehiclesDB source-snapshot SQLite passed independent SHA-256 verification, integrity_check=ok and foreign_key_check=0."
+        "verification": "All three research databases and the VehiclesDB source-snapshot SQLite passed independent SHA-256 verification, integrity_check=ok and foreign_key_check=0.",
+        "rebuild_required": true
       },
       "previous_verified_pack": {
         "workflow_run_number": 253,
@@ -2499,7 +2550,8 @@
       },
       "previous_verified_pack_history": [],
       "source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f",
-      "research_database_included_in_desktop": false
+      "research_database_included_in_desktop": false,
+      "research_pack_source_manifest_sha256": "d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f"
     },
     {
       "source_id": "volkswagen-okapi-product-data-api",

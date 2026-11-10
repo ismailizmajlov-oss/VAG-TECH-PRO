@@ -39,7 +39,7 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
     def test_pack_is_candidate_only_and_never_executable(self):
         source=SOURCES["obdb-vag-signalsets-cc-by-sa"];scope=source["technical_scope"]
         self.assertEqual(source["market_scope"],["UNKNOWN"])
-        self.assertEqual(source["verification_status"],"source_manifest_updated_rebuild_pending_research_only_no_production_import")
+        self.assertEqual(source["verification_status"],"verified_research_pack_build_candidate_only_no_production_import")
         self.assertEqual(source["display_status"],"read_only_research_candidate")
         self.assertFalse(scope["diagnostic_execution_allowed"]);self.assertFalse(scope["test_plan_approved"])
         self.assertFalse(scope["exact_vehicle_fitment"]);self.assertFalse(scope["exact_ecu_fitment"])
@@ -50,7 +50,15 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
 
     def test_no_dtc_repair_or_oem_wiring_data_is_claimed(self):
         source=SOURCES["obdb-vag-signalsets-cc-by-sa"];scope=source["technical_scope"]
-        self.assertIsNone(source["counts"])
+        self.assertEqual(source["counts"]["source_repositories"],38)
+        self.assertEqual(source["counts"]["upstream_files"],152)
+        self.assertEqual(source["counts"]["generation_candidates"],135)
+        self.assertEqual(source["counts"]["ecu_candidates"],71)
+        self.assertEqual(source["counts"]["uds_command_candidates"],18387)
+        self.assertEqual(source["counts"]["signal_candidates"],19799)
+        self.assertEqual(source["counts"]["dtc_definitions"],0)
+        self.assertEqual(source["counts"]["repair_procedures"],0)
+        self.assertEqual(source["counts"]["approved_test_plans"],0)
         self.assertEqual(source["previous_verified_pack"]["counts"]["uds_command_candidates"],7890)
         self.assertEqual(source["previous_verified_pack"]["counts"]["signal_candidates"],8446)
         self.assertFalse(scope["dtc_definitions"]);self.assertFalse(scope["repair_procedures"])
@@ -65,8 +73,16 @@ class ObdbVagSignalSourceRightsTests(unittest.TestCase):
 
     def test_previous_verified_pack_is_retained_and_new_build_is_pending(self):
         source=SOURCES["obdb-vag-signalsets-cc-by-sa"];build=source["research_pack_build_evidence"]
-        self.assertEqual(build["status"],"rebuild_pending_after_source_manifest_update")
+        self.assertEqual(build["status"],"verified_research_pack_build_candidate_only")
         self.assertEqual(build["source_manifest_sha256"],"d3d6ff667837649d0ee6890daadb550eae9af13c544add12e3c5f2843e0e186f")
+        self.assertEqual(build["workflow_run_number"],521)
+        self.assertEqual(build["workflow_run_id"],42770036360)
+        self.assertEqual(build["artifact_id"],13741207907)
+        self.assertEqual(build["artifact_sha256"],"5555247d7d7e25db1fe9ccb50566123a867f1948bbe3f955e0593ca95b5a3e91")
+        self.assertEqual(build["database_sha256"],"1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195")
+        self.assertEqual(build["manifest_sha256"],"6470cb542918a6bc773ac17960f639331abea5eff34d4de22b86ac687d3ad32f")
+        self.assertEqual(build["attribution_sha256"],"507120ae0bd921f131623cb596cfd7cfcd16fa29efe2975c9c96878ad6ad89dd")
+        self.assertEqual(build["counts"],{"sources":38,"generations":135,"ecus":71,"commands":18387,"signals":19799})
         previous=source["previous_verified_pack"]
         self.assertEqual(previous["workflow_run_number"],253)
         self.assertEqual(previous["workflow_run_id"],42443454970)
