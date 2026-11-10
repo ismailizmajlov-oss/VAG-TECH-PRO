@@ -297,5 +297,43 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source.get("product_import_allowed", False))
 
+
+    def test_elpts_official_reference_books_and_registry_link_remain_unlicensed(self):
+        source = self.factory_sources["elpts-national-otts-register-public-query"]
+        portal = source["official_portal_observations_2026_11_10"]
+        self.assertEqual(portal["official_homepage_url"], "https://elpts.ru/")
+        registry = portal["official_national_registry"]
+        self.assertTrue(registry["linked_from_official_elpts_homepage"])
+        self.assertEqual(registry["url"], "https://www.rst.gov.ru/portal/gost/home/activity/compliance/evaluationcompliance/AcknowledgementCorrespondence")
+        self.assertEqual(registry["access_result"], "timeout")
+        self.assertFalse(registry["raw_bytes_captured"])
+        self.assertIsNone(registry["source_snapshot_sha256"])
+        self.assertEqual(registry["license_status"], "not_stated")
+        self.assertFalse(registry["product_import_allowed"])
+        books = {item["id"]: item for item in portal["reference_books"]}
+        self.assertEqual(set(books), {"elpts-make-directory-xlsx", "elpts-technical-characteristics-xlsx", "elpts-mass-range-limitations-xlsx"})
+        for item in books.values():
+            self.assertTrue(item["linked_from_official_elpts_homepage"])
+            self.assertEqual(item["license_status"], "not_stated")
+            self.assertEqual(item["rights_status"], "not_confirmed")
+            self.assertFalse(item["downloaded"])
+            self.assertIsNone(item["sha256"])
+            self.assertFalse(item["display_allowed"])
+            self.assertFalse(item["offline_cache_allowed"])
+            self.assertFalse(item["product_import_allowed"])
+        tech = books["elpts-technical-characteristics-xlsx"]
+        self.assertEqual(tech["displayed_revision_date"], "2026-11-09 18:03")
+        self.assertEqual(tech["displayed_size"], "16.9 MB")
+        access = portal["access_conditions"]
+        self.assertTrue(access["eotts_training_materials_require_official_organization_profile"])
+        self.assertTrue(access["contract_and_confidentiality_links_present_on_official_homepage"])
+        self.assertTrue(access["paid_eotts_reports_require_separate_invoice_contract_or_addendum"])
+        gearbox = portal["gearbox_notice"]
+        self.assertEqual(gearbox["published_at"], "2026-08-21")
+        self.assertFalse(gearbox["exact_vag_gearbox_codes_exposed"])
+        self.assertFalse(gearbox["exact_engine_gearbox_pair_exposed"])
+        self.assertFalse(source["data_ingested"])
+        self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+
 if __name__ == "__main__":
     unittest.main()
