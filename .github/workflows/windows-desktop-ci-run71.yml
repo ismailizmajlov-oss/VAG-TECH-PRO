@@ -88,6 +88,12 @@ on:
       - "data/research/wikidata-vag-generations/**"
       - "tests/test_wikidata_generation_source_rights.py"
       - "data/source-manifests/vag-factory-source-register.json"
+      - ".github/workflows/build-ownerspecs-vag-research-pack.yml"
+      - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
+      - "scripts/build_ownerspecs_vag_research_pack.py"
+      - "tests/test_ownerspecs_source_rights.py"
+      - "tests/test_ownerspecs_vag_research_pack.py"
       - "data/source-manifests/kba-de-whole-vehicle-type-approvals.json"
       - "data/source-manifests/kba-de-fz-hersteller-handelsnamen-pkw.json"
       - "docs/KBA_GERMANY_OPEN_DATA_REVIEW_2026-11-07.md"
@@ -380,6 +386,11 @@ jobs:
           python tests/test_wikipedia_vag_engine_list_rights_gate.py
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia VAG engine-list licence/quality quarantine failed." }
           python tests/test_openvag_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "OpenVAG source-rights gate failed." }
+          python -m unittest discover -s tests -p "test_ownerspecs_vag_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs VAG research-pack tests failed." }
+          python tests/test_ownerspecs_source_rights.py
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA source-rights and applicability gate failed." }
           python tests/test_open_vehicle_schema_source_review.py
           python tests/test_wal33d_dtc_candidate_rights.py
           python tests/test_decode_tr_source_rights.py
