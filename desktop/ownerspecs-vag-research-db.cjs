@@ -114,7 +114,7 @@ function getOwnerSpecsSummary(explicitRoot) {
     pack.pack_id === PACK_ID &&
     pack.source_id === SOURCE_ID &&
     pack.status === "verified_research_only" &&
-    pack.license.id === LICENSE_ID &&
+    pack.license.id === LICENSE_ID && pack.source_file === "source.json" && pack.source_file_bytes === entry.source_file_bytes &&
     pack.source_manifest_sha256 === entry.source_manifest_sha256 &&
     pack.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
     pack.database.sha256 === entry.database_sha256 &&
@@ -139,7 +139,7 @@ function getOwnerSpecsSummary(explicitRoot) {
     source.applicability_policy.market_scope === "UNKNOWN" &&
     source.applicability_policy.exact_engine_gearbox_pair === false &&
     source.applicability_policy.ru_eaeu_applicability === false &&
-    snapshot.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
+    snapshot.source_snapshot_sha256 === entry.source_snapshot_sha256 && snapshot.source_manifest_sha256 === entry.source_manifest_sha256 &&
     snapshot.source_file_bytes === entry.source_file_bytes &&
     acquisition.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
     acquisition.retrieved_at_utc === entry.acquisition_retrieved_at_utc &&
