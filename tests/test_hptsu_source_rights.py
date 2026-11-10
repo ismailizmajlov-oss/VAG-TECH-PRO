@@ -71,7 +71,7 @@ class HptSuRightsRecordTests(unittest.TestCase):
 
         review = self.source["latest_terms_review"]
         self.assertEqual(review["reviewed_at"], "2026-11-10")
-        self.assertIn("6.4", review["api_terms_sections"])
+        self.assertIn("6.4", review["reviewed_sections"]["api_terms"])
         self.assertFalse(review["project_use"]["account_created"])
         self.assertFalse(review["project_use"]["subscription_started"])
         self.assertFalse(review["project_use"]["product_import_allowed"])
