@@ -122,14 +122,13 @@
   },
   "limitations": [
     "The current HTML page and JSON descriptor both report 111 generations; actual downloaded array/datapoint counts still must be reconciled against the pinned source bytes before pack publication.",
-    "The HTML page reports 111 generations while the JSON descriptor reports 112; the current snapshot is not eligible for acquisition or import until this is resolved.",
+    "The CSV endpoint is not the canonical input to this builder; the separate JSON snapshot is acquired, hashed and count-reconciled. Any future CSV acquisition must be independently hashed and reconciled before use.",
     "The publisher's public JSON exposes provenance kinds and source counts, but not a primary-document URL or revision for each individual value.",
     "The dataset's global multi-market label is not a market-by-market applicability map; normalized market scope remains UNKNOWN.",
     "Generation-level ranges and broad engine-family strings do not establish an individual vehicle's exact engine, gearbox or ECU.",
     "No exact VAG engine-to-gearbox pairs, ECU mappings, DTCs, wiring diagrams, pinouts, adaptations or repair procedures are established by this dataset.",
     "Any future integration must remain a separate CC BY-SA 4.0 database with visible attribution and Share-Alike compliance; do not merge it into a differently licensed production database.",
-    "No dataset bytes were downloaded, no source SHA-256 exists, and no values were imported or displayed.",
-    "No dataset bytes have been acquired in this review; source_snapshot_sha256 and file SHA-256 values remain null until the exact public JSON/CSV snapshot is downloaded."
+    "No exact source snapshot has yet been pinned in this manifest; the Windows acquisition workflow must download the public JSON and record its exact SHA-256 before the research pack can be published.",
   ],
   "evidence_reviewed": [
     {
