@@ -110,6 +110,10 @@ test("run63 preserves the newer manifest-driven candidate/safety gate and remain
     assert.doesNotMatch(db, /vehiclesDbCounts\.models !== 260/);
     assert.doesNotMatch(db, /vehiclesDbCounts\.marketEvidence !== 1524/);
     assert.match(db, /attributionUrl: safeHttpsUrl\(packManifest\.attribution\?\.url\)/);
+    assert.match(db, /identityOnlyUse: packManifest\.identity_only_use === true/);
+    assert.match(db, /safetyCriticalReliance: packManifest\.safety_critical_reliance === true/);
+    assert.match(db, /repairDecisionUse: packManifest\.repair_decision_use === true/);
+    assert.match(db, /openDataPolicyNotice: packManifest\.open_data_policy_notice/);
     assert.match(db, /sourceRevision: packManifest\.upstream_tag/);
 
     const verifier = fs.readFileSync(path.join(root, "desktop-source/scripts/verify-local-research-packs.cjs"), "utf8");
@@ -118,6 +122,8 @@ test("run63 preserves the newer manifest-driven candidate/safety gate and remain
     assert.match(verifier, /SELECT source_path, sha256, source_role FROM source_file_artifacts/);
 
     const tests = fs.readFileSync(path.join(root, "desktop-source/tests/local-research-db.test.cjs"), "utf8");
+    assert.match(tests, /vehiclesDbManifest\.counts\.models/);
+    assert.match(tests, /vehiclesDbManifest\.counts\.market_evidence/);
     assert.match(tests, /obdexPack\.snapshot_generated_at_utc/);
     assert.match(tests, /WHERE model_id='car\/audi\/100'/);
     assert.match(tests, /candidateRecordSha256/);
