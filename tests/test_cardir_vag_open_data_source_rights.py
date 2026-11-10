@@ -35,7 +35,7 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(review["page_url_changed_rows"],354)
         self.assertEqual(review["non_page_url_field_changes"],0)
         self.assertEqual(review["vag_page_url_changed_groups"],13)
-        self.assertEqual(review["vag_value_or_unit_changed_groups"],0)
+        self.assertEqual(review["core_vag_page_url_changed_groups"],0)
         self.assertIs(review["exact_vag_values_unchanged"],True)
         self.assertIs(review["exact_vag_subset_unchanged_except_page_url"],True)
         self.assertIs(self.manifest["import_policy"]["data_ingested"],False)
