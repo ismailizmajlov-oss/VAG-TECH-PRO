@@ -3813,7 +3813,7 @@
       "url": "https://www.otts.bot/",
       "terms_url": "https://www.otts.bot/terms",
       "source_kind": "commercial_aggregated_ru_eaeu_vehicle_compliance_database",
-      "source_revision": "published_user_agreement_last_updated_2026-08-26; homepage_and_OTTS_page_rechecked_2026-11-10",
+      "source_revision": "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-10",
       "market_scope": [
         "RU",
         "EAEU"
@@ -3884,7 +3884,7 @@
       "project_decision": "restricted_no_automated_collection_beyond_ordinary_use_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "homepage_OTTS_page_and_user_agreement_rechecked_2026-11-10; agreement_last_updated_2026-08-26",
+      "evidence_status": "OTTS_page_and_user_agreement_rechecked_2026-11-10; agreement_last_updated_2026-08-26",
       "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_RECHECK_2026-11-10.md",
       "evidence_reviewed": [
         {
