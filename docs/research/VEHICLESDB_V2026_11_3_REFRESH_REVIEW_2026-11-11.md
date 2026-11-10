@@ -25,6 +25,22 @@ The read-only probe matched the pinned counts exactly:
 
 The separate SQLite pack was built and independently verified in Windows workflow run [42874459366](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42874459366). Pack database SHA-256: `1f23666dcb83a47ccceac272165c4a3495dd03ae9ac5082ffc5f1486967e2e71`. The three-database Windows x64 offline research bundle was independently verified in the same run; its artifact SHA-256 is `f971cc47c3651da7c2fc68022c151f5eccad9dbd18b84580618fb920883891be`. Neither artifact is an installer.
 
+## Latest independent rebuild — 2026-11-10
+
+A subsequent Windows x64 bundle build re-downloaded the pinned source snapshot and independently verified all three SQLite databases:
+
+- Workflow run: [42887184918](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42887184918)
+- Source commit: `81b785244510681182ee9b7a7281f0bd6a53e8f4`
+- VehiclesDB SQLite SHA-256: `52c59d92e6d10820dfe7f16fc5fa1b50aa2075e6894eee25135e5fa1cfa62465`
+- Three-database Windows x64 research bundle: 42,745,584 bytes; SHA-256 `09b7018802352550b20931fb5a8c6268c724e9b5f48b5c62f62690ed43e0ee88`
+- The bundle index identifies itself as `verified_offline_data_packs_not_installer`; the three SQLite files remain separate and are not merged.
+- Independent checks: all three databases returned `PRAGMA integrity_check = ok`; all three returned zero foreign-key violations; each database SHA-256 matched the bundle index.
+- VehiclesDB remains 307 identity candidates and 1,621 foreign-market presence rows, with zero Russian-market rows, zero populated model-year bounds, and every row still `identity_candidate` / `not_established`.
+- OBDex remains 9,533 generic SAE/ISO DTC research rows and 132 PID rows, all in `generic_sae_iso_obd2`; no VAG fitment claims were found.
+- OBDb remains 38 source repositories, 135 generation candidates, 71 ECU candidates, 18,387 command candidates and 19,799 signal candidates; zero commands are marked executable.
+
+This rebuild supersedes the earlier bundle/database artifact hashes above for the latest pack build. It does not change the source-snapshot digest or the identity-only product decision.
+
 ## Scope and limitations
 
 The included market-presence sources cover AR, AU, CA, DE, ES, FI, GB, IE, LU, MY, NL, NZ, UA and US. They do not provide Russian or EAEU evidence. Ukraine is not an EAEU market. The pack contains no verified generations, production years, engine codes, gearbox codes, ECU fitment, PR-code fitment, DTC definitions, wiring diagrams or repair procedures. Presence of a make/model name in a foreign-market register is not proof of a vehicle configuration or technical applicability.
