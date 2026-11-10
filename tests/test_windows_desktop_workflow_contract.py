@@ -678,8 +678,8 @@ def main() -> None:
     if ownerspecs_marker not in text:
         raise SystemExit("Windows workflow is missing the pinned OwnerSpecs research-pack resolver")
     ownerspecs_step = text.split(ownerspecs_marker, 1)[1].split("\n      - name:", 1)[0]
-    if "ConvertFrom-Json -AsHashtable" not in ownerspecs_step:
-        raise SystemExit("OwnerSpecs resolver must preserve case-sensitive manufacturer keys in the source-rights register")
+    if ownerspecs_step.count("ConvertFrom-Json -AsHashtable") != 1 or "ConvertFrom-Json -AsHashtable -AsHashtable" in ownerspecs_step:
+        raise SystemExit("OwnerSpecs resolver must use exactly one -AsHashtable to preserve case-sensitive source-register keys")
 
 if __name__ == "__main__":
     main()
