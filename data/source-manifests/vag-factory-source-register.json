@@ -8828,6 +8828,68 @@
         "native_windows_10_11_verified": false,
         "native_windows_10_11_status": "not_run_owner_runner_gate_disabled"
       }
+    },
+    {
+      "source_id": "otts-baza-commercial-otts-catalog",
+      "publisher": "OTTS-Baza.ru / commercial service operator identified in published offer",
+      "url": "https://www.otts-baza.ru/",
+      "terms_url": "https://www.otts-baza.ru/offer/",
+      "source_kind": "commercial_aggregated_ru_eaeu_vehicle_type_approval_catalog",
+      "source_revision": "Terms revision 2026-10-14; reviewed 2026-11-10",
+      "market_scope": [
+        "RU",
+        "EAEU"
+      ],
+      "market_scope_precision": "provider_claimed_eaeu_coverage_not_independently_verified",
+      "document_types": [
+        "OTTS"
+      ],
+      "provider_displayed_counts": {
+        "cards": 42050,
+        "observed_at": "2026-11-10",
+        "count_status": "provider_interface_count_not_independently_verified_not_a_vag_count"
+      },
+      "evidence_scope": "Public search UI and published terms only. Search metadata fields observed; no document contents or raw source files acquired.",
+      "access": {
+        "public_search_ui_observed": true,
+        "full_document_access": "account_and_access_plan_or_quota_based",
+        "account_created": false,
+        "paid_plan_started": false,
+        "documents_downloaded": 0
+      },
+      "rights": {
+        "dataset_license": "not_granted",
+        "terms_revision": "2026-10-14",
+        "individual_document_internal_professional_use": "described_by_terms_subject_to_authorized_access",
+        "bulk_automated_extraction_allowed": false,
+        "systematic_extraction_of_substantial_part_allowed": false,
+        "competing_catalog_creation_allowed": false,
+        "offline_cache_for_product_distribution_allowed": false,
+        "third_party_display_allowed": false,
+        "redistribution_allowed": false,
+        "derivative_database_reproduction_allowed": false,
+        "written_permission_obtained": false,
+        "permission_status": "not_obtained_separate_written_agreement_required_for_product_use"
+      },
+      "limitations": [
+        "Published terms prohibit systematic extraction of a substantial part of the database for publication, resale or creation of a competing catalogue without a separate agreement.",
+        "Individual internal professional use does not grant rights to redistribute source documents or derived database contents to VAG TECH PRO users.",
+        "Provider-displayed 42,050-card count is not independently verified and is not a VAG-specific count.",
+        "No account was created, no paid plan was accepted and no documents were downloaded."
+      ],
+      "project_decision": "discovery_only_no_ingest_no_offline_cache_no_third_party_display_no_redistribution_without_separate_written_permission",
+      "evidence_status": "published_terms_reviewed_2026_11_10_no_reuse_rights_for_vag_tech_pro_database",
+      "evidence_reviewed": "2026-11-10",
+      "review_document": "docs/research/OTTS_BAZA_TERMS_REVIEW_2026-11-10.md",
+      "rights_review_references": [
+        "https://www.otts-baza.ru/",
+        "https://www.otts-baza.ru/offer/"
+      ],
+      "source_snapshot_sha256": null,
+      "hash_status": "not_computed_no_source_file_acquired",
+      "data_ingested": false,
+      "product_import_allowed": false,
+      "verification_status": "commercial_terms_prohibit_bulk_or_competing_catalog_reuse_without_separate_written_agreement"
     }
   ],
   "minimum_fitment_evidence_fields": [
