@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -135,6 +136,57 @@ test("run93 composes after run68's manifest-driven count guard without rewriting
     assert.match(evidence.research_packs_test_sha256, /^[a-f0-9]{64}$/);
     const second = run(root);
     assert.equal(second.status, 0, second.stderr);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("run93 repairs a downstream legacy count assertion and refreshes only desktop evidence hashes", () => {
+  const root = fixture();
+  try {
+    const first = run(root);
+    assert.equal(first.status, 0, first.stderr);
+    const evidencePath = path.join(root, "data", "research", "vehiclesdb-vag-identity", "desktop-candidate-boundary-verification.json");
+    const firstEvidence = JSON.parse(fs.readFileSync(evidencePath, "utf8"));
+    const testPath = path.join(root, "tests", "local-research-packs.test.cjs");
+    const dynamicBlock = [
+      '  const vehiclesDbPackManifest = JSON.parse(require("node:fs").readFileSync(require("node:path").join(__dirname, "../data/research/vehiclesdb-vag-identity/manifest.json"), "utf8"));',
+      "  assert.equal(result.vehiclesdb_identity.sources, vehiclesDbPackManifest.counts.sources);",
+      "  assert.equal(result.vehiclesdb_identity.models, vehiclesDbPackManifest.counts.models);",
+      "  assert.equal(result.vehiclesdb_identity.marketEvidence, vehiclesDbPackManifest.counts.market_evidence);"
+    ].join("\n");
+    const legacyBlock = [
+      "  assert.equal(result.vehiclesdb_identity.sources, 14);",
+      "  assert.equal(result.vehiclesdb_identity.models, 260);",
+      "  assert.equal(result.vehiclesdb_identity.marketEvidence, 1524);"
+    ].join("\n");
+    const beforeDownstream = fs.readFileSync(testPath, "utf8");
+    assert.ok(beforeDownstream.includes(dynamicBlock));
+    fs.writeFileSync(testPath, beforeDownstream.replace(
+      dynamicBlock,
+      legacyBlock + '\n  assert.equal(result.kba_de_vag_stock.marketScope, "DE");'
+    ));
+    const verifierPath = path.join(root, "scripts", "verify-local-research-packs.cjs");
+    fs.appendFileSync(verifierPath, "\n// downstream licensed-pack verifier extension\n");
+
+    const second = run(root);
+    assert.equal(second.status, 0, second.stderr);
+    const repairedTest = fs.readFileSync(testPath, "utf8");
+    assert.ok(repairedTest.includes(dynamicBlock));
+    assert.ok(repairedTest.includes('assert.equal(result.kba_de_vag_stock.marketScope, "DE");'));
+    assert.doesNotMatch(repairedTest, /vehiclesdb_identity\.models, 260/);
+    const secondEvidence = JSON.parse(fs.readFileSync(evidencePath, "utf8"));
+    const digest = (value) => crypto.createHash("sha256").update(value).digest("hex");
+    assert.equal(secondEvidence.research_packs_test_sha256, digest(fs.readFileSync(testPath)));
+    assert.equal(secondEvidence.verifier_sha256, digest(fs.readFileSync(verifierPath)));
+    assert.notEqual(firstEvidence.research_packs_test_sha256, secondEvidence.research_packs_test_sha256);
+    assert.notEqual(firstEvidence.verifier_sha256, secondEvidence.verifier_sha256);
+    assert.equal(secondEvidence.source_manifest_sha256, firstEvidence.source_manifest_sha256);
+    assert.deepEqual(secondEvidence.counts, firstEvidence.counts);
+
+    const third = run(root);
+    assert.equal(third.status, 0, third.stderr);
+    assert.deepEqual(JSON.parse(fs.readFileSync(evidencePath, "utf8")), secondEvidence);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
