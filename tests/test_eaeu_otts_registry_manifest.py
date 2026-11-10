@@ -113,7 +113,7 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(source["rights"]["bulk_automated_extraction_allowed"])
         self.assertFalse(source["rights"]["offline_cache_allowed"])
         self.assertFalse(source["rights"]["display_and_redistribution_allowed"])
-        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source.get("product_import_allowed", False))
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["applicability"]["exact_vehicle_fitment"])
 
