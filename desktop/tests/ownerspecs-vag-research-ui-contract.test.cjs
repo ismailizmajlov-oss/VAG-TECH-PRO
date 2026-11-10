@@ -21,7 +21,7 @@ test("OwnerSpecs is a separate offline research tab and API dataset", () => {
 });
 
 test("OwnerSpecs UI never presents critical values as confirmed repair data", () => {
-  for (const field of ["sourceRowSha256","sourceSnapshotSha256","databaseSha256","sourceManifestSha256","technicalReviewStatus","applicabilityPrecision","criticalValuePublishable","provenance"]) {
+  for (const field of ["sourceRowSha256","sourceSnapshotSha256","sourceSnapshotFileSha256","databaseSha256","sourceManifestSha256","technicalReviewStatus","applicabilityPrecision","criticalValuePublishable","provenance"]) {
     assert.ok(ui.includes(field), "missing OwnerSpecs provenance field: " + field);
   }
   assert.match(ui, /точная применимость не подтверждена/);
