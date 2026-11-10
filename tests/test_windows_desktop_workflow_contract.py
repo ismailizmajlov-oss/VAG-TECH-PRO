@@ -39,8 +39,8 @@ def main() -> None:
         raise SystemExit("Windows audit artifact must include the local research verifier source")
     if "windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/manifest.json" not in text:
         raise SystemExit("Windows audit artifact must include the exact OBDb pack manifest")
-    if "group: vag-tech-pro-windows-x64-v3-${{ github.ref }}" not in text:
-        raise SystemExit("Windows validation workflow must use the v3 concurrency group to bypass stale v2 runs")
+    if "group: vag-tech-pro-windows-x64-v4-${{ github.ref }}" not in text:
+        raise SystemExit("Windows validation workflow must use the v4 concurrency group to bypass stale v3 runs")
     if "cancel-in-progress: true" not in text:
         raise SystemExit("Windows validation workflow must cancel superseded runs so the latest source snapshot is tested first")
     status_retry_contract = (
