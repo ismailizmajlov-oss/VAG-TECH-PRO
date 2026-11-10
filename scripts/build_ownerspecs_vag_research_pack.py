@@ -464,7 +464,6 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         "source_file": "source.json",
         "source_file_bytes": snapshot_size,
         "source_snapshot_sha256": snapshot_hash,
-        "source_file_bytes": snapshot_size,
         "source_manifest_sha256": source_manifest_hash,
         "generation_count": len(generations),
         "verified_datapoints": sum(int(g.get("verified_datapoints") or 0) for g in generations),
@@ -488,6 +487,7 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         },
         "source_revision": source["data_revision"],
         "source_snapshot_sha256": snapshot_hash,
+        "source_file_bytes": snapshot_size,
         "source_manifest_sha256": source_manifest_hash,
         "database": {
             "file": database_path.name,
