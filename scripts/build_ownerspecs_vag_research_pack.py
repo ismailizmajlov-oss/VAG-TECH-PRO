@@ -9,6 +9,7 @@ import os
 import re
 import sqlite3
 import tempfile
+from datetime import datetime, timezone
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -581,19 +582,10 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
         if len(registry) != 1 or registry[0][0] != SOURCE_ID:
             raise ValueError("OwnerSpecs SQLite source registry mismatch.")
         if (
-            registry[0][16] != "UNKNOWN"
+            any(registry[0][index] != 1 for index in range(7, 15))
+            or registry[0][16] != "UNKNOWN"
             or registry[0][17] != 1
-            or registry[0][18] != 0
-            or registry[0][19] != 0
-            or registry[0][20] != 0
-            or registry[0][21] != 0
-            or registry[0][22] != 0
-            or registry[0][23] != 0
-            or registry[0][24] != 0
-            or registry[0][25] != 0
-            or registry[0][26] != 0
-            or registry[0][27] != 0
-            or registry[0][28] != 0
+            or any(registry[0][index] != 0 for index in range(18, 29))
         ):
             raise ValueError("OwnerSpecs SQLite source rights/applicability boundary failed.")
     finally:
@@ -626,8 +618,22 @@ def main() -> int:
         source = read_json(args.source_manifest)
         validate_source_manifest(source)
         raw = acquire_json(source["source_urls"]["json"], args.output_dir / "source.json")
-        if raw.get("generation_count") != source["snapshot"]["json_descriptor_generation_count"]:
-            raise ValueError("OwnerSpecs live JSON generation count differs from reviewed manifest.")
+        generations = validate_dataset(raw, source)
+        vag_generations = [g for g in generations if str(g.get("brand") or "").strip().casefold() in VAG_BRANDS]
+        acquisition_snapshot = {
+            "source_id": SOURCE_ID,
+            "source_url": source["source_urls"]["json"],
+            "source_revision": source["data_revision"],
+            "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
+            "source_file": "source.json",
+            "source_file_bytes": (args.output_dir / "source.json").stat().st_size,
+            "source_snapshot_sha256": sha256_file(args.output_dir / "source.json"),
+            "generation_count": len(generations),
+            "verified_datapoints": sum(int(g.get("verified_datapoints") or 0) for g in generations),
+            "vag_generation_count": len(vag_generations),
+            "vag_fact_count": sum(int(g.get("verified_datapoints") or 0) for g in vag_generations),
+        }
+        write_json(args.output_dir / "acquisition-snapshot.json", acquisition_snapshot)
         source_json = args.output_dir / "source.json"
     else:
         source_json = args.input_json
