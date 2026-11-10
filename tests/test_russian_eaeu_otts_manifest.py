@@ -233,8 +233,8 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertFalse(hpt["paid_terms_accepted"])
         self.assertFalse(hpt["data_ingested"])
         self.assertIsNone(hpt["source_snapshot_sha256"])
-        self.assertEqual(hpt["license"]["offline_cache"], "not_confirmed_for_distribution")
-        self.assertEqual(hpt["license"]["display_to_third_parties"], "prohibited_in_equivalent_database_form_without_written_consent")
+        self.assertEqual(hpt["license"]["offline_cache"], "not_authorized_for_third_party_product_distribution_without_separate_written_consent")
+        self.assertEqual(hpt["license"]["display_to_third_parties"], "not_authorized_as_equivalent_database_access_without_separate_written_consent")
         self.assertEqual(hpt["license"]["bulk_copy"], "prohibited")
         self.assertEqual(hpt["license"]["derived_database_for_third_parties"], "prohibited_without_separate_written_consent")
         self.assertEqual(hpt["license"]["full_database_mirror"], "prohibited")
@@ -341,6 +341,29 @@ class RussianEaeuOttsManifestTests(unittest.TestCase):
         self.assertEqual(latest["pricing_page_fetch_status"], "502 during review; no price relied upon")
         self.assertIn("competing catalogue", latest["reuse_restriction"])
 
+
+
+    def test_elpts_public_otts_ui_is_discovery_only_and_not_a_reuse_license(self):
+        source = self.sources["elpts-docs-electronic-otts-public-ui"]
+        access = source["access"]
+        self.assertTrue(access["page_accessible"])
+        self.assertEqual(access["reviewed_at"], "2026-11-10")
+        self.assertEqual(access["displayed_total_counter"], 14822)
+        self.assertIn("not_independently_verified", access["displayed_total_counter_status"])
+        self.assertEqual(access["returned_rows_for_observed_date_range"], 0)
+        self.assertIn("AUDI AG", access["manufacturer_filter_values_observed"])
+        self.assertIn("Volkswagen AG", access["manufacturer_filter_values_observed"])
+        self.assertTrue(access["manufacturer_filter_values_are_not_record_evidence"])
+        self.assertEqual(access["documented_export"], "not_verified")
+        self.assertEqual(source["status"], "discovery_only_rights_unconfirmed")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertIsNone(source["source_snapshot_sha256"])
+        self.assertEqual(source["license"]["commercial_use"], "not_confirmed")
+        self.assertEqual(source["license"]["offline_cache"], "not_confirmed")
+        self.assertFalse(source["technical_scope"]["exact_engine_code"])
+        self.assertFalse(source["technical_scope"]["exact_gearbox_code"])
+        self.assertFalse(source["technical_scope"]["exact_engine_gearbox_pair"])
 
 
 if __name__ == "__main__":
