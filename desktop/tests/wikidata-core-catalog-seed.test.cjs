@@ -119,6 +119,8 @@ test("bundled CC0 Wikidata taxonomy seeds only provenance-bound identity candida
   assert.equal(repeat.status, "already_applied");
   assert.equal(repeat.inserted, 0);
   assert.equal(repeat.unchanged, 527);
+  assert.equal(repeat.packageSha256, "52c4b195d8200594aca1cec2de93f64f8fbe94a746dea0406715da7348e057d2");
+  assert.equal(repeat.package_sha256, repeat.packageSha256);
   assert.deepEqual(readCounts(dbPath), { brands: 6, models: 521, candidateModels: 521, verifiedModels: 0, generations: 0, engines: 0, transmissions: 0, pairs: 0, ecus: 0, configurations: 0, technicalRecords: 0 });
 });
 
