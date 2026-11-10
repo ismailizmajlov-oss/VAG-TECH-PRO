@@ -228,7 +228,6 @@ function searchOwnerSpecsFacts(query, limit, explicitRoot) {
   const entry = readJson(safeFile(root, "manifest.json")).packs.find((item) => item.id === PACK_ID);
   const db = openReadOnly(safeFile(root, entry.database));
   try {
-    const pattern = "%" + q.replace(/[\\%_]/g, "\\$&") + "%";
     const rows = db.prepare(
       "SELECT g.generation_id AS generationId,g.brand,g.model,g.generation_label AS generationLabel,g.generation_slug AS generationSlug," +
       "g.generation_url AS generationUrl,g.year_start AS yearStartCandidate,g.year_end AS yearEndCandidate,g.body_type AS bodyTypeCandidate," +
