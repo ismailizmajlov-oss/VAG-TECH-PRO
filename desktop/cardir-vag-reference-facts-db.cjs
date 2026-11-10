@@ -147,11 +147,11 @@ function getCardirSummary(explicitRoot) {
     source.data_revision === entry.source_revision &&
     source.snapshot.source_snapshot_sha256 === entry.source_snapshot_sha256 &&
     source.snapshot.status === "source_snapshot_acquired_schema_verified" &&
-    source.applicability_policy.market_scope === "UNKNOWN" &&
-    source.applicability_policy.exact_engine_gearbox_pair === false &&
-    source.applicability_policy.ru_eaeu_applicability === false &&
-    source.import_policy.production_import === false &&
-    source.import_policy.product_import_allowed === false &&
+    policy.market_scope === "UNKNOWN" &&
+    policy.exact_engine_gearbox_pair === false &&
+    policy.ru_eaeu_applicability === false &&
+    importPolicy.production_import === false &&
+    importPolicy.product_import_allowed === false &&
     rights.rights_status === "approved_by_published_CC_BY_4_0" &&
     rights.license_id === LICENSE_ID &&
     rights.commercial_use_allowed === true &&
