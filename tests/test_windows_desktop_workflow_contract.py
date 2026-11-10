@@ -784,7 +784,8 @@ def main() -> None:
         "vehiclesDbPackManifest.identity_only_use !== true",
         "vehiclesDbPackManifest.safety_critical_reliance !== false",
         "vehiclesDbPackManifest.repair_decision_use !== false",
-        "vehiclesDbPackManifest.open_data_policy_notice.includes(\\\"not designed or warranted for safety-critical\\\")",
+        "vehiclesDbPackManifest.open_data_policy_notice.includes",
+        "not designed or warranted for safety-critical",
     )
     missing_dynamic_gate = [marker for marker in manifest_driven_vehiclesdb_gate if marker not in wikidata_patcher]
     if missing_dynamic_gate:
