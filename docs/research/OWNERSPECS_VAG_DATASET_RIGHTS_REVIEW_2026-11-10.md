@@ -39,4 +39,11 @@ The source JSON does not provide a primary-document locator or revision per valu
 - SQLite integrity check: **ok**; foreign-key violations: **0**.
 - Counts: 111 generations, 2,369 source datapoints, 20 VAG generations and 233 VAG facts.
 
-The pack is verified as a separate CC BY-SA research artifact, but it is not yet integrated into the Windows desktop application. Production import remains disabled; no critical repair values are publishable from this source.
+The pack was subsequently integrated into the offline Windows desktop research catalog in PR #91, validated by Windows x64 CI run 1264 on 2026-11-10. It remains a separate read-only CC BY-SA research artifact; production import remains disabled and no critical repair values are publishable from this source.
+
+
+## Desktop integration verification — 2026-11-10
+
+The exact pinned OwnerSpecs research artifact was integrated into the offline desktop build by PR #91, Windows x64 workflow run **1264** (run ID `42813922741`), source revision `f5f005a04e1dc715aae1fb48899592ff5f1009c2`. The integration workflow resolved and verified the pinned run-115 artifact, downloaded it, integrated the read-only SQLite reader and research UI, and ran the pack verifier. Steps 69–71 completed successfully. The full Windows x64 build/lifecycle job and separate Windows Server 2022 installer-compatibility lifecycle both passed; PR #91 was subsequently merged to main.
+
+The desktop pack retains the original CC BY-SA 4.0 attribution and Share-Alike boundary. It is visible only as a separate research dataset and does not seed the production vehicle catalog, engine/transmission fitment, OEM DTC index, ECU applicability or technical repair library. The 20 generation labels and 233 facts remain UNKNOWN-market candidates; the source JSON still lacks a primary-document locator and revision per value. Native Windows 10/11 client lifecycle remains unverified because the owner-controlled runner gate is disabled.
