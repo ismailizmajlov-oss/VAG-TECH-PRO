@@ -133,6 +133,7 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
         self.assertEqual(manifest["counts"]["all_source_verified_datapoints"], 3)
         self.assertEqual(manifest["counts"]["vag_generations"], 1)
         self.assertEqual(manifest["counts"]["vag_facts"], 2)
+        self.assertEqual(manifest["source_file_bytes"], (self.output / "source.json").stat().st_size)
         self.assertEqual(manifest["market_scope"], ["UNKNOWN"])
         self.assertFalse(manifest["critical_technical_values_publishable"])
         self.assertFalse(manifest["exact_engine_gearbox_pair"])
@@ -157,6 +158,15 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
         self.source_json.write_text(json.dumps(dataset, ensure_ascii=False), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "per-generation verified_datapoints mismatch"):
             build_pack(self.source_json, self.source_manifest, self.output)
+
+    def test_verify_rejects_pack_manifest_source_byte_size_mismatch(self):
+        build_pack(self.source_json, self.source_manifest, self.output)
+        manifest_path = self.output / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["source_file_bytes"] += 1
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2) + "\\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "source-file byte-size metadata mismatch"):
+            verify_pack(self.output, self.source_manifest)
 
     def test_rejects_source_snapshot_byte_size_mismatch(self):
         source = json.loads(self.source_manifest.read_text(encoding="utf-8"))
