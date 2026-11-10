@@ -562,24 +562,50 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
                  year_start,year_end,raw_generation_json,generation_sha256,market_scope,
                  technical_review_status,applicability_precision,exact_vehicle_fitment,
                  exact_engine_code_mapping,exact_gearbox_code_mapping,exact_engine_gearbox_pair,
-                 ru_eaeu_applicability,ecu_fitment,dtc_fitment,repair_procedure_applicability
+                 ru_eaeu_applicability,ecu_fitment,dtc_fitment,repair_procedure_applicability,
+                 source_ordinal
           FROM generations ORDER BY generation_id
         """).fetchall()
         fact_rows = db.execute("""
-          SELECT generation_id,source_ordinal,raw_fact_json,source_row_sha256,market_scope,
-                 technical_review_status,critical_value_publishable,exact_engine_code_mapping,
-                 exact_gearbox_code_mapping,exact_engine_gearbox_pair,ru_eaeu_applicability,
-                 repair_procedure_applicability,primary_document_url,primary_document_revision
+          SELECT generation_id,source_ordinal,category,field_key,label,value_json,value_max_json,
+                 unit,is_range,source_count,provenance_json,raw_fact_json,source_row_sha256,
+                 market_scope,technical_review_status,critical_value_publishable,
+                 exact_engine_code_mapping,exact_gearbox_code_mapping,exact_engine_gearbox_pair,
+                 ru_eaeu_applicability,repair_procedure_applicability,primary_document_url,
+                 primary_document_revision
           FROM facts ORDER BY generation_id,source_ordinal
         """).fetchall()
         if len(generation_rows) != manifest["counts"]["vag_generations"]:
             raise ValueError("OwnerSpecs generation count mismatch.")
         if len(fact_rows) != manifest["counts"]["vag_facts"]:
             raise ValueError("OwnerSpecs fact count mismatch.")
+        expected_vag = [
+            (ordinal, generation)
+            for ordinal, generation in enumerate(generations, start=1)
+            if str(generation.get("brand") or "").strip().casefold() in VAG_BRANDS
+        ]
+        expected_by_slug = {generation["generation_slug"]: (ordinal, generation) for ordinal, generation in expected_vag}
+        generation_ids = {}
         for row in generation_rows:
             raw = row[8]
             if sha256_bytes(raw.encode("utf-8")) != row[9]:
                 raise ValueError("OwnerSpecs generation row hash mismatch.")
+            expected_entry = expected_by_slug.get(row[4])
+            if expected_entry is None:
+                raise ValueError("Unexpected OwnerSpecs generation in SQLite.")
+            expected_ordinal, expected_generation = expected_entry
+            expected_raw = canonical_bytes(expected_generation).decode("utf-8")
+            if (
+                row[21] != expected_ordinal
+                or raw != expected_raw
+                or row[1] != expected_generation.get("brand")
+                or row[2] != expected_generation.get("model")
+                or row[3] != expected_generation.get("generation")
+                or row[5] != expected_generation.get("url")
+                or row[6] != expected_generation.get("year_start")
+                or row[7] != expected_generation.get("year_end")
+            ):
+                raise ValueError("OwnerSpecs generation row does not match the exact source JSON.")
             if row[10] != "UNKNOWN" or row[11] != "not_independently_reviewed" or row[12] != "publisher_generation_candidate_only":
                 raise ValueError("OwnerSpecs generation review/applicability boundary failed.")
             if any(row[index] != 0 for index in range(13, 21)):
@@ -588,17 +614,37 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
                 raise ValueError("Non-VAG generation entered the OwnerSpecs VAG pack.")
             if VIN_RE.search(raw):
                 raise ValueError("VIN-like content found in OwnerSpecs generation.")
-        for row in fact_rows:
-            raw = row[2]
-            if sha256_bytes(raw.encode("utf-8")) != row[3]:
-                raise ValueError("OwnerSpecs fact row hash mismatch.")
-            if row[4] != "UNKNOWN" or row[5] != "not_independently_reviewed":
+            generation_ids[row[4]] = row[0]
+        expected_fact_rows = []
+        for ordinal, generation in expected_vag:
+            generation_id = generation_ids[generation["generation_slug"]]
+            for fact_ordinal, (category, fact) in enumerate(flatten_generation(generation), start=1):
+                field_key = str(fact.get("field") or fact.get("kind") or fact.get("label") or "unclassified").strip()
+                label = str(fact.get("label") or fact.get("field") or fact.get("kind") or field_key)
+                value = fact.get("value", fact.get("value_kg", fact.get("pressure", fact.get("size"))))
+                value_max = fact.get("value_max", fact.get("value_max_kg"))
+                provenance = fact.get("provenance") or []
+                raw_fact = canonical_bytes(fact_identity(generation, category, fact)).decode("utf-8")
+                expected_fact_rows.append((
+                    generation_id, fact_ordinal, category, field_key, label,
+                    None if value is None else json.dumps(value, ensure_ascii=False, sort_keys=True),
+                    None if value_max is None else json.dumps(value_max, ensure_ascii=False, sort_keys=True),
+                    fact.get("unit"), int(bool(fact.get("is_range"))), int(fact.get("sources") or 0),
+                    json.dumps(provenance, ensure_ascii=False, sort_keys=True), raw_fact,
+                    sha256_bytes(raw_fact.encode("utf-8")),
+                ))
+        if len(expected_fact_rows) != len(fact_rows):
+            raise ValueError("OwnerSpecs fact source/SQLite row count mismatch.")
+        for row, expected_row in zip(fact_rows, expected_fact_rows):
+            if tuple(row[:13]) != expected_row:
+                raise ValueError("OwnerSpecs fact projection/hash does not match the exact source JSON.")
+            if row[13] != "UNKNOWN" or row[14] != "not_independently_reviewed":
                 raise ValueError("OwnerSpecs fact review/applicability boundary failed.")
-            if any(row[index] != 0 for index in range(6, 12)):
+            if any(row[index] != 0 for index in range(15, 21)):
                 raise ValueError("OwnerSpecs fact crossed a critical/production applicability boundary.")
-            if row[12] is not None or row[13] is not None:
+            if row[21] is not None or row[22] is not None:
                 raise ValueError("OwnerSpecs fact unexpectedly claims a primary document locator/revision.")
-            if VIN_RE.search(raw):
+            if VIN_RE.search(row[11]):
                 raise ValueError("VIN-like content found in OwnerSpecs fact.")
         registry = db.execute("SELECT * FROM source_registry").fetchall()
         if len(registry) != 1 or registry[0][0] != SOURCE_ID:
