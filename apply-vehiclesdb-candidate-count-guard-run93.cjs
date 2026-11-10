@@ -111,7 +111,7 @@ function main() {
 
   const oldReturn = [
     "attributionRequired: true,",
-    "        attribution: typeof packManifest.attribution === \"string\" ? packManifest.attribution : \"Vehicle data by VehiclesDB (vehiclesdb.com)\","
+    "        attribution: packManifest.attribution?.display_form || \"Vehicle data by VehiclesDB (vehiclesdb.com)\","
   ].join("\n");
   const newReturn = [
     "attributionRequired: true,",
@@ -119,12 +119,12 @@ function main() {
     "        safetyCriticalReliance: packManifest.safety_critical_reliance,",
     "        repairDecisionUse: packManifest.repair_decision_use,",
     "        openDataPolicyNotice: packManifest.open_data_policy_notice,",
-    "        attribution: typeof packManifest.attribution === \"string\" ? packManifest.attribution : \"Vehicle data by VehiclesDB (vehiclesdb.com)\","
+    "        attribution: packManifest.attribution?.display_form || \"Vehicle data by VehiclesDB (vehiclesdb.com)\","
   ].join("\n");
   const returnPatch = replaceExactlyOnce(dbText, oldReturn, newReturn, "VehiclesDB identity-only fields in candidate result");
   dbText = returnPatch.text;
 
-  const oldVerifier = 'assert(vehiclesDbSnapshot.attribution_required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
+  const oldVerifier = 'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
   const newVerifier = oldVerifier + '\n    assert(vehiclesDbSnapshot.identity_only_use === true && vehiclesDbSnapshot.safety_critical_reliance === false && vehiclesDbSnapshot.repair_decision_use === false && typeof vehiclesDbSnapshot.open_data_policy_notice === "string" && vehiclesDbSnapshot.open_data_policy_notice.includes("not designed or warranted for safety-critical"), "VehiclesDB safety-critical and repair-decision boundary failed");';
   const verifierPatch = replaceExactlyOnce(verifierItem.text, oldVerifier, newVerifier, "VehiclesDB independent verifier safety boundary");
 
