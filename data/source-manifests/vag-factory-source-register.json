@@ -9618,7 +9618,7 @@
       "source_id": "elpts-esbkts-public-query",
       "publisher": "АО «Электронный паспорт»",
       "url": "https://docs.elpts.ru/ncher/esbkts",
-      "source_kind": "official_public_query_for_electronic_sb kts_certificates",
+      "source_kind": "official_public_query_for_electronic_sbkts_certificates",
       "market_scope": [
         "RU"
       ],
