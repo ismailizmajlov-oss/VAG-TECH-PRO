@@ -70,4 +70,20 @@ The source lock now pins **38** OBDb repositories and **152** upstream files. Th
 
 The new pack contains 135 generation candidates, 71 ECU candidates, 18,387 UDS 0x22 command candidates and 19,799 signal candidates. All 152 upstream file hashes and all 38 pinned licence-file hashes match the manifest. SQLite `integrity_check=ok`; foreign-key violations: 0. Every command is service `0x22`, every command has execution disabled, all rows remain `market_scope=UNKNOWN` / `unverified_community_candidate`. Seven Škoda repositories contribute generation candidates only. There are still **zero DTC definitions**, zero approved test plans, zero exact vehicle fitments, zero confirmed engine/gearbox pairs, zero repair procedures, wiring diagrams or factory pinouts.
 
-The individual OBDb pack artifact is verified, but the encompassing three-database offline bundle run #521 failed at its final index inspection because the index builder and desktop sync guard still hard-coded the old 16-source/82-generation/44-ECU/7,890-command/8,446-signal snapshot. That stale guard is being updated to the new pinned 38-source counts. Until a fresh offline bundle run passes, the old three-database bundle remains stale for this OBDb source revision. The pack is not yet integrated into the desktop installer or production SQLite.
+At the time of run #521, the encompassing three-database offline bundle failed at its final index inspection because the index builder and desktop sync guard still hard-coded the old 16-source/82-generation/44-ECU/7,890-command/8,446-signal snapshot. The stale count guard was subsequently corrected. Windows x64 desktop validation run #1264 passed the offline data-pack bundle verification and included the current OBDb pack in the 15-pack desktop research manifest. This integration is research-catalog only; the pack is not imported into production SQLite.
+
+
+## Current offline desktop integration — Windows run #1264, 2026-11-10
+
+The expanded OBDb pack is included in the packaged offline desktop research manifest `data/research/manifest.json` as `obdb-vag-signals-cc-by-sa`. The exact run-1264 desktop-source audit confirms 15 research packs in the packaged manifest. The pack is integrated as a separate read-only CC BY-SA research namespace, not as production diagnostic content.
+
+Current pinned data and manifest:
+- 38 unique OBDb repositories; 152 upstream files; all 38 repository licence-file hashes are verified.
+- 135 generation candidates, 71 ECU candidates, 18,387 UDS 0x22 command candidates and 19,799 signal candidates.
+- SQLite SHA-256: `1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195`.
+- Current pack-manifest SHA-256 in the run-1264 build metadata: `ce781164ff253982816fb72ebca32939b0dc772f2908b75be8179d81588bf631`.
+- The separately built source-pack artifact remains Windows offline-pack workflow run #521, artifact ID `13741207907`, SHA-256 `5555247d7d7e25db1fe9ccb50566123a867f1948bbe3f955e0593ca95b5a3e91`.
+
+The run-1264 manifest retains the strict namespace policy: included service IDs are only `0x22`; service `0x01` is excluded; `dtc_definitions_included=false`; `command_execution_allowed=false`. All 38 repository records remain `market_scope=UNKNOWN` and `unverified_community_candidate`. No DTC definitions, approved test plans, exact vehicle or ECU fitments, exact engine/gearbox pairs, RU/EAEU applicability, repair procedures, wiring diagrams or factory pinouts are created by this pack.
+
+Windows x64 build-and-lifecycle and the separate Windows Server 2022 compatibility lifecycle passed in run #1264. This does not establish native Windows 10/11 client acceptance; that owner-controlled runner gate remains disabled. Production import and command execution remain prohibited.
