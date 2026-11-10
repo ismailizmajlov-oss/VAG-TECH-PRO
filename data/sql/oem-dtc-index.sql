@@ -166,6 +166,14 @@ WHEN NEW.dtc_namespace IN ('manufacturer_specific_vag','manufacturer_specific_ot
 )
 BEGIN SELECT RAISE(ABORT, 'manufacturer-controlled DTC code is outside allowed OBD-II ranges'); END;
 
+-- Direct INSERT must not bypass the guarded review-status transition below.
+CREATE TRIGGER IF NOT EXISTS oem_dtc_publication_insert_requires_guarded_transition
+BEFORE INSERT ON oem_dtc_index
+WHEN NEW.review_status='publication_approved'
+BEGIN
+  SELECT RAISE(ABORT, 'DTC publication must use guarded review-status transition');
+END;
+
 -- A row cannot be promoted until both technical review and reuse rights are cleared.
 CREATE TRIGGER IF NOT EXISTS prevent_unapproved_oem_dtc_publication
 BEFORE UPDATE OF review_status ON oem_dtc_index
