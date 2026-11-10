@@ -19,23 +19,37 @@ function replaceOnce(source, before, after, label) {
   return source.slice(0, first) + after + source.slice(first + before.length);
 }
 
-let source = fs.readFileSync(dbFile, "utf8");
-source = replaceOnce(
-  source,
-  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository_url, upstream_tag, dataset_version, dataset_license, attribution_required, attribution_text, attribution_url, catalog_sqlite_sha256, upstream_manifest_sha256, license_sha256, attribution_sha256, ru_evidence_present, fitment_claim FROM dataset_provenance WHERE provenance_id=1").get();',
-  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository, upstream_tag, dataset_version, dataset_license, license_url, upstream_manifest_sha256, source_catalog_sha256, attribution_sha256, license_sha256, lock_sha256, imported_at_utc FROM dataset_provenance WHERE dataset_id=?").get(PACKS.vehiclesdb.id);',
-  "VehiclesDB provenance query"
-);
-source = replaceOnce(
-  source,
-  `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbProvenance.attribution_required !== 1 ||
+
+function ensureVehiclesDbCandidateGate(source) {
+  const gateStart = source.indexOf("if (!vehiclesDbProvenance");
+  const gateEnd = gateStart >= 0 ? source.indexOf(") {", gateStart) : -1;
+  if (gateStart >= 0 && gateEnd > gateStart) {
+    const gate = source.slice(gateStart, gateEnd + 3);
+    const requiredDynamicMarkers = [
+      "vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models ||",
+      "vehiclesDbCounts.marketEvidence !== vehiclesDbPackManifest.counts?.market_evidence ||",
+      "vehiclesDbPackManifest.identity_only_use !== true ||",
+      "vehiclesDbPackManifest.safety_critical_reliance !== false ||",
+      "vehiclesDbPackManifest.repair_decision_use !== false ||",
+      "vehiclesDbPackManifest.open_data_policy_notice.includes("
+    ];
+    if (requiredDynamicMarkers.every((marker) => gate.includes(marker))) {
+      if (/vehiclesDbCounts\.models\s*!==\s*\d+/.test(gate) ||
+          /vehiclesDbCounts\.marketEvidence\s*!==\s*\d+/.test(gate)) {
+        throw new Error("VehiclesDB candidate gate mixes manifest-driven counts with stale fixed model/evidence counts.");
+      }
+      return source;
+    }
+  }
+
+  const legacyGate = \`if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbProvenance.attribution_required !== 1 ||
         vehiclesDbProvenance.ru_evidence_present !== 0 || vehiclesDbProvenance.fitment_claim !== 0 ||
         vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||
         vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbPackManifest.fitment_claim !== false ||
         vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution?.required !== true ||
         vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models || vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||
-        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`,
-  `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||
+        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {\`;
+  const currentGate = \`if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||
         vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license ||
         vehiclesDbProvenance.upstream_tag !== vehiclesDbPackManifest.upstream_tag ||
         vehiclesDbProvenance.upstream_manifest_sha256 !== vehiclesDbPackManifest.source_manifest_sha256 ||
@@ -47,9 +61,18 @@ source = replaceOnce(
         vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbPackManifest.fitment_claim !== false ||
         vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution?.required !== true ||
         vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models || vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||
-        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`,
-  "VehiclesDB provenance and candidate-only gate"
+        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {\`;
+  return replaceOnce(source, legacyGate, currentGate, "VehiclesDB provenance and candidate-only gate");
+}
+
+let source = fs.readFileSync(dbFile, "utf8");
+source = replaceOnce(
+  source,
+  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository_url, upstream_tag, dataset_version, dataset_license, attribution_required, attribution_text, attribution_url, catalog_sqlite_sha256, upstream_manifest_sha256, license_sha256, attribution_sha256, ru_evidence_present, fitment_claim FROM dataset_provenance WHERE provenance_id=1").get();',
+  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository, upstream_tag, dataset_version, dataset_license, license_url, upstream_manifest_sha256, source_catalog_sha256, attribution_sha256, license_sha256, lock_sha256, imported_at_utc FROM dataset_provenance WHERE dataset_id=?").get(PACKS.vehiclesdb.id);',
+  "VehiclesDB provenance query"
 );
+source = ensureVehiclesDbCandidateGate(source);
 source = replaceOnce(source, "attributionUrl: safeHttpsUrl(vehiclesDbProvenance.attribution_url),", "attributionUrl: safeHttpsUrl(vehiclesDbPackManifest.attribution?.url),", "VehiclesDB attribution URL");
 source = replaceOnce(source, "upstreamRevision: vehiclesDbProvenance.upstream_tag,", "upstreamRevision: vehiclesDbPackManifest.upstream_tag,", "VehiclesDB upstream revision");
 source = replaceOnce(source, "snapshotGeneratedAt: vehiclesDbProvenance.built_at_utc,", "snapshotGeneratedAt: vehiclesDbPackManifest.built_at_utc,", "VehiclesDB snapshot timestamp");
