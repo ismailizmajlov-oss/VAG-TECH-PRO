@@ -268,8 +268,6 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertIn("homologation-form fields", documentation)
         self.assertIn("not proof that the current public summary/search endpoint exposes", documentation)
 
-if __name__ == "__main__":
-    unittest.main()
 
 
     def test_elpts_2026_11_10_otts_page_recheck_is_filter_metadata_only(self):
@@ -298,3 +296,6 @@ if __name__ == "__main__":
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["product_import_allowed"])
+
+if __name__ == "__main__":
+    unittest.main()
