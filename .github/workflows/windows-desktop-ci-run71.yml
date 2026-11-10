@@ -2811,7 +2811,7 @@ jobs:
             @{ path=(Join-Path $ownerResearchRoot $ownerEntry.pack_manifest_file); hash=$ownerEntry.pack_manifest_sha256 }
             @{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_manifest_file); hash=$ownerEntry.source_manifest_sha256 }
             @{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_file); hash=$ownerEntry.source_file_sha256 }
-            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_snapshot_file); hash=$ownerEntry.source_snapshot_sha256 }
+            @{ path=(Join-Path $ownerResearchRoot $ownerEntry.source_snapshot_file); hash=$ownerEntry.source_snapshot_file_sha256 }
             @{ path=(Join-Path $ownerResearchRoot $ownerEntry.acquisition_snapshot_file); hash=$ownerEntry.acquisition_snapshot_sha256 }
             @{ path=(Join-Path $ownerResearchRoot $ownerEntry.attribution_file); hash=$ownerEntry.attribution_sha256 }
             @{ path=(Join-Path $ownerResearchRoot $ownerEntry.license_file); hash=$ownerEntry.license_sha256 }
