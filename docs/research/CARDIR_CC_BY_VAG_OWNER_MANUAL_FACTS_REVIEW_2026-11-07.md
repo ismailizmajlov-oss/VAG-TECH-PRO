@@ -76,3 +76,17 @@ The current publisher page (https://cardir.ru/dannye/) reports 44,245 verified v
 The current VAG subset contains 948 rows across 26 models and Audi, Porsche, SEAT, Skoda and Volkswagen. Against the archived run-36 CSV baseline, no VAG values or units changed and no VAG verification dates changed. There were 121 new VAG identity groups, 205 added rows, 30 removed full-row variants and 22 page-URL-only groups. Because the intermediate 72b3 snapshot has no available CSV artifact, no exact delta from that intermediate revision is claimed.
 
 The refreshed SQLite pack is still pending its current-snapshot build and independent verification. The data remains a separate read-only reference-facts research resource: market UNKNOWN; no production import; no exact vehicle fitment; no exact engine/gearbox mapping; no RU/EAEU applicability; no ECU, DTC, wiring, pinout or repair-procedure claims.
+
+## 2026-11-10 live CSV refresh — 02:23 UTC
+
+The next Windows acquisition downloaded a new exact CSV snapshot from the same official HTTPS URL. The publisher page still displays **44,245 values / 610 models**, but the downloaded file contains **44,272 rows / 611 brand/model pairs**, 15,174,126 bytes, SHA-256 `30f502729f08fa7a061ab0f6c19f62eab6385dea646c15878b8c3430b4b064f4`. The page/file count discrepancy is preserved explicitly; the file hash and observed row/model counts, not the stale page summary, are now the pinned acquisition contract.
+
+The previous pinned CSV (`64a507e4191a9047fe62ec17868488140dd14f692b012d4e1954b6c4322673be`) and the new CSV were both available as CI artifacts and compared as exact row multisets:
+
+- 52 full rows added, 25 removed (net +27), producing one additional non-VAG brand/model pair.
+- VAG exact-allowlist subset: 948 rows / 26 models before and after.
+- Added/removed VAG rows: 0 / 0.
+- VAG values, units, qualifiers, source titles, page locators, source URLs and verification dates: unchanged.
+- Canonical SHA-256 of the sorted VAG row set in both snapshots: `92720634c6f6ba907ea554e3bf59afea1ff312444897c365ffe4970b95c108ad`.
+
+Thus the upstream CSV changed, but the retained VAG facts did not. The source manifest and CI row-count contracts are updated to the new complete-file hash and counts. The previous Windows pack artifact was built against the old source hash and is stale; a fresh SQLite pack build and independent verification are required before it can be used by desktop CI. The pack remains a separate read-only CC BY 4.0 research resource with market scope UNKNOWN and no exact fitment, RU/EAEU applicability or production import.
