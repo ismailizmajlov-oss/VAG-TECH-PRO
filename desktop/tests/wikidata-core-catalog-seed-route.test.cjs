@@ -63,6 +63,8 @@ test("local-core API seeds bundled CC0 Wikidata candidates once and exposes prov
   assert.equal(admin.importBatches[0].package_id, "wikidata-vag-model-taxonomy-cc0-630dbed1af15");
   assert.equal(admin.importBatches[0].status, "applied");
   assert.equal(admin.importBatches[0].records_inserted, 527);
+  assert.equal(admin.importBatches[0].package_sha256, "52c4b195d8200594aca1cec2de93f64f8fbe94a746dea0406715da7348e057d2");
+  assert.equal(admin.bundledCatalogSeed.packageSha256, "52c4b195d8200594aca1cec2de93f64f8fbe94a746dea0406715da7348e057d2");
   assert.deepEqual(admin.moduleCoverage, []);
 
   const repeated = await GET(request());
