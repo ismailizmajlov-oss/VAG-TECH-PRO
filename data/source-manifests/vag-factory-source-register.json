@@ -3339,7 +3339,7 @@
         "ELPTS notice dated 2026-08-21 confirms the AS EOTTS workflow handles gearbox information including additional reduction and hydraulic transmissions. The public OTTS search table still exposes no engine/gearbox code fields or exact VAG engine/gearbox pairing."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "ELPTS national OTTS page shell rechecked 2026-11-09. Fresh indexed OTTS rendering shows UI total 14822, date filter 08.11.2026-09.11.2026 with no rows, and Volkswagen AG as a filter option only; AUDI AG was not reproduced on the OTTS page. A separate ESBKTS indexed rendering for 04.11.2026-05.11.2026 shows 155 results and two VOLKSWAGEN SBKTS metadata rows (FAW-Volkswagen type FV6462HADCG; SAIC Volkswagen type SVW71421GT). These are SBKTS, not OTTS, and the type strings are not engine/gearbox codes. No documents or raw bytes were downloaded; no data imported; no reuse rights changed. Official ELPTS homepage and paid-report forms page were rechecked 2026-11-09. The 20-page appendix to Order 10/81-26 dated 2026-10-02 defines participant-scoped R3/R4 reports (weekly, 180/120 RUB per row including VAT) with OTTS identifiers and vehicle descriptors, but no engine/gearbox codes; the daily R report includes gearbox make/type wording at 15 RUB per row but no exact VAG gearbox code. No report was ordered or downloaded; no reuse rights were upgraded. Fresh 2026-11-10 search-indexed OTTS rendering again exposes AUDI AG and Volkswagen AG as manufacturer filter options, but no approval rows; the 14822 total remains a UI label only and the active date filter is empty. No raw page bytes or records were captured, no hash exists, and reuse rights remain unconfirmed. On 2026-11-10 the official ELPTS homepage was reviewed: it links to the national OTTS/OTSH/SBKTS register at rst.gov.ru and to XLSX make/technical-characteristics reference books. The RST link timed out; the XLSX files were not downloaded because no reuse licence was stated. ELPTS also documents a gearbox-entry correction in AS EOTTS on 2026-08-21; this does not expose VAG factory codes or fitment.",
+      "evidence_status": "Rechecked 2026-11-11: official public page shell loads but dynamic records do not resolve in the direct renderer; search index alone shows counter 14,822 and a 2026-11-09..10 query with zero returned records. No source bytes, API export or dataset-specific reuse permission established.",
       "public_page_observations": {
         "observed_at": "2026-11-08",
         "ot_ts": {
@@ -3939,7 +3939,30 @@
           "note": "Public Yandex Disk listing linked from the official ELPTS homepage; no reuse licence stated. Not downloaded."
         }
       ],
-      "product_import_allowed": false
+      "product_import_allowed": false,
+      "latest_public_ui_recheck_2026_11_11": {
+        "reviewed_at": "2026-11-11",
+        "official_url": "https://docs.elpts.ru/ncher/otts",
+        "direct_render_status": "page_shell_loaded_dynamic_result_placeholders_not_resolved",
+        "search_index_observation": {
+          "displayed_total_counter": 14822,
+          "counter_validation": "search_index_only_not_reproduced_by_direct_renderer",
+          "query_date_range": "2026-11-09..2026-11-10",
+          "returned_records": 0
+        },
+        "raw_source_bytes_retrieved": false,
+        "api_or_bulk_export_confirmed": false,
+        "dataset_specific_reuse_terms_confirmed": false,
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "product_import_allowed": false,
+        "permission_request_sent": false,
+        "decision": "metadata_only_permission_required",
+        "note": "A public UI link and a search-indexed counter do not grant bulk extraction, persistent SQLite storage, offline display or redistribution rights."
+      }
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
