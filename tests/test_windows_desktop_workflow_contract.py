@@ -29,8 +29,12 @@ def main() -> None:
             + desktop_workflow_name.group(1)
         )
     status_workflow = re.search(r'(?m)^\s+upstream_workflow\s*=\s*"([^"]+)"', native_text)
-    if not status_workflow or status_workflow.group(1) != desktop_workflow_name.group(1):
-        raise SystemExit("Native Windows status record must identify the exact upstream desktop workflow")
+    actual_status_workflow = status_workflow.group(1) if status_workflow else "<missing>"
+    if actual_status_workflow != desktop_workflow_name.group(1):
+        raise SystemExit(
+            "Native Windows status record must identify the exact upstream desktop workflow; "
+            f"expected {desktop_workflow_name.group(1)!r}, found {actual_status_workflow!r}"
+        )
     if "windows-lifecycle-staging/desktop-source/lib/local-research-db.cjs" not in text:
         raise SystemExit("Windows audit artifact must include the local research verifier source")
     if "windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/manifest.json" not in text:
