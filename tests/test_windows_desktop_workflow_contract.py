@@ -768,6 +768,15 @@ def main() -> None:
     if "run-id: ${{ steps.mechanicdb-pack.outputs.run_id }}" not in mechanicdb_download:
         raise SystemExit("MechanicDB download must use the verified source-register run ID, not an unverified hard-coded run")
 
+    # run68 must add the Wikidata pack before run93 changes the shared VehiclesDB count guard.
+    # Reversing these patch steps removes run68's legacy anchor and breaks the Windows build.
+    wikidata_step = "      - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)"
+    vehiclesdb_guard_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
+    if wikidata_step not in text or vehiclesdb_guard_step not in text:
+        raise SystemExit("Windows workflow is missing the Wikidata or VehiclesDB candidate-only integration step")
+    if text.index(wikidata_step) > text.index(vehiclesdb_guard_step):
+        raise SystemExit("Wikidata integration must run before the VehiclesDB guard rewrites its shared provenance anchor")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 if __name__ == "__main__":
