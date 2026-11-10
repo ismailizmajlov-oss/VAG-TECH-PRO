@@ -238,7 +238,6 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         db.execute("PRAGMA foreign_keys=ON")
         db.execute("PRAGMA journal_mode=DELETE")
         db.execute("PRAGMA synchronous=FULL")
-        db.execute("BEGIN IMMEDIATE")
         db.executescript("""
           CREATE TABLE pack_metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL);
           CREATE TABLE source_registry(
@@ -296,6 +295,7 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
           CREATE INDEX idx_ownerspecs_fact_field ON facts(field_key);
           CREATE INDEX idx_ownerspecs_fact_category ON facts(category);
         """)
+        db.execute("BEGIN IMMEDIATE")
         rights = source["rights"]
         policy = source["applicability_policy"]
         attribution = rights["attribution_text"]
@@ -582,12 +582,33 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
         if len(registry) != 1 or registry[0][0] != SOURCE_ID:
             raise ValueError("OwnerSpecs SQLite source registry mismatch.")
         if (
-            any(registry[0][index] != 1 for index in range(7, 15))
+            registry[0][4] != "CC-BY-SA-4.0"
+            or registry[0][5] != "https://creativecommons.org/licenses/by-sa/4.0/"
+            or registry[0][6] != source["rights"]["rights_status"]
+            or any(registry[0][index] != 1 for index in range(7, 15))
+            or "ownerspecs.com" not in registry[0][15]
             or registry[0][16] != "UNKNOWN"
             or registry[0][17] != 1
             or any(registry[0][index] != 0 for index in range(18, 29))
         ):
             raise ValueError("OwnerSpecs SQLite source rights/applicability boundary failed.")
+        source_file = db.execute("SELECT sha256,byte_size,generation_count,fact_count FROM source_files").fetchone()
+        if (
+            source_file is None
+            or source_file[0] != manifest["source_snapshot_sha256"]
+            or source_file[1] != (output_dir / "source.json").stat().st_size
+            or source_file[2] != manifest["counts"]["all_source_generations"]
+            or source_file[3] != manifest["counts"]["all_source_verified_datapoints"]
+        ):
+            raise ValueError("OwnerSpecs SQLite source-file registry mismatch.")
+        metadata = dict(db.execute("SELECT key,value FROM pack_metadata"))
+        if (
+            metadata.get("source_snapshot_sha256") != manifest["source_snapshot_sha256"]
+            or metadata.get("source_manifest_sha256") != manifest["source_manifest_sha256"]
+            or metadata.get("product_import_allowed") != "false"
+            or metadata.get("critical_technical_values_publishable") != "false"
+        ):
+            raise ValueError("OwnerSpecs SQLite pack metadata boundary failed.")
     finally:
         db.close()
     attribution = (output_dir / "ATTRIBUTION.md").read_text(encoding="utf-8")
@@ -617,7 +638,10 @@ def main() -> int:
     if args.acquire:
         source = read_json(args.source_manifest)
         validate_source_manifest(source)
-        raw = acquire_json(source["source_urls"]["json"], args.output_dir / "source.json")
+        source_json_path = args.output_dir / "source.json"
+        if source_json_path.exists() or source_json_path.is_symlink():
+            raise FileExistsError(f"Refusing to overwrite an existing OwnerSpecs source snapshot: {source_json_path}")
+        raw = acquire_json(source["source_urls"]["json"], source_json_path)
         generations = validate_dataset(raw, source)
         vag_generations = [g for g in generations if str(g.get("brand") or "").strip().casefold() in VAG_BRANDS]
         acquisition_snapshot = {
@@ -626,7 +650,7 @@ def main() -> int:
             "source_revision": source["data_revision"],
             "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_file": "source.json",
-            "source_file_bytes": (args.output_dir / "source.json").stat().st_size,
+            "source_file_bytes": source_json.stat().st_size,
             "source_snapshot_sha256": sha256_file(args.output_dir / "source.json"),
             "generation_count": len(generations),
             "verified_datapoints": sum(int(g.get("verified_datapoints") or 0) for g in generations),
