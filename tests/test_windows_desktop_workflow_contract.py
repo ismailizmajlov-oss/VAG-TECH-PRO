@@ -448,10 +448,20 @@ def main() -> None:
     if rdw_step_marker not in text:
         raise SystemExit("Windows workflow is missing the current RDW pack resolver")
     rdw_step = text.split(rdw_step_marker, 1)[1].split("\n      - name:", 1)[0]
-    if 'for ($attempt = 0; $attempt -lt 120 -and $run.status -ne "completed"; $attempt++)' not in rdw_step or "Start-Sleep -Seconds 20" not in rdw_step:
-        raise SystemExit("RDW pack resolver must allow a 40-minute completion window for the measured acquisition duration")
-    if "timeout-minutes: 90" not in text:
-        raise SystemExit("Windows build job must leave headroom after the 40-minute RDW pack wait")
+    rdw_required = (
+        '$successfulRuns = @($response.workflow_runs | Where-Object { $_.head_branch -eq "main" -and $_.status -eq "completed" -and $_.conclusion -eq "success" -and $_.event -in @("push", "workflow_dispatch") } | Sort-Object run_number -Descending)',
+        '$run = $successfulRuns | Select-Object -First 1',
+        '$latestObservedRun = $response.workflow_runs | Sort-Object run_number -Descending | Select-Object -First 1',
+        'using latest successful run',
+        'source-manifest and snapshot hashes to the pinned repository manifest',
+        '$digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()',
+        '$digest -notmatch "^[a-f0-9]{64}$"',
+    )
+    missing_rdw_contract = [marker for marker in rdw_required if marker not in rdw_step]
+    if missing_rdw_contract:
+        raise SystemExit(f"RDW resolver must select a completed successful run and verify its pinned artifact digest: {missing_rdw_contract}")
+    if not re.search(r"(?m)^\s+timeout-minutes:\s+\d+", text):
+        raise SystemExit("Windows build job must retain an explicit bounded timeout")
 
     if "name: Create desktop source inventory for technical-section audit" not in text:
         raise SystemExit("Desktop source technical-surface inventory step is missing")
