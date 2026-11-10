@@ -7892,7 +7892,7 @@
       "publisher": "ownerspecs.com",
       "url": "https://ownerspecs.com/data",
       "source_kind": "curated_document_verified_vehicle_generation_specifications",
-      "source_revision": "publisher dataset JSON generated 2026-11-09; reviewed 2026-11-10; HTML/JSON generation-count mismatch",
+      "source_revision": "publisher dataset JSON generated 2026-11-09; exact JSON snapshot acquired and SHA-256 pinned 2026-11-10; 111 generations, 2,369 datapoints, 20 VAG generation candidates and 233 VAG facts",
       "market_scope": [
         "UNKNOWN"
       ],
@@ -7930,7 +7930,11 @@
         "per_value_primary_document_url": false,
         "per_value_primary_document_revision": false,
         "per_value_source_count": true,
-        "per_value_provenance_kind": true
+        "per_value_provenance_kind": true,
+        "vag_generation_count": 20,
+        "vag_fact_count": 233,
+        "source_snapshot_status": "source_snapshot_acquired_schema_verified",
+        "source_file_bytes": 683641
       },
       "applicability": {
         "market_scope": "UNKNOWN",
@@ -7947,11 +7951,12 @@
         "technical_review_status": "not_independently_reviewed"
       },
       "data_ingested": false,
-      "source_snapshot_sha256": null,
+      "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
       "research_pack_allowed": true,
       "research_pack_acquisition_allowed": true,
       "product_import_allowed": false,
-      "project_decision": "Rights are approved for a separate attributed CC BY-SA 4.0 research pack. Fresh live HTML and JSON metadata agree at 111 generations; acquire and validate the exact snapshot in Windows CI. No production applicability or repair-value approval."
+      "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. The exact JSON snapshot is acquired and hash-pinned; Windows CI has reconciled 111 source generations / 2,369 datapoints and identified 20 VAG generation candidates / 233 VAG facts. Rebuild the pack against this pinned manifest before marking research_pack_acquired. Keep market UNKNOWN and all production fitment/repair claims disabled.",
+      "research_pack_acquired": false
     }
   ],
   "minimum_fitment_evidence_fields": [
