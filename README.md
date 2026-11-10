@@ -41,6 +41,9 @@ The current research snapshots contain useful public data, but none of the follo
 | MechanicDB generic guidance | 275 generic guidance rows and 75 generic SAE DTC references | ODbL-1.0; generic educational reference only, no VAG or exact-vehicle applicability |
 | AutoDiag2 VAG community candidates | 110 model candidates, 259 version candidates, 1,083 unverified engine fields, 179 ECU candidates and 3,170 configuration candidates; 956 unattributed make-level DTC rows excluded, 0 retained | ODbL-1.0 / DbCL-1.0; separate read-only research pack, market UNKNOWN; no verified engine codes, transmission records or exact fitment |
 | MechanicDB manufacturer-labelled DTC candidates | 2 rows | ODbL-1.0; quarantined from normal DTC lookup pending technical review; not OEM-confirmed |
+| RDW NL/EU type-approval research | 604,765 rows across six CC0 datasets (registration and TGK base/make/trade-name/drive/gearbox tables) | CC0 1.0; NL/EU only; exact approval scope preserved; engine and gearbox child datasets are never cross-joined; no factory VAG codes, exact pair or RU/EAEU applicability |
+| CarDir VAG owner-manual reference facts | 948 facts across 26 models and five exact brand labels (Audi, Porsche, SEAT, Skoda, Volkswagen) | CC BY 4.0; publisher-curated owner-manual facts with source/page references; market UNKNOWN; raw qualifiers only, no inferred generation/year/engine/gearbox pair; separate read-only desktop research pack |
+| OwnerSpecs VAG generation/specification candidates | 20 generation candidates and 233 VAG facts from a 111-generation / 2,369-datapoint source snapshot | CC BY-SA 4.0; separate Share-Alike research pack; market UNKNOWN; no primary-document locator/revision per value; no exact fitment or critical repair-value publication |
 | KBA DE VAG stock identity research | 264,847 aggregate observations, 8 exact manufacturer labels, 802 make/trade-name pairs, 4,155 make/raw-type-key pairs, 17 federal states and four annual reference dates (2023–2026) | DL-DE BY 2.0; DE-only aggregate stock; Typschlüssel remains a raw field, not confirmed TSN; no engine/gearbox, ECU, DTC, repair or individual-vehicle fitment |
 | ASTRA / FEDRO Swiss TAS VAG research | 45,215 VAG-group type-approval index rows and 53,414 emissions/gearbox rows in the 2026-10-29 source snapshot; 5,420 exact variant/version links, 28,489 wildcard-scope links, 19,505 unlinked | Swiss OGD with FEDRO attribution; separate CH-only research namespace; `engineType` and stamped marking stay distinct; `chGearboxType` is not a VAG gearbox code; no RU/EAEU or repair fitment |
 | ASTRA / FEDRO TARGA per-gearbox VAG research | 53,240 source-defined approval/gearbox-variant rows; 0 exact VAG factory-code pairs; 0 production-fitment rows | Swiss OGD with attribution; CH-only; raw `Motortyp` and `Getriebe` labels; no RU/EAEU, model-year, generation or repair applicability |
@@ -50,25 +53,29 @@ Each pack remains in its own namespace with its own manifest, attribution/licens
 
 The OBDex research view applies the local DTC range policy rather than trusting the upstream namespace label alone. Rows in generic SAE/ISO ranges remain unreviewed research references; P34xx-P39xx, U3xxx, B3xxx and C3xxx are shown as namespace quarantine when they conflict with the local policy. No OBDex row is promoted into the production DTC index, linked to a VAG configuration or allowed to execute a diagnostic action.
 
-## Production-data status — 2026-11-09
+## Production-data status — 2026-11-10
 
-### Latest Windows CI verification — run1007 (2026-11-09)
+### Latest merged Windows x64 validation — PR #91 / run1264 (2026-11-10)
 
-[Windows desktop CI run 1007](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42616568018) completed successfully on 2026-11-09 for tested desktop/source revision cea2e2d3ee3d717989c4edbb185056ebb1924cc8. Both jobs passed: Windows x64 build-and-lifecycle and the separate Windows Server 2022 installer-compatibility lifecycle. The later main-branch commit dd2f843b97d86634b485c65a8b46d4917fd78be0 only records this CI evidence; it does not change the tested desktop source.
+[Windows desktop CI run 1264](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42813922741) validated PR #91 at source revision `f5f005a04e1dc715aae1fb48899592ff5f1009c2`; PR #91 was subsequently merged into `main` as commit `8e8280cf2c9a5efb7cb7c2e2178d7f4936a59e49`. Both jobs passed: the Windows x64 `build-and-lifecycle` job (100 steps) and the separate Windows Server 2022 installer-compatibility lifecycle (7 steps). The build produced NSIS x64 installers 0.2.3 and 0.2.4 and passed clean installation, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, database integrity and uninstall-preservation checks.
 
-Run 1007 checked the 62-entry central source register, 15-entry Russian/EAEU source register, 19 non-empty source manifests and 13-pack offline research manifest. It completed the Windows x64 build/lifecycle and Windows Server 2022 compatibility lifecycle. NSIS x64 installers 0.2.3 and 0.2.4 were built; the lifecycle covered clean installation, offline launch with external networking blocked, SQLite backup/restore, in-place upgrade, database integrity and uninstall while preserving the user database.
+Run 1264 verified the 67-entry central source register, 16-entry Russian/EAEU source register and 19 non-empty source manifests. It integrated the RDW NL/EU, KBA DE, CarDir and OwnerSpecs research packs into the offline desktop catalog. The two newly integrated packs were separately downloaded, hash-checked, opened read-only and tested: CarDir integration steps 66–68 and OwnerSpecs steps 69–71 all passed. These are research packs, not production catalog imports. The base 13-pack research manifest plus the two separate CarDir/OwnerSpecs packs yields 15 packs in the validated Windows desktop build.
 
-Run 1007 does not establish native Windows 10/11 client acceptance. The dedicated job was skipped because native_windows_10_11.runner_gate_enabled=false; it requires the owner-controlled self-hosted runner labels self-hosted, windows, x64, vag-tech-pro-win10-11. The workflow recorder reports release_ready=false. Installers remain unsigned because no owner-supplied code-signing certificate is configured.
+Run 1264 is a PR-head validation, not native Windows 10/11 client acceptance. The dedicated native lifecycle is owner-gated and was not run for this PR-head workflow. The latest recorded main-branch run before PR #91 merged was [run 1260](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42802969837), which also passed its Windows x64 and Windows Server 2022 jobs but recorded `native_windows_10_11.runner_gate_enabled=false`. Native Windows 10/11 acceptance therefore remains unproven. Installers remain unsigned because no owner-supplied code-signing certificate is configured; the workflow continues to report `release_ready=false`.
 
-Run 1007 artifact evidence:
-- Windows x64 installer/lifecycle artifact ID 13675940067, 1,369,403,910 bytes.
-- Desktop source-audit artifact ID 13675491195, 2,511,335 bytes, ZIP SHA-256 edd05cb0fd817843e36705982a1aaf12a165339375f0f47afaecddd92385f426; independently recomputed from the downloaded artifact.
-- Build-metadata artifact ID 13673413985, 2,977 bytes, ZIP SHA-256 b8191d7a0464dd0a061a29a38441f59df742d3a2931c2cea485267f147cc1c80; independently recomputed from the downloaded artifact.
-- Windows Server 2022 lifecycle artifact ID 13675512044, 7,367 bytes.
-- Installer VAG-TECH-PRO-Setup-0.2.3-x64.exe: 568,569,651 bytes, SHA-256 afb3197641940a9541079a613d2a1da67bcefa8e658b7000993fd801a0f1c0aa.
-- Installer VAG-TECH-PRO-Setup-0.2.4-x64.exe: 568,569,569 bytes, SHA-256 88457f9fddd0e4dfdc4fd795b698411d372e872d20f181814c05f6fae7d6a2b9.
+The EEA live-data acquisition job remains skipped: it requires the owner-controlled Windows 10/11 x64 runner and authorized EEA network access. The EEA source-rights/tooling checks passed, but no EEA source bytes or SQLite pack were acquired in run 1264.
 
-Build metadata pins source archive SHA-256 e041ce167f083192a11f4b86b19e7bbc51fe8a1bb8e732a0d2944229af713216, central source-register SHA-256 98406a1ae7ed260b566e22dd0e16de96304fff387a66c3280b64c71b86ec05f2, Russian/EAEU manifest SHA-256 a101ac1441998ad0e70a808e829b43d8146710d04029fd06eb19496e296a6de8, and source-manifest-index SHA-256 2e728fd2d7a2b8a6c71cc049418d8f798cb4085f8729aeb1745a02f51fd23936. Individual installer hashes are not substituted with the enclosing artifact ZIP digest.
+### Production catalog status
+
+The central source register has 67 entries and the Russian/EAEU register has 16. Across both registers, zero sources are marked `data_ingested=true` and zero are marked `product_import_allowed=true`. All 16 Russian/EAEU source records remain discovery, permission-required, restricted or schema-reference only; no Russian/EAEU OTTS records have been imported.
+
+The five canonical production SQL files (`vehicle-catalog.sql`, `oem-dtc-index.sql`, `technical-library.sql`, `otts-type-approval-evidence.sql` and `dtc-catalog-links.sql`) currently define tables, indexes and fail-closed publication guards but contain **zero INSERT statements**. The production catalog therefore remains unseeded: zero confirmed production vehicle-fitment rows, zero Russian/EAEU OTTS rows and zero confirmed VAG-specific DTC rows. The research packs above do not populate or authorize the production repair catalog.
+
+The 14 typed technical sections are represented in the desktop schema and renderer contracts, but their presence does not mean that approved repair content exists. Generic SAE/ISO DTC, community candidates and foreign-market type-approval observations remain in separate research namespaces and are not linked to confirmed VAG configurations.
+
+### Historical Windows CI verification — run1007 (superseded)
+
+[Windows desktop CI run 1007](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42616568018) completed successfully on 2026-11-09 for source revision `cea2e2d3ee3d717989c4edbb185056ebb1924cc8`. It built NSIS x64 installers 0.2.3 and 0.2.4 and passed the Windows x64 and Windows Server 2022 lifecycle checks. It predates the additional CarDir and OwnerSpecs desktop integrations and PR #91.
 
 ### Historical Windows CI verification — run981 (superseded)
 
@@ -113,6 +120,7 @@ The packaged offline research bundle remains explicitly separated from verified 
 - MechanicDB: 275 generic guidance rows and 75 generic SAE DTC references; not VAG-specific or OEM procedures.
 - Two manufacturer-labelled MechanicDB DTC candidates remain unverified; **zero VAG-specific DTC rows are verified**.
 - Fourteen typed technical sections are represented in the desktop schema, but **zero production fitment rows and zero Russian/EAEU OTTS rows were added**. The presence of a section or candidate pack does not mean it contains approved repair data.
+- The current production SQL files remain schema-only with no seed INSERT statements; research packs remain isolated from production fitment and repair tables.
 
 Run 953 tested desktop/source commit `6af565a73d2b667e591c86a87f05e707c3a41cfd`. Later commits update CI evidence, documentation, and a small workflow/test change to publish build metadata as a separate artifact; they do not change the tested desktop payload or research data. The standalone metadata-artifact change has not yet been exercised by a subsequent workflow run. The exact run record is maintained in [`ci-status/latest-windows-run.json`](ci-status/latest-windows-run.json).
 
