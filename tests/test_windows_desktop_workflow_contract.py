@@ -729,6 +729,43 @@ def main() -> None:
     if missing_owner_paths:
         raise SystemExit(f"Windows pull-request path filter must rerun for OwnerSpecs integration changes: {missing_owner_paths}")
 
+    mechanicdb_register = json.loads((ROOT / "data" / "source-manifests" / "vag-factory-source-register.json").read_text(encoding="utf-8"))
+    mechanicdb_entries = [entry for entry in mechanicdb_register["sources"] if entry.get("source_id") == "mechanicdb-vag-dtc-candidates-odbl"]
+    if len(mechanicdb_entries) != 1:
+        raise SystemExit("MechanicDB candidate source must have exactly one central register entry")
+    mechanicdb = mechanicdb_entries[0]
+    mechanicdb_expected = {
+        "research_pack_run_id": 41622526550,
+        "research_pack_run_number": 8,
+        "research_pack_artifact_id": 13223942420,
+        "research_pack_artifact_name": "mechanicdb-audi-vw-dtc-candidates-odbl-research",
+        "research_pack_source_commit": "05a58d9e800dc9d725f3cc254857f68c32cf59c6",
+        "artifact_sha256": "f294bf4ebe6384b2ad6a586244ba0c49011fb441c691006c460d8a070744a5d6",
+        "source_snapshot_sha256": "f123b251659b45f4acf64071329dec6dc3a4ba1c8b2f827ff1ad3b45e28e0c94",
+        "source_csv_sha256": "796fa2b18bdbff311f15eb4943b68adbf7241e564ce8eff32023a2d297694bff",
+        "display_status": "candidate_reference_visible_separate_namespace",
+    }
+    for key, value in mechanicdb_expected.items():
+        if mechanicdb.get(key) != value:
+            raise SystemExit(f"MechanicDB source-register pin mismatch for {key}")
+    if mechanicdb.get("research_pack_ingested") is not True or mechanicdb.get("data_ingested") is not False or mechanicdb.get("product_database_ingested") is not False:
+        raise SystemExit("MechanicDB must remain an isolated research pack and never enter the production catalog")
+    if mechanicdb.get("counts", {}).get("generic_sae_iso_rows") != 0 or mechanicdb.get("counts", {}).get("manufacturer_controlled_candidates") != 2:
+        raise SystemExit("MechanicDB candidate pack must contain only the two make-labelled candidates and zero generic DTC rows")
+    if mechanicdb.get("display_policy", {}).get("diagnostic_execution_allowed") is not False or mechanicdb.get("display_policy", {}).get("vag_oem_confirmation") is not False:
+        raise SystemExit("MechanicDB candidate display must remain non-actionable and not OEM-confirmed")
+
+    mechanicdb_resolver_marker = "      - name: Verify pinned MechanicDB Audi/VW candidate artifact"
+    if mechanicdb_resolver_marker not in text:
+        raise SystemExit("Windows workflow is missing the MechanicDB artifact ID/digest resolver")
+    mechanicdb_resolver = text.split(mechanicdb_resolver_marker, 1)[1].split("\\n      - name: Download MechanicDB candidate pack", 1)[0]
+    for required in ("ConvertFrom-Json -AsHashtable", "research_pack_run_id", "research_pack_artifact_id", "artifact.digest", "artifact_sha256", "research_pack_source_commit"):
+        if required not in mechanicdb_resolver:
+            raise SystemExit(f"MechanicDB resolver is missing a pinned artifact/provenance check: {required}")
+    mechanicdb_download = text.split("      - name: Download MechanicDB candidate pack", 1)[1].split("\\n      - name:", 1)[0]
+    if "run-id: \${{ steps.mechanicdb-pack.outputs.run_id }}" not in mechanicdb_download:
+        raise SystemExit("MechanicDB download must use the verified source-register run ID, not an unverified hard-coded run")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 if __name__ == "__main__":
