@@ -146,6 +146,8 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
             self.assertEqual(db.execute("SELECT DISTINCT market_scope FROM facts").fetchall(), [("UNKNOWN",)])
             self.assertEqual(db.execute("SELECT count(*) FROM facts WHERE primary_document_url IS NOT NULL OR primary_document_revision IS NOT NULL").fetchone()[0], 0)
             self.assertEqual(db.execute("SELECT count(*) FROM facts WHERE critical_value_publishable != 0 OR exact_engine_gearbox_pair != 0").fetchone()[0], 0)
+            pinned_time = json.loads(self.source_manifest.read_text(encoding="utf-8"))["snapshot"]["retrieved_at_utc"]
+            self.assertEqual(db.execute("SELECT retrieved_at_utc FROM source_files").fetchone()[0], pinned_time)
         finally:
             db.close()
 
