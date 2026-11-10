@@ -384,8 +384,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "OEM DTC SQLite/schema namespace validation failed." }
           node --test tests/dtc-overlap-audit.test.cjs
           if ($LASTEXITCODE -ne 0) { throw "DTC namespace overlap audit tests failed." }
-          python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
+          python -m py_compile scripts/vag_identity_vehiclesdb_common.py scripts/build_vag_identity_vehiclesdb.py scripts/verify_vag_identity_vehiclesdb.py scripts/test_vag_identity_vehiclesdb.py scripts/probe_vag_identity_vehiclesdb.py scripts/test_probe_vag_identity_vehiclesdb.py scripts/build_offline_data_pack_index.py scripts/verify_offline_data_pack_index.py
           python scripts/test_vag_identity_vehiclesdb.py
+          python scripts/test_probe_vag_identity_vehiclesdb.py
           python tests/test_offline_data_pack_rights.py
           if ($LASTEXITCODE -ne 0) { throw "Offline data-pack rights tests failed." }
           python -m py_compile scripts/build_eea_vag_approval_research_pack.py
