@@ -80,6 +80,17 @@ def main() -> None:
               'cc0','generic research only',1,'2026-11-03T00:00:00Z')""")
     cc0_source = db.execute("SELECT last_insert_rowid()").fetchone()[0]
 
+    # Direct INSERT must not bypass the rights/applicability publication guard.
+    expect_integrity_error(
+        lambda: db.execute("""INSERT INTO oem_dtc_index
+          (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+           evidence_locator,applicability_level,review_status,source_claim_hash,created_at_utc)
+          VALUES ('P0125','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                  'direct publication bypass test','generic_only','publication_approved',?,'2026-11-10T00:00:00Z')""",
+          (cc0_source, hashlib.sha256(b"direct-publication-P0125").hexdigest())),
+        "DTC publication must use guarded review-status transition"
+    )
+
     expect_integrity_error(
         lambda: db.execute("""INSERT INTO oem_dtc_index
           (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
