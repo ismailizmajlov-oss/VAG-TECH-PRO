@@ -82,6 +82,7 @@ class ElptsEsbktsPublicUiRightsTests(unittest.TestCase):
 
     def test_review_records_zero_acquisition_and_separate_document_scope(self):
         review = REVIEW.read_text(encoding="utf-8").casefold()
+        self.assertIn("eec.eaeunion.org", review)
         for phrase in (
             "discovery-only",
             "individual-vehicle safety certificate",
