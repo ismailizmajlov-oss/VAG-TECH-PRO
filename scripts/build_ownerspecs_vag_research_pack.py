@@ -464,6 +464,7 @@ def build_pack(source_json: Path, source_manifest_path: Path, output_dir: Path) 
         "source_file": "source.json",
         "source_file_bytes": snapshot_size,
         "source_snapshot_sha256": snapshot_hash,
+        "source_file_bytes": snapshot_size,
         "source_manifest_sha256": source_manifest_hash,
         "generation_count": len(generations),
         "verified_datapoints": sum(int(g.get("verified_datapoints") or 0) for g in generations),
@@ -545,6 +546,9 @@ def verify_pack(output_dir: Path, source_manifest_path: Path) -> dict[str, Any]:
         raise ValueError("OwnerSpecs pack license mismatch.")
     if manifest.get("source_snapshot_sha256") != sha256_file(output_dir / "source.json"):
         raise ValueError("OwnerSpecs source snapshot hash mismatch.")
+    source_file = output_dir / "source.json"
+    if manifest.get("source_file_bytes") != source_file.stat().st_size or snapshot.get("source_file_bytes") != source_file.stat().st_size:
+        raise ValueError("OwnerSpecs source-file byte-size metadata mismatch.")
     if manifest.get("source_manifest_sha256") != sha256_file(source_manifest_path):
         raise ValueError("OwnerSpecs source manifest hash mismatch.")
     generations = validate_dataset(dataset, source)
