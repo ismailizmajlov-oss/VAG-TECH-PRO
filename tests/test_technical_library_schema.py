@@ -99,10 +99,20 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
           VALUES ('TESTG1','VOLKSWAGEN_GROUP',NULL,6,'manual','FWD','published')""")
         transmission_id=self.db.execute("SELECT transmission_id FROM transmission_codes WHERE transmission_code='TESTG1'").fetchone()[0]
         self.db.execute("""INSERT INTO vehicle_catalog_evidence
-          (source_id,document_id,document_revision,issue_date,retrieved_at_utc,evidence_locator,source_sha256,claim_type,review_status,reviewer_note)
-          VALUES ('test-vag-source','TEST-PAIR','1',NULL,?,'https://example.invalid/test-pair',?,'engine_transmission_pair','candidate','synthetic fixture only')""",(UTC,self.h("a")))
+          (source_id,document_id,document_revision,issue_date,retrieved_at_utc,evidence_locator,
+           source_sha256,market_scope,applicability_precision,claim_type,review_status,reviewer_note)
+          VALUES ('test-vag-source','TEST-PAIR','1',NULL,?,'https://example.invalid/test-pair',
+                  ?,'EU','exact_pairing','engine_transmission_pair','candidate','synthetic fixture only')""",(UTC,self.h("a")))
         evidence_id=self.db.execute("SELECT evidence_id FROM vehicle_catalog_evidence WHERE document_id='TEST-PAIR'").fetchone()[0]
-        self.db.execute("UPDATE vehicle_catalog_evidence SET review_status='publication_approved' WHERE evidence_id=?",(evidence_id,))
+        self.db.execute("""UPDATE vehicle_catalog_evidence SET review_status='source_checked',
+          reviewed_at_utc=?,reviewer_note='Primary document and same-variant section checked.'
+          WHERE evidence_id=?""",(UTC,evidence_id))
+        self.db.execute("""UPDATE vehicle_catalog_evidence SET review_status='technically_verified',
+          reviewed_at_utc=?,reviewer_note='Exact engine and gearbox pair confirmed in one approval variant.'
+          WHERE evidence_id=?""",(UTC,evidence_id))
+        self.db.execute("""UPDATE vehicle_catalog_evidence SET review_status='publication_approved',
+          reviewed_at_utc=?,reviewer_note='Independent technical review completed.'
+          WHERE evidence_id=?""",(UTC,evidence_id))
         self.db.execute("INSERT INTO powertrain_pair_evidence (variant_id,engine_id,transmission_id,evidence_id) VALUES (?,?,?,?)",(variant_id,engine_id,transmission_id,evidence_id))
         pair_id=self.db.execute("SELECT pair_id FROM powertrain_pair_evidence WHERE evidence_id=?",(evidence_id,)).fetchone()[0]
         source_document_id=self.insert_source_document("test-tech","TEST-TECH-1",source_sha256=self.h("b"),market_scope="EU")
@@ -267,9 +277,12 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
 
     def test_vehicle_catalog_rights_are_required_for_exact_applicability(self) -> None:
         self.seed_published_exact_pair()
-        self.db.execute("UPDATE vehicle_catalog_source_rights SET rights_status='restricted' WHERE source_id='test-vag-source'")
         evidence_id = self.db.execute("SELECT evidence_id FROM vehicle_catalog_evidence WHERE document_id='TEST-PAIR'").fetchone()[0]
+        self.db.execute("UPDATE vehicle_catalog_source_rights SET rights_status='restricted' WHERE source_id='test-vag-source'")
+        status = self.db.execute("SELECT review_status FROM vehicle_catalog_evidence WHERE evidence_id=?", (evidence_id,)).fetchone()[0]
+        self.assertEqual(status, "candidate")
         pair = self.db.execute("SELECT variant_id,engine_id,transmission_id,pair_id FROM powertrain_pair_evidence WHERE evidence_id=?", (evidence_id,)).fetchone()
+        self.assertIsNotNone(pair, "rights revocation retains fitment evidence links for audit")
         self.db.execute(
             """INSERT INTO technical_applicability
                (vehicle_catalog_evidence_id,variant_id,engine_id,transmission_id,pair_evidence_id,
