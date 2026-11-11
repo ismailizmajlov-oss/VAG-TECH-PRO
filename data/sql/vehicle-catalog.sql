@@ -184,6 +184,7 @@ CREATE INDEX IF NOT EXISTS idx_engine_fitments_variant ON engine_fitments(varian
 CREATE INDEX IF NOT EXISTS idx_transmission_fitments_variant ON transmission_fitments(variant_id, transmission_id);
 
 -- Fitment rows are active catalog relationships, not a place to store unreviewed candidates.
+-- Keep this canonical schema in lockstep with the Windows local-core evidence policy.
 -- The cited claim must be technically verified, market-exact, revision/hash-bound,
 -- rights-cleared for commercial display and offline redistribution, and linked only
 -- to verified parent catalog entities.
