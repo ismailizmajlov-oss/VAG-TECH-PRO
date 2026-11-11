@@ -109,7 +109,17 @@ Verified run-1461 artifacts:
 
 Both runs used GitHub-hosted Windows runners. The owner-controlled Windows 10/11 client runner gate remains disabled, so native Windows 10/11 acceptance is still `blocked_owner_runner_unavailable`; Windows Server 2022 success is not a substitute.
 
-A subsequent PR validation attempt (run 1463) stopped before installer creation because the generated npm lockfile changed from the previously pinned SHA-256 `ff3ed566...` to `c9a17fee...`. The generated lock was retained and inspected; the exact new SHA-256 is now pinned in `desktop-package-lock.sha256`. A fresh full Windows validation is required before merge.
+The intervening PR validation attempt (run 1463) stopped before installer creation because the generated npm lockfile changed from the previously pinned SHA-256 `ff3ed566...` to `c9a17fee...`. The generated lock was retained, inspected and pinned in `desktop-package-lock.sha256`. The subsequent full Windows x64 validation [run 1465](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43023584214) completed successfully on the exact PR head `f19c687845e36b0f82e0401e8e6f82a7e7b034ac`. Both `build-and-lifecycle` and the separate Windows Server 2022 installer-compatibility lifecycle jobs passed. All 103 recorded steps in the primary job completed successfully, including offline bundle verification, research-pack rights gates, desktop/local-core/research tests, ESLint, TypeScript, both NSIS x64 installers, packaged-source/schema checks, clean install, offline launch with external networking blocked, SQLite integrity, backup/restore, in-place upgrade and uninstall-preservation checks.
+
+Verified run-1465 artifacts:
+- Windows x64 build/lifecycle artifact ID `13859480376`, size 1,383,476,821 bytes, GitHub artifact digest `sha256:36083e6c3ed71f7cb9b5d7fad0b75640126b4497cb3a676bbaadbf6832ed0fe3`.
+- Build metadata artifact ID `13857328546`, GitHub artifact digest `sha256:89ae483e2ae1d74d05f57234f1ebd3ece8ada3d35cb633349f9931a90e97c09d`.
+- Desktop source-audit artifact ID `13857691463`, GitHub artifact digest `sha256:bb20cf66e25e98fec4cb46d1e402b33ac35b7a8e6e0c98ea2dcded62785c9ddd`.
+- Windows Server 2022 lifecycle artifact ID `13858846586`, GitHub artifact digest `sha256:c3e6ce96a2b509422f6e8d0d4885c782784d6f843e2988e1dffb3020597a93fb`.
+- Installer `VAG-TECH-PRO-Setup-0.2.3-x64.exe`: 573,955,036 bytes, SHA-256 `6123201695f81c1ac118f5ec3ce496b07cfd4bcd993614b66d15b922cab3e91c`.
+- Installer `VAG-TECH-PRO-Setup-0.2.4-x64.exe`: 573,954,877 bytes, SHA-256 `b4e433b67f0a85155660a64f00201c3ac5e48f20a2b63b846100fec27250b754`.
+
+Run 1465 is successful PR-head CI and Windows Server 2022 lifecycle evidence only. The owner-controlled Windows 10/11 client runner gate remains disabled; native acceptance remains `blocked_owner_runner_unavailable`, not passed. Do not interpret this run as native Windows 10/11 acceptance or release approval.
 
 ### Current data and rights status
 
