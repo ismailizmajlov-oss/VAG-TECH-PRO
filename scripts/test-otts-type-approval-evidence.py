@@ -59,6 +59,22 @@ def test_structured_data_rights_are_required(db):
     )
 
 
+def test_structured_data_rights_are_required_on_update(db):
+    insert_source(db, "update-no-structured", "open_license", 1)
+    insert_rights(db, "update-no-structured")
+    expect_integrity_error(
+        db,
+        lambda: db.execute(
+            "UPDATE vehicle_catalog_source_rights SET store_structured_data_allowed=0 WHERE source_id='update-no-structured'"
+        ),
+        "approved rights cannot drop structured-data storage permission",
+    )
+    state = db.execute(
+        "SELECT rights_status, store_structured_data_allowed FROM vehicle_catalog_source_rights WHERE source_id='update-no-structured'"
+    ).fetchone()
+    assert state == ("approved", 1), state
+
+
 def evidence_values(source_id, key, *, market="EAEU", cached=0, precision="type_approval_descriptor"):
     return (
         source_id, "RU", "OTTS", "TEST-OTTS-001", key, "revision-A",
@@ -135,6 +151,7 @@ def main():
             # The database cannot accept rows that claim to have been reviewed before review occurs.
             insert_source(db, "licensed-source", "open_license", 1)
             test_structured_data_rights_are_required(db)
+            test_structured_data_rights_are_required_on_update(db)
             insert_rights(db, "licensed-source", pdf_allowed=0)
             expect_integrity_error(
                 db,
