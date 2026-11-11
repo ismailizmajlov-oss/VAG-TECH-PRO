@@ -16,6 +16,9 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         cls.review = (
             cls.root / "docs" / "research" / "OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
         ).read_text(encoding="utf-8").casefold()
+        cls.snapshot_drift_review = (
+            cls.root / "docs" / "research" / "OWNERSPECS_VAG_DATASET_SNAPSHOT_DRIFT_REVIEW_2026-11-11.md"
+        ).read_text(encoding="utf-8").casefold()
         matches = [
             item for item in cls.registry["sources"]
             if item.get("source_id") == "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0"
@@ -81,7 +84,25 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.entry["source_snapshot_sha256"],"6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
         self.assertEqual(self.entry["source_file_bytes"],683533)
         self.assertTrue(self.entry["research_pack_acquisition_allowed"])
-        self.assertTrue(self.entry["research_pack_acquired"]); self.assertTrue(self.entry["research_pack_current"])
+        self.assertTrue(self.entry["research_pack_acquired"]); self.assertFalse(self.entry["research_pack_current"])
+        self.assertTrue(self.entry["research_database_included_in_desktop"])
+        attempt = self.entry["latest_acquisition_attempt"]
+        self.assertEqual(attempt["status"], "quarantined_public_html_json_count_mismatch")
+        self.assertEqual(attempt["source_snapshot_sha256"], "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9")
+        self.assertEqual(attempt["source_file_bytes"], 659973)
+        self.assertEqual(attempt["html_page_claimed_datapoints"], 2369)
+        self.assertEqual(attempt["json_datapoints"], 2273)
+        self.assertEqual(attempt["vag_generation_count"], 20)
+        self.assertEqual(attempt["vag_facts"], 186)
+        self.assertEqual(attempt["datapoints_removed"], 96)
+        self.assertEqual(attempt["vag_datapoints_removed"], 47)
+        self.assertEqual(attempt["non_vag_datapoints_removed"], 49)
+        self.assertEqual(attempt["mass_values_changed"], 3)
+        self.assertEqual(attempt["workflow_run_id"], 42968938274)
+        self.assertEqual(attempt["acquisition_artifact_id"], 13833035466)
+        self.assertFalse(attempt["replacement_pack_built"])
+        self.assertTrue(attempt["previous_verified_pack_retained"])
+        self.assertFalse(attempt["product_database_imported"])
         self.assertEqual(self.entry["research_pack_status"],"verified_research_only")
         self.assertTrue(self.entry["research_database_included_in_desktop"])
         self.assertEqual(self.entry["research_pack_source_manifest_sha256"],"3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc")
@@ -104,7 +125,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(self.entry["desktop_integration_evidence"]["workflow_run_id"],42964628461)
         self.assertFalse(self.entry["desktop_integration_evidence"]["product_database_imported"])
         self.assertFalse(self.entry["desktop_integration_evidence"]["native_windows_10_11_verified"])
-        self.assertEqual(self.entry["verification_status"],"licensed_source_snapshot_reacquired_pack_built_verified_read_only_desktop_research_integration_verified_candidate_only_no_production_import")
+        self.assertEqual(self.entry["verification_status"],"last_verified_pack_retained_latest_public_json_quarantined_html_json_count_mismatch")
         self.assertFalse(self.entry["product_database_ingested"]); self.assertFalse(self.entry["product_import_allowed"])
         self.assertEqual(self.entry["applicability"]["market_scope"],"UNKNOWN")
         self.assertFalse(self.entry["applicability"]["exact_engine_gearbox_pair"])
@@ -113,6 +134,26 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         review = self.review.casefold()
         for phrase in ("111 generations","27 brands","2,369 verified datapoints","current live page/json pair","6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95","vag subset: 20 generation candidates and 233 facts","233 vag facts","five records changed across four generations","four specification values changed","one non-vag unit-only normalization","three are vag","intermediate, unverified claim","market scope remains unknown","must not be promoted to factory engine/gearbox fitment"):
             with self.subTest(phrase=phrase): self.assertIn(phrase.casefold(), review)
+
+    def test_current_public_json_drift_is_quarantined_and_previous_pack_is_retained(self):
+        attempt = self.entry["latest_acquisition_attempt"]
+        self.assertEqual(attempt["previous_verified_source_snapshot_sha256"], "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
+        self.assertEqual(attempt["source_snapshot_sha256"], "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9")
+        self.assertEqual(attempt["generation_count"], 111)
+        self.assertEqual(attempt["changed_generations_total"], 8)
+        self.assertEqual(attempt["vag_changed_generations"], 4)
+        self.assertEqual(attempt["non_vag_changed_generations"], 4)
+        self.assertEqual(attempt["changed_mass_values"][0]["old_value"], 2835)
+        self.assertEqual(attempt["changed_mass_values"][0]["new_value"], 2800)
+        self.assertEqual(attempt["changed_mass_values"][1]["old_value"], 2211)
+        self.assertEqual(attempt["changed_mass_values"][1]["new_value"], 2135)
+        self.assertEqual(attempt["changed_mass_values"][2]["old_value"], 3270)
+        self.assertEqual(attempt["changed_mass_values"][2]["new_value"], 3500)
+        self.assertIn("quarantine", self.entry["research_pack_stale_reason"].casefold())
+        review = self.snapshot_drift_review
+        for phrase in ("2,369","2,273","96","47","186","touareg","cayenne","q7","q8","2,835 kg","2,800 kg","no replacement sqlite pack was built","market scope remains unknown"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase.casefold(), review)
 
     def test_latest_snapshot_review_records_four_value_changes_three_vag_values_and_one_unit_only_change(self):
         review=self.manifest["snapshot"]["latest_snapshot_review"]
