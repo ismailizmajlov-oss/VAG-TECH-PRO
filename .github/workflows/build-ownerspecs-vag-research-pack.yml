@@ -9,6 +9,8 @@ on:
       - "tests/test_ownerspecs_vag_research_pack.py"
       - "tests/test_ownerspecs_source_rights.py"
       - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "docs/research/OWNERSPECS_VAG_DATASET_SNAPSHOT_DRIFT_REVIEW_2026-11-11.md"
   pull_request:
     branches: [main]
     paths:
@@ -18,6 +20,8 @@ on:
       - "tests/test_ownerspecs_source_rights.py"
       - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
       - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
+      - "docs/research/OWNERSPECS_VAG_DATASET_SNAPSHOT_DRIFT_REVIEW_2026-11-11.md"
+      - "data/source-manifests/vag-factory-source-register.json"
   workflow_dispatch:
 
 permissions:
@@ -54,12 +58,53 @@ jobs:
           python tests/test_ownerspecs_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA source-rights tests failed." }
 
-      - name: Acquire the publisher JSON and verify exact generation/datapoint counts
+      - name: Acquire the publisher JSON and classify reviewed snapshot drift
+        id: acquire
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
           python scripts/build_ownerspecs_vag_research_pack.py --acquire --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-source 2>&1 | Tee-Object -FilePath ownerspecs-acquisition.log
-          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs licensed source acquisition failed." }
+          $acquireExit = $LASTEXITCODE
+          if ($acquireExit -ne 0) {
+            $sourcePath = "artifacts/ownerspecs-source/source.json"
+            if (-not (Test-Path -LiteralPath $sourcePath)) { throw "OwnerSpecs acquisition failed without retaining the raw source JSON." }
+            $raw = Get-Content -LiteralPath $sourcePath -Raw | ConvertFrom-Json
+            $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
+            $sourceBytes = (Get-Item -LiteralPath $sourcePath).Length
+            $datapoints = [int](($raw.generations | Measure-Object -Property verified_datapoints -Sum).Sum)
+            $vagBrands = @("Audi", "Skoda", "Volkswagen", "Porsche")
+            $vag = @($raw.generations | Where-Object { $vagBrands -contains $_.brand })
+            $vagFacts = [int](($vag | Measure-Object -Property verified_datapoints -Sum).Sum)
+            $cayenne = $raw.generations | Where-Object { $_.generation_slug -eq "cayenne-e3-suv-2017-present" }
+            $q7 = $raw.generations | Where-Object { $_.generation_slug -eq "q7-4m-suv-2015-2019" }
+            $q8 = $raw.generations | Where-Object { $_.generation_slug -eq "q8-4mn-suv-2019-present" }
+            $touareg = $raw.generations | Where-Object { $_.generation_slug -eq "touareg-cr-suv-2018-present" }
+            $x5 = $raw.generations | Where-Object { $_.generation_slug -eq "x5-g05-suv-2019-2023" }
+            $x5MassValues = @($x5.masses | ForEach-Object { [int]$_.value_kg })
+            $logText = Get-Content -LiteralPath ownerspecs-acquisition.log -Raw
+            $register = Get-Content -LiteralPath data/source-manifests/vag-factory-source-register.json -Raw | ConvertFrom-Json
+            $registered = $register.sources | Where-Object { $_.source_id -eq "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0" }
+            $attempt = $registered.latest_acquisition_attempt
+            $expectedQuarantine =
+              $sourceHash -eq "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9" -and
+              $sourceBytes -eq 659973 -and
+              $raw.license -eq "CC BY-SA 4.0" -and $raw.attribution_required -eq $true -and
+              $raw.generation_count -eq 111 -and $datapoints -eq 2273 -and
+              $vag.Count -eq 20 -and $vagFacts -eq 186 -and
+              $cayenne.verified_datapoints -eq 0 -and $q7.verified_datapoints -eq 7 -and
+              $q8.verified_datapoints -eq 8 -and $touareg.verified_datapoints -eq 0 -and
+              $x5.verified_datapoints -eq 4 -and ($x5MassValues -join ",") -eq "2800,2135,3500,750" -and
+              $logText.Contains("OwnerSpecs datapoint count mismatch: expected 2369, got 2273.") -and
+              $attempt.status -eq "quarantined_public_html_json_count_mismatch" -and
+              $attempt.source_snapshot_sha256 -eq $sourceHash -and
+              $attempt.json_datapoints -eq $datapoints -and
+              $attempt.html_page_claimed_datapoints -eq 2369
+            if (-not $expectedQuarantine) { throw "OwnerSpecs acquisition failed outside the exact reviewed HTML/JSON count mismatch; refusing to classify it as a known quarantine." }
+            "source_quarantined=true" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
+            "### OwnerSpecs current JSON snapshot quarantined" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+            "The exact acquired JSON SHA-256 is $sourceHash ($sourceBytes bytes); its 111 generations sum to $datapoints datapoints and the VAG subset contains 20 generations / $vagFacts facts. The public HTML still claims 2,369 datapoints. The last verified pack is retained; no replacement SQLite pack was built or published." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+            return
+          }
           $snapshot = Get-Content -LiteralPath artifacts/ownerspecs-source/acquisition-snapshot.json -Raw | ConvertFrom-Json
           if ($snapshot.generation_count -ne 111 -or $snapshot.verified_datapoints -ne 2369 -or $snapshot.vag_generation_count -le 0 -or $snapshot.vag_fact_count -le 0 -or $snapshot.source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") {
             throw "OwnerSpecs snapshot differs from the reviewed publisher dataset; refusing to publish the research pack."
@@ -67,8 +112,8 @@ jobs:
           "OwnerSpecs source JSON SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
           "Generations: $($snapshot.generation_count); datapoints: $($snapshot.verified_datapoints); retained VAG generations: $($snapshot.vag_generation_count); VAG facts: $($snapshot.vag_fact_count)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
-      - name: Preserve acquisition evidence if source validation fails
-        if: failure()
+      - name: Preserve quarantined or failed acquisition evidence
+        if: always() && (steps.acquire.outputs.source_quarantined == 'true' || steps.acquire.outcome == 'failure')
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ownerspecs-vag-source-acquisition-evidence
@@ -79,6 +124,7 @@ jobs:
           retention-days: 14
 
       - name: Build and independently verify the separate CC BY-SA SQLite pack
+        if: steps.acquire.outputs.source_quarantined != 'true'
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
@@ -97,6 +143,7 @@ jobs:
           "SQLite SHA-256: $($manifest.database.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Upload verified SQLite, exact source JSON and attribution
+        if: steps.acquire.outputs.source_quarantined != 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ownerspecs-vag-vehicle-specs-research-pack
