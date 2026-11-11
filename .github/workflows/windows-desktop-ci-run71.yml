@@ -383,6 +383,8 @@ jobs:
           python --version
           python tests/test_windows_desktop_workflow_contract.py
           python tests/test_source_manifest_bundle.py -v
+          python tests/test_research_pack_desktop_integration_registry.py -v
+          if ($LASTEXITCODE -ne 0) { throw "Research-pack desktop integration registry contract failed." }
           python tests/test_technical_library_schema.py -v
           python -m unittest discover -s tests -p "test_provenance_hash_guards.py" -v
           if ($LASTEXITCODE -ne 0) { throw "Canonical provenance hash guards failed." }
