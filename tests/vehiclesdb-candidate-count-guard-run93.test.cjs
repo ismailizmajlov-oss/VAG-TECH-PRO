@@ -47,7 +47,6 @@ function fixture(overrides = {}) {
     '        attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",',
     "      };",
     "}",
-    "}",
     "",
     "function getWikidataGenerationSummary() {",
     "  return { attributionRequired: true, attribution: \"Wikidata attribution\" };",
