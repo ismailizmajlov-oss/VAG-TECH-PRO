@@ -74,8 +74,8 @@ jobs:
           "OwnerSpecs source JSON SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
           "Generations: $($snapshot.generation_count); datapoints: $($snapshot.verified_datapoints); retained VAG generations: $($snapshot.vag_generation_count); VAG facts: $($snapshot.vag_fact_count)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
-      - name: Preserve acquisition evidence if source validation fails
-        if: failure()
+      - name: Preserve exact source acquisition evidence
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ownerspecs-vag-source-acquisition-evidence
