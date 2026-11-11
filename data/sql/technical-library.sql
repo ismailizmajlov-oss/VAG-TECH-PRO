@@ -119,7 +119,7 @@ BEGIN SELECT RAISE(ABORT,'technical content SHA-256 must be 64 lowercase hexadec
 
 CREATE TRIGGER IF NOT EXISTS technical_applicability_evidence_sha256_insert_guard
 BEFORE INSERT ON technical_applicability
-WHEN length(NEW.evidence_sha256)<>64 OR NEW.evidence_sha256 GLOB '*[^a-f0-9]*'
+WHEN NEW.evidence_sha256 IS NULL OR length(NEW.evidence_sha256)<>64 OR NEW.evidence_sha256 GLOB '*[^a-f0-9]*'
 BEGIN SELECT RAISE(ABORT,'applicability evidence SHA-256 must be 64 lowercase hexadecimal characters'); END;
 CREATE TRIGGER IF NOT EXISTS technical_applicability_evidence_sha256_update_guard
 BEFORE UPDATE OF evidence_sha256 ON technical_applicability
@@ -128,7 +128,7 @@ BEGIN SELECT RAISE(ABORT,'applicability evidence SHA-256 must be 64 lowercase he
 
 CREATE TRIGGER IF NOT EXISTS technical_records_record_sha256_insert_guard
 BEFORE INSERT ON technical_records
-WHEN length(NEW.record_sha256)<>64 OR NEW.record_sha256 GLOB '*[^a-f0-9]*'
+WHEN NEW.record_sha256 IS NULL OR length(NEW.record_sha256)<>64 OR NEW.record_sha256 GLOB '*[^a-f0-9]*'
 BEGIN SELECT RAISE(ABORT,'technical record SHA-256 must be 64 lowercase hexadecimal characters'); END;
 CREATE TRIGGER IF NOT EXISTS technical_records_record_sha256_update_guard
 BEFORE UPDATE OF record_sha256 ON technical_records
@@ -148,6 +148,8 @@ CREATE INDEX IF NOT EXISTS idx_technical_oem_part_number ON technical_records(js
 CREATE TRIGGER IF NOT EXISTS technical_applicability_publication_guard
 BEFORE UPDATE OF review_status ON technical_applicability WHEN NEW.review_status='publication_approved'
 BEGIN
+ SELECT CASE WHEN NEW.evidence_sha256 IS NULL OR length(NEW.evidence_sha256)<>64 OR NEW.evidence_sha256 GLOB '*[^a-f0-9]*'
+  THEN RAISE(ABORT,'technical applicability evidence SHA-256 must be canonical lowercase hexadecimal') END;
  SELECT CASE
  WHEN NEW.market_scope='UNKNOWN' OR NEW.applicability_precision IN('model_year_only','generic_only','unknown')
  THEN RAISE(ABORT,'technical applicability is too broad for publication')
