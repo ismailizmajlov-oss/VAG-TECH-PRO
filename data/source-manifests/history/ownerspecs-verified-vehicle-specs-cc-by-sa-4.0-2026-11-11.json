@@ -4,7 +4,7 @@
   "publisher": "ownerspecs.com",
   "source_kind": "curated_document_verified_vehicle_generation_specifications",
   "reviewed_at": "2026-11-11",
-  "data_revision": "OpenSpecs dataset generated 2026-11-11; exact source.json acquired by Windows x64 CI run 141 at 2026-11-11T05:56:12Z; raw SHA-256 d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9; 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts; 47 VAG facts removed from the prior snapshot; candidate-only.",
+  "data_revision": "OpenSpecs dataset generated 2026-11-11; exact source.json acquired by Windows x64 CI run 158 at 2026-11-11T06:33:30Z; raw SHA-256 835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c; 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts; two non-VAG unit-case changes versus the 06:19 snapshot; no VAG fact changes; candidate-only.",
   "source_urls": {
     "dataset_page": "https://ownerspecs.com/data",
     "json": "https://ownerspecs.com/data/dataset.json",
@@ -40,102 +40,86 @@
     "json_descriptor_generation_count": 111,
     "html_page_brand_count": 27,
     "html_page_verified_datapoint_count": 2273,
-    "source_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+    "source_snapshot_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
     "source_file_bytes": 659973,
-    "retrieved_at_utc": "2026-11-11T05:56:12+00:00",
-    "note": "Exact source JSON bytes were retained by Windows x64 CI run 141 and independently hashed. The live publisher HTML page now reports 111 generations / 27 brands / 2,273 verified datapoints and last generated 2026-11-11; the JSON contains 111 generations and its nested fact count reconciles to 2,273. Compared with the last verified 2026-11-10 snapshot (111 / 2,369; VAG 20 / 233), there are 99 removed facts, 3 added replacement facts and 3 changed BMW X5 mass values; generation membership is unchanged. The VAG subset has 20 generation candidates / 186 facts, with 47 facts removed from Audi Q7, Audi Q8, Porsche Cayenne and Volkswagen Touareg. Market remains UNKNOWN; no per-value primary-document locator/revision; candidate-only.",
+    "retrieved_at_utc": "2026-11-11T06:33:30.154805+00:00",
+    "note": "Exact source JSON bytes were retained by Windows x64 acquisition run 158 and independently hashed. The live publisher HTML and JSON reconcile to 111 generations / 27 brands / 2,273 verified datapoints. A row-level comparison against the immediately previous exact 06:19 snapshot found only two non-VAG Hyundai i10 unit-label case changes; generation and datapoint membership are unchanged and the VAG subset remains 20 generation candidates / 186 facts. The previous d702e457 snapshot and its verified VAG-only research pack remain separately archived until a new pack is independently built. Market remains UNKNOWN; no per-value primary-document locator/revision; candidate-only.",
     "latest_snapshot_review": {
-      "previous_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
-      "current_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
-      "previous_source_file_bytes": 683533,
+      "previous_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+      "current_snapshot_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
+      "previous_source_file_bytes": 659973,
       "current_source_file_bytes": 659973,
-      "retrieved_at_utc": "2026-11-11T05:56:12+00:00",
+      "retrieved_at_utc": "2026-11-11T06:33:30.154805+00:00",
       "generation_count": 111,
       "datapoint_count": 2273,
       "vag_generation_count": 20,
       "vag_fact_count": 186,
       "generations_added": 0,
       "generations_removed": 0,
-      "datapoints_removed": 99,
-      "datapoints_added": 3,
-      "changed_datapoints_total": 3,
-      "net_datapoint_change": -96,
-      "vag_datapoints_removed": 47,
+      "datapoints_removed": 0,
+      "datapoints_added": 0,
+      "changed_datapoints_total": 2,
+      "net_datapoint_change": 0,
+      "vag_datapoints_removed": 0,
       "vag_datapoints_added": 0,
       "vag_changed_datapoints": 0,
       "generation_membership_changed": false,
-      "datapoint_membership_changed": true,
-      "removed_facts_by_brand": {
-        "Audi": 10,
-        "Porsche": 17,
-        "Volkswagen": 20,
-        "BMW": 13,
-        "Mercedes-Benz": 15,
-        "Kia": 12,
-        "Tesla": 12
-      },
-      "added_facts_by_brand": {
-        "BMW": 3
-      },
+      "datapoint_membership_changed": false,
+      "removed_facts_by_brand": {},
+      "added_facts_by_brand": {},
       "changed_values": [
         {
-          "brand": "BMW",
-          "model": "X5",
-          "generation": "X5 (G05)",
-          "field": "running_order",
-          "label": "Mass in running order (EU type-approval)",
-          "old_value_kg": 2211,
-          "new_value_kg": 2135
+          "brand": "Hyundai",
+          "model": "i10",
+          "generation": "i10 III (AC3)",
+          "field": "coolant_capacity",
+          "old_unit": "L",
+          "new_unit": "l",
+          "value": 5.53,
+          "value_max": 5.89,
+          "is_range": true,
+          "vag": false
         },
         {
-          "brand": "BMW",
-          "model": "X5",
-          "generation": "X5 (G05)",
-          "field": "max_laden_permissible",
-          "label": "Permissible maximum laden mass",
-          "old_value_kg": 2835,
-          "new_value_kg": 2800
-        },
-        {
-          "brand": "BMW",
-          "model": "X5",
-          "generation": "X5 (G05)",
-          "field": "tow_braked",
-          "label": "Towing capacity — braked trailer",
-          "old_value_kg": 3270,
-          "new_value_kg": 3500
+          "brand": "Hyundai",
+          "model": "i10",
+          "generation": "i10 III (AC3)",
+          "field": "engine_oil_capacity",
+          "old_unit": "l",
+          "new_unit": "L",
+          "value": 3.1,
+          "value_max": 3.4,
+          "is_range": true,
+          "vag": false
         }
       ],
-      "vag_removed_fact_groups": [
+      "changed_units": [
         {
-          "brand": "Audi",
-          "model": "Q7",
-          "generation": "Q7 II (4M)",
-          "removed_facts": 5,
-          "category": "mass"
+          "brand": "Hyundai",
+          "model": "i10",
+          "generation": "i10 III (AC3)",
+          "field": "coolant_capacity",
+          "old_unit": "L",
+          "new_unit": "l",
+          "value": 5.53,
+          "value_max": 5.89,
+          "is_range": true,
+          "vag": false
         },
         {
-          "brand": "Audi",
-          "model": "Q8",
-          "generation": "Q8 (4MN)",
-          "removed_facts": 5,
-          "category": "mass"
-        },
-        {
-          "brand": "Porsche",
-          "model": "Cayenne",
-          "generation": "Cayenne (E3)",
-          "removed_facts": 17,
-          "category": "specification_and_mass"
-        },
-        {
-          "brand": "Volkswagen",
-          "model": "Touareg",
-          "generation": "Touareg (CR)",
-          "removed_facts": 20,
-          "category": "specification_and_mass"
+          "brand": "Hyundai",
+          "model": "i10",
+          "generation": "i10 III (AC3)",
+          "field": "engine_oil_capacity",
+          "old_unit": "l",
+          "new_unit": "L",
+          "value": 3.1,
+          "value_max": 3.4,
+          "is_range": true,
+          "vag": false
         }
       ],
+      "vag_removed_fact_groups": [],
       "primary_document_locator_per_value_in_json": false,
       "primary_document_revision_per_value_in_json": false,
       "market_scope": "UNKNOWN",
@@ -151,20 +135,22 @@
         "reconciled": true
       },
       "acquisition_evidence": {
-        "workflow_run_id": 42968938274,
-        "workflow_run_number": 141,
-        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42968938274",
-        "artifact_id": 13833035466,
+        "workflow_run_id": 42973238985,
+        "workflow_run_number": 158,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42973238985",
+        "artifact_id": 13834540968,
         "artifact_name": "ownerspecs-vag-source-acquisition-evidence",
-        "artifact_sha256": "ee801173419bf17b8610f7eac80b813f24a9456633138a96078cfbc494ca5c85",
-        "artifact_bytes": 33501,
+        "artifact_sha256": "81360d348655f3fe84ccfd926c026120677848ffff4e9f03cfad404158f7c803",
+        "artifact_bytes": 34193,
         "source_json_path": "artifacts/ownerspecs-source/source.json",
-        "source_json_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+        "source_json_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
         "source_json_bytes": 659973,
-        "acquisition_log_sha256": "7c559297e0884939cf8ac33a05978e0835beeb5ea933e6fb84c6e4513ed82c77",
-        "note": "The previous builder correctly rejected this snapshot against the stale 2,369-point pin. The exact raw JSON and acquisition log were retained and independently hashed; a fresh publisher-page review now confirms 2,273 points."
+        "acquisition_snapshot_sha256": "93bd94338641703d4a1a3cb47870fbf0a3782d65738dc382444e6e4060b10904",
+        "acquisition_log_sha256": "5aed7971c3ff23321202a33483f2bd732c5f2ee319e8b15aba13f4b84a748fd8",
+        "note": "The exact publisher JSON was acquired, schema-validated and retained. The subsequent pack build rejected it because the manifest still pinned the prior 06:19 bytes; no SQLite pack was produced by this run."
       },
-      "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_current_exact_snapshot; retain_previous_verified_pack_until_replacement_is_independently_verified; do_not_promote_to_factory_fitment_or_repair_data"
+      "verification_status": "exact_raw_source_acquired_sha256_verified; row_level_delta_reconciled; no_VAG_fact_changes; research_pack_refresh_pending",
+      "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_exact_835fe745_snapshot; retain_d702e457_verified_pack_until_replacement_is_independently_verified; do_not_promote_to_factory_fitment_or_repair_data"
     },
     "snapshot_review_history": [
       {
@@ -289,6 +275,129 @@
         "candidate_only": true,
         "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_exact_retained_bytes; do_not_promote_to_factory_fitment_or_repair_data",
         "verification_status": "verified_previous_snapshot_superseded_by_2026-11-11_snapshot"
+      },
+      {
+        "previous_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+        "current_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+        "previous_source_file_bytes": 683533,
+        "current_source_file_bytes": 659973,
+        "retrieved_at_utc": "2026-11-11T05:56:12+00:00",
+        "generation_count": 111,
+        "datapoint_count": 2273,
+        "vag_generation_count": 20,
+        "vag_fact_count": 186,
+        "generations_added": 0,
+        "generations_removed": 0,
+        "datapoints_removed": 99,
+        "datapoints_added": 3,
+        "changed_datapoints_total": 3,
+        "net_datapoint_change": -96,
+        "vag_datapoints_removed": 47,
+        "vag_datapoints_added": 0,
+        "vag_changed_datapoints": 0,
+        "generation_membership_changed": false,
+        "datapoint_membership_changed": true,
+        "removed_facts_by_brand": {
+          "Audi": 10,
+          "Porsche": 17,
+          "Volkswagen": 20,
+          "BMW": 13,
+          "Mercedes-Benz": 15,
+          "Kia": 12,
+          "Tesla": 12
+        },
+        "added_facts_by_brand": {
+          "BMW": 3
+        },
+        "changed_values": [
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "running_order",
+            "label": "Mass in running order (EU type-approval)",
+            "old_value_kg": 2211,
+            "new_value_kg": 2135
+          },
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "max_laden_permissible",
+            "label": "Permissible maximum laden mass",
+            "old_value_kg": 2835,
+            "new_value_kg": 2800
+          },
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "tow_braked",
+            "label": "Towing capacity — braked trailer",
+            "old_value_kg": 3270,
+            "new_value_kg": 3500
+          }
+        ],
+        "vag_removed_fact_groups": [
+          {
+            "brand": "Audi",
+            "model": "Q7",
+            "generation": "Q7 II (4M)",
+            "removed_facts": 5,
+            "category": "mass"
+          },
+          {
+            "brand": "Audi",
+            "model": "Q8",
+            "generation": "Q8 (4MN)",
+            "removed_facts": 5,
+            "category": "mass"
+          },
+          {
+            "brand": "Porsche",
+            "model": "Cayenne",
+            "generation": "Cayenne (E3)",
+            "removed_facts": 17,
+            "category": "specification_and_mass"
+          },
+          {
+            "brand": "Volkswagen",
+            "model": "Touareg",
+            "generation": "Touareg (CR)",
+            "removed_facts": 20,
+            "category": "specification_and_mass"
+          }
+        ],
+        "primary_document_locator_per_value_in_json": false,
+        "primary_document_revision_per_value_in_json": false,
+        "market_scope": "UNKNOWN",
+        "critical_repair_values_publishable": false,
+        "candidate_only": true,
+        "public_page_reconciliation": {
+          "url": "https://ownerspecs.com/data",
+          "observed_at_utc": "2026-11-11",
+          "generation_count": 111,
+          "brand_count": 27,
+          "verified_datapoint_count": 2273,
+          "last_generated": "2026-11-11",
+          "reconciled": true
+        },
+        "acquisition_evidence": {
+          "workflow_run_id": 42968938274,
+          "workflow_run_number": 141,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42968938274",
+          "artifact_id": 13833035466,
+          "artifact_name": "ownerspecs-vag-source-acquisition-evidence",
+          "artifact_sha256": "ee801173419bf17b8610f7eac80b813f24a9456633138a96078cfbc494ca5c85",
+          "artifact_bytes": 33501,
+          "source_json_path": "artifacts/ownerspecs-source/source.json",
+          "source_json_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+          "source_json_bytes": 659973,
+          "acquisition_log_sha256": "7c559297e0884939cf8ac33a05978e0835beeb5ea933e6fb84c6e4513ed82c77",
+          "note": "The previous builder correctly rejected this snapshot against the stale 2,369-point pin. The exact raw JSON and acquisition log were retained and independently hashed; a fresh publisher-page review now confirms 2,273 points."
+        },
+        "disposition": "retained_as_prior_snapshot_review_history; previous 47-VAG-fact removal and three non-VAG BMW mass changes remain auditable",
+        "verification_status": "verified_previous_snapshot_superseded_by_2026-11-11-06-33-reacquisition"
       }
     ],
     "vag_generation_count": 20,
@@ -370,7 +479,7 @@
     "require_attribution_in_ui_and_pack": true
   },
   "limitations": [
-    "The acquired JSON contains 111 publisher generations and 2,369 publisher-verified datapoints; the exact VAG allowlist retains 20 generation candidates and 233 facts. These counts do not establish factory applicability.",
+    "The acquired JSON contains 111 publisher generations and 2,273 publisher-verified datapoints; the exact VAG allowlist retains 20 generation candidates and 186 facts. These counts do not establish factory applicability.",
     "The CSV endpoint is not the canonical input to this builder; the separate JSON snapshot is acquired, hashed and count-reconciled. Any future CSV acquisition must be independently hashed and reconciled before use.",
     "The publisher's public JSON exposes provenance kinds and source counts, but not a primary-document URL or revision for each individual value.",
     "The dataset's global multi-market label is not a market-by-market applicability map; normalized market scope remains UNKNOWN.",
@@ -378,7 +487,7 @@
     "No exact VAG engine-to-gearbox pairs, ECU mappings, DTCs, wiring diagrams, pinouts, adaptations or repair procedures are established by this dataset.",
     "Any future integration must remain a separate CC BY-SA 4.0 database with visible attribution and Share-Alike compliance; do not merge it into a differently licensed production database.",
     "The exact source JSON is pinned for the separate research pack only; no values have been imported into the production vehicle or technical library database.",
-    "The 2026-11-11 publisher snapshot contains 2,273 datapoints, 96 fewer net than the previous verified snapshot; 47 VAG facts were removed. The previous 233-fact VAG research pack is a dated prior snapshot and must not be represented as the current publisher revision.",
+    "The 2026-11-11 publisher snapshot contains 2,273 datapoints, 96 fewer net than the previous verified 2026-11-10 snapshot; 47 VAG facts were removed in that earlier delta. A later exact reacquisition changed only two non-VAG unit-label capitalizations; the VAG subset remained unchanged at 20 / 186.",
     "The current 20-generation / 186-fact VAG subset remains market UNKNOWN and candidate-only; no exact engine/gearbox pairing, ECU, DTC, RU/EAEU or repair applicability is established."
   ],
   "evidence_reviewed": [
@@ -396,8 +505,18 @@
       "url": "https://creativecommons.org/licenses/by-sa/4.0/",
       "reviewed_at": "2026-11-10",
       "observation": "CC BY-SA 4.0 permits sharing and adaptation, including commercial use, subject to attribution, indication of changes and Share-Alike for adapted material."
+    },
+    {
+      "url": "https://ownerspecs.com/data",
+      "reviewed_at": "2026-11-11",
+      "observation": "Fresh public HTML page reports 111 generations, 27 brands and 2,273 verified datapoints; last generated 2026-11-11."
+    },
+    {
+      "url": "https://ownerspecs.com/data/dataset.json",
+      "reviewed_at": "2026-11-11",
+      "observation": "Exact raw JSON retained by Windows x64 acquisition run 158; SHA-256 835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c, 659,973 bytes, 111 generations / 2,273 facts; row-level comparison against the prior exact d702e457 snapshot found two non-VAG Hyundai i10 unit-label case changes and no VAG changes."
     }
   ],
-  "verification_status": "license_observed; live_html_and_json_generation_counts_reconciled; exact_source_snapshot_acquired_and_sha256_verified; VAG_subset_candidate_only; research_pack_refresh_pending",
-  "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. The current 2026-11-11 source snapshot is pinned at SHA-256 d702e457... with 111 generations / 2,273 datapoints and a VAG subset of 20 generation candidates / 186 facts. A row-level comparison against the previous verified snapshot found 47 removed VAG facts and three changed non-VAG BMW X5 mass values. Build and independently verify a new separate Share-Alike research pack before replacing the previous desktop pack. Market remains UNKNOWN; no exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability; no production import."
+  "verification_status": "license_observed; live_html_and_json_counts_reconciled; exact_current_source_snapshot_acquired_and_sha256_verified; VAG_subset_unchanged_since_prior_verified_pack; separate_pack_refresh_pending; candidate_only",
+  "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. The latest exact publisher snapshot is pinned at SHA-256 835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c: 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts. Comparison with the prior exact d702e457 snapshot found only two non-VAG Hyundai i10 unit-label case changes and no VAG fact changes. The last independently verified VAG-only pack remains pinned to d702e457 and is retained until a new pack from the 835fe745 snapshot is built and independently verified. Market remains UNKNOWN; no per-value primary-document locator/revision; no exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability; no production import."
 }
