@@ -35,18 +35,27 @@ def insert_source(db, source_id, license_status, redistribution_allowed):
     )
 
 
-def insert_rights(db, source_id, *, pdf_allowed=0, status="approved"):
+def insert_rights(db, source_id, *, pdf_allowed=0, structured_allowed=1, status="approved"):
     db.execute(
         """INSERT INTO vehicle_catalog_source_rights
            (source_id,rights_status,license_name,license_url,license_text_sha256,
             commercial_use_allowed,display_allowed,offline_cache_allowed,
-            bulk_reuse_allowed,pdf_redistribution_allowed,attribution_required,
-            attribution_text,rights_revision,reviewed_at_utc)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            bulk_reuse_allowed,store_structured_data_allowed,pdf_redistribution_allowed,
+            attribution_required,attribution_text,rights_revision,reviewed_at_utc)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (source_id, status, "CC0-1.0 test fixture",
          "https://creativecommons.org/publicdomain/zero/1.0/",
-         H_LICENSE, 1, 1, 1, 1, pdf_allowed, 0, None,
+         H_LICENSE, 1, 1, 1, 1, structured_allowed, pdf_allowed, 0, None,
          "synthetic-rights-fixture-v1", NOW),
+    )
+
+
+def test_structured_data_rights_are_required(db):
+    insert_source(db, "no-structured", "open_license", 1)
+    expect_integrity_error(
+        db,
+        lambda: insert_rights(db, "no-structured", structured_allowed=0),
+        "structured-data storage right is required for approved OTTS reuse",
     )
 
 
@@ -125,6 +134,7 @@ def main():
 
             # The database cannot accept rows that claim to have been reviewed before review occurs.
             insert_source(db, "licensed-source", "open_license", 1)
+    test_structured_data_rights_are_required(db)
             insert_rights(db, "licensed-source", pdf_allowed=0)
             expect_integrity_error(
                 db,
