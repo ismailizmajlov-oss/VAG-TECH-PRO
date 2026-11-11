@@ -87,6 +87,17 @@ jobs:
           "Source JSON SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
           "Counts: $($snapshot.generation_count) generations / $($snapshot.verified_datapoints) datapoints / $($snapshot.vag_generation_count) VAG generations / $($snapshot.vag_fact_count) VAG facts." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
+      - name: Preserve exact OwnerSpecs acquisition evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ownerspecs-vag-source-acquisition-evidence-${{ github.run_number }}
+          path: |
+            artifacts/ownerspecs-source/**
+            ownerspecs-acquisition.log
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Build and independently verify the separate Share-Alike SQLite pack
         shell: pwsh
         run: |
