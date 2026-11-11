@@ -390,6 +390,10 @@ The public overview displays a non-exhaustive market list that does not show RU,
 
 No account, credentials, access request, API call, paid terms or data download was made. OKAPI remains metadata-only; no data or SHA-256 snapshot is claimed. It does not provide repair procedures, wiring diagrams, pinouts, DTC definitions or ECU repair mappings. See [the 2026-11-09 rights and market review](docs/research/VOLKSWAGEN_OKAPI_RIGHTS_AND_MARKET_SCOPE_REVIEW_2026-11-09.md).
 
+## Official Volkswagen erWin terms recheck — 2026-11-11
+
+The current official erWin GTC (status 2026-08-14) was reviewed against the product-use notice. Sections 7.1 and 7.4 reserve publication/reproduction/exploitation rights and grant a simple non-exclusive, non-transferable right for the customer's own use only. The official notice prohibits dissemination, distribution and reproduction except narrow internal-company printout exceptions. Those exceptions do not authorize a pre-populated third-party offline SQLite repair database. Section 5.8 also limits storage of downloaded service information to 24 hours, except only for statutory retention, documentation or evidentiary obligations. Direct erWin workshop access and the separate third-party RMI product licence are distinct contractual products; the latter retains its own eligibility and market restrictions. No account, subscription, source document or technical data was acquired. All VAG TECH PRO import, offline-cache and redistribution flags remain false. See [the current erWin rights recheck](docs/research/VW_ERWIN_TERMS_RIGHTS_RECHECK_2026-11-11.md), [official GTC](https://erwin.vwgroup-datahub.com/en-DE/simplecontent/terms-and-conditions-MCR6ZPIVA5SNFZ3KJ7TAQAMQWIQQ) and [official product-use notice](https://erwin.vwgroup-datahub.com/disclaimer-info).
+
 ## Release blockers
 
 1. Written source-owner permission or an explicit dataset license covering commercial use, display, offline caching, bulk reuse and redistribution for Russian/EAEU OTTS data.

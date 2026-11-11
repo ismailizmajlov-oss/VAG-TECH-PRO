@@ -1,6 +1,6 @@
 {
   "manifest_version": 1,
-  "reviewed_at": "2026-11-06",
+  "reviewed_at": "2026-11-11",
   "publisher": "Volkswagen Group Info Services AG",
   "purpose": "Official OEM source access and rights boundary for VAG-specific diagnostics and repair/maintenance data",
   "products": [
@@ -226,7 +226,7 @@
       "publisher": "Volkswagen Group Info Services AG",
       "source_url": "https://www.drivesomethinggreater.com/erwininfo",
       "source_kind": "official_oem_workshop_rmi_and_diagnostics_access_portal",
-      "source_revision": "official_erWin_portal_page_reviewed_2026-11-06",
+      "source_revision": "official_erWin_portal_and_GTC_status_2026-08-14_reviewed_2026-11-11",
       "market_scope": [
         "MARKETS_WITH_RMI_REGULATORY_ROLLOUT; exact_country_rollout_not_established"
       ],
@@ -257,7 +257,8 @@
         "access_to_oem_frontends": true,
         "credentials_created": false,
         "account_created": false,
-        "owner_action_required": true
+        "owner_action_required": true,
+        "individual_download_for_own_use": true
       },
       "rights": {
         "data_license_status": "end_user_workshop_access_contractual",
@@ -271,14 +272,19 @@
         "display_allowed": false,
         "redistribution_allowed": false,
         "bulk_reuse_allowed": false,
-        "terms_scope": "Direct licensed workshop access only; no data-feed, offline-cache or third-party redistribution right identified."
+        "terms_scope": "The official GTC (status 14.08.2026) grants a simple non-exclusive, non-transferable right to use downloaded service information only for the user's own use. Publication, reproduction, editing, design and exploitation rights are reserved; dissemination/distribution/reproduction are prohibited except for narrow internal-company printout exceptions. This does not license copying or distributing a pre-populated VAG TECH PRO offline SQLite database.",
+        "own_use_only": true,
+        "transfer_to_third_parties_allowed": false,
+        "downloaded_service_information_max_storage_hours": 24,
+        "downloaded_service_information_retention_exceptions": "Further storage is permitted only to the extent and for the duration necessary to comply with statutory retention, documentation or evidentiary obligations.",
+"prepopulated_offline_database_allowed": false
       },
       "applicability": {
         "precision": "brand_market_and_OEM_frontend_context; VIN/model matching inside OEM systems",
         "ru_eaeu_market_scope": "not_established",
         "exact_engine_gearbox_mapping": "available only within authorized OEM frontend if supported"
       },
-      "verification_status": "official_oem_portal_terms_reviewed_access_not_requested",
+      "verification_status": "official_oem_portal_and_current_GTC_reviewed_access_not_requested",
       "product_import_allowed": false,
       "data_ingested": false,
       "source_snapshot_sha256": null,
@@ -289,7 +295,11 @@
         "It directs users into OEM-operated frontends and does not provide a data feed/API for third-party offline SQLite ingestion.",
         "No automated extraction, offline caching or third-party redistribution right was identified for this direct-access product.",
         "Exact market rollout varies by country and is not established for Russia/EAEU.",
-        "No company account, licence or data download was created."
+        "No company account, licence or data download was created.",
+        "The official GTC status 2026-08-14, section 7.1, reserves publication, reproduction, editing, design and exploitation rights in erWin technical information.",
+        "The official GTC status 2026-08-14, section 7.4, grants a non-exclusive, non-transferable right for the user's own use only; it does not grant VAG TECH PRO third-party database reuse.",
+        "The official GTC status 2026-08-14, section 5.8, limits storage of downloaded service information to 24 hours, except only to the extent and for the duration necessary for statutory retention, documentation or evidentiary obligations.",
+        "The official product-use notice prohibits dissemination, distribution and reproduction except narrow internal-company printout exceptions; these exceptions do not authorize a bundled offline SQLite repair database."
       ],
       "evidence_reviewed": [
         {
@@ -301,11 +311,28 @@
           "url": "https://www.drivesomethinggreater.com/erwininfo/transition",
           "reviewed_at": "2026-11-06",
           "evidence": "Portal transition and company account requirements reviewed."
+        },
+        {
+          "url": "https://erwin.vwgroup-datahub.com/en-DE/simplecontent/terms-and-conditions-MCR6ZPIVA5SNFZ3KJ7TAQAMQWIQQ",
+          "reviewed_at": "2026-11-11",
+          "document_status": "2026-08-14",
+          "evidence": "Official erWin GTC status 14.08.2026. Section 7.1 reserves publication, reproduction, editing, design and exploitation rights in the workshop information. Section 7.4 grants only a simple non-exclusive right for the user's own use, is non-transferable, and requires protective notices to be retained."
+        },
+        {
+          "url": "https://erwin.vwgroup-datahub.com/disclaimer-info",
+          "reviewed_at": "2026-11-11",
+          "evidence": "Official erWin use-of-product notice states that dissemination, distribution and reproduction of technical information are prohibited, with limited exceptions for internal-company printouts within the same service number and specified maintenance tables, working hours and measurement protocols. These exceptions do not authorize a pre-populated third-party offline database."
+        },
+        {
+          "url": "https://erwin.vwgroup-datahub.com/en-DE/simplecontent/terms-and-conditions-MCR6ZPIVA5SNFZ3KJ7TAQAMQWIQQ",
+          "reviewed_at": "2026-11-11",
+          "document_status": "2026-08-14",
+          "evidence": "Official GTC section 5.8 limits storage of downloaded service information to a maximum of 24 hours; further storage is permitted only to the extent and duration necessary for statutory retention, documentation or evidentiary obligations."
         }
       ]
     }
   ],
-  "global_decision": "No product data downloaded or imported. All three sources require contractual access; RMI explicitly excludes Russia. Do not create accounts, accept paid terms, sign agreements or ingest data without owner approval and confirmed distribution scope.",
+  "global_decision": "No product data downloaded or imported. The direct erWin portal is paid contractual workshop access; the current GTC status 2026-08-14 grants own-use rights only and prohibits transfer/distribution except narrow internal printout exceptions. This is not a license for a pre-populated third-party offline SQLite database. The separate third-party RMI product licence remains governed by its own contract and explicitly excludes Russia. Do not create accounts, accept paid terms, sign agreements or ingest data without owner approval and confirmed distribution scope.",
   "data_ingested": false,
   "source_snapshot_sha256": null,
   "hash_status": "not_downloaded_no_access"
