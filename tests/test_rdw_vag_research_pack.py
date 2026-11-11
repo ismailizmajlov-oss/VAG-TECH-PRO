@@ -569,6 +569,14 @@ class WindowsBuildMetadataContractTests(unittest.TestCase):
         self.assertIn("$rdwEntry.exact_engine_gearbox_pair -ne $false", workflow)
         self.assertIn("$rdwEntry.repair_applicability -ne $false", workflow)
         self.assertIn("$rdwEntry.diagnostic_execution_allowed -ne $false", workflow)
+        self.assertIn("$rdwEntry.commercial_use_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.display_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.cache_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.bulk_reuse_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.redistribution_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.attribution_required -ne $false", workflow)
+        self.assertIn("$rdwEntry.share_alike_required -ne $false", workflow)
+        self.assertIn("$rdwSourceManifest.data_ingested -ne $false", workflow)
 
 if __name__ == "__main__":
     unittest.main()
