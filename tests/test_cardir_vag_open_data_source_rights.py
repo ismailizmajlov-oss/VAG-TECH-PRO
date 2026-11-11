@@ -44,9 +44,9 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(len(matches),1); source=matches[0]
         self.assertFalse(source["data_ingested"]); self.assertFalse(source["product_import_allowed"])
         self.assertEqual(source["verification_status"],"licensed_source_snapshot_updated_pack_verified_read_only_desktop_research_integration_verified_no_production_import")
-         self.assertTrue(source["research_pack_ingested"])
-         self.assertTrue(source["research_database_included_in_desktop"])
-         self.assertEqual(source["desktop_integration_status"],"verified_read_only_research_pack_integrated_in_offline_desktop")
+        self.assertTrue(source["research_pack_ingested"])
+        self.assertTrue(source["research_database_included_in_desktop"])
+        self.assertEqual(source["desktop_integration_status"],"verified_read_only_research_pack_integrated_in_offline_desktop")
         pack=source["research_pack"]
         self.assertEqual(pack["status"],"verified_research_only")
         self.assertEqual(pack["pack_build_status"],"verified_research_only")
