@@ -1,24 +1,24 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-11T14:09:16Z",
+  "recorded_at_utc": "2026-11-11T14:37:44Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run91",
-  "run_id": "43023584214",
-  "run_number": 1465,
+  "run_id": "43035900085",
+  "run_number": 1466,
   "run_attempt": 1,
   "status": "completed",
   "conclusion": "success",
-  "head_sha": "f19c687845e36b0f82e0401e8e6f82a7e7b034ac",
+  "head_sha": "0eaeef5869b15062e8b08f0b8f211855545f65ff",
   "head_branch": "automation/openvag-rights-and-current-release-status-20261111",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43023584214",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43035900085",
   "jobs": [
     {
-      "id": 130532674121,
+      "id": 130574495537,
       "name": "build-and-lifecycle",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 130545697470,
+      "id": 130587875737,
       "name": "Windows Server 2022 installer compatibility lifecycle",
       "status": "completed",
       "conclusion": "success"
@@ -26,49 +26,39 @@
   ],
   "artifacts": [
     {
-      "id": 13859480376,
+      "id": 13863693497,
       "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 1383476821,
+      "size_in_bytes": 1383476547,
       "expired": false,
-      "created_at": "2026-11-11T13:15:20Z",
-      "expires_at": "2026-11-25T13:14:25Z",
-      "digest": "sha256:36083e6c3ed71f7cb9b5d7fad0b75640126b4497cb3a676bbaadbf6832ed0fe3"
+      "digest": "sha256:a5420253c3c0412231a7b7b20e92d763d9bd4f25cfde954807be5e1d55804fb6"
     },
     {
-      "id": 13858846586,
+      "id": 13864179271,
       "name": "vag-tech-pro-windows-2022-lifecycle-run71",
-      "size_in_bytes": 10273,
+      "size_in_bytes": 10274,
       "expired": false,
-      "created_at": "2026-11-11T13:19:31Z",
-      "expires_at": "2026-12-11T13:19:30Z",
-      "digest": "sha256:c3e6ce96a2b509422f6e8d0d4885c782784d6f843e2988e1dffb3020597a93fb"
+      "digest": "sha256:abd1caae5f0c5aa6de6b8567edb76c6b7fa0a0aea3425f6c07f248b51bf6067d"
     },
     {
-      "id": 13857691463,
-      "name": "vag-tech-pro-desktop-source-audit-43023584214",
-      "size_in_bytes": 5381907,
+      "id": 13864901291,
+      "name": "vag-tech-pro-desktop-source-audit-43035900085",
+      "size_in_bytes": 5381906,
       "expired": false,
-      "created_at": "2026-11-11T13:14:24Z",
-      "expires_at": "2026-12-11T13:14:23Z",
-      "digest": "sha256:bb20cf66e25e98fec4cb46d1e402b33ac35b7a8e6e0c98ea2dcded62785c9ddd"
+      "digest": "sha256:14c72ac0d84d98a1d2f66724b4191e7ecfd23e9a7d0eb821c26f8d3e3f3d22d5"
     },
     {
-      "id": 13857328546,
-      "name": "vag-tech-pro-build-metadata-43023584214",
-      "size_in_bytes": 4424,
+      "id": 13864901270,
+      "name": "vag-tech-pro-build-metadata-43035900085",
+      "size_in_bytes": 4419,
       "expired": false,
-      "created_at": "2026-11-11T13:14:11Z",
-      "expires_at": "2026-12-11T13:14:10Z",
-      "digest": "sha256:89ae483e2ae1d74d05f57234f1ebd3ece8ada3d35cb633349f9931a90e97c09d"
+      "digest": "sha256:3f11e0092258241f1ac9dce4e0aa4a35ca04322ecb0409a3045bb980b996ecf5"
     },
     {
-      "id": 13855713838,
+      "id": 13862269309,
       "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
       "size_in_bytes": 25308,
       "expired": false,
-      "created_at": "2026-11-11T12:51:29Z",
-      "expires_at": "2026-11-18T12:51:28Z",
-      "digest": "sha256:91904af495582ca307c2bf8cdb44fafb0c0cf40877f65b0bd0828386b114c4ba"
+      "digest": "sha256:cc74f91361b4c451122705022c8679100fafa1a68492f87220dfea79b975ec7d"
     }
   ],
   "native_windows_10_11": {
@@ -85,7 +75,7 @@
     ]
   },
   "release_ready": false,
-  "release_readiness_note": "Not release-ready. Run 1465 passed on GitHub-hosted Windows x64 and Windows Server 2022 only. Native Windows 10/11 acceptance is blocked because the owner-controlled runner is unavailable. Licensed VAG repair data, exact factory fitment, Russian/EAEU source rights and installer signing remain unresolved.",
+  "release_readiness_note": "Not release-ready. Run 1466 passed on GitHub-hosted Windows x64 and Windows Server 2022 only. Native Windows 10/11 acceptance is blocked because the owner-controlled runner is unavailable. Licensed VAG repair data, exact factory fitment, Russian/EAEU source rights and installer signing remain unresolved.",
   "source_evidence": {
     "source_archive_sha256": "e041ce167f083192a11f4b86b19e7bbc51fe8a1bb8e732a0d2944229af713216",
     "vag_source_register_sha256": "9daaba154d8d1714e00e0a70a4705504efc838a5f8fffad6ed7eee68ce76290c",
@@ -121,14 +111,14 @@
   "installers": [
     {
       "name": "VAG-TECH-PRO-Setup-0.2.3-x64.exe",
-      "bytes": 573955036,
-      "sha256": "6123201695f81c1ac118f5ec3ce496b07cfd4bcd993614b66d15b922cab3e91c"
+      "bytes": 573954890,
+      "sha256": "a216337948dbc9d18ae8d6b82c13925a7dac68287ff216c0d020c06052576fa7"
     },
     {
       "name": "VAG-TECH-PRO-Setup-0.2.4-x64.exe",
-      "bytes": 573954877,
-      "sha256": "b4e433b67f0a85155660a64f00201c3ac5e48f20a2b63b846100fec27250b754"
+      "bytes": 573954809,
+      "sha256": "c603d64190e4d7822a4854033f8e0cb9b42e68c4d80c6d752883f6f8ce87378b"
     }
   ],
-  "commit": "f19c687845e36b0f82e0401e8e6f82a7e7b034ac"
+  "commit": "0eaeef5869b15062e8b08f0b8f211855545f65ff"
 }
