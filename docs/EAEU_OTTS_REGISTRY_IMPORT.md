@@ -6,6 +6,9 @@ The EAEU registry schema in Decision No. 88 defines **R.TR.TS.07.001 v1.0.0**. T
 
 The source **eaeu-otts-unified-register-public-portal** remains blocked for bulk reuse and product distribution. Decision No. 225 of 2014-12-02 establishes public access to national register parts from official websites and requests to authorized bodies; Decision No. 88 of 2016-07-26 defines the technical exchange schema. Neither decision grants bulk reuse, offline caching, commercial display or redistribution rights. The central portal root redirects to the EAEU open-data catalogue, but Decision No. 225 requires national parts to be accessible from official websites. Russia's national part is identified as FGIS Reestr KTS maintained by Interstandart (https://www.interstandart.ru/page/fgis_01); its exact public search endpoint and any bulk export remain unresolved. No real EAEU record is currently imported or cached.
 
+
+The public-access legal basis is now pinned to the **official EEC publication**: [Decision No. 225 PDF](https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf), reached from the [official EEC 2014 decisions index](https://docs.eaeunion.org/documents/254/) (entry dated 2014-12-08). The [Alta.ru text](https://www.alta.ru/tamdoc/14kr0225/) is retained only as a secondary republication. The official PDF link was verified on 2026-11-11, but the download timed out; no PDF bytes or SHA-256 are claimed. This source improvement does not change the rights gate: dataset-specific bulk reuse, commercial display, offline caching and redistribution remain unconfirmed.
+
 ## Validate-only mode
 
 Validate an authorized XML file's root, namespace and structural fields without writing a database:

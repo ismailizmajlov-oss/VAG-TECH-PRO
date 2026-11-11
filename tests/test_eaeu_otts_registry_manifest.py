@@ -43,7 +43,10 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
     def test_public_access_basis_is_decision_225_not_decision_88(self):
         source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
         self.assertIn("Decision No. 225", source["access"]["legal_access_basis"])
-        self.assertEqual(source["legal_basis_url"], "https://www.alta.ru/tamdoc/14kr0225/")
+        self.assertEqual(source["legal_basis_url"], "https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf")
+        self.assertEqual(source["legal_basis_official_listing_url"], "https://docs.eaeunion.org/documents/254/")
+        self.assertEqual(source["legal_basis_secondary_republication_url"], "https://www.alta.ru/tamdoc/14kr0225/")
+        self.assertEqual(source["access"]["public_access_basis"]["reference_url"], source["legal_basis_url"])
         self.assertEqual(source["schema_basis_url"], "https://www.alta.ru/tamdoc/16kr0088/")
         self.assertEqual(source["access"]["public_access_basis"]["reference_url"], source["legal_basis_url"])
         self.assertIn("Decision No. 225", source["access"]["public_access_basis"]["legal_act"])
@@ -210,7 +213,11 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         source = self.russian_sources["eaeu-open-data-portal"]
         legal = source["legal_basis"]
         self.assertIn("№ 225", legal["document"])
-        self.assertEqual(legal["document_url"], "https://www.alta.ru/tamdoc/14kr0225/")
+        self.assertEqual(legal["document_url"], "https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf")
+        self.assertEqual(legal["official_listing_url"], "https://docs.eaeunion.org/documents/254/")
+        self.assertEqual(legal["secondary_republication_sources"][0]["url"], "https://www.alta.ru/tamdoc/14kr0225/")
+        self.assertFalse(legal["primary_pdf_downloaded"])
+        self.assertIsNone(legal["primary_signed_pdf_sha256"])
         self.assertIn("paragraph 13", legal["access_rule"])
         self.assertIn("№ 88", legal["schema_document"])
         self.assertEqual(legal["schema_document_url"], "https://www.alta.ru/tamdoc/16kr0088/")

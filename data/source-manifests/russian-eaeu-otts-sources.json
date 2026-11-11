@@ -502,14 +502,27 @@
       "hash_status": "not_downloaded_no_ingestion",
       "legal_basis": {
         "document": "Решение Коллегии ЕЭК от 02.12.2014 № 225",
-        "document_url": "https://www.alta.ru/tamdoc/14kr0225/",
+        "document_url": "https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf",
         "access_rule": "Paragraphs 2–5 establish national parts and access from official websites of authorized bodies and the EEC; paragraph 11 requires publication of the specified registry fields on official sites within five working days; paragraph 13 assigns responses to interested-person requests to authorized bodies.",
         "schema_document": "Решение Коллегии ЕЭК от 26.07.2016 № 88",
         "schema_document_url": "https://www.alta.ru/tamdoc/16kr0088/",
         "schema_rule": "Decision No. 88 approves technical documents for intergovernmental information exchange and the R.TR.TS.07.001 schema. It is not the public-access legal basis and does not grant bulk reuse, offline caching, display or redistribution rights.",
         "reuse_boundary": "Public query and official publication are distinct from bulk reuse, commercial display, offline caching and redistribution. Dataset-specific rights must be established before product import.",
         "pilot_project_report_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf",
-        "pilot_project_status": "completed_per_eec_2023_report"
+        "pilot_project_status": "completed_per_eec_2023_report",
+        "official_listing_url": "https://docs.eaeunion.org/documents/254/",
+        "secondary_republication_sources": [
+          {
+            "url": "https://www.alta.ru/tamdoc/14kr0225/",
+            "quality": "secondary_republication",
+            "reviewed_at": "2026-11-11",
+            "note": "Retained as a secondary reference; superseded as the primary legal citation by the official EEC PDF linked from the official 2014 decisions index."
+          }
+        ],
+        "primary_pdf_downloaded": false,
+        "primary_signed_pdf_sha256": null,
+        "official_link_verified_at": "2026-11-11",
+        "official_link_verification": "Direct PDF link followed from Decision No. 225 entry on the EEC official 2014 decisions index; the PDF download timed out during this review, so no file hash is claimed."
       },
       "current_portal_observation": {
         "checked_at": "2026-11-09",
