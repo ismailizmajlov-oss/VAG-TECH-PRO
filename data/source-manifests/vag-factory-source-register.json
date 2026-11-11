@@ -1105,7 +1105,16 @@
         "gitignore_rule": "db/openvag.db",
         "database_bytes_obtained": false,
         "database_sha256": null,
-        "historical_release_assets_checked": false
+        "historical_release_assets_checked": true,
+        "release_collection_review": {
+          "checked_at": "2026-11-11",
+          "api_url": "https://api.github.com/repos/riz4d/OpenVAG/releases?per_page=100",
+          "status": "empty_release_collection",
+          "release_count": 0,
+          "release_assets_available": false,
+          "tags_checked": false,
+          "note": "The public GitHub Releases API returned an empty array. No release assets were available to inspect through the Releases collection; Git tags were not enumerated."
+        }
       },
       "rights": {
         "repository_code_license": "MIT",
@@ -1115,7 +1124,7 @@
         "permission_status": "not_cleared"
       },
       "project_decision": "quarantine_only; MIT covers the repository software but does not establish rights in the absent database or its underlying DTC/repair content; do not import definitions, repair solutions or mappings into production until the actual database bytes, record-level provenance and reuse rights are independently established",
-      "evidence_status": "README_LICENSE_DB_SCHEMA_AND_DEFAULT_BRANCH_TREE_RECHECKED_2026-11-11; advertised_db_file_absent_and_gitignored; no_data_hash_claimed",
+      "evidence_status": "README_LICENSE_DB_SCHEMA_DEFAULT_BRANCH_TREE_AND_RELEASE_COLLECTION_RECHECKED_2026-11-11; advertised_db_file_absent_and_gitignored; releases_api_empty; no_database_bytes_or_hash",
       "data_ingested": false,
       "product_import_allowed": false
     },
