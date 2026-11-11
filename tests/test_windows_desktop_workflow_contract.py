@@ -816,6 +816,29 @@ def main() -> None:
     if "vehiclesdb_candidate_guard_evidence_sha256" not in text:
         raise SystemExit("Windows build metadata must bind the final VehiclesDB candidate-boundary evidence hash")
 
+    native_status_contract = (
+        '$nativeRunnerGateEnabled = ($env:WIN10_11_RUNNER_AVAILABLE -eq "true")',
+        'if ($env:UPSTREAM_CONCLUSION -ne "success")',
+        'elseif (-not $nativeRunnerGateEnabled)',
+        '$nativeAcceptanceStatus = "blocked_owner_runner_unavailable"',
+        '$nativeAcceptanceStatus = "passed"',
+        '$nativeAcceptanceStatus = "failed"',
+        '$nativeAcceptanceStatus = "blocked_native_job_skipped"',
+        '$nativeClientOsVerified = ($nativeAcceptanceStatus -eq "passed")',
+        'required = $true',
+        'acceptance_status = $nativeAcceptanceStatus',
+        'client_os_verified = $nativeClientOsVerified',
+        'Native Windows 10/11 acceptance: $nativeAcceptanceStatus',
+    )
+    missing_native_status = [item for item in native_status_contract if item not in native_text]
+    if missing_native_status:
+        raise SystemExit(
+            "Native Windows status must distinguish an upstream CI success from actual client-OS acceptance: "
+            + repr(missing_native_status)
+        )
+    if 'native_acceptance_status = $env:UPSTREAM_CONCLUSION' in native_text:
+        raise SystemExit("Upstream Windows build success must never be treated as native Windows 10/11 acceptance")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
 
 
