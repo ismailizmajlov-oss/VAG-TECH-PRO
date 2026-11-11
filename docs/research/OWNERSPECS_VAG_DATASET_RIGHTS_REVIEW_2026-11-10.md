@@ -90,3 +90,18 @@ The latest facts remain CC BY-SA 4.0 research-only material: market UNKNOWN, no 
 The acquisition evidence also records a stale free-text source_revision label in the run-158 acquisition-snapshot.json: it was copied from the pre-refresh manifest that still pinned d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9. That label is explicitly marked stale; the raw source JSON SHA-256 **835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c** and byte count are authoritative. The updated manifest now pins those exact bytes, and the acquisition-only CLI has been separated from pack building so the next refresh can record the correct revision metadata before SQLite generation.
 
 No VAG fact changes were observed in the exact 835fe745 re-acquisition delta; only two non-VAG Hyundai i10 unit-label case changes were found.
+
+
+## Exact source reacquisition — 2026-11-11 06:56 UTC
+
+Windows x64 acquisition workflow [run 21](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42975872025) retained the exact publisher JSON in artifact **13835491309**:
+- Raw source JSON SHA-256: **fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f** (659,973 bytes).
+- Acquisition evidence ZIP SHA-256: **604f58412a9e8bd8c30eb46d12518369a98750b7df459a35108f4667f037453b** (34,540 bytes).
+- Acquisition snapshot SHA-256: **26d0f07aad04acd5d582df92824aa310b411bcf321563bf03e5561c4f1926083**.
+- Acquisition log SHA-256: **8c9d51a4a2734fc1ce6a6e5d3fe6f510f04f159d5d6a30dbed795545a1ccaeae**.
+
+The exact row-level comparison against the preceding 06:33 snapshot (**835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c**) found one change only: Hyundai i10 III (AC3) coolant-capacity unit label l to L; numeric range 5.53–5.89 is unchanged. There were no generation or datapoint membership changes and no VAG fact changes. The VAG subset remains 20 generation candidates / 186 facts.
+
+The acquisition snapshot's free-text source_revision field still points to the 835fe745 manifest pin, while the raw source file is fa53aef8. This is explicitly marked stale; the raw source SHA-256 and byte count are authoritative. The acquisition workflow preserved the raw source artifact before failing the stale-pin gate, and no SQLite pack was built by run 21. The current manifest now pins fa53aef8; the exact 06:33 manifest is archived separately at `data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-snapshot-2026-11-11-063330Z.json`.
+
+This is a non-VAG metadata normalization only. It does not change the VAG research subset or justify promotion to factory applicability. The d702e457 pack remains the last independently verified research pack until a new pack is built from the latest exact bytes and independently verified.
