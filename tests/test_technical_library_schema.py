@@ -149,6 +149,49 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         views={r[0] for r in self.db.execute("SELECT name FROM sqlite_master WHERE type='view'")}
         self.assertTrue({"v_published_technical_records","v_generic_dtc_test_plans","v_vag_specific_dtc_test_plans","v_published_oem_dtc_index"}<=views)
 
+    def test_source_snapshot_and_claim_hashes_require_lowercase_sha256(self) -> None:
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+            self.insert_source_document(
+                "invalid-source-hash", "INVALID-SOURCE-HASH",
+                source_sha256="g" * 64, market_scope="UNKNOWN"
+            )
+
+        source_document_id = self.insert_source_document(
+            "hash-format-source", "HASH-FORMAT-1",
+            source_sha256=self.h("a"), market_scope="UNKNOWN"
+        )
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+            self.db.execute(
+                """INSERT INTO oem_dtc_index
+                   (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                    evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+                   VALUES ('P0123','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                           'synthetic hash-format fixture','generic_only',?,?)""",
+                (source_document_id, "g" * 64, UTC),
+            )
+
+        self.db.execute(
+            """INSERT INTO oem_dtc_index
+               (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+               VALUES ('P0123','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                       'synthetic hash-format fixture','generic_only',?,?)""",
+            (source_document_id, self.h("b"), UTC),
+        )
+        dtc_id = self.db.execute(
+            "SELECT oem_dtc_id FROM oem_dtc_index WHERE dtc_code='P0123'"
+        ).fetchone()[0]
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+            self.db.execute(
+                "UPDATE oem_dtc_index SET source_claim_hash=? WHERE oem_dtc_id=?",
+                ("g" * 64, dtc_id),
+            )
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+            self.db.execute(
+                "UPDATE source_documents SET source_sha256=? WHERE source_document_id=?",
+                ("g" * 64, source_document_id),
+            )
+
     def test_exact_engine_transmission_record_requires_complete_evidence_and_publishes(self) -> None:
         self.seed_published_exact_pair()
         row=self.db.execute("""SELECT record_kind,document_revision,record_revision,market_scope,applicability_precision,
