@@ -82,9 +82,10 @@ jobs:
             $x5 = $raw.generations | Where-Object { $_.generation_slug -eq "x5-g05-suv-2019-2023" }
             $x5MassValues = @($x5.masses | ForEach-Object { [int]$_.value_kg })
             $logText = Get-Content -LiteralPath ownerspecs-acquisition.log -Raw
-            $register = Get-Content -LiteralPath data/source-manifests/vag-factory-source-register.json -Raw | ConvertFrom-Json
-            $registered = $register.sources | Where-Object { $_.source_id -eq "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0" }
-            $attempt = $registered.latest_acquisition_attempt
+            $register = Get-Content -LiteralPath data/source-manifests/vag-factory-source-register.json -Raw | ConvertFrom-Json -AsHashtable
+            $registered = @($register["sources"] | Where-Object { $_["source_id"] -eq "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0" })
+            if ($registered.Count -ne 1) { throw "OwnerSpecs source register entry is missing or duplicated." }
+            $attempt = $registered[0]["latest_acquisition_attempt"]
             $expectedQuarantine =
               $sourceHash -eq "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9" -and
               $sourceBytes -eq 659973 -and
@@ -95,10 +96,10 @@ jobs:
               $q8.verified_datapoints -eq 8 -and $touareg.verified_datapoints -eq 0 -and
               $x5.verified_datapoints -eq 4 -and ($x5MassValues -join ",") -eq "2800,2135,3500,750" -and
               $logText.Contains("OwnerSpecs datapoint count mismatch: expected 2369, got 2273.") -and
-              $attempt.status -eq "quarantined_public_html_json_count_mismatch" -and
-              $attempt.source_snapshot_sha256 -eq $sourceHash -and
-              $attempt.json_datapoints -eq $datapoints -and
-              $attempt.html_page_claimed_datapoints -eq 2369
+              $attempt["status"] -eq "quarantined_public_html_json_count_mismatch" -and
+              $attempt["source_snapshot_sha256"] -eq $sourceHash -and
+              $attempt["json_datapoints"] -eq $datapoints -and
+              $attempt["html_page_claimed_datapoints"] -eq 2369
             if (-not $expectedQuarantine) { throw "OwnerSpecs acquisition failed outside the exact reviewed HTML/JSON count mismatch; refusing to classify it as a known quarantine." }
             "source_quarantined=true" | Add-Content -LiteralPath $env:GITHUB_OUTPUT
             "### OwnerSpecs current JSON snapshot quarantined" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
