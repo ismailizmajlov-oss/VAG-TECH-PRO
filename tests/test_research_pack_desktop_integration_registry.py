@@ -84,6 +84,7 @@ class ResearchPackDesktopIntegrationRegistryTests(unittest.TestCase):
         self.assertEqual(latest["source_snapshot_sha256"], "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c")
         self.assertEqual(latest["vag_fact_count"], 186)
         self.assertEqual(latest["acquisition_evidence"]["workflow_run_id"], 42973238985)
+        self.assertTrue(latest["acquisition_evidence"]["source_revision_field_stale"])
         self.assertIsNone(source["desktop_integration_evidence"])
         self.assertEqual(source["previous_desktop_integration_evidence"]["workflow_run_id"], 42964628461)
         self.assertEqual(source["previous_verified_research_pack"]["artifact_id"], 13742090427)
