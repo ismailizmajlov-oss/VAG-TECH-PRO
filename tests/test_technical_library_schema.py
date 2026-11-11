@@ -149,6 +149,144 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         views={r[0] for r in self.db.execute("SELECT name FROM sqlite_master WHERE type='view'")}
         self.assertTrue({"v_published_technical_records","v_generic_dtc_test_plans","v_vag_specific_dtc_test_plans","v_published_oem_dtc_index"}<=views)
 
+    def test_hash_format_guards_are_additive_for_existing_legacy_tables(self) -> None:
+        schema_path = ROOT / "data/sql/oem-dtc-index.sql"
+        current_sql = schema_path.read_text(encoding="utf-8")
+        legacy_sql = current_sql.replace(
+            "  source_sha256 TEXT CHECK (source_sha256 IS NULL OR (length(source_sha256)=64 AND source_sha256 NOT GLOB '*[^a-f0-9]*')),",
+            "  source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64),",
+        ).replace(
+            "  source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64 AND source_claim_hash NOT GLOB '*[^a-f0-9]*'),",
+            "  source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64),",
+        )
+        legacy_sql = re.sub(
+            r"CREATE TRIGGER IF NOT EXISTS (?:source_documents_sha256_insert_guard|source_documents_sha256_update_guard|oem_dtc_source_claim_hash_insert_guard|oem_dtc_source_claim_hash_update_guard)\b.*?\nEND;\n",
+            "",
+            legacy_sql,
+            flags=re.S,
+        )
+
+        self.assertIn("source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64)", legacy_sql)
+        self.assertIn("source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64)", legacy_sql)
+        self.assertNotIn("source_documents_sha256_insert_guard", legacy_sql)
+        self.assertNotIn("oem_dtc_source_claim_hash_insert_guard", legacy_sql)
+
+        legacy_db = sqlite3.connect(":memory:")
+        try:
+            legacy_db.execute("PRAGMA foreign_keys=ON")
+            legacy_db.executescript(legacy_sql)
+            # Re-applying the current schema must add guards without rebuilding tables.
+            legacy_db.executescript(current_sql)
+            installed_guards = {
+                row[0] for row in legacy_db.execute(
+                    "SELECT name FROM sqlite_master WHERE type='trigger'"
+                )
+            }
+            self.assertTrue({
+                "source_documents_sha256_insert_guard",
+                "source_documents_sha256_update_guard",
+                "oem_dtc_source_claim_hash_insert_guard",
+                "oem_dtc_source_claim_hash_update_guard",
+            } <= installed_guards)
+
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "source SHA-256"):
+                legacy_db.execute(
+                    """INSERT INTO source_documents
+                       (source_id,publisher,document_id,document_type,revision,market_scope,
+                        source_sha256,license_status,reuse_scope,redistribution_allowed,retrieved_at_utc)
+                       VALUES ('legacy','Fixture','BAD-HASH','other','r1','UNKNOWN',?,
+                               'cc0','test only',1,?)""",
+                    ("g" * 64, UTC),
+                )
+
+            legacy_db.execute(
+                """INSERT INTO source_documents
+                   (source_id,publisher,document_id,document_type,revision,market_scope,
+                    source_sha256,license_status,reuse_scope,redistribution_allowed,retrieved_at_utc)
+                   VALUES ('legacy','Fixture','GOOD-HASH','other','r1','UNKNOWN',?,
+                           'cc0','test only',1,?)""",
+                (self.h("a"), UTC),
+            )
+            source_id = legacy_db.execute("SELECT last_insert_rowid()").fetchone()[0]
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "source SHA-256"):
+                legacy_db.execute(
+                    "UPDATE source_documents SET source_sha256=? WHERE source_document_id=?",
+                    ("g" * 64, source_id),
+                )
+
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "source claim hash"):
+                legacy_db.execute(
+                    """INSERT INTO oem_dtc_index
+                       (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                        evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+                       VALUES ('P0123','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                               'legacy migration fixture','generic_only',?,?)""",
+                    (source_id, "g" * 64, UTC),
+                )
+
+            legacy_db.execute(
+                """INSERT INTO oem_dtc_index
+                   (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                    evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+                   VALUES ('P0123','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                           'legacy migration fixture','generic_only',?,?)""",
+                (source_id, self.h("b"), UTC),
+            )
+            dtc_id = legacy_db.execute(
+                "SELECT oem_dtc_id FROM oem_dtc_index WHERE dtc_code='P0123'"
+            ).fetchone()[0]
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "source claim hash"):
+                legacy_db.execute(
+                    "UPDATE oem_dtc_index SET source_claim_hash=? WHERE oem_dtc_id=?",
+                    ("g" * 64, dtc_id),
+                )
+            self.assertEqual(legacy_db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+        finally:
+            legacy_db.close()
+
+    def test_source_snapshot_and_claim_hashes_require_lowercase_sha256(self) -> None:
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source SHA-256|CHECK constraint failed)"):
+            self.insert_source_document(
+                "invalid-source-hash", "INVALID-SOURCE-HASH",
+                source_sha256="g" * 64, market_scope="UNKNOWN"
+            )
+
+        source_document_id = self.insert_source_document(
+            "hash-format-source", "HASH-FORMAT-1",
+            source_sha256=self.h("a"), market_scope="UNKNOWN"
+        )
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source claim hash|CHECK constraint failed)"):
+            self.db.execute(
+                """INSERT INTO oem_dtc_index
+                   (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                    evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+                   VALUES ('P0123','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                           'synthetic hash-format fixture','generic_only',?,?)""",
+                (source_document_id, "g" * 64, UTC),
+            )
+
+        self.db.execute(
+            """INSERT INTO oem_dtc_index
+               (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+                evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+               VALUES ('P0123','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                       'synthetic hash-format fixture','generic_only',?,?)""",
+            (source_document_id, self.h("b"), UTC),
+        )
+        dtc_id = self.db.execute(
+            "SELECT oem_dtc_id FROM oem_dtc_index WHERE dtc_code='P0123'"
+        ).fetchone()[0]
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source claim hash|CHECK constraint failed)"):
+            self.db.execute(
+                "UPDATE oem_dtc_index SET source_claim_hash=? WHERE oem_dtc_id=?",
+                ("g" * 64, dtc_id),
+            )
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source SHA-256|CHECK constraint failed)"):
+            self.db.execute(
+                "UPDATE source_documents SET source_sha256=? WHERE source_document_id=?",
+                ("g" * 64, source_document_id),
+            )
+
     def test_exact_engine_transmission_record_requires_complete_evidence_and_publishes(self) -> None:
         self.seed_published_exact_pair()
         row=self.db.execute("""SELECT record_kind,document_revision,record_revision,market_scope,applicability_precision,

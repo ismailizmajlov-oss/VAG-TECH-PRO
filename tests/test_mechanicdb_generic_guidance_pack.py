@@ -6,6 +6,8 @@ import unittest
 from pathlib import Path
 
 
+ROOT = Path(__file__).resolve().parents[1]
+SQL_SCHEMA_PATH = ROOT / "data/sql/generic-repair-guidance.sql"
 PACK_DIR = Path(os.environ.get("MECHANICDB_PACK_DIR", "build/generic-repair-guidance"))
 MANIFEST_PATH = PACK_DIR / "manifest.json"
 DATABASE_PATH = PACK_DIR / "generic-repair-guidance.sqlite"
@@ -27,6 +29,70 @@ class MechanicDbGenericGuidancePackTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.connection.close()
+
+    def test_sql_schema_rejects_non_hex_provenance_hashes(self):
+        db = sqlite3.connect(":memory:")
+        try:
+            db.executescript(SQL_SCHEMA_PATH.read_text(encoding="utf-8"))
+            db.execute("""INSERT INTO source_registry
+                (source_id,publisher,repository_url,source_revision,data_license,license_url,
+                 rights_status,commercial_use_allowed,display_allowed,offline_cache_allowed,
+                 redistribution_allowed,share_alike_required,attribution_required,attribution_text,
+                 market_scope,applicability_precision,technical_review_status,safety_review_status)
+                VALUES ('fixture','Fixture','https://example.invalid/repo','r1','ODbL-1.0',
+                        'https://opendatacommons.org/licenses/odbl/1-0/','approved_by_published_license',
+                        1,1,1,1,1,1,'Fixture attribution','UNKNOWN','generic_code_only',
+                        'not_independently_reviewed','not_assessed')""")
+
+            def insert_source_file(file_id, git_sha, file_sha):
+                db.execute("""INSERT INTO source_files
+                    (source_file_id,source_id,source_url,git_blob_sha1,sha256,byte_size,purpose)
+                    VALUES (?, 'fixture', 'https://example.invalid/source.csv', ?, ?, 10, 'test fixture')""",
+                    (file_id, git_sha, file_sha))
+
+            with self.assertRaises(sqlite3.IntegrityError):
+                insert_source_file("bad-git-hash", "g" * 40, "a" * 64)
+            with self.assertRaises(sqlite3.IntegrityError):
+                insert_source_file("bad-file-hash", "a" * 40, "g" * 64)
+            insert_source_file("valid-source", "a" * 40, "b" * 64)
+
+            def insert_dtc(file_hash, line_hash):
+                db.execute("""INSERT INTO generic_dtc_references
+                    (dtc_code,source_record_id,system_category,namespace,manufacturer,market_scope,
+                     applicability_level,vag_specific,diagnostic_execution_allowed,technical_review_status,
+                     source_file_id,source_revision,source_file_sha256,source_line_no,source_line_sha256)
+                    VALUES ('P0001','row-1','powertrain','generic_sae_iso','UNKNOWN','UNKNOWN',
+                            'generic_only',0,0,'not_independently_reviewed',
+                            'valid-source','r1',?,2,?)""", (file_hash, line_hash))
+
+            with self.assertRaises(sqlite3.IntegrityError):
+                insert_dtc("g" * 64, "c" * 64)
+            with self.assertRaises(sqlite3.IntegrityError):
+                insert_dtc("b" * 64, "g" * 64)
+            insert_dtc("b" * 64, "c" * 64)
+
+            def insert_guidance(guidance_id, file_hash, line_hash):
+                db.execute("""INSERT INTO generic_repair_guidance
+                    (guidance_id,dtc_code,consideration_order,skill_level,title,instructions,
+                     namespace,manufacturer,market_scope,applicability_level,vag_specific,
+                     diagnostic_execution_allowed,technical_review_status,safety_review_status,
+                     source_file_id,source_revision,source_file_sha256,source_line_no,
+                     source_line_sha256,source_license)
+                    VALUES (?,'P0001',1,'technician','Fixture','Non-operational fixture text',
+                            'generic_sae_iso','UNKNOWN','UNKNOWN','generic_only',0,0,
+                            'not_independently_reviewed','not_assessed',
+                            'valid-source','r1',?,3,?,'ODbL-1.0')""",
+                    (guidance_id, file_hash, line_hash))
+
+            with self.assertRaises(sqlite3.IntegrityError):
+                insert_guidance("bad-guidance-file-hash", "g" * 64, "d" * 64)
+            with self.assertRaises(sqlite3.IntegrityError):
+                insert_guidance("bad-guidance-line-hash", "b" * 64, "g" * 64)
+            insert_guidance("valid-guidance", "b" * 64, "d" * 64)
+            self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+            self.assertEqual(db.execute("PRAGMA foreign_key_check").fetchall(), [])
+        finally:
+            db.close()
 
     def test_pinned_source_and_pack_hashes(self):
         manifest = self.manifest

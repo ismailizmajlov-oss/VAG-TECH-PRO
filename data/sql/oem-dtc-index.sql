@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS source_documents (
     market_scope IN ('RU','EAEU','EU','NAR','CN','ROW','UNKNOWN')
   ),
   source_url TEXT,
-  source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64),
+  source_sha256 TEXT CHECK (source_sha256 IS NULL OR (length(source_sha256)=64 AND source_sha256 NOT GLOB '*[^a-f0-9]*')),
   license_status TEXT NOT NULL CHECK (
     license_status IN ('cc0','public_domain','open_license','permission_granted',
                        'proprietary','unknown','permission_required')
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS oem_dtc_index (
     review_status IN ('candidate','source_header_verified','applicability_verified',
                       'engineer_reviewed','publication_approved','rejected')
   ),
-  source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64),
+  source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64 AND source_claim_hash NOT GLOB '*[^a-f0-9]*'),
   created_at_utc TEXT NOT NULL,
   UNIQUE(dtc_code, dtc_namespace, manufacturer, market_scope, model,
          generation_or_type_code, engine_code, transmission_code,
@@ -376,6 +376,38 @@ BEFORE UPDATE OF dtc_namespace, manufacturer ON oem_dtc_index
 WHEN NEW.dtc_namespace='manufacturer_specific_other' AND NEW.manufacturer<>'OTHER'
 BEGIN
   SELECT RAISE(ABORT, 'other manufacturer-specific DTC must use OTHER manufacturer');
+END;
+
+-- Additive guards also protect databases created by an earlier schema revision:
+-- CREATE TABLE IF NOT EXISTS cannot retrofit CHECK constraints into an existing SQLite table.
+CREATE TRIGGER IF NOT EXISTS source_documents_sha256_insert_guard
+BEFORE INSERT ON source_documents
+WHEN NEW.source_sha256 IS NOT NULL
+ AND (length(NEW.source_sha256)<>64 OR NEW.source_sha256 GLOB '*[^a-f0-9]*')
+BEGIN
+  SELECT RAISE(ABORT, 'source SHA-256 must be 64 lowercase hexadecimal characters');
+END;
+
+CREATE TRIGGER IF NOT EXISTS source_documents_sha256_update_guard
+BEFORE UPDATE OF source_sha256 ON source_documents
+WHEN NEW.source_sha256 IS NOT NULL
+ AND (length(NEW.source_sha256)<>64 OR NEW.source_sha256 GLOB '*[^a-f0-9]*')
+BEGIN
+  SELECT RAISE(ABORT, 'source SHA-256 must be 64 lowercase hexadecimal characters');
+END;
+
+CREATE TRIGGER IF NOT EXISTS oem_dtc_source_claim_hash_insert_guard
+BEFORE INSERT ON oem_dtc_index
+WHEN length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
+BEGIN
+  SELECT RAISE(ABORT, 'source claim hash must be 64 lowercase hexadecimal characters');
+END;
+
+CREATE TRIGGER IF NOT EXISTS oem_dtc_source_claim_hash_update_guard
+BEFORE UPDATE OF source_claim_hash ON oem_dtc_index
+WHEN length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
+BEGIN
+  SELECT RAISE(ABORT, 'source claim hash must be 64 lowercase hexadecimal characters');
 END;
 
 -- Runtime-safe public surface: revoking rights immediately removes a DTC from this view.
