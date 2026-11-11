@@ -46,7 +46,7 @@ function fixture(overrides = {}) {
     "  };",
     "}",
     "",
-    "function getWikidataGenerationSummary() {}"
+    "module.exports = {};"
   ].join("\n");
   fs.writeFileSync(path.join(root, "lib", "local-research-db.cjs"), oldCountGate + "\n" + candidateFunction + "\n");
   const tick = String.fromCharCode(96);
