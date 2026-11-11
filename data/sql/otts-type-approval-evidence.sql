@@ -65,7 +65,8 @@ BEGIN
     THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
   SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
       OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
-    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache and bulk-reuse rights') END;
+      OR NEW.store_structured_data_allowed<>1
+    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache, bulk-reuse and structured-data rights') END;
   SELECT CASE WHEN NEW.rights_revision IS NULL OR trim(NEW.rights_revision)=''
       OR NEW.reviewed_at_utc IS NULL OR trim(NEW.reviewed_at_utc)=''
     THEN RAISE(ABORT, 'source rights approval requires a reviewed revision and timestamp') END;
@@ -394,4 +395,140 @@ BEGIN
       reviewer_note='Source rights record was deleted; evidence returned to candidate status.'
   WHERE source_id=OLD.source_id
     AND review_status IN ('source_checked','technically_verified','publication_approved');
+END;
+
+-- Migration-safe v2 guards: CREATE TRIGGER IF NOT EXISTS does not replace older
+-- permissive triggers in an existing user database. These distinct trigger names
+-- add the structured-data permission check without requiring destructive data changes.
+CREATE TRIGGER IF NOT EXISTS require_structured_rights_otts_insert_v2
+BEFORE INSERT ON eaeu_otts_evidence
+WHEN NOT EXISTS (
+  SELECT 1
+  FROM vehicle_catalog_sources s
+  JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
+  WHERE s.source_id=NEW.source_id
+    AND s.redistribution_allowed=1
+    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+    AND r.rights_status='approved'
+    AND r.commercial_use_allowed=1
+    AND r.display_allowed=1
+    AND r.offline_cache_allowed=1
+    AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
+    AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
+)
+BEGIN
+  SELECT RAISE(ABORT, 'OTTS evidence import blocked: structured-data storage and all offline product rights are not approved');
+END;
+
+CREATE TRIGGER IF NOT EXISTS require_structured_rights_otts_update_v2
+BEFORE UPDATE OF source_id, document_cached ON eaeu_otts_evidence
+WHEN (NEW.source_id IS NOT OLD.source_id OR NEW.document_cached=1)
+  AND NOT EXISTS (
+    SELECT 1
+    FROM vehicle_catalog_sources s
+    JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
+    WHERE s.source_id=NEW.source_id
+      AND s.redistribution_allowed=1
+      AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+      AND r.rights_status='approved'
+      AND r.commercial_use_allowed=1
+      AND r.display_allowed=1
+      AND r.offline_cache_allowed=1
+      AND r.bulk_reuse_allowed=1
+      AND r.store_structured_data_allowed=1
+      AND (NEW.document_cached=0 OR r.pdf_redistribution_allowed=1)
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'OTTS evidence update blocked: structured-data storage and all offline product rights are not approved');
+END;
+
+CREATE TRIGGER IF NOT EXISTS require_structured_rights_otts_publication_v2
+BEFORE UPDATE OF review_status ON eaeu_otts_evidence
+WHEN NEW.review_status='publication_approved'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM vehicle_catalog_sources s
+    JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
+    WHERE s.source_id=NEW.source_id
+      AND s.redistribution_allowed=1
+      AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+      AND r.rights_status='approved'
+      AND r.commercial_use_allowed=1
+      AND r.display_allowed=1
+      AND r.offline_cache_allowed=1
+      AND r.bulk_reuse_allowed=1
+      AND r.store_structured_data_allowed=1
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'OTTS publication blocked: structured-data storage rights are missing or revoked');
+END;
+
+CREATE TRIGGER IF NOT EXISTS demote_otts_after_structured_rights_narrowing_v2
+AFTER UPDATE OF store_structured_data_allowed ON vehicle_catalog_source_rights
+WHEN NEW.store_structured_data_allowed<>1
+BEGIN
+  UPDATE eaeu_otts_evidence
+  SET review_status='candidate',
+      reviewed_at_utc=NULL,
+      review_note='Structured-data storage permission was revoked or narrowed; publication eligibility and cached document references were removed.',
+      document_cached=0,
+      document_reference_url=NULL,
+      document_sha256=NULL
+  WHERE source_id=NEW.source_id
+    AND (review_status='publication_approved' OR document_cached=1);
+END;
+
+-- Rights-row v2 triggers are additive so an existing user database with older
+-- same-named IF NOT EXISTS triggers receives the stricter checks on schema reapply.
+CREATE TRIGGER IF NOT EXISTS validate_source_rights_approval_insert_v2
+BEFORE INSERT ON vehicle_catalog_source_rights
+WHEN NEW.rights_status='approved'
+BEGIN
+  SELECT CASE WHEN NEW.license_name IS NULL OR trim(NEW.license_name)=''
+    THEN RAISE(ABORT, 'source rights approval requires a license name') END;
+  SELECT CASE WHEN (NEW.license_url IS NULL OR trim(NEW.license_url)='')
+      AND (NEW.permission_reference IS NULL OR trim(NEW.permission_reference)='')
+    THEN RAISE(ABORT, 'source rights approval requires a license URL or permission reference') END;
+  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64
+    THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
+  SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
+      OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
+      OR NEW.store_structured_data_allowed<>1
+    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache, bulk-reuse and structured-data rights') END;
+  SELECT CASE WHEN NEW.rights_revision IS NULL OR trim(NEW.rights_revision)=''
+      OR NEW.reviewed_at_utc IS NULL OR trim(NEW.reviewed_at_utc)=''
+    THEN RAISE(ABORT, 'source rights approval requires a reviewed revision and timestamp') END;
+  SELECT CASE WHEN NOT EXISTS (
+    SELECT 1 FROM vehicle_catalog_sources s
+    WHERE s.source_id=NEW.source_id
+      AND s.redistribution_allowed=1
+      AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+  ) THEN RAISE(ABORT, 'source registry does not authorize redistribution') END;
+END;
+
+CREATE TRIGGER IF NOT EXISTS validate_source_rights_approval_update_v2
+BEFORE UPDATE ON vehicle_catalog_source_rights
+WHEN NEW.rights_status='approved'
+BEGIN
+  SELECT CASE WHEN NEW.license_name IS NULL OR trim(NEW.license_name)=''
+    THEN RAISE(ABORT, 'source rights approval requires a license name') END;
+  SELECT CASE WHEN (NEW.license_url IS NULL OR trim(NEW.license_url)='')
+      AND (NEW.permission_reference IS NULL OR trim(NEW.permission_reference)='')
+    THEN RAISE(ABORT, 'source rights approval requires a license URL or permission reference') END;
+  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64
+    THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
+  SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
+      OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
+      OR NEW.store_structured_data_allowed<>1
+    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache, bulk-reuse and structured-data rights') END;
+  SELECT CASE WHEN NEW.rights_revision IS NULL OR trim(NEW.rights_revision)=''
+      OR NEW.reviewed_at_utc IS NULL OR trim(NEW.reviewed_at_utc)=''
+    THEN RAISE(ABORT, 'source rights approval requires a reviewed revision and timestamp') END;
+  SELECT CASE WHEN NOT EXISTS (
+    SELECT 1 FROM vehicle_catalog_sources s
+    WHERE s.source_id=NEW.source_id
+      AND s.redistribution_allowed=1
+      AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+  ) THEN RAISE(ABORT, 'source registry does not authorize redistribution') END;
 END;

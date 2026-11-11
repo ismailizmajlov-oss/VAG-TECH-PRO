@@ -59,6 +59,22 @@ def test_structured_data_rights_are_required(db):
     )
 
 
+def test_structured_data_rights_are_required_on_update(db):
+    insert_source(db, "update-no-structured", "open_license", 1)
+    insert_rights(db, "update-no-structured")
+    expect_integrity_error(
+        db,
+        lambda: db.execute(
+            "UPDATE vehicle_catalog_source_rights SET store_structured_data_allowed=0 WHERE source_id='update-no-structured'"
+        ),
+        "approved rights cannot drop structured-data storage permission",
+    )
+    state = db.execute(
+        "SELECT rights_status, store_structured_data_allowed FROM vehicle_catalog_source_rights WHERE source_id='update-no-structured'"
+    ).fetchone()
+    assert state == ("approved", 1), state
+
+
 def evidence_values(source_id, key, *, market="EAEU", cached=0, precision="type_approval_descriptor"):
     return (
         source_id, "RU", "OTTS", "TEST-OTTS-001", key, "revision-A",
@@ -101,6 +117,108 @@ def insert_evidence(db, source_id, key, review_status="candidate", **kwargs):
     )
 
 
+
+def test_legacy_structured_rights_fail_closed(db):
+    """Existing approved rows from pre-v2 databases must not bypass structured-data rights."""
+    insert_source(db, "legacy-structured-source", "open_license", 1)
+    insert_rights(db, "legacy-structured-source", pdf_allowed=1)
+    insert_evidence(db, "legacy-structured-source", "legacy-structured-row", cached=1)
+    evidence_id = db.execute(
+        "SELECT approval_evidence_id FROM eaeu_otts_evidence WHERE source_record_key='legacy-structured-row'"
+    ).fetchone()[0]
+
+    # Simulate a pre-v2 database whose approved rights row acquired the new column
+    # with its safe default (0), while old permissive triggers were still installed.
+    insert_source(db, "legacy-insert-source", "open_license", 1)
+    db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_insert")
+    db.execute("""CREATE TRIGGER validate_source_rights_approval_insert
+        BEFORE INSERT ON vehicle_catalog_source_rights
+        WHEN NEW.rights_status='approved'
+        BEGIN
+          SELECT CASE WHEN NEW.license_name IS NULL OR trim(NEW.license_name)=''
+            THEN RAISE(ABORT, 'legacy insert guard fixture') END;
+        END;""")
+    db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_update")
+    db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_insert_v2")
+    db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_update_v2")
+    db.execute("""CREATE TRIGGER validate_source_rights_approval_update
+        BEFORE UPDATE ON vehicle_catalog_source_rights
+        WHEN NEW.rights_status='approved'
+        BEGIN
+          SELECT CASE WHEN NEW.license_name IS NULL OR trim(NEW.license_name)=''
+            THEN RAISE(ABORT, 'legacy update guard fixture') END;
+        END;""")
+    db.execute("DROP TRIGGER IF EXISTS demote_otts_after_rights_narrowing")
+    db.execute("DROP TRIGGER IF EXISTS demote_otts_after_structured_rights_narrowing_v2")
+    db.execute(
+        "UPDATE vehicle_catalog_source_rights SET store_structured_data_allowed=0 WHERE source_id='legacy-structured-source'"
+    )
+
+    # Re-applying the current schema must add new guards even when legacy triggers/tables exist.
+    db.executescript(OTTS_SCHEMA.read_text(encoding="utf-8"))
+
+    expect_integrity_error(
+        db,
+        lambda: insert_rights(db, "legacy-insert-source", structured_allowed=0),
+        "legacy approved-rights insert guard cannot bypass structured-data permission",
+    )
+    expect_integrity_error(
+        db,
+        lambda: db.execute(
+            "UPDATE vehicle_catalog_source_rights SET rights_revision='legacy-bypass' WHERE source_id='legacy-structured-source'"
+        ),
+        "legacy approved-rights update guard cannot bypass structured-data permission",
+    )
+
+    expect_integrity_error(
+        db,
+        lambda: insert_evidence(db, "legacy-structured-source", "legacy-bypass-insert"),
+        "legacy approved row without structured-data rights cannot import new evidence",
+    )
+    expect_integrity_error(
+        db,
+        lambda: db.execute(
+            "UPDATE eaeu_otts_evidence SET document_cached=1 WHERE approval_evidence_id=?",
+            (evidence_id,),
+        ),
+        "legacy approved row without structured-data rights cannot add or retain a cache through update",
+    )
+
+    db.execute(
+        "UPDATE eaeu_otts_evidence SET review_status='source_checked', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+        (NOW, "Legacy rights row migration fixture inspected.", evidence_id),
+    )
+    db.execute(
+        "UPDATE eaeu_otts_evidence SET review_status='technically_verified', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+        (NOW, "Descriptor fixture checked; structured-data rights are absent.", evidence_id),
+    )
+    expect_integrity_error(
+        db,
+        lambda: db.execute(
+            "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+            (NOW, "Attempted publication from a legacy rights row.", evidence_id),
+        ),
+        "legacy approved row without structured-data rights cannot publish",
+    )
+
+    # Re-granting the missing right is explicit and reviewable; subsequent revocation
+    # must demote publication and clear any cached document reference.
+    db.execute(
+        "UPDATE vehicle_catalog_source_rights SET store_structured_data_allowed=1 WHERE source_id='legacy-structured-source'"
+    )
+    db.execute(
+        "UPDATE eaeu_otts_evidence SET review_status='publication_approved', reviewed_at_utc=?, review_note=? WHERE approval_evidence_id=?",
+        (NOW, "Structured-data permission explicitly restored for this fixture.", evidence_id),
+    )
+    db.execute(
+        "UPDATE vehicle_catalog_source_rights SET rights_status='restricted', store_structured_data_allowed=0 WHERE source_id='legacy-structured-source'"
+    )
+    state = db.execute(
+        "SELECT review_status, document_cached, document_reference_url, document_sha256 FROM eaeu_otts_evidence WHERE approval_evidence_id=?",
+        (evidence_id,),
+    ).fetchone()
+    assert state == ("candidate", 0, None, None), state
+
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         with closing(sqlite3.connect(Path(tmp) / "catalog.sqlite")) as db:
@@ -135,6 +253,7 @@ def main():
             # The database cannot accept rows that claim to have been reviewed before review occurs.
             insert_source(db, "licensed-source", "open_license", 1)
             test_structured_data_rights_are_required(db)
+            test_structured_data_rights_are_required_on_update(db)
             insert_rights(db, "licensed-source", pdf_allowed=0)
             expect_integrity_error(
                 db,
@@ -346,6 +465,8 @@ def main():
                 ),
                 "publication with unknown market",
             )
+
+            test_legacy_structured_rights_fail_closed(db)
 
             # OTTS descriptors never create or directly link factory engine/gearbox codes.
             assert db.execute("SELECT count(*) FROM engine_codes").fetchone()[0] == 0

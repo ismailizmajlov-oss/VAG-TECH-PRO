@@ -383,6 +383,8 @@ jobs:
           python tests/test_technical_library_schema.py -v
           python scripts/test-vehicle-catalog-schema.py
           if ($LASTEXITCODE -ne 0) { throw "Vehicle catalog exact-evidence and source-rights gates failed." }
+          python scripts/test-otts-type-approval-evidence.py
+          if ($LASTEXITCODE -ne 0) { throw "OTTS structured-data rights update gates failed." }
           python tests/test_dtc_namespace_policy.py -v
           if ($LASTEXITCODE -ne 0) { throw "Canonical DTC namespace policy cross-layer tests failed." }
           python scripts/validate-oem-dtc-index.py
