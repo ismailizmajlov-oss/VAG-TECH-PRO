@@ -378,6 +378,38 @@ BEGIN
   SELECT RAISE(ABORT, 'other manufacturer-specific DTC must use OTHER manufacturer');
 END;
 
+-- Additive guards also protect databases created by an earlier schema revision:
+-- CREATE TABLE IF NOT EXISTS cannot retrofit CHECK constraints into an existing SQLite table.
+CREATE TRIGGER IF NOT EXISTS source_documents_sha256_insert_guard
+BEFORE INSERT ON source_documents
+WHEN NEW.source_sha256 IS NOT NULL
+ AND (length(NEW.source_sha256)<>64 OR NEW.source_sha256 GLOB '*[^a-f0-9]*')
+BEGIN
+  SELECT RAISE(ABORT, 'source SHA-256 must be 64 lowercase hexadecimal characters');
+END;
+
+CREATE TRIGGER IF NOT EXISTS source_documents_sha256_update_guard
+BEFORE UPDATE OF source_sha256 ON source_documents
+WHEN NEW.source_sha256 IS NOT NULL
+ AND (length(NEW.source_sha256)<>64 OR NEW.source_sha256 GLOB '*[^a-f0-9]*')
+BEGIN
+  SELECT RAISE(ABORT, 'source SHA-256 must be 64 lowercase hexadecimal characters');
+END;
+
+CREATE TRIGGER IF NOT EXISTS oem_dtc_source_claim_hash_insert_guard
+BEFORE INSERT ON oem_dtc_index
+WHEN length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
+BEGIN
+  SELECT RAISE(ABORT, 'source claim hash must be 64 lowercase hexadecimal characters');
+END;
+
+CREATE TRIGGER IF NOT EXISTS oem_dtc_source_claim_hash_update_guard
+BEFORE UPDATE OF source_claim_hash ON oem_dtc_index
+WHEN length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
+BEGIN
+  SELECT RAISE(ABORT, 'source claim hash must be 64 lowercase hexadecimal characters');
+END;
+
 -- Runtime-safe public surface: revoking rights immediately removes a DTC from this view.
 CREATE VIEW IF NOT EXISTS v_published_oem_dtc_index AS
 SELECT d.*,
