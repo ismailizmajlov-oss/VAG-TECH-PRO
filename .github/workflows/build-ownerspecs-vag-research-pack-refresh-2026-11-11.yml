@@ -1,0 +1,132 @@
+name: Build OwnerSpecs VAG research pack — 2026-11-11 snapshot refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-ownerspecs-vag-research-pack-refresh-2026-11-11.yml"
+      - "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
+      - "tests/test_ownerspecs_snapshot_refresh_20261111.py"
+      - "scripts/build_ownerspecs_vag_research_pack.py"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-ownerspecs-vag-research-pack-refresh-2026-11-11.yml"
+      - "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
+      - "tests/test_ownerspecs_snapshot_refresh_20261111.py"
+      - "scripts/build_ownerspecs_vag_research_pack.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-ownerspecs-snapshot-refresh-2026-11-11-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  acquire-build-verify:
+    name: Acquire and verify isolated OwnerSpecs CC BY-SA snapshot refresh
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source and pinned snapshot manifest
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Compile builder and run snapshot/rights regression tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m py_compile scripts/build_ownerspecs_vag_research_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs builder compilation failed." }
+          python -m unittest discover -s tests -p "test_ownerspecs_vag_research_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs pack builder regression tests failed." }
+          python tests/test_ownerspecs_snapshot_refresh_20261111.py -v
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs 2026-11-11 snapshot reconciliation tests failed." }
+
+      - name: Reconcile the live publisher HTML page with the pinned manifest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $manifest = Get-Content -LiteralPath "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json" -Raw | ConvertFrom-Json
+          $html = (Invoke-WebRequest -Uri $manifest.source_urls.dataset_page -TimeoutSec 30).Content
+          $htmlText = [System.Net.WebUtility]::HtmlDecode([regex]::Replace($html, '<[^>]+>', ' '))
+          $htmlText = [regex]::Replace($htmlText, '\s+', ' ')
+          $pattern = '(?is)(?<generations>[0-9,]+)\s+generations\s+(?<brands>[0-9,]+)\s+brands\s+(?<datapoints>[0-9,]+)\s+verified datapoints'
+          $match = [regex]::Match($htmlText, $pattern)
+          if (-not $match.Success) { throw "OwnerSpecs public HTML count summary could not be parsed; refusing acquisition." }
+          $generations = [int](($match.Groups["generations"].Value) -replace ",", "")
+          $brands = [int](($match.Groups["brands"].Value) -replace ",", "")
+          $datapoints = [int](($match.Groups["datapoints"].Value) -replace ",", "")
+          $expected = $manifest.snapshot
+          if ($generations -ne $expected.html_page_generation_count -or $brands -ne $expected.html_page_brand_count -or $datapoints -ne $expected.html_page_verified_datapoint_count) {
+            throw "OwnerSpecs live HTML counts differ from the reviewed snapshot manifest."
+          }
+          if ($htmlText -notmatch [regex]::Escape($expected.publisher_generated_date)) { throw "OwnerSpecs public HTML generation date differs from the pinned manifest." }
+          "Live HTML reconciled: $generations generations / $brands brands / $datapoints datapoints." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Acquire the exact publisher JSON and verify snapshot hashes/counts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $manifestPath = "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
+          $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+          python scripts/build_ownerspecs_vag_research_pack.py --acquire --source-manifest $manifestPath --output-dir artifacts/ownerspecs-source 2>&1 | Tee-Object -FilePath ownerspecs-acquisition.log
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs snapshot acquisition failed." }
+          $snapshot = Get-Content -LiteralPath "artifacts/ownerspecs-source/acquisition-snapshot.json" -Raw | ConvertFrom-Json
+          $expected = $manifest.snapshot
+          if ($snapshot.generation_count -ne $expected.json_descriptor_generation_count -or $snapshot.verified_datapoints -ne $expected.html_page_verified_datapoint_count -or $snapshot.vag_generation_count -ne $expected.vag_generation_count -or $snapshot.vag_fact_count -ne $expected.vag_fact_count -or $snapshot.source_snapshot_sha256 -ne $expected.source_snapshot_sha256 -or $snapshot.source_file_bytes -ne $expected.source_file_bytes) {
+            throw "OwnerSpecs acquired JSON does not match the exact reviewed snapshot; refusing to build."
+          }
+          "Source JSON SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Counts: $($snapshot.generation_count) generations / $($snapshot.verified_datapoints) datapoints / $($snapshot.vag_generation_count) VAG generations / $($snapshot.vag_fact_count) VAG facts." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Preserve exact OwnerSpecs acquisition evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ownerspecs-vag-source-acquisition-evidence-${{ github.run_number }}
+          path: |
+            artifacts/ownerspecs-source/**
+            ownerspecs-acquisition.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Build and independently verify the separate Share-Alike SQLite pack
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $manifestPath = "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
+          python scripts/build_ownerspecs_vag_research_pack.py --input-json artifacts/ownerspecs-source/source.json --source-manifest $manifestPath --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-build.log
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA research pack build failed." }
+          python scripts/build_ownerspecs_vag_research_pack.py --verify-only --source-manifest $manifestPath --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-verify.log
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs independent SQLite/provenance verification failed." }
+          $pack = Get-Content -LiteralPath "artifacts/ownerspecs-vag-research-pack/manifest.json" -Raw | ConvertFrom-Json
+          if ($pack.counts.all_source_generations -ne 111 -or $pack.counts.all_source_verified_datapoints -ne 2273 -or $pack.counts.vag_generations -ne 20 -or $pack.counts.vag_facts -ne 186 -or $pack.market_scope[0] -ne "UNKNOWN" -or $pack.production_import -ne $false -or $pack.product_import_allowed -ne $false -or $pack.exact_engine_gearbox_pair -ne $false -or $pack.ru_eaeu_applicability -ne $false -or $pack.critical_technical_values_publishable -ne $false -or $pack.license.share_alike_required -ne $true) {
+            throw "OwnerSpecs pack count, rights or candidate-only boundary failed."
+          }
+          "## OwnerSpecs 2026-11-11 research pack" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "111 generations / 2,273 source facts / 20 VAG generation candidates / 186 VAG facts; CC BY-SA 4.0; market UNKNOWN; no production import or repair applicability." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Source SHA-256: $($pack.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "SQLite SHA-256: $($pack.database.sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          "Pack manifest SHA-256: $((Get-FileHash -LiteralPath 'artifacts/ownerspecs-vag-research-pack/manifest.json' -Algorithm SHA256).Hash.ToLowerInvariant())" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload verified research pack and exact acquisition evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ownerspecs-vag-research-pack-refresh-2026-11-11
+          path: |
+            artifacts/ownerspecs-vag-research-pack/**
+            artifacts/ownerspecs-source/source.json
+            artifacts/ownerspecs-source/acquisition-snapshot.json
+            ownerspecs-acquisition.log
+            ownerspecs-pack-build.log
+            ownerspecs-pack-verify.log
+          if-no-files-found: error
+          retention-days: 90

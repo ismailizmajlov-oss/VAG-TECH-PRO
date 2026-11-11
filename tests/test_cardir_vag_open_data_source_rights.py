@@ -43,12 +43,15 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         matches=[s for s in self.register["sources"] if s.get("source_id")==SOURCE_ID]
         self.assertEqual(len(matches),1); source=matches[0]
         self.assertFalse(source["data_ingested"]); self.assertFalse(source["product_import_allowed"])
-        self.assertEqual(source["verification_status"],"licensed_source_snapshot_updated_pack_verified_research_only_desktop_integration_pending_no_production_import")
+        self.assertEqual(source["verification_status"],"licensed_source_snapshot_updated_pack_verified_read_only_desktop_research_integration_verified_no_production_import")
+        self.assertTrue(source["research_pack_ingested"])
+        self.assertTrue(source["research_database_included_in_desktop"])
+        self.assertEqual(source["desktop_integration_status"],"verified_read_only_research_pack_integrated_in_offline_desktop")
         pack=source["research_pack"]
         self.assertEqual(pack["status"],"verified_research_only")
         self.assertEqual(pack["pack_build_status"],"verified_research_only")
         self.assertTrue(pack["research_pack_current"])
-        self.assertFalse(pack["research_database_included_in_desktop"])
+        self.assertTrue(pack["research_database_included_in_desktop"])
         self.assertEqual(pack["source_snapshot_sha256"],"902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb")
         self.assertEqual(pack["source_manifest_sha256"],"64fb51903d237befed7712baafa998d069e3f64bf26fd7974656a418f7feb209")
         self.assertEqual(pack["source_snapshot_manifest_sha256"],"319e01f3656d9bb3dc87b10e637d85679152848442f9d08e7708bbcf87c6b9f3")
@@ -63,7 +66,8 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertTrue(pack["source_row_number_mapping_verified"])
         self.assertEqual(pack["sqlite_integrity_check"],"ok")
         self.assertEqual(pack["foreign_key_violations"],0)
-        self.assertEqual(pack["desktop_integration_status"],"verified_research_pack_current_desktop_integration_pending")
+        self.assertEqual(pack["desktop_integration_status"],"verified_read_only_research_pack_integrated_in_offline_desktop")
+        self.assertEqual(pack["desktop_integration_evidence"]["workflow_run_id"],42964628461)
         self.assertEqual(pack["previous_verified_pack"]["artifact_run_number"],126)
         self.assertEqual(pack["previous_verified_pack_history"][-1]["artifact_run_number"],83)
         self.assertEqual(pack["previous_desktop_lifecycle_evidence"]["run_number"],1208)

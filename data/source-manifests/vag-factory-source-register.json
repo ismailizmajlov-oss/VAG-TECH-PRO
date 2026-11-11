@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-11",
+  "updated_at": "2026-11-11T06:56:22Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -1695,7 +1695,27 @@
         "Completeness is unknown; absence from Wikidata is not evidence that a generation did not exist."
       ],
       "limit_reached_means": "snapshot may be truncated; no completeness claim",
-      "data_ingested": false
+      "data_ingested": false,
+      "research_pack_integrated_in_desktop": true,
+      "desktop_integration_status": "verified_candidate_only_pack_integrated_in_offline_desktop",
+      "desktop_integration_evidence": {
+        "status": "verified_in_successful_windows_x64_desktop_build",
+        "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "workflow_run_id": 42964628461,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+        "job_id": 130338998567,
+        "job_name": "build-and-lifecycle",
+        "runner_label": "windows-2025",
+        "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+        "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+        "successful_step": "Integrate verified CC0 Wikidata VAG generation candidates (run71)",
+        "product_database_imported": false,
+        "production_fitment_published": false,
+        "native_windows_10_11_verified": false
+      },
+      "product_import_allowed": false,
+      "production_catalog_published": false
     },
     {
       "source_id": "wikidata-vag-model-taxonomy",
@@ -1786,7 +1806,42 @@
         "Completeness is unknown; absence from Wikidata is not evidence that a model did not exist."
       ],
       "limit_reached_means": "snapshot may be truncated; no completeness claim",
-      "data_ingested": false
+      "data_ingested": false,
+      "candidate_seed_integrated_in_local_sqlite": true,
+      "candidate_seed_integration": {
+        "status": "verified_candidate_identity_seed_in_local_sqlite",
+        "counts": {
+          "model_candidates": 521,
+          "car_model_entities": 490,
+          "car_model_series_entities": 40,
+          "manufacturer_candidates": 6,
+          "source_bindings": 530,
+          "russian_labels": 285,
+          "verified_models": 0,
+          "exact_fitments": 0
+        },
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "candidate_identity_only",
+        "review_status": "candidate",
+        "evidence": {
+          "status": "verified_in_successful_windows_x64_desktop_build",
+          "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+          "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+          "workflow_run_id": 42964628461,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+          "job_id": 130338998567,
+          "job_name": "build-and-lifecycle",
+          "runner_label": "windows-2025",
+          "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+          "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+          "successful_step": "Seed CC0 Wikidata model identity candidates into local SQLite core",
+          "product_database_imported": false,
+          "production_fitment_published": false,
+          "native_windows_10_11_verified": false
+        }
+      },
+      "product_import_allowed": false,
+      "production_catalog_published": false
     },
     {
       "source_id": "autodiag2-vag-community-v6",
@@ -8781,7 +8836,7 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_source_snapshot_updated_pack_verified_research_only_desktop_integration_pending_no_production_import",
+      "verification_status": "licensed_source_snapshot_updated_pack_verified_read_only_desktop_research_integration_verified_no_production_import",
       "research_pack": {
         "status": "verified_research_only",
         "research_pack_allowed": true,
@@ -8970,7 +9025,7 @@
             "review_status": "exact_multiset_comparison_verified; only CSV row order changed; new exact byte snapshot pinned and rebuilt into a separate research SQLite; no new VAG facts or applicability claims"
           }
         ],
-        "desktop_integration_status": "verified_research_pack_current_desktop_integration_pending",
+        "desktop_integration_status": "verified_read_only_research_pack_integrated_in_offline_desktop",
         "database_sha256": "20b5f84ec5e265ea7455cdfa149bf357864d4c9d7571933d65d4f75d80025b4f",
         "database_byte_size": 1961984,
         "source_manifest_sha256": "64fb51903d237befed7712baafa998d069e3f64bf26fd7974656a418f7feb209",
@@ -9162,7 +9217,7 @@
         "source_rows_multiset_sha256": "af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f",
         "vag_rows_multiset_sha256": "6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0",
         "source_row_hash_method": "SHA-256 of compact canonical UTF-8 JSON over original CSV field strings with sorted keys",
-        "research_database_included_in_desktop": false,
+        "research_database_included_in_desktop": true,
         "desktop_lifecycle_evidence": null,
         "research_pack_current": true,
         "exact_vag_values_unchanged": true,
@@ -9270,6 +9325,22 @@
           "current_pinned_pack_run_number": 145,
           "current_pinned_pack_artifact_id": 13740955733,
           "disposition": "do_not_downgrade_or_replace_the_current_902adb_snapshot_pack; the live endpoint returned the exact older d4b3 snapshot already verified in run126; acquisition failed closed on the pinned SHA-256 mismatch; no new source facts or production applicability are inferred"
+        },
+        "desktop_integration_evidence": {
+          "status": "verified_in_successful_windows_x64_desktop_build",
+          "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+          "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+          "workflow_run_id": 42964628461,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+          "job_id": 130338998567,
+          "job_name": "build-and-lifecycle",
+          "runner_label": "windows-2025",
+          "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+          "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+          "successful_step": "Integrate CarDir VAG reference facts into offline desktop",
+          "product_database_imported": false,
+          "production_fitment_published": false,
+          "native_windows_10_11_verified": false
         }
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json",
@@ -9385,14 +9456,33 @@
       "foreign_key_violations": 0,
       "full_row_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
       "vag_row_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
-      "source_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T05:51:15Z; SHA-256 902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb"
+      "source_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T05:51:15Z; SHA-256 902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+      "research_pack_ingested": true,
+      "research_database_included_in_desktop": true,
+      "desktop_integration_status": "verified_read_only_research_pack_integrated_in_offline_desktop",
+      "desktop_integration_evidence": {
+        "status": "verified_in_successful_windows_x64_desktop_build",
+        "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "workflow_run_id": 42964628461,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+        "job_id": 130338998567,
+        "job_name": "build-and-lifecycle",
+        "runner_label": "windows-2025",
+        "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+        "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+        "successful_step": "Integrate CarDir VAG reference facts into offline desktop",
+        "product_database_imported": false,
+        "production_fitment_published": false,
+        "native_windows_10_11_verified": false
+      }
     },
     {
       "source_id": "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0",
       "publisher": "ownerspecs.com",
       "url": "https://ownerspecs.com/data",
       "source_kind": "curated_document_verified_vehicle_generation_specifications",
-      "source_revision": "OpenSpecs dataset generated 2026-11-09; exact source.json re-acquired by Windows x64 CI at 2026-11-10T06:28:05Z; raw SHA-256 6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95; exact comparison with retained run64 source 7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d: four specification values changed (three VAG) plus one non-VAG unit-label case normalization; candidate-only.",
+      "source_revision": "OpenSpecs dataset generated 2026-11-11; exact source.json acquired by Windows x64 CI run 21 at 2026-11-11T06:56:22Z; raw SHA-256 fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f; 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts; one non-VAG Hyundai i10 coolant unit-case change versus the 06:33 snapshot; no VAG fact changes; candidate-only.",
       "market_scope": [
         "UNKNOWN"
       ],
@@ -9425,31 +9515,31 @@
         "html_page_generation_count": 111,
         "json_descriptor_generation_count": 111,
         "html_page_brand_count": 27,
-        "html_page_verified_datapoint_count": 2369,
+        "html_page_verified_datapoint_count": 2273,
         "metadata_consistent": true,
         "per_value_primary_document_url": false,
         "per_value_primary_document_revision": false,
         "per_value_source_count": true,
         "per_value_provenance_kind": true,
         "vag_generation_count": 20,
-        "vag_fact_count": 233,
+        "vag_fact_count": 186,
         "source_snapshot_status": "source_snapshot_acquired_schema_verified",
-        "source_file_bytes": 683533,
-        "source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
-        "retrieved_at_utc": "2026-11-10T06:28:05.310530+00:00",
+        "source_file_bytes": 659973,
+        "source_snapshot_sha256": "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f",
+        "retrieved_at_utc": "2026-11-11T06:56:22.374269+00:00",
         "generation_count": 111,
-        "verified_datapoints": 2369,
-        "changed_generations_total": 4,
-        "changed_datapoints_total": 5,
-        "vag_changed_generations": 2,
-        "vag_changed_datapoints": 3,
-        "non_vag_changed_datapoints": 2,
+        "verified_datapoints": 2273,
+        "generations_added": 0,
+        "generations_removed": 0,
+        "datapoints_removed": 0,
+        "datapoints_added": 0,
+        "changed_datapoints_total": 1,
+        "net_datapoint_change": 0,
+        "vag_datapoints_removed": 0,
+        "vag_datapoints_added": 0,
+        "vag_changed_datapoints": 0,
         "generation_membership_changed": false,
-        "datapoint_membership_changed": false,
-        "all_changes_are_range_collapses_to_upper_value": false,
-        "changed_specification_values_total": 4,
-        "changed_unit_only_records_total": 1,
-        "all_specification_value_changes_are_range_collapses_to_upper_value": true
+        "datapoint_membership_changed": false
       },
       "applicability": {
         "market_scope": "UNKNOWN",
@@ -9466,44 +9556,50 @@
         "technical_review_status": "not_independently_reviewed"
       },
       "data_ingested": false,
-      "source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+      "source_snapshot_sha256": "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f",
       "research_pack_allowed": true,
       "research_pack_acquisition_allowed": true,
       "product_import_allowed": false,
-      "project_decision": "The published CC BY-SA 4.0 rights permit a separate attributed Share-Alike research pack. Exact source JSON SHA-256 6ed73e4c... is retained and compared against the verified run64 baseline. The VAG-filtered pack was rebuilt and independently checked in Windows x64 run #115: 20 generation candidates / 233 facts, SQLite integrity ok and zero foreign-key violations. The pack remains market UNKNOWN, technical review not independently reviewed, with no exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability. It is a separate Share-Alike research pack only and is not imported into the production vehicle/technical database.",
+      "project_decision": "The exact OwnerSpecs source snapshot fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f (111 generations / 2,273 datapoints; VAG 20 generation candidates / 186 facts) was reacquired and independently hash-verified. A separate CC BY-SA 4.0 research-only SQLite pack was built and independently verified by Windows x64 run 27 (artifact SHA-256 5acf0b885b01b71216266a2f9a408511e66575b09966a9a05ae0b3880e4c45e8; database SHA-256 ee107718538b3ddc97c2577341c54919ec9269708ef02aad4aeaad3169360bc3). It remains market UNKNOWN and candidate-only: no per-value primary-document locator/revision, exact engine/gearbox pair, ECU, DTC, RU/EAEU or repair applicability; no production import. The previous d702e457 pack remains in the current desktop until the new pack passes desktop integration and Windows lifecycle validation.",
       "research_pack_acquired": true,
-      "research_pack_last_verified_at": "2026-11-10T06:43:59.091416+00:00",
-      "research_pack_workflow_run_id": 42770457166,
-      "research_pack_artifact_id": 13742090427,
-      "research_pack_artifact_name": "ownerspecs-vag-vehicle-specs-research-pack",
-      "research_pack_artifact_sha256": "93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1",
-      "research_pack_manifest_sha256": "35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd",
-      "research_pack_database_sha256": "572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683",
-      "research_pack_source_manifest_sha256": "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
+      "research_pack_last_verified_at": "2026-11-11T07:00:03Z",
+      "research_pack_workflow_run_id": 42976259283,
+      "research_pack_artifact_id": 13835168202,
+      "research_pack_artifact_name": "ownerspecs-vag-research-pack-refresh-2026-11-11",
+      "research_pack_artifact_sha256": "5acf0b885b01b71216266a2f9a408511e66575b09966a9a05ae0b3880e4c45e8",
+      "research_pack_manifest_sha256": "8b07eed9f69dc763289e326a1f9c47525183abc33d840d2c5531474a115499c5",
+      "research_pack_database_sha256": "ee107718538b3ddc97c2577341c54919ec9269708ef02aad4aeaad3169360bc3",
+      "research_pack_source_manifest_sha256": "a0daad6fd76fa2db22051248a81f52715074aa05b91b6dcdc15cb72a539db3ef",
       "product_database_ingested": false,
-      "research_pack_source_commit": "da635dd1b17131c6f33840c1601ba1ea24dccf08",
-      "verification_status": "licensed_source_snapshot_reacquired_pack_built_verified_candidate_only_no_production_import",
-      "research_pack_desktop_integration_status": "verified_pack_available_desktop_sync_pending",
-      "research_pack_run_number": 115,
-      "research_database_included_in_desktop": false,
+      "research_pack_source_commit": "cef31ae342ef9d266ab0d873ac653c0e27acf3ee",
+      "verification_status": "latest_publisher_snapshot_reacquired_and_hash_verified; current_CC_BY_SA_research_pack_built_and_independently_verified; desktop_integration_pending; candidate_only_no_production_import",
+      "research_pack_desktop_integration_status": "pending_current_snapshot_desktop_integration",
+      "research_pack_run_number": 27,
+      "research_database_included_in_desktop": true,
       "desktop_lifecycle_evidence": null,
       "previous_verified_research_pack": {
         "status": "verified_research_only_previous_snapshot",
-        "source_manifest_sha256": "3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
-        "pack_manifest_sha256": "7d47964b15d787c9ae1ebf5a16b5f0fa2082d9bc64c0fbe7e44a660b8c299a57",
-        "database_sha256": "eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf",
-        "artifact_id": 13733448981,
-        "artifact_sha256": "441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3",
-        "artifact_run_id": 42752686437,
-        "artifact_run_number": 64,
+        "source_manifest_sha256": "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
+        "pack_manifest_sha256": "35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd",
+        "database_sha256": "572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683",
+        "artifact_id": 13742090427,
+        "artifact_sha256": "93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1",
+        "artifact_run_id": 42770457166,
+        "artifact_run_number": 115,
         "artifact_name": "ownerspecs-vag-vehicle-specs-research-pack",
-        "source_commit": "c75eee82df6d97e44b89e8f9722fe5756777f580",
-        "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
-        "source_snapshot_manifest_sha256": "07441a2d7bb098b394a516cbb02e78d5a19dac0aa98baa66036f0014c6070c7a",
+        "source_commit": "da635dd1b17131c6f33840c1601ba1ea24dccf08",
+        "source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+        "source_snapshot_manifest_sha256": "c5c17ffb46dc2300a0b5eb9ef57a2877ea8be52a40cc657fccc38f3b1c45b01c",
         "database_byte_size": 323584,
-        "artifact_size_bytes": 113519,
-        "artifact_created_at": "2026-11-10T03:57:11Z",
-        "artifact_expires_at": "2027-02-08T03:56:54Z"
+        "artifact_size_bytes": 114062,
+        "artifact_created_at": "2026-11-10T06:44:01Z",
+        "artifact_expires_at": "2027-02-08T06:43:45Z",
+        "counts": {
+          "generation_count": 111,
+          "datapoint_count": 2369,
+          "vag_generation_count": 20,
+          "vag_fact_count": 233
+        }
       },
       "previous_desktop_lifecycle_evidence": {
         "status": "verified_windows_server_2022_x64_lifecycle",
@@ -9562,115 +9658,99 @@
         "native_windows_10_11_verified": false,
         "native_windows_10_11_status": "not_run_owner_runner_gate_disabled"
       },
-      "source_manifest_sha256": "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
-      "source_file_bytes": 683533,
-      "data_revision": "OpenSpecs dataset generated 2026-11-09; live JSON re-acquired 2026-11-10T05:51:09Z; SHA-256 f29c0e49e71b4c1def0c0159d2fa7617ed4d9724078a241d5ce81c7edfb8b9c4; 4 specification values changed (3 VAG) with no generation/datapoint membership changes; candidate-only.",
+      "source_manifest_sha256": "a0daad6fd76fa2db22051248a81f52715074aa05b91b6dcdc15cb72a539db3ef",
+      "source_file_bytes": 659973,
+      "data_revision": "OpenSpecs dataset generated 2026-11-11; exact source.json acquired by Windows x64 CI run 21 at 2026-11-11T06:56:22Z; raw SHA-256 fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f; 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts; one non-VAG Hyundai i10 coolant unit-case change versus the 06:33 snapshot; no VAG fact changes; candidate-only.",
       "latest_snapshot_review": {
-        "previous_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
-        "current_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
-        "previous_source_file_bytes": 683641,
-        "current_source_file_bytes": 683533,
-        "retrieved_at_utc": "2026-11-10T06:28:05.310530+00:00",
+        "previous_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+        "current_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+        "previous_source_file_bytes": 683533,
+        "current_source_file_bytes": 659973,
+        "retrieved_at_utc": "2026-11-11T05:56:12+00:00",
         "generation_count": 111,
-        "datapoint_count": 2369,
+        "datapoint_count": 2273,
         "vag_generation_count": 20,
-        "vag_fact_count": 233,
+        "vag_fact_count": 186,
         "generations_added": 0,
         "generations_removed": 0,
-        "datapoints_added": 0,
-        "datapoints_removed": 0,
-        "changed_generations_total": 4,
-        "changed_datapoints_total": 5,
-        "changed_specification_values_total": 4,
-        "changed_unit_only_records_total": 1,
-        "vag_changed_generations": 2,
-        "vag_changed_datapoints": 3,
-        "non_vag_changed_datapoints": 2,
-        "all_changed_fields_are_specification_values": false,
-        "all_specification_value_changes_are_range_collapses_to_upper_value": true,
-        "all_changes_are_range_collapses_to_upper_value": false,
+        "datapoints_removed": 99,
+        "datapoints_added": 3,
+        "changed_datapoints_total": 3,
+        "net_datapoint_change": -96,
+        "vag_datapoints_removed": 47,
+        "vag_datapoints_added": 0,
+        "vag_changed_datapoints": 0,
+        "generation_membership_changed": false,
+        "datapoint_membership_changed": true,
+        "removed_facts_by_brand": {
+          "Audi": 10,
+          "Porsche": 17,
+          "Volkswagen": 20,
+          "BMW": 13,
+          "Mercedes-Benz": 15,
+          "Kia": 12,
+          "Tesla": 12
+        },
+        "added_facts_by_brand": {
+          "BMW": 3
+        },
         "changed_values": [
           {
-            "brand": "Mercedes-Benz",
-            "model": "A-Class",
-            "generation": "A-Class (W177, 4th gen)",
-            "field": "co2",
-            "unit": "g/km",
-            "old": {
-              "value": 121,
-              "value_max": 139,
-              "is_range": true
-            },
-            "new": {
-              "value": 139,
-              "is_range": false
-            },
-            "vag": false
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "running_order",
+            "label": "Mass in running order (EU type-approval)",
+            "old_value_kg": 2211,
+            "new_value_kg": 2135
+          },
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "max_laden_permissible",
+            "label": "Permissible maximum laden mass",
+            "old_value_kg": 2835,
+            "new_value_kg": 2800
+          },
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "tow_braked",
+            "label": "Towing capacity — braked trailer",
+            "old_value_kg": 3270,
+            "new_value_kg": 3500
+          }
+        ],
+        "vag_removed_fact_groups": [
+          {
+            "brand": "Audi",
+            "model": "Q7",
+            "generation": "Q7 II (4M)",
+            "removed_facts": 5,
+            "category": "mass"
           },
           {
             "brand": "Audi",
-            "model": "A1",
-            "generation": "A1 (GB)",
-            "field": "co2",
-            "unit": "g/km",
-            "old": {
-              "value": 117,
-              "value_max": 145,
-              "is_range": true
-            },
-            "new": {
-              "value": 145,
-              "is_range": false
-            },
-            "vag": true
+            "model": "Q8",
+            "generation": "Q8 (4MN)",
+            "removed_facts": 5,
+            "category": "mass"
           },
           {
-            "brand": "Audi",
-            "model": "A1",
-            "generation": "A1 (GB)",
-            "field": "fuel_consumption",
-            "unit": "l/100km",
-            "old": {
-              "value": 5.1,
-              "value_max": 6.4,
-              "is_range": true
-            },
-            "new": {
-              "value": 6.4,
-              "is_range": false
-            },
-            "vag": true
+            "brand": "Porsche",
+            "model": "Cayenne",
+            "generation": "Cayenne (E3)",
+            "removed_facts": 17,
+            "category": "specification_and_mass"
           },
           {
             "brand": "Volkswagen",
-            "model": "Polo",
-            "generation": "Polo VI (AW)",
-            "field": "co2",
-            "unit": "g/km",
-            "old": {
-              "value": 104,
-              "value_max": 121,
-              "is_range": true
-            },
-            "new": {
-              "value": 121,
-              "is_range": false
-            },
-            "vag": true
-          }
-        ],
-        "changed_units": [
-          {
-            "brand": "Hyundai",
-            "model": "i10",
-            "generation": "i10 III (AC3)",
-            "field": "engine_oil_capacity",
-            "old_unit": "L",
-            "new_unit": "l",
-            "value": 3.1,
-            "value_max": 3.4,
-            "is_range": true,
-            "vag": false
+            "model": "Touareg",
+            "generation": "Touareg (CR)",
+            "removed_facts": 20,
+            "category": "specification_and_mass"
           }
         ],
         "primary_document_locator_per_value_in_json": false,
@@ -9678,19 +9758,159 @@
         "market_scope": "UNKNOWN",
         "critical_repair_values_publishable": false,
         "candidate_only": true,
-        "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_exact_retained_bytes; do_not_promote_to_factory_fitment_or_repair_data"
+        "public_page_reconciliation": {
+          "url": "https://ownerspecs.com/data",
+          "observed_at_utc": "2026-11-11",
+          "generation_count": 111,
+          "brand_count": 27,
+          "verified_datapoint_count": 2273,
+          "last_generated": "2026-11-11",
+          "reconciled": true
+        },
+        "acquisition_evidence": {
+          "workflow_run_id": 42968938274,
+          "workflow_run_number": 141,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42968938274",
+          "artifact_id": 13833035466,
+          "artifact_name": "ownerspecs-vag-source-acquisition-evidence",
+          "artifact_sha256": "ee801173419bf17b8610f7eac80b813f24a9456633138a96078cfbc494ca5c85",
+          "artifact_bytes": 33501,
+          "source_json_path": "artifacts/ownerspecs-source/source.json",
+          "source_json_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+          "source_json_bytes": 659973,
+          "acquisition_log_sha256": "7c559297e0884939cf8ac33a05978e0835beeb5ea933e6fb84c6e4513ed82c77",
+          "note": "The previous builder correctly rejected this snapshot against the stale 2,369-point pin. The exact raw JSON and acquisition log were retained and independently hashed; a fresh publisher-page review now confirms 2,273 points."
+        },
+        "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_current_exact_snapshot; retain_previous_verified_pack_until_replacement_is_independently_verified; do_not_promote_to_factory_fitment_or_repair_data"
       },
-      "research_pack_source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+      "research_pack_source_snapshot_sha256": "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f",
       "research_pack_current": true,
-      "research_pack_status": "verified_research_only",
-      "research_pack_database_byte_size": 323584,
-      "research_pack_artifact_size_bytes": 114062,
-      "research_pack_artifact_created_at": "2026-11-10T06:44:01Z",
-      "research_pack_artifact_expires_at": "2027-02-08T06:43:45Z",
+      "research_pack_status": "verified_research_only_current_snapshot",
+      "research_pack_database_byte_size": 262144,
+      "research_pack_artifact_size_bytes": 102391,
+      "research_pack_artifact_created_at": "2026-11-11T07:00:03Z",
+      "research_pack_artifact_expires_at": "2027-02-09T06:59:41Z",
       "research_pack_attribution_sha256": "6e9005e67b6dfa8704bcd83be166ec61749dedeeeebe0f6ddd80c7b3725c2eeb",
       "research_pack_license_reference_sha256": "7802316f0a49ea293c239db64b24756ff2621983892a0aa649adf74b30d99762",
-      "research_pack_source_snapshot_manifest_sha256": "c5c17ffb46dc2300a0b5eb9ef57a2877ea8be52a40cc657fccc38f3b1c45b01c",
-      "research_pack_acquisition_snapshot_sha256": "5c397284c0c9f39c10f2178558b448dc4b6b16d28bcbedaecf28a59c57753f6b"
+      "research_pack_source_snapshot_manifest_sha256": "8a2eda28a0101c02490cec43062d591f930ba90dc3358d833337997470dba553",
+      "research_pack_acquisition_snapshot_sha256": "7f9147f36e340e3997b8d51d4ce923ae0d2525b8b10f89c60cbb899c258bb436",
+      "research_pack_ingested": true,
+      "desktop_integration_evidence": null,
+      "older_verified_research_pack": {
+        "status": "verified_research_only_previous_snapshot",
+        "source_manifest_sha256": "3cccc31845fad9328db2e81dc70e787552ec192c780c140904baa6c9132abdeb",
+        "pack_manifest_sha256": "7d47964b15d787c9ae1ebf5a16b5f0fa2082d9bc64c0fbe7e44a660b8c299a57",
+        "database_sha256": "eba46aace1e2a28d288e64b2dcb179177ddc577a9b90771d6908d18319c96ecf",
+        "artifact_id": 13733448981,
+        "artifact_sha256": "441e5626796acb315ebf428e7e6acf5bdab93276335267fac639c23d21cdefe3",
+        "artifact_run_id": 42752686437,
+        "artifact_run_number": 64,
+        "artifact_name": "ownerspecs-vag-vehicle-specs-research-pack",
+        "source_commit": "c75eee82df6d97e44b89e8f9722fe5756777f580",
+        "source_snapshot_sha256": "7b39e1183bd2a7617d43fdbe1f2ae64662520cb62f89ba8fec4dadbcce79204d",
+        "source_snapshot_manifest_sha256": "07441a2d7bb098b394a516cbb02e78d5a19dac0aa98baa66036f0014c6070c7a",
+        "database_byte_size": 323584,
+        "artifact_size_bytes": 113519,
+        "artifact_created_at": "2026-11-10T03:57:11Z",
+        "artifact_expires_at": "2027-02-08T03:56:54Z"
+      },
+      "previous_desktop_integration_evidence": {
+        "status": "verified_in_successful_windows_x64_desktop_build",
+        "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "workflow_run_id": 42964628461,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+        "job_id": 130338998567,
+        "job_name": "build-and-lifecycle",
+        "runner_label": "windows-2025",
+        "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+        "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+        "successful_step": "Integrate OwnerSpecs VAG research pack into offline desktop",
+        "product_database_imported": false,
+        "production_fitment_published": false,
+        "native_windows_10_11_verified": false
+      },
+      "current_research_pack_in_desktop": false,
+      "previous_pack_still_in_desktop": true,
+      "latest_publisher_snapshot": {
+        "status": "exact_source_reacquired_manifest_matched; separate_research_pack_verified",
+        "source_snapshot_sha256": "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f",
+        "source_file_bytes": 659973,
+        "retrieved_at_utc": "2026-11-11T07:00:01.457157Z",
+        "publisher_generated_date": "2026-11-11",
+        "generation_count": 111,
+        "brand_count": 27,
+        "verified_datapoints": 2273,
+        "vag_generation_count": 20,
+        "vag_fact_count": 186,
+        "previous_exact_snapshot_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
+        "delta": {
+          "changed_datapoints": 1,
+          "vag_changed_datapoints": 0,
+          "generation_membership_changed": false,
+          "datapoint_membership_changed": false,
+          "changed_values": [
+            {
+              "brand": "Hyundai",
+              "model": "i10",
+              "generation": "i10 III (AC3)",
+              "field": "coolant_capacity",
+              "old_unit": "l",
+              "new_unit": "L",
+              "value": 5.53,
+              "value_max": 5.89,
+              "vag": false
+            }
+          ]
+        },
+        "acquisition_evidence": {
+          "workflow_run_id": 42976259283,
+          "workflow_run_number": 27,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42976259283",
+          "artifact_id": 13835990251,
+          "artifact_name": "ownerspecs-vag-source-acquisition-evidence-27",
+          "artifact_sha256": "747007f9a81587901faa28727c5d3b6ba0fc436697b67d176a8d569f122e6625",
+          "artifact_bytes": 34459,
+          "source_json_path": "artifacts/ownerspecs-source/source.json",
+          "source_json_sha256": "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f",
+          "source_json_bytes": 659973,
+          "acquisition_snapshot_sha256": "7f9147f36e340e3997b8d51d4ce923ae0d2525b8b10f89c60cbb899c258bb436",
+          "acquisition_log_sha256": "907f6e8486c5ab3b075c69fe0cf3cb4ec518bc2492164043f470b4b2f322a4d4",
+          "manifest_snapshot_sha256": "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f",
+          "source_revision_status": "matches_manifest",
+          "source_revision_field_stale": false,
+          "source_revision_field_value": "OpenSpecs dataset generated 2026-11-11; exact source.json acquired by Windows x64 CI run 21 at 2026-11-11T06:56:22Z; raw SHA-256 fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f; 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts; one non-VAG Hyundai i10 coolant unit-case change versus the 06:33 snapshot; no VAG fact changes; candidate-only.",
+          "source_revision_field_note": "Windows x64 acquisition run 27 retrieved exact source bytes whose SHA-256 matches the current manifest pin; the source_revision label is current for this acquisition.",
+          "note": "Exact source JSON was reacquired, hash-verified and count-reconciled. The same snapshot was then built as a separate CC BY-SA research-only SQLite pack and independently verified. Market UNKNOWN; candidate-only; no production import."
+        }
+      },
+      "research_pack_current_for_vag_subset": true,
+      "superseded_verified_research_packs": [
+        {
+          "status": "verified_research_only_previous_snapshot",
+          "source_manifest_sha256": "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697",
+          "pack_manifest_sha256": "21c94e2ec39ea1b231b96d3fe5f830e5ac62ae5cfc1d8e91312de977d8819fd4",
+          "database_sha256": "9b7da5b490d3dd805865f23389cb8cc7ca9b368137be8307adb07e0c8e683c4a",
+          "artifact_id": 13833552555,
+          "artifact_sha256": "66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77",
+          "artifact_run_id": 42971572740,
+          "artifact_run_number": 3,
+          "artifact_name": "ownerspecs-vag-research-pack-refresh-2026-11-11",
+          "source_commit": "9f9aa8136e5c084def52e5fdb983ede737c817ec",
+          "source_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+          "source_snapshot_manifest_sha256": "77ea356babebed51fd9f6f6b1afad75aaed69038b4f27a2d67621fb37c1ad195",
+          "database_byte_size": 262144,
+          "artifact_size_bytes": 101843,
+          "artifact_created_at": "2026-11-11T06:19:22Z",
+          "artifact_expires_at": "2027-02-09T06:19:03Z",
+          "counts": {
+            "generation_count": 111,
+            "datapoint_count": 2273,
+            "vag_generation_count": 20,
+            "vag_fact_count": 186
+          }
+        }
+      ]
     },
     {
       "source_id": "otts-baza-commercial-otts-catalog",

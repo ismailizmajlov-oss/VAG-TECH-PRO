@@ -44,17 +44,22 @@ class CardirLiveSnapshotProbeTests(unittest.TestCase):
         self.assertEqual(attempt["current_pinned_snapshot_sha256"],"902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb")
         self.assertEqual(attempt["current_pinned_pack_run_number"],145)
 
-    def test_current_pack_is_verified_but_not_yet_integrated_in_desktop(self):
+    def test_current_pack_is_integrated_read_only_in_desktop_without_production_promotion(self):
         self.assertEqual(self.pack["status"],"verified_research_only")
         self.assertEqual(self.pack["pack_build_status"],"verified_research_only")
         self.assertTrue(self.pack["research_pack_current"])
-        self.assertFalse(self.pack["research_database_included_in_desktop"])
+        self.assertTrue(self.pack["research_database_included_in_desktop"])
         self.assertEqual(self.pack["source_snapshot_sha256"],"902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb")
         self.assertEqual(self.pack["artifact_id"],13740955733); self.assertEqual(self.pack["artifact_run_number"],145)
         self.assertEqual(self.pack["database_sha256"],"20b5f84ec5e265ea7455cdfa149bf357864d4c9d7571933d65d4f75d80025b4f")
         self.assertEqual(self.pack["source_row_hashes_verified"],948); self.assertTrue(self.pack["source_row_number_mapping_verified"])
         self.assertEqual(self.pack["sqlite_integrity_check"],"ok"); self.assertEqual(self.pack["foreign_key_violations"],0)
-        self.assertEqual(self.pack["desktop_integration_status"],"verified_research_pack_current_desktop_integration_pending")
+        self.assertEqual(self.pack["desktop_integration_status"],"verified_read_only_research_pack_integrated_in_offline_desktop")
+        evidence=self.pack["desktop_integration_evidence"]
+        self.assertEqual(evidence["workflow_run_id"],42964628461)
+        self.assertEqual(evidence["successful_step"],"Integrate CarDir VAG reference facts into offline desktop")
+        self.assertFalse(evidence["product_database_imported"])
+        self.assertFalse(evidence["native_windows_10_11_verified"])
         self.assertEqual(self.pack["previous_verified_pack"]["artifact_run_number"],126)
         self.assertEqual(self.pack["previous_desktop_lifecycle_evidence"]["run_number"],1208)
         self.assertIsNone(self.pack["desktop_lifecycle_evidence"])

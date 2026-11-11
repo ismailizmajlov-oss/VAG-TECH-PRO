@@ -9,7 +9,7 @@ const PACK_ID = "ownerspecs-vag-vehicle-specs-research";
 const SOURCE_ID = "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0";
 const SOURCE_URL = "https://ownerspecs.com/data";
 const LICENSE_ID = "CC-BY-SA-4.0";
-const EXPECTED_COUNTS = { vagGenerations: 20, vagFacts: 233, sourceGenerations: 111, sourceFacts: 2369 };
+const EXPECTED_COUNTS = { vagGenerations: 20, vagFacts: 186, sourceGenerations: 111, sourceFacts: 2273 };
 const EXPECTED_TABLES = ["facts", "generations", "pack_metadata", "source_files", "source_registry"].sort();
 
 function assert(condition, message) { if (!condition) throw new Error(message); }

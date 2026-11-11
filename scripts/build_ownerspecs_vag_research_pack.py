@@ -728,21 +728,32 @@ def main() -> int:
         raw = acquire_json(source["source_urls"]["json"], source_json_path)
         generations = validate_dataset(raw, source)
         vag_generations = [g for g in generations if str(g.get("brand") or "").strip().casefold() in VAG_BRANDS]
+        acquired_sha256 = sha256_file(source_json_path)
+        manifest_snapshot_sha256 = source["snapshot"].get("source_snapshot_sha256")
+        source_revision_status = (
+            "unbound" if not manifest_snapshot_sha256
+            else "matches_manifest" if manifest_snapshot_sha256 == acquired_sha256
+            else "source_snapshot_differs_from_manifest_pin"
+        )
         acquisition_snapshot = {
             "source_id": SOURCE_ID,
             "source_url": source["source_urls"]["json"],
             "source_revision": source["data_revision"],
+            "source_revision_status": source_revision_status,
+            "source_revision_field_stale": source_revision_status == "source_snapshot_differs_from_manifest_pin",
+            "manifest_snapshot_sha256": manifest_snapshot_sha256,
             "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_file": "source.json",
             "source_file_bytes": source_json_path.stat().st_size,
-            "source_snapshot_sha256": sha256_file(args.output_dir / "source.json"),
+            "source_snapshot_sha256": acquired_sha256,
             "generation_count": len(generations),
             "verified_datapoints": sum(int(g.get("verified_datapoints") or 0) for g in generations),
             "vag_generation_count": len(vag_generations),
             "vag_fact_count": sum(int(g.get("verified_datapoints") or 0) for g in vag_generations),
         }
         write_json(args.output_dir / "acquisition-snapshot.json", acquisition_snapshot)
-        source_json = args.output_dir / "source.json"
+        print(json.dumps({"status": "acquired_source_snapshot", "snapshot": acquisition_snapshot}, ensure_ascii=False))
+        return 0
     else:
         source_json = args.input_json
         if source_json is None or not source_json.is_file():
