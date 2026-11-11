@@ -38,7 +38,7 @@ Accordingly, public_field_exposure_verified=false remains in the source register
 
 Decision No. 225 paragraph 8 lists OTTS/OTSH register fields such as make, commercial name, type, modification, category and ecological class, and refers to information in approval attachments. Paragraph 9 lists detailed SBKTS characteristics including engine make/type, displacement, compression, power, transmission and gearbox make/type, but also VIN and applicant information. The importer deliberately skips SBKTS and does not store VIN or applicant/entity names.
 
-The EEC's 2023 report on the temporary registry pilot also records that the earlier XML-submission mechanism did not provide machine-readable export from the unified register. This is historical evidence, not proof that no newer endpoint exists: https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf.
+The EEC's 2023 report on the temporary registry pilot also records that the earlier XML-submission mechanism did not provide machine-readable export from the unified register. This is historical evidence, not proof that no newer endpoint exists: https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf.
 
 ## Import and applicability rules
 
@@ -72,4 +72,4 @@ The importer stores the issuing country separately from the EAEU market scope. I
 - EAEU open-data catalogue: https://opendata.eaeunion.org/opendata/ru/resourses
 - EAEU technical-regulation registers: https://tech.eaeunion.org/tech/ru/registers/
 - EAEU portal root: https://portal.eaeunion.org/
-- EEC 2023 report on the registry pilot and machine-readable export limitation: https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf
+- EEC 2023 report on the registry pilot and machine-readable export limitation: https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf
