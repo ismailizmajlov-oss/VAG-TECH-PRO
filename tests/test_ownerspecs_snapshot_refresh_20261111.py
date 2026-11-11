@@ -7,12 +7,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 VERSIONED = ROOT / "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
 CURRENT = ROOT / "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+PREVIOUS = ROOT / "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-10.json"
 
 class OwnerSpecsSnapshotRefresh20261111Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.snapshot_manifest = json.loads(VERSIONED.read_text(encoding="utf-8"))
-        cls.previous_manifest = json.loads(CURRENT.read_text(encoding="utf-8"))
+        cls.current_manifest = json.loads(CURRENT.read_text(encoding="utf-8"))
+        cls.previous_manifest = json.loads(PREVIOUS.read_text(encoding="utf-8"))
 
     def test_current_publisher_snapshot_is_pinned_to_exact_retained_bytes(self):
         snapshot = self.snapshot_manifest["snapshot"]
@@ -73,8 +75,14 @@ class OwnerSpecsSnapshotRefresh20261111Tests(unittest.TestCase):
         self.assertEqual(evidence["source_json_bytes"], 659973)
         self.assertEqual(evidence["acquisition_log_sha256"], "7c559297e0884939cf8ac33a05978e0835beeb5ea933e6fb84c6e4513ed82c77")
 
-    def test_previous_canonical_pack_remains_unchanged_until_new_pack_is_verified(self):
+    def test_previous_manifest_is_preserved_and_current_manifest_promotes_verified_snapshot(self):
+        import hashlib
         previous = self.previous_manifest["snapshot"]
+        current = self.current_manifest["snapshot"]
+        self.assertEqual(self.current_manifest, self.snapshot_manifest)
+        self.assertEqual(hashlib.sha256(CURRENT.read_bytes()).hexdigest(), "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697")
+        self.assertEqual(hashlib.sha256(PREVIOUS.read_bytes()).hexdigest(), "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc")
+        self.assertEqual(current["source_snapshot_sha256"], "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9")
         self.assertEqual(previous["source_snapshot_sha256"], "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
         self.assertEqual(previous["html_page_verified_datapoint_count"], 2369)
         self.assertFalse(self.snapshot_manifest["import_policy"]["production_import"])
