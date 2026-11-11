@@ -11,9 +11,10 @@ PACK3_MANIFEST = ROOT / "data/source-manifests/history/ownerspecs-verified-vehic
 REGISTER = ROOT / "data/source-manifests/vag-factory-source-register.json"
 REVIEW = ROOT / "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
 
-CURRENT_SNAPSHOT_SHA = "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c"
+CURRENT_SNAPSHOT_SHA = "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f"
 PREVIOUS_PACK_SNAPSHOT_SHA = "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9"
-CURRENT_MANIFEST_SHA = "20899efcdbe6f630d32f43caec3cc0dd53989f696ca0e0db931dc09a69bc81e3"
+PREVIOUS_PUBLISHER_SNAPSHOT_SHA = "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c"
+CURRENT_MANIFEST_SHA = "6b659aa7ecedcf36d1a611c2be1546caa76b54a8d19c16a00b484587ac833bc8"
 
 class OwnerSpecsSourceRightsTests(unittest.TestCase):
     @classmethod
@@ -67,11 +68,11 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
 
     def test_latest_snapshot_delta_is_reconciled_and_does_not_change_vag_facts(self):
         review = self.manifest["snapshot"]["latest_snapshot_review"]
-        self.assertEqual(review["previous_snapshot_sha256"], PREVIOUS_PACK_SNAPSHOT_SHA)
+        self.assertEqual(review["previous_snapshot_sha256"], PREVIOUS_PUBLISHER_SNAPSHOT_SHA)
         self.assertEqual(review["current_snapshot_sha256"], CURRENT_SNAPSHOT_SHA)
         self.assertEqual(review["datapoints_removed"], 0)
         self.assertEqual(review["datapoints_added"], 0)
-        self.assertEqual(review["changed_datapoints_total"], 2)
+        self.assertEqual(review["changed_datapoints_total"], 1)
         self.assertEqual(review["net_datapoint_change"], 0)
         self.assertEqual(review["vag_datapoints_removed"], 0)
         self.assertEqual(review["vag_datapoints_added"], 0)
@@ -81,7 +82,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(review["market_scope"], "UNKNOWN")
         self.assertFalse(review["critical_repair_values_publishable"])
         self.assertTrue(review["candidate_only"])
-        self.assertEqual(review["acquisition_evidence"]["workflow_run_id"], 42973238985)
+        self.assertEqual(review["acquisition_evidence"]["workflow_run_id"], 42975872025)
 
     def test_previous_vag_removals_and_non_vag_mass_changes_remain_in_history(self):
         review = next(x for x in self.manifest["snapshot"]["snapshot_review_history"]
@@ -129,7 +130,8 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(latest["source_snapshot_sha256"], CURRENT_SNAPSHOT_SHA)
         self.assertEqual(latest["source_file_bytes"], 659973)
         self.assertEqual(latest["vag_fact_count"], 186)
-        self.assertEqual(latest["acquisition_evidence"]["artifact_id"], 13834540968)
+        self.assertEqual(latest["acquisition_evidence"]["artifact_id"], 13835491309)
+        self.assertTrue(latest["acquisition_evidence"]["source_revision_field_stale"])
         self.assertEqual(entry["applicability"]["market_scope"], "UNKNOWN")
         self.assertFalse(entry["applicability"]["exact_engine_gearbox_pair"])
         self.assertFalse(entry["applicability"]["ru_eaeu_applicability"])
