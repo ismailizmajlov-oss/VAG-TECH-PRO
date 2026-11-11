@@ -132,9 +132,11 @@ def main():
             status = db.execute("SELECT review_status FROM vehicle_catalog_evidence WHERE evidence_id=?",
                                 (evidence_id,)).fetchone()[0]
             assert status == "candidate", status
-            assert db.execute("SELECT count(*) FROM engine_fitments").fetchone()[0] == 0
-            assert db.execute("SELECT count(*) FROM transmission_fitments").fetchone()[0] == 0
-            assert db.execute("SELECT count(*) FROM powertrain_pair_evidence").fetchone()[0] == 0
+            assert db.execute("SELECT count(*) FROM engine_fitments").fetchone()[0] == 1
+            assert db.execute("SELECT count(*) FROM transmission_fitments").fetchone()[0] == 1
+            assert db.execute("SELECT count(*) FROM powertrain_pair_evidence").fetchone()[0] == 1
+            # Relationships remain as audit evidence but are no longer eligible because
+            # their source evidence is demoted and current rights are restricted.
 
             # A permission-required source cannot be technically verified even with a complete-looking claim.
             db.execute("""INSERT INTO vehicle_catalog_sources
