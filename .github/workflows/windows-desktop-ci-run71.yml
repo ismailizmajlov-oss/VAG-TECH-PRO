@@ -1966,10 +1966,10 @@ jobs:
           $expectedRun = [string]$entry.research_pack_source_commit
           $artifactId = [string]$entry.research_pack_artifact_id
           $expectedDigest = ([string]$entry.research_pack_artifact_sha256).ToLowerInvariant()
-          if ($runId -ne "42971572740" -or $expectedRun -ne "9f9aa8136e5c084def52e5fdb983ede737c817ec" -or $artifactId -ne "13833552555" -or $expectedDigest -ne "66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77") { throw "OwnerSpecs artifact pins differ from the reviewed source register." }
+          if ($runId -ne "42976259283" -or $expectedRun -ne "cef31ae342ef9d266ab0d873ac653c0e27acf3ee" -or $artifactId -ne "13835168202" -or $expectedDigest -ne "5acf0b885b01b71216266a2f9a408511e66575b09966a9a05ae0b3880e4c45e8") { throw "OwnerSpecs artifact pins differ from the reviewed source register." }
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json"; "X-GitHub-Api-Version" = "2022-11-28" }
           $run = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$runId" -Headers $headers -Method Get -TimeoutSec 30
-          if ($run.status -ne "completed" -or $run.conclusion -ne "success" -or $run.head_sha -ne $expectedRun -or $run.run_number -ne 3) { throw "Pinned OwnerSpecs research-pack workflow run is not the reviewed successful source revision." }
+          if ($run.status -ne "completed" -or $run.conclusion -ne "success" -or $run.head_sha -ne $expectedRun -or $run.run_number -ne 27) { throw "Pinned OwnerSpecs research-pack workflow run is not the reviewed successful source revision." }
           $artifact = Invoke-RestMethod -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/artifacts/$artifactId" -Headers $headers -Method Get -TimeoutSec 30
           $digest = ([string]$artifact.digest -replace "^sha256:", "").ToLowerInvariant()
           if ($artifact.id -ne [long]$artifactId -or $artifact.name -ne "ownerspecs-vag-research-pack-refresh-2026-11-11" -or $artifact.expired -ne $false -or $digest -ne $expectedDigest) { throw "Pinned OwnerSpecs research-pack artifact ID, name, expiry or SHA-256 mismatch." }
