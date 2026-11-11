@@ -414,14 +414,13 @@ END;
 -- longer eligible for workshop lookup or publication.
 CREATE TRIGGER IF NOT EXISTS demote_vehicle_catalog_after_rights_narrowing
 AFTER UPDATE OF rights_status, commercial_use_allowed, display_allowed,
-                offline_cache_allowed, bulk_reuse_allowed, redistribution_allowed
+                offline_cache_allowed, bulk_reuse_allowed
 ON vehicle_catalog_source_rights
 WHEN NEW.rights_status<>'approved'
   OR NEW.commercial_use_allowed<>1
   OR NEW.display_allowed<>1
   OR NEW.offline_cache_allowed<>1
   OR NEW.bulk_reuse_allowed<>1
-  OR NEW.redistribution_allowed<>1
 BEGIN
   DELETE FROM engine_fitments
   WHERE evidence_id IN (SELECT evidence_id FROM vehicle_catalog_evidence WHERE source_id=NEW.source_id);
