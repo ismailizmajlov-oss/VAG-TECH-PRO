@@ -68,7 +68,7 @@
       "source_id": "eaeu-otts-unified-register-public-portal",
       "publisher": "Eurasian Economic Commission",
       "url": "https://portal.eaeunion.org/",
-      "legal_basis_url": "https://www.alta.ru/tamdoc/14kr0225/",
+      "legal_basis_url": "https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf",
       "source_kind": "official_public_query_route_for_eaeu_vehicle_type_approval_register",
       "market_scope": [
         "EAEU"
@@ -149,13 +149,15 @@
           "commercial_reuse": "not_established",
           "display_and_redistribution": "not_established",
           "references": [
+            "https://docs.eaeunion.org/documents/254/",
+            "https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf",
             "https://www.alta.ru/tamdoc/14kr0225/",
             "https://dcvi.tks.ru/document/90866",
             "https://www.interstandart.ru/page/fgis_01",
             "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf"
           ],
           "review_date": "2026-11-06",
-          "reference_url": "https://www.alta.ru/tamdoc/14kr0225/"
+          "reference_url": "https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf"
         },
         "historical_machine_readable_export_limitation": {
           "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
@@ -436,6 +438,19 @@
           "product_import_allowed": false
         },
         "interpretation": "Roadmap only. The order does not itself publish approval records, provide an API, complete the planned legal changes, or grant reuse/caching/redistribution rights."
+      },
+      "legal_basis_official_listing_url": "https://docs.eaeunion.org/documents/254/",
+      "legal_basis_secondary_republication_url": "https://www.alta.ru/tamdoc/14kr0225/",
+      "legal_basis_pdf_observation": {
+        "official_listing_url": "https://docs.eaeunion.org/documents/254/",
+        "official_pdf_url": "https://docs.eaeunion.org/upload/iblock/35e/58u8fgf2lugz9c797qtpa4v3erehhes2/clcd_08122014_225_doc.pdf",
+        "link_followed_from_official_listing": true,
+        "verified_at": "2026-11-11",
+        "download_status": "timeout",
+        "downloaded": false,
+        "sha256": null,
+        "secondary_republication_url": "https://www.alta.ru/tamdoc/14kr0225/",
+        "rights_effect": "none; the legal act establishes public-access and publication rules, not dataset-specific bulk reuse, commercial use, offline caching, display or redistribution rights."
       }
     },
     {
