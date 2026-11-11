@@ -245,7 +245,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
             legacy_db.close()
 
     def test_source_snapshot_and_claim_hashes_require_lowercase_sha256(self) -> None:
-        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source SHA-256|CHECK constraint failed)"):
             self.insert_source_document(
                 "invalid-source-hash", "INVALID-SOURCE-HASH",
                 source_sha256="g" * 64, market_scope="UNKNOWN"
@@ -255,7 +255,7 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
             "hash-format-source", "HASH-FORMAT-1",
             source_sha256=self.h("a"), market_scope="UNKNOWN"
         )
-        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source claim hash|CHECK constraint failed)"):
             self.db.execute(
                 """INSERT INTO oem_dtc_index
                    (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
@@ -276,12 +276,12 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
         dtc_id = self.db.execute(
             "SELECT oem_dtc_id FROM oem_dtc_index WHERE dtc_code='P0123'"
         ).fetchone()[0]
-        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source claim hash|CHECK constraint failed)"):
             self.db.execute(
                 "UPDATE oem_dtc_index SET source_claim_hash=? WHERE oem_dtc_id=?",
                 ("g" * 64, dtc_id),
             )
-        with self.assertRaisesRegex(sqlite3.IntegrityError, "CHECK constraint failed"):
+        with self.assertRaisesRegex(sqlite3.IntegrityError, r"(source SHA-256|CHECK constraint failed)"):
             self.db.execute(
                 "UPDATE source_documents SET source_sha256=? WHERE source_document_id=?",
                 ("g" * 64, source_document_id),
