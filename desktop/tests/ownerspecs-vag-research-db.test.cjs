@@ -25,12 +25,12 @@ test("OwnerSpecs pack is a hash-verified, isolated CC BY-SA research-only SQLite
   assert.match(summary.sourceSnapshotSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceSnapshotFileSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceManifestSha256, /^[a-f0-9]{64}$/);
-  assert.equal(summary.sourceFileSha256, "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9");
-  assert.equal(summary.sourceSnapshotSha256, "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9");
+  assert.equal(summary.sourceFileSha256, "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f");
+  assert.equal(summary.sourceSnapshotSha256, "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f");
   assert.equal(summary.sourceSnapshotFileSha256, "77ea356babebed51fd9f6f6b1afad75aaed69038b4f27a2d67621fb37c1ad195");
-  assert.equal(summary.sourceManifestSha256, "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697");
-  assert.equal(summary.databaseSha256, "9b7da5b490d3dd805865f23389cb8cc7ca9b368137be8307adb07e0c8e683c4a");
-  assert.equal(summary.packManifestSha256, "21c94e2ec39ea1b231b96d3fe5f830e5ac62ae5cfc1d8e91312de977d8819fd4");
+  assert.equal(summary.sourceManifestSha256, "a0daad6fd76fa2db22051248a81f52715074aa05b91b6dcdc15cb72a539db3ef");
+  assert.equal(summary.databaseSha256, "ee107718538b3ddc97c2577341c54919ec9269708ef02aad4aeaad3169360bc3");
+  assert.equal(summary.packManifestSha256, "8b07eed9f69dc763289e326a1f9c47525183abc33d840d2c5531474a115499c5");
   assert.equal(summary.artifactSha256, "66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77");
   assert.equal(summary.sourceRetrievedAtUtc, "2026-11-11T05:56:12+00:00");
   assert.equal(summary.acquisitionRetrievedAtUtc, "2026-11-11T06:19:19.940448+00:00");
