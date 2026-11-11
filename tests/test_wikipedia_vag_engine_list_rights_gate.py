@@ -60,7 +60,9 @@ class WikipediaVagEngineListGateTests(unittest.TestCase):
         quality = source["quality_review"]
         self.assertEqual(quality["status"], "not_approved_for_technical_use")
         self.assertGreaterEqual(len(quality["blocking_warnings"]), 4)
-        self.assertEqual(source["project_decision"], "licensed_discovery_only; no technical or vehicle-fitment import until pinned snapshots, extraction QA and independent primary-source verification are complete")
+        self.assertIn("separate CC BY-SA 4.0 SQLite discovery pack was built", source["project_decision"])
+        self.assertIn("not integrated into the desktop or production database", source["project_decision"])
+        self.assertIn("block technical use", source["project_decision"])
 
     def test_all_four_revisions_are_pinned_and_market_scope_is_unknown(self):
         source_pages = {page["title"]: str(page["revision_id"]) for page in self.source["pages"]}
