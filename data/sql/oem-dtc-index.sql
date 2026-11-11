@@ -298,7 +298,7 @@ CREATE TABLE IF NOT EXISTS oem_dtc_publication_locks (
 );
 CREATE TRIGGER IF NOT EXISTS oem_dtc_publication_locks_source_claim_hash_insert_guard
 BEFORE INSERT ON oem_dtc_publication_locks
-WHEN length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
+WHEN NEW.source_claim_hash IS NULL OR length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
 BEGIN SELECT RAISE(ABORT,'published DTC source-claim hash must be 64 lowercase hexadecimal characters'); END;
 CREATE TRIGGER IF NOT EXISTS oem_dtc_publication_locks_source_claim_hash_update_guard
 BEFORE UPDATE OF source_claim_hash ON oem_dtc_publication_locks
