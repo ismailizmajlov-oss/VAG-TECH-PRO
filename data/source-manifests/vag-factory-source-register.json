@@ -196,11 +196,11 @@
           "product_import_allowed": false,
           "source_snapshot_sha256": null,
           "pilot_status": "historical_pilot_completed_per_eec_2023_report",
-          "pilot_report_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "pilot_report_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf",
           "current_machine_readable_export_verified": false
         },
         "pilot_project_2023_report": {
-          "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "source_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf",
           "publisher": "Eurasian Economic Commission",
           "document_type": "official EEC committee meeting materials; agenda item 12; explanatory report on pilot results",
           "meeting_date": "2023-04-18",
