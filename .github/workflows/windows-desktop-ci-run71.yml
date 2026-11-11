@@ -158,6 +158,7 @@ on:
       - "tests/dtc-overlap-audit.test.cjs"
       - "tests/test_dtc_namespace_policy.py"
       - "tests/test_technical_library_schema.py"
+      - "tests/test_provenance_hash_guards.py"
       - "tests/test_source_manifest_bundle.py"
       - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
@@ -295,6 +296,7 @@ on:
       - "tests/dtc-overlap-audit.test.cjs"
       - "tests/test_dtc_namespace_policy.py"
       - "tests/test_technical_library_schema.py"
+      - "tests/test_provenance_hash_guards.py"
       - "tests/test_source_manifest_bundle.py"
       - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "scripts/import-authorized-fgis-otts-export.cjs"
@@ -325,6 +327,7 @@ on:
       - "tests/dtc-overlap-audit.test.cjs"
       - "tests/test_dtc_namespace_policy.py"
       - "tests/test_technical_library_schema.py"
+      - "tests/test_provenance_hash_guards.py"
       - "tests/test_source_manifest_bundle.py"
       - "docs/research/TECHNICAL_LIBRARY_SCHEMA_DESIGN.md"
       - "docs/research/MECHANICDB_GENERIC_REPAIR_GUIDANCE_REVIEW_2026-11-04.md"
@@ -381,6 +384,8 @@ jobs:
           python tests/test_windows_desktop_workflow_contract.py
           python tests/test_source_manifest_bundle.py -v
           python tests/test_technical_library_schema.py -v
+          python -m unittest discover -s tests -p "test_provenance_hash_guards.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "Canonical provenance hash guards failed." }
           python scripts/test-vehicle-catalog-schema.py
           if ($LASTEXITCODE -ne 0) { throw "Vehicle catalog exact-evidence and source-rights gates failed." }
           python scripts/test-otts-type-approval-evidence.py
