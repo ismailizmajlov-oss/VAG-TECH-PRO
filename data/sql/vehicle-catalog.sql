@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_evidence (
   evidence_locator TEXT NOT NULL,
   source_sha256 TEXT CHECK (
     source_sha256 IS NULL OR
-    (length(source_sha256)=64 AND lower(source_sha256) NOT GLOB '*[^0-9a-f]*')
+    (length(source_sha256)=64 AND source_sha256 NOT GLOB '*[^a-f0-9]*')
   ),
   market_scope TEXT NOT NULL DEFAULT 'UNKNOWN' CHECK (
     market_scope IN ('RU','EAEU','EU','NAR','CN','ROW','MULTI','UNKNOWN')
@@ -135,6 +135,21 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_evidence (
   reviewer_note TEXT,
   reviewed_at_utc TEXT
 );
+
+CREATE TRIGGER IF NOT EXISTS vehicle_catalog_evidence_source_sha256_insert_guard
+BEFORE INSERT ON vehicle_catalog_evidence
+WHEN NEW.source_sha256 IS NOT NULL
+ AND (length(NEW.source_sha256)<>64 OR NEW.source_sha256 GLOB '*[^a-f0-9]*')
+BEGIN
+  SELECT RAISE(ABORT, 'vehicle evidence source SHA-256 must be 64 lowercase hexadecimal characters');
+END;
+CREATE TRIGGER IF NOT EXISTS vehicle_catalog_evidence_source_sha256_update_guard
+BEFORE UPDATE OF source_sha256 ON vehicle_catalog_evidence
+WHEN NEW.source_sha256 IS NOT NULL
+ AND (length(NEW.source_sha256)<>64 OR NEW.source_sha256 GLOB '*[^a-f0-9]*')
+BEGIN
+  SELECT RAISE(ABORT, 'vehicle evidence source SHA-256 must be 64 lowercase hexadecimal characters');
+END;
 
 CREATE TABLE IF NOT EXISTS vehicle_generation_evidence (
   generation_id INTEGER NOT NULL REFERENCES vehicle_generations(generation_id) ON DELETE CASCADE,
@@ -214,7 +229,7 @@ WHEN NOT EXISTS (
     AND e.market_scope=v.market_scope
     AND e.applicability_precision IN ('exact_engine','exact_pairing')
     AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
-    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
     AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
     AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
     AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
@@ -225,7 +240,7 @@ WHEN NOT EXISTS (
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
     AND r.store_structured_data_allowed=1
-    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64 AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
     AND ec.status IN ('verified','published')
@@ -254,7 +269,7 @@ WHEN NOT EXISTS (
     AND e.market_scope=v.market_scope
     AND e.applicability_precision IN ('exact_engine','exact_pairing')
     AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
-    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
     AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
     AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
     AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
@@ -265,7 +280,7 @@ WHEN NOT EXISTS (
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
     AND r.store_structured_data_allowed=1
-    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64 AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
     AND ec.status IN ('verified','published')
@@ -294,7 +309,7 @@ WHEN NOT EXISTS (
     AND e.market_scope=v.market_scope
     AND e.applicability_precision IN ('exact_transmission','exact_pairing')
     AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
-    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
     AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
     AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
     AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
@@ -305,7 +320,7 @@ WHEN NOT EXISTS (
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
     AND r.store_structured_data_allowed=1
-    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64 AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
     AND tc.status IN ('verified','published')
@@ -334,7 +349,7 @@ WHEN NOT EXISTS (
     AND e.market_scope=v.market_scope
     AND e.applicability_precision IN ('exact_transmission','exact_pairing')
     AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
-    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
     AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
     AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
     AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
@@ -345,7 +360,7 @@ WHEN NOT EXISTS (
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
     AND r.store_structured_data_allowed=1
-    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64 AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
     AND tc.status IN ('verified','published')
@@ -375,7 +390,7 @@ WHEN NOT EXISTS (
     AND e.market_scope=v.market_scope
     AND e.applicability_precision='exact_pairing'
     AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
-    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
     AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
     AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
     AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
@@ -386,7 +401,7 @@ WHEN NOT EXISTS (
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
     AND r.store_structured_data_allowed=1
-    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64 AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
     AND ec.status IN ('verified','published')
@@ -417,7 +432,7 @@ WHEN NOT EXISTS (
     AND e.market_scope=v.market_scope
     AND e.applicability_precision='exact_pairing'
     AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
-    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
     AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
     AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
     AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
@@ -428,7 +443,7 @@ WHEN NOT EXISTS (
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
     AND r.store_structured_data_allowed=1
-    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64 AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
     AND ec.status IN ('verified','published')
@@ -460,7 +475,7 @@ BEGIN
     AND (
       NEW.document_revision IS NULL OR length(trim(NEW.document_revision))=0
       OR NEW.source_sha256 IS NULL OR length(NEW.source_sha256)<>64
-      OR lower(NEW.source_sha256) GLOB '*[^0-9a-f]*'
+      OR NEW.source_sha256 GLOB '*[^a-f0-9]*'
       OR NEW.evidence_locator IS NULL OR length(trim(NEW.evidence_locator))=0
       OR NEW.market_scope='UNKNOWN' OR NEW.applicability_precision='unknown'
       OR NEW.reviewed_at_utc IS NULL OR length(trim(NEW.reviewed_at_utc))=0
@@ -479,7 +494,7 @@ BEGIN
         AND r.commercial_use_allowed=1 AND r.display_allowed=1
         AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
     AND r.store_structured_data_allowed=1
-        AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+        AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64 AND r.license_text_sha256 NOT GLOB '*[^a-f0-9]*'
         AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
         AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
     ) THEN RAISE(ABORT, 'technical verification requires approved source rights for this market and offline product use') END;

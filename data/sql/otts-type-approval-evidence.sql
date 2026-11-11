@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_source_rights (
   license_url TEXT,
   license_text_sha256 TEXT CHECK (
     license_text_sha256 IS NULL OR
-    (length(license_text_sha256)=64 AND lower(license_text_sha256) NOT GLOB '*[^0-9a-f]*')
+    (length(license_text_sha256)=64 AND license_text_sha256 NOT GLOB '*[^a-f0-9]*')
   ),
   commercial_use_allowed INTEGER NOT NULL DEFAULT 0 CHECK (commercial_use_allowed IN (0,1)),
   display_allowed INTEGER NOT NULL DEFAULT 0 CHECK (display_allowed IN (0,1)),
@@ -28,6 +28,17 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_source_rights (
   CHECK (attribution_required=0 OR length(trim(coalesce(attribution_text,'')))>0)
 );
 
+CREATE TRIGGER IF NOT EXISTS vehicle_catalog_source_rights_license_text_sha256_insert_guard
+BEFORE INSERT ON vehicle_catalog_source_rights
+WHEN NEW.license_text_sha256 IS NOT NULL
+ AND (length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'license-text SHA-256 must be 64 lowercase hexadecimal characters'); END;
+CREATE TRIGGER IF NOT EXISTS vehicle_catalog_source_rights_license_text_sha256_update_guard
+BEFORE UPDATE OF license_text_sha256 ON vehicle_catalog_source_rights
+WHEN NEW.license_text_sha256 IS NOT NULL
+ AND (length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'license-text SHA-256 must be 64 lowercase hexadecimal characters'); END;
+
 CREATE TRIGGER IF NOT EXISTS validate_source_rights_approval_insert
 BEFORE INSERT ON vehicle_catalog_source_rights
 WHEN NEW.rights_status='approved'
@@ -36,7 +47,7 @@ BEGIN
     THEN RAISE(ABORT, 'source rights approval requires a license name') END;
   SELECT CASE WHEN NEW.license_url IS NULL AND NEW.permission_reference IS NULL
     THEN RAISE(ABORT, 'source rights approval requires a license URL or permission reference') END;
-  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64
+  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*'
     THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
   SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
       OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
@@ -61,7 +72,7 @@ BEGIN
     THEN RAISE(ABORT, 'source rights approval requires a license name') END;
   SELECT CASE WHEN NEW.license_url IS NULL AND NEW.permission_reference IS NULL
     THEN RAISE(ABORT, 'source rights approval requires a license URL or permission reference') END;
-  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64
+  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*'
     THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
   SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
       OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
@@ -124,14 +135,14 @@ CREATE TABLE IF NOT EXISTS eaeu_otts_evidence (
   document_cached INTEGER NOT NULL DEFAULT 0 CHECK (document_cached IN (0,1)),
   document_sha256 TEXT CHECK (
     document_sha256 IS NULL OR
-    (length(document_sha256)=64 AND lower(document_sha256) NOT GLOB '*[^0-9a-f]*')
+    (length(document_sha256)=64 AND document_sha256 NOT GLOB '*[^a-f0-9]*')
   ),
   source_revision TEXT NOT NULL CHECK (length(trim(source_revision))>0),
   source_snapshot_sha256 TEXT NOT NULL CHECK (
-    length(source_snapshot_sha256)=64 AND lower(source_snapshot_sha256) NOT GLOB '*[^0-9a-f]*'
+    length(source_snapshot_sha256)=64 AND source_snapshot_sha256 NOT GLOB '*[^a-f0-9]*'
   ),
   record_sha256 TEXT NOT NULL CHECK (
-    length(record_sha256)=64 AND lower(record_sha256) NOT GLOB '*[^0-9a-f]*'
+    length(record_sha256)=64 AND record_sha256 NOT GLOB '*[^a-f0-9]*'
   ),
   retrieved_at_utc TEXT NOT NULL,
   review_status TEXT NOT NULL DEFAULT 'candidate'
@@ -145,6 +156,19 @@ CREATE TABLE IF NOT EXISTS eaeu_otts_evidence (
     (document_cached=1 AND document_sha256 IS NOT NULL AND document_reference_url IS NOT NULL)
   )
 );
+
+CREATE TRIGGER IF NOT EXISTS eaeu_otts_evidence_hashes_insert_guard
+BEFORE INSERT ON eaeu_otts_evidence
+WHEN (NEW.document_sha256 IS NOT NULL AND (length(NEW.document_sha256)<>64 OR NEW.document_sha256 GLOB '*[^a-f0-9]*'))
+  OR NEW.source_snapshot_sha256 IS NULL OR length(NEW.source_snapshot_sha256)<>64 OR NEW.source_snapshot_sha256 GLOB '*[^a-f0-9]*'
+  OR NEW.record_sha256 IS NULL OR length(NEW.record_sha256)<>64 OR NEW.record_sha256 GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'OTTS evidence hashes must be lowercase hexadecimal SHA-256 values'); END;
+CREATE TRIGGER IF NOT EXISTS eaeu_otts_evidence_hashes_update_guard
+BEFORE UPDATE OF document_sha256,source_snapshot_sha256,record_sha256 ON eaeu_otts_evidence
+WHEN (NEW.document_sha256 IS NOT NULL AND (length(NEW.document_sha256)<>64 OR NEW.document_sha256 GLOB '*[^a-f0-9]*'))
+  OR length(NEW.source_snapshot_sha256)<>64 OR NEW.source_snapshot_sha256 GLOB '*[^a-f0-9]*'
+  OR length(NEW.record_sha256)<>64 OR NEW.record_sha256 GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'OTTS evidence hashes must be lowercase hexadecimal SHA-256 values'); END;
 
 CREATE INDEX IF NOT EXISTS idx_eaeu_otts_approval_number
   ON eaeu_otts_evidence(member_state, approval_number, approval_revision);
@@ -294,7 +318,9 @@ BEGIN
     THEN RAISE(ABORT, 'OTTS publication requires a known market and issuing member state') END;
   SELECT CASE WHEN NEW.approval_number='' OR NEW.source_record_key=''
       OR NEW.form_revision='' OR NEW.source_revision='' OR NEW.evidence_locator=''
-      OR NEW.source_snapshot_sha256 IS NULL OR NEW.record_sha256 IS NULL
+      OR NEW.source_snapshot_sha256 IS NULL OR length(NEW.source_snapshot_sha256)<>64 OR NEW.source_snapshot_sha256 GLOB '*[^a-f0-9]*'
+      OR NEW.record_sha256 IS NULL OR length(NEW.record_sha256)<>64 OR NEW.record_sha256 GLOB '*[^a-f0-9]*'
+      OR (NEW.document_cached=1 AND (NEW.document_sha256 IS NULL OR length(NEW.document_sha256)<>64 OR NEW.document_sha256 GLOB '*[^a-f0-9]*'))
     THEN RAISE(ABORT, 'OTTS publication requires exact revision, locator and SHA-256 provenance') END;
   SELECT CASE WHEN NOT EXISTS (
     SELECT 1
@@ -490,7 +516,7 @@ BEGIN
   SELECT CASE WHEN (NEW.license_url IS NULL OR trim(NEW.license_url)='')
       AND (NEW.permission_reference IS NULL OR trim(NEW.permission_reference)='')
     THEN RAISE(ABORT, 'source rights approval requires a license URL or permission reference') END;
-  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64
+  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*'
     THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
   SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
       OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
@@ -516,7 +542,7 @@ BEGIN
   SELECT CASE WHEN (NEW.license_url IS NULL OR trim(NEW.license_url)='')
       AND (NEW.permission_reference IS NULL OR trim(NEW.permission_reference)='')
     THEN RAISE(ABORT, 'source rights approval requires a license URL or permission reference') END;
-  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64
+  SELECT CASE WHEN NEW.license_text_sha256 IS NULL OR length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*'
     THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
   SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
       OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
