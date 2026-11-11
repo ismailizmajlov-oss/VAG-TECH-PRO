@@ -24,7 +24,7 @@ test("OwnerSpecs desktop integration is pinned to the reviewed CC BY-SA pack", (
   assert.match(integration, /source:"d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9"/);
   assert.match(integration, /sourceManifest:"ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697"/);
   assert.match(integration, /packManifest:"21c94e2ec39ea1b231b96d3fe5f830e5ac62ae5cfc1d8e91312de977d8819fd4"/);
-  assert.match(integration, /database:"9b7da5b490d3dd805865f18689cb8cc7ca9b368137be8307adb07e0c8e683c4a"/);
+  assert.match(integration, /database:"9b7da5b490d3dd805865f23389cb8cc7ca9b368137be8307adb07e0c8e683c4a"/);
   assert.match(integration, /research_pack_source_commit==="9f9aa8136e5c084def52e5fdb983ede737c817ec"&&registered\.research_pack_artifact_id===13833552555/);
 });
 
