@@ -57,16 +57,17 @@ class ResearchPackDesktopIntegrationRegistryTests(unittest.TestCase):
         )
         self.assertTrue((ROOT / "desktop/cardir-vag-reference-facts-db.cjs").is_file())
 
-    def test_ownerspecs_current_pack_is_verified_and_separate_from_pending_desktop_integration(self):
+    def test_ownerspecs_current_pack_is_integrated_read_only_and_separate_from_production(self):
         source = self.sources["ownerspecs-verified-vehicle-specs-cc-by-sa-4.0"]
         self.assertTrue(source["research_pack_ingested"])
         self.assertTrue(source["research_pack_current"])
         self.assertTrue(source["research_pack_current_for_vag_subset"])
         self.assertEqual(source["research_pack_status"], "verified_research_only_current_snapshot")
         self.assertTrue(source["research_database_included_in_desktop"])
-        self.assertFalse(source["current_research_pack_in_desktop"])
-        self.assertTrue(source["previous_pack_still_in_desktop"])
-        self.assertEqual(source["research_pack_desktop_integration_status"], "pending_current_snapshot_desktop_integration")
+        self.assertTrue(source["current_research_pack_in_desktop"])
+        self.assertFalse(source["previous_pack_still_in_desktop"])
+        self.assertEqual(source["research_pack_desktop_integration_status"],
+                         "verified_read_only_research_pack_integrated_in_offline_desktop")
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["product_database_ingested"])
         self.assertFalse(source["product_import_allowed"])
@@ -87,7 +88,19 @@ class ResearchPackDesktopIntegrationRegistryTests(unittest.TestCase):
         self.assertFalse(latest["acquisition_evidence"]["source_revision_field_stale"])
         self.assertEqual(latest["acquisition_evidence"]["workflow_run_id"], 42976259283)
         self.assertEqual(latest["acquisition_evidence"]["artifact_id"], 13835990251)
-        self.assertIsNone(source["desktop_integration_evidence"])
+        evidence = source["desktop_integration_evidence"]
+        self.assertEqual(evidence["status"], "verified_in_successful_windows_x64_desktop_build")
+        self.assertEqual(evidence["workflow_run_id"], 42985948470)
+        self.assertEqual(evidence["job_id"], 130407021578)
+        self.assertEqual(evidence["head_sha"], "d87bb3573be0ae92964e65f3abe8218bdd90d9ef")
+        self.assertEqual(evidence["successful_step"], "Integrate OwnerSpecs VAG research pack into offline desktop")
+        self.assertEqual(evidence["source_pack_artifact_id"], 13835168202)
+        self.assertEqual(evidence["source_pack_artifact_sha256"], "5acf0b885b01b71216266a2f9a408511e66575b09966a9a05ae0b3880e4c45e8")
+        self.assertEqual(evidence["desktop_build_artifact_id"], 13841840140)
+        self.assertEqual(evidence["desktop_build_artifact_sha256"], "813f3dcb6167962db95eefc103ceb407aa2341d85f07f8e9f69d8a956b9e3568")
+        self.assertFalse(evidence["product_database_imported"])
+        self.assertFalse(evidence["production_fitment_published"])
+        self.assertFalse(evidence["native_windows_10_11_verified"])
         self.assertEqual(source["previous_desktop_integration_evidence"]["workflow_run_id"], 42964628461)
         self.assertEqual(source["superseded_verified_research_packs"][0]["artifact_id"], 13833552555)
         self.assertEqual(source["previous_verified_research_pack"]["artifact_id"], 13742090427)
