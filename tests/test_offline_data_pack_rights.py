@@ -89,6 +89,14 @@ class OfflineDataPackRightsTests(unittest.TestCase):
         self.assertIn('"status": "quarantined_pending_upstream_permission"', source)
         self.assertIn("Autoevolution-derived ODbL generation/engine candidate data is quarantined and excluded", source)
 
+    def test_vehiclesdb_identity_pack_is_never_safety_critical_or_a_repair_decision_source(self):
+        source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
+        self.assertIn('manifest.get("identity_only_use") is not True', source)
+        self.assertIn('manifest.get("safety_critical_reliance") is not False', source)
+        self.assertIn('manifest.get("repair_decision_use") is not False', source)
+        self.assertIn("not designed or warranted for safety-critical", source)
+        self.assertIn('"models": 307, "market_evidence": 1621', source)
+
     def test_bundle_requires_exactly_three_separate_pack_ids(self):
         source = (ROOT / "scripts" / "build_offline_data_pack_index.py").read_text(encoding="utf-8")
         self.assertIn('index.get("database_count") != 3', source)

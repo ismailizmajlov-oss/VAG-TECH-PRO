@@ -89,6 +89,13 @@ def fixture(root: Path) -> tuple[Path, Path, Path, Path, Path]:
         "not_in_release_sources": {"ro_drpciv": "Not present in pinned release manifest."},
         "expected_source_files": expected_source_files,
         "expected_counts": {"sources": 2, "source_files": 4, "models": 2, "market_evidence": 2},
+        "build_policy": {
+            "output_database": "vag-identity-vehiclesdb.sqlite",
+            "identity_only_use": True,
+            "safety_critical_reliance": False,
+            "repair_decision_use": False,
+            "open_data_policy_notice": "Test notice: identity-only; not for safety-critical or repair decisions.",
+        },
     }, indent=2), encoding="utf-8")
     return lock, source_db, upstream_manifest, attribution, license_file
 
@@ -107,6 +114,11 @@ class VehiclesDBIdentityPackTests(unittest.TestCase):
             self.assertEqual(verified["not_in_release_sources"], ["ro_drpciv"])
             pack_manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(pack_manifest["not_in_release_sources"], {"ro_drpciv": "Not present in pinned release manifest."})
+            self.assertTrue(pack_manifest["identity_only_use"])
+            self.assertFalse(pack_manifest["safety_critical_reliance"])
+            self.assertFalse(pack_manifest["repair_decision_use"])
+            self.assertIn("not for safety-critical", pack_manifest["open_data_policy_notice"])
+            self.assertIn(pack_manifest["open_data_policy_notice"], pack_manifest["warnings"])
             db = sqlite3.connect(output / "vag-identity-vehiclesdb.sqlite")
             try:
                 self.assertEqual(db.execute("SELECT count(*) FROM model_candidates WHERE make_slug='toyota'").fetchone()[0], 0)

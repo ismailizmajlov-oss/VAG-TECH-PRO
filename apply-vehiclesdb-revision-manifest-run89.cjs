@@ -48,6 +48,11 @@ function main() {
       manifest.fitment_status !== "not_established" ||
       manifest.fitment_claim !== false ||
       manifest.exact_fitment !== false ||
+      manifest.identity_only_use !== true ||
+      manifest.safety_critical_reliance !== false ||
+      manifest.repair_decision_use !== false ||
+      typeof manifest.open_data_policy_notice !== "string" ||
+      !manifest.open_data_policy_notice.includes("not designed or warranted for safety-critical") ||
       manifest.ru_evidence_present !== false ||
       manifest.engine_codes_included !== false ||
       manifest.gearbox_codes_included !== false ||
@@ -86,6 +91,10 @@ function main() {
     applicability_precision: manifest.applicability_precision,
     fitment_claim: manifest.fitment_claim,
     exact_fitment: manifest.exact_fitment,
+    identity_only_use: manifest.identity_only_use,
+    safety_critical_reliance: manifest.safety_critical_reliance,
+    repair_decision_use: manifest.repair_decision_use,
+    open_data_policy_notice: manifest.open_data_policy_notice,
     ru_evidence_present: manifest.ru_evidence_present,
     test_file_sha256: sha256(fs.readFileSync(finalTest.file)),
   };

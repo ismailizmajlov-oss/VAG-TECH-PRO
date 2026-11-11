@@ -188,6 +188,12 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertEqual(regional["status"], "permission_required")
         self.assertFalse(regional["data_ingested"])
         self.assertTrue(regional["observed_public_claims"]["access_claims_conflict"])
+        self.assertEqual(regional["observed_public_claims"]["observed_at"], "2026-11-11")
+        self.assertEqual(regional["observed_public_claims"]["landing_page_claimed_document_count"], 77802)
+        self.assertEqual(regional["observed_public_claims"]["public_offer_price_rub_per_document"], 200)
+        self.assertTrue(any(item["reviewed_at"] == "2026-11-11" for item in regional["evidence_reviewed"]))
+        self.assertFalse(central["product_import_allowed"])
+        self.assertFalse(central["data_ingested"])
         self.assertIsNone(regional["source_snapshot_sha256"])
     def test_russian_eaeu_manifest_keeps_open_data_catalog_and_otts_schema_separate(self):
         source = self.russian_sources["eaeu-open-data-portal"]
@@ -216,7 +222,7 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
     def test_eec_2023_report_confirms_temporary_pilot_completion_and_request_only_export(self):
         source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
         pilot = source["access"]["pilot_project_2023_report"]
-        self.assertEqual(pilot["source_url"], "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf")
+        self.assertEqual(pilot["source_url"], "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf")
         self.assertEqual(pilot["meeting_date"], "2023-04-18")
         self.assertEqual(pilot["agenda_item"], 12)
         self.assertEqual(pilot["pilot_period"], {"start": "2022-02-14", "end": "2022-12-31"})
@@ -239,6 +245,7 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
     def test_regional_manifest_keeps_completed_pilot_separate_from_current_data_rights(self):
         source = self.russian_sources["eaeu-open-data-portal"]
         pilot = source["pilot_project_2023_report"]
+        self.assertEqual(pilot["source_url"], "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf")
         self.assertEqual(pilot["conclusion"], "pilot_project_deemed_completed")
         self.assertEqual(pilot["historical_counts"]["ot_ts_approvals_and_revisions"], 2491)
         self.assertEqual(pilot["machine_readable_export_during_pilot"]["current_availability"], "not_verified_after_pilot_completion")
@@ -334,6 +341,24 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
         self.assertFalse(gearbox["exact_engine_gearbox_pair_exposed"])
         self.assertFalse(source["data_ingested"])
         self.assertEqual(source["rights"]["permission_status"], "not_obtained")
+
+    def test_otts_bot_2026_11_11_recheck_keeps_automated_collection_and_product_reuse_blocked(self):
+        central = self.factory_sources["otts-bot"]
+        regional = self.russian_sources["otts-bot"]
+        self.assertEqual(central["source_revision"], "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-11")
+        observation = central["provider_displayed_counts"]["recheck_2026_11_11"]
+        self.assertEqual(observation["ot_ts_page_result_counter"], 74115)
+        self.assertEqual(observation["marketing_headline"], "46,000+")
+        self.assertTrue(observation["count_discrepancy_unresolved"])
+        self.assertEqual(observation["homepage_sbkts_records"], 224744)
+        self.assertEqual(observation["homepage_otsh_records"], 1655)
+        self.assertFalse(central["rights"]["third_party_display_allowed"])
+        self.assertFalse(central["rights"]["offline_cache_allowed"])
+        self.assertFalse(central["product_import_allowed"])
+        self.assertFalse(central["data_ingested"])
+        self.assertEqual(regional["terms_revision"], central["source_revision"])
+        self.assertTrue(any(item["reviewed_at"] == "2026-11-11" for item in regional["terms_evidence_reviewed"]))
+        self.assertFalse(regional["data_ingested"])
 
 if __name__ == "__main__":
     unittest.main()

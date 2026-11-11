@@ -18,7 +18,8 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
     def test_cc_by_4_rights_and_attribution_are_explicit(self):
         source = SOURCES["vehiclesdb-vag-identity-cc-by-4.0"]
         rights = source["rights"]
-        self.assertEqual(source["release_tag"], "v2026.10.4")
+        self.assertEqual(source["release_tag"], LOCK["upstream_tag"])
+        self.assertEqual(LOCK["upstream_tag"], "v2026.11.3")
         self.assertEqual(rights["data_license"], "CC-BY-4.0")
         for key in ("commercial_use_allowed", "display_allowed", "offline_cache_allowed",
                     "redistribution_allowed", "attribution_required", "unconditional_upstream_source_notices_required"):
@@ -31,10 +32,7 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
         self.assertTrue(source["attribution_file_sha256"])
         self.assertTrue(source["license_file_sha256"])
         pinned = LOCK["expected_source_files"]
-        self.assertEqual(
-            set(pinned),
-            {"catalog.sqlite", "manifest.json", "ATTRIBUTION.md", "LICENSE"},
-        )
+        self.assertEqual(set(pinned), {"catalog.sqlite", "manifest.json", "ATTRIBUTION.md", "LICENSE"})
         self.assertEqual(pinned["catalog.sqlite"]["sha256"], source["upstream_catalog_sha256"])
         self.assertEqual(pinned["manifest.json"]["sha256"], source["upstream_manifest_sha256"])
         self.assertEqual(pinned["ATTRIBUTION.md"]["sha256"], source["attribution_file_sha256"])
@@ -46,32 +44,37 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
             hashlib.sha256(json.dumps(pinned, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest(),
         )
         self.assertIn("canonical UTF-8 JSON", source["source_snapshot_digest_method"])
+        self.assertTrue(source["identity_only_use"])
+        self.assertFalse(source["safety_critical_reliance"])
+        self.assertFalse(source["repair_decision_use"])
+        self.assertIn("not designed or warranted for safety-critical", source["open_data_policy_notice"])
         research = source["research_pack"]
         self.assertEqual(research["status"], "built_and_verified")
         self.assertEqual(research["upstream_tag"], LOCK["upstream_tag"])
         self.assertEqual(research["counts"], {
             "approved_source_registers": 14,
-            "model_name_candidates": 260,
-            "market_presence_evidence_rows": 1524,
+            "model_name_candidates": 307,
+            "market_presence_evidence_rows": 1621,
         })
+        self.assertEqual(research["source_manifest_sha256"], source["upstream_manifest_sha256"])
+        self.assertEqual(research["source_catalog_sha256"], source["upstream_catalog_sha256"])
         self.assertEqual(research["market_scope"], source["market_scope"])
         self.assertFalse(source["data_ingested"])
-        for key in ("artifact_sha256", "database_sha256", "manifest_sha256"):
+        for key in ("artifact_sha256", "database_sha256", "source_manifest_sha256", "source_catalog_sha256", "lock_sha256"):
             self.assertRegex(research[key], r"^[0-9a-f]{64}$")
-        self.assertEqual(research["workflow_run_id"], 42443454970)
+        self.assertEqual(research["workflow_run_id"], 42874459366)
         self.assertGreater(research["artifact_size_bytes"], 0)
         bundle = source["offline_bundle"]
         self.assertEqual(bundle["status"], "verified_offline_research_bundle_not_installer")
+        self.assertEqual(bundle["workflow_run_number"], 573)
+        self.assertEqual(bundle["workflow_run_id"], 42874459366)
         self.assertEqual(bundle["target_platform"], "windows-x64")
         self.assertEqual(bundle["separate_database_count"], 3)
-        self.assertEqual(bundle["vehiclesdb_database_sha256"], "13d55243c9ca48216eda467df06971dd85362e7499b6a40715448f99705e2463")
-        self.assertEqual(bundle["vehiclesdb_manifest_sha256"], "a3fc7c970748e0155759b015825d31b5ad9d28af977ee4f1ee0a820c17f3aafd")
-        self.assertEqual(bundle["obdb_database_sha256"], "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14")
-        self.assertEqual(bundle["obdb_manifest_sha256"], "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105")
-        self.assertEqual(bundle["obdex_database_sha256"], "a26760aa58170d379f913770650945b8268fac6e453bb52f8d8a58426a930704")
-        self.assertEqual(bundle["obdex_manifest_sha256"], "5d99fc0f0811bd5cdf6119252fbacfebc74a1eeaee357a8eeb5b81cb42b03913")
-        for key in ("artifact_sha256", "bundle_index_sha256", "vehiclesdb_database_sha256",
-                    "vehiclesdb_manifest_sha256", "vehiclesdb_source_snapshot_sha256"):
+        self.assertEqual(bundle["pack_ids"], ["obdb-vag-signals-cc-by-sa", "obdex-generic-cc0", "vehiclesdb-vag-identity"])
+        self.assertEqual(bundle["vehiclesdb_database_sha256"], research["database_sha256"])
+        self.assertEqual(bundle["vehiclesdb_upstream_catalog_sha256"], source["upstream_catalog_sha256"])
+        self.assertEqual(bundle["obdb_database_sha256"], "1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195")
+        for key in ("artifact_sha256", "vehiclesdb_database_sha256", "vehiclesdb_upstream_catalog_sha256", "obdb_database_sha256"):
             self.assertRegex(bundle[key], r"^[0-9a-f]{64}$")
         self.assertGreater(bundle["artifact_size_bytes"], 0)
 
@@ -96,20 +99,24 @@ class VehiclesDbVagIdentitySourceRightsTests(unittest.TestCase):
                     "repair_procedures", "wiring_diagrams", "diagnostic_execution_allowed",
                     "ru_eaeu_market_evidence"):
             self.assertIs(scope[key], False)
-        self.assertEqual(source["counts"]["model_name_candidates"], 260)
-        self.assertEqual(source["counts"]["market_presence_evidence_rows"], 1524)
+        self.assertEqual(source["counts"]["model_name_candidates"], 307)
+        self.assertEqual(source["counts"]["market_presence_evidence_rows"], 1621)
         self.assertEqual(source["applicability_precision"], "make_model_name_only_and_market_presence_only")
 
     def test_locked_upstream_manifest_matches_scope_and_licence(self):
         self.assertEqual(LOCK["dataset_id"], "vehiclesdb-vag-identity-cc-by-4.0")
         self.assertEqual(LOCK["data_license"], "CC-BY-4.0")
-        self.assertEqual(LOCK["upstream_tag"], "v2026.10.4")
+        self.assertEqual(LOCK["upstream_tag"], "v2026.11.3")
         self.assertIs(LOCK["scope"]["fitment_claim"], False)
         self.assertIs(LOCK["scope"]["ru_eaeu_market_evidence_expected"], False)
-        self.assertEqual(LOCK["expected_counts"]["models"], 260)
-        self.assertEqual(LOCK["expected_counts"]["market_evidence"], 1524)
+        self.assertEqual(LOCK["expected_counts"]["models"], 307)
+        self.assertEqual(LOCK["expected_counts"]["market_evidence"], 1621)
+        self.assertTrue(LOCK["build_policy"]["identity_only_use"])
+        self.assertFalse(LOCK["build_policy"]["safety_critical_reliance"])
+        self.assertFalse(LOCK["build_policy"]["repair_decision_use"])
         self.assertIn("il_mot", LOCK["excluded_source_reasons"])
         self.assertIn("th_dlt", LOCK["excluded_source_reasons"])
+        self.assertIn("de_kba_nfz", LOCK["excluded_source_reasons"])
 
 
 if __name__ == "__main__":

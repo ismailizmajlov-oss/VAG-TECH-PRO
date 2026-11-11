@@ -19,23 +19,53 @@ function replaceOnce(source, before, after, label) {
   return source.slice(0, first) + after + source.slice(first + before.length);
 }
 
-let source = fs.readFileSync(dbFile, "utf8");
-source = replaceOnce(
-  source,
-  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository_url, upstream_tag, dataset_version, dataset_license, attribution_required, attribution_text, attribution_url, catalog_sqlite_sha256, upstream_manifest_sha256, license_sha256, attribution_sha256, ru_evidence_present, fitment_claim FROM dataset_provenance WHERE provenance_id=1").get();',
-  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository, upstream_tag, dataset_version, dataset_license, license_url, upstream_manifest_sha256, source_catalog_sha256, attribution_sha256, license_sha256, lock_sha256, imported_at_utc FROM dataset_provenance WHERE dataset_id=?").get(PACKS.vehiclesdb.id);',
-  "VehiclesDB provenance query"
-);
-source = replaceOnce(
-  source,
-  `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbProvenance.attribution_required !== 1 ||
+
+function ensureVehiclesDbCandidateGate(source) {
+  const gateStart = source.indexOf("if (!vehiclesDbProvenance");
+  const gateEnd = gateStart >= 0 ? source.indexOf(") {", gateStart) : -1;
+  if (gateStart >= 0 && gateEnd > gateStart) {
+    const gate = source.slice(gateStart, gateEnd + 3);
+    const requiredDynamicMarkers = [
+      "vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||",
+      "vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license ||",
+      "vehiclesDbProvenance.upstream_tag !== vehiclesDbPackManifest.upstream_tag ||",
+      "vehiclesDbProvenance.upstream_manifest_sha256 !== vehiclesDbPackManifest.source_manifest_sha256 ||",
+      "vehiclesDbProvenance.source_catalog_sha256 !== vehiclesDbPackManifest.source_catalog_sha256 ||",
+      "vehiclesDbProvenance.attribution_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"ATTRIBUTION.md\"] ||",
+      "vehiclesDbProvenance.license_sha256 !== vehiclesDbPackManifest.source_snapshot_sha256?.[\"LICENSE\"] ||",
+      "vehiclesDbProvenance.lock_sha256 !== vehiclesDbPackManifest.lock_sha256 ||",
+      "vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models ||",
+      "vehiclesDbCounts.marketEvidence !== vehiclesDbPackManifest.counts?.market_evidence ||",
+      "vehiclesDbCounts.russianEvidence !== 0 ||",
+      "vehiclesDbPackManifest.identity_only_use !== true ||",
+      "vehiclesDbPackManifest.safety_critical_reliance !== false ||",
+      "vehiclesDbPackManifest.repair_decision_use !== false ||",
+      "vehiclesDbPackManifest.fitment_claim !== false ||",
+      "vehiclesDbPackManifest.ru_evidence_present !== false ||",
+      "vehiclesDbPackManifest.attribution?.required !== true ||",
+      "vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models ||",
+      "vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||",
+      "vehiclesDbPackManifest.open_data_policy_notice.includes(",
+      "!/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution)",
+      "!/UNCONDITIONAL/i.test(vehiclesDbAttribution)"
+    ];
+    if (requiredDynamicMarkers.every((marker) => gate.includes(marker))) {
+      if (/vehiclesDbCounts\.models\s*!==\s*\d+/.test(gate) ||
+          /vehiclesDbCounts\.marketEvidence\s*!==\s*\d+/.test(gate)) {
+        throw new Error("VehiclesDB candidate gate mixes manifest-driven counts with stale fixed model/evidence counts.");
+      }
+      return source;
+    }
+  }
+
+  const legacyGate = `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbProvenance.attribution_required !== 1 ||
         vehiclesDbProvenance.ru_evidence_present !== 0 || vehiclesDbProvenance.fitment_claim !== 0 ||
         vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||
         vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbPackManifest.fitment_claim !== false ||
         vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution?.required !== true ||
         vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models || vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||
-        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`,
-  `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||
+        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`;
+  const currentGate = `if (!vehiclesDbProvenance || vehiclesDbProvenance.dataset_id !== PACKS.vehiclesdb.id ||
         vehiclesDbProvenance.dataset_license !== PACKS.vehiclesdb.license ||
         vehiclesDbProvenance.upstream_tag !== vehiclesDbPackManifest.upstream_tag ||
         vehiclesDbProvenance.upstream_manifest_sha256 !== vehiclesDbPackManifest.source_manifest_sha256 ||
@@ -47,9 +77,18 @@ source = replaceOnce(
         vehiclesDbPackManifest.dataset_license !== PACKS.vehiclesdb.license || vehiclesDbPackManifest.fitment_claim !== false ||
         vehiclesDbPackManifest.ru_evidence_present !== false || vehiclesDbPackManifest.attribution?.required !== true ||
         vehiclesDbPackManifest.counts?.models !== vehiclesDbCounts.models || vehiclesDbPackManifest.counts?.market_evidence !== vehiclesDbCounts.marketEvidence ||
-        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`,
-  "VehiclesDB provenance and candidate-only gate"
+        !/Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) || !/UNCONDITIONAL/i.test(vehiclesDbAttribution)) {`;
+  return replaceOnce(source, legacyGate, currentGate, "VehiclesDB provenance and candidate-only gate");
+}
+
+let source = fs.readFileSync(dbFile, "utf8");
+source = replaceOnce(
+  source,
+  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository_url, upstream_tag, dataset_version, dataset_license, attribution_required, attribution_text, attribution_url, catalog_sqlite_sha256, upstream_manifest_sha256, license_sha256, attribution_sha256, ru_evidence_present, fitment_claim FROM dataset_provenance WHERE provenance_id=1").get();',
+  'const vehiclesDbProvenance = vehiclesDb.prepare("SELECT dataset_id, publisher, repository, upstream_tag, dataset_version, dataset_license, license_url, upstream_manifest_sha256, source_catalog_sha256, attribution_sha256, license_sha256, lock_sha256, imported_at_utc FROM dataset_provenance WHERE dataset_id=?").get(PACKS.vehiclesdb.id);',
+  "VehiclesDB provenance query"
 );
+source = ensureVehiclesDbCandidateGate(source);
 source = replaceOnce(source, "attributionUrl: safeHttpsUrl(vehiclesDbProvenance.attribution_url),", "attributionUrl: safeHttpsUrl(vehiclesDbPackManifest.attribution?.url),", "VehiclesDB attribution URL");
 source = replaceOnce(source, "upstreamRevision: vehiclesDbProvenance.upstream_tag,", "upstreamRevision: vehiclesDbPackManifest.upstream_tag,", "VehiclesDB upstream revision");
 source = replaceOnce(source, "snapshotGeneratedAt: vehiclesDbProvenance.built_at_utc,", "snapshotGeneratedAt: vehiclesDbPackManifest.built_at_utc,", "VehiclesDB snapshot timestamp");
@@ -160,6 +199,10 @@ const newFunction = String.raw`function searchVehiclesDbCandidates(query, limit 
         ecuFitment: false,
         exactFitment: false,
         ruEvidencePresent: false,
+        identityOnlyUse: packManifest.identity_only_use === true,
+        safetyCriticalReliance: packManifest.safety_critical_reliance === true,
+        repairDecisionUse: packManifest.repair_decision_use === true,
+        openDataPolicyNotice: packManifest.open_data_policy_notice,
         sourceRevision: packManifest.upstream_tag,
         sourceUrl: safeHttpsUrl(packManifest.source_repository),
         sourceLicense: PACKS.vehiclesdb.license,
@@ -242,6 +285,12 @@ fs.writeFileSync(verifierFile, verifier, "utf8");
 let tests = fs.readFileSync(testFile, "utf8");
 tests = replaceOnce(
   tests,
+  '  assert.deepEqual(vehiclesDb.counts, { sources: 14, models: 260, marketEvidence: 1524, russianEvidence: 0 });',
+  '  const vehiclesDbManifest = JSON.parse(fs.readFileSync(path.join(root, "vehiclesdb-vag-identity", "manifest.json"), "utf8"));\n  assert.equal(vehiclesDb.counts.sources, vehiclesDbManifest.counts.sources);\n  assert.equal(vehiclesDb.counts.models, vehiclesDbManifest.counts.models);\n  assert.equal(vehiclesDb.counts.marketEvidence, vehiclesDbManifest.counts.market_evidence);\n  assert.equal(vehiclesDb.counts.russianEvidence, 0);',
+  "VehiclesDB manifest-driven summary counts"
+);
+tests = replaceOnce(
+  tests,
   '  assert.equal(rows[0].snapshotGeneratedAt, "2026-11-03T07:21:36.7901580Z");',
   '  const rootManifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));\n  const obdexPack = rootManifest.packs.find((pack) => pack.id === "obdex-generic-cc0");\n  assert.equal(rows[0].snapshotGeneratedAt, obdexPack.snapshot_generated_at_utc);',
   "dynamic OBDex snapshot timestamp assertion"
@@ -263,6 +312,23 @@ const golfHashAfter = [
   '  assert.equal(golf.sourceSha256, golf.sourceCatalogSha256);',
 ].join("\n");
 tests = replaceOnce(tests, golfHashBefore, golfHashAfter, "VehiclesDB record and source catalog fingerprints");
+
+for (const required of [
+  "vehiclesDbManifest.counts.models",
+  "vehiclesDbManifest.counts.market_evidence",
+  "obdexPack.snapshot_generated_at_utc",
+  "candidateRecordSha256",
+]) {
+  if (!tests.includes(required)) throw new Error("VehiclesDB regression test is missing required manifest-driven assertion: " + required);
+}
+for (const required of [
+  "identityOnlyUse: packManifest.identity_only_use === true",
+  "safetyCriticalReliance: packManifest.safety_critical_reliance === true",
+  "repairDecisionUse: packManifest.repair_decision_use === true",
+  "openDataPolicyNotice: packManifest.open_data_policy_notice",
+]) {
+  if (!source.includes(required)) throw new Error("VehiclesDB candidate result is missing safety metadata: " + required);
+}
 fs.writeFileSync(testFile, tests, "utf8");
 
 process.stdout.write(JSON.stringify({

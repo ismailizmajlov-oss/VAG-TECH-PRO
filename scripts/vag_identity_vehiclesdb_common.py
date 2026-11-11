@@ -130,6 +130,14 @@ def _validate_inputs(lock: dict[str, Any], upstream: dict[str, Any], attribution
     attribution = lock.get("attribution", {})
     if attribution.get("required") is not True or "Vehicle data by VehiclesDB" not in attribution.get("text", ""):
         raise ValueError("VehiclesDB attribution requirement is missing from the lock")
+    build_policy = lock.get("build_policy", {})
+    if (not isinstance(build_policy, dict)
+            or build_policy.get("identity_only_use") is not True
+            or build_policy.get("safety_critical_reliance") is not False
+            or build_policy.get("repair_decision_use") is not False
+            or not isinstance(build_policy.get("open_data_policy_notice"), str)
+            or not build_policy["open_data_policy_notice"].strip()):
+        raise ValueError("VehiclesDB identity-only and safety-critical-use boundary is missing from the lock")
 
     approved = lock.get("approved_source_license_map")
     excluded = lock.get("excluded_source_reasons")
@@ -486,6 +494,10 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
         "fitment_status": "not_established",
         "fitment_claim": False,
         "exact_fitment": False,
+        "identity_only_use": lock["build_policy"]["identity_only_use"],
+        "safety_critical_reliance": lock["build_policy"]["safety_critical_reliance"],
+        "repair_decision_use": lock["build_policy"]["repair_decision_use"],
+        "open_data_policy_notice": lock["build_policy"]["open_data_policy_notice"],
         "ru_evidence_present": False,
         "generation_data_included": False,
         "model_year_data_included": False,
@@ -511,6 +523,7 @@ def build_pack(lock_path: Path, source_db_path: Path, upstream_manifest_path: Pa
             "The open VehiclesDB release does not supply generations, model years, engine codes, gearbox codes, ECU fitment or PR-code fitment for this pack.",
             "A make/model candidate is not exact vehicle fitment, an OEM configuration, or a repair recommendation.",
             "Keep this CC-BY-4.0 dataset separate and preserve VehiclesDB plus all upstream register attribution notices.",
+            lock["build_policy"]["open_data_policy_notice"],
         ],
         "built_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
@@ -542,6 +555,12 @@ def verify_pack(pack_dir: Path, lock_path: Path, *, strict_counts: bool = True) 
         raise ValueError("VehiclesDB pack approved/excluded/absent source map mismatch")
     if manifest.get("ru_evidence_present") is not False or manifest.get("fitment_claim") is not False:
         raise ValueError("VehiclesDB RU-market or exact-fitment boundary failed")
+    build_policy = lock.get("build_policy", {})
+    if (manifest.get("identity_only_use") is not True
+            or manifest.get("safety_critical_reliance") is not False
+            or manifest.get("repair_decision_use") is not False
+            or manifest.get("open_data_policy_notice") != build_policy.get("open_data_policy_notice")):
+        raise ValueError("VehiclesDB safety-critical/repair decision boundary failed")
     if any(manifest.get(key) is not False for key in (
         "generation_data_included", "model_year_data_included", "engine_codes_included",
         "gearbox_codes_included", "ecu_fitment_included", "pr_code_fitment_included",

@@ -18,6 +18,8 @@ on:
       - scripts/build_vag_identity_vehiclesdb.py
       - scripts/verify_vag_identity_vehiclesdb.py
       - scripts/test_vag_identity_vehiclesdb.py
+      - scripts/probe_vag_identity_vehiclesdb.py
+      - scripts/test_probe_vag_identity_vehiclesdb.py
       - tests/test_offline_data_pack_rights.py
       - apply-obdb-16-source-count-run88.cjs
       - tests/obdb-source-count-run88.test.cjs
@@ -40,6 +42,8 @@ on:
       - scripts/build_vag_identity_vehiclesdb.py
       - scripts/verify_vag_identity_vehiclesdb.py
       - scripts/test_vag_identity_vehiclesdb.py
+      - scripts/probe_vag_identity_vehiclesdb.py
+      - scripts/test_probe_vag_identity_vehiclesdb.py
       - tests/test_offline_data_pack_rights.py
       - apply-obdb-16-source-count-run88.cjs
       - tests/obdb-source-count-run88.test.cjs
@@ -76,6 +80,71 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/acquire-vag-identity-vehiclesdb.yml
+
+
+  probe-vag-identity-next:
+    name: Independent read-only VehiclesDB count verification
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Run synthetic probe regression tests
+        run: python scripts/test_probe_vag_identity_vehiclesdb.py
+
+      - name: Download and independently verify the pinned VehiclesDB source snapshot
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $ProgressPreference = "SilentlyContinue"
+          $lockPath = "data/source-manifests/vehiclesdb-vag-identity.lock.json"
+          $lock = Get-Content $lockPath -Raw | ConvertFrom-Json
+          $tag = $lock.upstream_tag
+          $base = "https://raw.githubusercontent.com/vehiclesdb/vehiclesdb/$tag"
+          $inputDir = Join-Path $env:RUNNER_TEMP "vehiclesdb-pinned-probe"
+          New-Item -ItemType Directory -Path $inputDir -Force | Out-Null
+          $files = @(
+            @{ url = "$base/dist/catalog.sqlite"; name = "catalog.sqlite" },
+            @{ url = "$base/manifest.json"; name = "manifest.json" },
+            @{ url = "$base/ATTRIBUTION.md"; name = "ATTRIBUTION.md" },
+            @{ url = "$base/LICENSE"; name = "LICENSE" }
+          )
+          foreach ($file in $files) {
+            $target = Join-Path $inputDir $file.name
+            Invoke-WebRequest -Uri $file.url -OutFile $target -MaximumRedirection 5
+            if (-not (Test-Path $target -PathType Leaf) -or (Get-Item $target).Length -le 0) {
+              throw "Pinned VehiclesDB source file is missing or empty: $($file.name)"
+            }
+            $hash = (Get-FileHash -Path $target -Algorithm SHA256).Hash.ToLowerInvariant()
+            Write-Host "$($file.name) bytes=$((Get-Item $target).Length) sha256=$hash"
+          }
+          $report = Join-Path $env:RUNNER_TEMP "vehiclesdb-vag-identity-probe-report.json"
+          $probeArgs = @(
+            "--lock", $lockPath,
+            "--source-db", (Join-Path $inputDir "catalog.sqlite"),
+            "--manifest", (Join-Path $inputDir "manifest.json"),
+            "--attribution", (Join-Path $inputDir "ATTRIBUTION.md"),
+            "--license", (Join-Path $inputDir "LICENSE"),
+            "--output", $report,
+            "--require-count-match"
+          )
+          python scripts/probe_vag_identity_vehiclesdb.py @probeArgs
+          if ($LASTEXITCODE -ne 0) { throw "VehiclesDB source count/provenance probe failed." }
+
+      - name: Compile read-only probe
+        run: python -m py_compile scripts/probe_vag_identity_vehiclesdb.py
+
+      - name: Upload count-only source probe report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: vehiclesdb-vag-identity-count-probe
+          path: ${{ runner.temp }}/vehiclesdb-vag-identity-probe-report.json
+          if-no-files-found: error
+          retention-days: 14
 
   package:
     name: Assemble and independently verify Windows offline SQLite packs

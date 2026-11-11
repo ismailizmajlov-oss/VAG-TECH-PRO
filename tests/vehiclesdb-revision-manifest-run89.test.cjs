@@ -27,6 +27,10 @@ function fixture(root, overrides = {}) {
     fitment_status: "not_established",
     fitment_claim: false,
     exact_fitment: false,
+    identity_only_use: true,
+    safety_critical_reliance: false,
+    repair_decision_use: false,
+    open_data_policy_notice: "VehiclesDB open data is not designed or warranted for safety-critical use; identity-only.",
     ru_evidence_present: false,
     engine_codes_included: false,
     gearbox_codes_included: false,
@@ -58,9 +62,27 @@ test("run89 binds the VehiclesDB desktop test to the pinned manifest revision", 
     assert.equal(evidence.data_license, "CC-BY-4.0");
     assert.equal(evidence.market_scope, "foreign_market_presence_only");
     assert.equal(evidence.exact_fitment, false);
+    assert.equal(evidence.identity_only_use, true);
+    assert.equal(evidence.safety_critical_reliance, false);
+    assert.equal(evidence.repair_decision_use, false);
+    assert.match(evidence.open_data_policy_notice, /not designed or warranted for safety-critical use/);
     const second = spawnSync(process.execPath, [PATCH, "--desktop-root", root], { encoding: "utf8" });
     assert.equal(second.status, 0, second.stderr);
     assert.equal(JSON.parse(second.stdout).patch_status, "already_current");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("run89 refuses a VehiclesDB manifest that claims safety-critical reliance", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "vag-run89-safety-"));
+  try {
+    fixture(root, { safety_critical_reliance: true });
+    const before = fs.readFileSync(path.join(root, "tests/local-research-db.test.cjs"), "utf8");
+    const result = spawnSync(process.execPath, [PATCH, "--desktop-root", root], { encoding: "utf8" });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /VehiclesDB manifest rights, revision or candidate-only scope gate failed/);
+    assert.equal(fs.readFileSync(path.join(root, "tests/local-research-db.test.cjs"), "utf8"), before);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-10",
+  "updated_at": "2026-11-11",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -196,11 +196,11 @@
           "product_import_allowed": false,
           "source_snapshot_sha256": null,
           "pilot_status": "historical_pilot_completed_per_eec_2023_report",
-          "pilot_report_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "pilot_report_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf",
           "current_machine_readable_export_verified": false
         },
         "pilot_project_2023_report": {
-          "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+          "source_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf",
           "publisher": "Eurasian Economic Commission",
           "document_type": "official EEC committee meeting materials; agenda item 12; explanatory report on pilot results",
           "meeting_date": "2023-04-18",
@@ -2895,13 +2895,13 @@
       "source_id": "vehiclesdb-vag-identity-cc-by-4.0",
       "publisher": "VehiclesDB",
       "url": "https://github.com/vehiclesdb/vehiclesdb",
-      "release_tag": "v2026.10.4",
+      "release_tag": "v2026.11.3",
       "source_kind": "foreign_market_vehicle_make_model_identity_and_market_presence_candidate_database",
       "source_manifest_path": "data/source-manifests/vehiclesdb-vag-identity.lock.json",
-      "source_snapshot_sha256": "2a8921baa9be98f1b3c00845dbc8bc2378af4c48ff4409f46f9efe79823e910d",
-      "upstream_catalog_sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704",
-      "upstream_manifest_sha256": "a401b7bd9bb58ea581fffaf1cccfb79a28b4592d4674c36b10e419f6c30b8fa8",
-      "attribution_file_sha256": "bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21",
+      "source_snapshot_sha256": "311decddc3e4a448d6b8c9556ba88159740fad87517e2a9387b182ec8a9a71aa",
+      "upstream_catalog_sha256": "06aa916028e2d732ce087e9a566fc26717ae0a9a2ab8cd8487a0e6df31f1b172",
+      "upstream_manifest_sha256": "7df6ec271cb5a7aae80164e28cb3b4be83612da42942b76989e43b7c99e8c075",
+      "attribution_file_sha256": "47edb850ed4ff02f5c9d8de3efcdd314d7a0162b1067e1c15ca07b956acccf60",
       "license_file_sha256": "48a2c12a43e8df6700e36440f089c1497e62a507e194e995d69a7d3530999e78",
       "market_scope": [
         "AR",
@@ -2926,8 +2926,8 @@
       "display_status": "foreign_market_identity_candidate_only",
       "counts": {
         "approved_source_registers": 14,
-        "model_name_candidates": 260,
-        "market_presence_evidence_rows": 1524
+        "model_name_candidates": 307,
+        "market_presence_evidence_rows": 1621
       },
       "rights": {
         "data_license": "CC-BY-4.0",
@@ -2965,26 +2965,27 @@
       },
       "project_decision": "allow_separate_read_only_foreign_market_identity_candidate_pack_under_CC_BY_4_0_with_required_attribution_and_all_unconditional_upstream_notices; do_not_use_for_RU_EAEU_coverage_or_exact_fitment",
       "limitations": [
-        "Only 260 make/model-name candidates and 1,524 market-presence evidence rows are included.",
-        "The 14 markets are AR, AU, CA, DE, ES, FI, GB, IE, LU, MY, NL, NZ, UA and US; Russia, Kazakhstan, Belarus, Armenia and Kyrgyzstan are absent.",
+        "The pinned v2026.11.3 release yields 307 make/model-name candidates and 1,621 market-presence evidence rows after the VAG and source-license filters.",
+        "The 14 included markets are AR, AU, CA, DE, ES, FI, GB, IE, LU, MY, NL, NZ, UA and US; Russia, Kazakhstan, Belarus, Armenia and Kyrgyzstan are absent.",
         "Ukraine is not an EAEU market; no Russian/EAEU evidence is present.",
         "No generation, production year, engine code, gearbox code, ECU, PR-code or exact vehicle fitment is included.",
         "Per-record market evidence is presence-only and must not be converted into exact technical applicability.",
+        "Identity-only use: the upstream open-data policy says the dataset is not designed or warranted for safety-critical reliance; it must not drive repair or safety-critical decisions.",
         "Keep the database separate and preserve the CC BY 4.0 VehiclesDB credit plus all unconditional upstream source notices."
       ],
-      "evidence_status": "Pinned v2026.10.4 manifest, license, attribution and four upstream file hashes/sizes; standalone Windows x64 pack and run253 offline bundle independently verified; SQLite integrity and foreign-key checks passed.",
+      "evidence_status": "Pinned VehiclesDB v2026.11.3 release; upstream catalog, manifest, attribution and license hashes verified on Windows x64; read-only count probe matched 307 models and 1,621 foreign-market evidence rows; separate SQLite pack and three-database offline bundle independently verified.",
       "upstream_source_files": {
         "catalog.sqlite": {
-          "byte_size": 9773056,
-          "sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704"
+          "byte_size": 10260480,
+          "sha256": "06aa916028e2d732ce087e9a566fc26717ae0a9a2ab8cd8487a0e6df31f1b172"
         },
         "manifest.json": {
-          "byte_size": 11249,
-          "sha256": "a401b7bd9bb58ea581fffaf1cccfb79a28b4592d4674c36b10e419f6c30b8fa8"
+          "byte_size": 12498,
+          "sha256": "7df6ec271cb5a7aae80164e28cb3b4be83612da42942b76989e43b7c99e8c075"
         },
         "ATTRIBUTION.md": {
-          "byte_size": 9615,
-          "sha256": "bf2ebd50a843d1b6e445ce3aff594b2ec94658aa1cd7b786e4e73db04ad6cd21"
+          "byte_size": 10256,
+          "sha256": "47edb850ed4ff02f5c9d8de3efcdd314d7a0162b1067e1c15ca07b956acccf60"
         },
         "LICENSE": {
           "byte_size": 1319,
@@ -2995,14 +2996,16 @@
       "source_snapshot_digest_method": "SHA-256 of canonical UTF-8 JSON for upstream_source_files (sorted keys, compact separators; each filename maps to byte_size and SHA-256)",
       "research_pack": {
         "status": "built_and_verified",
-        "upstream_tag": "v2026.10.4",
-        "artifact_sha256": "fbae2e96931b444b55b47ac84a00923024f02c3d1e478b19c050b9c9d8fbdf52",
-        "database_sha256": "13d55243c9ca48216eda467df06971dd85362e7499b6a40715448f99705e2463",
-        "manifest_sha256": "a3fc7c970748e0155759b015825d31b5ad9d28af977ee4f1ee0a820c17f3aafd",
+        "upstream_tag": "v2026.11.3",
+        "artifact_sha256": "c62be2fdc6d56aa7644868bf343b53dc6513e6a3e534ec69ca0e66f061ca5690",
+        "database_sha256": "1f23666dcb83a47ccceac272165c4a3495dd03ae9ac5082ffc5f1486967e2e71",
+        "source_manifest_sha256": "7df6ec271cb5a7aae80164e28cb3b4be83612da42942b76989e43b7c99e8c075",
+        "source_catalog_sha256": "06aa916028e2d732ce087e9a566fc26717ae0a9a2ab8cd8487a0e6df31f1b172",
+        "lock_sha256": "e4743a8f8933072f9cb5e960f285c763e1de27fc89ea6fc023313117c1794b16",
         "counts": {
           "approved_source_registers": 14,
-          "model_name_candidates": 260,
-          "market_presence_evidence_rows": 1524
+          "model_name_candidates": 307,
+          "market_presence_evidence_rows": 1621
         },
         "market_scope": [
           "AR",
@@ -3020,34 +3023,36 @@
           "UA",
           "US"
         ],
-        "verification": "SQLite integrity_check=ok; foreign_key_check=empty; no RU/EAEU evidence; no generations, model years, engine codes, gearbox codes or ECU fitment",
-        "built_at_utc": "2026-11-08T03:37:03+00:00",
-        "workflow_run_id": 42443454970,
-        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
-        "artifact_id": 13602607653,
-        "artifact_size_bytes": 2633294
+        "verification": "SQLite integrity_check=ok; foreign_key_check=empty; no RU/EAEU evidence; identity-only; no generations, model years, engine codes, gearbox codes, ECU fitment or repair-decision use",
+        "workflow_run_id": 42874459366,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42874459366",
+        "artifact_id": 13790916975,
+        "artifact_size_bytes": 2771476
       },
       "offline_bundle": {
         "status": "verified_offline_research_bundle_not_installer",
-        "workflow_run_number": 253,
-        "workflow_run_id": 42443454970,
-        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42443454970",
-        "artifact_id": 13603085469,
-        "artifact_size_bytes": 39103187,
-        "artifact_sha256": "8b9a126612c933c3b64c9b6c0d4d2d85470e6e6404acd3f2b761617ac4b341ff",
-        "bundle_index_sha256": "eda9d2dc4e5b115057133a06a9d85bba79a99108d967e349acc1b3e57b016fcb",
+        "workflow_run_number": 573,
+        "workflow_run_id": 42874459366,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42874459366",
+        "artifact_id": 13790753436,
+        "artifact_size_bytes": 42745598,
+        "artifact_sha256": "f971cc47c3651da7c2fc68022c151f5eccad9dbd18b84580618fb920883891be",
         "target_platform": "windows-x64",
         "separate_database_count": 3,
-        "vehiclesdb_database_sha256": "13d55243c9ca48216eda467df06971dd85362e7499b6a40715448f99705e2463",
-        "vehiclesdb_manifest_sha256": "a3fc7c970748e0155759b015825d31b5ad9d28af977ee4f1ee0a820c17f3aafd",
-        "vehiclesdb_source_snapshot_sha256": "389f71184049de0d867fe4f35f22ba7fdce70582681671d585c85f8f4a8b6704",
-        "obdex_database_sha256": "a26760aa58170d379f913770650945b8268fac6e453bb52f8d8a58426a930704",
-        "obdex_manifest_sha256": "5d99fc0f0811bd5cdf6119252fbacfebc74a1eeaee357a8eeb5b81cb42b03913",
-        "obdb_database_sha256": "6ee0de83b4e2fd055d0e54786d73fedc77428e3cac9d04948145a4f487cc4d14",
-        "obdb_manifest_sha256": "1630924ef1335750f173ef9732927a596a099c41b5dfe73bb310b354ded61105",
-        "built_at_utc": "2026-11-08T03:38:15.108260+00:00",
-        "verification": "All three research databases and the VehiclesDB source-snapshot SQLite passed independent SHA-256 verification, integrity_check=ok and foreign_key_check=0."
-      }
+        "pack_ids": [
+          "obdb-vag-signals-cc-by-sa",
+          "obdex-generic-cc0",
+          "vehiclesdb-vag-identity"
+        ],
+        "vehiclesdb_database_sha256": "1f23666dcb83a47ccceac272165c4a3495dd03ae9ac5082ffc5f1486967e2e71",
+        "vehiclesdb_upstream_catalog_sha256": "06aa916028e2d732ce087e9a566fc26717ae0a9a2ab8cd8487a0e6df31f1b172",
+        "obdb_database_sha256": "1a5cb45b03ab9439251d329de57d667ebea3e67b1a2b2dd9aa5333c14f2ed195",
+        "verification": "Bundle build and independent verification succeeded; 3 separate SQLite research databases; not an installer; no production fitment promotion."
+      },
+      "identity_only_use": true,
+      "safety_critical_reliance": false,
+      "repair_decision_use": false,
+      "open_data_policy_notice": "VehiclesDB's open-data policy warns that the dataset is not designed or warranted for safety-critical reliance; this pack is identity-only and must not drive repair, safety-critical or exact-fitment decisions."
     },
     {
       "source_id": "elpts-national-otts-register-public-query",
@@ -3334,7 +3339,7 @@
         "ELPTS notice dated 2026-08-21 confirms the AS EOTTS workflow handles gearbox information including additional reduction and hydraulic transmissions. The public OTTS search table still exposes no engine/gearbox code fields or exact VAG engine/gearbox pairing."
       ],
       "project_decision": "manual_document_level_lookup_only_after_document_type_and_authority_are_confirmed; no scraping, bulk export, offline caching, product display or redistribution until written permission or a dataset-specific open licence is verified",
-      "evidence_status": "ELPTS national OTTS page shell rechecked 2026-11-09. Fresh indexed OTTS rendering shows UI total 14822, date filter 08.11.2026-09.11.2026 with no rows, and Volkswagen AG as a filter option only; AUDI AG was not reproduced on the OTTS page. A separate ESBKTS indexed rendering for 04.11.2026-05.11.2026 shows 155 results and two VOLKSWAGEN SBKTS metadata rows (FAW-Volkswagen type FV6462HADCG; SAIC Volkswagen type SVW71421GT). These are SBKTS, not OTTS, and the type strings are not engine/gearbox codes. No documents or raw bytes were downloaded; no data imported; no reuse rights changed. Official ELPTS homepage and paid-report forms page were rechecked 2026-11-09. The 20-page appendix to Order 10/81-26 dated 2026-10-02 defines participant-scoped R3/R4 reports (weekly, 180/120 RUB per row including VAT) with OTTS identifiers and vehicle descriptors, but no engine/gearbox codes; the daily R report includes gearbox make/type wording at 15 RUB per row but no exact VAG gearbox code. No report was ordered or downloaded; no reuse rights were upgraded. Fresh 2026-11-10 search-indexed OTTS rendering again exposes AUDI AG and Volkswagen AG as manufacturer filter options, but no approval rows; the 14822 total remains a UI label only and the active date filter is empty. No raw page bytes or records were captured, no hash exists, and reuse rights remain unconfirmed. On 2026-11-10 the official ELPTS homepage was reviewed: it links to the national OTTS/OTSH/SBKTS register at rst.gov.ru and to XLSX make/technical-characteristics reference books. The RST link timed out; the XLSX files were not downloaded because no reuse licence was stated. ELPTS also documents a gearbox-entry correction in AS EOTTS on 2026-08-21; this does not expose VAG factory codes or fitment.",
+      "evidence_status": "Rechecked 2026-11-11: official public page shell loads but dynamic records do not resolve in the direct renderer; search index alone shows counter 14,822 and a 2026-11-09..10 query with zero returned records. No source bytes, API export or dataset-specific reuse permission established.",
       "public_page_observations": {
         "observed_at": "2026-11-08",
         "ot_ts": {
@@ -3934,7 +3939,30 @@
           "note": "Public Yandex Disk listing linked from the official ELPTS homepage; no reuse licence stated. Not downloaded."
         }
       ],
-      "product_import_allowed": false
+      "product_import_allowed": false,
+      "latest_public_ui_recheck_2026_11_11": {
+        "reviewed_at": "2026-11-11",
+        "official_url": "https://docs.elpts.ru/ncher/otts",
+        "direct_render_status": "page_shell_loaded_dynamic_result_placeholders_not_resolved",
+        "search_index_observation": {
+          "displayed_total_counter": 14822,
+          "counter_validation": "search_index_only_not_reproduced_by_direct_renderer",
+          "query_date_range": "2026-11-09..2026-11-10",
+          "returned_records": 0
+        },
+        "raw_source_bytes_retrieved": false,
+        "api_or_bulk_export_confirmed": false,
+        "dataset_specific_reuse_terms_confirmed": false,
+        "commercial_use_allowed": "not_established",
+        "display_allowed": "not_established",
+        "offline_cache_allowed": "not_established",
+        "bulk_reuse_allowed": "not_established",
+        "redistribution_allowed": "not_established",
+        "product_import_allowed": false,
+        "permission_request_sent": false,
+        "decision": "metadata_only_permission_required",
+        "note": "A public UI link and a search-indexed counter do not grant bulk extraction, persistent SQLite storage, offline display or redistribution rights."
+      }
     },
     {
       "source_id": "bri3d-vw-flash-simos18-dtc-candidate",
@@ -4181,7 +4209,7 @@
       "url": "https://www.otts.bot/",
       "terms_url": "https://www.otts.bot/terms",
       "source_kind": "commercial_aggregated_ru_eaeu_vehicle_compliance_database",
-      "source_revision": "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-10",
+      "source_revision": "published_user_agreement_last_updated_2026-08-26; OTTS_page_and_terms_rechecked_2026-11-11",
       "market_scope": [
         "RU",
         "EAEU"
@@ -4203,6 +4231,19 @@
           "homepage_sbkt_and_otsh_counters_rechecked": false,
           "independently_audited": false,
           "dataset_export_observed": false
+        },
+        "recheck_2026_11_11": {
+          "observed_at": "2026-11-11",
+          "ot_ts_page_result_counter": 74115,
+          "marketing_headline": "46,000+",
+          "count_discrepancy_unresolved": true,
+          "homepage_otts_records": 74115,
+          "homepage_sbkts_records": 224744,
+          "homepage_otsh_records": 1655,
+          "technical_characteristics_section": "not yet populated",
+          "engine_section": "not yet populated",
+          "dataset_export_observed": false,
+          "independently_audited": false
         }
       },
       "access": {
@@ -4227,7 +4268,7 @@
         "database_structure_and_site_text_rights": "operator_owned; use outside ordinary site viewing requires written consent under clause 5",
         "partner_program_grant_scope": "partner grants placement/reproduction/site-delivery rights to the operator only; contributor warranty does not grant VAG TECH PRO rights",
         "written_permission_obtained": false,
-        "review_date": "2026-11-10",
+        "review_date": "2026-11-11",
         "agreement_last_updated": "2026-08-26"
       },
       "applicability": {
@@ -4252,8 +4293,8 @@
       "project_decision": "restricted_no_automated_collection_beyond_ordinary_use_no_offline_cache_no_product_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders",
       "data_ingested": false,
       "source_snapshot_sha256": null,
-      "evidence_status": "OTTS_page_and_user_agreement_rechecked_2026-11-10; agreement_last_updated_2026-08-26",
-      "rights_review_document": "docs/research/OTTS_BOT_SOURCE_RIGHTS_RECHECK_2026-11-10.md",
+      "evidence_status": "OTTS_page_and_user_agreement_rechecked_2026-11-11; agreement_last_updated_2026-08-26",
+      "rights_review_document": "docs/research/RUSSIAN_OTTS_AGGREGATOR_RIGHTS_RECHECK_2026-11-11.md",
       "evidence_reviewed": [
         {
           "url": "https://www.otts.bot/terms",
@@ -4269,6 +4310,16 @@
           "url": "https://www.otts.bot/",
           "reviewed_at": "2026-11-09",
           "observation": "Homepage displays 74,115 OTTS, 224,744 SBKTS and 1,655 OTSH records, and describes technical-characteristics/engine sections as not yet populated. Counts are provider UI metadata only."
+        },
+        {
+          "url": "https://www.otts.bot/terms",
+          "reviewed_at": "2026-11-11",
+          "observation": "Rechecked 2026-11-11; agreement last updated 2026-08-26. Clause 3 prohibits scraping/mass requests beyond ordinary user scenarios and proprietary redistribution of documents/database information; clauses 4.3-4.4 grant rights to the operator only; clause 5 reserves the database structure and site text."
+        },
+        {
+          "url": "https://www.otts.bot/otts",
+          "reviewed_at": "2026-11-11",
+          "observation": "Rechecked page shows 74,115 OTTS result counter versus 46,000+ headline, 500 RUB single-document price, and no dataset export or third-party offline licence."
         }
       ],
       "product_import_allowed": false,
@@ -4311,6 +4362,56 @@
           "product_import_allowed": false
         },
         "decision": "discovery_only_no_scraping_no_bulk_requests_no_offline_cache_no_third_party_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders"
+      },
+      "rights_recheck_2026_11_11": {
+        "reviewed_at": "2026-11-11",
+        "terms_url": "https://www.otts.bot/terms",
+        "terms_last_updated": "2026-08-26",
+        "clauses": {
+          "3": {
+            "ordinary_search": "free ordinary website search",
+            "automated_collection": "scraping or mass requests beyond ordinary user scenarios prohibited",
+            "redistribution": "resale, publication or other distribution of obtained documents/database information as a proprietary information product prohibited"
+          },
+          "5": {
+            "website_and_database_structure": "operator-owned; use outside ordinary site viewing requires written consent",
+            "underlying_documents": "rights remain with their respective rightsholders"
+          },
+          "4.3-4.4": {
+            "contributor_warranty": "contributor warrants lawful acquisition and right to transfer the document",
+            "operator_grant": "contributor grants the operator placement, reproduction, public display and paid delivery rights",
+            "sublicense_to_vag_tech_pro": false
+          }
+        },
+        "page_observation": {
+          "url": "https://www.otts.bot/otts",
+          "reviewed_at": "2026-11-11",
+          "result_counter": 74115,
+          "headline": "46,000+",
+          "count_discrepancy_unresolved": true,
+          "paid_single_document_price_rub": 500,
+          "dataset_export_observed": false,
+          "third_party_offline_product_licence": false
+        },
+        "homepage_observation": {
+          "url": "https://www.otts.bot/",
+          "reviewed_at": "2026-11-11",
+          "otts_records": 74115,
+          "sbkts_records": 224744,
+          "otsh_records": 1655,
+          "technical_characteristics_section": "not yet populated",
+          "engine_section": "not yet populated"
+        },
+        "acquisition_state": {
+          "account_created": false,
+          "subscription_started": false,
+          "payment_made": false,
+          "automated_queries_used": false,
+          "documents_downloaded": false,
+          "source_bytes_cached": false,
+          "product_import_allowed": false
+        },
+        "decision": "no_scraping_no_bulk_requests_no_offline_cache_no_third_party_display_or_redistribution_without_separate_written_permission_from_operator_and_underlying_document_rightsholders"
       }
     },
     {
@@ -5217,7 +5318,7 @@
       "url": "https://otts.rusavtolab.ru/",
       "related_operator_site": "https://rusavtolab.ru/",
       "source_kind": "private_aggregated_otts_search_and_document_service",
-      "source_revision": "public pages observed 2026-11-06; no dataset release or API revision identified",
+      "source_revision": "public pages rechecked 2026-11-11; no dataset release or API revision identified",
       "market_scope": [
         "RU",
         "EAEU"
@@ -5228,7 +5329,8 @@
         "public_offer_price_rub_per_document": 200,
         "public_offer_service_description": "electronic copy of OTTS from open sources",
         "access_claims_conflict": true,
-        "count_treatment": "publisher_claim_not_verified_corpus_count"
+        "count_treatment": "publisher_claim_not_verified_corpus_count",
+        "observed_at": "2026-11-11"
       },
       "rights": {
         "dataset_license": "not_found",
@@ -5259,7 +5361,8 @@
         "Landing page says free PDF downloads, while public offer states 200 RUB per document; discrepancy unresolved.",
         "No dataset-specific licence or written bulk reuse permission identified.",
         "No reproducible bulk export or per-document upstream provenance export established.",
-        "No documents downloaded and no snapshot hash exists."
+        "No documents downloaded and no snapshot hash exists.",
+        "2026-11-11 recheck confirmed the landing-page claim of free PDF downloads conflicts with the public offer's 200 RUB per-document price. No dataset licence or written bulk-reuse permission was found."
       ],
       "evidence_reviewed": [
         {
@@ -5276,10 +5379,27 @@
           "url": "https://otts.rusavtolab.ru/oferta/",
           "reviewed_at": "2026-11-06",
           "evidence": "Public offer describes a 200 RUB per-document service and says the electronic copy is taken from open sources."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/",
+          "reviewed_at": "2026-11-11",
+          "evidence": "Landing page states 77,802 OTTS records and free PDF downloads; this is a provider UI claim only."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/o-servise/",
+          "reviewed_at": "2026-11-11",
+          "evidence": "About page identifies the service operator as SpecReg / RusAutoLab, a private business."
+        },
+        {
+          "url": "https://otts.rusavtolab.ru/oferta/",
+          "reviewed_at": "2026-11-11",
+          "evidence": "Public offer states 200 RUB per electronic copy of an OTTS document from open sources; it does not grant systematic extraction or third-party product redistribution."
         }
       ],
       "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion"
+      "hash_status": "not_downloaded_no_ingestion",
+      "evidence_status": "Landing page, About page and public offer rechecked 2026-11-11; no dataset licence or bulk reuse permission identified; no data downloaded.",
+      "rights_review_document": "docs/research/RUSSIAN_OTTS_AGGREGATOR_RIGHTS_RECHECK_2026-11-11.md"
     },
     {
       "source_id": "volkswagen-group-diagnostics-data",

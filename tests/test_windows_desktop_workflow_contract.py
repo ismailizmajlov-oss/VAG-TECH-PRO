@@ -39,8 +39,8 @@ def main() -> None:
         raise SystemExit("Windows audit artifact must include the local research verifier source")
     if "windows-lifecycle-staging/desktop-source/data/research/obdb-vag-signals-cc-by-sa/manifest.json" not in text:
         raise SystemExit("Windows audit artifact must include the exact OBDb pack manifest")
-    if "group: vag-tech-pro-windows-x64-v3-${{ github.ref }}" not in text:
-        raise SystemExit("Windows validation workflow must use the v3 concurrency group to bypass stale v2 runs")
+    if "group: vag-tech-pro-windows-x64-v4-${{ github.ref }}" not in text:
+        raise SystemExit("Windows validation workflow must use the v4 concurrency group to bypass stale v3 runs")
     if "cancel-in-progress: true" not in text:
         raise SystemExit("Windows validation workflow must cancel superseded runs so the latest source snapshot is tested first")
     status_retry_contract = (
@@ -768,7 +768,57 @@ def main() -> None:
     if "run-id: ${{ steps.mechanicdb-pack.outputs.run_id }}" not in mechanicdb_download:
         raise SystemExit("MechanicDB download must use the verified source-register run ID, not an unverified hard-coded run")
 
+    # run68 aligns the full VehiclesDB provenance predicate with the v2026.11.3
+    # schema. run93 must follow it: its count-gate replacement is idempotent,
+    # and it adds the returned identity-only flags plus verifier assertions.
+    revision_step = "      - name: Bind VehiclesDB test revision to the pinned manifest (run89)"
+    wikidata_step = "      - name: Integrate verified CC0 Wikidata VAG model identity pack (run68)"
+    candidate_gate_step = "      - name: Enforce VehiclesDB identity-only and manifest-driven count gate (run93)"
+    if not all(step in text for step in (revision_step, wikidata_step, candidate_gate_step)):
+        raise SystemExit("Windows workflow is missing a required VehiclesDB/Wikidata integration step")
+    if not (text.index(revision_step) < text.index(wikidata_step) < text.index(candidate_gate_step)):
+        raise SystemExit("VehiclesDB revision binding, provenance alignment and identity-only gate must run in order")
+
+    final_candidate_gate_step = "      - name: Reassert VehiclesDB manifest-driven count gate after downstream research integrations (run93 final)"
+    wikidata_seed_step = "      - name: Seed CC0 Wikidata model identity candidates into local SQLite core (run92)"
+    desktop_tests_step = "      - name: Run desktop, local core and research tests"
+    if not all(step in text for step in (final_candidate_gate_step, wikidata_seed_step, desktop_tests_step)):
+        raise SystemExit("Windows workflow is missing the final VehiclesDB count-gate reassertion")
+    if not (text.index(wikidata_seed_step) < text.index(final_candidate_gate_step) < text.index(desktop_tests_step)):
+        raise SystemExit("Final VehiclesDB count-gate reassertion must run after all research integrations and before desktop tests")
+    final_candidate_gate = text.split(final_candidate_gate_step, 1)[1].split("\n      - name:", 1)[0]
+    for marker in (
+        "apply-vehiclesdb-candidate-count-guard-run93.cjs --desktop-root desktop-source",
+        "node --test desktop-source/tests/local-research-packs.test.cjs",
+        "desktop-candidate-boundary-verification.json",
+        "research_packs_test_sha256",
+        "windows-lifecycle-staging/desktop-source",
+    ):
+        if marker not in final_candidate_gate:
+            raise SystemExit(f"Final VehiclesDB count-gate reassertion is missing: {marker}")
+
+    vehiclesdb_patcher = (ROOT / "apply-vehiclesdb-candidate-count-guard-run93.cjs").read_text(encoding="utf-8")
+    manifest_driven_vehiclesdb_gate = (
+        "vehiclesDbCounts.models !== vehiclesDbPackManifest.counts?.models",
+        "vehiclesDbCounts.marketEvidence !== vehiclesDbPackManifest.counts?.market_evidence",
+        "vehiclesDbPackManifest.identity_only_use !== true",
+        "vehiclesDbPackManifest.safety_critical_reliance !== false",
+        "vehiclesDbPackManifest.repair_decision_use !== false",
+        "vehiclesDbPackManifest.open_data_policy_notice.includes",
+        "not designed or warranted for safety-critical",
+        "vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models",
+        "vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence",
+    )
+    missing_dynamic_gate = [marker for marker in manifest_driven_vehiclesdb_gate if marker not in vehiclesdb_patcher]
+    if missing_dynamic_gate:
+        raise SystemExit(f"VehiclesDB candidate gate must enforce manifest counts and identity-only safety boundary: {missing_dynamic_gate}")
+
+    if "vehiclesdb_candidate_guard_evidence_sha256" not in text:
+        raise SystemExit("Windows build metadata must bind the final VehiclesDB candidate-boundary evidence hash")
+
     print("Windows desktop workflow contract: lifecycle paths, source-rights register and Wikidata snapshot pins are valid.")
+
+
 
 if __name__ == "__main__":
     main()

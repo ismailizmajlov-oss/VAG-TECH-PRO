@@ -211,6 +211,11 @@ def inspect_vehiclesdb(root: Path) -> dict[str, Any]:
         raise ValueError("VehiclesDB generation/year boundary failed")
     if manifest.get("engine_codes_included") is not False or manifest.get("gearbox_codes_included") is not False:
         raise ValueError("VehiclesDB engine/gearbox code boundary failed")
+    if (manifest.get("identity_only_use") is not True
+            or manifest.get("safety_critical_reliance") is not False
+            or manifest.get("repair_decision_use") is not False
+            or "not designed or warranted for safety-critical" not in str(manifest.get("open_data_policy_notice", ""))):
+        raise ValueError("VehiclesDB safety-critical/repair decision boundary failed")
     if upstream.get("version") != manifest.get("dataset_version") or upstream.get("license") != "CC-BY-4.0":
         raise ValueError("VehiclesDB upstream manifest mismatch")
     if sha256_file(db_path) != manifest.get("database_sha256"):
@@ -239,7 +244,7 @@ def inspect_vehiclesdb(root: Path) -> dict[str, Any]:
     }
     if counts != manifest.get("counts"):
         raise ValueError(f"VehiclesDB count mismatch: {counts} != {manifest.get('counts')}")
-    if counts != {"sources": 14, "source_files": 4, "models": 260, "market_evidence": 1524}:
+    if counts != {"sources": 14, "source_files": 4, "models": 307, "market_evidence": 1621}:
         raise ValueError("VehiclesDB expected snapshot counts changed")
     if db.execute("SELECT count(*) FROM model_market_evidence WHERE country_code IN ('ru','th')").fetchone()[0]:
         raise ValueError("VehiclesDB pack includes a prohibited market")

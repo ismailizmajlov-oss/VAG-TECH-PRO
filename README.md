@@ -34,7 +34,7 @@ The current research snapshots contain useful public data, but none of the follo
 | Pack | Snapshot contents | License and boundary |
 |---|---:|---|
 | OBDex generic reference | 9,533 upstream-labelled generic DTC research identifiers and 132 generic OBD-II PIDs; 155 P34xx and 174 U3xxx rows remain unverified for normalized import | CC0-1.0 for upstream data files; separate research pack only, no VAG fitment or normalized P3xxx/U3xxx promotion |
-| VehiclesDB identity (v2026.10.4) | 260 make/model candidates and 1,524 foreign-market presence rows across 14 rights-filtered source registers | CC BY 4.0; candidate identity only; no RU/EAEU, generation, year, engine or gearbox fitment |
+| VehiclesDB identity (v2026.11.3) | 307 make/model-name candidates and 1,621 foreign-market presence rows across 14 rights-filtered source registers | CC BY 4.0; identity-only candidate pack; markets AR, AU, CA, DE, ES, FI, GB, IE, LU, MY, NL, NZ, UA and US; no RU/EAEU evidence, verified generation/year, engine/gearbox codes or exact fitment |
 | OBDb signal research | 18,387 read-only UDS 0x22 command candidates, 19,799 signals, 71 ECU candidates and 135 generation candidates across 38 pinned repositories | CC BY-SA 4.0; market UNKNOWN, unverified community candidates; execution disabled; no DTC, test plans or exact fitment |
 | Wikidata model taxonomy | 521 candidate entities (490 car-model class; 40 model-series class), 285 Russian labels, 530 source bindings | CC0-1.0; candidate identity only, market UNKNOWN |
 | Wikidata series membership | 109 member entities, 125 model/member links, 187 source bindings; 32 parent models, 83 Russian labels, 155 raw date statements | CC0-1.0; series-member candidates, not verified generations or year ranges |
@@ -51,9 +51,11 @@ The current research snapshots contain useful public data, but none of the follo
 
 Each pack remains in its own namespace with its own manifest, attribution/license material, source revision and hashes. Share-Alike obligations are retained. Generic DTC and generic repair guidance are not linked to a VAG configuration or ECU.
 
+The VehiclesDB v2026.11.3 refresh was independently count-checked and rebuilt in Windows x64 offline-pack run [42874459366](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42874459366): 307 identity candidates and 1,621 foreign-market evidence rows, with the four upstream file hashes pinned. Its separate SQLite and the three-database research bundle passed integrity and foreign-key verification. This pack is not production fitment data. The first desktop/source-rights attempt against the refreshed snapshot exposed stale release/hash assertions; those assertions have been updated on the refresh branch, but a successful full desktop lifecycle for that refreshed branch is not claimed until its rerun passes. See [the v2026.11.3 review](docs/research/VEHICLESDB_V2026_11_3_REFRESH_REVIEW_2026-11-11.md), [the ELPTS UI recheck](docs/research/ELPTS_PUBLIC_UI_RECHECK_2026-11-11.md), and [the Russian OTTS aggregator rights recheck](docs/research/RUSSIAN_OTTS_AGGREGATOR_RIGHTS_RECHECK_2026-11-11.md).
+
 The OBDex research view applies the local DTC range policy rather than trusting the upstream namespace label alone. Rows in generic SAE/ISO ranges remain unreviewed research references; P34xx-P39xx, U3xxx, B3xxx and C3xxx are shown as namespace quarantine when they conflict with the local policy. No OBDex row is promoted into the production DTC index, linked to a VAG configuration or allowed to execute a diagnostic action.
 
-## Production-data status — 2026-11-10
+## Production-data status — 2026-11-11
 
 ### Latest fully successful Windows x64 validation — PR #91 / run1264 (2026-11-10)
 
@@ -69,7 +71,7 @@ Run 1264 build-metadata evidence: metadata artifact ID `13764566297`; extracted 
 
 ### Production catalog status
 
-The central source register has 67 entries and the Russian/EAEU register has 16. Across both registers, zero sources are marked `data_ingested=true` and zero are marked `product_import_allowed=true`. All 16 Russian/EAEU source records remain discovery, permission-required, restricted or schema-reference only; no Russian/EAEU OTTS records have been imported.
+The central source register has 68 entries and the Russian/EAEU register has 16. Across both registers, zero sources are marked `data_ingested=true` and zero are marked `product_import_allowed=true`. All 16 Russian/EAEU source records remain discovery, permission-required, restricted or schema-reference only; no Russian/EAEU OTTS records have been imported.
 
 The five canonical production SQL files (`vehicle-catalog.sql`, `oem-dtc-index.sql`, `technical-library.sql`, `otts-type-approval-evidence.sql` and `dtc-catalog-links.sql`) currently define tables, indexes and fail-closed publication guards but contain **zero INSERT statements**. The production catalog therefore remains unseeded: zero confirmed production vehicle-fitment rows, zero Russian/EAEU OTTS rows and zero confirmed VAG-specific DTC rows. The research packs above do not populate or authorize the production repair catalog.
 
