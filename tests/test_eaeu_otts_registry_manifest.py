@@ -222,7 +222,7 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
     def test_eec_2023_report_confirms_temporary_pilot_completion_and_request_only_export(self):
         source = self.factory_sources["eaeu-otts-unified-register-public-portal"]
         pilot = source["access"]["pilot_project_2023_report"]
-        self.assertEqual(pilot["source_url"], "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf")
+        self.assertEqual(pilot["source_url"], "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf")
         self.assertEqual(pilot["meeting_date"], "2023-04-18")
         self.assertEqual(pilot["agenda_item"], 12)
         self.assertEqual(pilot["pilot_period"], {"start": "2022-02-14", "end": "2022-12-31"})
@@ -245,6 +245,7 @@ class EaeuOttsRegistryManifestTests(unittest.TestCase):
     def test_regional_manifest_keeps_completed_pilot_separate_from_current_data_rights(self):
         source = self.russian_sources["eaeu-open-data-portal"]
         pilot = source["pilot_project_2023_report"]
+        self.assertEqual(pilot["source_url"], "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf")
         self.assertEqual(pilot["conclusion"], "pilot_project_deemed_completed")
         self.assertEqual(pilot["historical_counts"]["ot_ts_approvals_and_revisions"], 2491)
         self.assertEqual(pilot["machine_readable_export_during_pilot"]["current_availability"], "not_verified_after_pilot_completion")
