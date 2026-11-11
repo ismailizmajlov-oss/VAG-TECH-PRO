@@ -172,9 +172,26 @@ function main() {
   const newVerifierCountGate = "assert(vehiclesDbCounts.sources === vehiclesDbSnapshot.counts?.sources && vehiclesDbCounts.models === vehiclesDbSnapshot.counts?.models && vehiclesDbCounts.marketEvidence === vehiclesDbSnapshot.counts?.market_evidence && vehiclesDbCounts.russianEvidence === 0, " + tick + "VehiclesDB foreign-market-only count gate failed: " + interpolation + tick + ");";
   const verifierCountPatch = replaceExactlyOnce(verifierItem.text, oldVerifierCountGate, newVerifierCountGate, "VehiclesDB manifest-driven count gate in independent verifier");
 
-  const oldVerifier = 'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");';
-  const newVerifier = oldVerifier + '\n    assert(vehiclesDbSnapshot.identity_only_use === true && vehiclesDbSnapshot.safety_critical_reliance === false && vehiclesDbSnapshot.repair_decision_use === false && typeof vehiclesDbSnapshot.open_data_policy_notice === "string" && vehiclesDbSnapshot.open_data_policy_notice.includes("not designed or warranted for safety-critical"), "VehiclesDB safety-critical and repair-decision boundary failed");';
-  const verifierPatch = replaceExactlyOnce(verifierCountPatch.text, oldVerifier, newVerifier, "VehiclesDB independent verifier safety boundary");
+  const verifierBoundaryAssertion = 'assert(vehiclesDbSnapshot.identity_only_use === true && vehiclesDbSnapshot.safety_critical_reliance === false && vehiclesDbSnapshot.repair_decision_use === false && typeof vehiclesDbSnapshot.open_data_policy_notice === "string" && vehiclesDbSnapshot.open_data_policy_notice.includes("not designed or warranted for safety-critical"), "VehiclesDB safety-critical and repair-decision boundary failed");';
+  const attributionAnchors = [
+    'assert(vehiclesDbSnapshot.attribution?.required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");',
+    'assert(vehiclesDbSnapshot.attribution_required === true && /Vehicle data by VehiclesDB/i.test(vehiclesDbAttribution) && /UNCONDITIONAL/i.test(vehiclesDbAttribution), "VehiclesDB attribution and upstream notices are incomplete");'
+  ];
+  const attributionAnchorCount = attributionAnchors.reduce((sum, anchor) => sum + verifierCountPatch.text.split(anchor).length - 1, 0);
+  const boundaryCount = verifierCountPatch.text.split(verifierBoundaryAssertion).length - 1;
+  if (attributionAnchorCount !== 1 || boundaryCount > 1) {
+    fail("VehiclesDB independent verifier attribution/policy anchors are ambiguous or missing");
+  }
+  let verifierPatch;
+  if (boundaryCount === 1) {
+    verifierPatch = { text: verifierCountPatch.text, changed: false };
+  } else {
+    const attributionAnchor = attributionAnchors.find((anchor) => verifierCountPatch.text.includes(anchor));
+    verifierPatch = {
+      text: verifierCountPatch.text.replace(attributionAnchor, attributionAnchor + "\n    " + verifierBoundaryAssertion),
+      changed: true
+    };
+  }
 
   const oldTest = "  assert.equal(golf.sourceRevision, vehiclesDbManifest.source_revision);";
   const newTest = [
