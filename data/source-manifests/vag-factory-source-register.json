@@ -8316,7 +8316,11 @@
             "original_research_warning",
             "insufficient_inline_citations",
             "incomplete_list"
-          ]
+          ],
+          "wikitext_sha256": "527ad0a2b8f70eab2625a4e644091a812da77308a162475164124feecea5fc4a",
+          "rendered_html_sha256": "832089fa075d0c1c620890fb0b58a98047f53617bf744a102bcdc5bc2090673f",
+          "wikitext_bytes": 136655,
+          "rendered_html_bytes": 315538
         },
         {
           "title": "List of Volkswagen Group diesel engines",
@@ -8327,7 +8331,11 @@
           "quality_warnings": [
             "more_citations_needed",
             "incomplete_list"
-          ]
+          ],
+          "wikitext_sha256": "c14ce9f4caa460f57d9afdfcd2e344e04c3ee51d2b5194cb3bafbcb115776bf4",
+          "rendered_html_sha256": "2fcca1d7dba3a3fcc326a0c31f72af6f440b671e72a5aad21aa2d2ed17494f01",
+          "wikitext_bytes": 92997,
+          "rendered_html_bytes": 257664
         },
         {
           "title": "List of discontinued Volkswagen Group petrol engines",
@@ -8339,7 +8347,11 @@
             "unsourced_statements",
             "lacking_reliable_references",
             "incomplete_list"
-          ]
+          ],
+          "wikitext_sha256": "d359d16ea4cac498e9039ef6cd0e2bfa91d38ee5c01fd8eae3fffa1360f2e85c",
+          "rendered_html_sha256": "ef30c94448e3b512bd529b4c819b6b211311a82210748343cbc2825cafd79b1d",
+          "wikitext_bytes": 190497,
+          "rendered_html_bytes": 554014
         },
         {
           "title": "List of discontinued Volkswagen Group diesel engines",
@@ -8352,7 +8364,11 @@
             "accuracy_disputes",
             "lacking_reliable_references",
             "incomplete_list"
-          ]
+          ],
+          "wikitext_sha256": "3ba3cec7a350b70e179c9921bfb55c6665fdd0412ee0969bb3b63b2b29eff3bb",
+          "rendered_html_sha256": "c76b5772908efb09bc86d341b320dfd25208a58eb2a7abfe7961014460fee99d",
+          "wikitext_bytes": 129667,
+          "rendered_html_bytes": 427144
         }
       ],
       "evidence_scope": [
@@ -8410,21 +8426,71 @@
         ]
       },
       "access": {
-        "raw_revision_bytes_retrieved": false,
-        "mediawiki_api_snapshot_retrieved": false,
-        "source_snapshot_sha256": null,
+        "raw_revision_bytes_retrieved": true,
+        "mediawiki_api_snapshot_retrieved": true,
+        "source_snapshot_sha256": "77fd59c37f5d22d013efe8b34a872898c26cd75d1475a22a63d671aa376cdb23",
         "page_revisions_pinned": true,
         "web_rendering_observed": true,
-        "article_text_license_observed": true
+        "article_text_license_observed": true,
+        "retrieval_workflow_run_id": 43003516695,
+        "retrieval_workflow_run_number": 378,
+        "retrieval_artifact_id": 13846613276,
+        "retrieved_at_utc": "2026-11-11T10:25:57Z"
       },
-      "source_snapshot_sha256": null,
-      "hash_status": "not_downloaded_no_ingestion",
+      "source_snapshot_sha256": "77fd59c37f5d22d013efe8b34a872898c26cd75d1475a22a63d671aa376cdb23",
+      "hash_status": "verified_four_pinned_revisions_and_separate_candidate_pack",
       "data_ingested": false,
       "product_import_allowed": false,
       "applicability_precision": "community_engine_code_candidate_only; no model_year_market_or_fitment_confirmation",
-      "project_decision": "licensed_discovery_only; no technical or vehicle-fitment import until pinned snapshots, extraction QA and independent primary-source verification are complete",
-      "evidence_status": "Four article revision IDs and page-footer CC BY-SA 4.0 statements observed 2026-11-08. Raw page/API bytes were not retrieved; no source SHA-256 is claimed. All four pages carry quality warnings that block technical promotion.",
-      "review_document": "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md"
+      "project_decision": "Four pinned Wikipedia article revisions were downloaded through the MediaWiki revision interface and hashed; a separate CC BY-SA 4.0 SQLite discovery pack was built and independently verified in Windows x64 run #378 (241 candidate rows / 241 unique codes / 4 source documents; artifact SHA-256 4f675b559b54eab613806e6ce480c4a49ac74c8018b9c0655bcf4dcd442dc1f9; database SHA-256 12e2de36f8c356e0b348e56a6f49430941bda885511c5abeb86d43c0a1a96f50). The pack is not integrated into the desktop or production database. All values remain discovery-only candidates, market UNKNOWN, with no model/generation/year/engine-gearbox/ECU/DTC/repair applicability. Article quality warnings and the absence of row-level primary-source verification block technical use.",
+      "evidence_status": "Four pinned article revision snapshots, per-page wikitext and rendered HTML hashes, CC BY-SA 4.0 attribution and a separate research SQLite pack were verified in Windows x64 run #378. 241 candidate rows and 241 unique tokens were extracted from 64 source rows. The pack remains outside desktop and production databases; no candidate is approved for repair or diagnostic use.",
+      "review_document": "docs/research/WIKIPEDIA_VAG_ENGINE_CODE_LISTS_RIGHTS_AND_QUALITY_REVIEW_2026-11-08.md",
+      "source_manifest_sha256": "50381fb8b93cf007456b1a56a84275d19b48512c7313ef7b0c4767f5d0362a9f",
+      "research_pack_built": true,
+      "research_pack_ingested": false,
+      "research_database_included_in_desktop": false,
+      "research_pack_allowed": true,
+      "research_pack": {
+        "status": "verified_research_only_candidate_only",
+        "pack_id": "wikipedia-vag-engine-code-candidates-cc-by-sa-4-0",
+        "workflow_run_id": 43003516695,
+        "workflow_run_number": 378,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43003516695",
+        "source_commit": "c685803f261375600a9ab2d08ef79dc742598177",
+        "artifact_id": 13846613276,
+        "artifact_name": "wikipedia-vag-engine-candidates-43003516695",
+        "artifact_sha256": "4f675b559b54eab613806e6ce480c4a49ac74c8018b9c0655bcf4dcd442dc1f9",
+        "artifact_size_bytes": 416616,
+        "inner_archive_sha256": "b5e851e19784e90a1b238cd6427d094d83d2e03b40a8197058573ccb26f9b8e0",
+        "inner_archive_size_bytes": 409753,
+        "pack_manifest_sha256": "0eb4246a357f6d1cbca9a8277cd30f8fdebfb72d08e2b4c7cb5b8be524a1a08a",
+        "source_manifest_sha256": "50381fb8b93cf007456b1a56a84275d19b48512c7313ef7b0c4767f5d0362a9f",
+        "source_snapshot_sha256": "77fd59c37f5d22d013efe8b34a872898c26cd75d1475a22a63d671aa376cdb23",
+        "database_sha256": "12e2de36f8c356e0b348e56a6f49430941bda885511c5abeb86d43c0a1a96f50",
+        "attribution_sha256": "1bfa85c4c0c7e5182cfc122148958096a17167e7242d48e7c035f4332ee62090",
+        "license_notice_sha256": "7ea86ece96546c760f170b0db7b6007d5238307dacca9f1203ce52355eb6500e",
+        "built_at_utc": "2026-11-11T10:25:57+00:00",
+        "counts": {
+          "source_documents": 4,
+          "candidate_rows": 241,
+          "unique_candidate_codes": 241,
+          "source_rows_with_codes": 64
+        },
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "community_engine_code_candidate_only",
+        "quality_review_status": "not_approved_for_technical_use",
+        "candidate_only": true,
+        "product_import_allowed": false,
+        "exact_vehicle_fitment": false,
+        "generation_year_fitment": false,
+        "engine_gearbox_fitment": false,
+        "ecu_fitment": false,
+        "dtc_fitment": false,
+        "repair_use_allowed": false,
+        "diagnostic_execution_allowed": false,
+        "desktop_integration_status": "not_integrated",
+        "note": "Separate CC BY-SA 4.0 research artifact only. No production import, no desktop research-view integration, no technical promotion. Four source revisions retain quality warnings and require independent primary-source verification before any fitment or repair use."
+      }
     },
     {
       "source_id": "openvag-github-dtc-api-schema-only",

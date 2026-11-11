@@ -44,6 +44,8 @@ jobs:
           $ErrorActionPreference = "Stop"
           python -m unittest discover -s tests -p test_wikipedia_vag_engine_candidates.py -v
           if ($LASTEXITCODE -ne 0) { throw "Wikipedia candidate pack unit tests failed" }
+          python -m unittest discover -s tests -p test_wikipedia_vag_engine_list_rights_gate.py -v
+          if ($LASTEXITCODE -ne 0) { throw "Wikipedia candidate source-rights and provenance gate failed" }
 
       - name: Download pinned Wikipedia revisions and build separate research SQLite
         shell: pwsh
