@@ -119,7 +119,17 @@ Verified run-1465 artifacts:
 - Installer `VAG-TECH-PRO-Setup-0.2.3-x64.exe`: 573,955,036 bytes, SHA-256 `6123201695f81c1ac118f5ec3ce496b07cfd4bcd993614b66d15b922cab3e91c`.
 - Installer `VAG-TECH-PRO-Setup-0.2.4-x64.exe`: 573,954,877 bytes, SHA-256 `b4e433b67f0a85155660a64f00201c3ac5e48f20a2b63b846100fec27250b754`.
 
-Run 1465 is successful PR-head CI and Windows Server 2022 lifecycle evidence only. The owner-controlled Windows 10/11 client runner gate remains disabled; native acceptance remains `blocked_owner_runner_unavailable`, not passed. Do not interpret this run as native Windows 10/11 acceptance or release approval.
+The follow-up Windows x64 [run 1466](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43035900085) completed successfully on PR #114 head `0eaeef5869b15062e8b08f0b8f211855545f65ff`. Both `build-and-lifecycle` and the separate Windows Server 2022 installer-compatibility lifecycle jobs passed. The primary job completed all 103 steps successfully, including the full offline bundle and source-rights gates, desktop/local-core/research tests, ESLint, TypeScript, both NSIS x64 installers, packaged-source/schema verification, clean install, offline launch with external networking blocked, SQLite integrity, backup/restore, in-place upgrade and uninstall-preservation checks. The Server 2022 job independently verified both installers and the same user-database preservation lifecycle.
+
+Verified run-1466 artifacts:
+- Windows x64 build/lifecycle artifact ID `13863693497`, size 1,383,476,547 bytes, digest `sha256:a5420253c3c0412231a7b7b20e92d763d9bd4f25cfde954807be5e1d55804fb6`.
+- Build metadata artifact ID `13864901270`, size 4,419 bytes, digest `sha256:3f11e0092258241f1ac9dce4e0aa4a35ca04322ecb0409a3045bb980b996ecf5` (the downloaded ZIP was independently re-hashed and matched this digest).
+- Desktop source-audit artifact ID `13864901291`, size 5,381,906 bytes, digest `sha256:14c72ac0d84d98a1d2f66724b4191e7ecfd23e9a7d0eb821c26f8d3e3f3d22d5`.
+- Windows Server 2022 lifecycle artifact ID `13864179271`, size 10,274 bytes, digest `sha256:abd1caae5f0c5aa6de6b8567edb76c6b7fa0a0aea3425f6c07f248b51bf6067d`.
+- Installer `VAG-TECH-PRO-Setup-0.2.3-x64.exe`: 573,954,890 bytes, SHA-256 `a216337948dbc9d18ae8d6b82c13925a7dac68287ff216c0d020c06052576fa7`.
+- Installer `VAG-TECH-PRO-Setup-0.2.4-x64.exe`: 573,954,809 bytes, SHA-256 `c603d64190e4d7822a4854033f8e0cb9b42e68c4d80c6d752883f6f8ce87378b`.
+
+PR #114 was merged into `main` as `00e88a0777dca48650f3f1500124e0538c3f8765`. Run 1466 is successful PR-head evidence; a separate post-merge main-branch lifecycle is still required. Both run 1465 and run 1466 used GitHub-hosted Windows x64 runners plus a Windows Server 2022 compatibility runner. The owner-controlled Windows 10/11 client runner gate remains disabled, so native acceptance is still `blocked_owner_runner_unavailable`, not passed. No release approval is implied.
 
 ### Current data and rights status
 
