@@ -15,7 +15,7 @@ SQL_PATHS = (
     ROOT / "data/sql/generic-repair-guidance.sql",
 )
 TRIGGER_RE = re.compile(
-    r"CREATE TRIGGER IF NOT EXISTS ([A-Za-z_][A-Za-z0-9_]*)\\s+.*?END;",
+    r"CREATE TRIGGER IF NOT EXISTS ([A-Za-z_][A-Za-z0-9_]*)\s+.*?END;",
     re.IGNORECASE | re.DOTALL,
 )
 
@@ -66,7 +66,7 @@ class CanonicalProvenanceHashGuardTests(unittest.TestCase):
         for path in SQL_PATHS:
             sql = path.read_text(encoding="utf-8")
             self.assertIsNone(
-                re.search(r"lower\\s*\\(\\s*(?:NEW\\.)?[A-Za-z_][A-Za-z0-9_]*sha(?:256|1)[A-Za-z0-9_]*\\s*\\)", sql, re.IGNORECASE),
+                re.search(r"lower\s*\(\s*(?:NEW\.)?[A-Za-z_][A-Za-z0-9_]*sha(?:256|1)[A-Za-z0-9_]*\s*\)", sql, re.IGNORECASE),
                 f"{path.name} still accepts uppercase hash text through lower()",
             )
 
@@ -76,13 +76,13 @@ class CanonicalProvenanceHashGuardTests(unittest.TestCase):
 
         for path, name, trigger_sql in triggers:
             with self.subTest(schema=path.name, trigger=name):
-                table_match = re.search(r"\\bON\\s+([A-Za-z_][A-Za-z0-9_]*)", trigger_sql, re.IGNORECASE)
+                table_match = re.search(r"\bON\s+([A-Za-z_][A-Za-z0-9_]*)", trigger_sql, re.IGNORECASE)
                 self.assertIsNotNone(table_match, f"{name} has no target table")
                 table = table_match.group(1)
-                fields = sorted(set(re.findall(r"\\bNEW\\.([A-Za-z_][A-Za-z0-9_]*)", trigger_sql)))
+                fields = sorted(set(re.findall(r"\bNEW\.([A-Za-z_][A-Za-z0-9_]*)", trigger_sql)))
                 self.assertTrue(fields, f"{name} does not validate any NEW hash field")
-                operation = "insert" if re.search(r"BEFORE\\s+INSERT", trigger_sql, re.IGNORECASE) else "update"
-                self.assertRegex(trigger_sql, r"BEFORE\\s+(?:INSERT|UPDATE)", f"{name} is not a write guard")
+                operation = "insert" if re.search(r"BEFORE\s+INSERT", trigger_sql, re.IGNORECASE) else "update"
+                self.assertRegex(trigger_sql, r"BEFORE\s+(?:INSERT|UPDATE)", f"{name} is not a write guard")
 
                 db = sqlite3.connect(":memory:")
                 try:
