@@ -97,7 +97,7 @@ A source audit of the current desktop payload confirms that the shipped producti
 ### Release gates
 
 - `release_ready=false`; CI artifacts are verification evidence, not an authorized public release.
-- Native Windows 10/11 x64 lifecycle remains unproven. The owner-controlled runner gate is disabled; required labels are `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`.
+- Native Windows 10/11 x64 lifecycle remains unproven. The owner-controlled runner gate is disabled; required labels are `self-hosted`, `windows`, `x64`, `vag-tech-pro-win10-11`. The latest native-workflow run [#479](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42996918945) completed only its status-recording job; the actual client lifecycle job was **skipped** (`runner_gate_enabled=false`). Its green workflow conclusion is not Windows 10/11 acceptance.
 - Installers remain unsigned because no owner-supplied Authenticode certificate and protected signing secret are configured.
 - Written rights for Russian/EAEU OTTS bulk extraction, offline caching, end-user display and redistribution remain outstanding.
 - A licensed OEM VAG DTC/ECU/test-plan corpus and rights-cleared repair procedures, wiring diagrams, pinouts, torque values, adaptations, service schedules and OEM parts/applicability data remain unavailable.
