@@ -149,9 +149,9 @@ def main():
                 reviewer_note='Source record inspected; reuse permission is absent.',
                 reviewed_at_utc='2026-11-11T00:04:00Z' WHERE evidence_id=?""", (blocked_id,))
             must_reject(db,
-                "UPDATE vehicle_catalog_evidence SET review_status='technically_verified',
+                """UPDATE vehicle_catalog_evidence SET review_status='technically_verified',
                  reviewer_note='Not allowed without rights.',reviewed_at_utc='2026-11-11T00:05:00Z'
-                 WHERE evidence_id=?",
+                 WHERE evidence_id=?""",
                 (blocked_id,), "verification without source rights")
 
             assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
