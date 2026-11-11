@@ -121,6 +121,21 @@ Verified run-1465 artifacts:
 
 Run 1465 is successful PR-head CI and Windows Server 2022 lifecycle evidence only. The owner-controlled Windows 10/11 client runner gate remains disabled; native acceptance remains `blocked_owner_runner_unavailable`, not passed. Do not interpret this run as native Windows 10/11 acceptance or release approval.
 
+### Post-merge main Windows x64 lifecycle — run 1468
+
+The post-merge main-branch [Windows x64 lifecycle run 1468](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43040921163) completed successfully on 2026-11-11 for commit `00e88a0777dca48650f3f1500124e0538c3f8765` (the PR #114 merge). Both `build-and-lifecycle` and the separate `Windows Server 2022 installer compatibility lifecycle` jobs passed. All 103 primary-job steps completed successfully, including source-rights and offline research-pack verification, desktop/local-core/research tests, ESLint, TypeScript, both NSIS x64 installers, packaged schema checks, clean install, offline launch with external networking blocked, SQLite integrity, backup/restore, in-place upgrade and uninstall-preservation checks. The independent Server 2022 job also verified both installers and preservation of the per-user database.
+
+Verified run-1468 artifacts:
+- Windows x64 build/lifecycle artifact ID `13865812987`, 1,383,476,730 bytes, GitHub artifact digest `sha256:984c645a41481f40e3eb7b6df6aae5f3e1ff8301cf76f7b446bca41226f40b96`.
+- Build metadata artifact ID `13865089547`, 4,417 bytes, GitHub artifact digest `sha256:eb42be9d3239e3188e450c56e73df16c9d32946fa998e4d167f84cbe5346f475`.
+- Desktop source-audit artifact ID `13866102755`, 5,381,908 bytes, GitHub artifact digest `sha256:cd6d46d373fd181cd3a8f58fb5451d9ae4bded6030266c8530b12252aa03d171`.
+- Windows Server 2022 lifecycle artifact ID `13866922627`, 10,269 bytes, GitHub artifact digest `sha256:f84bf80a874674e87f2376f1d1e554b2ad448cd5af74e0424f30bd2c0bc5d478`.
+- Installer `VAG-TECH-PRO-Setup-0.2.3-x64.exe`: 573,954,938 bytes, SHA-256 `1cfaf3098f3ec9d76f277d8de90311ee64d807dd30ea977fd29672744aec2b7a`.
+- Installer `VAG-TECH-PRO-Setup-0.2.4-x64.exe`: 573,954,892 bytes, SHA-256 `beb3cc5a7c0d1a21c7d66c02eaa88c1e453086d58c949c92b568e70a0f154f85`.
+
+The Server 2022 lifecycle log confirms that the offline workspace opened with external networking blocked and that backup/restore, SQLite integrity, in-place upgrade and uninstall with user-data preservation passed. This is GitHub-hosted Windows x64 plus Windows Server 2022 evidence only. Native Windows 10/11 remains `blocked_owner_runner_unavailable`; the owner-controlled client runner gate is disabled and no client OS verification is claimed. Run 1468 does not clear the licensed VAG repair-data, Russian/EAEU reuse-rights, exact factory-fitment or Authenticode blockers.
+
+
 ### Current data and rights status
 
 The current central source register contains 68 entries; the Russian/EAEU OTTS register contains 16; the packaged source-manifest index contains 21 entries. Build metadata from run 1451 pins central source-register SHA-256 `6acb98596bbf974e7a72cc4bdc42a7edcb547bf8cc4ac9cf927acab375767fef` and Russian/EAEU source-manifest SHA-256 `383bd61629efade4470b9548eaf28d6d5adee074232132445d2da0a703c472b5`.
