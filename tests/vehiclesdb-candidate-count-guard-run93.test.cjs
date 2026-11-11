@@ -38,11 +38,17 @@ function fixture(overrides = {}) {
   };
   fs.writeFileSync(path.join(research, "manifest.json"), JSON.stringify(manifest, null, 2));
   const oldCountGate = "vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||";
-  const oldReturn = [
-    "attributionRequired: true,",
-    '        attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",'
+  const candidateFunction = [
+    "function searchVehiclesDbCandidates() {",
+    "  return {",
+    "    attributionRequired: true,",
+    '    attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",',
+    "  };",
+    "}",
+    "",
+    "function getWikidataGenerationSummary() {}"
   ].join("\n");
-  fs.writeFileSync(path.join(root, "lib", "local-research-db.cjs"), oldCountGate + "\n" + oldReturn + "\n");
+  fs.writeFileSync(path.join(root, "lib", "local-research-db.cjs"), oldCountGate + "\n" + candidateFunction + "\n");
   const tick = String.fromCharCode(96);
   const dollar = String.fromCharCode(36);
   const interpolation = dollar + "{JSON.stringify(vehiclesDbCounts)}";
@@ -201,6 +207,39 @@ test("run93 repairs a downstream legacy count assertion and refreshes only deskt
     const third = run(root);
     assert.equal(third.status, 0, third.stderr);
     assert.deepEqual(JSON.parse(fs.readFileSync(evidencePath, "utf8")), secondEvidence);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("run93 remains idempotent after downstream candidate-object extensions and repairs a missing policy field", () => {
+  const root = fixture();
+  try {
+    const first = run(root);
+    assert.equal(first.status, 0, first.stderr);
+    const dbPath = path.join(root, "lib", "local-research-db.cjs");
+    let db = fs.readFileSync(dbPath, "utf8");
+    const oldAttribution = '    attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",';
+    const downstreamAttribution = [
+      '    downstreamResearchEvidence: "ownerspecs-cardir",',
+      '    attribution: typeof packManifest.attribution === "string" ? packManifest.attribution : "Vehicle data by VehiclesDB (vehiclesdb.com)",'
+    ].join("\n");
+    assert.equal(db.split(oldAttribution).length - 1, 1);
+    db = db.replace(oldAttribution, downstreamAttribution);
+    db = db.replace("    repairDecisionUse: packManifest.repair_decision_use === true,\n", "");
+    fs.writeFileSync(dbPath, db);
+    const second = run(root);
+    assert.equal(second.status, 0, second.stderr);
+    const repaired = fs.readFileSync(dbPath, "utf8");
+    assert.match(repaired, /downstreamResearchEvidence: "ownerspecs-cardir"/);
+    assert.match(repaired, /attribution: typeof packManifest\.attribution === "string"/);
+    assert.equal(repaired.split("repairDecisionUse: packManifest.repair_decision_use === true,").length - 1, 1);
+    assert.equal(repaired.split("identityOnlyUse: packManifest.identity_only_use === true,").length - 1, 1);
+    assert.equal(repaired.split("safetyCriticalReliance: packManifest.safety_critical_reliance === true,").length - 1, 1);
+    assert.equal(repaired.split("openDataPolicyNotice: packManifest.open_data_policy_notice,").length - 1, 1);
+    const third = run(root);
+    assert.equal(third.status, 0, third.stderr);
+    assert.equal(fs.readFileSync(dbPath, "utf8"), repaired);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
