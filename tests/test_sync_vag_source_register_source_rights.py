@@ -248,5 +248,30 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
 
 
 
+    def test_erwin_own_use_and_24_hour_storage_limit_remain_non_redistributable(self):
+        central_path = ROOT / "data" / "source-manifests" / "vag-factory-source-register.json"
+        central = json.loads(central_path.read_text(encoding="utf-8"))
+        source = next(item for item in central["sources"] if item["source_id"] == "volkswagen-erwin-portal")
+        rights = source["rights"]
+
+        self.assertEqual(rights["downloaded_service_information_max_storage_hours"], 24)
+        self.assertIn("statutory retention", rights["downloaded_service_information_retention_exceptions"])
+        self.assertFalse(rights["offline_cache_allowed"])
+        self.assertFalse(rights["redistribution_allowed"])
+        self.assertFalse(rights["bulk_reuse_allowed"])
+        self.assertFalse(rights["prepopulated_offline_database_allowed"])
+        self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source["data_ingested"])
+
+        detail_path = ROOT / "data" / "source-manifests" / "vw-oem-repair-data-access.json"
+        detail = json.loads(detail_path.read_text(encoding="utf-8"))
+        product = next(item for item in detail["products"] if item["source_id"] == "volkswagen-erwin-portal")
+        self.assertEqual(product["rights"]["downloaded_service_information_max_storage_hours"], 24)
+        self.assertFalse(product["rights"]["offline_cache_allowed"])
+        self.assertFalse(product["rights"]["redistribution_allowed"])
+        self.assertFalse(product["product_import_allowed"])
+        self.assertFalse(product["data_ingested"])
+
+
 if __name__ == "__main__":
     unittest.main()
