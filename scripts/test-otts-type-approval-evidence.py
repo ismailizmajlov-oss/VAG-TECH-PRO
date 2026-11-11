@@ -139,6 +139,8 @@ def test_legacy_structured_rights_fail_closed(db):
             THEN RAISE(ABORT, 'legacy insert guard fixture') END;
         END;""")
     db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_update")
+    db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_insert_v2")
+    db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_update_v2")
     db.execute("""CREATE TRIGGER validate_source_rights_approval_update
         BEFORE UPDATE ON vehicle_catalog_source_rights
         WHEN NEW.rights_status='approved'
