@@ -11,7 +11,7 @@ const workflow = fs.readFileSync(path.join(root, ".github/workflows/windows-desk
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"), "utf8"));
 
 test("OwnerSpecs desktop integration is pinned to the reviewed CC BY-SA pack", () => {
-  assert.equal(manifest.snapshot.source_snapshot_sha256, "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c");
+  assert.equal(manifest.snapshot.source_snapshot_sha256, "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f");
   assert.equal(manifest.snapshot.source_file_bytes, 659973);
   assert.equal(manifest.snapshot.json_descriptor_generation_count, 111);
   assert.equal(manifest.snapshot.html_page_verified_datapoint_count, 2273);
@@ -33,7 +33,7 @@ test("Windows desktop workflow downloads the exact pinned OwnerSpecs artifact an
   assert.match(workflow, /ownerspecs-vag-research-pack/);
   assert.match(workflow, /42971572740/);
   assert.match(workflow, /66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77/);
-  assert.match(workflow, /835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c/);
+  assert.match(workflow, /fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f/);
   assert.match(workflow, /integrate-ownerspecs-vag-research\.cjs/);
   assert.match(workflow, /ownerspecs-pack-integration-contract\.test\.cjs/);
 });
