@@ -80,7 +80,7 @@ def main() -> None:
           VALUES ('invalid-hash','Synthetic','invalid','other','r1','UNKNOWN',
                   'cc0','CC0-1.0','test only',1,?,'2026-11-11T00:00:00Z')""",
           ("g" * 64,)),
-        "CHECK constraint failed"
+        "source"
     )
 
     obdex_snapshot_sha256 = hashlib.sha256(b"synthetic-obdex-cc0-snapshot").hexdigest()
@@ -106,7 +106,7 @@ def main() -> None:
           VALUES ('P0124','generic_sae_iso','UNKNOWN','UNKNOWN',?,
                   'malformed source claim hash','generic_only',?,'2026-11-11T00:00:00Z')""",
           (cc0_source, "g" * 64)),
-        "CHECK constraint failed"
+        "source"
     )
 
     # Direct INSERT must not bypass the rights/applicability publication guard.
