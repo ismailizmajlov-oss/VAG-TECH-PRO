@@ -2,7 +2,7 @@
 const fs=require("node:fs"),path=require("node:path"),crypto=require("node:crypto");
 const {DatabaseSync}=require("node:sqlite");
 const ID="ownerspecs-vag-vehicle-specs-research",SOURCE="ownerspecs-verified-vehicle-specs-cc-by-sa-4.0";
-const SOURCE_MANIFEST="data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json";
+const SOURCE_MANIFEST="data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-pack3-2026-11-11.json";
 const PIN={
  artifact:"66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77",
  source:"d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
