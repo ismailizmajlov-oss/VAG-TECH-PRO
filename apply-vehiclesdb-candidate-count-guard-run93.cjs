@@ -111,19 +111,45 @@ function main() {
   const countPatch = replaceExactlyOnce(dbText, oldCountGate, newCountGate, "VehiclesDB dynamic count/safety gate");
   dbText = countPatch.text;
 
-  const oldReturn = [
-    "attributionRequired: true,",
-    "        attribution: packManifest.attribution?.display_form || \"Vehicle data by VehiclesDB (vehiclesdb.com)\","
-  ].join("\n");
-  const newReturn = [
-    "attributionRequired: true,",
-    "        identityOnlyUse: packManifest.identity_only_use,",
-    "        safetyCriticalReliance: packManifest.safety_critical_reliance,",
-    "        repairDecisionUse: packManifest.repair_decision_use,",
-    "        openDataPolicyNotice: packManifest.open_data_policy_notice,",
-    "        attribution: packManifest.attribution?.display_form || \"Vehicle data by VehiclesDB (vehiclesdb.com)\","
-  ].join("\n");
-  const returnPatch = replaceExactlyOnce(dbText, oldReturn, newReturn, "VehiclesDB identity-only fields in candidate result");
+  const candidateFunctionStart = dbText.indexOf("function searchVehiclesDbCandidates(");
+  const candidateFunctionEnd = dbText.indexOf("\nfunction getWikidataGenerationSummary(", candidateFunctionStart);
+  if (candidateFunctionStart < 0 || candidateFunctionEnd < 0) fail("VehiclesDB candidate search function boundaries are missing");
+  let candidateFunction = dbText.slice(candidateFunctionStart, candidateFunctionEnd);
+  const attributionRequiredMatches = [...candidateFunction.matchAll(/^\s*attributionRequired:\s*true,\s*$/gm)];
+  if (attributionRequiredMatches.length !== 1) fail("VehiclesDB candidate result must contain exactly one attributionRequired=true field");
+  const attributionStart = attributionRequiredMatches[0].index;
+  const attributionLines = [...candidateFunction.slice(attributionStart).matchAll(/^([ \t]*)attribution:\s*.+,\s*$/gm)];
+  if (attributionLines.length !== 1) fail("VehiclesDB candidate result must contain exactly one attribution field after attributionRequired");
+  const attributionIndent = attributionLines[0][1];
+  const policyFields = [
+    { name: "identityOnlyUse", expression: "packManifest.identity_only_use === true", allowed: ["packManifest.identity_only_use === true", "packManifest.identity_only_use"] },
+    { name: "safetyCriticalReliance", expression: "packManifest.safety_critical_reliance === true", allowed: ["packManifest.safety_critical_reliance === true", "packManifest.safety_critical_reliance"] },
+    { name: "repairDecisionUse", expression: "packManifest.repair_decision_use === true", allowed: ["packManifest.repair_decision_use === true", "packManifest.repair_decision_use"] },
+    { name: "openDataPolicyNotice", expression: "packManifest.open_data_policy_notice", allowed: ["packManifest.open_data_policy_notice"] }
+  ];
+  const missingPolicyFields = [];
+  for (const field of policyFields) {
+    const propertyPattern = new RegExp("^([\\t ]*)" + field.name + ":\\s*(.*?)\\s*,\\s*$", "gm");
+    const matches = [...candidateFunction.matchAll(propertyPattern)];
+    if (matches.length > 1) fail("VehiclesDB candidate result has duplicate policy field: " + field.name);
+    if (matches.length === 1) {
+      if (!field.allowed.includes(matches[0][2].trim())) fail("VehiclesDB candidate result has an unexpected policy expression: " + field.name);
+    } else {
+      missingPolicyFields.push(attributionIndent + field.name + ": " + field.expression + ",");
+    }
+  }
+  let returnPatch = { text: dbText, changed: false };
+  if (missingPolicyFields.length) {
+    const insertionIndex = attributionStart + attributionLines[0].index;
+    candidateFunction = candidateFunction.slice(0, insertionIndex) + missingPolicyFields.join("\n") + "\n" + candidateFunction.slice(insertionIndex);
+    dbText = dbText.slice(0, candidateFunctionStart) + candidateFunction + dbText.slice(candidateFunctionEnd);
+    returnPatch = { text: dbText, changed: true };
+  }
+  for (const field of policyFields) {
+    const propertyPattern = new RegExp("^([\\t ]*)" + field.name + ":\\s*(.*?)\\s*,\\s*$", "gm");
+    const matches = [...candidateFunction.matchAll(propertyPattern)];
+    if (matches.length !== 1 || !field.allowed.includes(matches[0][2].trim())) fail("VehiclesDB candidate policy field failed final verification: " + field.name);
+  }
   dbText = returnPatch.text;
 
   const tick = String.fromCharCode(96);
