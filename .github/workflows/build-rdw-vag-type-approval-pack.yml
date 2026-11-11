@@ -1,0 +1,113 @@
+name: Build RDW VAG type-approval research SQLite pack
+
+on:
+  push:
+    branches:
+      - main
+      - automation/rdw-vag-research-pack-run1
+    paths:
+      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "scripts/probe_rdw_vag_type_approvals.py"
+      - "scripts/build_rdw_vag_type_approval_pack.py"
+      - "scripts/verify_rdw_vag_type_approval_pack.py"
+      - "tests/test_rdw_vag_type_approval_pack.py"
+      - ".github/workflows/build-rdw-vag-type-approval-pack.yml"
+  pull_request:
+    paths:
+      - "data/source-manifests/rdw-eu-vag-type-approval-open-data.json"
+      - "data/source-manifests/vag-factory-source-register.json"
+      - "scripts/probe_rdw_vag_type_approvals.py"
+      - "scripts/build_rdw_vag_type_approval_pack.py"
+      - "scripts/verify_rdw_vag_type_approval_pack.py"
+      - "tests/test_rdw_vag_type_approval_pack.py"
+      - ".github/workflows/build-rdw-vag-type-approval-pack.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vag-tech-pro-rdw-vag-research-pack
+  cancel-in-progress: false
+
+jobs:
+  build-and-verify:
+    runs-on: windows-2022
+    timeout-minutes: 120
+    steps:
+      - name: Checkout pinned VAG TECH PRO source
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Compile RDW source acquisition and verification scripts
+        shell: pwsh
+        run: |
+          python -m py_compile scripts/probe_rdw_vag_type_approvals.py scripts/build_rdw_vag_type_approval_pack.py scripts/verify_rdw_vag_type_approval_pack.py
+          if ($LASTEXITCODE -ne 0) { throw "RDW acquisition/verifier Python compilation failed" }
+
+      - name: Test RDW rights, privacy, provenance and exact-scope contracts
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tests -p "test_rdw_vag_type_approval_pack.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "RDW research pack contract tests failed" }
+
+      - name: Acquire filtered VAG approval projections and build SQLite
+        shell: pwsh
+        run: |
+          python scripts/build_rdw_vag_type_approval_pack.py --output-dir artifacts/rdw-vag-research-pack 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-vag-pack-build.log"
+          if ($LASTEXITCODE -ne 0) { throw "RDW research SQLite acquisition/build failed" }
+
+      - name: Independently verify source projections, SQLite hashes and applicability boundaries
+        shell: pwsh
+        run: |
+          python scripts/verify_rdw_vag_type_approval_pack.py --pack-dir artifacts/rdw-vag-research-pack 2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE/rdw-vag-pack-verification.json"
+          if ($LASTEXITCODE -ne 0) { throw "Independent RDW research pack verification failed" }
+
+      - name: Write verified RDW research pack summary
+        shell: pwsh
+        run: |
+          $manifestPath = Join-Path $env:GITHUB_WORKSPACE "artifacts/rdw-vag-research-pack/manifest.json"
+          $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+          $counts = $manifest.counts
+          @(
+            "## RDW VAG type-approval research pack",
+            "",
+            "- Status: verified research-only; not a production fitment catalog",
+            "- Market scope: NL registration observations / EU type-approval identifiers",
+            "- Approval scopes: $($counts.approval_scope)",
+            "- Registration observations: $($counts.registration_observation)",
+            "- RDW engine designation rows: $($counts.tgk_drive)",
+            "- RDW gearbox classification rows: $($counts.tgk_gearbox)",
+            "- Engine/gearbox pair claims: 0",
+            "- Model year/generation inferred: no",
+            "- VIN/registration plate/holder fields selected: no",
+            "- RU/EAEU applicability: no",
+            "- Production import allowed: no",
+            "- Database SHA-256: $($manifest.database.sha256)",
+            "- Projection bundle SHA-256: $($manifest.source_projection_bundle_sha256)"
+          ) | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload verified RDW VAG research pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdw-vag-type-approval-nl-research-pack
+          path: artifacts/rdw-vag-research-pack/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload RDW acquisition diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdw-vag-type-approval-build-diagnostics
+          path: |
+            rdw-vag-pack-build.log
+            rdw-vag-pack-verification.json
+          if-no-files-found: ignore
+          retention-days: 14
