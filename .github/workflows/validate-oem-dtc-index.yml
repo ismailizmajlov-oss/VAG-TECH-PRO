@@ -6,6 +6,11 @@ on:
     paths:
       - data/schemas/oem-dtc-index.schema.json
       - data/sql/oem-dtc-index.sql
+      - data/sql/vehicle-catalog.sql
+      - data/sql/technical-library.sql
+      - data/sql/otts-type-approval-evidence.sql
+      - data/sql/generic-repair-guidance.sql
+      - tests/test_provenance_hash_guards.py
       - scripts/validate-oem-dtc-index.py
       - scripts/audit-dtc-overlap.cjs
       - tests/dtc-overlap-audit.test.cjs
@@ -15,6 +20,11 @@ on:
     paths:
       - data/schemas/oem-dtc-index.schema.json
       - data/sql/oem-dtc-index.sql
+      - data/sql/vehicle-catalog.sql
+      - data/sql/technical-library.sql
+      - data/sql/otts-type-approval-evidence.sql
+      - data/sql/generic-repair-guidance.sql
+      - tests/test_provenance_hash_guards.py
       - scripts/validate-oem-dtc-index.py
       - scripts/audit-dtc-overlap.cjs
       - tests/dtc-overlap-audit.test.cjs
@@ -40,5 +50,6 @@ jobs:
         run: |
           python scripts/validate-oem-dtc-index.py
           python -m unittest discover -s tests -p "test_technical_library_schema.py"
+          python -m unittest discover -s tests -p "test_provenance_hash_guards.py" -v
           node --check scripts/audit-dtc-overlap.cjs
           node --test tests/dtc-overlap-audit.test.cjs
