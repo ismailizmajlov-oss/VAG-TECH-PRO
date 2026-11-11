@@ -435,7 +435,9 @@ def main():
                 "publication with unknown market",
             )
 
-            test_legacy_structured_rights_fail_closed(db)\n\n            # OTTS descriptors never create or directly link factory engine/gearbox codes.
+            test_legacy_structured_rights_fail_closed(db)
+
+            # OTTS descriptors never create or directly link factory engine/gearbox codes.
             assert db.execute("SELECT count(*) FROM engine_codes").fetchone()[0] == 0
             assert db.execute("SELECT count(*) FROM transmission_codes").fetchone()[0] == 0
             assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
