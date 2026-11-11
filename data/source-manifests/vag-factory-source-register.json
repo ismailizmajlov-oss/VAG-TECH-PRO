@@ -1695,7 +1695,27 @@
         "Completeness is unknown; absence from Wikidata is not evidence that a generation did not exist."
       ],
       "limit_reached_means": "snapshot may be truncated; no completeness claim",
-      "data_ingested": false
+      "data_ingested": false,
+      "research_pack_integrated_in_desktop": true,
+      "desktop_integration_status": "verified_candidate_only_pack_integrated_in_offline_desktop",
+      "desktop_integration_evidence": {
+        "status": "verified_in_successful_windows_x64_desktop_build",
+        "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "workflow_run_id": 42964628461,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+        "job_id": 130338998567,
+        "job_name": "build-and-lifecycle",
+        "runner_label": "windows-2025",
+        "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+        "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+        "successful_step": "Integrate verified CC0 Wikidata VAG generation candidates (run71)",
+        "product_database_imported": false,
+        "production_fitment_published": false,
+        "native_windows_10_11_verified": false
+      },
+      "product_import_allowed": false,
+      "production_catalog_published": false
     },
     {
       "source_id": "wikidata-vag-model-taxonomy",
@@ -1786,7 +1806,42 @@
         "Completeness is unknown; absence from Wikidata is not evidence that a model did not exist."
       ],
       "limit_reached_means": "snapshot may be truncated; no completeness claim",
-      "data_ingested": false
+      "data_ingested": false,
+      "candidate_seed_integrated_in_local_sqlite": true,
+      "candidate_seed_integration": {
+        "status": "verified_candidate_identity_seed_in_local_sqlite",
+        "counts": {
+          "model_candidates": 521,
+          "car_model_entities": 490,
+          "car_model_series_entities": 40,
+          "manufacturer_candidates": 6,
+          "source_bindings": 530,
+          "russian_labels": 285,
+          "verified_models": 0,
+          "exact_fitments": 0
+        },
+        "market_scope": "UNKNOWN",
+        "applicability_precision": "candidate_identity_only",
+        "review_status": "candidate",
+        "evidence": {
+          "status": "verified_in_successful_windows_x64_desktop_build",
+          "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+          "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+          "workflow_run_id": 42964628461,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+          "job_id": 130338998567,
+          "job_name": "build-and-lifecycle",
+          "runner_label": "windows-2025",
+          "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+          "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+          "successful_step": "Seed CC0 Wikidata model identity candidates into local SQLite core",
+          "product_database_imported": false,
+          "production_fitment_published": false,
+          "native_windows_10_11_verified": false
+        }
+      },
+      "product_import_allowed": false,
+      "production_catalog_published": false
     },
     {
       "source_id": "autodiag2-vag-community-v6",
@@ -8781,7 +8836,7 @@
       },
       "data_ingested": false,
       "product_import_allowed": false,
-      "verification_status": "licensed_source_snapshot_updated_pack_verified_research_only_desktop_integration_pending_no_production_import",
+      "verification_status": "licensed_source_snapshot_updated_pack_verified_read_only_desktop_research_integration_verified_no_production_import",
       "research_pack": {
         "status": "verified_research_only",
         "research_pack_allowed": true,
@@ -8970,7 +9025,7 @@
             "review_status": "exact_multiset_comparison_verified; only CSV row order changed; new exact byte snapshot pinned and rebuilt into a separate research SQLite; no new VAG facts or applicability claims"
           }
         ],
-        "desktop_integration_status": "verified_research_pack_current_desktop_integration_pending",
+        "desktop_integration_status": "verified_read_only_research_pack_integrated_in_offline_desktop",
         "database_sha256": "20b5f84ec5e265ea7455cdfa149bf357864d4c9d7571933d65d4f75d80025b4f",
         "database_byte_size": 1961984,
         "source_manifest_sha256": "64fb51903d237befed7712baafa998d069e3f64bf26fd7974656a418f7feb209",
@@ -9162,7 +9217,7 @@
         "source_rows_multiset_sha256": "af09d2f806e22e294193f7b50faefc9581743427946be5f770fc671d2209e54f",
         "vag_rows_multiset_sha256": "6826b00fbab01c356ec52067e9829441e1c12a8b8c31cf981ab71cceb4f068d0",
         "source_row_hash_method": "SHA-256 of compact canonical UTF-8 JSON over original CSV field strings with sorted keys",
-        "research_database_included_in_desktop": false,
+        "research_database_included_in_desktop": true,
         "desktop_lifecycle_evidence": null,
         "research_pack_current": true,
         "exact_vag_values_unchanged": true,
@@ -9270,6 +9325,22 @@
           "current_pinned_pack_run_number": 145,
           "current_pinned_pack_artifact_id": 13740955733,
           "disposition": "do_not_downgrade_or_replace_the_current_902adb_snapshot_pack; the live endpoint returned the exact older d4b3 snapshot already verified in run126; acquisition failed closed on the pinned SHA-256 mismatch; no new source facts or production applicability are inferred"
+        },
+        "desktop_integration_evidence": {
+          "status": "verified_in_successful_windows_x64_desktop_build",
+          "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+          "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+          "workflow_run_id": 42964628461,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+          "job_id": 130338998567,
+          "job_name": "build-and-lifecycle",
+          "runner_label": "windows-2025",
+          "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+          "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+          "successful_step": "Integrate CarDir VAG reference facts into offline desktop",
+          "product_database_imported": false,
+          "production_fitment_published": false,
+          "native_windows_10_11_verified": false
         }
       },
       "source_manifest": "cardir-vag-owner-manual-facts-cc-by-4.0.json",
@@ -9385,7 +9456,26 @@
       "foreign_key_violations": 0,
       "full_row_multiset_sha256": "c84a7c2add81f5400234a608b4f0ea1669fead4434779f26cf29ef341cc43b5f",
       "vag_row_multiset_sha256": "af5102dba4f010cb0909f7a91a3f9cbc1efd692e1e298600946fdd94c9204dca",
-      "source_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T05:51:15Z; SHA-256 902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb"
+      "source_revision": "CarDir open-data snapshot 2026-11-09; retrieved 2026-11-10T05:51:15Z; SHA-256 902adb1ea1c20eeb98f803a12ffb787a5d082fb184f914091ff8e79bc67ccbbb",
+      "research_pack_ingested": true,
+      "research_database_included_in_desktop": true,
+      "desktop_integration_status": "verified_read_only_research_pack_integrated_in_offline_desktop",
+      "desktop_integration_evidence": {
+        "status": "verified_in_successful_windows_x64_desktop_build",
+        "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "workflow_run_id": 42964628461,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+        "job_id": 130338998567,
+        "job_name": "build-and-lifecycle",
+        "runner_label": "windows-2025",
+        "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+        "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+        "successful_step": "Integrate CarDir VAG reference facts into offline desktop",
+        "product_database_imported": false,
+        "production_fitment_published": false,
+        "native_windows_10_11_verified": false
+      }
     },
     {
       "source_id": "ownerspecs-verified-vehicle-specs-cc-by-sa-4.0",
@@ -9482,10 +9572,10 @@
       "research_pack_source_manifest_sha256": "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
       "product_database_ingested": false,
       "research_pack_source_commit": "da635dd1b17131c6f33840c1601ba1ea24dccf08",
-      "verification_status": "licensed_source_snapshot_reacquired_pack_built_verified_candidate_only_no_production_import",
-      "research_pack_desktop_integration_status": "verified_pack_available_desktop_sync_pending",
+      "verification_status": "licensed_source_snapshot_reacquired_pack_built_verified_read_only_desktop_research_integration_verified_candidate_only_no_production_import",
+      "research_pack_desktop_integration_status": "verified_read_only_research_pack_integrated_in_offline_desktop",
       "research_pack_run_number": 115,
-      "research_database_included_in_desktop": false,
+      "research_database_included_in_desktop": true,
       "desktop_lifecycle_evidence": null,
       "previous_verified_research_pack": {
         "status": "verified_research_only_previous_snapshot",
@@ -9690,7 +9780,24 @@
       "research_pack_attribution_sha256": "6e9005e67b6dfa8704bcd83be166ec61749dedeeeebe0f6ddd80c7b3725c2eeb",
       "research_pack_license_reference_sha256": "7802316f0a49ea293c239db64b24756ff2621983892a0aa649adf74b30d99762",
       "research_pack_source_snapshot_manifest_sha256": "c5c17ffb46dc2300a0b5eb9ef57a2877ea8be52a40cc657fccc38f3b1c45b01c",
-      "research_pack_acquisition_snapshot_sha256": "5c397284c0c9f39c10f2178558b448dc4b6b16d28bcbedaecf28a59c57753f6b"
+      "research_pack_acquisition_snapshot_sha256": "5c397284c0c9f39c10f2178558b448dc4b6b16d28bcbedaecf28a59c57753f6b",
+      "research_pack_ingested": true,
+      "desktop_integration_evidence": {
+        "status": "verified_in_successful_windows_x64_desktop_build",
+        "workflow_name": "VAG TECH PRO Windows x64 desktop validation run91",
+        "workflow_file": ".github/workflows/windows-desktop-ci-run71.yml",
+        "workflow_run_id": 42964628461,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42964628461",
+        "job_id": 130338998567,
+        "job_name": "build-and-lifecycle",
+        "runner_label": "windows-2025",
+        "head_sha": "cdf8f973102796339333112836e9256c0c5dae5a",
+        "head_branch": "automation/canonical-sha256-guards-all-sqlite-2026-11-11",
+        "successful_step": "Integrate OwnerSpecs VAG research pack into offline desktop",
+        "product_database_imported": false,
+        "production_fitment_published": false,
+        "native_windows_10_11_verified": false
+      }
     },
     {
       "source_id": "otts-baza-commercial-otts-catalog",
