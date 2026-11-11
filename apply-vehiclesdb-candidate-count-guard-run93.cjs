@@ -112,14 +112,26 @@ function main() {
   dbText = countPatch.text;
 
   const candidateFunctionStart = dbText.indexOf("function searchVehiclesDbCandidates(");
-  const candidateFunctionEnd = dbText.indexOf("\nmodule.exports = {", candidateFunctionStart);
+  const candidateFunctionTail = candidateFunctionStart < 0 ? "" : dbText.slice(candidateFunctionStart + "function searchVehiclesDbCandidates(".length);
+  const nextFunctionMatch = candidateFunctionTail.match(/\nfunction\s+[A-Za-z0-9_]+\s*\(/);
+  const moduleExportIndex = candidateFunctionStart < 0 ? -1 : dbText.indexOf("\nmodule.exports = {", candidateFunctionStart);
+  const candidateFunctionEnd = nextFunctionMatch
+    ? candidateFunctionStart + "function searchVehiclesDbCandidates(".length + nextFunctionMatch.index
+    : moduleExportIndex;
   if (candidateFunctionStart < 0 || candidateFunctionEnd < 0) fail("VehiclesDB candidate search function boundaries are missing");
   let candidateFunction = dbText.slice(candidateFunctionStart, candidateFunctionEnd);
-  const attributionRequiredMatches = [...candidateFunction.matchAll(/^\s*attributionRequired:\s*true,\s*$/gm)];
-  if (attributionRequiredMatches.length !== 1) fail("VehiclesDB candidate result must contain exactly one attributionRequired=true field");
+  const candidateRecordAnchor = "const candidateRecordSha256 = crypto.createHash(\"sha256\").update(JSON.stringify(sourceRecord)).digest(\"hex\");";
+  const candidateRecordIndex = candidateFunction.indexOf(candidateRecordAnchor);
+  if (candidateRecordIndex < 0) fail("VehiclesDB normalized candidate-record hash anchor is missing");
+  const candidateReturnStart = candidateFunction.indexOf("return {", candidateRecordIndex);
+  const candidateReturnEnd = candidateFunction.indexOf("\n      };", candidateReturnStart);
+  if (candidateReturnStart < 0 || candidateReturnEnd < 0) fail("VehiclesDB candidate return-object boundaries are missing");
+  let candidateReturn = candidateFunction.slice(candidateReturnStart, candidateReturnEnd + "\n      };".length);
+  const attributionRequiredMatches = [...candidateReturn.matchAll(/^\s*attributionRequired:\s*true,\s*$/gm)];
+  if (attributionRequiredMatches.length !== 1) fail("VehiclesDB candidate return object must contain exactly one attributionRequired=true field");
   const attributionStart = attributionRequiredMatches[0].index;
-  const attributionLines = [...candidateFunction.slice(attributionStart).matchAll(/^([ \t]*)attribution:\s*.+,\s*$/gm)];
-  if (attributionLines.length !== 1) fail("VehiclesDB candidate result must contain exactly one attribution field after attributionRequired");
+  const attributionLines = [...candidateReturn.slice(attributionStart).matchAll(/^([ \t]*)attribution:\s*.+,\s*$/gm)];
+  if (attributionLines.length !== 1) fail("VehiclesDB candidate return object must contain exactly one attribution field after attributionRequired");
   const attributionIndent = attributionLines[0][1];
   const policyFields = [
     { name: "identityOnlyUse", expression: "packManifest.identity_only_use === true", allowed: ["packManifest.identity_only_use === true", "packManifest.identity_only_use"] },
@@ -130,10 +142,10 @@ function main() {
   const missingPolicyFields = [];
   for (const field of policyFields) {
     const propertyPattern = new RegExp("^([\\t ]*)" + field.name + ":\\s*(.*?)\\s*,\\s*$", "gm");
-    const matches = [...candidateFunction.matchAll(propertyPattern)];
-    if (matches.length > 1) fail("VehiclesDB candidate result has duplicate policy field: " + field.name);
+    const matches = [...candidateReturn.matchAll(propertyPattern)];
+    if (matches.length > 1) fail("VehiclesDB candidate return object has duplicate policy field: " + field.name);
     if (matches.length === 1) {
-      if (!field.allowed.includes(matches[0][2].trim())) fail("VehiclesDB candidate result has an unexpected policy expression: " + field.name);
+      if (!field.allowed.includes(matches[0][2].trim())) fail("VehiclesDB candidate return object has an unexpected policy expression: " + field.name);
     } else {
       missingPolicyFields.push(attributionIndent + field.name + ": " + field.expression + ",");
     }
@@ -141,14 +153,15 @@ function main() {
   let returnPatch = { text: dbText, changed: false };
   if (missingPolicyFields.length) {
     const insertionIndex = attributionStart + attributionLines[0].index;
-    candidateFunction = candidateFunction.slice(0, insertionIndex) + missingPolicyFields.join("\n") + "\n" + candidateFunction.slice(insertionIndex);
+    candidateReturn = candidateReturn.slice(0, insertionIndex) + missingPolicyFields.join("\n") + "\n" + candidateReturn.slice(insertionIndex);
+    candidateFunction = candidateFunction.slice(0, candidateReturnStart) + candidateReturn + candidateFunction.slice(candidateReturnEnd + "\n      };".length);
     dbText = dbText.slice(0, candidateFunctionStart) + candidateFunction + dbText.slice(candidateFunctionEnd);
     returnPatch = { text: dbText, changed: true };
   }
   for (const field of policyFields) {
     const propertyPattern = new RegExp("^([\\t ]*)" + field.name + ":\\s*(.*?)\\s*,\\s*$", "gm");
-    const matches = [...candidateFunction.matchAll(propertyPattern)];
-    if (matches.length !== 1 || !field.allowed.includes(matches[0][2].trim())) fail("VehiclesDB candidate policy field failed final verification: " + field.name);
+    const matches = [...candidateReturn.matchAll(propertyPattern)];
+    if (matches.length !== 1 || !field.allowed.includes(matches[0][2].trim())) fail("VehiclesDB candidate return-object policy field failed final verification: " + field.name);
   }
   dbText = returnPatch.text;
 
