@@ -576,6 +576,20 @@ class WindowsBuildMetadataContractTests(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, workflow)
 
+    def test_windows_source_audit_stages_rdW_metadata_without_copying_the_large_database(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
+        staging_contract = (
+            '$packagedResearchRoot = Join-Path "desktop-source/release/win-unpacked/resources" "research-data"',
+            "$packagedRdwEntries.Count -ne 1",
+            'foreach ($field in @("pack_manifest_file","source_manifest_file","desktop_integration_report_file","license_file","attribution_file","build_report_file"))',
+            "Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force",
+            "$metadata.rdw_database_sha256",
+            "$rdwPackManifest.database.sha256",
+        )
+        for token in staging_contract:
+            with self.subTest(token=token):
+                self.assertIn(token, workflow)
+
     def test_windows_2022_lifecycle_revalidates_rdw_metadata_against_packaged_evidence(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
         lifecycle_contract = (
