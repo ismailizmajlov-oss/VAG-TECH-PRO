@@ -508,7 +508,7 @@
         "schema_document_url": "https://www.alta.ru/tamdoc/16kr0088/",
         "schema_rule": "Decision No. 88 approves technical documents for intergovernmental information exchange and the R.TR.TS.07.001 schema. It is not the public-access legal basis and does not grant bulk reuse, offline caching, display or redistribution rights.",
         "reuse_boundary": "Public query and official publication are distinct from bulk reuse, commercial display, offline caching and redistribution. Dataset-specific rights must be established before product import.",
-        "pilot_project_report_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+        "pilot_project_report_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf",
         "pilot_project_status": "completed_per_eec_2023_report"
       },
       "current_portal_observation": {
@@ -525,7 +525,7 @@
           "target_xsd_retrieved": false
         },
         "pilot_status": "historical_pilot_completed_per_eec_2023_report",
-        "pilot_report_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf"
+        "pilot_report_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf"
       },
       "access_and_reuse": {
         "individual_public_query": "Decision No. 225 establishes public access to national parts from official websites and requests to authorized bodies; the central open-data catalogue is not itself the OTTS register and the exact national query endpoint must be resolved.",
@@ -671,7 +671,7 @@
         }
       },
       "pilot_project_2023_report": {
-        "source_url": "https://eec.eaeunion.org/upload/files/deptexreg/KK/KK-49.pdf",
+        "source_url": "https://eec.eaeunion.org/upload/medialibrary/6cf/Proekt-povestki-KK_49-i-materialy-k-ney_.pdf",
         "meeting_date": "2023-04-18",
         "agenda_item": 12,
         "pilot_order": "EEC Collegium Order No. 18 of 2022-02-08",
