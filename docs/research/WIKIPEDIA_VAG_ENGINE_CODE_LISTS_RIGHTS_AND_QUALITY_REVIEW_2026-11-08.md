@@ -44,11 +44,12 @@ The attribution above is a template only; it is not evidence that any content ha
 
 - Article revisions recorded: 4.
 - Raw article/API bytes retrieved: four pinned wikitext revisions and four rendered HTML snapshots; per-page SHA-256 and byte sizes retained in the pack manifest.
-- Raw snapshot SHA-256: not available; no hash is fabricated.
+- Aggregate source snapshot SHA-256: `77fd59c37f5d22d013efe8b34a872898c26cd75d1475a22a63d671aa376cdb23`; per-page wikitext and rendered-HTML SHA-256 values and byte sizes are retained in the pack manifest.
+- Separate candidate SQLite SHA-256: `12e2de36f8c356e0b348e56a6f49430941bda885511c5abeb86d43c0a1a96f50`; pack manifest SHA-256: `0eb4246a357f6d1cbca9a8277cd30f8fdebfb72d08e2b4c7cb5b8be524a1a08a`.
 - Engine-code candidate rows extracted: 241 (241 unique tokens from 64 source rows); production engine-code rows imported: 0.
 - Vehicle-application rows imported: 0.
 - Engine/gearbox pairings imported: 0.
 - Production applicability claims created: 0.
 - Rights status: CC BY-SA 4.0 for article text, subject to attribution and ShareAlike.
 - Technical review status: not approved; source-quality warnings block data promotion.
-- Next permitted step: obtain pinned revision bytes in CI, hash each source snapshot, extract only explicit engine-code candidates with section-level provenance, and independently verify each candidate against primary factory/approval sources before any promotion.
+- Next permitted step: retain the pack only as a separately licensed discovery artifact; independently verify each candidate against primary factory/approval sources before any desktop research-view integration or promotion. The pack is not OEM data and is not authorized for repair or diagnostic execution.
