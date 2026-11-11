@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS source_documents (
     market_scope IN ('RU','EAEU','EU','NAR','CN','ROW','UNKNOWN')
   ),
   source_url TEXT,
-  source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64),
+  source_sha256 TEXT CHECK (source_sha256 IS NULL OR (length(source_sha256)=64 AND source_sha256 NOT GLOB '*[^a-f0-9]*')),
   license_status TEXT NOT NULL CHECK (
     license_status IN ('cc0','public_domain','open_license','permission_granted',
                        'proprietary','unknown','permission_required')
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS oem_dtc_index (
     review_status IN ('candidate','source_header_verified','applicability_verified',
                       'engineer_reviewed','publication_approved','rejected')
   ),
-  source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64),
+  source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64 AND source_claim_hash NOT GLOB '*[^a-f0-9]*'),
   created_at_utc TEXT NOT NULL,
   UNIQUE(dtc_code, dtc_namespace, manufacturer, market_scope, model,
          generation_or_type_code, engine_code, transmission_code,
