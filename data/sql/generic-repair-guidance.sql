@@ -85,8 +85,8 @@ CREATE TABLE IF NOT EXISTS generic_repair_guidance (
 -- Additive guards protect any reused research-pack database from malformed provenance hashes.
 CREATE TRIGGER IF NOT EXISTS generic_source_files_hashes_insert_guard
 BEFORE INSERT ON source_files
-WHEN length(NEW.git_blob_sha1)<>40 OR NEW.git_blob_sha1 GLOB '*[^a-f0-9]*'
-  OR length(NEW.sha256)<>64 OR NEW.sha256 GLOB '*[^a-f0-9]*'
+WHEN NEW.git_blob_sha1 IS NULL OR length(NEW.git_blob_sha1)<>40 OR NEW.git_blob_sha1 GLOB '*[^a-f0-9]*'
+  OR NEW.sha256 IS NULL OR length(NEW.sha256)<>64 OR NEW.sha256 GLOB '*[^a-f0-9]*'
 BEGIN SELECT RAISE(ABORT,'generic source file hashes must be lowercase hexadecimal'); END;
 CREATE TRIGGER IF NOT EXISTS generic_source_files_hashes_update_guard
 BEFORE UPDATE OF git_blob_sha1,sha256 ON source_files
@@ -96,8 +96,8 @@ BEGIN SELECT RAISE(ABORT,'generic source file hashes must be lowercase hexadecim
 
 CREATE TRIGGER IF NOT EXISTS generic_dtc_references_hashes_insert_guard
 BEFORE INSERT ON generic_dtc_references
-WHEN length(NEW.source_file_sha256)<>64 OR NEW.source_file_sha256 GLOB '*[^a-f0-9]*'
-  OR length(NEW.source_line_sha256)<>64 OR NEW.source_line_sha256 GLOB '*[^a-f0-9]*'
+WHEN NEW.source_file_sha256 IS NULL OR length(NEW.source_file_sha256)<>64 OR NEW.source_file_sha256 GLOB '*[^a-f0-9]*'
+  OR NEW.source_line_sha256 IS NULL OR length(NEW.source_line_sha256)<>64 OR NEW.source_line_sha256 GLOB '*[^a-f0-9]*'
 BEGIN SELECT RAISE(ABORT,'generic DTC provenance hashes must be lowercase hexadecimal SHA-256'); END;
 CREATE TRIGGER IF NOT EXISTS generic_dtc_references_hashes_update_guard
 BEFORE UPDATE OF source_file_sha256,source_line_sha256 ON generic_dtc_references
