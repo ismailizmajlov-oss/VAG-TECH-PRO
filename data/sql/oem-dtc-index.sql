@@ -45,6 +45,17 @@ CREATE TABLE IF NOT EXISTS technical_source_rights (
  permission_reference TEXT, rights_revision TEXT NOT NULL, reviewed_at_utc TEXT NOT NULL,
  CHECK(rights_status<>'approved' OR(display_allowed=1 AND offline_cache_allowed=1 AND bulk_reuse_allowed=1 AND redistribution_allowed=1 AND license_text_sha256 IS NOT NULL))
 );
+CREATE TRIGGER IF NOT EXISTS technical_source_rights_license_text_sha256_insert_guard
+BEFORE INSERT ON technical_source_rights
+WHEN NEW.license_text_sha256 IS NOT NULL
+ AND (length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'technical source license SHA-256 must be 64 lowercase hexadecimal characters'); END;
+CREATE TRIGGER IF NOT EXISTS technical_source_rights_license_text_sha256_update_guard
+BEFORE UPDATE OF license_text_sha256 ON technical_source_rights
+WHEN NEW.license_text_sha256 IS NOT NULL
+ AND (length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'technical source license SHA-256 must be 64 lowercase hexadecimal characters'); END;
+
 CREATE TRIGGER IF NOT EXISTS technical_source_permission_reference_guard
 BEFORE INSERT ON technical_source_rights WHEN NEW.rights_status='approved'
 BEGIN
@@ -285,6 +296,15 @@ CREATE TABLE IF NOT EXISTS oem_dtc_publication_locks (
   source_claim_hash TEXT NOT NULL CHECK(length(source_claim_hash)=64 AND source_claim_hash NOT GLOB '*[^a-f0-9]*'),
   approved_at_utc TEXT NOT NULL
 );
+CREATE TRIGGER IF NOT EXISTS oem_dtc_publication_locks_source_claim_hash_insert_guard
+BEFORE INSERT ON oem_dtc_publication_locks
+WHEN length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'published DTC source-claim hash must be 64 lowercase hexadecimal characters'); END;
+CREATE TRIGGER IF NOT EXISTS oem_dtc_publication_locks_source_claim_hash_update_guard
+BEFORE UPDATE OF source_claim_hash ON oem_dtc_publication_locks
+WHEN length(NEW.source_claim_hash)<>64 OR NEW.source_claim_hash GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'published DTC source-claim hash must be 64 lowercase hexadecimal characters'); END;
+
 CREATE TRIGGER IF NOT EXISTS record_oem_dtc_publication_lock
 AFTER UPDATE OF review_status ON oem_dtc_index
 WHEN NEW.review_status='publication_approved' AND OLD.review_status<>'publication_approved'
