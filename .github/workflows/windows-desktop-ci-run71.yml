@@ -2636,7 +2636,7 @@ jobs:
           $ownerSourceRunNumber = if ($ownerReport) { $ownerReport.source_run_number } else { $null }
           $ownerIntegrationScriptHash = (Get-FileHash -LiteralPath "scripts/integrate-ownerspecs-vag-research.cjs" -Algorithm SHA256).Hash.ToLowerInvariant()
           $ownerDbModuleHash = if (Test-Path "desktop-source/lib/ownerspecs-vag-research-db.cjs") { (Get-FileHash -LiteralPath "desktop-source/lib/ownerspecs-vag-research-db.cjs" -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
-          $rdwResearchRoot = [System.IO.Path]::GetFullPath("desktop-source/data/research")
+          $rdwResearchRoot = [System.IO.Path]::GetFullPath("desktop-source/release/win-unpacked/resources/research-data")
           $rdwResearchManifestPath = Join-Path $rdwResearchRoot "manifest.json"
           if (-not (Test-Path -LiteralPath $rdwResearchManifestPath -PathType Leaf)) { throw "Desktop research manifest is missing for RDW build metadata." }
           $rdwResearchManifest = Get-Content -LiteralPath $rdwResearchManifestPath -Raw | ConvertFrom-Json
