@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_source_rights (
  store_structured_data_allowed INTEGER NOT NULL DEFAULT 0 CHECK(store_structured_data_allowed IN(0,1)),
  license_text_sha256 TEXT CHECK(license_text_sha256 IS NULL OR(length(license_text_sha256)=64 AND license_text_sha256 NOT GLOB '*[^a-f0-9]*')),
  permission_reference TEXT, rights_revision TEXT NOT NULL, reviewed_at_utc TEXT NOT NULL,
- CHECK(rights_status<>'approved' OR(display_allowed=1 AND offline_cache_allowed=1 AND bulk_reuse_allowed=1 AND redistribution_allowed=1 AND license_text_sha256 IS NOT NULL))
+ CHECK(rights_status<>'approved' OR(commercial_use_allowed=1 AND display_allowed=1 AND offline_cache_allowed=1 AND bulk_reuse_allowed=1 AND redistribution_allowed=1 AND store_structured_data_allowed=1 AND license_text_sha256 IS NOT NULL))
 );
 CREATE TRIGGER IF NOT EXISTS vehicle_catalog_rights_permission_reference_insert
 BEFORE INSERT ON vehicle_catalog_source_rights WHEN NEW.rights_status='approved'
