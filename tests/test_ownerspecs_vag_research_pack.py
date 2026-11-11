@@ -136,7 +136,7 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
         def acquire_fixture(_url, destination):
             destination.parent.mkdir(parents=True, exist_ok=True)
             dataset = fixture_dataset()
-            destination.write_text(json.dumps(dataset, ensure_ascii=False, sort_keys=True) + "\\n", encoding="utf-8")
+            destination.write_text(json.dumps(dataset, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
             return dataset
 
         captured = io.StringIO()
