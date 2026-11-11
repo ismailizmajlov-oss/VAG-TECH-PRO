@@ -9572,7 +9572,7 @@
       "research_pack_source_manifest_sha256": "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc",
       "product_database_ingested": false,
       "research_pack_source_commit": "da635dd1b17131c6f33840c1601ba1ea24dccf08",
-      "verification_status": "licensed_source_snapshot_reacquired_pack_built_verified_read_only_desktop_research_integration_verified_candidate_only_no_production_import",
+      "verification_status": "last_verified_pack_retained_latest_public_json_quarantined_html_json_count_mismatch",
       "research_pack_desktop_integration_status": "verified_read_only_research_pack_integrated_in_offline_desktop",
       "research_pack_run_number": 115,
       "research_database_included_in_desktop": true,
@@ -9771,7 +9771,7 @@
         "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_exact_retained_bytes; do_not_promote_to_factory_fitment_or_repair_data"
       },
       "research_pack_source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
-      "research_pack_current": true,
+      "research_pack_current": false,
       "research_pack_status": "verified_research_only",
       "research_pack_database_byte_size": 323584,
       "research_pack_artifact_size_bytes": 114062,
@@ -9797,6 +9797,123 @@
         "product_database_imported": false,
         "production_fitment_published": false,
         "native_windows_10_11_verified": false
+      },
+      "research_pack_stale_reason": "The pinned research pack remains a valid dated CC BY-SA 4.0 snapshot, but the current public JSON sums to 2,273 datapoints while the public HTML still claims 2,369; the new JSON was quarantined and no replacement pack was built.",
+      "latest_acquisition_attempt": {
+        "status": "quarantined_public_html_json_count_mismatch",
+        "source_revision": "OwnerSpecs public JSON acquired by Windows x64 CI at 2026-11-11T05:56:12Z",
+        "source_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+        "source_file_bytes": 659973,
+        "generation_count": 111,
+        "html_page_claimed_datapoints": 2369,
+        "json_datapoints": 2273,
+        "vag_generation_count": 20,
+        "vag_facts": 186,
+        "previous_verified_source_snapshot_sha256": "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95",
+        "previous_verified_datapoints": 2369,
+        "datapoints_removed": 96,
+        "vag_datapoints_removed": 47,
+        "non_vag_datapoints_removed": 49,
+        "changed_generations_total": 8,
+        "vag_changed_generations": 4,
+        "non_vag_changed_generations": 4,
+        "mass_values_changed": 3,
+        "changed_mass_values": [
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "max_laden_permissible.value_kg",
+            "old_value": 2835,
+            "new_value": 2800,
+            "unit": "kg"
+          },
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "running_order.value_kg",
+            "old_value": 2211,
+            "new_value": 2135,
+            "unit": "kg"
+          },
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "field": "tow_braked.value_kg",
+            "old_value": 3270,
+            "new_value": 3500,
+            "unit": "kg"
+          }
+        ],
+        "removed_generation_facts": [
+          {
+            "brand": "Porsche",
+            "model": "Cayenne",
+            "generation": "Cayenne (E3)",
+            "previous_datapoints": 17,
+            "current_datapoints": 0
+          },
+          {
+            "brand": "Kia",
+            "model": "EV6",
+            "generation": "EV6",
+            "previous_datapoints": 12,
+            "current_datapoints": 0
+          },
+          {
+            "brand": "Mercedes-Benz",
+            "model": "GLE",
+            "generation": "GLE SUV (V167)",
+            "previous_datapoints": 15,
+            "current_datapoints": 0
+          },
+          {
+            "brand": "Tesla",
+            "model": "Model Y",
+            "generation": "Model Y",
+            "previous_datapoints": 12,
+            "current_datapoints": 0
+          },
+          {
+            "brand": "Audi",
+            "model": "Q7",
+            "generation": "Q7 II (4M)",
+            "previous_datapoints": 12,
+            "current_datapoints": 7
+          },
+          {
+            "brand": "Audi",
+            "model": "Q8",
+            "generation": "Q8 (4MN)",
+            "previous_datapoints": 13,
+            "current_datapoints": 8
+          },
+          {
+            "brand": "Volkswagen",
+            "model": "Touareg",
+            "generation": "Touareg (CR)",
+            "previous_datapoints": 20,
+            "current_datapoints": 0
+          },
+          {
+            "brand": "BMW",
+            "model": "X5",
+            "generation": "X5 (G05)",
+            "previous_datapoints": 14,
+            "current_datapoints": 4
+          }
+        ],
+        "workflow_run_id": 42968938274,
+        "workflow_run_number": 141,
+        "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42968938274",
+        "acquisition_artifact_id": 13833035466,
+        "builder_result": "rejected_datapoint_count_mismatch_expected_2369_actual_2273",
+        "replacement_pack_built": false,
+        "previous_verified_pack_retained": true,
+        "product_database_imported": false,
+        "production_import": false
       }
     },
     {
