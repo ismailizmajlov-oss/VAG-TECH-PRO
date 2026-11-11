@@ -129,7 +129,23 @@ def test_legacy_structured_rights_fail_closed(db):
 
     # Simulate a pre-v2 database whose approved rights row acquired the new column
     # with its safe default (0), while old permissive triggers were still installed.
+    insert_source(db, "legacy-insert-source", "open_license", 1)
+    db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_insert")
+    db.execute("""CREATE TRIGGER validate_source_rights_approval_insert
+        BEFORE INSERT ON vehicle_catalog_source_rights
+        WHEN NEW.rights_status='approved'
+        BEGIN
+          SELECT CASE WHEN NEW.license_name IS NULL OR trim(NEW.license_name)=''
+            THEN RAISE(ABORT, 'legacy insert guard fixture') END;
+        END;""")
     db.execute("DROP TRIGGER IF EXISTS validate_source_rights_approval_update")
+    db.execute("""CREATE TRIGGER validate_source_rights_approval_update
+        BEFORE UPDATE ON vehicle_catalog_source_rights
+        WHEN NEW.rights_status='approved'
+        BEGIN
+          SELECT CASE WHEN NEW.license_name IS NULL OR trim(NEW.license_name)=''
+            THEN RAISE(ABORT, 'legacy update guard fixture') END;
+        END;""")
     db.execute("DROP TRIGGER IF EXISTS demote_otts_after_rights_narrowing")
     db.execute("DROP TRIGGER IF EXISTS demote_otts_after_structured_rights_narrowing_v2")
     db.execute(
@@ -138,6 +154,19 @@ def test_legacy_structured_rights_fail_closed(db):
 
     # Re-applying the current schema must add new guards even when legacy triggers/tables exist.
     db.executescript(OTTS_SCHEMA.read_text(encoding="utf-8"))
+
+    expect_integrity_error(
+        db,
+        lambda: insert_rights(db, "legacy-insert-source", structured_allowed=0),
+        "legacy approved-rights insert guard cannot bypass structured-data permission",
+    )
+    expect_integrity_error(
+        db,
+        lambda: db.execute(
+            "UPDATE vehicle_catalog_source_rights SET rights_revision='legacy-bypass' WHERE source_id='legacy-structured-source'"
+        ),
+        "legacy approved-rights update guard cannot bypass structured-data permission",
+    )
 
     expect_integrity_error(
         db,
