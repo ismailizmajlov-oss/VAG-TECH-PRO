@@ -13,8 +13,9 @@ Recheck the public default branch of [riz4d/OpenVAG](https://github.com/riz4d/Op
 - `db/README.md` describes a database of approximately 2.1 MB.
 - The advertised path `db/openvag.db` is not present in the current default branch (GitHub contents lookup returned 404).
 - The repository `.gitignore` explicitly excludes `db/openvag.db` with the comment `Database (regenerated from scripts)`.
+- The public GitHub Releases API (`/repos/riz4d/OpenVAG/releases?per_page=100`) returned an empty array on 2026-11-11; no release assets were available through the Releases collection. Git tags were not enumerated.
 
-The review did not obtain database bytes, did not compute a database SHA-256 and did not inspect historical release assets. Therefore this finding is limited to the current default-branch tree; it is not a claim that no copy has ever existed elsewhere.
+The review did not obtain database bytes and did not compute a database SHA-256. The public GitHub Releases API returned an empty array on 2026-11-11, so no release assets were available through the Releases collection; Git tags were not enumerated. This is not a claim that no copy has ever existed in tags, forks or elsewhere.
 
 ## License and provenance
 
