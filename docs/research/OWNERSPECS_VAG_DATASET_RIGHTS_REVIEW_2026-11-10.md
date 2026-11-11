@@ -47,3 +47,23 @@ The pack was subsequently integrated into the offline Windows desktop research c
 The exact pinned OwnerSpecs research artifact was integrated into the offline desktop build by PR #91, Windows x64 workflow run **1264** (run ID `42813922741`), source revision `f5f005a04e1dc715aae1fb48899592ff5f1009c2`. The integration workflow resolved and verified the pinned run-115 artifact, downloaded it, integrated the read-only SQLite reader and research UI, and ran the pack verifier. Steps 69–71 completed successfully. The full Windows x64 build/lifecycle job and separate Windows Server 2022 installer-compatibility lifecycle both passed; PR #91 was subsequently merged to main.
 
 The desktop pack retains the original CC BY-SA 4.0 attribution and Share-Alike boundary. It is visible only as a separate research dataset and does not seed the production vehicle catalog, engine/transmission fitment, OEM DTC index, ECU applicability or technical repair library. The 20 generation labels and 233 facts remain UNKNOWN-market candidates; the source JSON still lacks a primary-document locator and revision per value. Native Windows 10/11 client lifecycle remains unverified because the owner-controlled runner gate is disabled.
+
+## Current publisher snapshot refresh — 2026-11-11
+
+A fresh live review of the [public dataset page](https://ownerspecs.com/data) on 2026-11-11 reports **111 generations, 27 brands and 2,273 verified datapoints**, with last generated date 2026-11-11. The [machine-readable JSON](https://ownerspecs.com/data/dataset.json) reports 111 generations; the retained exact JSON from Windows x64 acquisition run [141](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42968938274) contains 111 generation records and 2,273 nested facts.
+
+The exact source file retained in artifact **13833035466** has:
+- Raw source JSON SHA-256: **d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9**.
+- Source JSON size: **659,973 bytes**.
+- Acquisition evidence ZIP SHA-256: **ee801173419bf17b8610f7eac80b813f24a9456633138a96078cfbc494ca5c85** (33,501 bytes).
+- Acquisition log SHA-256: **7c559297e0884939cf8ac33a05978e0835beeb5ea933e6fb84c6e4513ed82c77**.
+
+An exact row-level comparison with the previous verified 2026-11-10 snapshot (SHA-256 `6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95`, 111 generations / 2,369 facts) found:
+- No generation membership changes.
+- 99 facts removed, 3 replacement facts added and 3 BMW X5 mass values changed; net reduction: 96 facts.
+- The VAG subset remains 20 generation candidates but falls from 233 to **186 facts**: 47 VAG facts were removed. The affected VAG generations are Audi Q7 (5 mass facts), Audi Q8 (5 mass facts), Porsche Cayenne (17 specification/mass facts) and Volkswagen Touareg (20 specification/mass facts).
+- The three changed values are non-VAG BMW X5 mass values: running order 2,211→2,135 kg; permissible maximum laden mass 2,835→2,800 kg; braked towing capacity 3,270→3,500 kg.
+
+The first acquisition workflow correctly failed closed because the prior manifest still expected 2,369 datapoints. The fresh publisher HTML now confirms 2,273, so the failure was a stale snapshot pin, not a reason to discard the new source. A versioned 2026-11-11 manifest and a dedicated Windows x64 refresh workflow now pin the exact source bytes and reconcile the live HTML, JSON counts, VAG subset and hashes before building a new pack.
+
+The previously verified 233-fact research pack remains a dated prior snapshot. It is not silently relabelled as current and will not be replaced in the desktop until the 2026-11-11 pack is independently built, verified, and its SQLite/artifact hashes are recorded. The new pack remains a separate read-only CC BY-SA 4.0 research database with attribution and Share-Alike; market UNKNOWN; no primary-document locator/revision per value; no exact engine/gearbox pair, ECU, DTC, RU/EAEU or repair applicability; no production import.
