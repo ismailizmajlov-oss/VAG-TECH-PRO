@@ -25,6 +25,7 @@ class OwnerSpecsSnapshotRefresh20261111Tests(unittest.TestCase):
         self.assertEqual(snapshot["source_snapshot_sha256"], "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9")
         self.assertEqual(snapshot["vag_generation_count"], 20)
         self.assertEqual(snapshot["vag_fact_count"], 186)
+        self.assertEqual(snapshot["retrieved_at_utc"], "2026-11-11T05:56:12+00:00")
 
     def test_row_level_snapshot_comparison_is_reconciled_and_vag_removals_are_explicit(self):
         review = self.snapshot_manifest["snapshot"]["latest_snapshot_review"]
