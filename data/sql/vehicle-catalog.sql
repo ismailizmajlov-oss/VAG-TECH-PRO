@@ -223,6 +223,7 @@ WHEN NOT EXISTS (
     AND r.rights_status='approved'
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
     AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
@@ -262,6 +263,7 @@ WHEN NOT EXISTS (
     AND r.rights_status='approved'
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
     AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
@@ -301,6 +303,7 @@ WHEN NOT EXISTS (
     AND r.rights_status='approved'
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
     AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
@@ -340,6 +343,7 @@ WHEN NOT EXISTS (
     AND r.rights_status='approved'
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
     AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
@@ -380,6 +384,7 @@ WHEN NOT EXISTS (
     AND r.rights_status='approved'
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
     AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
@@ -421,6 +426,7 @@ WHEN NOT EXISTS (
     AND r.rights_status='approved'
     AND r.commercial_use_allowed=1 AND r.display_allowed=1
     AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
     AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
     AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
     AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
@@ -471,6 +477,7 @@ BEGIN
         AND r.rights_status='approved'
         AND r.commercial_use_allowed=1 AND r.display_allowed=1
         AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.store_structured_data_allowed=1
         AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
         AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
         AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
