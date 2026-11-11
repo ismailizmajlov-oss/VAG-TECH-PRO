@@ -6,13 +6,16 @@ import sqlite3
 import tempfile
 import unittest
 import sys
+import io
+from contextlib import redirect_stdout
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 SOURCE_MANIFEST = ROOT / "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
 
-from scripts.build_ownerspecs_vag_research_pack import build_pack, verify_pack
+from scripts.build_ownerspecs_vag_research_pack import build_pack, verify_pack, main
 
 
 PROVENANCE_KINDS = {
@@ -124,6 +127,33 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
 
     def tearDown(self):
         self.temp.cleanup()
+
+    def test_acquire_cli_captures_exact_source_without_building_a_pack(self):
+        output = self.root / "acquired"
+        argv = ["build_ownerspecs_vag_research_pack.py", "--acquire",
+                "--source-manifest", str(self.source_manifest), "--output-dir", str(output)]
+
+        def acquire_fixture(_url, destination):
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            dataset = fixture_dataset()
+            destination.write_text(json.dumps(dataset, ensure_ascii=False, sort_keys=True) + "\\n", encoding="utf-8")
+            return dataset
+
+        captured = io.StringIO()
+        with patch("sys.argv", argv):
+            with patch("scripts.build_ownerspecs_vag_research_pack.acquire_json", side_effect=acquire_fixture):
+                with patch("scripts.build_ownerspecs_vag_research_pack.build_pack", side_effect=AssertionError("acquire mode must not build a pack")):
+                    with redirect_stdout(captured):
+                        result = main()
+
+        self.assertEqual(result, 0)
+        payload = json.loads(captured.getvalue())
+        self.assertEqual(payload["status"], "acquired_source_snapshot")
+        self.assertEqual(payload["snapshot"]["generation_count"], 2)
+        self.assertEqual(payload["snapshot"]["verified_datapoints"], 3)
+        self.assertTrue((output / "source.json").is_file())
+        self.assertTrue((output / "acquisition-snapshot.json").is_file())
+        self.assertFalse((output / "ownerspecs-vag-research.sqlite").exists())
 
     def test_builds_separate_vag_only_cc_by_sa_pack_with_hashes(self):
         manifest = build_pack(self.source_json, self.source_manifest, self.output)
