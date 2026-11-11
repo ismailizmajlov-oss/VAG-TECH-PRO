@@ -134,7 +134,7 @@ def main():
 
             # The database cannot accept rows that claim to have been reviewed before review occurs.
             insert_source(db, "licensed-source", "open_license", 1)
-    test_structured_data_rights_are_required(db)
+            test_structured_data_rights_are_required(db)
             insert_rights(db, "licensed-source", pdf_allowed=0)
             expect_integrity_error(
                 db,
