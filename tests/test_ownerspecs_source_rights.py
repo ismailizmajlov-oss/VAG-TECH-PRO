@@ -14,7 +14,7 @@ REVIEW = ROOT / "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.m
 CURRENT_SNAPSHOT_SHA = "fa53aef8eb1d8b8c028ded086cdc3f1e2fc726caa637cdc96ca860336711882f"
 PREVIOUS_PACK_SNAPSHOT_SHA = "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9"
 PREVIOUS_PUBLISHER_SNAPSHOT_SHA = "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c"
-CURRENT_MANIFEST_SHA = "6b659aa7ecedcf36d1a611c2be1546caa76b54a8d19c16a00b484587ac833bc8"
+CURRENT_MANIFEST_SHA = "a0daad6fd76fa2db22051248a81f52715074aa05b91b6dcdc15cb72a539db3ef"
 
 class OwnerSpecsSourceRightsTests(unittest.TestCase):
     @classmethod
@@ -99,7 +99,7 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
             {("BMW", "X5", "running_order"), ("BMW", "X5", "max_laden_permissible"), ("BMW", "X5", "tow_braked")}
         )
 
-    def test_last_verified_pack_is_explicitly_older_than_latest_publisher_snapshot(self):
+    def test_latest_verified_pack_is_current_snapshot_and_remains_research_only(self):
         entry = self.entry
         self.assertTrue(entry["research_pack_allowed"])
         self.assertTrue(entry["research_pack_acquisition_allowed"])
@@ -109,29 +109,36 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(entry["source_snapshot_sha256"], CURRENT_SNAPSHOT_SHA)
         self.assertEqual(entry["source_manifest_sha256"], CURRENT_MANIFEST_SHA)
         self.assertEqual(entry["source_file_bytes"], 659973)
-        self.assertFalse(entry["research_pack_current"])
+        self.assertTrue(entry["research_pack_current"])
         self.assertTrue(entry["research_pack_current_for_vag_subset"])
-        self.assertEqual(entry["research_pack_status"], "verified_research_only_previous_snapshot")
-        self.assertEqual(entry["research_pack_source_snapshot_sha256"], PREVIOUS_PACK_SNAPSHOT_SHA)
-        self.assertEqual(entry["research_pack_source_manifest_sha256"], "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697")
-        self.assertEqual(entry["research_pack_source_commit"], "9f9aa8136e5c084def52e5fdb983ede737c817ec")
-        self.assertEqual(entry["research_pack_workflow_run_id"], 42971572740)
-        self.assertEqual(entry["research_pack_run_number"], 3)
-        self.assertEqual(entry["research_pack_artifact_id"], 13833552555)
+        self.assertEqual(entry["research_pack_status"], "verified_research_only_current_snapshot")
+        self.assertEqual(entry["research_pack_source_snapshot_sha256"], CURRENT_SNAPSHOT_SHA)
+        self.assertEqual(entry["research_pack_source_manifest_sha256"], CURRENT_MANIFEST_SHA)
+        self.assertEqual(entry["research_pack_source_commit"], "cef31ae342ef9d266ab0d873ac653c0e27acf3ee")
+        self.assertEqual(entry["research_pack_workflow_run_id"], 42976259283)
+        self.assertEqual(entry["research_pack_run_number"], 27)
+        self.assertEqual(entry["research_pack_artifact_id"], 13835168202)
         self.assertEqual(entry["research_pack_artifact_name"], "ownerspecs-vag-research-pack-refresh-2026-11-11")
-        self.assertEqual(entry["research_pack_artifact_sha256"], "66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77")
-        self.assertEqual(entry["research_pack_manifest_sha256"], "21c94e2ec39ea1b231b96d3fe5f830e5ac62ae5cfc1d8e91312de977d8819fd4")
-        self.assertEqual(entry["research_pack_database_sha256"], "9b7da5b490d3dd805865f23389cb8cc7ca9b368137be8307adb07e0c8e683c4a")
+        self.assertEqual(entry["research_pack_artifact_sha256"], "5acf0b885b01b71216266a2f9a408511e66575b09966a9a05ae0b3880e4c45e8")
+        self.assertEqual(entry["research_pack_manifest_sha256"], "8b07eed9f69dc763289e326a1f9c47525183abc33d840d2c5531474a115499c5")
+        self.assertEqual(entry["research_pack_database_sha256"], "ee107718538b3ddc97c2577341c54919ec9269708ef02aad4aeaad3169360bc3")
+        self.assertEqual(entry["research_pack_source_snapshot_manifest_sha256"], "8a2eda28a0101c02490cec43062d591f930ba90dc3358d833337997470dba553")
+        self.assertEqual(entry["research_pack_acquisition_snapshot_sha256"], "7f9147f36e340e3997b8d51d4ce923ae0d2525b8b10f89c60cbb899c258bb436")
         self.assertTrue(entry["research_database_included_in_desktop"])
         self.assertFalse(entry["current_research_pack_in_desktop"])
         self.assertTrue(entry["previous_pack_still_in_desktop"])
         self.assertEqual(entry["research_pack_desktop_integration_status"], "pending_current_snapshot_desktop_integration")
-        latest = entry["latest_publisher_snapshot"]
-        self.assertEqual(latest["source_snapshot_sha256"], CURRENT_SNAPSHOT_SHA)
-        self.assertEqual(latest["source_file_bytes"], 659973)
-        self.assertEqual(latest["vag_fact_count"], 186)
-        self.assertEqual(latest["acquisition_evidence"]["artifact_id"], 13835491309)
-        self.assertTrue(latest["acquisition_evidence"]["source_revision_field_stale"])
+        self.assertEqual(entry["latest_publisher_snapshot"]["source_snapshot_sha256"], CURRENT_SNAPSHOT_SHA)
+        self.assertEqual(entry["latest_publisher_snapshot"]["vag_fact_count"], 186)
+        latest_acquisition = entry["latest_publisher_snapshot"]["acquisition_evidence"]
+        self.assertEqual(latest_acquisition["workflow_run_id"], 42976259283)
+        self.assertEqual(latest_acquisition["artifact_id"], 13835990251)
+        self.assertFalse(latest_acquisition["source_revision_field_stale"])
+        self.assertEqual(latest_acquisition["source_revision_status"], "matches_manifest")
+        self.assertEqual(entry["superseded_verified_research_packs"][0]["source_snapshot_sha256"], PREVIOUS_PACK_SNAPSHOT_SHA)
+        self.assertEqual(entry["superseded_verified_research_packs"][0]["artifact_id"], 13833552555)
+        self.assertEqual(entry["previous_verified_research_pack"]["artifact_id"], 13742090427)
+        self.assertEqual(entry["older_verified_research_pack"]["artifact_id"], 13733448981)
         self.assertEqual(entry["applicability"]["market_scope"], "UNKNOWN")
         self.assertFalse(entry["applicability"]["exact_engine_gearbox_pair"])
         self.assertFalse(entry["applicability"]["ru_eaeu_applicability"])
