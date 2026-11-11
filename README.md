@@ -57,6 +57,17 @@ The OBDex research view applies the local DTC range policy rather than trusting 
 
 ## Production-data status — 2026-11-11
 
+### Latest successful PR-head Windows x64 lifecycle — PR #100 / run1370
+
+[Windows desktop CI run 1370](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42932589509) validated PR #100 at head revision `b16c121e67d30a3dca97367ad95088d724d1bd01`; the PR was subsequently merged into `main` as `91d57d2c9e9b34a357972575020ce612c4e87d2a`. The Windows x64 `build-and-lifecycle` job passed all 104 steps, and the separate Windows Server 2022 installer-compatibility lifecycle passed all 7 steps. The run built NSIS x64 installers 0.2.3 and 0.2.4 and passed the clean-install, offline/network-blocked launch, in-place upgrade, SQLite integrity, backup/restore and uninstall-preservation lifecycle.
+
+Run 1370 independently rebuilt the VehiclesDB v2026.11.3 identity-only research pack and integrated the CC0 Wikidata identity candidates. Build metadata SHA-256: `cfe401e0e565da46a1e4af0abb0c1a0b92c7c2e8771a5f0dedaf39bcceac548b`. Installer 0.2.3 SHA-256: `5065e1284c3f8ed2d8b58291c3db0a4880faf6b7788ca6c4a62d10f6237abcc7` (573,942,147 bytes); installer 0.2.4 SHA-256: `c4233b8e280505e4819d35e9cdd19b5d8eb8c5e152f91300e570da57c6603e2f` (573,942,014 bytes). These are CI evidence artifacts, not signed public-release installers.
+
+The refreshed source register contains 68 entries; the Russian/EAEU OTTS register contains 16. Build metadata confirms 521 Wikidata model candidates plus 6 manufacturer candidates seeded into the local research/identity layer, with 0 verified models, 0 exact fitments, 0 engine codes and 0 transmission codes from that seed. The VehiclesDB pack contains 307 model-name candidates and 1,621 foreign-market evidence rows; neither pack establishes RU/EAEU fitment or factory powertrain pairings.
+
+The EEA CC BY 4.0 rights/tooling validation passed, but the live acquisition job remained skipped because it requires the owner-controlled Windows 10/11 x64 runner. The native Windows 10/11 lifecycle was not executed in run 1370; the Windows Server 2022 compatibility job is not a substitute. The installers remain unsigned because no owner-supplied code-signing certificate is configured. Run 1370 therefore does not change `release_ready=false` or the production-data status below.
+
+
 ### Latest fully successful Windows x64 validation — PR #91 / run1264 (2026-11-10)
 
 [Windows desktop CI run 1264](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42813922741) validated PR #91 at source revision `f5f005a04e1dc715aae1fb48899592ff5f1009c2`; PR #91 was subsequently merged into `main` as commit `8e8280cf2c9a5efb7cb7c2e2178d7f4936a59e49`. Both jobs passed: the Windows x64 `build-and-lifecycle` job (100 steps) and the separate Windows Server 2022 installer-compatibility lifecycle (7 steps). The build produced NSIS x64 installers 0.2.3 and 0.2.4 and passed clean installation, external-network-blocked offline launch, SQLite backup/restore, in-place upgrade, database integrity and uninstall-preservation checks.
