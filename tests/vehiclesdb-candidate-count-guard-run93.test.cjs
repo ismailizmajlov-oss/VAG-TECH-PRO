@@ -41,12 +41,12 @@ function fixture(overrides = {}) {
   const candidateFunction = [
     "function searchVehiclesDbCandidates() {",
     "  const marketEvidence = [{ attributionRequired: true, attribution: \"market evidence\" }];",
-    "  const sourceRecord = {};",
-    '  const candidateRecordSha256 = crypto.createHash("sha256").update(JSON.stringify(sourceRecord)).digest("hex");',
-    "  return {",
-    "    attributionRequired: true,",
-    '    attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",',
-    "  };",
+    "      return {",
+    "        sourceModelId: row.source_model_id,",
+    "        attributionRequired: true,",
+    '        attribution: packManifest.attribution?.display_form || "Vehicle data by VehiclesDB (vehiclesdb.com)",',
+    "      };",
+    "}",
     "}",
     "",
     "function getWikidataGenerationSummary() {",
@@ -88,7 +88,10 @@ test("run93 binds current VehiclesDB counts and safety policy into desktop searc
     assert.match(db, /vehiclesDbCounts\.models !== vehiclesDbPackManifest\.counts\?\.models/);
     assert.match(db, /vehiclesDbCounts\.marketEvidence !== vehiclesDbPackManifest\.counts\?\.market_evidence/);
     assert.match(db, /safety_critical_reliance !== false/);
-    assert.match(db, /identityOnlyUse: packManifest\.identity_only_use/);\n    assert.match(db, /marketEvidence = \[\{ attributionRequired: true, attribution: "market evidence" \}\]/);\n    assert.match(db, /function getWikidataGenerationSummary\(\) \{\s*return \{ attributionRequired: true, attribution: "Wikidata attribution" \}/);
+    assert.match(db, /identityOnlyUse: packManifest\.identity_only_use/);
+    assert.match(db, /sourceModelId: row\.source_model_id/);
+    assert.match(db, /marketEvidence = \[\{ attributionRequired: true, attribution: "market evidence" \}\]/);
+    assert.match(db, /function getWikidataGenerationSummary\(\) \{\s*return \{ attributionRequired: true, attribution: "Wikidata attribution" \}/);
     assert.match(db, /safetyCriticalReliance: packManifest\.safety_critical_reliance/);
     assert.match(db, /repairDecisionUse: packManifest\.repair_decision_use/);
     assert.match(verifier, /VehiclesDB safety-critical and repair-decision boundary failed/);
