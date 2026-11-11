@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_source_rights (
   display_allowed INTEGER NOT NULL DEFAULT 0 CHECK (display_allowed IN (0,1)),
   offline_cache_allowed INTEGER NOT NULL DEFAULT 0 CHECK (offline_cache_allowed IN (0,1)),
   bulk_reuse_allowed INTEGER NOT NULL DEFAULT 0 CHECK (bulk_reuse_allowed IN (0,1)),
+  store_structured_data_allowed INTEGER NOT NULL DEFAULT 0 CHECK (store_structured_data_allowed IN (0,1)),
   pdf_redistribution_allowed INTEGER NOT NULL DEFAULT 0 CHECK (pdf_redistribution_allowed IN (0,1)),
   attribution_required INTEGER NOT NULL DEFAULT 0 CHECK (attribution_required IN (0,1)),
   attribution_text TEXT,
@@ -39,7 +40,8 @@ BEGIN
     THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
   SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
       OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
-    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache and bulk-reuse rights') END;
+      OR NEW.store_structured_data_allowed<>1
+    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache, bulk-reuse and structured-data rights') END;
   SELECT CASE WHEN NEW.rights_revision IS NULL OR trim(NEW.rights_revision)=''
       OR NEW.reviewed_at_utc IS NULL OR trim(NEW.reviewed_at_utc)=''
     THEN RAISE(ABORT, 'source rights approval requires a reviewed revision and timestamp') END;
@@ -362,4 +364,34 @@ BEGIN
   UPDATE vehicle_catalog_source_rights
   SET rights_status='restricted', reviewed_at_utc=NULL
   WHERE source_id=NEW.source_id AND rights_status='approved';
+END;
+
+-- Rights revocation demotes evidence but retains its immutable links for audit.
+-- All workshop queries must join evidence status and current rights before use.
+CREATE TRIGGER IF NOT EXISTS demote_vehicle_catalog_after_rights_narrowing
+AFTER UPDATE OF rights_status, commercial_use_allowed, display_allowed,
+                offline_cache_allowed, bulk_reuse_allowed, store_structured_data_allowed
+ON vehicle_catalog_source_rights
+WHEN NEW.rights_status<>'approved'
+  OR NEW.commercial_use_allowed<>1
+  OR NEW.display_allowed<>1
+  OR NEW.offline_cache_allowed<>1
+  OR NEW.bulk_reuse_allowed<>1
+  OR NEW.store_structured_data_allowed<>1
+BEGIN
+  UPDATE vehicle_catalog_evidence
+  SET review_status='candidate', reviewed_at_utc=NULL,
+      reviewer_note='Source rights were revoked or narrowed; evidence returned to candidate status.'
+  WHERE source_id=NEW.source_id
+    AND review_status IN ('source_checked','technically_verified','publication_approved');
+END;
+
+CREATE TRIGGER IF NOT EXISTS demote_vehicle_catalog_after_rights_deletion
+AFTER DELETE ON vehicle_catalog_source_rights
+BEGIN
+  UPDATE vehicle_catalog_evidence
+  SET review_status='candidate', reviewed_at_utc=NULL,
+      reviewer_note='Source rights record was deleted; evidence returned to candidate status.'
+  WHERE source_id=OLD.source_id
+    AND review_status IN ('source_checked','technically_verified','publication_approved');
 END;
