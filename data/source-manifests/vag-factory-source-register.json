@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-11",
+  "updated_at": "2026-11-11T06:33:30Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -9482,7 +9482,7 @@
       "publisher": "ownerspecs.com",
       "url": "https://ownerspecs.com/data",
       "source_kind": "curated_document_verified_vehicle_generation_specifications",
-      "source_revision": "OpenSpecs dataset generated 2026-11-11; exact source.json SHA-256 d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9; 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts; 47 VAG facts removed versus the previous verified snapshot; candidate-only.",
+      "source_revision": "OpenSpecs dataset generated 2026-11-11; exact source.json acquired by Windows x64 CI run 158 at 2026-11-11T06:33:30Z; raw SHA-256 835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c; 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts; two non-VAG unit-case changes versus the 06:19 snapshot; no VAG fact changes; candidate-only.",
       "market_scope": [
         "UNKNOWN"
       ],
@@ -9525,21 +9525,21 @@
         "vag_fact_count": 186,
         "source_snapshot_status": "source_snapshot_acquired_schema_verified",
         "source_file_bytes": 659973,
-        "source_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
-        "retrieved_at_utc": "2026-11-11T05:56:12+00:00",
+        "source_snapshot_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
+        "retrieved_at_utc": "2026-11-11T06:33:30.154805+00:00",
         "generation_count": 111,
         "verified_datapoints": 2273,
         "generations_added": 0,
         "generations_removed": 0,
-        "datapoints_removed": 99,
-        "datapoints_added": 3,
-        "changed_datapoints_total": 3,
-        "net_datapoint_change": -96,
-        "vag_datapoints_removed": 47,
+        "datapoints_removed": 0,
+        "datapoints_added": 0,
+        "changed_datapoints_total": 2,
+        "net_datapoint_change": 0,
+        "vag_datapoints_removed": 0,
         "vag_datapoints_added": 0,
         "vag_changed_datapoints": 0,
         "generation_membership_changed": false,
-        "datapoint_membership_changed": true
+        "datapoint_membership_changed": false
       },
       "applicability": {
         "market_scope": "UNKNOWN",
@@ -9556,11 +9556,11 @@
         "technical_review_status": "not_independently_reviewed"
       },
       "data_ingested": false,
-      "source_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+      "source_snapshot_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
       "research_pack_allowed": true,
       "research_pack_acquisition_allowed": true,
       "product_import_allowed": false,
-      "project_decision": "The current 2026-11-11 OwnerSpecs snapshot is pinned and reconciled to the publisher page: 111 generations / 2,273 datapoints; VAG subset 20 generation candidates / 186 facts. The separate CC BY-SA 4.0 research pack was built and independently verified in Windows x64 workflow run #3 (artifact 13833552555). Compared with the previous verified 2026-11-10 pack, 47 VAG facts were removed. The new pack is ready for offline desktop integration, but it remains market UNKNOWN, candidate-only, with no per-value primary-document locator/revision, exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability. No production import.",
+      "project_decision": "Latest exact OwnerSpecs publisher snapshot is pinned to 835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c (111 generations / 2,273 datapoints; VAG 20 generation candidates / 186 facts). A row-level comparison against the previous exact d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9 snapshot found only two non-VAG Hyundai i10 unit-label case changes and no VAG fact changes. The last independently verified CC BY-SA pack remains tied to d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9; its source manifest is archived separately and the new pack refresh is pending. Market UNKNOWN, no exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability, no production import.",
       "research_pack_acquired": true,
       "research_pack_last_verified_at": "2026-11-11T06:19:22Z",
       "research_pack_workflow_run_id": 42971572740,
@@ -9572,7 +9572,7 @@
       "research_pack_source_manifest_sha256": "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697",
       "product_database_ingested": false,
       "research_pack_source_commit": "9f9aa8136e5c084def52e5fdb983ede737c817ec",
-      "verification_status": "current_publisher_snapshot_reconciled; separate_CC_BY_SA_research_pack_built_and_independently_verified; offline_desktop_integration_pending; candidate_only_no_production_import",
+      "verification_status": "latest_publisher_snapshot_acquired_and_sha256_verified; VAG_subset_unchanged_since_last_verified_pack; previous_pack_retained; current_pack_refresh_pending; desktop_integration_pending; candidate_only_no_production_import",
       "research_pack_desktop_integration_status": "pending_current_snapshot_desktop_integration",
       "research_pack_run_number": 3,
       "research_database_included_in_desktop": true,
@@ -9658,7 +9658,7 @@
         "native_windows_10_11_verified": false,
         "native_windows_10_11_status": "not_run_owner_runner_gate_disabled"
       },
-      "source_manifest_sha256": "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697",
+      "source_manifest_sha256": "7c0d13bcfe18a86160027965a2e56550af7c61e1a0c24c5fecdd22c6ce831217",
       "source_file_bytes": 659973,
       "data_revision": "OpenSpecs dataset generated 2026-11-11; live page 111 generations / 27 brands / 2,273 datapoints; VAG subset 20 / 186; exact source JSON SHA-256 d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9.",
       "latest_snapshot_review": {
@@ -9784,8 +9784,8 @@
         "disposition": "rebuild_separate_CC_BY_SA_research_pack_from_current_exact_snapshot; retain_previous_verified_pack_until_replacement_is_independently_verified; do_not_promote_to_factory_fitment_or_repair_data"
       },
       "research_pack_source_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
-      "research_pack_current": true,
-      "research_pack_status": "verified_research_only",
+      "research_pack_current": false,
+      "research_pack_status": "verified_research_only_previous_snapshot",
       "research_pack_database_byte_size": 262144,
       "research_pack_artifact_size_bytes": 101843,
       "research_pack_artifact_created_at": "2026-11-11T06:19:22Z",
@@ -9831,7 +9831,66 @@
         "native_windows_10_11_verified": false
       },
       "current_research_pack_in_desktop": false,
-      "previous_pack_still_in_desktop": true
+      "previous_pack_still_in_desktop": true,
+      "latest_publisher_snapshot": {
+        "status": "acquired_exact_source_bytes_pack_build_rejected_by_stale_prior_pin",
+        "source_snapshot_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
+        "source_file_bytes": 659973,
+        "retrieved_at_utc": "2026-11-11T06:33:30.154805+00:00",
+        "publisher_generated_date": "2026-11-11",
+        "generation_count": 111,
+        "brand_count": 27,
+        "verified_datapoints": 2273,
+        "vag_generation_count": 20,
+        "vag_fact_count": 186,
+        "previous_exact_snapshot_sha256": "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9",
+        "delta": {
+          "changed_datapoints": 2,
+          "vag_changed_datapoints": 0,
+          "generation_membership_changed": false,
+          "datapoint_membership_changed": false,
+          "changed_values": [
+            {
+              "brand": "Hyundai",
+              "model": "i10",
+              "generation": "i10 III (AC3)",
+              "field": "coolant_capacity",
+              "old_unit": "L",
+              "new_unit": "l",
+              "value": 5.53,
+              "value_max": 5.89,
+              "vag": false
+            },
+            {
+              "brand": "Hyundai",
+              "model": "i10",
+              "generation": "i10 III (AC3)",
+              "field": "engine_oil_capacity",
+              "old_unit": "l",
+              "new_unit": "L",
+              "value": 3.1,
+              "value_max": 3.4,
+              "vag": false
+            }
+          ]
+        },
+        "acquisition_evidence": {
+          "workflow_run_id": 42973238985,
+          "workflow_run_number": 158,
+          "workflow_run_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42973238985",
+          "artifact_id": 13834540968,
+          "artifact_name": "ownerspecs-vag-source-acquisition-evidence",
+          "artifact_sha256": "81360d348655f3fe84ccfd926c026120677848ffff4e9f03cfad404158f7c803",
+          "artifact_bytes": 34193,
+          "source_json_path": "artifacts/ownerspecs-source/source.json",
+          "source_json_sha256": "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c",
+          "source_json_bytes": 659973,
+          "acquisition_snapshot_sha256": "93bd94338641703d4a1a3cb47870fbf0a3782d65738dc382444e6e4060b10904",
+          "acquisition_log_sha256": "5aed7971c3ff23321202a33483f2bd732c5f2ee319e8b15aba13f4b84a748fd8",
+          "note": "The exact publisher JSON was acquired, schema-validated and retained. The subsequent pack build rejected it because the manifest still pinned the prior 06:19 bytes; no SQLite pack was produced by this run."
+        }
+      },
+      "research_pack_current_for_vag_subset": true
     },
     {
       "source_id": "otts-baza-commercial-otts-catalog",
