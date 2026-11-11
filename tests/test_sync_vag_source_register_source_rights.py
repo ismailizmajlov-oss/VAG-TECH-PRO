@@ -100,7 +100,12 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
         self.assertEqual(source["data_file_presence"]["default_branch_status"], "not_present")
         self.assertFalse(source["data_file_presence"]["database_bytes_obtained"])
         self.assertIsNone(source["data_file_presence"]["database_sha256"])
-        self.assertFalse(source["data_file_presence"]["historical_release_assets_checked"])
+        self.assertTrue(source["data_file_presence"]["historical_release_assets_checked"])
+        release_review = source["data_file_presence"]["release_collection_review"]
+        self.assertEqual(release_review["status"], "empty_release_collection")
+        self.assertEqual(release_review["release_count"], 0)
+        self.assertFalse(release_review["release_assets_available"])
+        self.assertFalse(release_review["tags_checked"])
         self.assertEqual(source["rights"]["repository_code_license"], "MIT")
         self.assertEqual(source["rights"]["database_data_license"], "not_separately_established_in_review")
         self.assertEqual(source["rights"]["underlying_record_authority"], "not_established")
