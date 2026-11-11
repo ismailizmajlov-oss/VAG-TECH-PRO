@@ -3111,14 +3111,22 @@ jobs:
           $rdwResearchRoot = Join-Path $desktopRoot "data/research"
           $rdwEntry = @($researchManifest.packs | Where-Object { $_.id -eq "rdw-vag-nl-eu-type-approval-research" }) | Select-Object -First 1
           if (-not $rdwEntry -or $rdwEntry.source_id -ne "rdw-eu-vag-type-approval-open-data-nl" -or $rdwEntry.license -ne "CC0 1.0" -or $rdwEntry.rights_status -ne "approved_by_published_CC0_license" -or @($rdwEntry.market_scope).Count -ne 1 -or $rdwEntry.market_scope[0] -ne "NL") { throw "Packaged RDW research manifest is missing or has an unexpected identity/market/license." }
+          function Resolve-RdwLifecycleFile([string]$relativePath) {
+            if ([string]::IsNullOrWhiteSpace($relativePath)) { throw "RDW lifecycle resource path is missing." }
+            $root = [System.IO.Path]::GetFullPath($rdwResearchRoot)
+            $candidate = [System.IO.Path]::GetFullPath((Join-Path $root $relativePath))
+            $prefix = $root.TrimEnd([System.IO.Path]::DirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+            if (-not $candidate.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) { throw "RDW lifecycle resource path escapes the research root." }
+            return $candidate
+          }
           $rdwFiles = @(
-            @{ path=(Join-Path $rdwResearchRoot $rdwEntry.database); hash=$metadata.rdw_database_sha256 }
-            @{ path=(Join-Path $rdwResearchRoot $rdwEntry.pack_manifest_file); hash=$metadata.rdw_pack_manifest_sha256 }
-            @{ path=(Join-Path $rdwResearchRoot $rdwEntry.source_manifest_file); hash=$metadata.rdw_source_manifest_sha256 }
-            @{ path=(Join-Path $rdwResearchRoot $rdwEntry.desktop_integration_report_file); hash=$metadata.rdw_integration_report_sha256 }
-            @{ path=(Join-Path $rdwResearchRoot $rdwEntry.license_file); hash=$metadata.rdw_license_sha256 }
-            @{ path=(Join-Path $rdwResearchRoot $rdwEntry.attribution_file); hash=$metadata.rdw_attribution_sha256 }
-            @{ path=(Join-Path $rdwResearchRoot $rdwEntry.build_report_file); hash=$metadata.rdw_build_report_sha256 }
+            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.database); hash=$metadata.rdw_database_sha256 }
+            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.pack_manifest_file); hash=$metadata.rdw_pack_manifest_sha256 }
+            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.source_manifest_file); hash=$metadata.rdw_source_manifest_sha256 }
+            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.desktop_integration_report_file); hash=$metadata.rdw_integration_report_sha256 }
+            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.license_file); hash=$metadata.rdw_license_sha256 }
+            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.attribution_file); hash=$metadata.rdw_attribution_sha256 }
+            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.build_report_file); hash=$metadata.rdw_build_report_sha256 }
           )
           foreach ($file in $rdwFiles) {
             if (-not (Test-Path -LiteralPath $file.path -PathType Leaf)) { throw "Packaged RDW resource is missing: $($file.path)" }
@@ -3128,6 +3136,7 @@ jobs:
           $rdwSourceManifest = Get-Content -LiteralPath (Join-Path $rdwResearchRoot $rdwEntry.source_manifest_file) -Raw | ConvertFrom-Json
           $rdwIntegrationReport = Get-Content -LiteralPath (Join-Path $rdwResearchRoot $rdwEntry.desktop_integration_report_file) -Raw | ConvertFrom-Json
           if ($metadata.rdw_source_id -ne $rdwEntry.source_id -or $metadata.rdw_license -ne $rdwEntry.license -or $metadata.rdw_rights_status -ne $rdwEntry.rights_status -or $metadata.rdw_source_artifact_sha256 -ne $rdwEntry.source_artifact_sha256 -or $metadata.rdw_source_snapshot_sha256 -ne $rdwEntry.source_snapshot_sha256 -or $metadata.rdw_source_run_id -ne $rdwEntry.source_run_id -or $metadata.rdw_source_run_number -ne $rdwEntry.source_run_number) { throw "RDW source/artifact metadata does not match the packaged research manifest." }
+          if (@($metadata.rdw_market_scope).Count -ne 1 -or $metadata.rdw_market_scope[0] -ne "NL" -or $metadata.rdw_pack_manifest_sha256 -ne $rdwEntry.pack_manifest_sha256 -or $metadata.rdw_source_manifest_sha256 -ne $rdwEntry.source_manifest_sha256 -or $metadata.rdw_database_sha256 -ne $rdwEntry.database_sha256 -or $metadata.rdw_integration_report_sha256 -ne $rdwEntry.desktop_integration_report_sha256 -or $metadata.rdw_license_sha256 -ne $rdwEntry.license_sha256 -or $metadata.rdw_attribution_sha256 -ne $rdwEntry.attribution_sha256 -or $metadata.rdw_build_report_sha256 -ne $rdwEntry.build_report_sha256) { throw "RDW build hashes/market scope do not match the packaged research manifest." }
           if ($rdwPackManifest.database.sha256 -ne $metadata.rdw_database_sha256 -or $rdwPackManifest.source_manifest_sha256 -ne $metadata.rdw_source_manifest_sha256 -or $rdwPackManifest.source_snapshot_sha256 -ne $rdwEntry.source_snapshot_sha256 -or $rdwSourceManifest.source_snapshot_sha256 -ne $rdwEntry.source_snapshot_sha256 -or $rdwIntegrationReport.database_sha256 -ne $metadata.rdw_database_sha256 -or $rdwIntegrationReport.artifact_sha256 -ne $metadata.rdw_source_artifact_sha256) { throw "RDW pack/source/integration provenance chain does not match build metadata." }
           if ($metadata.rdw_source_file_count -ne $rdwEntry.counts.source_files -or $metadata.rdw_approval_scope_count -ne $rdwEntry.counts.approval_scopes -or $metadata.rdw_registration_observation_count -ne $rdwEntry.counts.registration_observations -or $metadata.rdw_engine_candidate_count -ne $rdwEntry.counts.engine_candidates -or $metadata.rdw_gearbox_classification_count -ne $rdwEntry.counts.gearbox_classifications -or $metadata.rdw_auxiliary_row_count -ne $rdwEntry.counts.auxiliary_rows -or $metadata.rdw_source_row_count -ne $rdwEntry.counts.source_rows) { throw "RDW research counts do not match the packaged manifest." }
           if ($metadata.rdw_production_import -ne $false -or $metadata.rdw_product_import_allowed -ne $false -or $metadata.rdw_data_ingested -ne $false -or $metadata.rdw_ru_eaeu_applicability -ne $false -or $metadata.rdw_exact_vehicle_fitment -ne $false -or $metadata.rdw_exact_engine_gearbox_pair -ne $false -or $metadata.rdw_repair_applicability -ne $false -or $metadata.rdw_diagnostic_execution_allowed -ne $false) { throw "RDW research pack crossed a candidate-only applicability boundary." }
