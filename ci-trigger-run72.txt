@@ -2,3 +2,5 @@ VAG TECH PRO Windows x64 validation trigger.
 Base revision: 3c30a82a3da799d2fc5bfd4ea67c597241203f0f
 Purpose: run the consolidated Windows x64 desktop validation after the ELPTS OTTS public-table evidence and rights-boundary regression test were committed. The audit artifact must include scripts/windows-installer-lifecycle.ps1 for diagnosis of the prior BaseUrl lifecycle failure.
 No OTTS records were downloaded, cached or imported. No unlicensed source was approved. No installer is published.
+
+PR validation trigger: run72 lifecycle audit; no product data change.
