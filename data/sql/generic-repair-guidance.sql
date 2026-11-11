@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS source_files (
   source_file_id TEXT PRIMARY KEY,
   source_id TEXT NOT NULL REFERENCES source_registry(source_id),
   source_url TEXT NOT NULL,
-  git_blob_sha1 TEXT NOT NULL CHECK (length(git_blob_sha1)=40),
-  sha256 TEXT NOT NULL CHECK (length(sha256)=64),
+  git_blob_sha1 TEXT NOT NULL CHECK (length(git_blob_sha1)=40 AND git_blob_sha1 NOT GLOB '*[^a-f0-9]*'),
+  sha256 TEXT NOT NULL CHECK (length(sha256)=64 AND sha256 NOT GLOB '*[^a-f0-9]*'),
   byte_size INTEGER NOT NULL CHECK (byte_size > 0),
   record_count INTEGER,
   purpose TEXT NOT NULL
@@ -52,9 +52,9 @@ CREATE TABLE IF NOT EXISTS generic_dtc_references (
   technical_review_status TEXT NOT NULL CHECK (technical_review_status='not_independently_reviewed'),
   source_file_id TEXT NOT NULL REFERENCES source_files(source_file_id),
   source_revision TEXT NOT NULL,
-  source_file_sha256 TEXT NOT NULL CHECK (length(source_file_sha256)=64),
+  source_file_sha256 TEXT NOT NULL CHECK (length(source_file_sha256)=64 AND source_file_sha256 NOT GLOB '*[^a-f0-9]*'),
   source_line_no INTEGER NOT NULL CHECK (source_line_no > 1),
-  source_line_sha256 TEXT NOT NULL CHECK (length(source_line_sha256)=64)
+  source_line_sha256 TEXT NOT NULL CHECK (length(source_line_sha256)=64 AND source_line_sha256 NOT GLOB '*[^a-f0-9]*')
 );
 
 CREATE TABLE IF NOT EXISTS generic_repair_guidance (
@@ -76,9 +76,9 @@ CREATE TABLE IF NOT EXISTS generic_repair_guidance (
   safety_review_status TEXT NOT NULL CHECK (safety_review_status='not_assessed'),
   source_file_id TEXT NOT NULL REFERENCES source_files(source_file_id),
   source_revision TEXT NOT NULL,
-  source_file_sha256 TEXT NOT NULL CHECK (length(source_file_sha256)=64),
+  source_file_sha256 TEXT NOT NULL CHECK (length(source_file_sha256)=64 AND source_file_sha256 NOT GLOB '*[^a-f0-9]*'),
   source_line_no INTEGER NOT NULL CHECK (source_line_no > 1),
-  source_line_sha256 TEXT NOT NULL CHECK (length(source_line_sha256)=64),
+  source_line_sha256 TEXT NOT NULL CHECK (length(source_line_sha256)=64 AND source_line_sha256 NOT GLOB '*[^a-f0-9]*'),
   source_license TEXT NOT NULL CHECK (source_license='ODbL-1.0')
 );
 
