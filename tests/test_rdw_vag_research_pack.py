@@ -580,6 +580,11 @@ class WindowsBuildMetadataContractTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
         lifecycle_contract = (
             "$rdwResearchRoot = Join-Path $desktopRoot \"data/research\"",
+            "Resolve-RdwLifecycleFile",
+            "$metadata.rdw_market_scope[0] -ne \"NL\"",
+            "$metadata.rdw_license_sha256 -ne $rdwEntry.license_sha256",
+            "$metadata.rdw_attribution_sha256 -ne $rdwEntry.attribution_sha256",
+            "$metadata.rdw_build_report_sha256 -ne $rdwEntry.build_report_sha256",
             "$metadata.rdw_database_sha256",
             "$metadata.rdw_pack_manifest_sha256",
             "$metadata.rdw_source_manifest_sha256",
