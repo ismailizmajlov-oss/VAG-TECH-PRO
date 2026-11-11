@@ -9575,7 +9575,7 @@
       "verification_status": "current_publisher_snapshot_reconciled; separate_CC_BY_SA_research_pack_built_and_independently_verified; offline_desktop_integration_pending; candidate_only_no_production_import",
       "research_pack_desktop_integration_status": "pending_current_snapshot_desktop_integration",
       "research_pack_run_number": 3,
-      "research_database_included_in_desktop": false,
+      "research_database_included_in_desktop": true,
       "desktop_lifecycle_evidence": null,
       "previous_verified_research_pack": {
         "status": "verified_research_only_previous_snapshot",
@@ -9829,7 +9829,9 @@
         "product_database_imported": false,
         "production_fitment_published": false,
         "native_windows_10_11_verified": false
-      }
+      },
+      "current_research_pack_in_desktop": false,
+      "previous_pack_still_in_desktop": true
     },
     {
       "source_id": "otts-baza-commercial-otts-catalog",
