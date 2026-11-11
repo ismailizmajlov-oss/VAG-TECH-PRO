@@ -121,9 +121,13 @@ function main() {
   if (candidateFunctionStart < 0 || candidateFunctionEnd < 0) fail("VehiclesDB candidate search function boundaries are missing");
   let candidateFunction = dbText.slice(candidateFunctionStart, candidateFunctionEnd);
   const candidateRecordAnchor = "const candidateRecordSha256 = crypto.createHash(\"sha256\").update(JSON.stringify(sourceRecord)).digest(\"hex\");";
+  const candidateModelAnchor = "sourceModelId: row.source_model_id,";
   const candidateRecordIndex = candidateFunction.indexOf(candidateRecordAnchor);
-  if (candidateRecordIndex < 0) fail("VehiclesDB normalized candidate-record hash anchor is missing");
-  const candidateReturnStart = candidateFunction.indexOf("return {", candidateRecordIndex);
+  const candidateModelIndex = candidateFunction.indexOf(candidateModelAnchor);
+  if ((candidateRecordIndex >= 0) === (candidateModelIndex >= 0)) fail("VehiclesDB candidate function must contain exactly one supported source-record anchor");
+  const candidateReturnStart = candidateRecordIndex >= 0
+    ? candidateFunction.indexOf("return {", candidateRecordIndex)
+    : candidateFunction.lastIndexOf("return {", candidateModelIndex);
   const candidateReturnEnd = candidateFunction.indexOf("\n      };", candidateReturnStart);
   if (candidateReturnStart < 0 || candidateReturnEnd < 0) fail("VehiclesDB candidate return-object boundaries are missing");
   let candidateReturn = candidateFunction.slice(candidateReturnStart, candidateReturnEnd + "\n      };".length);
