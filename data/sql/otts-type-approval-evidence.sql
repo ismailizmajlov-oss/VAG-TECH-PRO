@@ -409,9 +409,8 @@ END;
 
 
 
--- Revoking or narrowing source rights removes active vehicle fitment links and demotes
--- the associated evidence. The immutable evidence row remains for audit, but is no
--- longer eligible for workshop lookup or publication.
+-- Rights revocation demotes evidence but retains its immutable links for audit.
+-- All workshop queries must join evidence status and current rights before use.
 CREATE TRIGGER IF NOT EXISTS demote_vehicle_catalog_after_rights_narrowing
 AFTER UPDATE OF rights_status, commercial_use_allowed, display_allowed,
                 offline_cache_allowed, bulk_reuse_allowed
@@ -422,15 +421,9 @@ WHEN NEW.rights_status<>'approved'
   OR NEW.offline_cache_allowed<>1
   OR NEW.bulk_reuse_allowed<>1
 BEGIN
-  DELETE FROM engine_fitments
-  WHERE evidence_id IN (SELECT evidence_id FROM vehicle_catalog_evidence WHERE source_id=NEW.source_id);
-  DELETE FROM transmission_fitments
-  WHERE evidence_id IN (SELECT evidence_id FROM vehicle_catalog_evidence WHERE source_id=NEW.source_id);
-  DELETE FROM powertrain_pair_evidence
-  WHERE evidence_id IN (SELECT evidence_id FROM vehicle_catalog_evidence WHERE source_id=NEW.source_id);
   UPDATE vehicle_catalog_evidence
   SET review_status='candidate', reviewed_at_utc=NULL,
-      reviewer_note='Source rights were revoked or narrowed; active fitment links were removed.'
+      reviewer_note='Source rights were revoked or narrowed; evidence returned to candidate status.'
   WHERE source_id=NEW.source_id
     AND review_status IN ('source_checked','technically_verified','publication_approved');
 END;
@@ -438,15 +431,9 @@ END;
 CREATE TRIGGER IF NOT EXISTS demote_vehicle_catalog_after_rights_deletion
 AFTER DELETE ON vehicle_catalog_source_rights
 BEGIN
-  DELETE FROM engine_fitments
-  WHERE evidence_id IN (SELECT evidence_id FROM vehicle_catalog_evidence WHERE source_id=OLD.source_id);
-  DELETE FROM transmission_fitments
-  WHERE evidence_id IN (SELECT evidence_id FROM vehicle_catalog_evidence WHERE source_id=OLD.source_id);
-  DELETE FROM powertrain_pair_evidence
-  WHERE evidence_id IN (SELECT evidence_id FROM vehicle_catalog_evidence WHERE source_id=OLD.source_id);
   UPDATE vehicle_catalog_evidence
   SET review_status='candidate', reviewed_at_utc=NULL,
-      reviewer_note='Source rights record was deleted; active fitment links were removed.'
+      reviewer_note='Source rights record was deleted; evidence returned to candidate status.'
   WHERE source_id=OLD.source_id
     AND review_status IN ('source_checked','technically_verified','publication_approved');
 END;
