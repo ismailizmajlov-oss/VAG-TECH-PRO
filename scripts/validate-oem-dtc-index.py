@@ -73,6 +73,16 @@ def main() -> None:
     if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
         raise AssertionError("SQLite integrity_check failed")
 
+    expect_integrity_error(
+        lambda: db.execute("""INSERT INTO source_documents
+          (source_id,publisher,document_id,document_type,revision,market_scope,
+           license_status,license_name,reuse_scope,redistribution_allowed,source_sha256,retrieved_at_utc)
+          VALUES ('invalid-hash','Synthetic','invalid','other','r1','UNKNOWN',
+                  'cc0','CC0-1.0','test only',1,?,'2026-11-11T00:00:00Z')""",
+          ("g" * 64,)),
+        "CHECK constraint failed"
+    )
+
     obdex_snapshot_sha256 = hashlib.sha256(b"synthetic-obdex-cc0-snapshot").hexdigest()
     cc0_license_sha256 = hashlib.sha256(b"CC0-1.0 public domain dedication").hexdigest()
     db.execute("""INSERT INTO source_documents
@@ -88,6 +98,16 @@ def main() -> None:
        store_structured_data_allowed,license_text_sha256,rights_revision,reviewed_at_utc)
       VALUES (?,'approved',1,1,1,1,1,1,0,1,?,'synthetic-cc0-r1','2026-11-03T00:00:00Z')""",
       (cc0_source,cc0_license_sha256))
+
+    expect_integrity_error(
+        lambda: db.execute("""INSERT INTO oem_dtc_index
+          (dtc_code,dtc_namespace,manufacturer,market_scope,source_document_id,
+           evidence_locator,applicability_level,source_claim_hash,created_at_utc)
+          VALUES ('P0124','generic_sae_iso','UNKNOWN','UNKNOWN',?,
+                  'malformed source claim hash','generic_only',?,'2026-11-11T00:00:00Z')""",
+          (cc0_source, "g" * 64)),
+        "CHECK constraint failed"
+    )
 
     # Direct INSERT must not bypass the rights/applicability publication guard.
     expect_integrity_error(
