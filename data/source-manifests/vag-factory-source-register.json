@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-11T15:43:09Z",
+  "updated_at": "2026-11-11T16:15:00Z",
   "project_scope": "VAG TECH PRO; Russian market first",
   "policy": {
     "generic_obd_is_not_vag_specific": true,
@@ -5671,7 +5671,9 @@
         "terms_scope": "The official GTC (status 14.08.2026) grants a simple non-exclusive, non-transferable right to use downloaded service information only for the user's own use. Publication, reproduction, editing, design and exploitation rights are reserved; dissemination/distribution/reproduction are prohibited except for narrow internal-company printout exceptions. This does not license copying or distributing a pre-populated VAG TECH PRO offline SQLite database.",
         "own_use_only": true,
         "transfer_to_third_parties_allowed": false,
-        "prepopulated_offline_database_allowed": false
+        "downloaded_service_information_max_storage_hours": 24,
+        "downloaded_service_information_retention_exceptions": "Further storage is permitted only to the extent and for the duration necessary to comply with statutory retention, documentation or evidentiary obligations.",
+"prepopulated_offline_database_allowed": false
       },
       "access": {
         "business_account_required": true,
@@ -5704,6 +5706,7 @@
         "No company account, licence or data download was created.",
         "The official GTC status 2026-08-14, section 7.1, reserves publication, reproduction, editing, design and exploitation rights in erWin technical information.",
         "The official GTC status 2026-08-14, section 7.4, grants a non-exclusive, non-transferable right for the user's own use only; it does not grant VAG TECH PRO third-party database reuse.",
+        "The official GTC status 2026-08-14, section 5.8, limits storage of downloaded service information to 24 hours, except only to the extent and for the duration necessary for statutory retention, documentation or evidentiary obligations.",
         "The official product-use notice prohibits dissemination, distribution and reproduction except narrow internal-company printout exceptions; these exceptions do not authorize a bundled offline SQLite repair database."
       ],
       "evidence_reviewed": [
@@ -5727,6 +5730,12 @@
           "url": "https://erwin.vwgroup-datahub.com/disclaimer-info",
           "reviewed_at": "2026-11-11",
           "evidence": "Official erWin use-of-product notice states that dissemination, distribution and reproduction of technical information are prohibited, with limited exceptions for internal-company printouts within the same service number and specified maintenance tables, working hours and measurement protocols. These exceptions do not authorize a pre-populated third-party offline database."
+        },
+        {
+          "url": "https://erwin.vwgroup-datahub.com/en-DE/simplecontent/terms-and-conditions-MCR6ZPIVA5SNFZ3KJ7TAQAMQWIQQ",
+          "reviewed_at": "2026-11-11",
+          "document_status": "2026-08-14",
+          "evidence": "Official GTC section 5.8 limits storage of downloaded service information to a maximum of 24 hours; further storage is permitted only to the extent and duration necessary for statutory retention, documentation or evidentiary obligations."
         }
       ]
     },
