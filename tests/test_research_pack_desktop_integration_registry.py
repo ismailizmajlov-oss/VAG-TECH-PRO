@@ -57,34 +57,33 @@ class ResearchPackDesktopIntegrationRegistryTests(unittest.TestCase):
         )
         self.assertTrue((ROOT / "desktop/cardir-vag-reference-facts-db.cjs").is_file())
 
-    def test_ownerspecs_current_pack_is_verified_and_desktop_sync_is_pending(self):
+    def test_ownerspecs_last_verified_pack_is_separate_from_latest_publisher_snapshot(self):
         source = self.sources["ownerspecs-verified-vehicle-specs-cc-by-sa-4.0"]
         self.assertTrue(source["research_pack_ingested"])
-        self.assertTrue(source["research_pack_current"])
-        self.assertEqual(source["research_pack_status"], "verified_research_only")
+        self.assertFalse(source["research_pack_current"])
+        self.assertTrue(source["research_pack_current_for_vag_subset"])
+        self.assertEqual(source["research_pack_status"], "verified_research_only_previous_snapshot")
         self.assertTrue(source["research_database_included_in_desktop"])
         self.assertFalse(source["current_research_pack_in_desktop"])
         self.assertTrue(source["previous_pack_still_in_desktop"])
-        self.assertEqual(source["research_pack_desktop_integration_status"],
-                         "pending_current_snapshot_desktop_integration")
+        self.assertEqual(source["research_pack_desktop_integration_status"], "pending_current_snapshot_desktop_integration")
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["product_database_ingested"])
         self.assertFalse(source["product_import_allowed"])
-        self.assertEqual(source["source_snapshot_sha256"],
-                         "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9")
+        self.assertEqual(source["source_snapshot_sha256"], "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c")
+        self.assertEqual(source["research_pack_source_snapshot_sha256"], "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9")
         self.assertEqual(source["research_pack_artifact_id"], 13833552555)
         self.assertEqual(source["research_pack_workflow_run_id"], 42971572740)
         self.assertEqual(source["research_pack_run_number"], 3)
-        self.assertEqual(source["research_pack_source_commit"],
-                         "9f9aa8136e5c084def52e5fdb983ede737c817ec")
-        self.assertEqual(source["research_pack_artifact_sha256"],
-                         "66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77")
-        self.assertEqual(source["research_pack_database_sha256"],
-                         "9b7da5b490d3dd805865f23389cb8cc7ca9b368137be8307adb07e0c8e683c4a")
-        self.assertEqual(source["research_pack_manifest_sha256"],
-                         "21c94e2ec39ea1b231b96d3fe5f830e5ac62ae5cfc1d8e91312de977d8819fd4")
-        self.assertEqual(source["research_pack_source_manifest_sha256"],
-                         "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697")
+        self.assertEqual(source["research_pack_source_commit"], "9f9aa8136e5c084def52e5fdb983ede737c817ec")
+        self.assertEqual(source["research_pack_artifact_sha256"], "66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77")
+        self.assertEqual(source["research_pack_database_sha256"], "9b7da5b490d3dd805865f23389cb8cc7ca9b368137be8307adb07e0c8e683c4a")
+        self.assertEqual(source["research_pack_manifest_sha256"], "21c94e2ec39ea1b231b96d3fe5f830e5ac62ae5cfc1d8e91312de977d8819fd4")
+        self.assertEqual(source["research_pack_source_manifest_sha256"], "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697")
+        latest = source["latest_publisher_snapshot"]
+        self.assertEqual(latest["source_snapshot_sha256"], "835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c")
+        self.assertEqual(latest["vag_fact_count"], 186)
+        self.assertEqual(latest["acquisition_evidence"]["workflow_run_id"], 42973238985)
         self.assertIsNone(source["desktop_integration_evidence"])
         self.assertEqual(source["previous_desktop_integration_evidence"]["workflow_run_id"], 42964628461)
         self.assertEqual(source["previous_verified_research_pack"]["artifact_id"], 13742090427)
