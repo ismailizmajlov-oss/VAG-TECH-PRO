@@ -130,8 +130,13 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
 
     def test_acquire_cli_captures_exact_source_without_building_a_pack(self):
         output = self.root / "acquired"
+        acquire_manifest = self.root / "acquire-manifest.json"
+        source_manifest = json.loads(self.source_manifest.read_text(encoding="utf-8"))
+        source_manifest["snapshot"]["source_snapshot_sha256"] = "0" * 64
+        source_manifest["snapshot"]["source_file_bytes"] = None
+        acquire_manifest.write_text(json.dumps(source_manifest, ensure_ascii=False), encoding="utf-8")
         argv = ["build_ownerspecs_vag_research_pack.py", "--acquire",
-                "--source-manifest", str(self.source_manifest), "--output-dir", str(output)]
+                "--source-manifest", str(acquire_manifest), "--output-dir", str(output)]
 
         def acquire_fixture(_url, destination):
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -151,6 +156,9 @@ class OwnerSpecsResearchPackTests(unittest.TestCase):
         self.assertEqual(payload["status"], "acquired_source_snapshot")
         self.assertEqual(payload["snapshot"]["generation_count"], 2)
         self.assertEqual(payload["snapshot"]["verified_datapoints"], 3)
+        self.assertEqual(payload["snapshot"]["manifest_snapshot_sha256"], "0" * 64)
+        self.assertEqual(payload["snapshot"]["source_revision_status"], "source_snapshot_differs_from_manifest_pin")
+        self.assertTrue(payload["snapshot"]["source_revision_field_stale"])
         self.assertTrue((output / "source.json").is_file())
         self.assertTrue((output / "acquisition-snapshot.json").is_file())
         self.assertFalse((output / "ownerspecs-vag-research.sqlite").exists())
