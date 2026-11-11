@@ -109,6 +109,8 @@ Verified run-1461 artifacts:
 
 Both runs used GitHub-hosted Windows runners. The owner-controlled Windows 10/11 client runner gate remains disabled, so native Windows 10/11 acceptance is still `blocked_owner_runner_unavailable`; Windows Server 2022 success is not a substitute.
 
+A subsequent PR validation attempt (run 1463) stopped before installer creation because the generated npm lockfile changed from the previously pinned SHA-256 `ff3ed566...` to `c9a17fee...`. The generated lock was retained and inspected; the exact new SHA-256 is now pinned in `desktop-package-lock.sha256`. A fresh full Windows validation is required before merge.
+
 ### Current data and rights status
 
 The current central source register contains 68 entries; the Russian/EAEU OTTS register contains 16; the packaged source-manifest index contains 21 entries. Build metadata from run 1451 pins central source-register SHA-256 `6acb98596bbf974e7a72cc4bdc42a7edcb547bf8cc4ac9cf927acab375767fef` and Russian/EAEU source-manifest SHA-256 `383bd61629efade4470b9548eaf28d6d5adee074232132445d2da0a703c472b5`.
