@@ -88,3 +88,5 @@ The latest facts remain CC BY-SA 4.0 research-only material: market UNKNOWN, no 
 
 
 The acquisition evidence also records a stale free-text source_revision label in the run-158 acquisition-snapshot.json: it was copied from the pre-refresh manifest that still pinned d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9. That label is explicitly marked stale; the raw source JSON SHA-256 **835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c** and byte count are authoritative. The updated manifest now pins those exact bytes, and the acquisition-only CLI has been separated from pack building so the next refresh can record the correct revision metadata before SQLite generation.
+
+No VAG fact changes were observed in the exact 835fe745 re-acquisition delta; only two non-VAG Hyundai i10 unit-label case changes were found.
