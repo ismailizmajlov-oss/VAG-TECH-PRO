@@ -576,6 +576,31 @@ class WindowsBuildMetadataContractTests(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, workflow)
 
+    def test_windows_2022_lifecycle_revalidates_rdw_metadata_against_packaged_evidence(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
+        lifecycle_contract = (
+            "$rdwResearchRoot = Join-Path $desktopRoot \"data/research\"",
+            "$metadata.rdw_database_sha256",
+            "$metadata.rdw_pack_manifest_sha256",
+            "$metadata.rdw_source_manifest_sha256",
+            "$metadata.rdw_integration_report_sha256",
+            "$metadata.rdw_source_artifact_sha256",
+            "$metadata.rdw_source_run_id",
+            "$metadata.rdw_approval_scope_count",
+            "$metadata.rdw_engine_candidate_count",
+            "$metadata.rdw_gearbox_classification_count",
+            "$metadata.rdw_production_import -ne $false",
+            "$metadata.rdw_ru_eaeu_applicability -ne $false",
+            "$metadata.rdw_exact_engine_gearbox_pair -ne $false",
+            "$metadata.rdw_diagnostic_execution_allowed -ne $false",
+            "$metadata.rdw_commercial_use_allowed -ne $true",
+            "$metadata.rdw_cache_allowed -ne $true",
+            "$metadata.rdw_redistribution_allowed -ne $true",
+        )
+        for token in lifecycle_contract:
+            with self.subTest(token=token):
+                self.assertIn(token, workflow)
+
     def test_rdw_build_metadata_fails_closed_for_market_and_fitment_claims(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
         self.assertIn('$rdwEntry.market_scope[0] -ne "NL"', workflow)
