@@ -59,9 +59,9 @@ def main():
             db.execute("""INSERT INTO vehicle_catalog_source_rights
                 (source_id,rights_status,license_name,license_url,license_text_sha256,
                  commercial_use_allowed,display_allowed,offline_cache_allowed,bulk_reuse_allowed,
-                 redistribution_allowed,rights_revision,reviewed_at_utc)
+                 rights_revision,reviewed_at_utc)
                 VALUES ('test','approved','CC0-1.0','https://creativecommons.org/publicdomain/zero/1.0/',
-                        ?,1,1,1,1,1,'CC0-1.0','2026-11-11T00:00:00Z')""", (HASH_A,))
+                        ?,1,1,1,1,'CC0-1.0','2026-11-11T00:00:00Z')""", (HASH_A,))
 
             db.execute("""INSERT INTO vehicle_makes
                 (make_key,display_name,status,created_at_utc)
