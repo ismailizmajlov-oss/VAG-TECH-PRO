@@ -192,6 +192,22 @@ jobs:
               expires_at = $_.expires_at
             }
           })
+          $nativeRunnerGateEnabled = ($env:WIN10_11_RUNNER_AVAILABLE -eq "true")
+          $nativeAcceptanceStatus = "blocked_native_job_not_completed"
+          if ($env:UPSTREAM_CONCLUSION -ne "success") {
+            $nativeAcceptanceStatus = "blocked_upstream_windows_build_failed"
+          } elseif (-not $nativeRunnerGateEnabled) {
+            $nativeAcceptanceStatus = "blocked_owner_runner_unavailable"
+          } elseif ($env:NATIVE_JOB_RESULT -eq "success") {
+            $nativeAcceptanceStatus = "passed"
+          } elseif ($env:NATIVE_JOB_RESULT -eq "failure" -or $env:NATIVE_JOB_RESULT -eq "cancelled" -or $env:NATIVE_JOB_RESULT -eq "timed_out") {
+            $nativeAcceptanceStatus = "failed"
+          } elseif ($env:NATIVE_JOB_RESULT -eq "skipped") {
+            $nativeAcceptanceStatus = "blocked_native_job_skipped"
+          }
+          $nativeClientOsVerified = ($nativeAcceptanceStatus -eq "passed")
+          "Native Windows 10/11 acceptance: $nativeAcceptanceStatus (runner gate enabled: $nativeRunnerGateEnabled; lifecycle job: $env:NATIVE_JOB_RESULT)." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+
           $record = [ordered]@{
             schema_version = 1
             recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
@@ -208,12 +224,15 @@ jobs:
             jobs = $jobRows
             artifacts = $artifactRows
             native_windows_10_11 = [ordered]@{
-              runner_gate_enabled = ($env:WIN10_11_RUNNER_AVAILABLE -eq "true")
+              required = $true
+              acceptance_status = $nativeAcceptanceStatus
+              client_os_verified = $nativeClientOsVerified
+              runner_gate_enabled = $nativeRunnerGateEnabled
               lifecycle_job_result = $env:NATIVE_JOB_RESULT
               required_runner_labels = @("self-hosted", "windows", "x64", "vag-tech-pro-win10-11")
             }
             release_ready = $false
-            release_readiness_note = "CI evidence only; licensed VAG repair data, exact factory fitment, Windows 10/11 native lifecycle and owner-approved source rights must be independently satisfied."
+            release_readiness_note = "Not release-ready. Native Windows 10/11 acceptance status: $nativeAcceptanceStatus. Licensed VAG repair data, exact factory fitment, source rights and installer signing must also be independently satisfied."
           }
           $directory = Join-Path $env:GITHUB_WORKSPACE "ci-status"
           New-Item -ItemType Directory -Path $directory -Force | Out-Null

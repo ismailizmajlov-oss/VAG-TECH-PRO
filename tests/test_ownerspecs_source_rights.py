@@ -125,9 +125,17 @@ class OwnerSpecsSourceRightsTests(unittest.TestCase):
         self.assertEqual(entry["research_pack_source_snapshot_manifest_sha256"], "8a2eda28a0101c02490cec43062d591f930ba90dc3358d833337997470dba553")
         self.assertEqual(entry["research_pack_acquisition_snapshot_sha256"], "7f9147f36e340e3997b8d51d4ce923ae0d2525b8b10f89c60cbb899c258bb436")
         self.assertTrue(entry["research_database_included_in_desktop"])
-        self.assertFalse(entry["current_research_pack_in_desktop"])
-        self.assertTrue(entry["previous_pack_still_in_desktop"])
-        self.assertEqual(entry["research_pack_desktop_integration_status"], "pending_current_snapshot_desktop_integration")
+        self.assertTrue(entry["current_research_pack_in_desktop"])
+        self.assertFalse(entry["previous_pack_still_in_desktop"])
+        self.assertEqual(entry["research_pack_desktop_integration_status"],
+                         "verified_read_only_research_pack_integrated_in_offline_desktop")
+        evidence = entry["desktop_integration_evidence"]
+        self.assertEqual(evidence["workflow_run_id"], 42985948470)
+        self.assertEqual(evidence["job_id"], 130407021578)
+        self.assertEqual(evidence["source_pack_artifact_id"], 13835168202)
+        self.assertEqual(evidence["desktop_build_artifact_id"], 13841840140)
+        self.assertFalse(evidence["product_database_imported"])
+        self.assertFalse(evidence["native_windows_10_11_verified"])
         self.assertEqual(entry["latest_publisher_snapshot"]["source_snapshot_sha256"], CURRENT_SNAPSHOT_SHA)
         self.assertEqual(entry["latest_publisher_snapshot"]["vag_fact_count"], 186)
         latest_acquisition = entry["latest_publisher_snapshot"]["acquisition_evidence"]
