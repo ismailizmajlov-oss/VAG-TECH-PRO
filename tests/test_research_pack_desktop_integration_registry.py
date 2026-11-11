@@ -66,6 +66,11 @@ class ResearchPackDesktopIntegrationRegistryTests(unittest.TestCase):
         self.assertFalse(source["data_ingested"])
         self.assertFalse(source["product_database_ingested"])
         self.assertFalse(source["product_import_allowed"])
+        self.assertFalse(source["research_pack_current"])
+        self.assertEqual(source["latest_acquisition_attempt"]["status"],
+                         "quarantined_public_html_json_count_mismatch")
+        self.assertEqual(source["latest_acquisition_attempt"]["json_datapoints"], 2273)
+        self.assertEqual(source["latest_acquisition_attempt"]["html_page_claimed_datapoints"], 2369)
         self.assertEqual(source["source_snapshot_sha256"],
                          "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
         self.assertEqual(source["applicability"]["market_scope"], "UNKNOWN")
