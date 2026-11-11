@@ -8,7 +8,8 @@ on:
       - "scripts/build_ownerspecs_vag_research_pack.py"
       - "tests/test_ownerspecs_vag_research_pack.py"
       - "tests/test_ownerspecs_source_rights.py"
-      - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "tests/test_ownerspecs_snapshot_refresh_20261111.py"
+      - "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
   pull_request:
     branches: [main]
     paths:
@@ -16,7 +17,8 @@ on:
       - "scripts/build_ownerspecs_vag_research_pack.py"
       - "tests/test_ownerspecs_vag_research_pack.py"
       - "tests/test_ownerspecs_source_rights.py"
-      - "data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json"
+      - "tests/test_ownerspecs_snapshot_refresh_20261111.py"
+      - "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
       - "docs/research/OWNERSPECS_VAG_DATASET_RIGHTS_REVIEW_2026-11-10.md"
   workflow_dispatch:
 
@@ -53,16 +55,21 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs SQLite research-pack tests failed." }
           python tests/test_ownerspecs_source_rights.py
           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA source-rights tests failed." }
+          python tests/test_ownerspecs_snapshot_refresh_20261111.py -v
+          if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs 2026-11-11 snapshot reconciliation tests failed." }
 
       - name: Acquire the publisher JSON and verify exact generation/datapoint counts
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          python scripts/build_ownerspecs_vag_research_pack.py --acquire --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-source 2>&1 | Tee-Object -FilePath ownerspecs-acquisition.log
+          $manifestPath = "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
+          $sourceManifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+          python scripts/build_ownerspecs_vag_research_pack.py --acquire --source-manifest $manifestPath --output-dir artifacts/ownerspecs-source 2>&1 | Tee-Object -FilePath ownerspecs-acquisition.log
           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs licensed source acquisition failed." }
           $snapshot = Get-Content -LiteralPath artifacts/ownerspecs-source/acquisition-snapshot.json -Raw | ConvertFrom-Json
-          if ($snapshot.generation_count -ne 111 -or $snapshot.verified_datapoints -ne 2369 -or $snapshot.vag_generation_count -le 0 -or $snapshot.vag_fact_count -le 0 -or $snapshot.source_snapshot_sha256 -notmatch "^[a-f0-9]{64}$") {
-            throw "OwnerSpecs snapshot differs from the reviewed publisher dataset; refusing to publish the research pack."
+          $expected = $sourceManifest.snapshot
+          if ($snapshot.generation_count -ne $expected.json_descriptor_generation_count -or $snapshot.verified_datapoints -ne $expected.html_page_verified_datapoint_count -or $snapshot.vag_generation_count -ne $expected.vag_generation_count -or $snapshot.vag_fact_count -ne $expected.vag_fact_count -or $snapshot.source_snapshot_sha256 -ne $expected.source_snapshot_sha256 -or $snapshot.source_file_bytes -ne $expected.source_file_bytes) {
+            throw "OwnerSpecs snapshot differs from the exact reviewed publisher bytes/counts; refusing to publish the research pack."
           }
           "OwnerSpecs source JSON SHA-256: $($snapshot.source_snapshot_sha256)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
           "Generations: $($snapshot.generation_count); datapoints: $($snapshot.verified_datapoints); retained VAG generations: $($snapshot.vag_generation_count); VAG facts: $($snapshot.vag_fact_count)" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
@@ -82,12 +89,13 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          python scripts/build_ownerspecs_vag_research_pack.py --input-json artifacts/ownerspecs-source/source.json --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-build.log
+          $manifestPath = "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json"
+          python scripts/build_ownerspecs_vag_research_pack.py --input-json artifacts/ownerspecs-source/source.json --source-manifest $manifestPath --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-build.log
           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs VAG SQLite research-pack build failed." }
-          python scripts/build_ownerspecs_vag_research_pack.py --verify-only --source-manifest data/source-manifests/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0.json --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-verify.log
+          python scripts/build_ownerspecs_vag_research_pack.py --verify-only --source-manifest $manifestPath --output-dir artifacts/ownerspecs-vag-research-pack 2>&1 | Tee-Object -FilePath ownerspecs-pack-verify.log
           if ($LASTEXITCODE -ne 0) { throw "Independent OwnerSpecs SQLite/provenance verification failed." }
           $manifest = Get-Content -LiteralPath artifacts/ownerspecs-vag-research-pack/manifest.json -Raw | ConvertFrom-Json
-          if ($manifest.market_scope[0] -ne "UNKNOWN" -or $manifest.product_import_allowed -ne $false -or $manifest.production_import -ne $false -or $manifest.exact_engine_gearbox_pair -ne $false -or $manifest.ru_eaeu_applicability -ne $false -or $manifest.critical_technical_values_publishable -ne $false -or $manifest.license.share_alike_required -ne $true) {
+          if ($manifest.counts.all_source_generations -ne 111 -or $manifest.counts.all_source_verified_datapoints -ne 2273 -or $manifest.counts.vag_generations -ne 20 -or $manifest.counts.vag_facts -ne 186 -or $manifest.market_scope[0] -ne "UNKNOWN" -or $manifest.product_import_allowed -ne $false -or $manifest.production_import -ne $false -or $manifest.exact_engine_gearbox_pair -ne $false -or $manifest.ru_eaeu_applicability -ne $false -or $manifest.critical_technical_values_publishable -ne $false -or $manifest.license.share_alike_required -ne $true) {
             throw "OwnerSpecs research pack escaped its CC BY-SA, UNKNOWN-market, non-fitment boundary."
           }
           "## OwnerSpecs VAG research pack" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
