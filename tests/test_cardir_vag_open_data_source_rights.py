@@ -67,7 +67,7 @@ class CardirVagOpenDataSourceRightsTests(unittest.TestCase):
         self.assertEqual(pack["sqlite_integrity_check"],"ok")
         self.assertEqual(pack["foreign_key_violations"],0)
         self.assertEqual(pack["desktop_integration_status"],"verified_read_only_research_pack_integrated_in_offline_desktop")
-         self.assertEqual(pack["desktop_integration_evidence"]["workflow_run_id"],42964628461)
+        self.assertEqual(pack["desktop_integration_evidence"]["workflow_run_id"],42964628461)
         self.assertEqual(pack["previous_verified_pack"]["artifact_run_number"],126)
         self.assertEqual(pack["previous_verified_pack_history"][-1]["artifact_run_number"],83)
         self.assertEqual(pack["previous_desktop_lifecycle_evidence"]["run_number"],1208)
