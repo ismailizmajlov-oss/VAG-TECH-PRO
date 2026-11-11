@@ -94,6 +94,47 @@ CREATE TABLE IF NOT EXISTS technical_records (
  CHECK(oem_dtc_id IS NULL OR dtc_namespace IS NOT NULL),
  CHECK(record_kind='diagnostic_test_plan' OR(dtc_namespace IS NULL AND oem_dtc_id IS NULL))
 );
+-- Additive canonical-hash guards also protect user databases created before this schema revision.
+CREATE TRIGGER IF NOT EXISTS vehicle_catalog_source_rights_license_text_sha256_insert_guard
+BEFORE INSERT ON vehicle_catalog_source_rights
+WHEN NEW.license_text_sha256 IS NOT NULL
+ AND (length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'license-text SHA-256 must be 64 lowercase hexadecimal characters'); END;
+CREATE TRIGGER IF NOT EXISTS vehicle_catalog_source_rights_license_text_sha256_update_guard
+BEFORE UPDATE OF license_text_sha256 ON vehicle_catalog_source_rights
+WHEN NEW.license_text_sha256 IS NOT NULL
+ AND (length(NEW.license_text_sha256)<>64 OR NEW.license_text_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'license-text SHA-256 must be 64 lowercase hexadecimal characters'); END;
+
+CREATE TRIGGER IF NOT EXISTS technical_documents_content_sha256_insert_guard
+BEFORE INSERT ON technical_documents
+WHEN NEW.content_sha256 IS NOT NULL
+ AND (length(NEW.content_sha256)<>64 OR NEW.content_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'technical content SHA-256 must be 64 lowercase hexadecimal characters'); END;
+CREATE TRIGGER IF NOT EXISTS technical_documents_content_sha256_update_guard
+BEFORE UPDATE OF content_sha256 ON technical_documents
+WHEN NEW.content_sha256 IS NOT NULL
+ AND (length(NEW.content_sha256)<>64 OR NEW.content_sha256 GLOB '*[^a-f0-9]*')
+BEGIN SELECT RAISE(ABORT,'technical content SHA-256 must be 64 lowercase hexadecimal characters'); END;
+
+CREATE TRIGGER IF NOT EXISTS technical_applicability_evidence_sha256_insert_guard
+BEFORE INSERT ON technical_applicability
+WHEN length(NEW.evidence_sha256)<>64 OR NEW.evidence_sha256 GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'applicability evidence SHA-256 must be 64 lowercase hexadecimal characters'); END;
+CREATE TRIGGER IF NOT EXISTS technical_applicability_evidence_sha256_update_guard
+BEFORE UPDATE OF evidence_sha256 ON technical_applicability
+WHEN length(NEW.evidence_sha256)<>64 OR NEW.evidence_sha256 GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'applicability evidence SHA-256 must be 64 lowercase hexadecimal characters'); END;
+
+CREATE TRIGGER IF NOT EXISTS technical_records_record_sha256_insert_guard
+BEFORE INSERT ON technical_records
+WHEN length(NEW.record_sha256)<>64 OR NEW.record_sha256 GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'technical record SHA-256 must be 64 lowercase hexadecimal characters'); END;
+CREATE TRIGGER IF NOT EXISTS technical_records_record_sha256_update_guard
+BEFORE UPDATE OF record_sha256 ON technical_records
+WHEN length(NEW.record_sha256)<>64 OR NEW.record_sha256 GLOB '*[^a-f0-9]*'
+BEGIN SELECT RAISE(ABORT,'technical record SHA-256 must be 64 lowercase hexadecimal characters'); END;
+
 CREATE INDEX IF NOT EXISTS idx_technical_documents_source ON technical_documents(source_document_id,review_status);
 CREATE INDEX IF NOT EXISTS idx_technical_applicability_vehicle ON technical_applicability(variant_id,engine_id,transmission_id,ecu_identity_id);
 CREATE INDEX IF NOT EXISTS idx_technical_applicability_market_year ON technical_applicability(market_scope,model_year_from,model_year_to);
@@ -121,7 +162,7 @@ BEGIN
   JOIN vehicle_catalog_sources s ON s.source_id=e.source_id
   JOIN vehicle_catalog_source_rights r ON r.source_id=e.source_id
   WHERE e.evidence_id=NEW.vehicle_catalog_evidence_id
-  AND e.review_status='publication_approved' AND e.source_sha256 IS NOT NULL AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
+  AND e.review_status='publication_approved' AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*'
   AND s.license_status IN('cc0','public_domain','open_license','permission_granted') AND s.redistribution_allowed=1
   AND r.rights_status='approved' AND r.display_allowed=1 AND r.offline_cache_allowed=1
   AND r.bulk_reuse_allowed=1 AND r.redistribution_allowed=1 AND r.store_structured_data_allowed=1)
@@ -135,7 +176,7 @@ BEGIN
   WHERE p.pair_id=NEW.pair_evidence_id AND p.variant_id=NEW.variant_id AND p.engine_id=NEW.engine_id
   AND p.transmission_id=NEW.transmission_id AND e.evidence_id=NEW.vehicle_catalog_evidence_id
   AND e.claim_type='engine_transmission_pair' AND e.review_status='publication_approved'
-  AND e.source_sha256 IS NOT NULL AND v.status='published' AND v.market_scope=NEW.market_scope
+  AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64 AND e.source_sha256 NOT GLOB '*[^a-f0-9]*' AND v.status='published' AND v.market_scope=NEW.market_scope
   AND ec.status='published' AND tc.status='published')
  THEN RAISE(ABORT,'exact engine/transmission applicability requires a published variant, engine, transmission and approved pair evidence')
  WHEN NEW.applicability_precision='exact_vin' AND NOT EXISTS(
@@ -168,7 +209,8 @@ BEGIN
    OR(NEW.content_storage_mode='diagram' AND r.store_diagrams_allowed=1)
    OR(NEW.content_storage_mode='structured_only' AND r.store_structured_data_allowed=1)
    OR(NEW.content_storage_mode='mixed' AND r.store_text_allowed=1 AND r.store_diagrams_allowed=1 AND r.store_structured_data_allowed=1))
-  AND(NEW.content_storage_mode='reference_only' OR sd.source_sha256 IS NOT NULL))
+  AND(NEW.content_storage_mode='reference_only' OR (sd.source_sha256 IS NOT NULL AND length(sd.source_sha256)=64 AND sd.source_sha256 NOT GLOB '*[^a-f0-9]*'))
+  AND(NEW.content_storage_mode='reference_only' OR (NEW.content_sha256 IS NOT NULL AND length(NEW.content_sha256)=64 AND NEW.content_sha256 NOT GLOB '*[^a-f0-9]*')))
  THEN RAISE(ABORT,'technical document source rights are not approved for its storage mode')
  WHEN NOT EXISTS(
   SELECT 1 FROM technical_document_applicability da JOIN technical_applicability a ON a.applicability_id=da.applicability_id
