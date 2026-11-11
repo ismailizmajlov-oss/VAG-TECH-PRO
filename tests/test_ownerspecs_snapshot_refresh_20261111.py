@@ -86,6 +86,8 @@ class OwnerSpecsSnapshotRefresh20261111Tests(unittest.TestCase):
         self.assertEqual(evidence["source_json_bytes"], 659973)
         self.assertEqual(evidence["acquisition_snapshot_sha256"], "93bd94338641703d4a1a3cb47870fbf0a3782d65738dc382444e6e4060b10904")
         self.assertEqual(evidence["acquisition_log_sha256"], "5aed7971c3ff23321202a33483f2bd732c5f2ee319e8b15aba13f4b84a748fd8")
+        self.assertTrue(evidence["source_revision_field_stale"])
+        self.assertIn("raw source JSON SHA-256 and byte count are authoritative", evidence["source_revision_field_note"])
 
     def test_previous_pack_manifest_is_archived_and_current_manifest_matches_latest_snapshot(self):
         self.assertEqual(self.current_manifest, self.snapshot_manifest)
