@@ -519,5 +519,124 @@ class RdwVagResearchPackTests(unittest.TestCase):
                 rdw.build_pack(Path(tmp) / "pack", self.source, self.source_bytes, bad_datasets, self.metadata)
 
 
+
+
+class WindowsBuildMetadataContractTests(unittest.TestCase):
+    def test_windows_build_metadata_pins_integrated_rdw_pack_provenance_and_scope(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
+        required_contract = (
+            "$rdwResearchManifest.packs | Where-Object { $_.id -eq \"rdw-vag-nl-eu-type-approval-research\" }",
+            "Resolve-RdwResearchFile",
+            "$rdwEntry.database_sha256",
+            "$rdwEntry.pack_manifest_sha256",
+            "$rdwEntry.source_manifest_sha256",
+            "$rdwEntry.desktop_integration_report_sha256",
+            "$rdwIntegrationReport.source_run_id",
+            "$rdwIntegrationReport.artifact_sha256",
+            "$rdwIntegrationReport.counts.sourceFiles",
+            "$rdwEntry.counts.source_files",
+            "$rdwIntegrationReport.counts.approvalScopes",
+            "$rdwEntry.counts.approval_scopes",
+            "$rdwIntegrationReport.counts.registrationObservations",
+            "$rdwEntry.counts.registration_observations",
+            "$rdwIntegrationReport.counts.engineCandidates",
+            "$rdwEntry.counts.engine_candidates",
+            "$rdwIntegrationReport.counts.gearboxClassifications",
+            "$rdwEntry.counts.gearbox_classifications",
+            "$rdwIntegrationReport.counts.auxiliaryRows",
+            "$rdwEntry.counts.auxiliary_rows",
+            "$rdwIntegrationReport.counts.sourceRows",
+            "$rdwEntry.counts.source_rows",
+            'foreach ($key in @("registration","tgk_base","tgk_drive","tgk_gearbox","tgk_make","tgk_trade_name"))',
+            "rdw_source_artifact_sha256 = $rdwArtifactHash",
+            "rdw_source_snapshot_sha256 = $rdwSnapshotHash",
+            "rdw_pack_manifest_sha256 = $rdwPackManifestHash",
+            "rdw_database_sha256 = $rdwDatabaseHash",
+            "rdw_integration_report_sha256 = $rdwIntegrationReportHash",
+            "rdw_approval_scope_count = $rdwApprovalScopeCount",
+            "rdw_engine_candidate_count = $rdwEngineCount",
+            "rdw_source_file_count = $rdwSourceFileCount",
+            "rdw_gearbox_classification_count = $rdwGearboxCount",
+            "rdw_auxiliary_row_count = $rdwAuxiliaryRowCount",
+            "rdw_commercial_use_allowed = $rdwCommercialUseAllowed",
+            "rdw_display_allowed = $rdwDisplayAllowed",
+            "rdw_cache_allowed = $rdwCacheAllowed",
+            "rdw_bulk_reuse_allowed = $rdwBulkReuseAllowed",
+            "rdw_redistribution_allowed = $rdwRedistributionAllowed",
+            "rdw_attribution_required = $rdwAttributionRequired",
+            "rdw_share_alike_required = $rdwShareAlikeRequired",
+            "rdw_production_import = $rdwProductionImport",
+            "rdw_product_import_allowed = $rdwProductImportAllowed",
+            "rdw_data_ingested = $rdwDataIngested",
+            "rdw_ru_eaeu_applicability = $rdwRuEaeuApplicability",
+            "rdw_exact_engine_gearbox_pair = $rdwExactEngineGearboxPair",
+            "rdw_diagnostic_execution_allowed = $rdwDiagnosticExecutionAllowed",
+        )
+        for token in required_contract:
+            with self.subTest(token=token):
+                self.assertIn(token, workflow)
+
+    def test_windows_source_audit_stages_rdW_metadata_without_copying_the_large_database(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
+        staging_contract = (
+            '$packagedResearchRoot = Join-Path "desktop-source/release/win-unpacked/resources" "research-data"',
+            "$packagedRdwEntries.Count -ne 1",
+            'foreach ($field in @("pack_manifest_file","source_manifest_file","desktop_integration_report_file","license_file","attribution_file","build_report_file"))',
+            "Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force",
+            "$metadata.rdw_database_sha256",
+            "$rdwPackManifest.database.sha256",
+        )
+        for token in staging_contract:
+            with self.subTest(token=token):
+                self.assertIn(token, workflow)
+
+    def test_windows_2022_lifecycle_revalidates_rdw_metadata_against_packaged_evidence(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
+        lifecycle_contract = (
+            "$rdwResearchRoot = Join-Path $desktopRoot \"data/research\"",
+            "Resolve-RdwLifecycleFile",
+            "$metadata.rdw_market_scope[0] -ne \"NL\"",
+            "$metadata.rdw_license_sha256 -ne $rdwEntry.license_sha256",
+            "$metadata.rdw_attribution_sha256 -ne $rdwEntry.attribution_sha256",
+            "$metadata.rdw_build_report_sha256 -ne $rdwEntry.build_report_sha256",
+            "$metadata.rdw_database_sha256",
+            "$metadata.rdw_pack_manifest_sha256",
+            "$metadata.rdw_source_manifest_sha256",
+            "$metadata.rdw_integration_report_sha256",
+            "$metadata.rdw_source_artifact_sha256",
+            "$metadata.rdw_source_run_id",
+            "$metadata.rdw_approval_scope_count",
+            "$metadata.rdw_engine_candidate_count",
+            "$metadata.rdw_gearbox_classification_count",
+            "$metadata.rdw_production_import -ne $false",
+            "$metadata.rdw_ru_eaeu_applicability -ne $false",
+            "$metadata.rdw_exact_engine_gearbox_pair -ne $false",
+            "$metadata.rdw_diagnostic_execution_allowed -ne $false",
+            "$metadata.rdw_commercial_use_allowed -ne $true",
+            "$metadata.rdw_cache_allowed -ne $true",
+            "$metadata.rdw_redistribution_allowed -ne $true",
+        )
+        for token in lifecycle_contract:
+            with self.subTest(token=token):
+                self.assertIn(token, workflow)
+
+    def test_rdw_build_metadata_fails_closed_for_market_and_fitment_claims(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "windows-desktop-ci-run71.yml").read_text(encoding="utf-8")
+        self.assertIn('$rdwEntry.market_scope[0] -ne "NL"', workflow)
+        self.assertIn("$rdwEntry.production_import -ne $false", workflow)
+        self.assertIn("$rdwEntry.ru_eaeu_applicability -ne $false", workflow)
+        self.assertIn("$rdwEntry.exact_vehicle_fitment -ne $false", workflow)
+        self.assertIn("$rdwEntry.exact_engine_gearbox_pair -ne $false", workflow)
+        self.assertIn("$rdwEntry.repair_applicability -ne $false", workflow)
+        self.assertIn("$rdwEntry.diagnostic_execution_allowed -ne $false", workflow)
+        self.assertIn("$rdwEntry.commercial_use_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.display_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.cache_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.bulk_reuse_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.redistribution_allowed -ne $true", workflow)
+        self.assertIn("$rdwEntry.attribution_required -ne $false", workflow)
+        self.assertIn("$rdwEntry.share_alike_required -ne $false", workflow)
+        self.assertIn("$rdwSourceManifest.data_ingested -ne $false", workflow)
+
 if __name__ == "__main__":
     unittest.main()
