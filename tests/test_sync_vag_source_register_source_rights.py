@@ -91,6 +91,24 @@ class SyncVagSourceRegisterTests(unittest.TestCase):
         self.assertIs(source["research_pack"]["production_import"], False)
 
 
+    def test_openvag_database_file_and_data_rights_remain_quarantined(self):
+        manifest_path = ROOT / "data" / "source-manifests" / "vag-factory-source-register.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        source = next(item for item in manifest["sources"] if item["source_id"] == "riz4d-openvag-dtc-quarantine")
+        self.assertEqual(source["repository_revision_checked"], "407d5e042cf46d55087ed4ae4e056605f2b04f08")
+        self.assertEqual(source["data_file_presence"]["claimed_database_path"], "db/openvag.db")
+        self.assertEqual(source["data_file_presence"]["default_branch_status"], "not_present")
+        self.assertFalse(source["data_file_presence"]["database_bytes_obtained"])
+        self.assertIsNone(source["data_file_presence"]["database_sha256"])
+        self.assertFalse(source["data_file_presence"]["historical_release_assets_checked"])
+        self.assertEqual(source["rights"]["repository_code_license"], "MIT")
+        self.assertEqual(source["rights"]["database_data_license"], "not_separately_established_in_review")
+        self.assertEqual(source["rights"]["underlying_record_authority"], "not_established")
+        self.assertFalse(source["rights"]["redistribution_allowed"])
+        self.assertEqual(source["project_decision"], "quarantine_only; MIT covers the repository software but does not establish rights in the absent database or its underlying DTC/repair content; do not import definitions, repair solutions or mappings into production until the actual database bytes, record-level provenance and reuse rights are independently established")
+        self.assertFalse(source["data_ingested"])
+        self.assertFalse(source["product_import_allowed"])
+
     def test_repository_source_register_has_explicit_boolean_ingest_state(self):
         manifest_path = ROOT / "data" / "source-manifests" / "vag-factory-source-register.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
