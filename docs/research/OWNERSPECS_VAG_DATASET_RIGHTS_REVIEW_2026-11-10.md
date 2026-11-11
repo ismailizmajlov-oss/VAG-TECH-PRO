@@ -69,3 +69,19 @@ The first acquisition workflow correctly failed closed because the prior manifes
 The previously verified 233-fact research pack remains a dated prior snapshot. It is not silently relabelled as current and will not be replaced in the desktop until the 2026-11-11 pack is independently built, verified, and its SQLite/artifact hashes are recorded. The new pack remains a separate read-only CC BY-SA 4.0 research database with attribution and Share-Alike; market UNKNOWN; no primary-document locator/revision per value; no exact engine/gearbox pair, ECU, DTC, RU/EAEU or repair applicability; no production import.
 
 The 20 VAG generation labels and 186 facts in the current snapshot remain **candidate-only**: market scope is UNKNOWN, no per-value primary-document locator/revision is supplied, and no exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability is established. They are not factory fitment or critical repair data.
+
+
+## Exact source reacquisition — 2026-11-11 06:33 UTC
+
+Windows x64 acquisition workflow [run 158](https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/42973238985) retained the exact publisher JSON in artifact **13834540968**:
+- Raw source JSON SHA-256: **835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c**.
+- Raw source JSON size: **659,973 bytes**.
+- Acquisition evidence ZIP SHA-256: **81360d348655f3fe84ccfd926c026120677848ffff4e9f03cfad404158f7c803** (34,193 bytes).
+- Acquisition snapshot SHA-256: **93bd94338641703d4a1a3cb47870fbf0a3782d65738dc382444e6e4060b10904**.
+- Acquisition log SHA-256: **5aed7971c3ff23321202a33483f2bd732c5f2ee319e8b15aba13f4b84a748fd8**.
+
+A direct row-level comparison with the preceding exact 06:19 snapshot (**d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9**) found exactly two non-VAG unit-case changes in Hyundai i10 III (AC3): coolant capacity L to l (5.53–5.89) and engine-oil capacity l to L (3.1–3.4). No generation or datapoint membership changed, and the VAG subset remains exactly 20 generation candidates / 186 facts. The numeric values and ranges are unchanged.
+
+The acquisition step itself completed and retained the source bytes. The subsequent pack-build call rejected the new bytes because the manifest still pinned the preceding d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9 hash; **no SQLite pack was built by run 158**. The prior pack remains the last independently verified artifact and is explicitly tied to d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9. Its exact source manifest is preserved at `data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-pack3-2026-11-11.json`; the current publisher manifest is updated to 835fe7452b3370dbf921049a72ca365d6f69b6b63ef8a3a37b5714265272814c. A separate pack rebuild and verification are still required before replacing the desktop research pack.
+
+The latest facts remain CC BY-SA 4.0 research-only material: market UNKNOWN, no per-value primary-document locator/revision, no exact engine/gearbox, ECU, DTC, RU/EAEU or repair applicability, and no production import.
