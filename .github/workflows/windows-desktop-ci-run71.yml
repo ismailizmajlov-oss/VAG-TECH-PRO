@@ -2865,6 +2865,27 @@ jobs:
             New-Item -ItemType Directory -Path $targetFolder -Force | Out-Null
             if (Test-Path $sourceFolder) { Copy-Item -Path (Join-Path $sourceFolder "*") -Destination $targetFolder -Recurse -Force }
           }
+          $packagedResearchRoot = Join-Path "desktop-source/release/win-unpacked/resources" "research-data"
+          if (Test-Path -LiteralPath (Join-Path $packagedResearchRoot "manifest.json") -PathType Leaf) {
+            $targetResearchRoot = Join-Path $desktopStage "data/research"
+            New-Item -ItemType Directory -Path $targetResearchRoot -Force | Out-Null
+            Copy-Item -LiteralPath (Join-Path $packagedResearchRoot "manifest.json") -Destination $targetResearchRoot -Force
+            $packagedResearchManifest = Get-Content -LiteralPath (Join-Path $packagedResearchRoot "manifest.json") -Raw | ConvertFrom-Json
+            $packagedRdwEntries = @($packagedResearchManifest.packs | Where-Object { $_.id -eq "rdw-vag-nl-eu-type-approval-research" })
+            if ($packagedRdwEntries.Count -ne 1) { throw "Expected one RDW pack in packaged research resources before lifecycle evidence staging." }
+            $packagedRdwEntry = $packagedRdwEntries[0]
+            foreach ($field in @("pack_manifest_file","source_manifest_file","desktop_integration_report_file","license_file","attribution_file","build_report_file")) {
+              $relative = [string]$packagedRdwEntry.$field
+              if ([string]::IsNullOrWhiteSpace($relative)) { throw "RDW packaged metadata path is missing: $field" }
+              $sourcePath = [System.IO.Path]::GetFullPath((Join-Path $packagedResearchRoot $relative))
+              $rootPrefix = [System.IO.Path]::GetFullPath($packagedResearchRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+              if (-not $sourcePath.StartsWith($rootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) { throw "RDW packaged metadata path escapes research resources: $field" }
+              if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) { throw "RDW packaged metadata file is missing: $field" }
+              $targetPath = Join-Path $targetResearchRoot $relative
+              New-Item -ItemType Directory -Path (Split-Path -Parent $targetPath) -Force | Out-Null
+              Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force
+            }
+          }
       - name: Upload desktop source audit evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -3120,7 +3141,6 @@ jobs:
             return $candidate
           }
           $rdwFiles = @(
-            @{ path=(Resolve-RdwLifecycleFile $rdwEntry.database); hash=$metadata.rdw_database_sha256 }
             @{ path=(Resolve-RdwLifecycleFile $rdwEntry.pack_manifest_file); hash=$metadata.rdw_pack_manifest_sha256 }
             @{ path=(Resolve-RdwLifecycleFile $rdwEntry.source_manifest_file); hash=$metadata.rdw_source_manifest_sha256 }
             @{ path=(Resolve-RdwLifecycleFile $rdwEntry.desktop_integration_report_file); hash=$metadata.rdw_integration_report_sha256 }
