@@ -429,6 +429,8 @@ jobs:
            if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs isolated SQLite research-pack tests failed." }
            python tests/test_ownerspecs_source_rights.py
            if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs CC BY-SA rights/applicability tests failed." }
+           python tests/test_ownerspecs_snapshot_refresh_20261111.py -v
+           if ($LASTEXITCODE -ne 0) { throw "OwnerSpecs snapshot refresh reconciliation tests failed." }
            python tests/test_cardir_source_rights.py
            if ($LASTEXITCODE -ne 0) { throw "CarDir live snapshot multiset review failed." }
            node --check scripts/integrate-ownerspecs-vag-research.cjs
