@@ -43,9 +43,9 @@ The attribution above is a template only; it is not evidence that any content ha
 ## Acquisition and provenance state
 
 - Article revisions recorded: 4.
-- Raw article/API bytes retrieved: 0.
+- Raw article/API bytes retrieved: four pinned wikitext revisions and four rendered HTML snapshots; per-page SHA-256 and byte sizes retained in the pack manifest.
 - Raw snapshot SHA-256: not available; no hash is fabricated.
-- Engine-code rows imported: 0.
+- Engine-code candidate rows extracted: 241 (241 unique tokens from 64 source rows); production engine-code rows imported: 0.
 - Vehicle-application rows imported: 0.
 - Engine/gearbox pairings imported: 0.
 - Production applicability claims created: 0.
