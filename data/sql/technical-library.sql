@@ -285,3 +285,46 @@ WHEN NEW.review_status='publication_approved'
 BEGIN
  SELECT RAISE(ABORT,'technical record publication must use guarded review-status transition');
 END;
+
+
+-- Current source rights are checked on every publication lookup. A rights change
+-- demotes affected vehicle evidence so previously published fitment cannot remain active.
+CREATE TRIGGER IF NOT EXISTS demote_vehicle_catalog_after_technical_rights_narrowing
+AFTER UPDATE OF rights_status, commercial_use_allowed, display_allowed,
+                offline_cache_allowed, bulk_reuse_allowed, redistribution_allowed,
+                store_structured_data_allowed
+ON vehicle_catalog_source_rights
+WHEN NEW.rights_status<>'approved'
+  OR NEW.commercial_use_allowed<>1
+  OR NEW.display_allowed<>1
+  OR NEW.offline_cache_allowed<>1
+  OR NEW.bulk_reuse_allowed<>1
+  OR NEW.redistribution_allowed<>1
+  OR NEW.store_structured_data_allowed<>1
+BEGIN
+  UPDATE vehicle_catalog_evidence
+  SET review_status='candidate', reviewed_at_utc=NULL,
+      reviewer_note='Source rights were revoked or narrowed; evidence returned to candidate status.'
+  WHERE source_id=NEW.source_id
+    AND review_status IN ('source_checked','technically_verified','publication_approved');
+END;
+
+CREATE TRIGGER IF NOT EXISTS demote_vehicle_catalog_after_technical_rights_deletion
+AFTER DELETE ON vehicle_catalog_source_rights
+BEGIN
+  UPDATE vehicle_catalog_evidence
+  SET review_status='candidate', reviewed_at_utc=NULL,
+      reviewer_note='Source rights record was deleted; evidence returned to candidate status.'
+  WHERE source_id=OLD.source_id
+    AND review_status IN ('source_checked','technically_verified','publication_approved');
+END;
+
+CREATE TRIGGER IF NOT EXISTS restrict_vehicle_catalog_rights_after_source_restriction
+AFTER UPDATE OF license_status, redistribution_allowed ON vehicle_catalog_sources
+WHEN NEW.redistribution_allowed<>1
+  OR NEW.license_status NOT IN ('cc0','public_domain','open_license','permission_granted')
+BEGIN
+  UPDATE vehicle_catalog_source_rights
+  SET rights_status='restricted'
+  WHERE source_id=NEW.source_id AND rights_status='approved';
+END;
