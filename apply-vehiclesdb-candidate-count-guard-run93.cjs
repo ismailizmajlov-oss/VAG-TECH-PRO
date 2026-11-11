@@ -112,7 +112,7 @@ function main() {
   dbText = countPatch.text;
 
   const candidateFunctionStart = dbText.indexOf("function searchVehiclesDbCandidates(");
-  const candidateFunctionEnd = dbText.indexOf("\nfunction getWikidataGenerationSummary(", candidateFunctionStart);
+  const candidateFunctionEnd = dbText.indexOf("\nmodule.exports = {", candidateFunctionStart);
   if (candidateFunctionStart < 0 || candidateFunctionEnd < 0) fail("VehiclesDB candidate search function boundaries are missing");
   let candidateFunction = dbText.slice(candidateFunctionStart, candidateFunctionEnd);
   const attributionRequiredMatches = [...candidateFunction.matchAll(/^\s*attributionRequired:\s*true,\s*$/gm)];
