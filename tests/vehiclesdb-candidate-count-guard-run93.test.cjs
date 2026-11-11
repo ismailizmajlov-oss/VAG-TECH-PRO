@@ -40,7 +40,7 @@ function fixture(overrides = {}) {
   const oldCountGate = "vehiclesDbCounts.sources !== 14 || vehiclesDbCounts.models !== 260 || vehiclesDbCounts.marketEvidence !== 1524 || vehiclesDbCounts.russianEvidence !== 0 ||";
   const candidateFunction = [
     "function searchVehiclesDbCandidates() {",
-    "  const marketEvidence = [{ attributionRequired: true, attribution: \\"market evidence\\" }];",
+    "  const marketEvidence = [{ attributionRequired: true, attribution: \"market evidence\" }];",
     "  const sourceRecord = {};",
     '  const candidateRecordSha256 = crypto.createHash("sha256").update(JSON.stringify(sourceRecord)).digest("hex");',
     "  return {",
@@ -50,7 +50,7 @@ function fixture(overrides = {}) {
     "}",
     "",
     "function getWikidataGenerationSummary() {",
-    "  return { attributionRequired: true, attribution: \\"Wikidata attribution\\" };",
+    "  return { attributionRequired: true, attribution: \"Wikidata attribution\" };",
     "}",
     "",
     "module.exports = {};"
