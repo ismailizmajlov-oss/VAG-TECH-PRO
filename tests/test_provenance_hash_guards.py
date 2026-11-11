@@ -98,6 +98,7 @@ class CanonicalProvenanceHashGuardTests(unittest.TestCase):
                             f'INSERT INTO "{table}" (id, {field_sql}) VALUES (1, {placeholders})',
                             valid_values,
                         )
+                        next_id = 2
                         for index, field in enumerate(fields):
                             length = 40 if "sha1" in field.lower() else 64
                             for invalid in ("A" * length, "g" * length):
@@ -105,9 +106,10 @@ class CanonicalProvenanceHashGuardTests(unittest.TestCase):
                                 values[index] = invalid
                                 with self.assertRaises(sqlite3.IntegrityError):
                                     db.execute(
-                                        f'INSERT INTO "{table}" (id, {field_sql}) VALUES (2, {placeholders})',
+                                        f'INSERT INTO "{table}" (id, {field_sql}) VALUES ({next_id}, {placeholders})',
                                         values,
                                     )
+                                next_id += 1
                     else:
                         db.execute(
                             f'INSERT INTO "{table}" (id, {field_sql}) VALUES (1, {placeholders})',
