@@ -70,7 +70,7 @@ class ResearchPackDesktopIntegrationRegistryTests(unittest.TestCase):
                          "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95")
         self.assertEqual(source["applicability"]["market_scope"], "UNKNOWN")
         self.assertFalse(source["applicability"]["exact_engine_gearbox_pair"])
-        self.assertFalse(source["applicability"]["critical_technical_values_publishable"])
+        self.assertFalse(source["applicability"]["ru_eaeu_applicability"])
         assert_integration_evidence(
             self, source["desktop_integration_evidence"],
             "Integrate OwnerSpecs VAG research pack into offline desktop",
