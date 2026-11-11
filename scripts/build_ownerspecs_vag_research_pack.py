@@ -742,7 +742,8 @@ def main() -> int:
             "vag_fact_count": sum(int(g.get("verified_datapoints") or 0) for g in vag_generations),
         }
         write_json(args.output_dir / "acquisition-snapshot.json", acquisition_snapshot)
-        source_json = args.output_dir / "source.json"
+        print(json.dumps({"status": "acquired_source_snapshot", "snapshot": acquisition_snapshot}, ensure_ascii=False))
+        return 0
     else:
         source_json = args.input_json
         if source_json is None or not source_json.is_file():
