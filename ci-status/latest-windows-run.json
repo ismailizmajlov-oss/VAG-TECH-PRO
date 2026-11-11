@@ -1,78 +1,81 @@
 {
   "schema_version": 1,
-  "recorded_at_utc": "2026-11-11T12:00:51.2257409Z",
+  "recorded_at_utc": "2026-11-11T12:35:11.0357237Z",
   "upstream_workflow": "VAG TECH PRO Windows x64 desktop validation run91",
-  "run_id": 43012338562,
-  "run_number": 1458,
+  "run_id": 43017610405,
+  "run_number": 1460,
   "run_attempt": 1,
   "status": "completed",
   "conclusion": "success",
-  "head_sha": "3959aaa22af6e1b240efa2a5a78055d69d79ef22",
+  "head_sha": "fb9a0ac92795fa32b49c96813488f663dadaf005",
   "head_branch": "main",
-  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43012338562",
+  "html_url": "https://github.com/ismailizmajlov-oss/VAG-TECH-PRO/actions/runs/43017610405",
   "jobs": [
     {
-      "id": 130494816025,
+      "id": 130512483759,
       "name": "build-and-lifecycle",
       "status": "completed",
       "conclusion": "success",
-      "runner_name": "GitHub Actions 1000007262",
-      "started_at": "2026-11-11T11:29:21Z",
-      "completed_at": "2026-11-11T11:56:40Z"
+      "runner_name": "GitHub Actions 1000007277",
+      "started_at": "2026-11-11T12:07:27Z",
+      "completed_at": "2026-11-11T12:31:00Z"
     },
     {
-      "id": 130507455206,
+      "id": 130523882207,
       "name": "Windows Server 2022 installer compatibility lifecycle",
       "status": "completed",
       "conclusion": "success",
-      "runner_name": "GitHub Actions 1000007271",
-      "started_at": "2026-11-11T11:56:42Z",
-      "completed_at": "2026-11-11T12:00:34Z"
+      "runner_name": "GitHub Actions 1000007285",
+      "started_at": "2026-11-11T12:31:02Z",
+      "completed_at": "2026-11-11T12:34:57Z"
     }
   ],
   "artifacts": [
     {
-      "id": 13853046334,
-      "name": "vag-tech-pro-build-metadata-43012338562",
-      "size_in_bytes": 4420,
+      "id": 13855235858,
+      "name": "vag-tech-pro-build-metadata-43017610405",
+      "size_in_bytes": 4422,
       "expired": false,
-      "created_at": "2026-11-11T11:55:25Z",
-      "expires_at": "2026-12-11T11:55:24Z"
+      "created_at": "2026-11-11T12:29:55Z",
+      "expires_at": "2026-12-11T12:29:54Z"
     },
     {
-      "id": 13853022118,
+      "id": 13854982152,
+      "name": "vag-tech-pro-desktop-source-audit-43017610405",
+      "size_in_bytes": 5381905,
+      "expired": false,
+      "created_at": "2026-11-11T12:30:06Z",
+      "expires_at": "2026-12-11T12:30:04Z"
+    },
+    {
+      "id": 13854598612,
       "name": "vag-tech-pro-windows-2022-lifecycle-run71",
       "size_in_bytes": 10280,
       "expired": false,
-      "created_at": "2026-11-11T12:00:32Z",
-      "expires_at": "2026-12-11T12:00:31Z"
+      "created_at": "2026-11-11T12:34:54Z",
+      "expires_at": "2026-12-11T12:34:53Z"
     },
     {
-      "id": 13852932077,
+      "id": 13854567920,
       "name": "vag-tech-pro-windows-x64-run71",
-      "size_in_bytes": 1383469376,
+      "size_in_bytes": 1383471939,
       "expired": false,
-      "created_at": "2026-11-11T11:56:34Z",
-      "expires_at": "2026-11-25T11:55:37Z"
+      "created_at": "2026-11-11T12:30:54Z",
+      "expires_at": "2026-11-25T12:30:09Z"
     },
     {
-      "id": 13851964158,
-      "name": "vag-tech-pro-desktop-source-audit-43012338562",
-      "size_in_bytes": 5381906,
-      "expired": false,
-      "created_at": "2026-11-11T11:55:36Z",
-      "expires_at": "2026-12-11T11:55:35Z"
-    },
-    {
-      "id": 13851461351,
+      "id": 13852714343,
       "name": "vag-tech-pro-vehiclesdb-schema-diagnostic",
       "size_in_bytes": 25308,
       "expired": false,
-      "created_at": "2026-11-11T11:31:36Z",
-      "expires_at": "2026-11-18T11:31:35Z"
+      "created_at": "2026-11-11T12:09:47Z",
+      "expires_at": "2026-11-18T12:09:46Z"
     }
   ],
   "native_windows_10_11": {
+    "required": true,
+    "acceptance_status": "blocked_owner_runner_unavailable",
+    "client_os_verified": false,
     "runner_gate_enabled": false,
     "lifecycle_job_result": "skipped",
     "required_runner_labels": [
@@ -83,5 +86,5 @@
     ]
   },
   "release_ready": false,
-  "release_readiness_note": "CI evidence only; licensed VAG repair data, exact factory fitment, Windows 10/11 native lifecycle and owner-approved source rights must be independently satisfied."
+  "release_readiness_note": "Not release-ready. Native Windows 10/11 acceptance status: blocked_owner_runner_unavailable. Licensed VAG repair data, exact factory fitment, source rights and installer signing must also be independently satisfied."
 }
