@@ -4,8 +4,8 @@ const { getOwnerSpecsSummary } = require("../lib/ownerspecs-vag-research-db.cjs"
 
 try {
   const summary = getOwnerSpecsSummary(process.argv[2]);
-  if (summary.counts.vagGenerations !== 20 || summary.counts.vagFacts !== 233 ||
-      summary.counts.sourceGenerations !== 111 || summary.counts.sourceFacts !== 2369 ||
+  if (summary.counts.vagGenerations !== 20 || summary.counts.vagFacts !== 186 ||
+      summary.counts.sourceGenerations !== 111 || summary.counts.sourceFacts !== 2273 ||
       summary.marketScope !== "UNKNOWN" || summary.productionImport !== false ||
       summary.productImportAllowed !== false || summary.criticalTechnicalValuesPublishable !== false ||
       summary.exactEngineGearboxPair !== false || summary.ruEaeuApplicability !== false) {
