@@ -56,8 +56,10 @@ jobs:
           $ErrorActionPreference = "Stop"
           $manifest = Get-Content -LiteralPath "data/source-manifests/history/ownerspecs-verified-vehicle-specs-cc-by-sa-4.0-2026-11-11.json" -Raw | ConvertFrom-Json
           $html = (Invoke-WebRequest -Uri $manifest.source_urls.dataset_page -TimeoutSec 30).Content
+          $htmlText = [System.Net.WebUtility]::HtmlDecode([regex]::Replace($html, '<[^>]+>', ' '))
+          $htmlText = [regex]::Replace($htmlText, '\s+', ' ')
           $pattern = '(?is)(?<generations>[0-9,]+)\s+generations\s+(?<brands>[0-9,]+)\s+brands\s+(?<datapoints>[0-9,]+)\s+verified datapoints'
-          $match = [regex]::Match($html, $pattern)
+          $match = [regex]::Match($htmlText, $pattern)
           if (-not $match.Success) { throw "OwnerSpecs public HTML count summary could not be parsed; refusing acquisition." }
           $generations = [int](($match.Groups["generations"].Value) -replace ",", "")
           $brands = [int](($match.Groups["brands"].Value) -replace ",", "")
@@ -66,7 +68,7 @@ jobs:
           if ($generations -ne $expected.html_page_generation_count -or $brands -ne $expected.html_page_brand_count -or $datapoints -ne $expected.html_page_verified_datapoint_count) {
             throw "OwnerSpecs live HTML counts differ from the reviewed snapshot manifest."
           }
-          if ($html -notmatch [regex]::Escape($expected.publisher_generated_date)) { throw "OwnerSpecs public HTML generation date differs from the pinned manifest." }
+          if ($htmlText -notmatch [regex]::Escape($expected.publisher_generated_date)) { throw "OwnerSpecs public HTML generation date differs from the pinned manifest." }
           "Live HTML reconciled: $generations generations / $brands brands / $datapoints datapoints." | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Acquire the exact publisher JSON and verify snapshot hashes/counts
