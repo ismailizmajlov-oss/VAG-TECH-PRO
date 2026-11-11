@@ -2673,8 +2673,12 @@ jobs:
           if ($rdwDatabaseHash -ne $rdwEntry.database_sha256 -or $rdwPackManifestHash -ne $rdwEntry.pack_manifest_sha256 -or $rdwSourceManifestHash -ne $rdwEntry.source_manifest_sha256 -or $rdwIntegrationReportHash -ne $rdwEntry.desktop_integration_report_sha256 -or $rdwLicenseHash -ne $rdwEntry.license_sha256 -or $rdwAttributionHash -ne $rdwEntry.attribution_sha256 -or $rdwBuildReportHash -ne $rdwEntry.build_report_sha256) { throw "RDW build metadata file hashes do not match the integrated desktop manifest." }
           if ($rdwPackManifest.database.sha256 -ne $rdwDatabaseHash -or $rdwPackManifest.source_manifest_sha256 -ne $rdwSourceManifestHash -or $rdwPackManifest.source_snapshot_sha256 -ne $rdwEntry.source_snapshot_sha256 -or $rdwSourceManifest.source_snapshot_sha256 -ne $rdwEntry.source_snapshot_sha256) { throw "RDW pack/source manifest provenance is inconsistent." }
           if ($rdwIntegrationReport.source_run_id -ne $rdwEntry.source_run_id -or $rdwIntegrationReport.source_run_number -ne $rdwEntry.source_run_number -or $rdwIntegrationReport.artifact_sha256 -ne $rdwEntry.source_artifact_sha256 -or $rdwIntegrationReport.database_sha256 -ne $rdwDatabaseHash -or $rdwIntegrationReport.pack_manifest_sha256 -ne $rdwPackManifestHash -or $rdwIntegrationReport.source_manifest_sha256 -ne $rdwSourceManifestHash -or $rdwIntegrationReport.source_snapshot_sha256 -ne $rdwEntry.source_snapshot_sha256) { throw "RDW desktop integration report does not match the pack manifest." }
-          if ((ConvertTo-Json -InputObject $rdwIntegrationReport.counts -Compress) -ne (ConvertTo-Json -InputObject $rdwEntry.counts -Compress)) { throw "RDW integration counts differ from the pinned desktop manifest." }
-          if ((ConvertTo-Json -InputObject $rdwPackManifest.source_revisions -Compress) -ne (ConvertTo-Json -InputObject $rdwEntry.source_revisions -Compress)) { throw "RDW source revisions differ from the pinned desktop manifest." }
+          foreach ($key in @("source_files","approval_scopes","registration_observations","engine_candidates","gearbox_classifications","auxiliary_rows","source_rows")) {
+            if ([long]$rdwIntegrationReport.counts.$key -ne [long]$rdwEntry.counts.$key) { throw "RDW integration count differs from the pinned desktop manifest: $key" }
+          }
+          foreach ($key in @("registration","tgk_base","tgk_drive","tgk_gearbox","tgk_make","tgk_trade_name")) {
+            if ([string]$rdwPackManifest.source_revisions.$key -ne [string]$rdwEntry.source_revisions.$key) { throw "RDW source revision differs from the pinned desktop manifest: $key" }
+          }
           $rdwSourceId = $rdwEntry.source_id
           $rdwLicense = $rdwEntry.license
           $rdwRightsStatus = $rdwEntry.rights_status
