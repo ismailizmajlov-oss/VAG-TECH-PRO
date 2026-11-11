@@ -8,7 +8,7 @@ const researchRoot = path.resolve(__dirname, "../data/research");
 
 test("OwnerSpecs pack is a hash-verified, isolated CC BY-SA research-only SQLite", () => {
   const summary = getOwnerSpecsSummary(researchRoot);
-  assert.deepEqual(summary.counts, { sourceGenerations: 111, sourceFacts: 2369, vagGenerations: 20, vagFacts: 233 });
+  assert.deepEqual(summary.counts, { sourceGenerations: 111, sourceFacts: 2273, vagGenerations: 20, vagFacts: 186 });
   assert.equal(summary.marketScope, "UNKNOWN");
   assert.equal(summary.schemaVersion, 1);
   assert.equal(summary.status, "verified_research_only");
@@ -21,19 +21,19 @@ test("OwnerSpecs pack is a hash-verified, isolated CC BY-SA research-only SQLite
   assert.equal(summary.ruEaeuApplicability, false);
   assert.match(summary.databaseSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceFileSha256, /^[a-f0-9]{64}$/);
-  assert.equal(summary.sourceFileBytes, 683533);
+  assert.equal(summary.sourceFileBytes, 659973);
   assert.match(summary.sourceSnapshotSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceSnapshotFileSha256, /^[a-f0-9]{64}$/);
   assert.match(summary.sourceManifestSha256, /^[a-f0-9]{64}$/);
-  assert.equal(summary.sourceFileSha256, "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95");
-  assert.equal(summary.sourceSnapshotSha256, "6ed73e4cd634e64501edd3b0e03405afa0aad3b8d1a103f78b839c87c8588c95");
-  assert.equal(summary.sourceSnapshotFileSha256, "c5c17ffb46dc2300a0b5eb9ef57a2877ea8be52a40cc657fccc38f3b1c45b01c");
-  assert.equal(summary.sourceManifestSha256, "3d744c8b813508daefaebcd690d10c2cef6d0a731e87eda59015622bffeabbdc");
-  assert.equal(summary.databaseSha256, "572455b8054bd93600fb5ef25d38c6aa478a5bc98a0d26d678a220b008d4d683");
-  assert.equal(summary.packManifestSha256, "35bbe697d046891c1f49e8f5a318fa2f6f1afab087a7c20d8718ab4c02c9f6dd");
-  assert.equal(summary.artifactSha256, "93c4050130a8d372888ffd3126e18d4ef03de434558adfc98f7bb51e0a6918d1");
-  assert.equal(summary.sourceRetrievedAtUtc, "2026-11-10T06:28:05.310530+00:00");
-  assert.equal(summary.acquisitionRetrievedAtUtc, "2026-11-10T06:43:59.091416+00:00");
+  assert.equal(summary.sourceFileSha256, "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9");
+  assert.equal(summary.sourceSnapshotSha256, "d702e4572a4e640c0295c40970ef3c0da2db3703c829c5e3d96cebb4acccacc9");
+  assert.equal(summary.sourceSnapshotFileSha256, "77ea356babebed51fd9f6f6b1afad75aaed69038b4f27a2d67621fb37c1ad195");
+  assert.equal(summary.sourceManifestSha256, "ed221369ae9195cad18194602a75b17d4ab8aa5908dceb503fc2ca0bfa725697");
+  assert.equal(summary.databaseSha256, "9b7da5b490d3dd805865f23389cb8cc7ca9b368137be8307adb07e0c8e683c4a");
+  assert.equal(summary.packManifestSha256, "21c94e2ec39ea1b231b96d3fe5f830e5ac62ae5cfc1d8e91312de977d8819fd4");
+  assert.equal(summary.artifactSha256, "66c764501b3071958b9c1949f3be15908a27ee280c1e2fdd1985c5b934be8c77");
+  assert.equal(summary.sourceRetrievedAtUtc, "2026-11-11T05:56:12+00:00");
+  assert.equal(summary.acquisitionRetrievedAtUtc, "2026-11-11T06:19:19.940448+00:00");
 });
 
 test("OwnerSpecs search returns raw candidate facts with row-level provenance", () => {
