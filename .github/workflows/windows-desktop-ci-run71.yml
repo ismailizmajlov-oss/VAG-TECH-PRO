@@ -2643,7 +2643,7 @@ jobs:
           $rdwEntries = @($rdwResearchManifest.packs | Where-Object { $_.id -eq "rdw-vag-nl-eu-type-approval-research" })
           if ($rdwEntries.Count -ne 1) { throw "Expected exactly one verified RDW research pack in the desktop manifest." }
           $rdwEntry = $rdwEntries[0]
-          if ($rdwEntry.source_id -ne "rdw-eu-vag-type-approval-open-data-nl" -or $rdwEntry.license -ne "CC0 1.0" -or $rdwEntry.license_status -ne "approved_by_published_CC0_license" -or $rdwEntry.rights_status -ne "approved_by_published_CC0_license") { throw "RDW source identity or CC0 rights status is invalid." }
+          if ($rdwEntry.source_id -ne "rdw-eu-vag-type-approval-open-data-nl" -or $rdwEntry.license -ne "CC0 1.0" -or $rdwEntry.license_status -ne "approved_by_published_CC0_license" -or $rdwEntry.rights_status -ne "approved_by_published_CC0_license" -or $rdwEntry.commercial_use_allowed -ne $true -or $rdwEntry.display_allowed -ne $true -or $rdwEntry.cache_allowed -ne $true -or $rdwEntry.bulk_reuse_allowed -ne $true -or $rdwEntry.redistribution_allowed -ne $true -or $rdwEntry.attribution_required -ne $false -or $rdwEntry.share_alike_required -ne $false) { throw "RDW source identity, CC0 rights or reuse flags are invalid." }
           if (@($rdwEntry.market_scope).Count -ne 1 -or $rdwEntry.market_scope[0] -ne "NL" -or $rdwEntry.production_import -ne $false -or $rdwEntry.product_import_allowed -ne $false -or $rdwEntry.ru_eaeu_applicability -ne $false -or $rdwEntry.exact_vehicle_fitment -ne $false -or $rdwEntry.exact_engine_gearbox_pair -ne $false -or $rdwEntry.repair_applicability -ne $false -or $rdwEntry.diagnostic_execution_allowed -ne $false) { throw "RDW candidate-only applicability boundary failed." }
           function Resolve-RdwResearchFile([string]$relativePath, [string]$label) {
             if ([string]::IsNullOrWhiteSpace($relativePath)) { throw "RDW $label path is missing." }
@@ -2663,6 +2663,7 @@ jobs:
           $rdwPackManifest = Get-Content -LiteralPath $rdwPackManifestPath -Raw | ConvertFrom-Json
           $rdwSourceManifest = Get-Content -LiteralPath $rdwSourceManifestPath -Raw | ConvertFrom-Json
           $rdwIntegrationReport = Get-Content -LiteralPath $rdwIntegrationReportPath -Raw | ConvertFrom-Json
+          if ($rdwSourceManifest.data_ingested -ne $false) { throw "RDW source manifest unexpectedly claims product data ingestion." }
           $rdwDatabaseHash = (Get-FileHash -LiteralPath $rdwDatabasePath -Algorithm SHA256).Hash.ToLowerInvariant()
           $rdwPackManifestHash = (Get-FileHash -LiteralPath $rdwPackManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
           $rdwSourceManifestHash = (Get-FileHash -LiteralPath $rdwSourceManifestPath -Algorithm SHA256).Hash.ToLowerInvariant()
