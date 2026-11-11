@@ -160,11 +160,16 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
             "  source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64),",
         )
         legacy_sql = re.sub(
-            r"CREATE TRIGGER IF NOT EXISTS (?:source_documents_sha256_insert_guard|source_documents_sha256_update_guard|oem_dtc_source_claim_hash_insert_guard|oem_dtc_source_claim_hash_update_guard)\\b.*?\\nEND;\\n",
+            r"CREATE TRIGGER IF NOT EXISTS (?:source_documents_sha256_insert_guard|source_documents_sha256_update_guard|oem_dtc_source_claim_hash_insert_guard|oem_dtc_source_claim_hash_update_guard)\b.*?\nEND;\n",
             "",
             legacy_sql,
             flags=re.S,
         )
+
+        self.assertIn("source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64)", legacy_sql)
+        self.assertIn("source_claim_hash TEXT NOT NULL CHECK (length(source_claim_hash)=64)", legacy_sql)
+        self.assertNotIn("source_documents_sha256_insert_guard", legacy_sql)
+        self.assertNotIn("oem_dtc_source_claim_hash_insert_guard", legacy_sql)
 
         legacy_db = sqlite3.connect(":memory:")
         try:
@@ -172,6 +177,17 @@ class TechnicalLibrarySchemaTests(unittest.TestCase):
             legacy_db.executescript(legacy_sql)
             # Re-applying the current schema must add guards without rebuilding tables.
             legacy_db.executescript(current_sql)
+            installed_guards = {
+                row[0] for row in legacy_db.execute(
+                    "SELECT name FROM sqlite_master WHERE type='trigger'"
+                )
+            }
+            self.assertTrue({
+                "source_documents_sha256_insert_guard",
+                "source_documents_sha256_update_guard",
+                "oem_dtc_source_claim_hash_insert_guard",
+                "oem_dtc_source_claim_hash_update_guard",
+            } <= installed_guards)
 
             with self.assertRaisesRegex(sqlite3.IntegrityError, "source SHA-256"):
                 legacy_db.execute(
