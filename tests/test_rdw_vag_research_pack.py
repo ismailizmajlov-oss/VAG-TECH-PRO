@@ -533,6 +533,8 @@ class WindowsBuildMetadataContractTests(unittest.TestCase):
             "$rdwEntry.desktop_integration_report_sha256",
             "$rdwIntegrationReport.source_run_id",
             "$rdwIntegrationReport.artifact_sha256",
+            'foreach ($key in @("source_files","approval_scopes","registration_observations","engine_candidates","gearbox_classifications","auxiliary_rows","source_rows"))',
+            'foreach ($key in @("registration","tgk_base","tgk_drive","tgk_gearbox","tgk_make","tgk_trade_name"))',
             "rdw_source_artifact_sha256 = $rdwArtifactHash",
             "rdw_source_snapshot_sha256 = $rdwSnapshotHash",
             "rdw_pack_manifest_sha256 = $rdwPackManifestHash",
