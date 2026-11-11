@@ -111,7 +111,18 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_evidence (
   issue_date TEXT,
   retrieved_at_utc TEXT NOT NULL,
   evidence_locator TEXT NOT NULL,
-  source_sha256 TEXT CHECK (source_sha256 IS NULL OR length(source_sha256)=64),
+  source_sha256 TEXT CHECK (
+    source_sha256 IS NULL OR
+    (length(source_sha256)=64 AND lower(source_sha256) NOT GLOB '*[^0-9a-f]*')
+  ),
+  market_scope TEXT NOT NULL DEFAULT 'UNKNOWN' CHECK (
+    market_scope IN ('RU','EAEU','EU','NAR','CN','ROW','MULTI','UNKNOWN')
+  ),
+  applicability_precision TEXT NOT NULL DEFAULT 'unknown' CHECK (
+    applicability_precision IN ('unknown','make_only','model_only','generation','variant',
+      'exact_engine','exact_transmission','exact_pairing','exact_ecu','exact_configuration',
+      'type_approval_descriptor','document_metadata_only')
+  ),
   claim_type TEXT NOT NULL CHECK (
     claim_type IN ('make','model','generation','variant','engine_code',
                    'transmission_code','engine_fitment','transmission_fitment','vin_range',
@@ -121,7 +132,8 @@ CREATE TABLE IF NOT EXISTS vehicle_catalog_evidence (
     review_status IN ('candidate','source_checked','technically_verified',
                       'publication_approved','rejected')
   ),
-  reviewer_note TEXT
+  reviewer_note TEXT,
+  reviewed_at_utc TEXT
 );
 
 CREATE TABLE IF NOT EXISTS vehicle_generation_evidence (
@@ -171,53 +183,341 @@ CREATE INDEX IF NOT EXISTS idx_transmission_code ON transmission_codes(transmiss
 CREATE INDEX IF NOT EXISTS idx_engine_fitments_variant ON engine_fitments(variant_id, engine_id);
 CREATE INDEX IF NOT EXISTS idx_transmission_fitments_variant ON transmission_fitments(variant_id, transmission_id);
 
--- Fitment links require evidence of the corresponding claim type.
-CREATE TRIGGER IF NOT EXISTS validate_engine_fitment_evidence
+-- Fitment rows are active catalog relationships, not a place to store unreviewed candidates.
+-- The cited claim must be technically verified, market-exact, revision/hash-bound,
+-- rights-cleared for commercial display and offline redistribution, and linked only
+-- to verified parent catalog entities.
+DROP TRIGGER IF EXISTS validate_engine_fitment_evidence;
+DROP TRIGGER IF EXISTS validate_transmission_fitment_evidence;
+DROP TRIGGER IF EXISTS validate_powertrain_pair_evidence;
+DROP TRIGGER IF EXISTS prevent_unlicensed_vehicle_evidence_publication;
+DROP TRIGGER IF EXISTS vehicle_catalog_evidence_publication_insert_requires_guarded_transition;
+
+CREATE TRIGGER validate_engine_fitment_evidence
 BEFORE INSERT ON engine_fitments
 WHEN NOT EXISTS (
-  SELECT 1 FROM vehicle_catalog_evidence e
+  SELECT 1
+  FROM vehicle_catalog_evidence e
+  JOIN vehicle_catalog_sources s ON s.source_id=e.source_id
+  JOIN vehicle_catalog_source_rights r ON r.source_id=e.source_id
+  JOIN vehicle_variants v ON v.variant_id=NEW.variant_id
+  JOIN vehicle_generations g ON g.generation_id=v.generation_id
+  JOIN vehicle_models m ON m.model_id=g.model_id
+  JOIN vehicle_makes mk ON mk.make_id=m.make_id
+  JOIN engine_codes ec ON ec.engine_id=NEW.engine_id
   WHERE e.evidence_id=NEW.evidence_id
-    AND e.claim_type IN ('engine_fitment','engine_code','engine_transmission_pair')
+    AND e.claim_type IN ('engine_fitment','engine_transmission_pair')
+    AND e.review_status IN ('technically_verified','publication_approved')
+    AND e.market_scope=v.market_scope
+    AND e.applicability_precision IN ('exact_engine','exact_pairing')
+    AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
+    AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
+    AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
+    AND (s.market_scope=e.market_scope OR (s.market_scope='EAEU' AND e.market_scope IN ('RU','EAEU')) OR s.market_scope='MULTI')
+    AND s.redistribution_allowed=1
+    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+    AND r.rights_status='approved'
+    AND r.commercial_use_allowed=1 AND r.display_allowed=1
+    AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
+    AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
+    AND ec.status IN ('verified','published')
+    AND v.status IN ('verified','published')
+    AND g.status IN ('verified','published')
+    AND m.status IN ('verified','published')
+    AND mk.status IN ('verified','published')
 )
-BEGIN
-  SELECT RAISE(ABORT, 'engine fitment requires engine-fitment evidence');
-END;
+BEGIN SELECT RAISE(ABORT, 'engine fitment requires technically verified exact-market evidence, cleared rights and verified parent records'); END;
 
-CREATE TRIGGER IF NOT EXISTS validate_transmission_fitment_evidence
+CREATE TRIGGER validate_engine_fitment_evidence_update
+BEFORE UPDATE OF variant_id,engine_id,evidence_id ON engine_fitments
+WHEN NOT EXISTS (
+  SELECT 1
+  FROM vehicle_catalog_evidence e
+  JOIN vehicle_catalog_sources s ON s.source_id=e.source_id
+  JOIN vehicle_catalog_source_rights r ON r.source_id=e.source_id
+  JOIN vehicle_variants v ON v.variant_id=NEW.variant_id
+  JOIN vehicle_generations g ON g.generation_id=v.generation_id
+  JOIN vehicle_models m ON m.model_id=g.model_id
+  JOIN vehicle_makes mk ON mk.make_id=m.make_id
+  JOIN engine_codes ec ON ec.engine_id=NEW.engine_id
+  WHERE e.evidence_id=NEW.evidence_id
+    AND e.claim_type IN ('engine_fitment','engine_transmission_pair')
+    AND e.review_status IN ('technically_verified','publication_approved')
+    AND e.market_scope=v.market_scope
+    AND e.applicability_precision IN ('exact_engine','exact_pairing')
+    AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
+    AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
+    AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
+    AND (s.market_scope=e.market_scope OR (s.market_scope='EAEU' AND e.market_scope IN ('RU','EAEU')) OR s.market_scope='MULTI')
+    AND s.redistribution_allowed=1
+    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+    AND r.rights_status='approved'
+    AND r.commercial_use_allowed=1 AND r.display_allowed=1
+    AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
+    AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
+    AND ec.status IN ('verified','published')
+    AND v.status IN ('verified','published')
+    AND g.status IN ('verified','published')
+    AND m.status IN ('verified','published')
+    AND mk.status IN ('verified','published')
+)
+BEGIN SELECT RAISE(ABORT, 'engine fitment update requires technically verified exact-market evidence, cleared rights and verified parent records'); END;
+
+CREATE TRIGGER validate_transmission_fitment_evidence
 BEFORE INSERT ON transmission_fitments
 WHEN NOT EXISTS (
-  SELECT 1 FROM vehicle_catalog_evidence e
+  SELECT 1
+  FROM vehicle_catalog_evidence e
+  JOIN vehicle_catalog_sources s ON s.source_id=e.source_id
+  JOIN vehicle_catalog_source_rights r ON r.source_id=e.source_id
+  JOIN vehicle_variants v ON v.variant_id=NEW.variant_id
+  JOIN vehicle_generations g ON g.generation_id=v.generation_id
+  JOIN vehicle_models m ON m.model_id=g.model_id
+  JOIN vehicle_makes mk ON mk.make_id=m.make_id
+  JOIN transmission_codes tc ON tc.transmission_id=NEW.transmission_id
   WHERE e.evidence_id=NEW.evidence_id
-    AND e.claim_type IN ('transmission_fitment','transmission_code','engine_transmission_pair')
+    AND e.claim_type IN ('transmission_fitment','engine_transmission_pair')
+    AND e.review_status IN ('technically_verified','publication_approved')
+    AND e.market_scope=v.market_scope
+    AND e.applicability_precision IN ('exact_transmission','exact_pairing')
+    AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
+    AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
+    AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
+    AND (s.market_scope=e.market_scope OR (s.market_scope='EAEU' AND e.market_scope IN ('RU','EAEU')) OR s.market_scope='MULTI')
+    AND s.redistribution_allowed=1
+    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+    AND r.rights_status='approved'
+    AND r.commercial_use_allowed=1 AND r.display_allowed=1
+    AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
+    AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
+    AND tc.status IN ('verified','published')
+    AND v.status IN ('verified','published')
+    AND g.status IN ('verified','published')
+    AND m.status IN ('verified','published')
+    AND mk.status IN ('verified','published')
 )
-BEGIN
-  SELECT RAISE(ABORT, 'transmission fitment requires transmission-fitment evidence');
-END;
+BEGIN SELECT RAISE(ABORT, 'transmission fitment requires technically verified exact-market evidence, cleared rights and verified parent records'); END;
 
-CREATE TRIGGER IF NOT EXISTS validate_powertrain_pair_evidence
+CREATE TRIGGER validate_transmission_fitment_evidence_update
+BEFORE UPDATE OF variant_id,transmission_id,evidence_id ON transmission_fitments
+WHEN NOT EXISTS (
+  SELECT 1
+  FROM vehicle_catalog_evidence e
+  JOIN vehicle_catalog_sources s ON s.source_id=e.source_id
+  JOIN vehicle_catalog_source_rights r ON r.source_id=e.source_id
+  JOIN vehicle_variants v ON v.variant_id=NEW.variant_id
+  JOIN vehicle_generations g ON g.generation_id=v.generation_id
+  JOIN vehicle_models m ON m.model_id=g.model_id
+  JOIN vehicle_makes mk ON mk.make_id=m.make_id
+  JOIN transmission_codes tc ON tc.transmission_id=NEW.transmission_id
+  WHERE e.evidence_id=NEW.evidence_id
+    AND e.claim_type IN ('transmission_fitment','engine_transmission_pair')
+    AND e.review_status IN ('technically_verified','publication_approved')
+    AND e.market_scope=v.market_scope
+    AND e.applicability_precision IN ('exact_transmission','exact_pairing')
+    AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
+    AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
+    AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
+    AND (s.market_scope=e.market_scope OR (s.market_scope='EAEU' AND e.market_scope IN ('RU','EAEU')) OR s.market_scope='MULTI')
+    AND s.redistribution_allowed=1
+    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+    AND r.rights_status='approved'
+    AND r.commercial_use_allowed=1 AND r.display_allowed=1
+    AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
+    AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
+    AND tc.status IN ('verified','published')
+    AND v.status IN ('verified','published')
+    AND g.status IN ('verified','published')
+    AND m.status IN ('verified','published')
+    AND mk.status IN ('verified','published')
+)
+BEGIN SELECT RAISE(ABORT, 'transmission fitment update requires technically verified exact-market evidence, cleared rights and verified parent records'); END;
+
+CREATE TRIGGER validate_powertrain_pair_evidence
 BEFORE INSERT ON powertrain_pair_evidence
 WHEN NOT EXISTS (
-  SELECT 1 FROM vehicle_catalog_evidence e
+  SELECT 1
+  FROM vehicle_catalog_evidence e
+  JOIN vehicle_catalog_sources s ON s.source_id=e.source_id
+  JOIN vehicle_catalog_source_rights r ON r.source_id=e.source_id
+  JOIN vehicle_variants v ON v.variant_id=NEW.variant_id
+  JOIN vehicle_generations g ON g.generation_id=v.generation_id
+  JOIN vehicle_models m ON m.model_id=g.model_id
+  JOIN vehicle_makes mk ON mk.make_id=m.make_id
+  JOIN engine_codes ec ON ec.engine_id=NEW.engine_id
+  JOIN transmission_codes tc ON tc.transmission_id=NEW.transmission_id
   WHERE e.evidence_id=NEW.evidence_id
     AND e.claim_type='engine_transmission_pair'
+    AND e.review_status IN ('technically_verified','publication_approved')
+    AND e.market_scope=v.market_scope
+    AND e.applicability_precision='exact_pairing'
+    AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
+    AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
+    AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
+    AND (s.market_scope=e.market_scope OR (s.market_scope='EAEU' AND e.market_scope IN ('RU','EAEU')) OR s.market_scope='MULTI')
+    AND s.redistribution_allowed=1
+    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+    AND r.rights_status='approved'
+    AND r.commercial_use_allowed=1 AND r.display_allowed=1
+    AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
+    AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
+    AND ec.status IN ('verified','published')
+    AND tc.status IN ('verified','published')
+    AND v.status IN ('verified','published')
+    AND g.status IN ('verified','published')
+    AND m.status IN ('verified','published')
+    AND mk.status IN ('verified','published')
 )
+BEGIN SELECT RAISE(ABORT, 'powertrain pair requires same-variant exact-pair evidence, cleared rights and verified parent records'); END;
+
+CREATE TRIGGER validate_powertrain_pair_evidence_update
+BEFORE UPDATE OF variant_id,engine_id,transmission_id,evidence_id ON powertrain_pair_evidence
+WHEN NOT EXISTS (
+  SELECT 1
+  FROM vehicle_catalog_evidence e
+  JOIN vehicle_catalog_sources s ON s.source_id=e.source_id
+  JOIN vehicle_catalog_source_rights r ON r.source_id=e.source_id
+  JOIN vehicle_variants v ON v.variant_id=NEW.variant_id
+  JOIN vehicle_generations g ON g.generation_id=v.generation_id
+  JOIN vehicle_models m ON m.model_id=g.model_id
+  JOIN vehicle_makes mk ON mk.make_id=m.make_id
+  JOIN engine_codes ec ON ec.engine_id=NEW.engine_id
+  JOIN transmission_codes tc ON tc.transmission_id=NEW.transmission_id
+  WHERE e.evidence_id=NEW.evidence_id
+    AND e.claim_type='engine_transmission_pair'
+    AND e.review_status IN ('technically_verified','publication_approved')
+    AND e.market_scope=v.market_scope
+    AND e.applicability_precision='exact_pairing'
+    AND e.document_revision IS NOT NULL AND length(trim(e.document_revision))>0
+    AND e.source_sha256 IS NOT NULL AND length(e.source_sha256)=64
+    AND e.evidence_locator IS NOT NULL AND length(trim(e.evidence_locator))>0
+    AND e.reviewed_at_utc IS NOT NULL AND length(trim(e.reviewed_at_utc))>0
+    AND e.reviewer_note IS NOT NULL AND length(trim(e.reviewer_note))>0
+    AND (s.market_scope=e.market_scope OR (s.market_scope='EAEU' AND e.market_scope IN ('RU','EAEU')) OR s.market_scope='MULTI')
+    AND s.redistribution_allowed=1
+    AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+    AND r.rights_status='approved'
+    AND r.commercial_use_allowed=1 AND r.display_allowed=1
+    AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+    AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+    AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
+    AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
+    AND ec.status IN ('verified','published')
+    AND tc.status IN ('verified','published')
+    AND v.status IN ('verified','published')
+    AND g.status IN ('verified','published')
+    AND m.status IN ('verified','published')
+    AND mk.status IN ('verified','published')
+)
+BEGIN SELECT RAISE(ABORT, 'powertrain pair update requires same-variant exact-pair evidence, cleared rights and verified parent records'); END;
+
+-- Evidence can only advance through explicit review stages. Technical verification
+-- requires exact market scope, document revision/hash, a precise claim and approved rights.
+CREATE TRIGGER validate_vehicle_catalog_evidence_review_transition
+BEFORE UPDATE OF review_status ON vehicle_catalog_evidence
+WHEN NEW.review_status<>OLD.review_status
 BEGIN
-  SELECT RAISE(ABORT, 'engine/transmission pair requires explicit pair evidence');
+  SELECT CASE WHEN NOT (
+    NEW.review_status='candidate'
+    OR (OLD.review_status='candidate' AND NEW.review_status IN ('source_checked','rejected'))
+    OR (OLD.review_status='source_checked' AND NEW.review_status IN ('technically_verified','rejected'))
+    OR (OLD.review_status='technically_verified' AND NEW.review_status IN ('publication_approved','rejected'))
+    OR (OLD.review_status='publication_approved' AND NEW.review_status='rejected')
+    OR (OLD.review_status IN ('source_checked','technically_verified','publication_approved') AND NEW.review_status='candidate')
+    OR (OLD.review_status='rejected' AND NEW.review_status='candidate')
+  ) THEN RAISE(ABORT, 'invalid vehicle catalog evidence review-state transition') END;
+
+  SELECT CASE WHEN NEW.review_status IN ('source_checked','technically_verified','publication_approved')
+    AND (
+      NEW.document_revision IS NULL OR length(trim(NEW.document_revision))=0
+      OR NEW.source_sha256 IS NULL OR length(NEW.source_sha256)<>64
+      OR lower(NEW.source_sha256) GLOB '*[^0-9a-f]*'
+      OR NEW.evidence_locator IS NULL OR length(trim(NEW.evidence_locator))=0
+      OR NEW.market_scope='UNKNOWN' OR NEW.applicability_precision='unknown'
+      OR NEW.reviewed_at_utc IS NULL OR length(trim(NEW.reviewed_at_utc))=0
+      OR NEW.reviewer_note IS NULL OR length(trim(NEW.reviewer_note))=0
+    ) THEN RAISE(ABORT, 'reviewed vehicle evidence requires document revision, SHA-256, market, precision, locator and review note') END;
+
+  SELECT CASE WHEN NEW.review_status IN ('technically_verified','publication_approved')
+    AND NOT EXISTS (
+      SELECT 1 FROM vehicle_catalog_sources s
+      JOIN vehicle_catalog_source_rights r ON r.source_id=s.source_id
+      WHERE s.source_id=NEW.source_id
+        AND (s.market_scope=NEW.market_scope OR (s.market_scope='EAEU' AND NEW.market_scope IN ('RU','EAEU')) OR s.market_scope='MULTI')
+        AND s.redistribution_allowed=1
+        AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
+        AND r.rights_status='approved'
+        AND r.commercial_use_allowed=1 AND r.display_allowed=1
+        AND r.offline_cache_allowed=1 AND r.bulk_reuse_allowed=1
+        AND r.license_text_sha256 IS NOT NULL AND length(r.license_text_sha256)=64
+        AND r.rights_revision IS NOT NULL AND length(trim(r.rights_revision))>0
+        AND r.reviewed_at_utc IS NOT NULL AND length(trim(r.reviewed_at_utc))>0
+    ) THEN RAISE(ABORT, 'technical verification requires approved source rights for this market and offline product use') END;
+
+  SELECT CASE WHEN NEW.review_status IN ('technically_verified','publication_approved')
+    AND NOT (
+      (NEW.claim_type='make' AND NEW.applicability_precision='make_only')
+      OR (NEW.claim_type='model' AND NEW.applicability_precision='model_only')
+      OR (NEW.claim_type='generation' AND NEW.applicability_precision='generation')
+      OR (NEW.claim_type='variant' AND NEW.applicability_precision='variant')
+      OR (NEW.claim_type IN ('engine_code','engine_fitment') AND NEW.applicability_precision='exact_engine')
+      OR (NEW.claim_type IN ('transmission_code','transmission_fitment') AND NEW.applicability_precision='exact_transmission')
+      OR (NEW.claim_type='engine_transmission_pair' AND NEW.applicability_precision='exact_pairing')
+      OR (NEW.claim_type='ecu_fitment' AND NEW.applicability_precision='exact_ecu')
+      OR (NEW.claim_type='dtc_applicability' AND NEW.applicability_precision IN ('exact_ecu','exact_configuration'))
+      OR (NEW.claim_type='repair_document_applicability' AND NEW.applicability_precision='exact_configuration')
+      OR (NEW.claim_type IN ('market_scope','vin_range') AND NEW.applicability_precision='exact_configuration')
+    ) THEN RAISE(ABORT, 'technical verification requires claim-specific applicability precision') END;
+
+  SELECT CASE WHEN NEW.review_status='publication_approved' AND OLD.review_status<>'technically_verified'
+    THEN RAISE(ABORT, 'publication approval requires prior technical verification') END;
 END;
 
--- Publication requires a reviewed claim and an explicitly reusable source.
-CREATE TRIGGER IF NOT EXISTS prevent_unlicensed_vehicle_evidence_publication
-BEFORE UPDATE OF review_status ON vehicle_catalog_evidence
+CREATE TRIGGER prevent_verified_vehicle_catalog_evidence_mutation
+BEFORE UPDATE ON vehicle_catalog_evidence
+WHEN OLD.review_status IN ('technically_verified','publication_approved')
+  AND NEW.review_status<>'candidate'
+  AND (
+    NEW.source_id IS NOT OLD.source_id
+    OR NEW.document_id IS NOT OLD.document_id
+    OR NEW.document_revision IS NOT OLD.document_revision
+    OR NEW.issue_date IS NOT OLD.issue_date
+    OR NEW.retrieved_at_utc IS NOT OLD.retrieved_at_utc
+    OR NEW.evidence_locator IS NOT OLD.evidence_locator
+    OR NEW.source_sha256 IS NOT OLD.source_sha256
+    OR NEW.market_scope IS NOT OLD.market_scope
+    OR NEW.applicability_precision IS NOT OLD.applicability_precision
+    OR NEW.claim_type IS NOT OLD.claim_type
+  )
+BEGIN
+  SELECT RAISE(ABORT, 'verified vehicle evidence is immutable; demote to candidate before correction');
+END;
+
+CREATE TRIGGER vehicle_catalog_evidence_publication_insert_requires_guarded_transition
+BEFORE INSERT ON vehicle_catalog_evidence
 WHEN NEW.review_status='publication_approved'
 BEGIN
-  SELECT CASE WHEN NOT EXISTS (
-    SELECT 1 FROM vehicle_catalog_sources s
-    WHERE s.source_id=NEW.source_id
-      AND s.redistribution_allowed=1
-      AND s.license_status IN ('cc0','public_domain','open_license','permission_granted')
-  ) THEN RAISE(ABORT, 'publication blocked: source reuse rights not cleared') END;
-  SELECT CASE WHEN NEW.evidence_locator='' OR NEW.evidence_locator IS NULL
-    THEN RAISE(ABORT, 'publication blocked: evidence locator is required') END;
+  SELECT RAISE(ABORT, 'vehicle catalog evidence publication must use guarded review-status transition');
 END;
 
 -- A model-year range alone is not an engine or transmission fitment claim.
