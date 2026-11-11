@@ -65,7 +65,8 @@ BEGIN
     THEN RAISE(ABORT, 'source rights approval requires a license-text SHA-256') END;
   SELECT CASE WHEN NEW.commercial_use_allowed<>1 OR NEW.display_allowed<>1
       OR NEW.offline_cache_allowed<>1 OR NEW.bulk_reuse_allowed<>1
-    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache and bulk-reuse rights') END;
+      OR NEW.store_structured_data_allowed<>1
+    THEN RAISE(ABORT, 'source rights approval requires commercial, display, offline-cache, bulk-reuse and structured-data rights') END;
   SELECT CASE WHEN NEW.rights_revision IS NULL OR trim(NEW.rights_revision)=''
       OR NEW.reviewed_at_utc IS NULL OR trim(NEW.reviewed_at_utc)=''
     THEN RAISE(ABORT, 'source rights approval requires a reviewed revision and timestamp') END;
